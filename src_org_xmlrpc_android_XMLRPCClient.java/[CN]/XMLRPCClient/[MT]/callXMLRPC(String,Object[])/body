@@ -1,0 +1,61 @@
+{
+  try {
+    StringWriter bodyWriter=new StringWriter();
+    serializer.setOutput(bodyWriter);
+    serializer.startDocument(null,null);
+    serializer.startTag(null,TAG_METHOD_CALL);
+    serializer.startTag(null,TAG_METHOD_NAME).text(method).endTag(null,TAG_METHOD_NAME);
+    if (params != null && params.length != 0) {
+      serializer.startTag(null,TAG_PARAMS);
+      for (int i=0; i < params.length; i++) {
+        serializer.startTag(null,TAG_PARAM).startTag(null,XMLRPCSerializer.TAG_VALUE);
+        XMLRPCSerializer.serialize(serializer,params[i]);
+        serializer.endTag(null,XMLRPCSerializer.TAG_VALUE).endTag(null,TAG_PARAM);
+      }
+      serializer.endTag(null,TAG_PARAMS);
+    }
+    serializer.endTag(null,TAG_METHOD_CALL);
+    serializer.endDocument();
+    HttpEntity entity=new StringEntity(bodyWriter.toString());
+    postMethod.setEntity(entity);
+    HttpResponse response=client.execute(postMethod);
+    int statusCode=response.getStatusLine().getStatusCode();
+    if (statusCode != HttpStatus.SC_OK) {
+      throw new XMLRPCException("HTTP status code: " + statusCode + " != "+ HttpStatus.SC_OK);
+    }
+    XmlPullParser pullParser=XmlPullParserFactory.newInstance().newPullParser();
+    entity=response.getEntity();
+    Reader reader=new InputStreamReader(entity.getContent());
+    pullParser.setInput(reader);
+    pullParser.nextTag();
+    pullParser.require(XmlPullParser.START_TAG,null,TAG_METHOD_RESPONSE);
+    pullParser.nextTag();
+    String tag=pullParser.getName();
+    if (tag.equals(TAG_PARAMS)) {
+      pullParser.nextTag();
+      pullParser.require(XmlPullParser.START_TAG,null,TAG_PARAM);
+      pullParser.nextTag();
+      Object obj=XMLRPCSerializer.deserialize(pullParser);
+      entity.consumeContent();
+      return obj;
+    }
+ else     if (tag.equals(TAG_FAULT)) {
+      pullParser.nextTag();
+      Map<String,Object> map=(Map<String,Object>)XMLRPCSerializer.deserialize(pullParser);
+      String faultString=(String)map.get(TAG_FAULT_STRING);
+      int faultCode=(Integer)map.get(TAG_FAULT_CODE);
+      entity.consumeContent();
+      throw new XMLRPCFault(faultString,faultCode);
+    }
+ else {
+      entity.consumeContent();
+      throw new XMLRPCException("Bad tag <" + tag + "> in XMLRPC response - neither <params> nor <fault>");
+    }
+  }
+ catch (  XMLRPCException e) {
+    throw e;
+  }
+catch (  Exception e) {
+    throw new XMLRPCException(e);
+  }
+}

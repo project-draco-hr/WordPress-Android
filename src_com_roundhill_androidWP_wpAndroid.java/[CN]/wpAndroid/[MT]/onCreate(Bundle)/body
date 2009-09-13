@@ -1,0 +1,25 @@
+{
+  super.onCreate(icicle);
+  boolean eula=checkEULA();
+  if (eula == false) {
+    AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(wpAndroid.this);
+    dialogBuilder.setTitle("End User License Agreement");
+    dialogBuilder.setMessage(R.string.EULA);
+    dialogBuilder.setPositiveButton("Accept",new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int whichButton){
+        eulaDB eulaDB=new eulaDB(wpAndroid.this);
+        eulaDB.setEULA(wpAndroid.this);
+      }
+    }
+);
+    dialogBuilder.setNegativeButton("Decline",new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int whichButton){
+        finish();
+      }
+    }
+);
+    dialogBuilder.setCancelable(false);
+    dialogBuilder.create().show();
+  }
+  displayAccounts();
+}

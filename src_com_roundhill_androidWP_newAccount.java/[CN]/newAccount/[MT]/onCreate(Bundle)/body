@@ -1,0 +1,136 @@
+{
+  super.onCreate(savedInstanceState);
+  getWindow().setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND,WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+  setContentView(R.layout.newaccount);
+  Spinner spinner=(Spinner)this.findViewById(R.id.maxImageWidth);
+  ArrayAdapter spinnerArrayAdapter=new ArrayAdapter<Object>(this,android.R.layout.simple_spinner_item,new String[]{"Original Size","100","150","200","250","300","350","400","450","500","550","600","650","700","750","800","900","950","1000"});
+  spinner.setAdapter(spinnerArrayAdapter);
+  TextView eulaTV=(TextView)this.findViewById(R.id.l_EULA);
+  eulaTV.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newAccount.this);
+      dialogBuilder.setTitle("End User License Agreement");
+      dialogBuilder.setMessage(R.string.EULA);
+      dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+        public void onClick(        DialogInterface dialog,        int whichButton){
+        }
+      }
+);
+      dialogBuilder.setCancelable(true);
+      dialogBuilder.create().show();
+    }
+  }
+);
+  final Button cancelButton=(Button)findViewById(R.id.cancel);
+  final Button saveButton=(Button)findViewById(R.id.save);
+  saveButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      EditText urlET=(EditText)findViewById(R.id.url);
+      String blogURL=urlET.getText().toString();
+      EditText usernameET=(EditText)findViewById(R.id.username);
+      final String username=usernameET.getText().toString();
+      EditText passwordET=(EditText)findViewById(R.id.password);
+      final String password=passwordET.getText().toString();
+      RadioGroup imageRG=(RadioGroup)findViewById(R.id.imagePlacement);
+      RadioButton checkedRB=(RadioButton)findViewById(imageRG.getCheckedRadioButtonId());
+      final String buttonValue=checkedRB.getText().toString();
+      final boolean fullSizeImageValue=false;
+      Spinner spinner=(Spinner)findViewById(R.id.maxImageWidth);
+      final String maxImageWidth=spinner.getSelectedItem().toString();
+      long maxImageWidthId=spinner.getSelectedItemId();
+      final int maxImageWidthIdInt=(int)maxImageWidthId;
+      CheckBox centerThumbnail=(CheckBox)findViewById(R.id.centerThumbnail);
+      final boolean centerThumbnailValue=centerThumbnail.isChecked();
+      if (blogURL.contains("http://") || blogURL.contains("HTTP://")) {
+      }
+ else {
+        blogURL="http://" + blogURL;
+      }
+      String lastChar=blogURL.substring(blogURL.length() - 1,blogURL.length());
+      if (lastChar.equals("/")) {
+        blogURL=blogURL.substring(0,blogURL.length() - 1);
+      }
+      final String fBlogURL=blogURL + "/xmlrpc.php";
+      client=new XMLRPCClient(fBlogURL);
+      XMLRPCMethod method=new XMLRPCMethod("wp.getUsersBlogs",new XMLRPCMethodCallback(){
+        public void callFinished(        Object[] result){
+          String s="done";
+          s=result.toString();
+          String[] blogNames=new String[100];
+          String[] urls=new String[100];
+          HashMap contentHash=new HashMap();
+          int ctr=0;
+          for (          Object item : result) {
+            contentHash=(HashMap)result[ctr];
+            blogNames[ctr]=contentHash.get("blogName").toString();
+            urls[ctr]=contentHash.get("xmlrpc").toString();
+            String blogName=blogNames[ctr];
+            String blogURL=urls[ctr];
+            ctr++;
+            settingsDB settingsDB=new settingsDB(newAccount.this);
+            boolean noMatch=false;
+            noMatch=settingsDB.checkMatch(newAccount.this,blogName,blogURL,username);
+            if (noMatch) {
+              AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newAccount.this);
+              dialogBuilder.setTitle("Account Already Exists");
+              dialogBuilder.setMessage("There is already a wpToGo account for this wordpress blog configured.");
+              dialogBuilder.setPositiveButton("Ok",new DialogInterface.OnClickListener(){
+                public void onClick(                DialogInterface dialog,                int whichButton){
+                  Bundle bundle=new Bundle();
+                  bundle.putString("returnStatus","SAVE");
+                  Intent mIntent=new Intent();
+                  mIntent.putExtras(bundle);
+                  setResult(RESULT_OK,mIntent);
+                  finish();
+                }
+              }
+);
+              dialogBuilder.setCancelable(true);
+              dialogBuilder.create().show();
+            }
+ else {
+              boolean success=false;
+              success=settingsDB.addAccount(newAccount.this,blogURL,blogName,username,password,buttonValue,centerThumbnailValue,fullSizeImageValue,maxImageWidth,maxImageWidthIdInt);
+            }
+          }
+          if (success) {
+            Toast.makeText(newAccount.this,"Account/Blog added successfully!",Toast.LENGTH_SHORT).show();
+          }
+ else {
+            AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newAccount.this);
+            dialogBuilder.setTitle("Error Creating Account");
+            dialogBuilder.setMessage("Something bad happened while trying to create your local account.  Please check your settings and try again.");
+            dialogBuilder.setPositiveButton("Ok",new DialogInterface.OnClickListener(){
+              public void onClick(              DialogInterface dialog,              int whichButton){
+              }
+            }
+);
+            dialogBuilder.setCancelable(true);
+            dialogBuilder.create().show();
+          }
+          Bundle bundle=new Bundle();
+          bundle.putString("returnStatus","SAVE");
+          Intent mIntent=new Intent();
+          mIntent.putExtras(bundle);
+          setResult(RESULT_OK,mIntent);
+          finish();
+        }
+      }
+);
+      Object[] params={username,password};
+      method.call(params);
+    }
+  }
+);
+  cancelButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      Bundle bundle=new Bundle();
+      bundle.putString("returnStatus","CANCEL");
+      Intent mIntent=new Intent();
+      mIntent.putExtras(bundle);
+      setResult(RESULT_OK,mIntent);
+      finish();
+    }
+  }
+);
+}

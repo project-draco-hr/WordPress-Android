@@ -1,0 +1,82 @@
+{
+  showDialog(ID_DIALOG_REFRESHING);
+  Vector settings=new Vector();
+  settingsDB settingsDB=new settingsDB(this);
+  settings=settingsDB.loadSettings(this,id);
+  String sURL="";
+  if (settings.get(0).toString().contains("xmlrpc.php")) {
+    sURL=settings.get(0).toString();
+  }
+ else {
+    sURL=settings.get(0).toString() + "xmlrpc.php";
+  }
+  String sUsername=settings.get(2).toString();
+  String sPassword=settings.get(3).toString();
+  client=new XMLRPCClient(sURL);
+  XMLRPCMethod method=new XMLRPCMethod("blogger.getRecentPosts",new XMLRPCMethodCallback(){
+    public void callFinished(    Object[] result){
+      String s="done";
+      s=result.toString();
+      HashMap contentHash=new HashMap();
+      titles=new String[result.length];
+      postIDs=new String[result.length];
+      dateCreated=new String[result.length];
+      Vector dbVector=new Vector();
+      for (int ctr=0; ctr < result.length; ctr++) {
+        HashMap<String,String> dbValues=new HashMap();
+        contentHash=(HashMap)result[ctr];
+        titles[ctr]=contentHash.get("content").toString().substring(contentHash.get("content").toString().indexOf("<title>") + 7,contentHash.get("content").toString().indexOf("</title>"));
+        postIDs[ctr]=contentHash.get("postid").toString();
+        dateCreated[ctr]=contentHash.get("dateCreated").toString();
+        dbValues.put("blogID",id);
+        dbValues.put("postID",postIDs[ctr]);
+        dbValues.put("title",titles[ctr]);
+        dbValues.put("postDate",dateCreated[ctr]);
+        dbVector.add(ctr,dbValues);
+      }
+      postStoreDB postStoreDB=new postStoreDB(viewPosts.this);
+      postStoreDB.savePosts(viewPosts.this,dbVector);
+      setListAdapter(new CommentListAdapter(viewPosts.this));
+      dismissDialog(viewPosts.this.ID_DIALOG_REFRESHING);
+    }
+  }
+);
+  Object[] params={"spacer",1,sUsername,sPassword,30};
+  method.call(params);
+  ListView listView=(ListView)findViewById(android.R.id.list);
+  listView.setOnLongClickListener(new OnLongClickListener(){
+    public boolean onLongClick(    View v){
+      return false;
+    }
+  }
+);
+  listView.setOnItemClickListener(new OnItemClickListener(){
+    public void onNothingSelected(    AdapterView<?> arg0){
+    }
+    public void onItemClick(    AdapterView<?> arg0,    View arg1,    int arg2,    long arg3){
+      Intent intent=new Intent(viewPosts.this,editPost.class);
+      intent.putExtra("postID",postIDs[(int)arg3]);
+      intent.putExtra("postTitle",titles[(int)arg3]);
+      intent.putExtra("id",id);
+      intent.putExtra("accountName",accountName);
+      startActivity(intent);
+    }
+  }
+);
+  listView.setOnCreateContextMenuListener(new OnCreateContextMenuListener(){
+    public void onCreateContextMenu(    ContextMenu menu,    View v,    ContextMenuInfo menuInfo){
+      AdapterView.AdapterContextMenuInfo info;
+      try {
+        info=(AdapterView.AdapterContextMenuInfo)menuInfo;
+      }
+ catch (      ClassCastException e) {
+        return;
+      }
+      selectedID=info.position;
+      menu.add(0,0,0,"Preview Post");
+      menu.add(0,1,0,"View Comments");
+      menu.add(0,2,0,"Edit Post");
+    }
+  }
+);
+}

@@ -1,0 +1,25 @@
+{
+  db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
+  Cursor c=db.query(SETTINGS_TABLE,new String[]{"id","blogName","username"},null,null,null,null,null);
+  String id;
+  String blogName, username;
+  int numRows=c.getCount();
+  c.moveToFirst();
+  Vector accounts=new Vector();
+  for (int i=0; i < numRows; i++) {
+    id=c.getString(0);
+    blogName=c.getString(1);
+    username=c.getString(2);
+    if (id != null) {
+      HashMap thisHash=new HashMap();
+      thisHash.put("id",id);
+      thisHash.put("blogName",blogName);
+      thisHash.put("username",username);
+      accounts.add(thisHash);
+    }
+    c.moveToNext();
+  }
+  c.close();
+  db.close();
+  return accounts;
+}

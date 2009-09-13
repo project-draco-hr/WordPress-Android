@@ -1,0 +1,19 @@
+{
+  db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
+  Cursor c=db.query(POSTS_TABLE,new String[]{"title","content","categories","publish"},"savedName='" + postSavedName + "' AND id="+ id,null,null,null,null);
+  int numRows=c.getCount();
+  c.moveToFirst();
+  Vector returnVector=new Vector();
+  if (c.getString(0) != null) {
+    returnVector.add(c.getString(0));
+    returnVector.add(c.getString(1));
+    returnVector.add(c.getString(2));
+    returnVector.add(c.getInt(3));
+  }
+ else {
+    returnVector=null;
+  }
+  c.close();
+  db.close();
+  return returnVector;
+}

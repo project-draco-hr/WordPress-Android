@@ -1,0 +1,43 @@
+{
+  super.onCreate(icicle);
+  setContentView(R.layout.viewpost);
+  Bundle extras=getIntent().getExtras();
+  if (extras != null) {
+    id=extras.getString("id");
+    postID=extras.getString("postID");
+    accountName=extras.getString("accountName");
+    postTitle=extras.getString("postTitle");
+  }
+  pd=ProgressDialog.show(viewPost.this,"Getting Preview","Getting post preview...",true,false);
+  this.setTitle(postTitle + " - View Post");
+  Vector settings=new Vector();
+  settingsDB settingsDB=new settingsDB(this);
+  settings=settingsDB.loadSettings(this,id);
+  String sURL="";
+  if (settings.get(0).toString().contains("xmlrpc.php")) {
+    sURL=settings.get(0).toString();
+  }
+ else {
+    sURL=settings.get(0).toString() + "xmlrpc.php";
+  }
+  String sUsername=settings.get(2).toString();
+  String sPassword=settings.get(3).toString();
+  client=new XMLRPCClient(sURL);
+  XMLRPCMethod method=new XMLRPCMethod("metaWeblog.getPost",new XMLRPCMethodCallback(){
+    public void callFinished(    Object result){
+      pd.dismiss();
+      String s="done";
+      s=result.toString();
+      HashMap resultHash=(HashMap)result;
+      String HTML=resultHash.get("description").toString();
+      WebView wv=(WebView)findViewById(R.id.webView);
+      String mimetype="text/html";
+      String encoding="UTF-8";
+      wv.loadData(HTML,mimetype,encoding);
+      wv.clearCache(true);
+    }
+  }
+);
+  Object[] params={postID,sUsername,sPassword};
+  method.call(params);
+}

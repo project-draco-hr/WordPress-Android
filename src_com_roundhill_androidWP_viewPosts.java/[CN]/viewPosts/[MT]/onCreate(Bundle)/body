@@ -1,0 +1,41 @@
+{
+  super.onCreate(icicle);
+  setContentView(R.layout.viewposts);
+  Bundle extras=getIntent().getExtras();
+  if (extras != null) {
+    id=extras.getString("id");
+    accountName=extras.getString("accountName");
+  }
+  this.setTitle(accountName + " - Recent Posts");
+  boolean loadedPosts=loadPosts();
+  if (!loadedPosts) {
+    refreshPosts();
+  }
+  final ImageButton addNewPost=(ImageButton)findViewById(R.id.newPost);
+  addNewPost.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      Intent i=new Intent(viewPosts.this,newPost.class);
+      i.putExtra("accountName",accountName);
+      i.putExtra("id",id);
+      startActivityForResult(i,0);
+    }
+  }
+);
+  final ImageButton refresh=(ImageButton)findViewById(R.id.refresh);
+  refresh.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      refreshPosts();
+    }
+  }
+);
+  final ImageButton moderate=(ImageButton)findViewById(R.id.moderate);
+  moderate.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      Intent i=new Intent(viewPosts.this,moderateComments.class);
+      i.putExtra("accountName",accountName);
+      i.putExtra("id",id);
+      startActivityForResult(i,0);
+    }
+  }
+);
+}

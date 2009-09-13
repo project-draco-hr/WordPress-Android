@@ -1,0 +1,140 @@
+{
+  super.onCreate(icicle);
+  setContentView(R.layout.moderatecomments);
+  Bundle extras=getIntent().getExtras();
+  if (extras != null) {
+    id=extras.getString("id");
+    accountName=extras.getString("accountName");
+  }
+  this.setTitle(accountName + " - Moderate Comments");
+  Vector settings=new Vector();
+  settingsDB settingsDB=new settingsDB(this);
+  settings=settingsDB.loadSettings(this,id);
+  final Button moderateButton=(Button)findViewById(R.id.moderate);
+  moderateButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      showDialog(ID_DIALOG_POSTING);
+      Thread t=new Thread(){
+        String resultCode="";
+        public void run(){
+          Looper.prepare();
+          Vector settings=new Vector();
+          settingsDB settingsDB=new settingsDB(moderateComments.this);
+          settings=settingsDB.loadSettings(moderateComments.this,id);
+          String sURL="";
+          if (settings.get(0).toString().contains("xmlrpc.php")) {
+            sURL=settings.get(0).toString();
+          }
+ else {
+            sURL=settings.get(0).toString() + "xmlrpc.php";
+          }
+          String sUsername=settings.get(2).toString();
+          String sPassword=settings.get(3).toString();
+          client=new XMLRPCClient(sURL);
+          ListView lv=getListView();
+          Object curListItem;
+          ListAdapter la=lv.getAdapter();
+          Set set=changedComments.keySet();
+          Iterator iter=set.iterator();
+          int i=1;
+          while (iter.hasNext()) {
+            HashMap changedComment=(HashMap)changedComments.get(iter.next());
+            String commentID=changedComment.get("commentID").toString();
+            String commentStatus=changedComment.get("commentStatus").toString();
+            if (commentStatus.equals("Approved")) {
+              commentStatus="approve";
+            }
+ else             if (commentStatus.equals("Unapproved")) {
+              commentStatus="hold";
+            }
+ else             if (commentStatus.equals("Spam")) {
+              commentStatus="spam";
+            }
+            i++;
+            HashMap contentHash, postHash=new HashMap();
+            contentHash=(HashMap)allComments.get(String.valueOf(commentID));
+            postHash.put("status",commentStatus);
+            Date blah=new Date();
+            blah.setTime(blah.parse(contentHash.get("date_created_gmt").toString()));
+            postHash.put("date_created_gmt",blah);
+            postHash.put("content",contentHash.get("content"));
+            postHash.put("author",contentHash.get("author"));
+            postHash.put("author_url",contentHash.get("author_url"));
+            postHash.put("author_email",contentHash.get("author_email"));
+            XMLRPCMethodEditComment method=new XMLRPCMethodEditComment("wp.editComment",new XMLRPCMethodCallbackEditComment(){
+              public void callFinished(              Object result){
+                String s="done";
+                s=result.toString();
+                dismissDialog(ID_DIALOG_POSTING);
+              }
+            }
+);
+            Object[] params={1,sUsername,sPassword,commentID,postHash};
+            method.call(params);
+          }
+          changedComments.clear();
+          Toast.makeText(moderateComments.this,"Comment Moderated Succesfully",20);
+        }
+      }
+;
+      t.start();
+    }
+  }
+);
+  String sURL="";
+  if (settings.get(0).toString().contains("xmlrpc.php")) {
+    sURL=settings.get(0).toString();
+  }
+ else {
+    sURL=settings.get(0).toString() + "xmlrpc.php";
+  }
+  String sUsername=settings.get(2).toString();
+  String sPassword=settings.get(3).toString();
+  HashMap hPost=new HashMap();
+  hPost.put("status","");
+  hPost.put("post_id","");
+  hPost.put("number",30);
+  List<Object> list=new ArrayList<Object>();
+  client=new XMLRPCClient(sURL);
+  XMLRPCMethod method=new XMLRPCMethod("wp.getComments",new XMLRPCMethodCallback(){
+    public void callFinished(    Object[] result){
+      String s="done";
+      s=result.toString();
+      origComments=result;
+      if (result.length == 0) {
+        comments=new String[1];
+        authors=new String[1];
+        status=new String[1];
+        comments[0]="There's no comments on your blog? Sad.";
+        authors[0]="";
+        status[0]="";
+      }
+ else {
+        comments=new String[result.length];
+        authors=new String[result.length];
+        status=new String[result.length];
+        commentID=new String[result.length];
+        authorEmail=new String[result.length];
+        dateCreated=new String[result.length];
+        authorURL=new String[result.length];
+        HashMap contentHash=new HashMap();
+        int ctr=0;
+        for (        Object item : result) {
+          contentHash=(HashMap)result[ctr];
+          allComments.put(contentHash.get("comment_id").toString(),contentHash);
+          comments[ctr]=contentHash.get("content").toString();
+          authors[ctr]=contentHash.get("author").toString();
+          status[ctr]=contentHash.get("status").toString();
+          commentID[ctr]=contentHash.get("comment_id").toString();
+          ctr++;
+        }
+      }
+      setListAdapter(new CommentListAdapter(moderateComments.this));
+      changedComments.clear();
+      initializing=false;
+    }
+  }
+);
+  Object[] params={1,sUsername,sPassword,hPost};
+  method.call(params);
+}
