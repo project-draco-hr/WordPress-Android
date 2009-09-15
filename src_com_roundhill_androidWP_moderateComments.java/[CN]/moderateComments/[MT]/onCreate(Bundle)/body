@@ -65,13 +65,13 @@
               public void callFinished(              Object result){
                 String s="done";
                 s=result.toString();
-                dismissDialog(ID_DIALOG_POSTING);
               }
             }
 );
             Object[] params={1,sUsername,sPassword,commentID,postHash};
             method.call(params);
           }
+          dismissDialog(ID_DIALOG_POSTING);
           changedComments.clear();
           Toast.makeText(moderateComments.this,"Comment Moderated Succesfully",20);
         }
@@ -99,8 +99,6 @@
   XMLRPCMethod method=new XMLRPCMethod("wp.getComments",new XMLRPCMethodCallback(){
     public void callFinished(    Object[] result){
       String s="done";
-      s=result.toString();
-      origComments=result;
       if (result.length == 0) {
         comments=new String[1];
         authors=new String[1];
@@ -110,6 +108,8 @@
         status[0]="";
       }
  else {
+        s=result.toString();
+        origComments=result;
         comments=new String[result.length];
         authors=new String[result.length];
         status=new String[result.length];
