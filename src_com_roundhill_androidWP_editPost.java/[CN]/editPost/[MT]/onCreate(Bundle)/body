@@ -35,16 +35,16 @@
  else {
           HashMap contentHash=(HashMap)result;
           EditText titleET=(EditText)findViewById(R.id.title);
-          titleET.setText(contentHash.get("title").toString());
+          titleET.setText(escapeUtils.unescapeHtml(contentHash.get("title").toString()));
           EditText contentET=(EditText)findViewById(R.id.content);
           if (contentHash.get("mt_text_more").toString() != "") {
-            contentET.setText(contentHash.get("description").toString() + "<!--more-->\n" + contentHash.get("mt_text_more").toString());
+            contentET.setText(escapeUtils.unescapeHtml(contentHash.get("description").toString() + "<!--more-->\n" + contentHash.get("mt_text_more").toString()));
           }
  else {
-            contentET.setText(contentHash.get("description").toString());
+            contentET.setText(escapeUtils.unescapeHtml(contentHash.get("description").toString()));
           }
           EditText tagsET=(EditText)findViewById(R.id.tags);
-          tagsET.setText(contentHash.get("mt_keywords").toString());
+          tagsET.setText(escapeUtils.unescapeHtml(contentHash.get("mt_keywords").toString()));
           String status=contentHash.get("post_status").toString();
           TextView categories=(TextView)findViewById(R.id.selectedCategories);
           Object categoriesArray[]=(Object[])contentHash.get("categories");
@@ -54,7 +54,7 @@
             for (            Object item : categoriesArray) {
               String category=categoriesArray[ctr].toString();
               if (!selectedCategories.contains(category)) {
-                categories.setText(categories.getText().toString() + category + ", ");
+                categories.setText(escapeUtils.unescapeHtml(categories.getText().toString() + category + ", "));
                 selectedCategories.add(category);
               }
               ctr++;
@@ -93,8 +93,8 @@
     }
   }
 );
-  final Button postButton=(Button)findViewById(R.id.post);
-  postButton.setOnClickListener(new Button.OnClickListener(){
+  final customButton postButton=(customButton)findViewById(R.id.post);
+  postButton.setOnClickListener(new customButton.OnClickListener(){
     public void onClick(    View v){
       showDialog(ID_DIALOG_POSTING);
       Thread t=new Thread(){
@@ -114,8 +114,8 @@
     }
   }
 );
-  final ImageButton refreshCategoriesButton=(ImageButton)findViewById(R.id.refreshCategoriesButton);
-  refreshCategoriesButton.setOnClickListener(new Button.OnClickListener(){
+  final customImageButton refreshCategoriesButton=(customImageButton)findViewById(R.id.refreshCategoriesButton);
+  refreshCategoriesButton.setOnClickListener(new customImageButton.OnClickListener(){
     public void onClick(    View v){
       pd=ProgressDialog.show(editPost.this,"Refreshing Categories","Attempting to refresh categories from the wordpress site...",true,true);
       Thread th=new Thread(){
@@ -129,8 +129,8 @@
     }
   }
 );
-  final Button addPictureButton=(Button)findViewById(R.id.addPictureButton);
-  addPictureButton.setOnClickListener(new Button.OnClickListener(){
+  final customButton addPictureButton=(customButton)findViewById(R.id.addPictureButton);
+  addPictureButton.setOnClickListener(new customButton.OnClickListener(){
     public void onClick(    View v){
       Intent photoPickerIntent=new Intent(Intent.ACTION_PICK);
       photoPickerIntent.setType("image/*");
@@ -138,8 +138,8 @@
     }
   }
 );
-  final Button clearCategories=(Button)findViewById(R.id.clearCategories);
-  clearCategories.setOnClickListener(new Button.OnClickListener(){
+  final customButton clearCategories=(customButton)findViewById(R.id.clearCategories);
+  clearCategories.setOnClickListener(new customButton.OnClickListener(){
     public void onClick(    View v){
       TextView selectedCategoriesTV=(TextView)findViewById(R.id.selectedCategories);
       selectedCategoriesTV.setText("Selected categories: ");
@@ -147,8 +147,8 @@
     }
   }
 );
-  final Button boldButton=(Button)findViewById(R.id.bold);
-  boldButton.setOnClickListener(new Button.OnClickListener(){
+  final customButton boldButton=(customButton)findViewById(R.id.bold);
+  boldButton.setOnClickListener(new customButton.OnClickListener(){
     public void onClick(    View v){
       TextView contentText=(TextView)findViewById(R.id.content);
       int selectionStart=contentText.getSelectionStart();
@@ -182,8 +182,8 @@
     }
   }
 );
-  final Button linkButton=(Button)findViewById(R.id.link);
-  linkButton.setOnClickListener(new Button.OnClickListener(){
+  final customButton linkButton=(customButton)findViewById(R.id.link);
+  linkButton.setOnClickListener(new customButton.OnClickListener(){
     public void onClick(    View v){
       TextView contentText=(TextView)findViewById(R.id.content);
       int selectionStart=contentText.getSelectionStart();
@@ -212,8 +212,8 @@
     }
   }
 );
-  final Button emButton=(Button)findViewById(R.id.em);
-  emButton.setOnClickListener(new Button.OnClickListener(){
+  final customButton emButton=(customButton)findViewById(R.id.em);
+  emButton.setOnClickListener(new customButton.OnClickListener(){
     public void onClick(    View v){
       TextView contentText=(TextView)findViewById(R.id.content);
       int selectionStart=contentText.getSelectionStart();
@@ -247,8 +247,8 @@
     }
   }
 );
-  final Button bquoteButton=(Button)findViewById(R.id.bquote);
-  bquoteButton.setOnClickListener(new Button.OnClickListener(){
+  final customButton bquoteButton=(customButton)findViewById(R.id.bquote);
+  bquoteButton.setOnClickListener(new customButton.OnClickListener(){
     public void onClick(    View v){
       TextView contentText=(TextView)findViewById(R.id.content);
       int selectionStart=contentText.getSelectionStart();
@@ -282,15 +282,15 @@
     }
   }
 );
-  final Button cancelButton=(Button)findViewById(R.id.cancel);
-  cancelButton.setOnClickListener(new Button.OnClickListener(){
+  final customButton cancelButton=(customButton)findViewById(R.id.cancel);
+  cancelButton.setOnClickListener(new customButton.OnClickListener(){
     public void onClick(    View v){
       finish();
     }
   }
 );
-  final Button clearPictureButton=(Button)findViewById(R.id.clearPicture);
-  clearPictureButton.setOnClickListener(new Button.OnClickListener(){
+  final customButton clearPictureButton=(customButton)findViewById(R.id.clearPicture);
+  clearPictureButton.setOnClickListener(new customButton.OnClickListener(){
     public void onClick(    View v){
       imageUrl.clear();
       thumbnailUrl.clear();

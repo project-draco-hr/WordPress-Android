@@ -13,7 +13,12 @@
   }
  catch (  final XMLRPCFault e) {
     e.printStackTrace();
-    dismissDialog(editPost.this.ID_DIALOG_POSTING);
+    if (pd.isShowing()) {
+      pd.dismiss();
+    }
+ else {
+      dismissDialog(editPost.this.ID_DIALOG_POSTING);
+    }
     AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
     dialogBuilder.setTitle("Connection Error");
     dialogBuilder.setMessage(e.getFaultString());
@@ -30,10 +35,20 @@ catch (  final XMLRPCException e) {
       public void run(){
         Throwable couse=e.getCause();
         if (couse instanceof HttpHostConnectException) {
-          dismissDialog(editPost.this.ID_DIALOG_POSTING);
+          if (pd.isShowing()) {
+            pd.dismiss();
+          }
+ else {
+            dismissDialog(editPost.this.ID_DIALOG_POSTING);
+          }
         }
  else {
-          dismissDialog(editPost.this.ID_DIALOG_POSTING);
+          if (pd.isShowing()) {
+            pd.dismiss();
+          }
+ else {
+            dismissDialog(editPost.this.ID_DIALOG_POSTING);
+          }
           AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
           dialogBuilder.setTitle("Connection Error");
           dialogBuilder.setMessage(e.getMessage() + e.getLocalizedMessage());

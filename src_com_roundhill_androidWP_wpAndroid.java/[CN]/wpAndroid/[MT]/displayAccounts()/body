@@ -13,14 +13,17 @@
       HashMap curHash=(HashMap)accounts.get(i);
       String curBlogName=curHash.get("blogName").toString();
       String curUsername=curHash.get("username").toString();
+      String accountID=curHash.get("id").toString();
       accountNames.add(i,curBlogName);
       layout.setBackgroundColor(Color.parseColor("#e8e8e8"));
-      final Button buttonView=new Button(this);
+      final customButton buttonView=new customButton(this);
       buttonView.setTextColor(Color.parseColor("#444444"));
       buttonView.setTextSize(18);
-      buttonView.setText(curBlogName + "\n" + "("+ curUsername+ ")");
+      buttonView.setText(escapeUtils.unescapeHtml(curBlogName) + "\n" + "("+ curUsername+ ")");
       buttonView.setId(i);
-      buttonView.setOnClickListener(new Button.OnClickListener(){
+      LinearLayout.LayoutParams params=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+      buttonView.setLayoutParams(params);
+      buttonView.setOnClickListener(new customButton.OnClickListener(){
         public void onClick(        View v){
           for (int i=0; i < accounts.size(); i++) {
             HashMap btnHash=(HashMap)accounts.get(i);
@@ -57,14 +60,14 @@
     textView.setTextSize(12);
     textView.setPadding(0,20,0,0);
     textView.setGravity(Gravity.CENTER_HORIZONTAL);
-    textView.setText("Select 'Menu' to add another account.");
+    textView.setText("Select 'Menu' to add another account or to configure comment notifications.");
     layout.addView(textView);
     sv.addView(layout);
     setContentView(sv);
   }
  else {
     setContentView(R.layout.home);
-    final Button newAccountButton=(Button)findViewById(R.id.addFirstAccount);
+    final customButton newAccountButton=(customButton)findViewById(R.id.addFirstAccount);
     newAccountButton.setOnClickListener(new Button.OnClickListener(){
       public void onClick(      View v){
         Intent i=new Intent(wpAndroid.this,newAccount.class);

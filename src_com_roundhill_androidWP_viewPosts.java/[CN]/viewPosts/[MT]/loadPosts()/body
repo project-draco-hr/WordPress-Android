@@ -7,12 +7,13 @@
     dateCreated=new String[loadedPosts.size()];
     for (int i=0; i < loadedPosts.size(); i++) {
       HashMap contentHash=(HashMap)loadedPosts.get(i);
-      titles[i]=contentHash.get("title").toString();
+      titles[i]=escapeUtils.unescapeHtml(contentHash.get("title").toString());
       postIDs[i]=contentHash.get("postID").toString();
       dateCreated[i]=contentHash.get("postDate").toString();
     }
     setListAdapter(new CommentListAdapter(viewPosts.this));
     ListView listView=(ListView)findViewById(android.R.id.list);
+    listView.setSelector(R.layout.list_selector);
     listView.setOnItemClickListener(new OnItemClickListener(){
       public void onNothingSelected(      AdapterView<?> arg0){
       }
