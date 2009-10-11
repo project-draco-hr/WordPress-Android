@@ -72,6 +72,7 @@
     save.setText("Save");
     save.setOnClickListener(new customButton.OnClickListener(){
       public void onClick(      View v){
+        checkCtr=0;
         int listItemCount=cbLayout.getChildCount();
         for (int i=0; i < listItemCount; i++) {
           CheckBox cbox=(CheckBox)((View)cbLayout.getChildAt(i));
@@ -87,26 +88,53 @@
         }
         settingsDB.updateInterval(notificationSettings.this,sInterval.getSelectedItem().toString());
         if (checkCtr > 0) {
-          if (svc != null) {
-            stopService(svc);
+          String updateInterval=sInterval.getSelectedItem().toString();
+          int UPDATE_INTERVAL=3600000;
+          if (updateInterval.equals("5 Minutes")) {
+            UPDATE_INTERVAL=300000;
           }
-          svc=new Intent(notificationSettings.this,commentService.class);
-          svc.putExtra("updateInterval",sInterval.getSelectedItem().toString());
-          startService(svc);
+ else           if (updateInterval.equals("10 Minutes")) {
+            UPDATE_INTERVAL=600000;
+          }
+ else           if (updateInterval.equals("15 Minutes")) {
+            UPDATE_INTERVAL=900000;
+          }
+ else           if (updateInterval.equals("30 Minutes")) {
+            UPDATE_INTERVAL=1800000;
+          }
+ else           if (updateInterval.equals("1 Hour")) {
+            UPDATE_INTERVAL=3600000;
+          }
+ else           if (updateInterval.equals("3 Hours")) {
+            UPDATE_INTERVAL=10800000;
+          }
+ else           if (updateInterval.equals("6 Hours")) {
+            UPDATE_INTERVAL=21600000;
+          }
+ else           if (updateInterval.equals("12 Hours")) {
+            UPDATE_INTERVAL=43200000;
+          }
+ else           if (updateInterval.equals("Daily")) {
+            UPDATE_INTERVAL=86400000;
+          }
+          Intent intent=new Intent(notificationSettings.this,broadcastReceiver.class);
+          PendingIntent pIntent=PendingIntent.getBroadcast(notificationSettings.this,0,intent,0);
+          AlarmManager alarmManager=(AlarmManager)getSystemService(ALARM_SERVICE);
+          alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis() + (5 * 1000),UPDATE_INTERVAL,pIntent);
+          final NotificationManager nm=(NotificationManager)getSystemService(NOTIFICATION_SERVICE);
           commentService.setUpdateListener(new ServiceUpdateUIListener(){
-            public void updateUI(            final String accountID,            final String accountName){
+            public void updateUI(            final String uAccountID,            final String uAccountName){
               runOnUiThread(new Runnable(){
                 public void run(){
-                  final NotificationManager nm=(NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-                  ComponentName comp=new ComponentName(getPackageName(),getClass().getName());
                   Intent notificationIntent=new Intent(notificationSettings.this,moderateComments.class);
-                  notificationIntent.putExtra("id",accountID);
-                  notificationIntent.putExtra("accountName",accountName);
+                  notificationIntent.setData((Uri.parse("custom://wpToGoNotificationIntent" + uAccountID)));
+                  notificationIntent.putExtra("id",uAccountID);
+                  notificationIntent.putExtra("accountName",uAccountName);
                   notificationIntent.putExtra("fromNotification",true);
-                  final PendingIntent pendingIntent=PendingIntent.getActivity(notificationSettings.this,0,notificationIntent,0);
-                  Notification n=new Notification(R.drawable.wp_logo_small,"New Comment Received",System.currentTimeMillis());
-                  n.setLatestEventInfo(notificationSettings.this,accountName,"New Comment Received",pendingIntent);
-                  nm.notify(22 + Integer.valueOf(accountID),n);
+                  PendingIntent pendingIntent=PendingIntent.getActivity(notificationSettings.this,0,notificationIntent,Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                  Notification n=new Notification(R.drawable.wp_logo,"New Comment Received",System.currentTimeMillis());
+                  n.setLatestEventInfo(notificationSettings.this,uAccountName,"New Comment Received",pendingIntent);
+                  nm.notify(22 + Integer.valueOf(uAccountID),n);
                 }
               }
 );
@@ -115,14 +143,10 @@
 );
         }
  else {
-          if (svc != null) {
-            Vector activeNotificationAccounts=settingsDB.getNotificationAccounts(notificationSettings.this);
-            if (activeNotificationAccounts != null) {
-              if (activeNotificationAccounts.size() < 1) {
-                stopService(svc);
-              }
-            }
-          }
+          Intent stopIntent=new Intent(notificationSettings.this,broadcastReceiver.class);
+          PendingIntent stopPIntent=PendingIntent.getBroadcast(notificationSettings.this,0,stopIntent,0);
+          AlarmManager alarmManager=(AlarmManager)getSystemService(ALARM_SERVICE);
+          alarmManager.cancel(stopPIntent);
         }
         finish();
       }
