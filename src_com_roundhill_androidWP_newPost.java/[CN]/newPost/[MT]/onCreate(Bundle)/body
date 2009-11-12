@@ -32,22 +32,16 @@
   final customButton postButton=(customButton)findViewById(R.id.post);
   postButton.setOnClickListener(new customButton.OnClickListener(){
     public void onClick(    View v){
-      showDialog(ID_DIALOG_POSTING);
-      Thread t=new Thread(){
-        String resultCode="";
-        public void run(){
-          try {
-            Looper.prepare();
-            finalResult=submitPost();
-            mHandler.post(mUpdateResults);
-          }
- catch (          IOException e) {
-            e.printStackTrace();
-          }
-        }
+      boolean result=savePost();
+      if (result) {
+        Intent intent=new Intent(newPost.this,tabView.class);
+        intent.putExtra("id",id);
+        intent.putExtra("accountName",accountName);
+        intent.putExtra("activateTab","drafts");
+        startActivity(intent);
+        Toast.makeText(newPost.this,"Saved to local drafts",Toast.LENGTH_SHORT).show();
+        finish();
       }
-;
-      t.start();
     }
   }
 );
@@ -215,32 +209,6 @@
         contentText.setText(firstHalf + textToBold + lastHalf);
         Editable etext=(Editable)contentText.getText();
         Selection.setSelection(etext,selectionStart + textToBold.length());
-      }
-    }
-  }
-);
-  final customButton saveButton=(customButton)findViewById(R.id.saveLocally);
-  saveButton.setOnClickListener(new customButton.OnClickListener(){
-    public void onClick(    View v){
-      EditText titleET=(EditText)findViewById(R.id.title);
-      String postTitle=titleET.getText().toString();
-      EditText contentET=(EditText)findViewById(R.id.content);
-      String postContent=contentET.getText().toString();
-      if (postTitle.equals("") || postContent.equals("")) {
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newPost.this);
-        dialogBuilder.setTitle("Missing Fields");
-        dialogBuilder.setMessage("You must enter something in the title and content fields before saving.");
-        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-          public void onClick(          DialogInterface dialog,          int whichButton){
-          }
-        }
-);
-        dialogBuilder.setCancelable(true);
-        dialogBuilder.create().show();
-      }
- else {
-        Intent i=new Intent(newPost.this,saveName.class);
-        startActivityForResult(i,3);
       }
     }
   }
