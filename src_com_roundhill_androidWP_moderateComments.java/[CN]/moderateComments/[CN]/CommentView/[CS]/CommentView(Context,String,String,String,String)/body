@@ -1,44 +1,31 @@
 {
   super(context);
   this.setOrientation(VERTICAL);
+  this.setId(Integer.valueOf(commentID));
   tvAuthor=new TextView(context);
   tvAuthor.setTextColor(Color.parseColor("#444444"));
-  tvAuthor.setPadding(4,4,4,4);
+  tvAuthor.setPadding(4,4,4,0);
   tvAuthor.setText(author);
+  tvAuthor.setTextSize(10);
   addView(tvAuthor,new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
   tvComment=new TextView(context);
   tvComment.setTextColor(Color.parseColor("#444444"));
   tvComment.setPadding(4,4,4,4);
   tvComment.setText(comment);
   addView(tvComment,new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
-  rgCommentStatus=new RadioGroup(moderateComments.this);
-  rgCommentStatus.setOnCheckedChangeListener(moderateComments.this);
-  rgCommentStatus.setPadding(4,4,4,4);
-  addView(rgCommentStatus,new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
-  rgCommentStatus.setOrientation(0);
-  rgCommentStatus.setId(Integer.valueOf(commentID));
-  RadioButton rb1=new RadioButton(context);
-  RadioButton rb2=new RadioButton(context);
-  RadioButton rb3=new RadioButton(context);
-  rb1.setButtonDrawable(R.layout.radio_group);
-  rb2.setButtonDrawable(R.layout.radio_group);
-  rb3.setButtonDrawable(R.layout.radio_group);
-  rgCommentStatus.addView(rb3,0);
-  rgCommentStatus.addView(rb2,0);
-  rgCommentStatus.addView(rb1,0);
-  rb3.setText("Spam");
-  if (status.equals("spam")) {
-    rb3.toggle();
-  }
-  rb3.setTextColor(Color.parseColor("#444444"));
-  rb2.setText("Unapproved");
-  if (status.equals("hold")) {
-    rb2.toggle();
-  }
-  rb2.setTextColor(Color.parseColor("#444444"));
-  rb1.setText("Approved");
+  tvStatus=new TextView(context);
+  tvStatus.setPadding(4,4,4,4);
   if (status.equals("approve")) {
-    rb1.toggle();
+    tvStatus.setTextColor(Color.parseColor("#006505"));
+    tvStatus.setText("Approved");
   }
-  rb1.setTextColor(Color.parseColor("#444444"));
+ else   if (status.equals("hold")) {
+    tvStatus.setTextColor(Color.parseColor("#D54E21"));
+    tvStatus.setText("Unapproved");
+  }
+ else   if (status.equals("spam")) {
+    tvStatus.setTextColor(Color.parseColor("#FF0000"));
+    tvStatus.setText("Spam");
+  }
+  addView(tvStatus,new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
 }

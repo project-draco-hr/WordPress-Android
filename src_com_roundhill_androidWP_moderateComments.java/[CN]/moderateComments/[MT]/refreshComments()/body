@@ -1,0 +1,84 @@
+{
+  Vector settings=new Vector();
+  settingsDB settingsDB=new settingsDB(this);
+  settings=settingsDB.loadSettings(this,id);
+  String sURL="";
+  if (settings.get(0).toString().contains("xmlrpc.php")) {
+    sURL=settings.get(0).toString();
+  }
+ else {
+    sURL=settings.get(0).toString() + "xmlrpc.php";
+  }
+  String sUsername=settings.get(2).toString();
+  String sPassword=settings.get(3).toString();
+  HashMap hPost=new HashMap();
+  hPost.put("status","");
+  hPost.put("post_id","");
+  hPost.put("number",30);
+  List<Object> list=new ArrayList<Object>();
+  client=new XMLRPCClient(sURL);
+  XMLRPCMethod method=new XMLRPCMethod("wp.getComments",new XMLRPCMethodCallback(){
+    public void callFinished(    Object[] result){
+      String s="done";
+      if (result.length == 0) {
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(moderateComments.this);
+        dialogBuilder.setTitle("No Comments Found");
+        dialogBuilder.setMessage("You don't have any comments on your blog");
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+            finish();
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        dialogBuilder.create().show();
+      }
+ else {
+        s=result.toString();
+        origComments=result;
+        comments=new String[result.length];
+        authors=new String[result.length];
+        status=new String[result.length];
+        commentID=new String[result.length];
+        authorEmail=new String[result.length];
+        dateCreated=new String[result.length];
+        authorURL=new String[result.length];
+        HashMap contentHash=new HashMap();
+        int ctr=0;
+        for (        Object item : result) {
+          contentHash=(HashMap)result[ctr];
+          allComments.put(contentHash.get("comment_id").toString(),contentHash);
+          comments[ctr]=contentHash.get("content").toString();
+          authors[ctr]=contentHash.get("author").toString();
+          status[ctr]=contentHash.get("status").toString();
+          commentID[ctr]=contentHash.get("comment_id").toString();
+          ctr++;
+        }
+        setListAdapter(new CommentListAdapter(moderateComments.this));
+        ListView listView=(ListView)findViewById(android.R.id.list);
+        listView.setSelector(R.layout.list_selector);
+        listView.setOnCreateContextMenuListener(new OnCreateContextMenuListener(){
+          public void onCreateContextMenu(          ContextMenu menu,          View v,          ContextMenuInfo menuInfo){
+            AdapterView.AdapterContextMenuInfo info;
+            try {
+              info=(AdapterView.AdapterContextMenuInfo)menuInfo;
+            }
+ catch (            ClassCastException e) {
+              return;
+            }
+            selectedID=info.targetView.getId();
+            rowID=info.position;
+            menu.setHeaderTitle("Comment Actions");
+            menu.add(0,0,0,"Mark Approved");
+            menu.add(0,1,0,"Mark Unapproved");
+            menu.add(0,2,0,"Mark Spam");
+          }
+        }
+);
+      }
+    }
+  }
+);
+  Object[] params={1,sUsername,sPassword,hPost};
+  method.call(params);
+}
