@@ -24,6 +24,13 @@
   final customButton saveButton=(customButton)findViewById(R.id.save);
   saveButton.setOnClickListener(new customButton.OnClickListener(){
     public void onClick(    View v){
+      Thread action=new Thread(){
+        public void run(){
+          pd=ProgressDialog.show(newAccount.this,"Account Setup","Attempting to configure account",true,false);
+        }
+      }
+;
+      runOnUiThread(action);
       EditText urlET=(EditText)findViewById(R.id.url);
       String blogURL=urlET.getText().toString();
       EditText usernameET=(EditText)findViewById(R.id.username);
@@ -53,6 +60,7 @@
         public void callFinished(        Object[] result){
           String s="done";
           s=result.toString();
+          pd.dismiss();
           String[] blogNames=new String[100];
           String[] urls=new String[100];
           HashMap contentHash=new HashMap();
@@ -94,16 +102,6 @@
             Toast.makeText(newAccount.this,"Account/Blog added successfully!",Toast.LENGTH_SHORT).show();
           }
  else {
-            AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newAccount.this);
-            dialogBuilder.setTitle("Error Creating Account");
-            dialogBuilder.setMessage("Something bad happened while trying to create your local account.  Please check your settings and try again.");
-            dialogBuilder.setPositiveButton("Ok",new DialogInterface.OnClickListener(){
-              public void onClick(              DialogInterface dialog,              int whichButton){
-              }
-            }
-);
-            dialogBuilder.setCancelable(true);
-            dialogBuilder.create().show();
           }
           Bundle bundle=new Bundle();
           bundle.putString("returnStatus","SAVE");

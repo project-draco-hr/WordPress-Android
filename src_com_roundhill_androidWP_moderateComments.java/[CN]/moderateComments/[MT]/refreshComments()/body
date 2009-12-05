@@ -1,4 +1,11 @@
 {
+  Thread action=new Thread(){
+    public void run(){
+      pd=ProgressDialog.show(moderateComments.this,"Refresh Comments","Attempting to get comments",true,false);
+    }
+  }
+;
+  runOnUiThread(action);
   Vector settings=new Vector();
   settingsDB settingsDB=new settingsDB(this);
   settings=settingsDB.loadSettings(this,id);
@@ -20,13 +27,13 @@
   XMLRPCMethod method=new XMLRPCMethod("wp.getComments",new XMLRPCMethodCallback(){
     public void callFinished(    Object[] result){
       String s="done";
+      pd.dismiss();
       if (result.length == 0) {
         AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(moderateComments.this);
         dialogBuilder.setTitle("No Comments Found");
         dialogBuilder.setMessage("You don't have any comments on your blog");
         dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
           public void onClick(          DialogInterface dialog,          int whichButton){
-            finish();
           }
         }
 );
@@ -44,37 +51,31 @@
         dateCreated=new String[result.length];
         authorURL=new String[result.length];
         HashMap contentHash=new HashMap();
-        int ctr=0;
-        for (        Object item : result) {
+        Vector dbVector=new Vector();
+        for (int ctr=0; ctr < result.length; ctr++) {
+          HashMap<String,String> dbValues=new HashMap();
           contentHash=(HashMap)result[ctr];
           allComments.put(contentHash.get("comment_id").toString(),contentHash);
           comments[ctr]=contentHash.get("content").toString();
           authors[ctr]=contentHash.get("author").toString();
           status[ctr]=contentHash.get("status").toString();
           commentID[ctr]=contentHash.get("comment_id").toString();
-          ctr++;
+          dateCreated[ctr]=contentHash.get("date_created_gmt").toString();
+          authorURL[ctr]=contentHash.get("author_url").toString();
+          authorEmail[ctr]=contentHash.get("author_email").toString();
+          dbValues.put("blogID",id);
+          dbValues.put("commentID",commentID[ctr]);
+          dbValues.put("author",authors[ctr]);
+          dbValues.put("comment",comments[ctr]);
+          dbValues.put("commentDate",dateCreated[ctr]);
+          dbValues.put("status",status[ctr]);
+          dbValues.put("url",authorURL[ctr]);
+          dbValues.put("email",authorEmail[ctr]);
+          dbVector.add(ctr,dbValues);
         }
-        setListAdapter(new CommentListAdapter(moderateComments.this));
-        ListView listView=(ListView)findViewById(android.R.id.list);
-        listView.setSelector(R.layout.list_selector);
-        listView.setOnCreateContextMenuListener(new OnCreateContextMenuListener(){
-          public void onCreateContextMenu(          ContextMenu menu,          View v,          ContextMenuInfo menuInfo){
-            AdapterView.AdapterContextMenuInfo info;
-            try {
-              info=(AdapterView.AdapterContextMenuInfo)menuInfo;
-            }
- catch (            ClassCastException e) {
-              return;
-            }
-            selectedID=info.targetView.getId();
-            rowID=info.position;
-            menu.setHeaderTitle("Comment Actions");
-            menu.add(0,0,0,"Mark Approved");
-            menu.add(0,1,0,"Mark Unapproved");
-            menu.add(0,2,0,"Mark Spam");
-          }
-        }
-);
+        postStoreDB postStoreDB=new postStoreDB(moderateComments.this);
+        postStoreDB.saveComments(moderateComments.this,dbVector);
+        loadComments();
       }
     }
   }

@@ -19,18 +19,20 @@
   HashMap contentHash, postHash=new HashMap();
   contentHash=(HashMap)allComments.get(sSelCommentID);
   postHash.put("status",newStatus);
-  Date blah=new Date();
+  Date d=new Date();
+  SimpleDateFormat sdf=new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
+  String cDate=contentHash.get("commentDate").toString().replace("America/Los_Angeles","GMT");
   try {
-    blah.setTime(blah.parse(contentHash.get("date_created_gmt").toString()));
+    d=sdf.parse(cDate);
   }
- catch (  Exception e1) {
-    e1.printStackTrace();
+ catch (  ParseException pe) {
+    pe.printStackTrace();
   }
-  postHash.put("date_created_gmt",blah);
-  postHash.put("content",contentHash.get("content"));
+  postHash.put("date_created_gmt",d);
+  postHash.put("content",contentHash.get("comment"));
   postHash.put("author",contentHash.get("author"));
-  postHash.put("author_url",contentHash.get("author_url"));
-  postHash.put("author_email",contentHash.get("author_email"));
+  postHash.put("author_url",contentHash.get("url"));
+  postHash.put("author_email",contentHash.get("email"));
   Object[] params={1,sUsername,sPassword,sSelCommentID,postHash};
   Object result=null;
   try {
