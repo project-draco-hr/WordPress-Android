@@ -7,6 +7,7 @@
     comments=new String[loadedPosts.size()];
     dateCreated=new String[loadedPosts.size()];
     status=new String[loadedPosts.size()];
+    authorEmail=new String[loadedPosts.size()];
     for (int i=0; i < loadedPosts.size(); i++) {
       HashMap contentHash=(HashMap)loadedPosts.get(i);
       allComments.put(contentHash.get("commentID").toString(),contentHash);
@@ -15,8 +16,16 @@
       comments[i]=contentHash.get("comment").toString();
       dateCreated[i]=contentHash.get("commentDate").toString();
       status[i]=contentHash.get("status").toString();
+      authorEmail[i]=contentHash.get("email").toString();
     }
-    setListAdapter(new CommentListAdapter(moderateComments.this));
+    try {
+      ThumbnailBus bus=new ThumbnailBus();
+      thumbs=new ThumbnailAdapter(this,new CommentListAdapter(this),new SimpleWebImageCache<ThumbnailBus,ThumbnailMessage>(null,null,101,bus),IMAGE_IDS);
+    }
+ catch (    Exception e1) {
+      e1.printStackTrace();
+    }
+    setListAdapter(thumbs);
     ListView listView=(ListView)findViewById(android.R.id.list);
     listView.setSelector(R.layout.list_selector);
     listView.setOnItemClickListener(new OnItemClickListener(){

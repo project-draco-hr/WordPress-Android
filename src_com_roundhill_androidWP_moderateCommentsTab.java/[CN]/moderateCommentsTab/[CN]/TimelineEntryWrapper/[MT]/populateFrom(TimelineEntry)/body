@@ -1,0 +1,30 @@
+{
+  getName().setText(s.name);
+  getCreatedAt().setText(s.createdAt);
+  getComment().setText(s.comment);
+  row.setId(Integer.valueOf(s.commentID));
+  String prettyComment, textColor="";
+  if (s.status.equals("spam")) {
+    prettyComment="Spam";
+    textColor="#FF0000";
+  }
+ else   if (s.status.equals("hold")) {
+    prettyComment="Unapproved";
+    textColor="#D54E21";
+  }
+ else {
+    prettyComment="Approved";
+    textColor="#006505";
+  }
+  getStatus().setText(prettyComment);
+  getStatus().setTextColor(Color.parseColor(textColor));
+  if (s.profileImageUrl != null) {
+    try {
+      getAvatar().setImageResource(R.drawable.placeholder);
+      getAvatar().setTag(s.profileImageUrl.toString());
+    }
+ catch (    Throwable t) {
+      goBlooey(t);
+    }
+  }
+}
