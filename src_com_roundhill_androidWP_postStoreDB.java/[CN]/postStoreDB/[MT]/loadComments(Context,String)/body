@@ -1,7 +1,7 @@
 {
   db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
   Vector returnVector=new Vector();
-  Cursor c=db.query(COMMENTS_TABLE,new String[]{"blogID","commentID","author","comment","commentDate","status","url","email"},"blogID=" + blogID,null,null,null,null);
+  Cursor c=db.query(COMMENTS_TABLE,new String[]{"blogID","commentID","author","comment","commentDate","status","url","email","postTitle"},"blogID=" + blogID,null,null,null,null);
   int numRows=c.getCount();
   c.moveToFirst();
   for (int i=0; i < numRows; ++i) {
@@ -15,6 +15,7 @@
       returnHash.put("status",c.getString(5));
       returnHash.put("url",c.getString(6));
       returnHash.put("email",c.getString(7));
+      returnHash.put("postTitle",c.getString(8));
       returnVector.add(i,returnHash);
     }
     c.moveToNext();

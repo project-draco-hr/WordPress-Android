@@ -2,22 +2,23 @@
   postStoreDB postStoreDB=new postStoreDB(this);
   Vector loadedPosts=postStoreDB.loadComments(moderateCommentsTab.this,id);
   if (loadedPosts != null) {
-    String author, commentID, comment, dateCreated, status, authorEmail;
-    model=new ArrayList<TimelineEntry>();
+    String author, commentID, comment, dateCreated, status, authorEmail, postTitle;
+    model=new ArrayList<CommentEntry>();
     for (int i=0; i < loadedPosts.size(); i++) {
       HashMap contentHash=(HashMap)loadedPosts.get(i);
       allComments.put(contentHash.get("commentID").toString(),contentHash);
       author=escapeUtils.unescapeHtml(contentHash.get("author").toString());
       commentID=contentHash.get("commentID").toString();
-      comment=contentHash.get("comment").toString();
+      comment=escapeUtils.unescapeHtml(contentHash.get("comment").toString());
       dateCreated=contentHash.get("commentDate").toString();
       status=contentHash.get("status").toString();
-      authorEmail=contentHash.get("email").toString();
-      model.add(new TimelineEntry(commentID,author,dateCreated,comment,status,URI.create("http://gravatar.com/avatar/" + getMd5Hash(authorEmail.trim()) + "?s=48&d=identicon")));
+      authorEmail=escapeUtils.unescapeHtml(contentHash.get("email").toString());
+      postTitle=escapeUtils.unescapeHtml(contentHash.get("postTitle").toString());
+      model.add(new CommentEntry(commentID,author,dateCreated,comment,status,postTitle,URI.create("http://gravatar.com/avatar/" + getMd5Hash(authorEmail.trim()) + "?s=48&d=identicon")));
     }
     try {
       ThumbnailBus bus=new ThumbnailBus();
-      thumbs=new ThumbnailAdapter(this,new TimelineAdapter(),new SimpleWebImageCache<ThumbnailBus,ThumbnailMessage>(null,null,101,bus),IMAGE_IDS);
+      thumbs=new ThumbnailAdapter(this,new CommentAdapter(),new SimpleWebImageCache<ThumbnailBus,ThumbnailMessage>(null,null,101,bus),IMAGE_IDS);
     }
  catch (    Exception e1) {
       e1.printStackTrace();
