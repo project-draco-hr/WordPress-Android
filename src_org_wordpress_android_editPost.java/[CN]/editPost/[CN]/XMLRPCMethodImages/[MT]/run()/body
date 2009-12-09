@@ -1,0 +1,51 @@
+{
+  try {
+    final long t0=System.currentTimeMillis();
+    final Object result;
+    result=(Object)client.call(method,params);
+    final long t1=System.currentTimeMillis();
+    handler.post(new Runnable(){
+      public void run(){
+        callBack.callFinished(result);
+      }
+    }
+);
+  }
+ catch (  final XMLRPCFault e) {
+    dismissDialog(editPost.this.ID_DIALOG_POSTING);
+    AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
+    dialogBuilder.setTitle("Connection Error");
+    dialogBuilder.setMessage(e.getFaultString());
+    dialogBuilder.setPositiveButton("Ok",new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int whichButton){
+      }
+    }
+);
+    dialogBuilder.setCancelable(true);
+    dialogBuilder.create().show();
+  }
+catch (  final XMLRPCException e) {
+    handler.post(new Runnable(){
+      public void run(){
+        Throwable couse=e.getCause();
+        if (couse instanceof HttpHostConnectException) {
+          dismissDialog(editPost.this.ID_DIALOG_POSTING);
+        }
+ else {
+          dismissDialog(editPost.this.ID_DIALOG_POSTING);
+          AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
+          dialogBuilder.setTitle("Connection Error");
+          dialogBuilder.setMessage(e.getMessage() + e.getLocalizedMessage());
+          dialogBuilder.setPositiveButton("Ok",new DialogInterface.OnClickListener(){
+            public void onClick(            DialogInterface dialog,            int whichButton){
+            }
+          }
+);
+          dialogBuilder.setCancelable(true);
+          dialogBuilder.create().show();
+        }
+      }
+    }
+);
+  }
+}

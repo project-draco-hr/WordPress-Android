@@ -1,0 +1,81 @@
+{
+  try {
+    final long t0=System.currentTimeMillis();
+    final Object result;
+    result=(Object)client.call(method,params);
+    final long t1=System.currentTimeMillis();
+    handler.post(new Runnable(){
+      public void run(){
+        callBack.callFinished(result);
+      }
+    }
+);
+  }
+ catch (  final XMLRPCFault e) {
+    e.printStackTrace();
+    if (pd.isShowing()) {
+      pd.dismiss();
+    }
+ else {
+      dismissDialog(editPost.this.ID_DIALOG_POSTING);
+    }
+    final AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
+    dialogBuilder.setTitle("Connection Error");
+    dialogBuilder.setMessage(e.getFaultString());
+    dialogBuilder.setPositiveButton("Ok",new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int whichButton){
+        finish();
+      }
+    }
+);
+    dialogBuilder.setCancelable(true);
+    Thread action=new Thread(){
+      public void run(){
+        dialogBuilder.create().show();
+      }
+    }
+;
+    runOnUiThread(action);
+  }
+catch (  final XMLRPCException e) {
+    handler.post(new Runnable(){
+      public void run(){
+        Throwable couse=e.getCause();
+        if (couse instanceof HttpHostConnectException) {
+          if (pd.isShowing()) {
+            pd.dismiss();
+          }
+ else {
+            dismissDialog(editPost.this.ID_DIALOG_POSTING);
+          }
+        }
+ else {
+          if (pd.isShowing()) {
+            pd.dismiss();
+          }
+ else {
+            dismissDialog(editPost.this.ID_DIALOG_POSTING);
+          }
+          final AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
+          dialogBuilder.setTitle("Connection Error");
+          dialogBuilder.setMessage(e.getMessage() + e.getLocalizedMessage());
+          dialogBuilder.setPositiveButton("Ok",new DialogInterface.OnClickListener(){
+            public void onClick(            DialogInterface dialog,            int whichButton){
+              finish();
+            }
+          }
+);
+          dialogBuilder.setCancelable(true);
+          Thread action=new Thread(){
+            public void run(){
+              dialogBuilder.create().show();
+            }
+          }
+;
+          runOnUiThread(action);
+        }
+      }
+    }
+);
+  }
+}

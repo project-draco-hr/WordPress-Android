@@ -1,0 +1,60 @@
+{
+  String sSelCommentID=String.valueOf(selCommentID);
+  Vector settings=new Vector();
+  settingsDB settingsDB=new settingsDB(moderateComments.this);
+  settings=settingsDB.loadSettings(moderateComments.this,id);
+  String sURL="";
+  if (settings.get(0).toString().contains("xmlrpc.php")) {
+    sURL=settings.get(0).toString();
+  }
+ else {
+    sURL=settings.get(0).toString() + "xmlrpc.php";
+  }
+  String sUsername=settings.get(2).toString();
+  String sPassword=settings.get(3).toString();
+  client=new XMLRPCClient(sURL);
+  ListView lv=getListView();
+  Object curListItem;
+  ListAdapter la=lv.getAdapter();
+  HashMap contentHash, postHash=new HashMap();
+  contentHash=(HashMap)allComments.get(sSelCommentID);
+  postHash.put("status",newStatus);
+  Date d=new Date();
+  SimpleDateFormat sdf=new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
+  String cDate=contentHash.get("commentDate").toString().replace("America/Los_Angeles","PDT");
+  try {
+    d=sdf.parse(cDate);
+  }
+ catch (  ParseException pe) {
+    pe.printStackTrace();
+  }
+  postHash.put("date_created_gmt",d);
+  postHash.put("content",contentHash.get("comment"));
+  postHash.put("author",contentHash.get("author"));
+  postHash.put("author_url",contentHash.get("url"));
+  postHash.put("author_email",contentHash.get("email"));
+  Object[] params={1,sUsername,sPassword,sSelCommentID,postHash};
+  Object result=null;
+  try {
+    result=(Object)client.call("wp.editComment",params);
+    dismissDialog(ID_DIALOG_POSTING);
+    Thread action=new Thread(){
+      public void run(){
+        Toast.makeText(moderateComments.this,"Comment Moderated Succesfully",Toast.LENGTH_SHORT).show();
+      }
+    }
+;
+    this.runOnUiThread(action);
+    Thread action2=new Thread(){
+      public void run(){
+        refreshComments();
+      }
+    }
+;
+    this.runOnUiThread(action2);
+  }
+ catch (  XMLRPCException e) {
+    dismissDialog(ID_DIALOG_POSTING);
+    e.printStackTrace();
+  }
+}

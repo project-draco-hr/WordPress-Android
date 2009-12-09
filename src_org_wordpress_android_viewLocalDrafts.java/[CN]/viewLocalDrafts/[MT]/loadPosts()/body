@@ -1,0 +1,56 @@
+{
+  localDraftsDB lDraftsDB=new localDraftsDB(this);
+  Vector loadedPosts=lDraftsDB.loadPosts(viewLocalDrafts.this,id);
+  if (loadedPosts != null) {
+    postIDs=new Integer[loadedPosts.size()];
+    titles=new String[loadedPosts.size()];
+    publish=new Integer[loadedPosts.size()];
+    uploaded=new Integer[loadedPosts.size()];
+    for (int i=0; i < loadedPosts.size(); i++) {
+      HashMap contentHash=(HashMap)loadedPosts.get(i);
+      postIDs[i]=(Integer)contentHash.get("id");
+      titles[i]=escapeUtils.unescapeHtml(contentHash.get("title").toString());
+      publish[i]=(Integer)contentHash.get("publish");
+      uploaded[i]=(Integer)contentHash.get("uploaded");
+    }
+    setListAdapter(new CommentListAdapter(viewLocalDrafts.this));
+    ListView listView=(ListView)findViewById(android.R.id.list);
+    listView.setSelector(R.layout.list_selector);
+    listView.setOnItemClickListener(new OnItemClickListener(){
+      public void onNothingSelected(      AdapterView<?> arg0){
+      }
+      public void onItemClick(      AdapterView<?> arg0,      View arg1,      int arg2,      long arg3){
+        Intent intent=new Intent(viewLocalDrafts.this,editPost.class);
+        intent.putExtra("postID",postIDs[(int)arg3]);
+        intent.putExtra("postTitle",titles[(int)arg3]);
+        intent.putExtra("id",id);
+        intent.putExtra("accountName",accountName);
+        intent.putExtra("localDraft",true);
+        startActivity(intent);
+      }
+    }
+);
+    listView.setOnCreateContextMenuListener(new OnCreateContextMenuListener(){
+      public void onCreateContextMenu(      ContextMenu menu,      View v,      ContextMenuInfo menuInfo){
+        AdapterView.AdapterContextMenuInfo info;
+        try {
+          info=(AdapterView.AdapterContextMenuInfo)menuInfo;
+        }
+ catch (        ClassCastException e) {
+          return;
+        }
+        selectedID=info.targetView.getId();
+        rowID=info.position;
+        menu.setHeaderTitle("Post Actions");
+        menu.add(0,0,0,"Edit Draft");
+        menu.add(0,1,0,"Upload Draft to Blog");
+        menu.add(0,2,0,"Delete Draft");
+      }
+    }
+);
+    return true;
+  }
+ else {
+    return false;
+  }
+}

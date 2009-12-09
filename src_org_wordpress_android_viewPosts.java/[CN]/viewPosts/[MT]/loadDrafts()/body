@@ -1,0 +1,21 @@
+{
+  localDraftsDB lDraftsDB=new localDraftsDB(this);
+  Vector loadedPosts=lDraftsDB.loadPosts(viewPosts.this,id);
+  if (loadedPosts != null) {
+    draftIDs=new String[loadedPosts.size()];
+    draftTitles=new String[loadedPosts.size()];
+    publish=new String[loadedPosts.size()];
+    uploaded=new Integer[loadedPosts.size()];
+    for (int i=0; i < loadedPosts.size(); i++) {
+      HashMap contentHash=(HashMap)loadedPosts.get(i);
+      draftIDs[i]=contentHash.get("id").toString();
+      draftTitles[i]=escapeUtils.unescapeHtml(contentHash.get("title").toString());
+      publish[i]=contentHash.get("publish").toString();
+      uploaded[i]=(Integer)contentHash.get("uploaded");
+    }
+    return true;
+  }
+ else {
+    return false;
+  }
+}

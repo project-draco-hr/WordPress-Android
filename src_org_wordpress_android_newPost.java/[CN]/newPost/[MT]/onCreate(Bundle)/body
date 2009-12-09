@@ -1,0 +1,228 @@
+{
+  super.onCreate(icicle);
+  setContentView(R.layout.main);
+  Bundle extras=getIntent().getExtras();
+  if (extras != null) {
+    id=extras.getString("id");
+    accountName=extras.getString("accountName");
+  }
+  this.setTitle(accountName + " - New Post");
+  loadCategories();
+  selectedImageIDs.clear();
+  selectedImageCtr=0;
+  Spinner spinner=(Spinner)findViewById(R.id.spinner1);
+  spinner.setOnItemSelectedListener(new OnItemSelectedListener(){
+    public void onItemSelected(    AdapterView parent,    View v,    int position,    long id){
+      if (newStart != true) {
+        String selectedItem=parent.getItemAtPosition(position).toString();
+        TextView selectedCategoriesTV=(TextView)findViewById(R.id.selectedCategories);
+        if (!selectedCategories.contains(selectedItem)) {
+          selectedCategoriesTV.setText(selectedCategoriesTV.getText().toString() + selectedItem + ", ");
+          selectedCategories.add(selectedItem);
+        }
+      }
+ else {
+        newStart=false;
+      }
+    }
+    public void onNothingSelected(    AdapterView arg0){
+    }
+  }
+);
+  final customButton postButton=(customButton)findViewById(R.id.post);
+  postButton.setOnClickListener(new customButton.OnClickListener(){
+    public void onClick(    View v){
+      boolean result=savePost();
+      if (result) {
+        Intent intent=new Intent(newPost.this,tabView.class);
+        intent.putExtra("id",id);
+        intent.putExtra("accountName",accountName);
+        intent.putExtra("activateTab","drafts");
+        startActivity(intent);
+        Toast.makeText(newPost.this,"Saved to local drafts",Toast.LENGTH_SHORT).show();
+        finish();
+      }
+    }
+  }
+);
+  final ImageButton refreshCategoriesButton=(ImageButton)findViewById(R.id.refreshCategoriesButton);
+  refreshCategoriesButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      pd=ProgressDialog.show(newPost.this,"Refreshing Categories","Attempting to refresh categories from the wordpress site...",true,true);
+      Thread th=new Thread(){
+        public void run(){
+          finalResult=getCategories();
+          mHandler.post(mUpdateResults);
+        }
+      }
+;
+      th.start();
+    }
+  }
+);
+  final customButton addPictureButton=(customButton)findViewById(R.id.addPictureButton);
+  addPictureButton.setOnClickListener(new customButton.OnClickListener(){
+    public void onClick(    View v){
+      Intent photoPickerIntent=new Intent(Intent.ACTION_PICK);
+      photoPickerIntent.setType("image/*");
+      startActivityForResult(photoPickerIntent,1);
+    }
+  }
+);
+  final customButton clearCategories=(customButton)findViewById(R.id.clearCategories);
+  clearCategories.setOnClickListener(new customButton.OnClickListener(){
+    public void onClick(    View v){
+      TextView selectedCategoriesTV=(TextView)findViewById(R.id.selectedCategories);
+      selectedCategoriesTV.setText("Selected categories: ");
+      selectedCategories.clear();
+    }
+  }
+);
+  final customButton boldButton=(customButton)findViewById(R.id.bold);
+  boldButton.setOnClickListener(new customButton.OnClickListener(){
+    public void onClick(    View v){
+      TextView contentText=(TextView)findViewById(R.id.content);
+      int selectionStart=contentText.getSelectionStart();
+      int selectionEnd=contentText.getSelectionEnd();
+      if (selectionStart > selectionEnd) {
+        int temp=selectionEnd;
+        selectionEnd=selectionStart;
+        selectionStart=temp;
+      }
+      if (selectionStart == -1 || selectionStart == contentText.getText().toString().length() || (selectionStart == selectionEnd)) {
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newPost.this);
+        dialogBuilder.setTitle("No text selected");
+        dialogBuilder.setMessage("Please select some text first in order to bold it. You can select text by holding the shift key and scrolling.");
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        dialogBuilder.create().show();
+      }
+ else {
+        String textToBold=contentText.getText().toString().substring(selectionStart,selectionEnd);
+        textToBold="<strong>" + textToBold + "</strong>";
+        String firstHalf=contentText.getText().toString().substring(0,selectionStart);
+        String lastHalf=contentText.getText().toString().substring(selectionEnd,contentText.getText().toString().length());
+        contentText.setText(firstHalf + textToBold + lastHalf);
+        Editable etext=(Editable)contentText.getText();
+        Selection.setSelection(etext,selectionStart + textToBold.length());
+      }
+    }
+  }
+);
+  final customButton linkButton=(customButton)findViewById(R.id.link);
+  linkButton.setOnClickListener(new customButton.OnClickListener(){
+    public void onClick(    View v){
+      TextView contentText=(TextView)findViewById(R.id.content);
+      int selectionStart=contentText.getSelectionStart();
+      int selectionEnd=contentText.getSelectionEnd();
+      if (selectionStart > selectionEnd) {
+        int temp=selectionEnd;
+        selectionEnd=selectionStart;
+        selectionStart=temp;
+      }
+      if (selectionStart == -1 || selectionStart == contentText.getText().toString().length() || (selectionStart == selectionEnd)) {
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newPost.this);
+        dialogBuilder.setTitle("No text selected");
+        dialogBuilder.setMessage("Please select some text first in order to link it. You can select text by holding the shift key and scrolling.");
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        dialogBuilder.create().show();
+      }
+ else {
+        Intent i=new Intent(newPost.this,link.class);
+        startActivityForResult(i,2);
+      }
+    }
+  }
+);
+  final customButton emButton=(customButton)findViewById(R.id.em);
+  emButton.setOnClickListener(new customButton.OnClickListener(){
+    public void onClick(    View v){
+      TextView contentText=(TextView)findViewById(R.id.content);
+      int selectionStart=contentText.getSelectionStart();
+      int selectionEnd=contentText.getSelectionEnd();
+      if (selectionStart > selectionEnd) {
+        int temp=selectionEnd;
+        selectionEnd=selectionStart;
+        selectionStart=temp;
+      }
+      if (selectionStart == -1 || selectionStart == contentText.getText().toString().length() || (selectionStart == selectionEnd)) {
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newPost.this);
+        dialogBuilder.setTitle("No text selected");
+        dialogBuilder.setMessage("Please select some text in order to emphasize it. You can select text by holding the shift key and scrolling.");
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        dialogBuilder.create().show();
+      }
+ else {
+        String textToBold=contentText.getText().toString().substring(selectionStart,selectionEnd);
+        textToBold="<em>" + textToBold + "</em>";
+        String firstHalf=contentText.getText().toString().substring(0,selectionStart);
+        String lastHalf=contentText.getText().toString().substring(selectionEnd,contentText.getText().toString().length());
+        contentText.setText(firstHalf + textToBold + lastHalf);
+        Editable etext=(Editable)contentText.getText();
+        Selection.setSelection(etext,selectionStart + textToBold.length());
+      }
+    }
+  }
+);
+  final customButton bquoteButton=(customButton)findViewById(R.id.bquote);
+  bquoteButton.setOnClickListener(new customButton.OnClickListener(){
+    public void onClick(    View v){
+      TextView contentText=(TextView)findViewById(R.id.content);
+      int selectionStart=contentText.getSelectionStart();
+      int selectionEnd=contentText.getSelectionEnd();
+      if (selectionStart > selectionEnd) {
+        int temp=selectionEnd;
+        selectionEnd=selectionStart;
+        selectionStart=temp;
+      }
+      if (selectionStart == -1 || selectionStart == contentText.getText().toString().length() || (selectionStart == selectionEnd)) {
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newPost.this);
+        dialogBuilder.setTitle("No text selected");
+        dialogBuilder.setMessage("Please select some text in order to place it in a blockquote. You can select text by holding the shift key and scrolling.");
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        dialogBuilder.create().show();
+      }
+ else {
+        String textToBold=contentText.getText().toString().substring(selectionStart,selectionEnd);
+        textToBold="<blockquote>" + textToBold + "</blockquote>";
+        String firstHalf=contentText.getText().toString().substring(0,selectionStart);
+        String lastHalf=contentText.getText().toString().substring(selectionEnd,contentText.getText().toString().length());
+        contentText.setText(firstHalf + textToBold + lastHalf);
+        Editable etext=(Editable)contentText.getText();
+        Selection.setSelection(etext,selectionStart + textToBold.length());
+      }
+    }
+  }
+);
+  final customButton clearPictureButton=(customButton)findViewById(R.id.clearPicture);
+  clearPictureButton.setOnClickListener(new customButton.OnClickListener(){
+    public void onClick(    View v){
+      imageUrl.clear();
+      thumbnailUrl.clear();
+      selectedImageIDs.clear();
+      selectedImageCtr=0;
+      GridView gridview=(GridView)findViewById(R.id.gridView);
+      gridview.setAdapter(null);
+    }
+  }
+);
+}

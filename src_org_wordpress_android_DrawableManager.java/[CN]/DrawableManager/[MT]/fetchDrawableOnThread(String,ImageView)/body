@@ -1,0 +1,20 @@
+{
+  if (drawableMap.containsKey(urlString)) {
+    imageView.setImageDrawable((Drawable)drawableMap.get(urlString));
+  }
+  final Handler handler=new Handler(){
+    @Override public void handleMessage(    Message message){
+      imageView.setImageDrawable((Drawable)message.obj);
+    }
+  }
+;
+  Thread thread=new Thread(){
+    @Override public void run(){
+      Drawable drawable=fetchDrawable(urlString);
+      Message message=handler.obtainMessage(1,drawable);
+      handler.sendMessage(message);
+    }
+  }
+;
+  thread.start();
+}

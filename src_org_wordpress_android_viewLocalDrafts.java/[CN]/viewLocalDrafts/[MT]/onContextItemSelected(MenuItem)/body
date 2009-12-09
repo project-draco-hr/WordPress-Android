@@ -1,0 +1,47 @@
+{
+switch (item.getItemId()) {
+case 0:
+    Intent i2=new Intent(viewLocalDrafts.this,editPost.class);
+  i2.putExtra("postID",String.valueOf(selectedID));
+i2.putExtra("postTitle",titles[rowID]);
+i2.putExtra("id",id);
+i2.putExtra("accountName",accountName);
+i2.putExtra("localDraft",true);
+startActivity(i2);
+return true;
+case 1:
+showDialog(ID_DIALOG_POSTING);
+new Thread(){
+public void run(){
+try {
+submitResult=submitPost();
+}
+ catch (IOException e) {
+e.printStackTrace();
+}
+}
+}
+.start();
+return true;
+case 2:
+AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewLocalDrafts.this);
+dialogBuilder.setTitle("Delete Post?");
+dialogBuilder.setMessage("Are you sure you want to delete the draft '" + titles[rowID] + "'?");
+dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+localDraftsDB lDraftsDB=new localDraftsDB(viewLocalDrafts.this);
+lDraftsDB.deletePost(viewLocalDrafts.this,String.valueOf(selectedID));
+loadPosts();
+}
+}
+);
+dialogBuilder.setNegativeButton("Cancel",new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+}
+}
+);
+dialogBuilder.setCancelable(true);
+dialogBuilder.create().show();
+}
+return false;
+}

@@ -1,0 +1,24 @@
+{
+  db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
+  Vector returnVector=new Vector();
+  Cursor c=db.query(LOCALDRAFTS_TABLE,new String[]{"id","title","publish","uploaded"},"blogID=" + blogID,null,null,null,"id desc");
+  int numRows=c.getCount();
+  c.moveToFirst();
+  for (int i=0; i < numRows; ++i) {
+    if (c.getString(0) != null) {
+      HashMap returnHash=new HashMap();
+      returnHash.put("id",c.getInt(0));
+      returnHash.put("title",c.getString(1));
+      returnHash.put("publish",c.getInt(2));
+      returnHash.put("uploaded",c.getInt(3));
+      returnVector.add(i,returnHash);
+    }
+    c.moveToNext();
+  }
+  c.close();
+  db.close();
+  if (numRows == 0) {
+    returnVector=null;
+  }
+  return returnVector;
+}

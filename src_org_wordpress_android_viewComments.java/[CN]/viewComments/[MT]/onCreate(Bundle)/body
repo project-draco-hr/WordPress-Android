@@ -1,0 +1,59 @@
+{
+  super.onCreate(icicle);
+  setContentView(R.layout.viewcomments);
+  Bundle extras=getIntent().getExtras();
+  if (extras != null) {
+    id=extras.getString("id");
+    postID=extras.getString("postID");
+    accountName=extras.getString("accountName");
+    postTitle=extras.getString("postTitle");
+  }
+  this.setTitle(postTitle + " - View Comments");
+  Vector settings=new Vector();
+  settingsDB settingsDB=new settingsDB(this);
+  settings=settingsDB.loadSettings(this,id);
+  String sURL="";
+  if (settings.get(0).toString().contains("xmlrpc.php")) {
+    sURL=settings.get(0).toString();
+  }
+ else {
+    sURL=settings.get(0).toString() + "xmlrpc.php";
+  }
+  String sUsername=settings.get(2).toString();
+  String sPassword=settings.get(3).toString();
+  HashMap hPost=new HashMap();
+  hPost.put("status","approve");
+  hPost.put("post_id",postID);
+  hPost.put("number",10);
+  Object[] commentStruct={postID,"","",""};
+  List<Object> list=new ArrayList<Object>();
+  client=new XMLRPCClient(sURL);
+  XMLRPCMethod method=new XMLRPCMethod("wp.getComments",new XMLRPCMethodCallback(){
+    public void callFinished(    Object[] result){
+      String s="done";
+      s=result.toString();
+      if (result.length == 0) {
+        comments=new String[1];
+        authors=new String[1];
+        comments[0]="There are no approved comments for this post";
+        authors[0]="";
+      }
+ else {
+        comments=new String[result.length];
+        authors=new String[result.length];
+        HashMap contentHash=new HashMap();
+        int ctr=0;
+        for (        Object item : result) {
+          contentHash=(HashMap)result[ctr];
+          comments[ctr]=contentHash.get("content").toString();
+          authors[ctr]=contentHash.get("author").toString();
+          ctr++;
+        }
+      }
+      setListAdapter(new CommentListAdapter(viewComments.this));
+    }
+  }
+);
+  Object[] params={1,sUsername,sPassword,hPost};
+  method.call(params);
+}
