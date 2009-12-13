@@ -1,0 +1,26 @@
+{
+  super.onCreate(savedInstanceState);
+  Bundle extras=getIntent().getExtras();
+  if (extras != null) {
+    id=extras.getString("id");
+    accountName=extras.getString("accountName");
+    comment=extras.getString("comment");
+    email=extras.getString("email");
+    name=extras.getString("name");
+  }
+  final Window w=getWindow();
+  w.requestFeature(Window.FEATURE_LEFT_ICON);
+  setContentView(R.layout.view_comment);
+  final String gravatarURL="http://gravatar.com/avatar/" + getMd5Hash(email.trim()) + "?s=64&d=identicon";
+  Thread action=new Thread(){
+    public void run(){
+      w.setFeatureDrawable(Window.FEATURE_LEFT_ICON,getDrawable(gravatarURL));
+    }
+  }
+;
+  this.runOnUiThread(action);
+  this.setTitle(name);
+  final ImageView ivGravatar=(ImageView)findViewById(R.id.gravatar);
+  TextView tvComment=(TextView)findViewById(R.id.comment);
+  tvComment.setText(comment);
+}

@@ -2,7 +2,7 @@
   postStoreDB postStoreDB=new postStoreDB(this);
   Vector loadedPosts=postStoreDB.loadComments(moderateCommentsTab.this,id);
   if (loadedPosts != null) {
-    String author, commentID, comment, dateCreated, dateCreatedFormatted, status, authorEmail, postTitle;
+    String author, commentID, comment, dateCreated, dateCreatedFormatted, status, authorEmail, authorURL, postTitle;
     model=new ArrayList<CommentEntry>();
     for (int i=0; i < loadedPosts.size(); i++) {
       HashMap contentHash=(HashMap)loadedPosts.get(i);
@@ -14,8 +14,9 @@
       dateCreatedFormatted=contentHash.get("commentDateFormatted").toString();
       status=contentHash.get("status").toString();
       authorEmail=escapeUtils.unescapeHtml(contentHash.get("email").toString());
+      authorURL=escapeUtils.unescapeHtml(contentHash.get("url").toString());
       postTitle=escapeUtils.unescapeHtml(contentHash.get("postTitle").toString());
-      model.add(new CommentEntry(commentID,author,dateCreatedFormatted,comment,status,postTitle,URI.create("http://gravatar.com/avatar/" + getMd5Hash(authorEmail.trim()) + "?s=48&d=identicon")));
+      model.add(new CommentEntry(commentID,author,dateCreatedFormatted,comment,status,postTitle,authorURL,authorEmail,URI.create("http://gravatar.com/avatar/" + getMd5Hash(authorEmail.trim()) + "?s=48&d=identicon")));
     }
     try {
       ThumbnailBus bus=new ThumbnailBus();
@@ -27,6 +28,21 @@
     setListAdapter(thumbs);
     ListView listView=(ListView)findViewById(android.R.id.list);
     listView.setSelector(R.layout.list_selector);
+    listView.setOnItemClickListener(new OnItemClickListener(){
+      public void onNothingSelected(      AdapterView<?> arg0){
+      }
+      public void onItemClick(      AdapterView<?> arg0,      View arg1,      int arg2,      long arg3){
+        Intent intent=new Intent(moderateCommentsTab.this,viewComment.class);
+        intent.putExtra("id",id);
+        intent.putExtra("accountName",accountName);
+        intent.putExtra("comment",model.get((int)arg3).comment);
+        intent.putExtra("name",model.get((int)arg3).name);
+        intent.putExtra("email",model.get((int)arg3).authorEmail);
+        intent.putExtra("url",model.get((int)arg3).authorURL);
+        startActivity(intent);
+      }
+    }
+);
     listView.setOnCreateContextMenuListener(new OnCreateContextMenuListener(){
       public void onCreateContextMenu(      ContextMenu menu,      View v,      ContextMenuInfo menuInfo){
         AdapterView.AdapterContextMenuInfo info;

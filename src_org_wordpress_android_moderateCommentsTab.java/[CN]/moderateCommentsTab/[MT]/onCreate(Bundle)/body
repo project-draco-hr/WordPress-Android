@@ -15,11 +15,25 @@
   this.setTitle(accountName + " - Moderate Comments");
   boolean loadedComments=loadComments();
   if (!loadedComments) {
+    Thread action=new Thread(){
+      public void run(){
+        pd=ProgressDialog.show(moderateCommentsTab.this,"Refresh Comments","Attempting to get comments",true,false);
+      }
+    }
+;
+    runOnUiThread(action);
     refreshComments();
   }
   final customMenuButton refresh=(customMenuButton)findViewById(R.id.refreshComments);
   refresh.setOnClickListener(new customMenuButton.OnClickListener(){
     public void onClick(    View v){
+      Thread action=new Thread(){
+        public void run(){
+          pd=ProgressDialog.show(moderateCommentsTab.this,"Refresh Comments","Attempting to get comments",true,false);
+        }
+      }
+;
+      runOnUiThread(action);
       refreshComments();
     }
   }

@@ -1,11 +1,4 @@
 {
-  Thread action=new Thread(){
-    public void run(){
-      pd=ProgressDialog.show(moderateCommentsTab.this,"Refresh Comments","Attempting to get comments",true,false);
-    }
-  }
-;
-  runOnUiThread(action);
   Vector settings=new Vector();
   settingsDB settingsDB=new settingsDB(this);
   settings=settingsDB.loadSettings(this,id);
@@ -27,7 +20,9 @@
   XMLRPCMethod method=new XMLRPCMethod("wp.getComments",new XMLRPCMethodCallback(){
     public void callFinished(    Object[] result){
       String s="done";
-      pd.dismiss();
+      if (pd.isShowing()) {
+        pd.dismiss();
+      }
       if (result.length == 0) {
         AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(moderateCommentsTab.this);
         dialogBuilder.setTitle("No Comments Found");
