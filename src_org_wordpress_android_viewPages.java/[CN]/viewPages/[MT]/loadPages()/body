@@ -3,49 +3,60 @@
   Vector loadedPosts=postStoreDB.loadPages(viewPages.this,id);
   if (loadedPosts != null) {
     titles=new String[loadedPosts.size()];
-    pageIDs=new String[loadedPosts.size()];
+    postIDs=new String[loadedPosts.size()];
     dateCreated=new String[loadedPosts.size()];
     dateCreatedFormatted=new String[loadedPosts.size()];
     for (int i=0; i < loadedPosts.size(); i++) {
       HashMap contentHash=(HashMap)loadedPosts.get(i);
       titles[i]=escapeUtils.unescapeHtml(contentHash.get("title").toString());
-      pageIDs[i]=contentHash.get("pageID").toString();
+      postIDs[i]=contentHash.get("pageID").toString();
       dateCreated[i]=contentHash.get("pageDate").toString();
       dateCreatedFormatted[i]=contentHash.get("pageDateFormatted").toString();
+    }
+    List postIDList=Arrays.asList(postIDs);
+    List newPostIDList=new ArrayList();
+    newPostIDList.add("postsHeader");
+    newPostIDList.addAll(postIDList);
+    postIDs=(String[])newPostIDList.toArray(new String[newPostIDList.size()]);
+    List postTitleList=Arrays.asList(titles);
+    List newPostTitleList=new ArrayList();
+    newPostTitleList.add("Posts");
+    newPostTitleList.addAll(postTitleList);
+    titles=(String[])newPostTitleList.toArray(new String[newPostTitleList.size()]);
+    List dateList=Arrays.asList(dateCreated);
+    List newDateList=new ArrayList();
+    newDateList.add("postsHeader");
+    newDateList.addAll(dateList);
+    dateCreated=(String[])newDateList.toArray(new String[newDateList.size()]);
+    List dateFormattedList=Arrays.asList(dateCreatedFormatted);
+    List newDateFormattedList=new ArrayList();
+    newDateFormattedList.add("postsHeader");
+    newDateFormattedList.addAll(dateFormattedList);
+    dateCreatedFormatted=(String[])newDateFormattedList.toArray(new String[newDateFormattedList.size()]);
+    boolean drafts=loadDrafts();
+    if (drafts) {
+      List draftIDList=Arrays.asList(draftIDs);
+      List newDraftIDList=new ArrayList();
+      newDraftIDList.add("draftsHeader");
+      newDraftIDList.addAll(draftIDList);
+      draftIDs=(String[])newDraftIDList.toArray(new String[newDraftIDList.size()]);
+      List titleList=Arrays.asList(draftTitles);
+      List newTitleList=new ArrayList();
+      newTitleList.add("Local Drafts");
+      newTitleList.addAll(titleList);
+      draftTitles=(String[])newTitleList.toArray(new String[newTitleList.size()]);
+      List publishList=Arrays.asList(publish);
+      List newPublishList=new ArrayList();
+      newPublishList.add("draftsHeader");
+      newPublishList.addAll(publishList);
+      publish=(String[])newPublishList.toArray(new String[newPublishList.size()]);
+      postIDs=mergeStringArrays(draftIDs,postIDs);
+      titles=mergeStringArrays(draftTitles,titles);
+      dateCreatedFormatted=mergeStringArrays(publish,dateCreatedFormatted);
     }
     setListAdapter(new CommentListAdapter(viewPages.this));
     ListView listView=(ListView)findViewById(android.R.id.list);
     listView.setSelector(R.layout.list_selector);
-    listView.setOnItemClickListener(new OnItemClickListener(){
-      public void onNothingSelected(      AdapterView<?> arg0){
-      }
-      public void onItemClick(      AdapterView<?> arg0,      View arg1,      int arg2,      long arg3){
-        Intent intent=new Intent(viewPages.this,editPost.class);
-        intent.putExtra("pageID",pageIDs[(int)arg3]);
-        intent.putExtra("postTitle",titles[(int)arg3]);
-        intent.putExtra("id",id);
-        intent.putExtra("accountName",accountName);
-        startActivity(intent);
-      }
-    }
-);
-    listView.setOnCreateContextMenuListener(new OnCreateContextMenuListener(){
-      public void onCreateContextMenu(      ContextMenu menu,      View v,      ContextMenuInfo menuInfo){
-        AdapterView.AdapterContextMenuInfo info;
-        try {
-          info=(AdapterView.AdapterContextMenuInfo)menuInfo;
-        }
- catch (        ClassCastException e) {
-          return;
-        }
-        selectedID=info.position;
-        menu.setHeaderTitle("Post Actions");
-        menu.add(0,0,0,"Preview Page");
-        menu.add(0,1,0,"View Comments");
-        menu.add(0,2,0,"Edit Page");
-      }
-    }
-);
     return true;
   }
  else {

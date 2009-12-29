@@ -1,29 +1,73 @@
 {
+  if (item.getGroupId() == 0) {
 switch (item.getItemId()) {
 case 0:
-    Intent i0=new Intent(viewPages.this,viewPost.class);
-  i0.putExtra("postID",pageIDs[selectedID]);
-i0.putExtra("postTitle",titles[selectedID]);
-i0.putExtra("id",id);
+      Intent i0=new Intent(viewPages.this,viewPost.class);
+    i0.putExtra("postID",String.valueOf(selectedID));
+  i0.putExtra("id",id);
 i0.putExtra("accountName",accountName);
 startActivity(i0);
 return true;
 case 1:
 Intent i=new Intent(viewPages.this,viewComments.class);
-i.putExtra("postID",pageIDs[selectedID]);
-i.putExtra("postTitle",titles[selectedID]);
+i.putExtra("postID",String.valueOf(selectedID));
 i.putExtra("id",id);
 i.putExtra("accountName",accountName);
 startActivity(i);
 return true;
 case 2:
-Intent i2=new Intent(viewPages.this,editPost.class);
-i2.putExtra("postID",pageIDs[selectedID]);
-i2.putExtra("postTitle",titles[selectedID]);
+Intent i2=new Intent(viewPages.this,editPage.class);
+i2.putExtra("postID",String.valueOf(selectedID));
 i2.putExtra("id",id);
 i2.putExtra("accountName",accountName);
 startActivity(i2);
 return true;
+}
+}
+ else {
+switch (item.getItemId()) {
+case 0:
+Intent i2=new Intent(viewPages.this,editPage.class);
+i2.putExtra("postID",String.valueOf(selectedID));
+i2.putExtra("id",id);
+i2.putExtra("accountName",accountName);
+i2.putExtra("localDraft",true);
+startActivityForResult(i2,1);
+return true;
+case 1:
+showDialog(ID_DIALOG_POSTING);
+new Thread(){
+public void run(){
+try {
+submitResult=submitPost();
+}
+ catch (IOException e) {
+e.printStackTrace();
+}
+}
+}
+.start();
+return true;
+case 2:
+AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewPages.this);
+dialogBuilder.setTitle("Delete Draft?");
+dialogBuilder.setMessage("Are you sure you want to delete the draft '" + titles[rowID] + "'?");
+dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+localDraftsDB lDraftsDB=new localDraftsDB(viewPages.this);
+lDraftsDB.deletePageDraft(viewPages.this,String.valueOf(selectedID));
+loadPages();
+}
+}
+);
+dialogBuilder.setNegativeButton("Cancel",new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+}
+}
+);
+dialogBuilder.setCancelable(true);
+dialogBuilder.create().show();
+}
 }
 return false;
 }

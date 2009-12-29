@@ -1,14 +1,12 @@
 {
   super.onCreate(icicle);
   setContentView(R.layout.viewposts);
-  TextView longPress=(TextView)findViewById(R.id.longPress);
-  longPress.setText("Long press on a page to view actions");
   Bundle extras=getIntent().getExtras();
   if (extras != null) {
     id=extras.getString("id");
     accountName=extras.getString("accountName");
   }
-  this.setTitle(escapeUtils.unescapeHtml(accountName) + " - View Pages");
+  this.setTitle(escapeUtils.unescapeHtml(accountName) + " - Pages");
   boolean loadedPages=loadPages();
   if (!loadedPages) {
     refreshPages();
@@ -16,7 +14,7 @@
   final customMenuButton addNewPost=(customMenuButton)findViewById(R.id.newPost);
   addNewPost.setOnClickListener(new customMenuButton.OnClickListener(){
     public void onClick(    View v){
-      Intent i=new Intent(viewPages.this,newPost.class);
+      Intent i=new Intent(viewPages.this,newPage.class);
       i.putExtra("accountName",accountName);
       i.putExtra("id",id);
       startActivityForResult(i,0);

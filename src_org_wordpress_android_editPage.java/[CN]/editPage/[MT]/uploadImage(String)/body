@@ -1,0 +1,167 @@
+{
+  int finalHeight=0;
+  settingsDB settingsDB=new settingsDB(editPage.this);
+  Vector categoriesVector=settingsDB.loadSettings(editPage.this,id);
+  String sURL="";
+  if (categoriesVector.get(0).toString().contains("xmlrpc.php")) {
+    sURL=categoriesVector.get(0).toString();
+  }
+ else {
+    sURL=categoriesVector.get(0).toString() + "xmlrpc.php";
+  }
+  String sUsername=categoriesVector.get(2).toString();
+  String sPassword=categoriesVector.get(3).toString();
+  sImagePlacement=categoriesVector.get(4).toString();
+  String sCenterThumbnailString=categoriesVector.get(5).toString();
+  if (sCenterThumbnailString.equals("1")) {
+    centerThumbnail=true;
+  }
+  sMaxImageWidth=categoriesVector.get(7).toString();
+  client=new XMLRPCClient(sURL);
+  String curImagePath="";
+  curImagePath=imageURL;
+  Uri imageUri=Uri.parse(curImagePath);
+  String imgID=imageUri.getLastPathSegment();
+  long imgID2=Long.parseLong(imgID);
+  String[] projection;
+  projection=new String[]{Images.Media._ID,Images.Media.DATA};
+  Uri imgPath;
+  imgPath=ContentUris.withAppendedId(Images.Media.EXTERNAL_CONTENT_URI,imgID2);
+  Cursor cur=managedQuery(imgPath,projection,null,null,null);
+  String thumbData="";
+  if (cur.moveToFirst()) {
+    int nameColumn, dataColumn, heightColumn, widthColumn;
+    nameColumn=cur.getColumnIndex(Images.Media._ID);
+    dataColumn=cur.getColumnIndex(Images.Media.DATA);
+    thumbData=cur.getString(dataColumn);
+  }
+  File jpeg=new File(thumbData);
+  imageTitle=jpeg.getName();
+  byte[] bytes=new byte[(int)jpeg.length()];
+  DataInputStream in=null;
+  try {
+    in=new DataInputStream(new FileInputStream(jpeg));
+  }
+ catch (  FileNotFoundException e) {
+    e.printStackTrace();
+  }
+  try {
+    in.readFully(bytes);
+  }
+ catch (  IOException e) {
+    e.printStackTrace();
+  }
+  try {
+    in.close();
+  }
+ catch (  IOException e) {
+    e.printStackTrace();
+  }
+  BitmapFactory.Options opts=new BitmapFactory.Options();
+  opts.inJustDecodeBounds=true;
+  Bitmap bm=BitmapFactory.decodeByteArray(bytes,0,bytes.length,opts);
+  int width=opts.outWidth;
+  int height=opts.outHeight;
+  int finalWidth=500;
+  byte[] finalBytes;
+  if (sMaxImageWidth.equals("Original Size")) {
+    if (bytes.length > 1000000) {
+      float finWidth=1000;
+      int sample=0;
+      float fWidth=width;
+      sample=new Double(Math.ceil(fWidth / finWidth)).intValue();
+      if (sample == 3) {
+        sample=4;
+      }
+ else       if (sample > 4 && sample < 8) {
+        sample=8;
+      }
+      opts.inSampleSize=sample;
+      opts.inJustDecodeBounds=false;
+      float percentage=(float)finalWidth / width;
+      float proportionateHeight=height * percentage;
+      finalHeight=(int)Math.rint(proportionateHeight);
+      bm=BitmapFactory.decodeByteArray(bytes,0,bytes.length,opts);
+      ByteArrayOutputStream baos=new ByteArrayOutputStream();
+      bm.compress(Bitmap.CompressFormat.JPEG,75,baos);
+      bm.recycle();
+      finalBytes=baos.toByteArray();
+    }
+ else {
+      finalBytes=bytes;
+    }
+  }
+ else {
+    finalWidth=Integer.parseInt(sMaxImageWidth);
+    if (finalWidth > width) {
+      finalBytes=bytes;
+    }
+ else {
+      int sample=0;
+      float fWidth=width;
+      sample=new Double(Math.ceil(fWidth / 1200)).intValue();
+      if (sample == 3) {
+        sample=4;
+      }
+ else       if (sample > 4 && sample < 8) {
+        sample=8;
+      }
+      opts.inSampleSize=sample;
+      opts.inJustDecodeBounds=false;
+      bm=BitmapFactory.decodeByteArray(bytes,0,bytes.length,opts);
+      float percentage=(float)finalWidth / bm.getWidth();
+      float proportionateHeight=bm.getHeight() * percentage;
+      finalHeight=(int)Math.rint(proportionateHeight);
+      float scaleWidth=((float)finalWidth) / bm.getWidth();
+      float scaleHeight=((float)finalHeight) / bm.getHeight();
+      float scaleBy=Math.min(scaleWidth,scaleHeight);
+      Matrix matrix=new Matrix();
+      matrix.postScale(scaleBy,scaleBy);
+      Bitmap resized=Bitmap.createBitmap(bm,0,0,bm.getWidth(),bm.getHeight(),matrix,true);
+      ByteArrayOutputStream baos=new ByteArrayOutputStream();
+      resized.compress(Bitmap.CompressFormat.JPEG,75,baos);
+      bm.recycle();
+      resized.recycle();
+      finalBytes=baos.toByteArray();
+    }
+  }
+  String contentType="image/jpg";
+  Map<String,Object> m=new HashMap<String,Object>();
+  HashMap hPost=new HashMap();
+  m.put("name",imageTitle);
+  m.put("type",contentType);
+  m.put("bits",finalBytes);
+  m.put("overwrite",true);
+  client=new XMLRPCClient(sURL);
+  XMLRPCMethodImages method=new XMLRPCMethodImages("wp.uploadFile",new XMLRPCMethodCallback(){
+    public void callFinished(    Object result){
+      imgHTML="";
+      HashMap contentHash=new HashMap();
+      contentHash=(HashMap)result;
+      String resultURL=contentHash.get("url").toString();
+      String finalImageUrl="";
+      finalImageUrl=resultURL;
+      String centerCSS=" ";
+      if (centerThumbnail) {
+        centerCSS="style=\"display:block;margin-right:auto;margin-left:auto;\" ";
+      }
+      if (resultURL != null) {
+        if (sImagePlacement.equals("Above Text")) {
+          imgHTML+="<img " + centerCSS + "alt=\"image\" src=\""+ finalImageUrl+ "\" /><br /><br />";
+        }
+ else {
+          imgHTML+="<br /><img " + centerCSS + "alt=\"image\" src=\""+ finalImageUrl+ "\" />";
+        }
+      }
+    }
+  }
+);
+  Object[] params={1,sUsername,sPassword,m};
+  try {
+    method.call(params);
+  }
+ catch (  InterruptedException e) {
+    e.printStackTrace();
+  }
+  return imgHTML;
+}
