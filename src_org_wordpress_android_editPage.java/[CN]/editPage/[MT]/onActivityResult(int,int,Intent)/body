@@ -37,47 +37,6 @@ Selection.setSelection(etext,selectionStart + textToLink.length());
 }
 }
 break;
-case 3:
-String selectedPostID=extras.getString("selectedSaveName");
-if (selectedPostID.equals("noPostsFound") != true && selectedPostID.equals("CANCEL") != true) {
-savedPostsDB postsDB2=new savedPostsDB(editPage.this);
-Vector postFields=postsDB2.loadPost(this,selectedPostID,id);
-EditText titleET=(EditText)findViewById(R.id.title);
-EditText contentET=(EditText)findViewById(R.id.content);
-TextView categoriesTV=(TextView)findViewById(R.id.selectedCategories);
-CheckBox publishCB=(CheckBox)findViewById(R.id.publish);
-titleET.setText(postFields.get(0).toString());
-contentET.setText(postFields.get(1).toString());
-if (postFields.get(2) != null) {
-categoriesTV.setText(postFields.get(2).toString());
-}
- else {
-categoriesTV.setText("Selected categories: ");
-}
-boolean publish=false;
-if (postFields.get(3) != null) {
-if (postFields.get(3).equals("1")) {
-publish=true;
-}
-}
-publishCB.setChecked(publish);
-selectedImageIDs=new Vector();
-}
- else if (selectedPostID.equals("CANCEL")) {
-}
- else {
-AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPage.this);
-dialogBuilder.setTitle("No Pages Found");
-dialogBuilder.setMessage("No saved pages were found.");
-dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-public void onClick(DialogInterface dialog,int whichButton){
-}
-}
-);
-dialogBuilder.setCancelable(true);
-dialogBuilder.create().show();
-}
-break;
 }
 }
 }
