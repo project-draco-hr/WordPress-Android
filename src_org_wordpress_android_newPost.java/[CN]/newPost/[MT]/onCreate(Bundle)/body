@@ -40,6 +40,21 @@
     }
   }
 );
+  final customImageButton refreshCategoriesButton=(customImageButton)findViewById(R.id.refreshCategoriesButton);
+  refreshCategoriesButton.setOnClickListener(new customImageButton.OnClickListener(){
+    public void onClick(    View v){
+      pd=ProgressDialog.show(newPost.this,"Refreshing Categories","Attempting to refresh categories from the wordpress site...",true,true);
+      Thread th=new Thread(){
+        public void run(){
+          finalResult=getCategories();
+          mHandler.post(mUpdateResults);
+        }
+      }
+;
+      th.start();
+    }
+  }
+);
   final customButton addPictureButton=(customButton)findViewById(R.id.addPictureButton);
   addPictureButton.setOnClickListener(new customButton.OnClickListener(){
     public void onClick(    View v){
