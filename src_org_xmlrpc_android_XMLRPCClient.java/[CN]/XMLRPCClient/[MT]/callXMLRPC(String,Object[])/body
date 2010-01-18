@@ -25,8 +25,15 @@
     }
     XmlPullParser pullParser=XmlPullParserFactory.newInstance().newPullParser();
     entity=response.getEntity();
-    Reader reader=new InputStreamReader(entity.getContent());
-    pullParser.setInput(reader);
+    PushbackInputStream is=new PushbackInputStream(entity.getContent());
+    int bomCheck=is.read();
+    if (bomCheck != 239) {
+      is.unread(bomCheck);
+    }
+ else {
+      is.skip(2);
+    }
+    pullParser.setInput(is,"UTF-8");
     pullParser.nextTag();
     pullParser.require(XmlPullParser.START_TAG,null,TAG_METHOD_RESPONSE);
     pullParser.nextTag();
