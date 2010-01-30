@@ -17,44 +17,59 @@
     public void callFinished(    Object[] result){
       String s="done";
       s=result.toString();
-      HashMap contentHash=new HashMap();
-      String rTitles[]=new String[result.length];
-      String rPostIDs[]=new String[result.length];
-      String rDateCreated[]=new String[result.length];
-      String rDateCreatedFormatted[]=new String[result.length];
-      String rParentID[]=new String[result.length];
-      Vector dbVector=new Vector();
-      for (int ctr=0; ctr < result.length; ctr++) {
-        HashMap<String,String> dbValues=new HashMap();
-        contentHash=(HashMap)result[ctr];
-        rTitles[ctr]=escapeUtils.unescapeHtml(contentHash.get("page_title").toString());
-        rPostIDs[ctr]=contentHash.get("page_id").toString();
-        rDateCreated[ctr]=contentHash.get("dateCreated").toString();
-        rParentID[ctr]=contentHash.get("page_parent_id").toString();
-        Date d=new Date();
-        SimpleDateFormat sdf=new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
-        String cDate=rDateCreated[ctr].replace("America/Los_Angeles","PST");
-        try {
-          d=sdf.parse(cDate);
-          SimpleDateFormat sdfOut=new SimpleDateFormat("MMMM dd, yyyy hh:mm a");
-          rDateCreatedFormatted[ctr]=sdfOut.format(d);
+      if (result.length == 0) {
+        dismissDialog(viewPages.this.ID_DIALOG_REFRESHING);
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewPages.this);
+        dialogBuilder.setTitle("No Pages Found");
+        dialogBuilder.setMessage("You don't have any pages on your blog");
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
         }
- catch (        ParseException pe) {
-          pe.printStackTrace();
-          rDateCreatedFormatted[ctr]=rDateCreated[ctr];
-        }
-        dbValues.put("blogID",id);
-        dbValues.put("pageID",rPostIDs[ctr]);
-        dbValues.put("title",rTitles[ctr]);
-        dbValues.put("pageDate",rDateCreated[ctr]);
-        dbValues.put("pageDateFormatted",rDateCreatedFormatted[ctr]);
-        dbValues.put("parentID",rParentID[ctr]);
-        dbVector.add(ctr,dbValues);
+);
+        dialogBuilder.setCancelable(true);
+        dialogBuilder.create().show();
       }
-      postStoreDB postStoreDB=new postStoreDB(viewPages.this);
-      postStoreDB.savePages(viewPages.this,dbVector);
-      dismissDialog(viewPages.this.ID_DIALOG_REFRESHING);
-      loadPages();
+ else {
+        HashMap contentHash=new HashMap();
+        String rTitles[]=new String[result.length];
+        String rPostIDs[]=new String[result.length];
+        String rDateCreated[]=new String[result.length];
+        String rDateCreatedFormatted[]=new String[result.length];
+        String rParentID[]=new String[result.length];
+        Vector dbVector=new Vector();
+        for (int ctr=0; ctr < result.length; ctr++) {
+          HashMap<String,String> dbValues=new HashMap();
+          contentHash=(HashMap)result[ctr];
+          rTitles[ctr]=escapeUtils.unescapeHtml(contentHash.get("page_title").toString());
+          rPostIDs[ctr]=contentHash.get("page_id").toString();
+          rDateCreated[ctr]=contentHash.get("dateCreated").toString();
+          rParentID[ctr]=contentHash.get("page_parent_id").toString();
+          Date d=new Date();
+          SimpleDateFormat sdf=new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
+          String cDate=rDateCreated[ctr].replace("America/Los_Angeles","PST");
+          try {
+            d=sdf.parse(cDate);
+            SimpleDateFormat sdfOut=new SimpleDateFormat("MMMM dd, yyyy hh:mm a");
+            rDateCreatedFormatted[ctr]=sdfOut.format(d);
+          }
+ catch (          ParseException pe) {
+            pe.printStackTrace();
+            rDateCreatedFormatted[ctr]=rDateCreated[ctr];
+          }
+          dbValues.put("blogID",id);
+          dbValues.put("pageID",rPostIDs[ctr]);
+          dbValues.put("title",rTitles[ctr]);
+          dbValues.put("pageDate",rDateCreated[ctr]);
+          dbValues.put("pageDateFormatted",rDateCreatedFormatted[ctr]);
+          dbValues.put("parentID",rParentID[ctr]);
+          dbVector.add(ctr,dbValues);
+        }
+        postStoreDB postStoreDB=new postStoreDB(viewPages.this);
+        postStoreDB.savePages(viewPages.this,dbVector);
+        dismissDialog(viewPages.this.ID_DIALOG_REFRESHING);
+        loadPages();
+      }
     }
   }
 );
