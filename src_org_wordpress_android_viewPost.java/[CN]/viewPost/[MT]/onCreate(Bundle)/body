@@ -8,7 +8,7 @@
     accountName=extras.getString("accountName");
   }
   pd=ProgressDialog.show(viewPost.this,"Getting Preview","Attempting to get preview",true,false);
-  this.setTitle(accountName + " - Preview");
+  this.setTitle(escapeUtils.unescapeHtml(accountName) + " - Preview");
   Vector settings=new Vector();
   settingsDB settingsDB=new settingsDB(this);
   settings=settingsDB.loadSettings(this,id);
@@ -31,8 +31,8 @@
       String HTML=resultHash.get("description").toString();
       WebView wv=(WebView)findViewById(R.id.webView);
       String mimetype="text/html";
-      String encoding="UTF-8";
-      wv.loadData(HTML,mimetype,encoding);
+      String encoding="utf-8";
+      wv.loadDataWithBaseURL(null,HTML,mimetype,encoding,"about:blank");
       wv.clearCache(true);
     }
   }
