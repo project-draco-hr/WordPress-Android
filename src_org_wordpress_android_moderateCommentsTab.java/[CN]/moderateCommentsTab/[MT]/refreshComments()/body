@@ -1,4 +1,5 @@
 {
+  showProgressBar();
   Vector settings=new Vector();
   settingsDB settingsDB=new settingsDB(this);
   settings=settingsDB.loadSettings(this,id);
@@ -11,6 +12,7 @@
   }
   String sUsername=settings.get(2).toString();
   String sPassword=settings.get(3).toString();
+  int sBlogId=Integer.parseInt(settings.get(10).toString());
   HashMap hPost=new HashMap();
   hPost.put("status","");
   hPost.put("post_id","");
@@ -20,20 +22,11 @@
   XMLRPCMethod method=new XMLRPCMethod("wp.getComments",new XMLRPCMethodCallback(){
     public void callFinished(    Object[] result){
       String s="done";
+      closeProgressBar();
       if (result.length == 0) {
         if (pd.isShowing()) {
           pd.dismiss();
         }
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(moderateCommentsTab.this);
-        dialogBuilder.setTitle("No Comments Found");
-        dialogBuilder.setMessage("You don't have any comments on your blog");
-        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-          public void onClick(          DialogInterface dialog,          int whichButton){
-          }
-        }
-);
-        dialogBuilder.setCancelable(true);
-        dialogBuilder.create().show();
       }
  else {
         s=result.toString();
@@ -89,6 +82,6 @@
     }
   }
 );
-  Object[] params={1,sUsername,sPassword,hPost};
+  Object[] params={sBlogId,sUsername,sPassword,hPost};
   method.call(params);
 }

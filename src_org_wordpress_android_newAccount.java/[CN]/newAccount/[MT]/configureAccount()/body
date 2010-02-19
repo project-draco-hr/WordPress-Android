@@ -1,0 +1,91 @@
+{
+  EditText urlET=(EditText)findViewById(R.id.url);
+  blogURL=urlET.getText().toString();
+  EditText usernameET=(EditText)findViewById(R.id.username);
+  final String username=usernameET.getText().toString();
+  EditText passwordET=(EditText)findViewById(R.id.password);
+  final String password=passwordET.getText().toString();
+  if (!(blogURL.toLowerCase().contains("http://")) && !(blogURL.toLowerCase().contains("https://"))) {
+    blogURL="http://" + blogURL;
+  }
+  String fBlogURL="";
+  String rsdUrl=getRSDMetaTagHref(blogURL);
+  if (rsdUrl != null) {
+    xmlrpcURL=getXMLRPCUrl(rsdUrl);
+  }
+  if (xmlrpcURL != null) {
+    fBlogURL=xmlrpcURL;
+  }
+ else {
+    String lastChar=blogURL.substring(blogURL.length() - 1,blogURL.length());
+    if (lastChar.equals("/")) {
+      blogURL=blogURL.substring(0,blogURL.length() - 1);
+    }
+    fBlogURL=blogURL + "/xmlrpc.php";
+  }
+  client=new XMLRPCClient(fBlogURL);
+  XMLRPCMethod method=new XMLRPCMethod("wp.getUsersBlogs",new XMLRPCMethodCallback(){
+    public void callFinished(    Object[] result){
+      String s="done";
+      s=result.toString();
+      pd.dismiss();
+      String[] blogNames=new String[result.length];
+      String[] urls=new String[result.length];
+      int[] blogIds=new int[result.length];
+      HashMap contentHash=new HashMap();
+      int ctr=0;
+      for (      Object item : result) {
+        contentHash=(HashMap)result[ctr];
+        blogNames[ctr]=contentHash.get("blogName").toString();
+        urls[ctr]=contentHash.get("xmlrpc").toString();
+        blogIds[ctr]=Integer.parseInt(contentHash.get("blogid").toString());
+        String blogName=blogNames[ctr];
+        String blogURL=urls[ctr];
+        int blogId=blogIds[ctr];
+        ctr++;
+        settingsDB settingsDB=new settingsDB(newAccount.this);
+        boolean noMatch=false;
+        noMatch=settingsDB.checkMatch(newAccount.this,blogName,blogURL,username);
+        if (noMatch) {
+          AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newAccount.this);
+          dialogBuilder.setTitle(getResources().getText(R.string.account_exists));
+          dialogBuilder.setMessage(getResources().getText(R.string.account_already_exists));
+          dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+            public void onClick(            DialogInterface dialog,            int whichButton){
+              Bundle bundle=new Bundle();
+              bundle.putString("returnStatus","SAVE");
+              Intent mIntent=new Intent();
+              mIntent.putExtras(bundle);
+              setResult(RESULT_OK,mIntent);
+              finish();
+            }
+          }
+);
+          dialogBuilder.setCancelable(true);
+          dialogBuilder.create().show();
+        }
+ else {
+          boolean success=false;
+          if (blogName == "") {
+            blogName="(No Blog Title)";
+          }
+          success=settingsDB.addAccount(newAccount.this,blogURL,blogName,username,password,"Above Text",true,false,"500",5,false,blogId);
+        }
+      }
+      if (success) {
+        Toast.makeText(newAccount.this,getResources().getText(R.string.account_added),Toast.LENGTH_SHORT).show();
+      }
+ else {
+      }
+      Bundle bundle=new Bundle();
+      bundle.putString("returnStatus","SAVE");
+      Intent mIntent=new Intent();
+      mIntent.putExtras(bundle);
+      setResult(RESULT_OK,mIntent);
+      finish();
+    }
+  }
+);
+  Object[] params={username,password};
+  method.call(params);
+}

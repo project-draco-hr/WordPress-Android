@@ -1,5 +1,5 @@
 {
-  showDialog(ID_DIALOG_REFRESHING);
+  showProgressBar();
   Vector settings=new Vector();
   settingsDB settingsDB=new settingsDB(this);
   settings=settingsDB.loadSettings(this,id);
@@ -12,23 +12,17 @@
   }
   String sUsername=settings.get(2).toString();
   String sPassword=settings.get(3).toString();
+  int sBlogId=Integer.parseInt(settings.get(10).toString());
   client=new XMLRPCClient(sURL);
   XMLRPCMethod method=new XMLRPCMethod("wp.getPageList",new XMLRPCMethodCallback(){
     public void callFinished(    Object[] result){
       String s="done";
       s=result.toString();
       if (result.length == 0) {
-        dismissDialog(viewPages.this.ID_DIALOG_REFRESHING);
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewPages.this);
-        dialogBuilder.setTitle("No Pages Found");
-        dialogBuilder.setMessage("You don't have any pages on your blog");
-        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-          public void onClick(          DialogInterface dialog,          int whichButton){
-          }
-        }
-);
-        dialogBuilder.setCancelable(true);
-        dialogBuilder.create().show();
+        closeProgressBar();
+        postStoreDB postStoreDB=new postStoreDB(viewPages.this);
+        postStoreDB.clearPages(viewPages.this,id);
+        loadPages();
       }
  else {
         HashMap contentHash=new HashMap();
@@ -67,12 +61,12 @@
         }
         postStoreDB postStoreDB=new postStoreDB(viewPages.this);
         postStoreDB.savePages(viewPages.this,dbVector);
-        dismissDialog(viewPages.this.ID_DIALOG_REFRESHING);
+        closeProgressBar();
         loadPages();
       }
     }
   }
 );
-  Object[] params={1,sUsername,sPassword};
+  Object[] params={sBlogId,sUsername,sPassword};
   method.call(params);
 }

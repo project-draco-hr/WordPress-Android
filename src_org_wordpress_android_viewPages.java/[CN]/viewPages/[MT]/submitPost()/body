@@ -61,6 +61,7 @@
     if (sCenterThumbnailString.equals("1")) {
       centerThumbnail=true;
     }
+    int sBlogId=Integer.parseInt(categoriesVector.get(10).toString());
     Map<String,Object> contentStruct=new HashMap<String,Object>();
     if (imageContent != "") {
       if (sImagePlacement.equals("Above Text")) {
@@ -74,7 +75,7 @@
     contentStruct.put("title",escapeUtils.escapeHtml(title));
     contentStruct.put("description",escapeUtils.escapeHtml(content));
     client=new XMLRPCClient(sURL);
-    Object[] params={1,sUsername,sPassword,contentStruct,publishThis};
+    Object[] params={sBlogId,sUsername,sPassword,contentStruct,publishThis};
     Object result=null;
     try {
       result=(Object)client.call("metaWeblog.newPost",params);
@@ -88,8 +89,13 @@
     Thread action=new Thread(){
       public void run(){
         AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewPages.this);
-        dialogBuilder.setTitle("Success");
-        dialogBuilder.setMessage("Page ID #" + newID + " added successfully");
+        dialogBuilder.setTitle(getResources().getText(R.string.success));
+        if (xmlrpcError) {
+          dialogBuilder.setMessage(getResources().getText(R.string.page_id) + " " + newID+ " "+ getResources().getText(R.string.added_successfully_image_error));
+        }
+ else {
+          dialogBuilder.setMessage(getResources().getText(R.string.page_id) + " " + newID+ " "+ getResources().getText(R.string.added_successfully));
+        }
         dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
           public void onClick(          DialogInterface dialog,          int whichButton){
             boolean isInteger=false;
@@ -103,6 +109,7 @@
               selectedImageIDs.clear();
               imageUrl.clear();
               selectedImageCtr=0;
+              xmlrpcError=false;
               lDraftsDB.deletePageDraft(viewPages.this,String.valueOf(selectedID));
               refreshPages();
             }

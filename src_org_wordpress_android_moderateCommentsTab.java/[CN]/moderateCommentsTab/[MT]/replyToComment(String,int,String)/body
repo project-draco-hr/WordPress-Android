@@ -11,6 +11,7 @@
   }
   String sUsername=settings.get(2).toString();
   String sPassword=settings.get(3).toString();
+  int sBlogId=Integer.parseInt(settings.get(10).toString());
   client=new XMLRPCClient(sURL);
   ListView lv=getListView();
   Object curListItem;
@@ -21,14 +22,14 @@
   replyHash.put("author","");
   replyHash.put("author_url","");
   replyHash.put("author_email","");
-  Object[] params={1,sUsername,sPassword,Integer.valueOf(postID),replyHash};
+  Object[] params={sBlogId,sUsername,sPassword,Integer.valueOf(postID),replyHash};
   Object result=null;
   try {
     result=(Object)client.call("wp.newComment",params);
     dismissDialog(ID_DIALOG_REPLYING);
     Thread action=new Thread(){
       public void run(){
-        Toast.makeText(moderateCommentsTab.this,"Reply Added Succesfully",Toast.LENGTH_SHORT).show();
+        Toast.makeText(moderateCommentsTab.this,getResources().getText(R.string.reply_added),Toast.LENGTH_SHORT).show();
       }
     }
 ;
@@ -45,7 +46,7 @@
  catch (  XMLRPCException e) {
     dismissDialog(ID_DIALOG_REPLYING);
     AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(moderateCommentsTab.this);
-    dialogBuilder.setTitle("Connection Error");
+    dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
     dialogBuilder.setMessage(e.getMessage());
     dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
       public void onClick(      DialogInterface dialog,      int whichButton){

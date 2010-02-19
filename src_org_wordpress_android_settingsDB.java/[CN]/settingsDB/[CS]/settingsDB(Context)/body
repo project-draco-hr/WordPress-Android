@@ -1,6 +1,11 @@
 {
   db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
   db.execSQL(CREATE_TABLE_SETTINGS);
-  db.setVersion(1);
+  int test=db.getVersion();
+  if (db.getVersion() <= 1) {
+    db.execSQL(ADD_BLOGID);
+    db.execSQL(UPDATE_BLOGID);
+  }
+  db.setVersion(DATABASE_VERSION);
   db.close();
 }

@@ -1,90 +1,21 @@
 {
   super.onCreate(savedInstanceState);
   setContentView(R.layout.newaccount);
+  this.setTitle("WordPress - " + getResources().getText(R.string.new_account));
   final customButton cancelButton=(customButton)findViewById(R.id.cancel);
   final customButton saveButton=(customButton)findViewById(R.id.save);
   saveButton.setOnClickListener(new customButton.OnClickListener(){
     public void onClick(    View v){
+      pd=ProgressDialog.show(newAccount.this,getResources().getText(R.string.account_setup),getResources().getText(R.string.attempting_configure),true,false);
       Thread action=new Thread(){
         public void run(){
-          pd=ProgressDialog.show(newAccount.this,"Account Setup","Attempting to configure account",true,false);
+          Looper.prepare();
+          configureAccount();
+          Looper.loop();
         }
       }
 ;
-      runOnUiThread(action);
-      EditText urlET=(EditText)findViewById(R.id.url);
-      String blogURL=urlET.getText().toString();
-      EditText usernameET=(EditText)findViewById(R.id.username);
-      final String username=usernameET.getText().toString();
-      EditText passwordET=(EditText)findViewById(R.id.password);
-      final String password=passwordET.getText().toString();
-      if (!(blogURL.toLowerCase().contains("http://")) && !(blogURL.toLowerCase().contains("https://"))) {
-        blogURL="http://" + blogURL;
-      }
-      String lastChar=blogURL.substring(blogURL.length() - 1,blogURL.length());
-      if (lastChar.equals("/")) {
-        blogURL=blogURL.substring(0,blogURL.length() - 1);
-      }
-      final String fBlogURL=blogURL + "/xmlrpc.php";
-      client=new XMLRPCClient(fBlogURL);
-      XMLRPCMethod method=new XMLRPCMethod("wp.getUsersBlogs",new XMLRPCMethodCallback(){
-        public void callFinished(        Object[] result){
-          String s="done";
-          s=result.toString();
-          pd.dismiss();
-          String[] blogNames=new String[100];
-          String[] urls=new String[100];
-          HashMap contentHash=new HashMap();
-          int ctr=0;
-          for (          Object item : result) {
-            contentHash=(HashMap)result[ctr];
-            blogNames[ctr]=contentHash.get("blogName").toString();
-            urls[ctr]=contentHash.get("xmlrpc").toString();
-            String blogName=blogNames[ctr];
-            String blogURL=urls[ctr];
-            ctr++;
-            settingsDB settingsDB=new settingsDB(newAccount.this);
-            boolean noMatch=false;
-            noMatch=settingsDB.checkMatch(newAccount.this,blogName,blogURL,username);
-            if (noMatch) {
-              AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newAccount.this);
-              dialogBuilder.setTitle("Account Already Exists");
-              dialogBuilder.setMessage("There is already a WordPress account for this wordpress blog configured.");
-              dialogBuilder.setPositiveButton("Ok",new DialogInterface.OnClickListener(){
-                public void onClick(                DialogInterface dialog,                int whichButton){
-                  Bundle bundle=new Bundle();
-                  bundle.putString("returnStatus","SAVE");
-                  Intent mIntent=new Intent();
-                  mIntent.putExtras(bundle);
-                  setResult(RESULT_OK,mIntent);
-                  finish();
-                }
-              }
-);
-              dialogBuilder.setCancelable(true);
-              dialogBuilder.create().show();
-            }
- else {
-              boolean success=false;
-              success=settingsDB.addAccount(newAccount.this,blogURL,blogName,username,password,"Above Text",true,false,"500",5,false);
-            }
-          }
-          if (success) {
-            Toast.makeText(newAccount.this,"Account/Blog added successfully!",Toast.LENGTH_SHORT).show();
-          }
- else {
-          }
-          Bundle bundle=new Bundle();
-          bundle.putString("returnStatus","SAVE");
-          Intent mIntent=new Intent();
-          mIntent.putExtras(bundle);
-          setResult(RESULT_OK,mIntent);
-          finish();
-        }
-      }
-);
-      Object[] params={username,password};
-      method.call(params);
+      action.start();
     }
   }
 );
@@ -102,7 +33,7 @@
   customButton signUp=(customButton)findViewById(R.id.wordpressdotcom);
   signUp.setOnClickListener(new customButton.OnClickListener(){
     public void onClick(    View v){
-      Intent signupIntent=new Intent(Intent.ACTION_VIEW,Uri.parse("http://wordpress.com/signup"));
+      Intent signupIntent=new Intent(Intent.ACTION_VIEW,Uri.parse("http://wordpress.com/signup/?ref=wp-android"));
       startActivity(signupIntent);
     }
   }

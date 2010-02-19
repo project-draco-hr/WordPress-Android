@@ -6,6 +6,14 @@
     postIDs=new String[loadedPosts.size()];
     dateCreated=new String[loadedPosts.size()];
     dateCreatedFormatted=new String[loadedPosts.size()];
+  }
+ else {
+    titles=new String[0];
+    postIDs=new String[0];
+    dateCreated=new String[0];
+    dateCreatedFormatted=new String[0];
+  }
+  if (loadedPosts != null) {
     for (int i=0; i < loadedPosts.size(); i++) {
       HashMap contentHash=(HashMap)loadedPosts.get(i);
       titles[i]=escapeUtils.unescapeHtml(contentHash.get("title").toString());
@@ -20,7 +28,7 @@
     postIDs=(String[])newPostIDList.toArray(new String[newPostIDList.size()]);
     List postTitleList=Arrays.asList(titles);
     List newPostTitleList=new ArrayList();
-    newPostTitleList.add("Posts");
+    newPostTitleList.add(getResources().getText(R.string.tab_posts));
     newPostTitleList.addAll(postTitleList);
     titles=(String[])newPostTitleList.toArray(new String[newPostTitleList.size()]);
     List dateList=Arrays.asList(dateCreated);
@@ -33,27 +41,29 @@
     newDateFormattedList.add("postsHeader");
     newDateFormattedList.addAll(dateFormattedList);
     dateCreatedFormatted=(String[])newDateFormattedList.toArray(new String[newDateFormattedList.size()]);
-    boolean drafts=loadDrafts();
-    if (drafts) {
-      List draftIDList=Arrays.asList(draftIDs);
-      List newDraftIDList=new ArrayList();
-      newDraftIDList.add("draftsHeader");
-      newDraftIDList.addAll(draftIDList);
-      draftIDs=(String[])newDraftIDList.toArray(new String[newDraftIDList.size()]);
-      List titleList=Arrays.asList(draftTitles);
-      List newTitleList=new ArrayList();
-      newTitleList.add("Local Drafts");
-      newTitleList.addAll(titleList);
-      draftTitles=(String[])newTitleList.toArray(new String[newTitleList.size()]);
-      List publishList=Arrays.asList(publish);
-      List newPublishList=new ArrayList();
-      newPublishList.add("draftsHeader");
-      newPublishList.addAll(publishList);
-      publish=(String[])newPublishList.toArray(new String[newPublishList.size()]);
-      postIDs=mergeStringArrays(draftIDs,postIDs);
-      titles=mergeStringArrays(draftTitles,titles);
-      dateCreatedFormatted=mergeStringArrays(publish,dateCreatedFormatted);
-    }
+  }
+  boolean drafts=loadDrafts();
+  if (drafts) {
+    List draftIDList=Arrays.asList(draftIDs);
+    List newDraftIDList=new ArrayList();
+    newDraftIDList.add("draftsHeader");
+    newDraftIDList.addAll(draftIDList);
+    draftIDs=(String[])newDraftIDList.toArray(new String[newDraftIDList.size()]);
+    List titleList=Arrays.asList(draftTitles);
+    List newTitleList=new ArrayList();
+    newTitleList.add(getResources().getText(R.string.local_drafts));
+    newTitleList.addAll(titleList);
+    draftTitles=(String[])newTitleList.toArray(new String[newTitleList.size()]);
+    List publishList=Arrays.asList(publish);
+    List newPublishList=new ArrayList();
+    newPublishList.add("draftsHeader");
+    newPublishList.addAll(publishList);
+    publish=(String[])newPublishList.toArray(new String[newPublishList.size()]);
+    postIDs=StringHelper.mergeStringArrays(draftIDs,postIDs);
+    titles=StringHelper.mergeStringArrays(draftTitles,titles);
+    dateCreatedFormatted=StringHelper.mergeStringArrays(publish,dateCreatedFormatted);
+  }
+  if (loadedPosts != null || drafts == true) {
     setListAdapter(new PostListAdapter(viewPosts.this));
     ListView listView=(ListView)findViewById(android.R.id.list);
     listView.setSelector(R.layout.list_selector);
@@ -77,17 +87,17 @@
         rowID=info.position;
         if (totalDrafts > 0 && rowID <= totalDrafts && rowID != 0) {
           menu.clear();
-          menu.setHeaderTitle("Draft Actions");
-          menu.add(1,0,0,"Edit Draft");
-          menu.add(1,1,0,"Upload Draft to Blog");
-          menu.add(1,2,0,"Delete Draft");
+          menu.setHeaderTitle(getResources().getText(R.string.draft_actions));
+          menu.add(1,0,0,getResources().getText(R.string.edit_draft));
+          menu.add(1,1,0,getResources().getText(R.string.upload));
+          menu.add(1,2,0,getResources().getText(R.string.delete_draft));
         }
  else         if (rowID == 1 || ((rowID != (totalDrafts + 1)) && rowID != 0)) {
           menu.clear();
-          menu.setHeaderTitle("Post Actions");
-          menu.add(0,0,0,"Preview Post");
-          menu.add(0,1,0,"View Comments");
-          menu.add(0,2,0,"Edit Post");
+          menu.setHeaderTitle(getResources().getText(R.string.post_actions));
+          menu.add(0,0,0,getResources().getText(R.string.preview_post));
+          menu.add(0,1,0,getResources().getText(R.string.view_comments));
+          menu.add(0,2,0,getResources().getText(R.string.edit_post));
         }
       }
     }

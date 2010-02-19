@@ -1,0 +1,41 @@
+{
+  InputStream in=getResponse(urlString);
+  if (in != null) {
+    XmlPullParser parser=Xml.newPullParser();
+    try {
+      parser.setInput(in,null);
+      int eventType=parser.getEventType();
+      boolean done=false;
+      while (eventType != XmlPullParser.END_DOCUMENT) {
+        String name="";
+        String apiLink="";
+switch (eventType) {
+case XmlPullParser.START_TAG:
+          name=parser.getName();
+        if (name.equalsIgnoreCase("api")) {
+          for (int i=0; i < parser.getAttributeCount(); i++) {
+            String attrName=parser.getAttributeName(i);
+            String attrValue=parser.getAttributeValue(i);
+            if (attrName.equals("name")) {
+              name=attrValue;
+            }
+ else             if (attrName.equals("apiLink")) {
+              apiLink=attrValue;
+            }
+          }
+          if (name.equals("WordPress")) {
+            return apiLink;
+          }
+        }
+      break;
+  }
+  eventType=parser.next();
+}
+}
+ catch (Exception e) {
+e.printStackTrace();
+return null;
+}
+}
+return null;
+}

@@ -1,5 +1,5 @@
 {
-  showDialog(ID_DIALOG_REFRESHING);
+  showProgressBar();
   Vector settings=new Vector();
   settingsDB settingsDB=new settingsDB(this);
   settings=settingsDB.loadSettings(this,id);
@@ -12,16 +12,17 @@
   }
   String sUsername=settings.get(2).toString();
   String sPassword=settings.get(3).toString();
+  int sBlogId=Integer.parseInt(settings.get(10).toString());
   client=new XMLRPCClient(sURL);
   XMLRPCMethod method=new XMLRPCMethod("blogger.getRecentPosts",new XMLRPCMethodCallback(){
     public void callFinished(    Object[] result){
       String s="done";
       s=result.toString();
       if (result.length == 0) {
-        dismissDialog(viewPosts.this.ID_DIALOG_REFRESHING);
+        closeProgressBar();
         AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewPosts.this);
-        dialogBuilder.setTitle("No Posts Found");
-        dialogBuilder.setMessage("You don't have any posts on your blog");
+        dialogBuilder.setTitle(getResources().getText(R.string.posts_not_found));
+        dialogBuilder.setMessage(getResources().getText(R.string.posts_no_posts));
         dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
           public void onClick(          DialogInterface dialog,          int whichButton){
           }
@@ -64,12 +65,12 @@
         }
         postStoreDB postStoreDB=new postStoreDB(viewPosts.this);
         postStoreDB.savePosts(viewPosts.this,dbVector);
-        dismissDialog(viewPosts.this.ID_DIALOG_REFRESHING);
+        closeProgressBar();
         loadPosts();
       }
     }
   }
 );
-  Object[] params={"spacer",1,sUsername,sPassword,30};
+  Object[] params={"spacer",sBlogId,sUsername,sPassword,30};
   method.call(params);
 }

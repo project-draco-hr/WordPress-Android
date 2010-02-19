@@ -8,7 +8,7 @@
     postID=extras.getString("postID");
     localDraft=extras.getBoolean("localDraft",false);
   }
-  this.setTitle(accountName + " - Edit Post");
+  this.setTitle(accountName + " - " + getResources().getText(R.string.edit_post));
   loadCategories();
   if (localDraft) {
     localDraftsDB lDraftsDB=new localDraftsDB(this);
@@ -66,7 +66,7 @@
     EditText titleET=(EditText)findViewById(R.id.title);
     String setTitle=titleET.getText().toString();
     if (setTitle.equals("")) {
-      pd=ProgressDialog.show(editPost.this,"Getting Post","Please wait while attempting to get post. (note - pictures will not be loaded)",true,false);
+      pd=ProgressDialog.show(editPost.this,getResources().getText(R.string.getting_post),getResources().getText(R.string.please_wait_getting_post),true,false);
       XMLRPCMethod method=new XMLRPCMethod("metaWeblog.getPost",new XMLRPCMethodCallback(){
         public void callFinished(        Object result){
           String s="done";
@@ -172,7 +172,7 @@
   final customImageButton refreshCategoriesButton=(customImageButton)findViewById(R.id.refreshCategoriesButton);
   refreshCategoriesButton.setOnClickListener(new customImageButton.OnClickListener(){
     public void onClick(    View v){
-      pd=ProgressDialog.show(editPost.this,"Refreshing Categories","Attempting to refresh categories",true,true);
+      pd=ProgressDialog.show(editPost.this,getResources().getText(R.string.refreshing_categories),getResources().getText(R.string.attempting_categories_refresh),true,true);
       Thread th=new Thread(){
         public void run(){
           finalResult=getCategories();
@@ -215,8 +215,8 @@
       }
       if (selectionStart == -1 || selectionStart == contentText.getText().toString().length() || (selectionStart == selectionEnd)) {
         AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
-        dialogBuilder.setTitle("No text selected");
-        dialogBuilder.setMessage("Please select some text first in order to bold it. You can select text by holding the shift key and scrolling.");
+        dialogBuilder.setTitle(getResources().getText(R.string.no_text_selected));
+        dialogBuilder.setMessage(getResources().getText(R.string.select_text_to_bold) + " " + getResources().getText(R.string.howto_select_text));
         dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
           public void onClick(          DialogInterface dialog,          int whichButton){
           }
@@ -250,8 +250,8 @@
       }
       if (selectionStart == -1 || selectionStart == contentText.getText().toString().length() || (selectionStart == selectionEnd)) {
         AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
-        dialogBuilder.setTitle("No text selected");
-        dialogBuilder.setMessage("Please select some text first in order to link it. You can select text by holding the shift key and scrolling.");
+        dialogBuilder.setTitle(getResources().getText(R.string.no_text_selected));
+        dialogBuilder.setMessage(getResources().getText(R.string.select_text_to_link) + " " + getResources().getText(R.string.howto_select_text));
         dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
           public void onClick(          DialogInterface dialog,          int whichButton){
           }
@@ -280,8 +280,8 @@
       }
       if (selectionStart == -1 || selectionStart == contentText.getText().toString().length() || (selectionStart == selectionEnd)) {
         AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
-        dialogBuilder.setTitle("No text selected");
-        dialogBuilder.setMessage("Please select some text in order to emphasize it. You can select text by holding the shift key and scrolling.");
+        dialogBuilder.setTitle(getResources().getText(R.string.no_text_selected));
+        dialogBuilder.setMessage(getResources().getText(R.string.select_text_to_emphasize) + " " + getResources().getText(R.string.howto_select_text));
         dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
           public void onClick(          DialogInterface dialog,          int whichButton){
           }
@@ -315,8 +315,8 @@
       }
       if (selectionStart == -1 || selectionStart == contentText.getText().toString().length() || (selectionStart == selectionEnd)) {
         AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
-        dialogBuilder.setTitle("No text selected");
-        dialogBuilder.setMessage("Please select some text in order to place it in a blockquote. You can select text by holding the shift key and scrolling.");
+        dialogBuilder.setTitle(getResources().getText(R.string.no_text_selected));
+        dialogBuilder.setMessage(getResources().getText(R.string.select_text_to_blockquote) + " " + getResources().getText(R.string.howto_select_text));
         dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
           public void onClick(          DialogInterface dialog,          int whichButton){
           }
