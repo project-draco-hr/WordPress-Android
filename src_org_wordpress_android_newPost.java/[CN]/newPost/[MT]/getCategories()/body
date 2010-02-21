@@ -3,7 +3,23 @@
   String returnMessage="";
   boolean enteredSettings=checkSettings();
   if (!enteredSettings) {
-    returnMessage="invalidSettings";
+    AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newPost.this);
+    dialogBuilder.setTitle(getResources().getText(R.string.settings_not_found));
+    dialogBuilder.setMessage(getResources().getText(R.string.settings_not_found_load_now));
+    dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int whichButton){
+        Intent i=new Intent(newPost.this,settings.class);
+        startActivityForResult(i,0);
+      }
+    }
+);
+    dialogBuilder.setNegativeButton(getResources().getText(R.string.no),new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int whichButton){
+      }
+    }
+);
+    dialogBuilder.setCancelable(true);
+    dialogBuilder.create().show();
   }
  else {
     settingsDB settingsDB=new settingsDB(this);
