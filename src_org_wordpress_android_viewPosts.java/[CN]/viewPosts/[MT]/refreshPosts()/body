@@ -14,15 +14,15 @@
   String sPassword=settings.get(3).toString();
   int sBlogId=Integer.parseInt(settings.get(10).toString());
   client=new XMLRPCClient(sURL);
-  XMLRPCMethod method=new XMLRPCMethod("blogger.getRecentPosts",new XMLRPCMethodCallback(){
+  XMLRPCMethod method=new XMLRPCMethod((isPage) ? "wp.getPageList" : "blogger.getRecentPosts",new XMLRPCMethodCallback(){
     public void callFinished(    Object[] result){
       String s="done";
       s=result.toString();
       if (result.length == 0) {
         closeProgressBar();
         AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewPosts.this);
-        dialogBuilder.setTitle(getResources().getText(R.string.posts_not_found));
-        dialogBuilder.setMessage(getResources().getText(R.string.posts_no_posts));
+        dialogBuilder.setTitle(getResources().getText((isPage) ? R.string.pages_not_found : R.string.posts_not_found));
+        dialogBuilder.setMessage(getResources().getText((isPage) ? R.string.pages_no_pages : R.string.posts_no_posts));
         dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
           public void onClick(          DialogInterface dialog,          int whichButton){
           }
@@ -37,13 +37,22 @@
         String rPostIDs[]=new String[result.length];
         String rDateCreated[]=new String[result.length];
         String rDateCreatedFormatted[]=new String[result.length];
+        String rParentID[]=new String[result.length];
         Vector dbVector=new Vector();
         for (int ctr=0; ctr < result.length; ctr++) {
           HashMap<String,String> dbValues=new HashMap();
           contentHash=(HashMap)result[ctr];
-          rTitles[ctr]=escapeUtils.unescapeHtml(contentHash.get("content").toString().substring(contentHash.get("content").toString().indexOf("<title>") + 7,contentHash.get("content").toString().indexOf("</title>")));
-          rPostIDs[ctr]=contentHash.get("postid").toString();
-          rDateCreated[ctr]=contentHash.get("dateCreated").toString();
+          if (isPage) {
+            rTitles[ctr]=escapeUtils.unescapeHtml(contentHash.get("page_title").toString());
+            rPostIDs[ctr]=contentHash.get("page_id").toString();
+            rDateCreated[ctr]=contentHash.get("dateCreated").toString();
+            rParentID[ctr]=contentHash.get("page_parent_id").toString();
+          }
+ else {
+            rTitles[ctr]=escapeUtils.unescapeHtml(contentHash.get("content").toString().substring(contentHash.get("content").toString().indexOf("<title>") + 7,contentHash.get("content").toString().indexOf("</title>")));
+            rPostIDs[ctr]=contentHash.get("postid").toString();
+            rDateCreated[ctr]=contentHash.get("dateCreated").toString();
+          }
           Date d=new Date();
           SimpleDateFormat sdf=new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
           String cDate=rDateCreated[ctr].replace("America/Los_Angeles","PST");
@@ -56,21 +65,37 @@
             pe.printStackTrace();
             rDateCreatedFormatted[ctr]=rDateCreated[ctr];
           }
+          postStoreDB postStoreDB=new postStoreDB(viewPosts.this);
           dbValues.put("blogID",id);
-          dbValues.put("postID",rPostIDs[ctr]);
           dbValues.put("title",rTitles[ctr]);
-          dbValues.put("postDate",rDateCreated[ctr]);
-          dbValues.put("postDateFormatted",rDateCreatedFormatted[ctr]);
-          dbVector.add(ctr,dbValues);
+          if (isPage) {
+            dbValues.put("pageID",rPostIDs[ctr]);
+            dbValues.put("pageDate",rDateCreated[ctr]);
+            dbValues.put("pageDateFormatted",rDateCreatedFormatted[ctr]);
+            dbValues.put("parentID",rParentID[ctr]);
+            dbVector.add(ctr,dbValues);
+            postStoreDB.savePages(viewPosts.this,dbVector);
+          }
+ else {
+            dbValues.put("postID",rPostIDs[ctr]);
+            dbValues.put("postDate",rDateCreated[ctr]);
+            dbValues.put("postDateFormatted",rDateCreatedFormatted[ctr]);
+            dbVector.add(ctr,dbValues);
+            postStoreDB.savePosts(viewPosts.this,dbVector);
+          }
         }
-        postStoreDB postStoreDB=new postStoreDB(viewPosts.this);
-        postStoreDB.savePosts(viewPosts.this,dbVector);
         closeProgressBar();
         loadPosts();
       }
     }
   }
 );
-  Object[] params={"spacer",sBlogId,sUsername,sPassword,30};
-  method.call(params);
+  if (isPage) {
+    Object[] params={sBlogId,sUsername,sPassword};
+    method.call(params);
+  }
+ else {
+    Object[] params={"spacer",sBlogId,sUsername,sPassword,30};
+    method.call(params);
+  }
 }

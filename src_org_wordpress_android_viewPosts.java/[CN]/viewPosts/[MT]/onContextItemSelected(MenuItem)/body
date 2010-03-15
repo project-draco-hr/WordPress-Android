@@ -24,12 +24,42 @@ startActivityForResult(i2,1);
 return true;
 }
 }
+ else if (item.getGroupId() == 2) {
+switch (item.getItemId()) {
+case 0:
+Intent i0=new Intent(viewPosts.this,viewPost.class);
+i0.putExtra("postID",String.valueOf(selectedID));
+i0.putExtra("id",id);
+i0.putExtra("accountName",accountName);
+i0.putExtra("isPage",true);
+startActivity(i0);
+return true;
+case 1:
+Intent i=new Intent(viewPosts.this,viewComments.class);
+i.putExtra("postID",String.valueOf(selectedID));
+i.putExtra("id",id);
+i.putExtra("accountName",accountName);
+startActivity(i);
+return true;
+case 2:
+Intent i2=new Intent(viewPosts.this,editPost.class);
+i2.putExtra("postID",String.valueOf(selectedID));
+i2.putExtra("id",id);
+i2.putExtra("accountName",accountName);
+i2.putExtra("isPage",true);
+startActivityForResult(i2,1);
+return true;
+}
+}
  else {
 switch (item.getItemId()) {
 case 0:
 Intent i2=new Intent(viewPosts.this,editPost.class);
 i2.putExtra("postID",String.valueOf(selectedID));
 i2.putExtra("id",id);
+if (isPage) {
+i2.putExtra("isPage",true);
+}
 i2.putExtra("accountName",accountName);
 i2.putExtra("localDraft",true);
 startActivityForResult(i2,0);
@@ -55,7 +85,12 @@ dialogBuilder.setMessage(getResources().getText(R.string.delete_sure) + " '" + t
 dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
 public void onClick(DialogInterface dialog,int whichButton){
 localDraftsDB lDraftsDB=new localDraftsDB(viewPosts.this);
+if (isPage) {
+lDraftsDB.deletePageDraft(viewPosts.this,String.valueOf(selectedID));
+}
+ else {
 lDraftsDB.deletePost(viewPosts.this,String.valueOf(selectedID));
+}
 loadPosts();
 }
 }

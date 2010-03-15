@@ -3,8 +3,11 @@
   String title=titleET.getText().toString();
   EditText contentET=(EditText)findViewById(R.id.content);
   String content=contentET.getText().toString();
-  EditText tagsET=(EditText)findViewById(R.id.tags);
-  String tags=tagsET.getText().toString();
+  String tags="";
+  if (!isPage) {
+    EditText tagsET=(EditText)findViewById(R.id.tags);
+    tags=tagsET.getText().toString();
+  }
   CheckBox publishCB=(CheckBox)findViewById(R.id.publish);
   boolean publishThis=false;
   String images="";
@@ -49,22 +52,29 @@
     for (int it=0; it < selectedImageCtr; it++) {
       images+=selectedImageIDs.get(it).toString() + ",";
     }
-    Spinner spinner=(Spinner)findViewById(R.id.spinner1);
-    int itemCount=spinner.getCount();
-    String selectedCategory="Uncategorized";
-    if (itemCount != 0) {
-      selectedCategory=spinner.getSelectedItem().toString();
-    }
-    String[] theCategories=new String[selectedCategories.size()];
-    int catSize=selectedCategories.size();
-    for (int i=0; i < selectedCategories.size(); i++) {
-      categories+=selectedCategories.get(i).toString() + ",";
+    if (!isPage) {
+      Spinner spinner=(Spinner)findViewById(R.id.spinner1);
+      int itemCount=spinner.getCount();
+      String selectedCategory="Uncategorized";
+      if (itemCount != 0) {
+        selectedCategory=spinner.getSelectedItem().toString();
+      }
+      String[] theCategories=new String[selectedCategories.size()];
+      int catSize=selectedCategories.size();
+      for (int i=0; i < selectedCategories.size(); i++) {
+        categories+=selectedCategories.get(i).toString() + ",";
+      }
     }
     if (publishCB.isChecked()) {
       publishThis=true;
     }
     localDraftsDB lDraftsDB=new localDraftsDB(this);
-    success=lDraftsDB.saveLocalDraft(this,id,title,content,images,tags,categories,publishThis);
+    if (isPage) {
+      success=lDraftsDB.saveLocalPageDraft(this,id,title,content,images,publishThis);
+    }
+ else {
+      success=lDraftsDB.saveLocalDraft(this,id,title,content,images,tags,categories,publishThis);
+    }
   }
   return success;
 }

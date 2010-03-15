@@ -5,30 +5,77 @@
   if (extras != null) {
     id=extras.getString("id");
     accountName=extras.getString("accountName");
+    isPage=extras.getBoolean("isPage",false);
   }
-  this.setTitle(accountName + " - " + getResources().getText(R.string.new_post));
-  loadCategories();
+  this.setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
+  if (isPage) {
+    TextView tvTitle=(TextView)findViewById(R.id.l_title);
+    tvTitle.setText(getResources().getText(R.string.page_title));
+    TextView tvContent=(TextView)findViewById(R.id.l_content);
+    tvTitle.setText(getResources().getText(R.string.page_content));
+    TextView tvCategories=(TextView)findViewById(R.id.selectedCategories);
+    EditText tagsET=(EditText)findViewById(R.id.tags);
+    TextView tvCategoriesLabel=(TextView)findViewById(R.id.l_category);
+    Spinner spinner=(Spinner)findViewById(R.id.spinner1);
+    TextView tvTagsLabel=(TextView)findViewById(R.id.l_tags);
+    customImageButton btnRefresh=(customImageButton)findViewById(R.id.refreshCategoriesButton);
+    customButton btnClear=(customButton)findViewById(R.id.clearCategories);
+    tvCategories.setVisibility(View.GONE);
+    tagsET.setVisibility(View.GONE);
+    tvCategoriesLabel.setVisibility(View.GONE);
+    spinner.setVisibility(View.GONE);
+    tvTagsLabel.setVisibility(View.GONE);
+    btnRefresh.setVisibility(View.GONE);
+    btnClear.setVisibility(View.GONE);
+  }
   selectedImageIDs.clear();
   selectedImageCtr=0;
-  Spinner spinner=(Spinner)findViewById(R.id.spinner1);
-  spinner.setOnItemSelectedListener(new OnItemSelectedListener(){
-    public void onItemSelected(    AdapterView parent,    View v,    int position,    long id){
-      if (newStart != true) {
-        String selectedItem=parent.getItemAtPosition(position).toString();
-        TextView selectedCategoriesTV=(TextView)findViewById(R.id.selectedCategories);
-        if (!selectedCategories.contains(selectedItem)) {
-          selectedCategoriesTV.setText(selectedCategoriesTV.getText().toString() + selectedItem + ", ");
-          selectedCategories.add(selectedItem);
+  if (!isPage) {
+    loadCategories();
+    Spinner spinner=(Spinner)findViewById(R.id.spinner1);
+    spinner.setOnItemSelectedListener(new OnItemSelectedListener(){
+      public void onItemSelected(      AdapterView parent,      View v,      int position,      long id){
+        if (newStart != true) {
+          String selectedItem=parent.getItemAtPosition(position).toString();
+          TextView selectedCategoriesTV=(TextView)findViewById(R.id.selectedCategories);
+          if (!selectedCategories.contains(selectedItem)) {
+            selectedCategoriesTV.setText(selectedCategoriesTV.getText().toString() + selectedItem + ", ");
+            selectedCategories.add(selectedItem);
+          }
+        }
+ else {
+          newStart=false;
         }
       }
- else {
-        newStart=false;
+      public void onNothingSelected(      AdapterView arg0){
       }
     }
-    public void onNothingSelected(    AdapterView arg0){
-    }
-  }
 );
+    final customImageButton refreshCategoriesButton=(customImageButton)findViewById(R.id.refreshCategoriesButton);
+    refreshCategoriesButton.setOnClickListener(new customImageButton.OnClickListener(){
+      public void onClick(      View v){
+        pd=ProgressDialog.show(newPost.this,getResources().getText(R.string.refreshing_categories),getResources().getText(R.string.attempting_categories_refresh),true,true);
+        Thread th=new Thread(){
+          public void run(){
+            finalResult=getCategories();
+            mHandler.post(mUpdateResults);
+          }
+        }
+;
+        th.start();
+      }
+    }
+);
+    final customButton clearCategories=(customButton)findViewById(R.id.clearCategories);
+    clearCategories.setOnClickListener(new customButton.OnClickListener(){
+      public void onClick(      View v){
+        TextView selectedCategoriesTV=(TextView)findViewById(R.id.selectedCategories);
+        selectedCategoriesTV.setText("Selected categories: ");
+        selectedCategories.clear();
+      }
+    }
+);
+  }
   final customButton postButton=(customButton)findViewById(R.id.post);
   postButton.setOnClickListener(new customButton.OnClickListener(){
     public void onClick(    View v){
@@ -45,36 +92,12 @@
     }
   }
 );
-  final customImageButton refreshCategoriesButton=(customImageButton)findViewById(R.id.refreshCategoriesButton);
-  refreshCategoriesButton.setOnClickListener(new customImageButton.OnClickListener(){
-    public void onClick(    View v){
-      pd=ProgressDialog.show(newPost.this,getResources().getText(R.string.refreshing_categories),getResources().getText(R.string.attempting_categories_refresh),true,true);
-      Thread th=new Thread(){
-        public void run(){
-          finalResult=getCategories();
-          mHandler.post(mUpdateResults);
-        }
-      }
-;
-      th.start();
-    }
-  }
-);
   final customButton addPictureButton=(customButton)findViewById(R.id.addPictureButton);
   addPictureButton.setOnClickListener(new customButton.OnClickListener(){
     public void onClick(    View v){
       Intent photoPickerIntent=new Intent(Intent.ACTION_PICK);
       photoPickerIntent.setType("image/*");
       startActivityForResult(photoPickerIntent,1);
-    }
-  }
-);
-  final customButton clearCategories=(customButton)findViewById(R.id.clearCategories);
-  clearCategories.setOnClickListener(new customButton.OnClickListener(){
-    public void onClick(    View v){
-      TextView selectedCategoriesTV=(TextView)findViewById(R.id.selectedCategories);
-      selectedCategoriesTV.setText("Selected categories: ");
-      selectedCategories.clear();
     }
   }
 );

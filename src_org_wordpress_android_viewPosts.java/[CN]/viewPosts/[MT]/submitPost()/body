@@ -1,6 +1,12 @@
 {
   final localDraftsDB lDraftsDB=new localDraftsDB(this);
-  Vector post=lDraftsDB.loadPost(this,String.valueOf(selectedID));
+  Vector post;
+  if (isPage) {
+    post=lDraftsDB.loadPageDraft(this,String.valueOf(selectedID));
+  }
+ else {
+    post=lDraftsDB.loadPost(this,String.valueOf(selectedID));
+  }
   HashMap postHashMap=(HashMap)post.get(0);
   String title=postHashMap.get("title").toString();
   String content=postHashMap.get("content").toString();
@@ -14,14 +20,17 @@
       selectedImageCtr++;
     }
   }
-  String categories=postHashMap.get("categories").toString();
-  if (!categories.equals("")) {
-    String[] aCategories=categories.split(",");
-    for (int i=0; i < aCategories.length; i++) {
-      selectedCategories.add(aCategories[i]);
+  String tags="";
+  if (!isPage) {
+    String categories=postHashMap.get("categories").toString();
+    if (!categories.equals("")) {
+      String[] aCategories=categories.split(",");
+      for (int i=0; i < aCategories.length; i++) {
+        selectedCategories.add(aCategories[i]);
+      }
     }
+    tags=postHashMap.get("tags").toString();
   }
-  String tags=postHashMap.get("tags").toString();
   int publish=Integer.valueOf(postHashMap.get("publish").toString());
   Boolean publishThis=false;
   if (publish == 1) {
@@ -31,7 +40,6 @@
   for (int it=0; it < selectedImageCtr; it++) {
     imageContent+=uploadImage(selectedImageIDs.get(it).toString());
   }
-  Integer blogID=1;
   Vector<Object> myPostVector=new Vector<Object>();
   String res=null;
   boolean enteredSettings=checkSettings();
@@ -79,14 +87,16 @@
         content=content + imageContent;
       }
     }
-    contentStruct.put("post_type","post");
+    contentStruct.put("post_type",(isPage) ? "page" : "post");
     contentStruct.put("title",escapeUtils.escapeHtml(title));
     contentStruct.put("description",escapeUtils.escapeHtml(content));
-    if (tags != "") {
-      contentStruct.put("mt_keywords",escapeUtils.escapeHtml(tags));
-    }
-    if (theCategories.length > 0) {
-      contentStruct.put("categories",theCategories);
+    if (!isPage) {
+      if (tags != "") {
+        contentStruct.put("mt_keywords",escapeUtils.escapeHtml(tags));
+      }
+      if (theCategories.length > 0) {
+        contentStruct.put("categories",theCategories);
+      }
     }
     client=new XMLRPCClient(sURL);
     Object[] params={sBlogId,sUsername,sPassword,contentStruct,publishThis};
@@ -105,10 +115,10 @@
         AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewPosts.this);
         dialogBuilder.setTitle(getResources().getText(R.string.success));
         if (xmlrpcError) {
-          dialogBuilder.setMessage(getResources().getText(R.string.post_id) + " " + newID+ " "+ getResources().getText(R.string.added_successfully_image_error));
+          dialogBuilder.setMessage(getResources().getText((isPage) ? R.string.page_id : R.string.post_id) + " " + newID+ " "+ getResources().getText(R.string.added_successfully_image_error));
         }
  else {
-          dialogBuilder.setMessage(getResources().getText(R.string.post_id) + " " + newID+ " "+ getResources().getText(R.string.added_successfully));
+          dialogBuilder.setMessage(getResources().getText((isPage) ? R.string.page_id : R.string.post_id) + " " + newID+ " "+ getResources().getText(R.string.added_successfully));
         }
         dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
           public void onClick(          DialogInterface dialog,          int whichButton){
@@ -125,7 +135,12 @@
               selectedImageCtr=0;
               selectedCategories.clear();
               xmlrpcError=false;
-              lDraftsDB.deletePost(viewPosts.this,String.valueOf(selectedID));
+              if (isPage) {
+                lDraftsDB.deletePageDraft(viewPosts.this,String.valueOf(selectedID));
+              }
+ else {
+                lDraftsDB.deletePost(viewPosts.this,String.valueOf(selectedID));
+              }
               refreshPosts();
             }
           }

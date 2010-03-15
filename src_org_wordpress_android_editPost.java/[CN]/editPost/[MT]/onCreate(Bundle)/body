@@ -7,12 +7,41 @@
     accountName=extras.getString("accountName");
     postID=extras.getString("postID");
     localDraft=extras.getBoolean("localDraft",false);
+    isPage=extras.getBoolean("isPage",false);
   }
-  this.setTitle(accountName + " - " + getResources().getText(R.string.edit_post));
-  loadCategories();
+  this.setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.edit_page : R.string.edit_post));
+  if (isPage) {
+    TextView tvTitle=(TextView)findViewById(R.id.l_title);
+    tvTitle.setText(getResources().getText(R.string.page_title));
+    TextView tvContent=(TextView)findViewById(R.id.l_content);
+    tvTitle.setText(getResources().getText(R.string.page_content));
+    TextView tvCategories=(TextView)findViewById(R.id.selectedCategories);
+    EditText tagsET=(EditText)findViewById(R.id.tags);
+    TextView tvCategoriesLabel=(TextView)findViewById(R.id.l_category);
+    Spinner spinner=(Spinner)findViewById(R.id.spinner1);
+    TextView tvTagsLabel=(TextView)findViewById(R.id.l_tags);
+    customImageButton btnRefresh=(customImageButton)findViewById(R.id.refreshCategoriesButton);
+    customButton btnClear=(customButton)findViewById(R.id.clearCategories);
+    tvCategories.setVisibility(View.GONE);
+    tagsET.setVisibility(View.GONE);
+    tvCategoriesLabel.setVisibility(View.GONE);
+    spinner.setVisibility(View.GONE);
+    tvTagsLabel.setVisibility(View.GONE);
+    btnRefresh.setVisibility(View.GONE);
+    btnClear.setVisibility(View.GONE);
+  }
+  if (!isPage) {
+    loadCategories();
+  }
   if (localDraft) {
     localDraftsDB lDraftsDB=new localDraftsDB(this);
-    Vector post=lDraftsDB.loadPost(this,postID);
+    Vector post;
+    if (isPage) {
+      post=lDraftsDB.loadPageDraft(this,postID);
+    }
+ else {
+      post=lDraftsDB.loadPost(this,postID);
+    }
     HashMap postHashMap=(HashMap)post.get(0);
     EditText titleET=(EditText)findViewById(R.id.title);
     EditText contentET=(EditText)findViewById(R.id.content);
@@ -30,19 +59,21 @@
         gridview.setAdapter(new ImageAdapter(this));
       }
     }
-    String categories=postHashMap.get("categories").toString();
-    if (!categories.equals("")) {
-      String[] aCategories=categories.split(",");
-      for (int i=0; i < aCategories.length; i++) {
-        selectedCategories.add(aCategories[i]);
+    if (!isPage) {
+      String categories=postHashMap.get("categories").toString();
+      if (!categories.equals("")) {
+        String[] aCategories=categories.split(",");
+        for (int i=0; i < aCategories.length; i++) {
+          selectedCategories.add(aCategories[i]);
+        }
+        TextView tvCategories=(TextView)findViewById(R.id.selectedCategories);
+        tvCategories.setText("Selected categories: " + categories);
       }
-      TextView tvCategories=(TextView)findViewById(R.id.selectedCategories);
-      tvCategories.setText("Selected categories: " + categories);
-    }
-    String tags=postHashMap.get("tags").toString();
-    if (!tags.equals("")) {
-      EditText tagsET=(EditText)findViewById(R.id.tags);
-      tagsET.setText(tags);
+      String tags=postHashMap.get("tags").toString();
+      if (!tags.equals("")) {
+        EditText tagsET=(EditText)findViewById(R.id.tags);
+        tagsET.setText(tags);
+      }
     }
     int publish=Integer.valueOf(postHashMap.get("publish").toString());
     CheckBox publishCB=(CheckBox)findViewById(R.id.publish);
@@ -66,7 +97,7 @@
     EditText titleET=(EditText)findViewById(R.id.title);
     String setTitle=titleET.getText().toString();
     if (setTitle.equals("")) {
-      pd=ProgressDialog.show(editPost.this,getResources().getText(R.string.getting_post),getResources().getText(R.string.please_wait_getting_post),true,false);
+      pd=ProgressDialog.show(editPost.this,getResources().getText((isPage) ? R.string.getting_page : R.string.getting_post),getResources().getText((isPage) ? R.string.please_wait_getting_page : R.string.please_wait_getting_post),true,false);
       XMLRPCMethod method=new XMLRPCMethod("metaWeblog.getPost",new XMLRPCMethodCallback(){
         public void callFinished(        Object result){
           String s="done";
@@ -85,20 +116,22 @@
  else {
               contentET.setText(escapeUtils.unescapeHtml(contentHash.get("description").toString()));
             }
-            EditText tagsET=(EditText)findViewById(R.id.tags);
-            tagsET.setText(escapeUtils.unescapeHtml(contentHash.get("mt_keywords").toString()));
             String status=contentHash.get("post_status").toString();
-            TextView categories=(TextView)findViewById(R.id.selectedCategories);
-            Object categoriesArray[]=(Object[])contentHash.get("categories");
-            if (categoriesArray != null) {
-              int ctr=0;
-              for (              Object item : categoriesArray) {
-                String category=categoriesArray[ctr].toString();
-                if (!selectedCategories.contains(category)) {
-                  categories.setText(escapeUtils.unescapeHtml(categories.getText().toString() + category + ", "));
-                  selectedCategories.add(category);
+            if (!isPage) {
+              EditText tagsET=(EditText)findViewById(R.id.tags);
+              tagsET.setText(escapeUtils.unescapeHtml(contentHash.get("mt_keywords").toString()));
+              TextView categories=(TextView)findViewById(R.id.selectedCategories);
+              Object categoriesArray[]=(Object[])contentHash.get("categories");
+              if (categoriesArray != null) {
+                int ctr=0;
+                for (                Object item : categoriesArray) {
+                  String category=categoriesArray[ctr].toString();
+                  if (!selectedCategories.contains(category)) {
+                    categories.setText(escapeUtils.unescapeHtml(categories.getText().toString() + category + ", "));
+                    selectedCategories.add(category);
+                  }
+                  ctr++;
                 }
-                ctr++;
               }
             }
             CheckBox publishCB=(CheckBox)findViewById(R.id.publish);
