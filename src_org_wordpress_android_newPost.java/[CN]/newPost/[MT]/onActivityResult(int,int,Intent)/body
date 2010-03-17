@@ -2,39 +2,53 @@
   super.onActivityResult(requestCode,resultCode,data);
   if (data != null) {
     Bundle extras=data.getExtras();
+    GridView gridview=(GridView)findViewById(R.id.gridView);
 switch (requestCode) {
 case 0:
       String title=extras.getString("returnStatus");
     break;
 case 1:
-  Uri imagePath=data.getData();
-String imgPath2=imagePath.getEncodedPath();
-selectedImageIDs.add(selectedImageCtr,imagePath);
-imageUrl.add(selectedImageCtr,imgPath2);
-selectedImageCtr++;
-GridView gridview=(GridView)findViewById(R.id.gridView);
-gridview.setAdapter(new ImageAdapter(this));
-break;
+  break;
 case 2:
 String linkText=extras.getString("linkText");
 if (linkText.equals("http://") != true) {
 if (linkText.equals("CANCEL") != true) {
-TextView contentText=(TextView)findViewById(R.id.content);
-int selectionStart=contentText.getSelectionStart();
-int selectionEnd=contentText.getSelectionEnd();
-if (selectionStart > selectionEnd) {
-int temp=selectionEnd;
-selectionEnd=selectionStart;
-selectionStart=temp;
+  TextView contentText=(TextView)findViewById(R.id.content);
+  int selectionStart=contentText.getSelectionStart();
+  int selectionEnd=contentText.getSelectionEnd();
+  if (selectionStart > selectionEnd) {
+    int temp=selectionEnd;
+    selectionEnd=selectionStart;
+    selectionStart=temp;
+  }
+  String textToLink=contentText.getText().toString().substring(selectionStart,selectionEnd);
+  textToLink="<a href=\"" + linkText + "\">"+ textToLink+ "</a>";
+  String firstHalf=contentText.getText().toString().substring(0,selectionStart);
+  String lastHalf=contentText.getText().toString().substring(selectionEnd,contentText.getText().toString().length());
+  contentText.setText(firstHalf + textToLink + lastHalf);
+  Editable etext=(Editable)contentText.getText();
+  Selection.setSelection(etext,selectionStart + textToLink.length());
 }
-String textToLink=contentText.getText().toString().substring(selectionStart,selectionEnd);
-textToLink="<a href=\"" + linkText + "\">"+ textToLink+ "</a>";
-String firstHalf=contentText.getText().toString().substring(0,selectionStart);
-String lastHalf=contentText.getText().toString().substring(selectionEnd,contentText.getText().toString().length());
-contentText.setText(firstHalf + textToLink + lastHalf);
-Editable etext=(Editable)contentText.getText();
-Selection.setSelection(etext,selectionStart + textToLink.length());
 }
+break;
+case 3:
+int returnType=extras.getInt("returnType");
+if (returnType == 0) {
+String imageURIString=extras.getString("imageURI");
+Uri imageUri=Uri.parse(imageURIString);
+String imgPath=imageUri.getEncodedPath();
+selectedImageIDs.add(selectedImageCtr,imageUri);
+imageUrl.add(selectedImageCtr,imgPath);
+selectedImageCtr++;
+gridview.setAdapter(new ImageAdapter(this));
+}
+ else {
+Uri imagePath=data.getData();
+String imgPath2=imagePath.getEncodedPath();
+selectedImageIDs.add(selectedImageCtr,imagePath);
+imageUrl.add(selectedImageCtr,imgPath2);
+selectedImageCtr++;
+gridview.setAdapter(new ImageAdapter(this));
 }
 break;
 }
