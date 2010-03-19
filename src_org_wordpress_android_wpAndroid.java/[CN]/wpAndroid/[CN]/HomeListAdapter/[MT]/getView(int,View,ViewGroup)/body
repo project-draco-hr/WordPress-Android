@@ -1,0 +1,36 @@
+{
+  View pv=convertView;
+  ViewWrapper wrapper=null;
+  if (pv == null) {
+    LayoutInflater inflater=getLayoutInflater();
+    pv=inflater.inflate(R.layout.home_row,parent,false);
+    wrapper=new ViewWrapper(pv);
+    if (position == 0) {
+      usenameHeight=wrapper.getBlogUsername().getHeight();
+    }
+    pv.setTag(wrapper);
+    wrapper=new ViewWrapper(pv);
+    pv.setTag(wrapper);
+  }
+ else {
+    wrapper=(ViewWrapper)pv.getTag();
+  }
+  String username=accountUsers[position];
+  pv.setBackgroundDrawable(getResources().getDrawable(R.drawable.list_bg_selector));
+  pv.setId(Integer.valueOf(accountIDs[position]));
+  if (wrapper.getBlogUsername().getHeight() == 0) {
+    wrapper.getBlogUsername().setHeight((int)wrapper.getBlogName().getTextSize() + wrapper.getBlogUsername().getPaddingBottom());
+  }
+  wrapper.getBlogName().setText(escapeUtils.unescapeHtml(blogNames[position]));
+  wrapper.getBlogUsername().setText(escapeUtils.unescapeHtml(username));
+  if (wrapper.getBlavatar() != null) {
+    try {
+      wrapper.getBlavatar().setImageResource(R.drawable.app_icon);
+      wrapper.getBlavatar().setTag(blavatars[position]);
+    }
+ catch (    Throwable t) {
+      t.printStackTrace();
+    }
+  }
+  return pv;
+}

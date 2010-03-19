@@ -1,54 +1,65 @@
 {
   super.onActivityResult(requestCode,resultCode,data);
-  if (data != null) {
-    Bundle extras=data.getExtras();
+  if (data != null || requestCode == 4) {
+    Bundle extras;
     GridView gridview=(GridView)findViewById(R.id.gridView);
 switch (requestCode) {
 case 0:
-      String title=extras.getString("returnStatus");
-    break;
-case 1:
+      extras=data.getExtras();
+    String title=extras.getString("returnStatus");
   break;
+case 1:
+break;
 case 2:
+extras=data.getExtras();
 String linkText=extras.getString("linkText");
 if (linkText.equals("http://") != true) {
 if (linkText.equals("CANCEL") != true) {
-  TextView contentText=(TextView)findViewById(R.id.content);
-  int selectionStart=contentText.getSelectionStart();
-  int selectionEnd=contentText.getSelectionEnd();
-  if (selectionStart > selectionEnd) {
-    int temp=selectionEnd;
-    selectionEnd=selectionStart;
-    selectionStart=temp;
-  }
-  String textToLink=contentText.getText().toString().substring(selectionStart,selectionEnd);
-  textToLink="<a href=\"" + linkText + "\">"+ textToLink+ "</a>";
-  String firstHalf=contentText.getText().toString().substring(0,selectionStart);
-  String lastHalf=contentText.getText().toString().substring(selectionEnd,contentText.getText().toString().length());
-  contentText.setText(firstHalf + textToLink + lastHalf);
-  Editable etext=(Editable)contentText.getText();
-  Selection.setSelection(etext,selectionStart + textToLink.length());
+TextView contentText=(TextView)findViewById(R.id.content);
+int selectionStart=contentText.getSelectionStart();
+int selectionEnd=contentText.getSelectionEnd();
+if (selectionStart > selectionEnd) {
+int temp=selectionEnd;
+selectionEnd=selectionStart;
+selectionStart=temp;
+}
+String textToLink=contentText.getText().toString().substring(selectionStart,selectionEnd);
+textToLink="<a href=\"" + linkText + "\">"+ textToLink+ "</a>";
+String firstHalf=contentText.getText().toString().substring(0,selectionStart);
+String lastHalf=contentText.getText().toString().substring(selectionEnd,contentText.getText().toString().length());
+contentText.setText(firstHalf + textToLink + lastHalf);
+Editable etext=(Editable)contentText.getText();
+Selection.setSelection(etext,selectionStart + textToLink.length());
 }
 }
 break;
 case 3:
-int returnType=extras.getInt("returnType");
-if (returnType == 0) {
-String imageURIString=extras.getString("imageURI");
-Uri imageUri=Uri.parse(imageURIString);
+Uri imageUri=data.getData();
 String imgPath=imageUri.getEncodedPath();
 selectedImageIDs.add(selectedImageCtr,imageUri);
 imageUrl.add(selectedImageCtr,imgPath);
 selectedImageCtr++;
 gridview.setAdapter(new ImageAdapter(this));
-}
- else {
-Uri imagePath=data.getData();
-String imgPath2=imagePath.getEncodedPath();
-selectedImageIDs.add(selectedImageCtr,imagePath);
-imageUrl.add(selectedImageCtr,imgPath2);
+break;
+case 4:
+if (resultCode == Activity.RESULT_OK) {
+File f=new File(SD_CARD_TEMP_DIR);
+try {
+Uri capturedImage=Uri.parse(android.provider.MediaStore.Images.Media.insertImage(getContentResolver(),f.getAbsolutePath(),null,null));
+Log.i("camera","Selected image: " + capturedImage.toString());
+Bundle bundle=new Bundle();
+bundle.putString("imageURI",capturedImage.toString());
+selectedImageIDs.add(selectedImageCtr,capturedImage);
+imageUrl.add(selectedImageCtr,capturedImage.toString());
 selectedImageCtr++;
 gridview.setAdapter(new ImageAdapter(this));
+}
+ catch (FileNotFoundException e) {
+e.printStackTrace();
+}
+}
+ else {
+Log.i("Camera","Result code was " + resultCode);
 }
 break;
 }
