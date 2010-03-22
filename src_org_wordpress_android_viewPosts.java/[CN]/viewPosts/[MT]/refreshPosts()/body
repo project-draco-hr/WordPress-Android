@@ -39,6 +39,7 @@
         String rDateCreatedFormatted[]=new String[result.length];
         String rParentID[]=new String[result.length];
         Vector dbVector=new Vector();
+        postStoreDB postStoreDB=new postStoreDB(viewPosts.this);
         for (int ctr=0; ctr < result.length; ctr++) {
           HashMap<String,String> dbValues=new HashMap();
           contentHash=(HashMap)result[ctr];
@@ -67,7 +68,6 @@
             pe.printStackTrace();
             rDateCreatedFormatted[ctr]=rDateCreated[ctr];
           }
-          postStoreDB postStoreDB=new postStoreDB(viewPosts.this);
           dbValues.put("blogID",id);
           dbValues.put("title",rTitles[ctr]);
           if (isPage) {
@@ -76,15 +76,19 @@
             dbValues.put("pageDateFormatted",rDateCreatedFormatted[ctr]);
             dbValues.put("parentID",rParentID[ctr]);
             dbVector.add(ctr,dbValues);
-            postStoreDB.savePages(viewPosts.this,dbVector);
           }
  else {
             dbValues.put("postID",rPostIDs[ctr]);
             dbValues.put("postDate",rDateCreated[ctr]);
             dbValues.put("postDateFormatted",rDateCreatedFormatted[ctr]);
             dbVector.add(ctr,dbValues);
-            postStoreDB.savePosts(viewPosts.this,dbVector);
           }
+        }
+        if (isPage) {
+          postStoreDB.savePages(viewPosts.this,dbVector);
+        }
+ else {
+          postStoreDB.savePosts(viewPosts.this,dbVector);
         }
         loadPosts();
         closeProgressBar();
