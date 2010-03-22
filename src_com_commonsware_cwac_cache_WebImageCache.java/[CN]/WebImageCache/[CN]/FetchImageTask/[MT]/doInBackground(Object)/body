@@ -1,0 +1,33 @@
+{
+  String url=params[1].toString();
+  File cache=(File)params[2];
+  try {
+    URLConnection connection=new URL(url).openConnection();
+    InputStream stream=connection.getInputStream();
+    BufferedInputStream in=new BufferedInputStream(stream);
+    ByteArrayOutputStream out=new ByteArrayOutputStream(10240);
+    int read;
+    byte[] b=new byte[4096];
+    while ((read=in.read(b)) != -1) {
+      out.write(b,0,read);
+    }
+    out.flush();
+    out.close();
+    byte[] raw=out.toByteArray();
+    WebImageCache.this.put(url,new BitmapDrawable(new ByteArrayInputStream(raw)));
+    Bundle message=(Bundle)params[0];
+    if (message != null) {
+      getBus().send(message);
+    }
+    if (cache != null) {
+      FileOutputStream file=new FileOutputStream(cache);
+      file.write(raw);
+      file.flush();
+      file.close();
+    }
+  }
+ catch (  Throwable t) {
+    Log.e(TAG,"Exception downloading image",t);
+  }
+  return (null);
+}

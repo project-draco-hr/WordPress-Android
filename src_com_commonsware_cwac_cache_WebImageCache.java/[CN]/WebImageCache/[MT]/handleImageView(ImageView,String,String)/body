@@ -1,0 +1,28 @@
+{
+  Bundle message=((SimpleBus)getBus()).createMessage(url);
+  Drawable d=get(url,message);
+  image.setImageDrawable(d);
+  if (d == placeholder) {
+    SimpleBus.Receiver r=(SimpleBus.Receiver)image.getTag();
+    if (r != null) {
+      getBus().unregister(r);
+    }
+    r=new SimpleBus.Receiver<Bundle>(){
+      public void onReceive(      final Bundle message){
+        ((Activity)image.getContext()).runOnUiThread(new Runnable(){
+          public void run(){
+            if (url.equals(message.getString(SimpleBus.KEY))) {
+              image.setImageDrawable(get(url,null));
+            }
+ else {
+            }
+          }
+        }
+);
+      }
+    }
+;
+    image.setTag(r);
+    getBus().register(url,r,tag);
+  }
+}
