@@ -16,62 +16,26 @@
     TextView tvCategories=(TextView)findViewById(R.id.selectedCategories);
     EditText tagsET=(EditText)findViewById(R.id.tags);
     TextView tvCategoriesLabel=(TextView)findViewById(R.id.l_category);
-    Spinner spinner=(Spinner)findViewById(R.id.spinner1);
     TextView tvTagsLabel=(TextView)findViewById(R.id.l_tags);
-    customImageButton btnRefresh=(customImageButton)findViewById(R.id.refreshCategoriesButton);
-    customButton btnClear=(customButton)findViewById(R.id.clearCategories);
     tvCategories.setVisibility(View.GONE);
     tagsET.setVisibility(View.GONE);
     tvCategoriesLabel.setVisibility(View.GONE);
-    spinner.setVisibility(View.GONE);
     tvTagsLabel.setVisibility(View.GONE);
-    btnRefresh.setVisibility(View.GONE);
-    btnClear.setVisibility(View.GONE);
   }
   selectedImageIDs.clear();
   selectedImageCtr=0;
   if (!isPage) {
-    loadCategories();
-    Spinner spinner=(Spinner)findViewById(R.id.spinner1);
-    spinner.setOnItemSelectedListener(new OnItemSelectedListener(){
-      public void onItemSelected(      AdapterView parent,      View v,      int position,      long id){
-        if (newStart != true) {
-          String selectedItem=parent.getItemAtPosition(position).toString();
-          TextView selectedCategoriesTV=(TextView)findViewById(R.id.selectedCategories);
-          if (!selectedCategories.contains(selectedItem)) {
-            selectedCategoriesTV.setText(selectedCategoriesTV.getText().toString() + selectedItem + ", ");
-            selectedCategories.add(selectedItem);
-          }
-        }
- else {
-          newStart=false;
-        }
-      }
-      public void onNothingSelected(      AdapterView arg0){
-      }
-    }
-);
-    final customImageButton refreshCategoriesButton=(customImageButton)findViewById(R.id.refreshCategoriesButton);
-    refreshCategoriesButton.setOnClickListener(new customImageButton.OnClickListener(){
+    final customButton selectCategories=(customButton)findViewById(R.id.selectCategories);
+    selectCategories.setOnClickListener(new customButton.OnClickListener(){
       public void onClick(      View v){
-        pd=ProgressDialog.show(newPost.this,getResources().getText(R.string.refreshing_categories),getResources().getText(R.string.attempting_categories_refresh),true,true);
-        Thread th=new Thread(){
-          public void run(){
-            finalResult=getCategories();
-            mHandler.post(mUpdateResults);
-          }
+        Bundle bundle=new Bundle();
+        bundle.putString("id",id);
+        if (checkedCategories != null) {
+          bundle.putLongArray("checkedCategories",checkedCategories);
         }
-;
-        th.start();
-      }
-    }
-);
-    final customButton clearCategories=(customButton)findViewById(R.id.clearCategories);
-    clearCategories.setOnClickListener(new customButton.OnClickListener(){
-      public void onClick(      View v){
-        TextView selectedCategoriesTV=(TextView)findViewById(R.id.selectedCategories);
-        selectedCategoriesTV.setText("Selected categories: ");
-        selectedCategories.clear();
+        Intent i=new Intent(newPost.this,selectCategories.class);
+        i.putExtras(bundle);
+        startActivityForResult(i,5);
       }
     }
 );

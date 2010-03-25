@@ -1,10 +1,25 @@
 {
-  String returnMessage="";
   Vector res;
+  String returnMessage="";
   boolean enteredSettings=checkSettings();
-  String errormsg="";
   if (!enteredSettings) {
-    returnMessage="invalidSettings";
+    AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(selectCategories.this);
+    dialogBuilder.setTitle(getResources().getText(R.string.settings_not_found));
+    dialogBuilder.setMessage(getResources().getText(R.string.settings_not_found_load_now));
+    dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int whichButton){
+        Intent i=new Intent(selectCategories.this,settings.class);
+        startActivityForResult(i,0);
+      }
+    }
+);
+    dialogBuilder.setNegativeButton(getResources().getText(R.string.no),new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int whichButton){
+      }
+    }
+);
+    dialogBuilder.setCancelable(true);
+    dialogBuilder.create().show();
   }
  else {
     settingsDB settingsDB=new settingsDB(this);
@@ -18,9 +33,8 @@
     }
     String sUsername=categoriesVector.get(2).toString();
     String sPassword=categoriesVector.get(3).toString();
-    int sBlogId=Integer.parseInt(categoriesVector.get(10).toString());
     Object result[]=null;
-    Object[] params={sBlogId,sUsername,sPassword};
+    Object[] params={1,sUsername,sPassword};
     client=new XMLRPCClient(sURL);
     try {
       result=(Object[])client.call("wp.getCategories",params);
@@ -42,7 +56,6 @@
       textArray.add(categoryName);
     }
     returnMessage="gotCategories";
-    newStart=true;
   }
   return returnMessage;
 }

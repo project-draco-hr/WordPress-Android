@@ -1,0 +1,29 @@
+{
+  loadTextArray.clear();
+  categoriesDB categoriesDB=new categoriesDB(this);
+  Vector categoriesVector=categoriesDB.loadCategories(this,id);
+  if (categoriesVector != null) {
+    for (int i=0; i < categoriesVector.size(); i++) {
+      loadTextArray.add(categoriesVector.get(i).toString());
+    }
+    ArrayAdapter<CharSequence> categories=new ArrayAdapter<CharSequence>(this,R.layout.categories_row,loadTextArray);
+    this.setListAdapter(categories);
+    if (checkedCategories != null) {
+      ListView lv=getListView();
+      for (int i=0; i < checkedCategories.length; i++) {
+        lv.setItemChecked((int)checkedCategories[i],true);
+      }
+    }
+ else     if (categoriesCSV != null) {
+      String catsArray[]=categoriesCSV.split(",");
+      ListView lv=getListView();
+      for (int i=0; i < loadTextArray.size(); i++) {
+        for (int x=0; x < catsArray.length; x++) {
+          if (catsArray[x].equals(loadTextArray.get(i).toString())) {
+            lv.setItemChecked(i,true);
+          }
+        }
+      }
+    }
+  }
+}
