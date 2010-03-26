@@ -1,0 +1,39 @@
+{
+  String returnString="";
+  settingsDB settingsDB=new settingsDB(this);
+  Vector settingsVector=settingsDB.loadSettings(this,id);
+  String sURL="";
+  if (settingsVector.get(0).toString().contains("xmlrpc.php")) {
+    sURL=settingsVector.get(0).toString();
+  }
+ else {
+    sURL=settingsVector.get(0).toString() + "xmlrpc.php";
+  }
+  String sUsername=settingsVector.get(2).toString();
+  String sPassword=settingsVector.get(3).toString();
+  int sBlogId=Integer.parseInt(settingsVector.get(10).toString());
+  Map<String,Object> struct=new HashMap<String,Object>();
+  struct.put("name",category_name);
+  struct.put("slug",category_slug);
+  struct.put("description",category_desc);
+  struct.put("parent_id",parent_id);
+  client=new XMLRPCClient(sURL);
+  Object[] params={sBlogId,sUsername,sPassword,struct};
+  Object result=null;
+  try {
+    result=client.call("wp.newCategory",params);
+  }
+ catch (  XMLRPCException e) {
+    e.printStackTrace();
+  }
+  if (result == null) {
+    returnString="addCategory_failed";
+  }
+ else {
+    categoriesDB categoriesDB=new categoriesDB(this);
+    int category_id=Integer.parseInt(result.toString());
+    categoriesDB.insertCategory(this,id,category_id,category_name);
+    returnString="addCategory_success";
+  }
+  return returnString;
+}

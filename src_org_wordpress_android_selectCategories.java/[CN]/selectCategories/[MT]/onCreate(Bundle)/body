@@ -11,8 +11,19 @@
     categoriesCSV=extras.getString("categoriesCSV");
   }
   loadCategories();
-  customButton done=(customButton)findViewById(R.id.categories_done);
-  done.setOnClickListener(new customButton.OnClickListener(){
+  final customMenuButton addCategory=(customMenuButton)findViewById(R.id.newCategory);
+  addCategory.setOnClickListener(new customButton.OnClickListener(){
+    public void onClick(    View v){
+      Bundle bundle=new Bundle();
+      bundle.putString("id",id);
+      Intent i=new Intent(selectCategories.this,addCategory.class);
+      i.putExtras(bundle);
+      startActivityForResult(i,0);
+    }
+  }
+);
+  customMenuButtonText done=(customMenuButtonText)findViewById(R.id.categories_done);
+  done.setOnClickListener(new customMenuButtonText.OnClickListener(){
     public void onClick(    View v){
       String selectedCategories="";
       long checkedItems[]=lv.getCheckItemIds();
@@ -40,32 +51,6 @@
       mIntent.putExtras(bundle);
       setResult(RESULT_OK,mIntent);
       finish();
-    }
-  }
-);
-  customButton cancel=(customButton)findViewById(R.id.categories_cancel);
-  cancel.setOnClickListener(new customButton.OnClickListener(){
-    public void onClick(    View v){
-      Bundle bundle=new Bundle();
-      Intent mIntent=new Intent();
-      mIntent.putExtras(bundle);
-      setResult(RESULT_CANCELED,mIntent);
-      finish();
-    }
-  }
-);
-  final customImageButton refreshCategoriesButton=(customImageButton)findViewById(R.id.refreshCategoriesButton);
-  refreshCategoriesButton.setOnClickListener(new customImageButton.OnClickListener(){
-    public void onClick(    View v){
-      pd=ProgressDialog.show(selectCategories.this,getResources().getText(R.string.refreshing_categories),getResources().getText(R.string.attempting_categories_refresh),true,true);
-      Thread th=new Thread(){
-        public void run(){
-          finalResult=getCategories();
-          mHandler.post(mUpdateResults);
-        }
-      }
-;
-      th.start();
     }
   }
 );
