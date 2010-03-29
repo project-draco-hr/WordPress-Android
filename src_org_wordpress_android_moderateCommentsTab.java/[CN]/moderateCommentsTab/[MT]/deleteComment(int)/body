@@ -1,4 +1,5 @@
 {
+  String sSelCommentID=String.valueOf(selCommentID);
   Vector settings=new Vector();
   settingsDB settingsDB=new settingsDB(moderateCommentsTab.this);
   settings=settingsDB.loadSettings(moderateCommentsTab.this,id);
@@ -13,23 +14,14 @@
   String sPassword=settings.get(3).toString();
   int sBlogId=Integer.parseInt(settings.get(10).toString());
   client=new XMLRPCClient(sURL);
-  ListView lv=getListView();
-  Object curListItem;
-  ListAdapter la=lv.getAdapter();
-  HashMap replyHash=new HashMap();
-  replyHash.put("comment_parent",commentID);
-  replyHash.put("content",comment);
-  replyHash.put("author","");
-  replyHash.put("author_url","");
-  replyHash.put("author_email","");
-  Object[] params={sBlogId,sUsername,sPassword,Integer.valueOf(postID),replyHash};
+  Object[] params={sBlogId,sUsername,sPassword,selCommentID};
   Object result=null;
   try {
-    result=(Object)client.call("wp.newComment",params);
-    dismissDialog(ID_DIALOG_REPLYING);
+    result=(Object)client.call("wp.deleteComment",params);
+    dismissDialog(ID_DIALOG_DELETING);
     Thread action=new Thread(){
       public void run(){
-        Toast.makeText(moderateCommentsTab.this,getResources().getText(R.string.reply_added),Toast.LENGTH_SHORT).show();
+        Toast.makeText(moderateCommentsTab.this,getResources().getText(R.string.comment_moderated),Toast.LENGTH_SHORT).show();
       }
     }
 ;
@@ -44,7 +36,7 @@
     this.runOnUiThread(action2);
   }
  catch (  final XMLRPCException e) {
-    dismissDialog(ID_DIALOG_REPLYING);
+    dismissDialog(ID_DIALOG_DELETING);
     Thread action3=new Thread(){
       public void run(){
         AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(moderateCommentsTab.this);
