@@ -1,29 +1,18 @@
 {
   super.onCreate(icicle);
-  setContentView(R.layout.main);
   Bundle extras=getIntent().getExtras();
   if (extras != null) {
     id=extras.getString("id");
     accountName=extras.getString("accountName");
     isPage=extras.getBoolean("isPage",false);
   }
-  this.setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
   if (isPage) {
-    TextView tvTitle=(TextView)findViewById(R.id.l_title);
-    tvTitle.setText(getResources().getText(R.string.page_title));
-    TextView tvContent=(TextView)findViewById(R.id.l_content);
-    tvTitle.setText(getResources().getText(R.string.page_content));
-    customButton selectCategories=(customButton)findViewById(R.id.selectCategories);
-    TextView tvCategories=(TextView)findViewById(R.id.selectedCategories);
-    EditText tagsET=(EditText)findViewById(R.id.tags);
-    TextView tvCategoriesLabel=(TextView)findViewById(R.id.l_category);
-    TextView tvTagsLabel=(TextView)findViewById(R.id.l_tags);
-    selectCategories.setVisibility(View.GONE);
-    tvCategories.setVisibility(View.GONE);
-    tagsET.setVisibility(View.GONE);
-    tvCategoriesLabel.setVisibility(View.GONE);
-    tvTagsLabel.setVisibility(View.GONE);
+    setContentView(R.layout.main_page);
   }
+ else {
+    setContentView(R.layout.main);
+  }
+  this.setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
   selectedImageIDs.clear();
   selectedImageCtr=0;
   if (!isPage) {

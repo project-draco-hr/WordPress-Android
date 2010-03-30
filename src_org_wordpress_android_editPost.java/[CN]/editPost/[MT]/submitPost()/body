@@ -3,8 +3,6 @@
   String title=titleET.getText().toString();
   EditText contentET=(EditText)findViewById(R.id.content);
   String content=contentET.getText().toString();
-  EditText tagsET=(EditText)findViewById(R.id.tags);
-  String tags=tagsET.getText().toString();
   CheckBox publishCB=(CheckBox)findViewById(R.id.publish);
   Boolean publishThis=false;
   String imageContent="";
@@ -18,8 +16,6 @@
     res="emptyFields";
   }
  else {
-    String selectedCategory="";
-    String[] theCategories=categories.split(",");
     settingsDB settingsDB=new settingsDB(this);
     Vector categoriesVector=settingsDB.loadSettings(this,id);
     String sURL="";
@@ -57,11 +53,16 @@
     contentStruct.put("post_type","post");
     contentStruct.put("title",escapeUtils.escapeHtml(title));
     contentStruct.put("description",escapeUtils.escapeHtml(content));
-    if (tags != "") {
-      contentStruct.put("mt_keywords",escapeUtils.escapeHtml(tags));
-    }
-    if (theCategories.length > 0) {
-      contentStruct.put("categories",theCategories);
+    if (!isPage) {
+      EditText tagsET=(EditText)findViewById(R.id.tags);
+      String tags=tagsET.getText().toString();
+      String[] theCategories=categories.split(",");
+      if (tags != "") {
+        contentStruct.put("mt_keywords",escapeUtils.escapeHtml(tags));
+      }
+      if (theCategories.length > 0) {
+        contentStruct.put("categories",theCategories);
+      }
     }
     client=new XMLRPCClient(sURL);
     Object[] params={postID,sUsername,sPassword,contentStruct,publishThis};
