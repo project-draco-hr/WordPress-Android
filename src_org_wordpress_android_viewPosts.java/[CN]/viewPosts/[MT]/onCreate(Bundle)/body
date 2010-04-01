@@ -2,14 +2,41 @@
   super.onCreate(icicle);
   setContentView(R.layout.viewposts);
   Bundle extras=getIntent().getExtras();
+  String action=null;
   if (extras != null) {
     id=extras.getString("id");
     accountName=extras.getString("accountName");
     isPage=extras.getBoolean("viewPages");
+    action=extras.getString("action");
   }
-  boolean loadedPosts=loadPosts();
-  if (!loadedPosts) {
-    refreshPosts();
+  if (action != null) {
+    if (action.equals("upload")) {
+      selectedID=extras.getInt("uploadID");
+      showDialog(ID_DIALOG_POSTING);
+      new Thread(){
+        public void run(){
+          try {
+            submitResult=submitPost();
+          }
+ catch (          IOException e) {
+            e.printStackTrace();
+          }
+        }
+      }
+.start();
+    }
+ else {
+      boolean loadedPosts=loadPosts();
+      if (!loadedPosts) {
+        refreshPosts();
+      }
+    }
+  }
+ else {
+    boolean loadedPosts=loadPosts();
+    if (!loadedPosts) {
+      refreshPosts();
+    }
   }
   Display display=getWindowManager().getDefaultDisplay();
   int width=display.getWidth();
@@ -17,8 +44,8 @@
   if (width > 480 || height > 480) {
     largeScreen=true;
   }
-  final customMenuButton addNewPost=(customMenuButton)findViewById(R.id.newPost);
-  addNewPost.setOnClickListener(new customMenuButton.OnClickListener(){
+  final ImageButton addNewPost=(ImageButton)findViewById(R.id.newPost);
+  addNewPost.setOnClickListener(new ImageButton.OnClickListener(){
     public void onClick(    View v){
       Intent i=new Intent(viewPosts.this,newPost.class);
       i.putExtra("accountName",accountName);
@@ -30,8 +57,8 @@
     }
   }
 );
-  final customMenuButton refresh=(customMenuButton)findViewById(R.id.refresh);
-  refresh.setOnClickListener(new customMenuButton.OnClickListener(){
+  final ImageButton refresh=(ImageButton)findViewById(R.id.refresh);
+  refresh.setOnClickListener(new ImageButton.OnClickListener(){
     public void onClick(    View v){
       refreshPosts();
     }

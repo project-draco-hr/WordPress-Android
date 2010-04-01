@@ -1,0 +1,23 @@
+{
+  Intent intent=getIntent();
+  String text=intent.getStringExtra(Intent.EXTRA_TEXT);
+  if (text != null) {
+    EditText contentET=(EditText)findViewById(R.id.content);
+    if (text.contains("youtube_gdata")) {
+      text=text.replace("&feature=youtube_gdata","");
+      text=text.replace("watch?v=","v/");
+      text="<object width=\"480\" height=\"385\"><param name=\"movie\" value=\"" + text + "\"></param><param name=\"allowFullScreen\" value=\"true\"></param><param name=\"allowscriptaccess\" value=\"always\"></param><embed src=\""+ text+ "\" type=\"application/x-shockwave-flash\" allowscriptaccess=\"always\" allowfullscreen=\"true\" width=\"480\" height=\"385\"></embed></object>";
+    }
+    contentET.setText(text);
+  }
+  String type=intent.getType();
+  Uri stream=(Uri)intent.getParcelableExtra(Intent.EXTRA_STREAM);
+  if (stream != null && type != null) {
+    String imgPath=stream.getEncodedPath();
+    selectedImageIDs.add(selectedImageCtr,stream);
+    imageUrl.add(selectedImageCtr,imgPath);
+    selectedImageCtr++;
+    GridView gridview=(GridView)findViewById(R.id.gridView);
+    gridview.setAdapter(new ImageAdapter(newPost.this));
+  }
+}

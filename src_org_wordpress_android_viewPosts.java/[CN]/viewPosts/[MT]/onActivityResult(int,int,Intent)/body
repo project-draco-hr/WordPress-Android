@@ -7,7 +7,27 @@
 switch (requestCode) {
 case 0:
         if (returnResult.equals("OK")) {
-          loadPosts();
+          boolean uploadNow=false;
+          uploadNow=extras.getBoolean("upload");
+          if (uploadNow) {
+            int uploadID=extras.getInt("newID");
+            selectedID=uploadID;
+            showDialog(ID_DIALOG_POSTING);
+            new Thread(){
+              public void run(){
+                try {
+                  submitResult=submitPost();
+                }
+ catch (                IOException e) {
+                  e.printStackTrace();
+                }
+              }
+            }
+.start();
+          }
+ else {
+            loadPosts();
+          }
         }
       break;
 case 1:
