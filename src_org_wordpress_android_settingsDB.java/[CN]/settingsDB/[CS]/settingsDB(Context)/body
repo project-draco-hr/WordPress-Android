@@ -1,10 +1,15 @@
 {
   db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
   db.execSQL(CREATE_TABLE_SETTINGS);
-  int test=db.getVersion();
+  db.execSQL(CREATE_TABLE_EULA);
   if (db.getVersion() <= 1) {
-    db.execSQL(ADD_BLOGID);
-    db.execSQL(UPDATE_BLOGID);
+    try {
+      db.execSQL(ADD_BLOGID);
+      db.execSQL(UPDATE_BLOGID);
+    }
+ catch (    SQLException e) {
+      e.printStackTrace();
+    }
     db.execSQL(ADD_SOUND_OPTION);
     db.execSQL(ADD_VIBRATE_OPTION);
     db.execSQL(ADD_LIGHT_OPTION);
