@@ -98,57 +98,77 @@
     client=new XMLRPCClient(sURL);
     Object[] params={sBlogId,sUsername,sPassword,contentStruct,publishThis};
     Object result=null;
+    boolean success=false;
     try {
       result=(Object)client.call("metaWeblog.newPost",params);
+      success=true;
     }
- catch (    XMLRPCException e) {
-      e.printStackTrace();
-    }
-    newID=result.toString();
-    res="OK";
-    dismissDialog(ID_DIALOG_POSTING);
-    Thread action=new Thread(){
-      public void run(){
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewPosts.this);
-        dialogBuilder.setTitle(getResources().getText(R.string.success));
-        if (xmlrpcError) {
-          dialogBuilder.setMessage(getResources().getText((isPage) ? R.string.page_id : R.string.post_id) + " " + newID+ " "+ getResources().getText(R.string.added_successfully_image_error));
-        }
- else {
-          dialogBuilder.setMessage(getResources().getText((isPage) ? R.string.page_id : R.string.post_id) + " " + newID+ " "+ getResources().getText(R.string.added_successfully));
-        }
-        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-          public void onClick(          DialogInterface dialog,          int whichButton){
-            boolean isInteger=false;
-            try {
-              int i=Integer.parseInt(newID);
-              isInteger=true;
-            }
- catch (            NumberFormatException e) {
-            }
-            if (isInteger) {
-              selectedImageIDs.clear();
-              imageUrl.clear();
-              selectedImageCtr=0;
-              selectedCategories.clear();
-              xmlrpcError=false;
-              if (isPage) {
-                lDraftsDB.deletePageDraft(viewPosts.this,String.valueOf(selectedID));
-              }
- else {
-                lDraftsDB.deletePost(viewPosts.this,String.valueOf(selectedID));
-              }
-              refreshPosts();
+ catch (    final XMLRPCException e) {
+      Thread prompt=new Thread(){
+        public void run(){
+          dismissDialog(ID_DIALOG_POSTING);
+          AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewPosts.this);
+          dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
+          dialogBuilder.setMessage(e.getMessage());
+          dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+            public void onClick(            DialogInterface dialog,            int whichButton){
             }
           }
-        }
 );
-        dialogBuilder.setCancelable(true);
-        dialogBuilder.create().show();
+          dialogBuilder.setCancelable(true);
+          dialogBuilder.create().show();
+        }
       }
-    }
 ;
-    this.runOnUiThread(action);
+      this.runOnUiThread(prompt);
+    }
+    if (success) {
+      newID=result.toString();
+      res="OK";
+      dismissDialog(ID_DIALOG_POSTING);
+      Thread action=new Thread(){
+        public void run(){
+          AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewPosts.this);
+          dialogBuilder.setTitle(getResources().getText(R.string.success));
+          if (xmlrpcError) {
+            dialogBuilder.setMessage(getResources().getText((isPage) ? R.string.page_id : R.string.post_id) + " " + newID+ " "+ getResources().getText(R.string.added_successfully_image_error));
+          }
+ else {
+            dialogBuilder.setMessage(getResources().getText((isPage) ? R.string.page_id : R.string.post_id) + " " + newID+ " "+ getResources().getText(R.string.added_successfully));
+          }
+          dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+            public void onClick(            DialogInterface dialog,            int whichButton){
+              boolean isInteger=false;
+              try {
+                int i=Integer.parseInt(newID);
+                isInteger=true;
+              }
+ catch (              NumberFormatException e) {
+              }
+              if (isInteger) {
+                selectedImageIDs.clear();
+                imageUrl.clear();
+                selectedImageCtr=0;
+                selectedCategories.clear();
+                xmlrpcError=false;
+                if (isPage) {
+                  lDraftsDB.deletePageDraft(viewPosts.this,String.valueOf(selectedID));
+                }
+ else {
+                  lDraftsDB.deletePost(viewPosts.this,String.valueOf(selectedID));
+                }
+                refreshPosts();
+              }
+            }
+          }
+);
+          dialogBuilder.setCancelable(true);
+          dialogBuilder.create().show();
+        }
+      }
+;
+      this.runOnUiThread(action);
+    }
   }
   return res;
 }

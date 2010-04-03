@@ -36,26 +36,32 @@
     Object result[]=null;
     Object[] params={1,sUsername,sPassword};
     client=new XMLRPCClient(sURL);
+    boolean success=false;
     try {
       result=(Object[])client.call("wp.getCategories",params);
+      success=true;
     }
  catch (    XMLRPCException e) {
-      e.getMessage();
       e.printStackTrace();
       res=null;
     }
-    int size=result.length;
-    categoriesDB categoriesDB=new categoriesDB(this);
-    categoriesDB.clearCategories(this,id);
-    for (int i=0; i < size; i++) {
-      HashMap curHash=(HashMap)result[i];
-      String categoryName=curHash.get("categoryName").toString();
-      String categoryID=curHash.get("categoryId").toString();
-      int convertedCategoryID=Integer.parseInt(categoryID);
-      categoriesDB.insertCategory(this,id,convertedCategoryID,categoryName);
-      textArray.add(categoryName);
+    if (success) {
+      int size=result.length;
+      categoriesDB categoriesDB=new categoriesDB(this);
+      categoriesDB.clearCategories(this,id);
+      for (int i=0; i < size; i++) {
+        HashMap curHash=(HashMap)result[i];
+        String categoryName=curHash.get("categoryName").toString();
+        String categoryID=curHash.get("categoryId").toString();
+        int convertedCategoryID=Integer.parseInt(categoryID);
+        categoriesDB.insertCategory(this,id,convertedCategoryID,categoryName);
+        textArray.add(categoryName);
+      }
+      returnMessage="gotCategories";
     }
-    returnMessage="gotCategories";
+ else {
+      returnMessage="FAIL";
+    }
   }
   return returnMessage;
 }

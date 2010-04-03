@@ -67,14 +67,37 @@
     client=new XMLRPCClient(sURL);
     Object[] params={postID,sUsername,sPassword,contentStruct,publishThis};
     Object result=null;
+    boolean success=false;
     try {
       result=(Object)client.call("metaWeblog.editPost",params);
+      success=true;
     }
- catch (    XMLRPCException e) {
-      e.printStackTrace();
+ catch (    final XMLRPCException e) {
+      Thread prompt=new Thread(){
+        public void run(){
+          dismissDialog(ID_DIALOG_POSTING);
+          AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
+          dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
+          dialogBuilder.setMessage(e.getMessage());
+          dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+            public void onClick(            DialogInterface dialog,            int whichButton){
+            }
+          }
+);
+          dialogBuilder.setCancelable(true);
+          dialogBuilder.create().show();
+        }
+      }
+;
+      this.runOnUiThread(prompt);
     }
-    newID=result.toString();
-    res="OK";
+    if (success) {
+      newID=result.toString();
+      res="OK";
+    }
+ else {
+      res="FAIL";
+    }
   }
   return res;
 }
