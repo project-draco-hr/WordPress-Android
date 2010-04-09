@@ -12,7 +12,7 @@
   if (!enteredSettings) {
     res="invalidSettings";
   }
- else   if (title.equals("") || content.equals("")) {
+ else   if (title.equals("") || (content.equals("") && selectedImageIDs.size() == 0)) {
     res="emptyFields";
   }
  else {
@@ -51,14 +51,14 @@
       }
     }
     contentStruct.put("post_type","post");
-    contentStruct.put("title",escapeUtils.escapeHtml(title));
-    contentStruct.put("description",escapeUtils.escapeHtml(content));
+    contentStruct.put("title",title);
+    contentStruct.put("description",content);
     if (!isPage) {
       EditText tagsET=(EditText)findViewById(R.id.tags);
       String tags=tagsET.getText().toString();
       String[] theCategories=categories.split(",");
       if (tags != "") {
-        contentStruct.put("mt_keywords",escapeUtils.escapeHtml(tags));
+        contentStruct.put("mt_keywords",tags);
       }
       if (theCategories.length > 0) {
         contentStruct.put("categories",theCategories);

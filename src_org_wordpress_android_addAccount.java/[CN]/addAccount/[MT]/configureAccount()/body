@@ -7,7 +7,7 @@
   final String password=passwordET.getText().toString();
   if (blogURL.equals("") || username.equals("") || password.equals("")) {
     pd.dismiss();
-    AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newAccount.this);
+    AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(addAccount.this);
     dialogBuilder.setTitle(getResources().getText(R.string.required_fields));
     dialogBuilder.setMessage(getResources().getText(R.string.url_username_password_required));
     dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
@@ -57,13 +57,13 @@
           String blogURL=urls[ctr];
           int blogId=blogIds[ctr];
           ctr++;
-          settingsDB settingsDB=new settingsDB(newAccount.this);
+          settingsDB settingsDB=new settingsDB(addAccount.this);
           boolean noMatch=false;
-          noMatch=settingsDB.checkMatch(newAccount.this,blogName,blogURL,username);
+          noMatch=settingsDB.checkMatch(addAccount.this,blogName,blogURL,username);
           if (noMatch) {
             Thread prompt=new Thread(){
               public void run(){
-                Toast.makeText(newAccount.this,getResources().getText(R.string.account_already_exists),Toast.LENGTH_SHORT).show();
+                Toast.makeText(addAccount.this,getResources().getText(R.string.account_already_exists),Toast.LENGTH_SHORT).show();
               }
             }
 ;
@@ -74,11 +74,11 @@
             if (blogName == "") {
               blogName="(No Blog Title)";
             }
-            success=settingsDB.addAccount(newAccount.this,blogURL,blogName,username,password,"Above Text",true,false,"500",5,false,blogId);
+            success=settingsDB.addAccount(addAccount.this,blogURL,blogName,username,password,"Above Text",true,false,"500",5,false,blogId);
           }
         }
         if (result.length == 0) {
-          AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newAccount.this);
+          AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(addAccount.this);
           dialogBuilder.setTitle("No Blogs Found");
           dialogBuilder.setMessage("No blogs were found for that account.");
           dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){

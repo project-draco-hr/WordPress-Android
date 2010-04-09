@@ -1,39 +1,19 @@
 {
   super.onCreate(savedInstanceState);
-  setContentView(R.layout.newaccount);
-  this.setTitle("WordPress - " + getResources().getText(R.string.new_account));
-  final Button cancelButton=(Button)findViewById(R.id.cancel);
-  final Button saveButton=(Button)findViewById(R.id.save);
-  saveButton.setOnClickListener(new Button.OnClickListener(){
+  setContentView(R.layout.new_account);
+  this.setTitle("WordPress");
+  final Button setupAccountButton=(Button)findViewById(R.id.setupAccount);
+  final Button createAccountButton=(Button)findViewById(R.id.createAccount);
+  setupAccountButton.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
-      pd=ProgressDialog.show(newAccount.this,getResources().getText(R.string.account_setup),getResources().getText(R.string.attempting_configure),true,false);
-      Thread action=new Thread(){
-        public void run(){
-          Looper.prepare();
-          configureAccount();
-          Looper.loop();
-        }
-      }
-;
-      action.start();
+      Intent i=new Intent(newAccount.this,addAccount.class);
+      startActivityForResult(i,0);
     }
   }
 );
-  cancelButton.setOnClickListener(new Button.OnClickListener(){
+  createAccountButton.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
-      Bundle bundle=new Bundle();
-      bundle.putString("returnStatus","CANCEL");
-      Intent mIntent=new Intent();
-      mIntent.putExtras(bundle);
-      setResult(RESULT_OK,mIntent);
-      finish();
-    }
-  }
-);
-  Button signUp=(Button)findViewById(R.id.wordpressdotcom);
-  signUp.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      Intent signupIntent=new Intent(Intent.ACTION_VIEW,Uri.parse("http://wordpress.com/signup/?ref=wp-android"));
+      Intent signupIntent=new Intent(newAccount.this,signup.class);
       startActivity(signupIntent);
     }
   }
