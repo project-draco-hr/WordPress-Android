@@ -41,22 +41,31 @@
         curImagePath=imageUrl.get(it).toString();
         if (i == 0 || sFullSizeImage) {
           Uri imageUri=Uri.parse(curImagePath);
-          String imgID=imageUri.getLastPathSegment();
-          long imgID2=Long.parseLong(imgID);
-          String[] projection;
-          projection=new String[]{Images.Media._ID,Images.Media.DATA};
-          Uri imgPath;
-          imgPath=ContentUris.withAppendedId(Images.Media.EXTERNAL_CONTENT_URI,imgID2);
-          Cursor cur=this.managedQuery(imgPath,projection,null,null,null);
-          String thumbData="";
-          if (cur.moveToFirst()) {
-            int nameColumn, dataColumn, heightColumn, widthColumn;
-            nameColumn=cur.getColumnIndex(Images.Media._ID);
-            dataColumn=cur.getColumnIndex(Images.Media.DATA);
-            String imgPath4=imgPath.getEncodedPath();
-            thumbData=cur.getString(dataColumn);
+          File jpeg=null;
+          String mimeType="";
+          if (imageUri.toString().contains("content:")) {
+            String imgID=imageUri.getLastPathSegment();
+            long imgID2=Long.parseLong(imgID);
+            String[] projection;
+            projection=new String[]{Images.Media._ID,Images.Media.DATA,Images.Media.MIME_TYPE};
+            Uri imgPath;
+            imgPath=ContentUris.withAppendedId(Images.Media.EXTERNAL_CONTENT_URI,imgID2);
+            Cursor cur=this.managedQuery(imgPath,projection,null,null,null);
+            String thumbData="";
+            if (cur.moveToFirst()) {
+              int nameColumn, dataColumn, heightColumn, widthColumn, mimeTypeColumn;
+              nameColumn=cur.getColumnIndex(Images.Media._ID);
+              dataColumn=cur.getColumnIndex(Images.Media.DATA);
+              mimeTypeColumn=cur.getColumnIndex(Images.Media.MIME_TYPE);
+              String imgPath4=imgPath.getEncodedPath();
+              thumbData=cur.getString(dataColumn);
+              mimeType=cur.getString(mimeTypeColumn);
+            }
+            jpeg=new File(thumbData);
           }
-          File jpeg=new File(thumbData);
+ else {
+            jpeg=new File(imageUri.toString().replace("file://",""));
+          }
           imageTitle=jpeg.getName();
           byte[] bytes=new byte[(int)jpeg.length()];
           byte[] finalBytes;
@@ -85,11 +94,10 @@
  else {
             finalBytes=bytes;
           }
-          String contentType="image/jpg";
           Map<String,Object> m=new HashMap<String,Object>();
           HashMap hPost=new HashMap();
           m.put("name",imageTitle);
-          m.put("type",contentType);
+          m.put("type",mimeType);
           m.put("bits",finalBytes);
           m.put("overwrite",true);
           Object[] params={1,sUsername,sPassword,m};

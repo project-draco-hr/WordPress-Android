@@ -10,21 +10,22 @@
     imageView=(ImageView)convertView;
   }
   Uri tempURI=(Uri)selectedImageIDs.get(position);
-  String[] projection=new String[]{Images.Thumbnails._ID,Images.Thumbnails.DATA,Images.ImageColumns.ORIENTATION};
+  String[] projection=new String[]{Images.Thumbnails._ID,Images.Thumbnails.DATA};
   Cursor cur=managedQuery(tempURI,projection,null,null,null);
-  String thumbData="";
-  if (cur.moveToFirst()) {
-    int nameColumn, dataColumn, heightColumn, widthColumn, orientation;
-    String testOrientation="";
-    nameColumn=cur.getColumnIndex(Images.Media._ID);
-    dataColumn=cur.getColumnIndex(Images.Media.DATA);
-    orientation=cur.getColumnIndex(Images.ImageColumns.ORIENTATION);
-    thumbData=cur.getString(dataColumn);
-    testOrientation=cur.getString(orientation);
-    int blah=0;
-    blah++;
+  File jpeg=null;
+  if (cur != null) {
+    String thumbData="";
+    if (cur.moveToFirst()) {
+      int nameColumn, dataColumn, heightColumn, widthColumn;
+      nameColumn=cur.getColumnIndex(Images.Media._ID);
+      dataColumn=cur.getColumnIndex(Images.Media.DATA);
+      thumbData=cur.getString(dataColumn);
+    }
+    jpeg=new File(thumbData);
   }
-  File jpeg=new File(thumbData);
+ else {
+    jpeg=new File(tempURI.toString().replace("file://",""));
+  }
   imageTitle=jpeg.getName();
   byte[] bytes=new byte[(int)jpeg.length()];
   DataInputStream in=null;
