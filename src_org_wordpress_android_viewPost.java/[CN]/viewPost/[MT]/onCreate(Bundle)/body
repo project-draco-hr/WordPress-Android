@@ -1,6 +1,8 @@
 {
   super.onCreate(icicle);
+  requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
   setContentView(R.layout.viewpost);
+  setProgressBarIndeterminateVisibility(true);
   Bundle extras=getIntent().getExtras();
   if (extras != null) {
     id=extras.getString("id");
@@ -8,43 +10,22 @@
     accountName=extras.getString("accountName");
     isPage=extras.getBoolean("isPage");
   }
-  pd=ProgressDialog.show(viewPost.this,getResources().getText(R.string.getting_preview),getResources().getText(R.string.getting_preview_attempting),true,false);
   if (isPage) {
     this.setTitle(escapeUtils.unescapeHtml(accountName) + " - " + getResources().getText(R.string.preview_page));
-    TextView postPreview=(TextView)findViewById(R.id.postPreview);
-    postPreview.setText(getResources().getText(R.string.page_preview));
   }
  else {
     this.setTitle(escapeUtils.unescapeHtml(accountName) + " - " + getResources().getText(R.string.preview_post));
   }
-  Vector settings=new Vector();
   settingsDB settingsDB=new settingsDB(this);
-  settings=settingsDB.loadSettings(this,id);
-  String sURL="";
-  if (settings.get(0).toString().contains("xmlrpc.php")) {
-    sURL=settings.get(0).toString();
-  }
- else {
-    sURL=settings.get(0).toString() + "xmlrpc.php";
-  }
-  String sUsername=settings.get(2).toString();
-  String sPassword=settings.get(3).toString();
-  client=new XMLRPCClient(sURL);
-  XMLRPCMethod method=new XMLRPCMethod("metaWeblog.getPost",new XMLRPCMethodCallback(){
-    public void callFinished(    Object result){
-      pd.dismiss();
-      String s="done";
-      s=result.toString();
-      HashMap resultHash=(HashMap)result;
-      String HTML=resultHash.get("description").toString();
-      WebView wv=(WebView)findViewById(R.id.webView);
-      String mimetype="text/html";
-      String encoding="utf-8";
-      wv.loadDataWithBaseURL(null,HTML,mimetype,encoding,"about:blank");
-      wv.clearCache(true);
-    }
-  }
-);
-  Object[] params={postID,sUsername,sPassword};
-  method.call(params);
+  Vector account=settingsDB.loadSettings(this,id);
+  String blogURL=account.get(0).toString();
+  blogURL=blogURL.replace("https:","http:");
+  blogURL=blogURL.replace("xmlrpc.php","") + "?p=" + postID;
+  WebView wv=(WebView)findViewById(R.id.webView);
+  wv.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+  wv.getSettings().setUserAgentString("Mozilla/5.0 (Linux) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Safari/530.17");
+  wv.getSettings().setBuiltInZoomControls(true);
+  wv.getSettings().setJavaScriptEnabled(true);
+  wv.setWebViewClient(new WordPressWebViewClient());
+  wv.loadUrl(blogURL);
 }
