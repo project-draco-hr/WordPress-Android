@@ -31,8 +31,10 @@
     entity=response.getEntity();
     PushbackInputStream is=new PushbackInputStream(entity.getContent());
     int bomCheck=is.read();
-    while (bomCheck != 60) {
+    int i=0;
+    while (bomCheck != 60 && i <= 20) {
       bomCheck=is.read();
+      i++;
     }
     is.unread(bomCheck);
     pullParser.setInput(is,"UTF-8");
