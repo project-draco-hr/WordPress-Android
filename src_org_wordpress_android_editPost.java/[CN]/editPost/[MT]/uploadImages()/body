@@ -42,24 +42,27 @@
         if (i == 0 || sFullSizeImage) {
           Uri imageUri=Uri.parse(curImagePath);
           File jpeg=null;
-          String mimeType="";
+          String mimeType="", orientation="";
           if (imageUri.toString().contains("content:")) {
             String imgID=imageUri.getLastPathSegment();
             long imgID2=Long.parseLong(imgID);
             String[] projection;
-            projection=new String[]{Images.Media._ID,Images.Media.DATA,Images.Media.MIME_TYPE};
+            projection=new String[]{Images.Media._ID,Images.Media.DATA,Images.Media.MIME_TYPE,Images.Media.ORIENTATION};
             Uri imgPath;
             imgPath=ContentUris.withAppendedId(Images.Media.EXTERNAL_CONTENT_URI,imgID2);
             Cursor cur=this.managedQuery(imgPath,projection,null,null,null);
             String thumbData="";
             if (cur.moveToFirst()) {
-              int nameColumn, dataColumn, heightColumn, widthColumn, mimeTypeColumn;
+              int nameColumn, dataColumn, mimeTypeColumn, orientationColumn;
+              ;
               nameColumn=cur.getColumnIndex(Images.Media._ID);
               dataColumn=cur.getColumnIndex(Images.Media.DATA);
               mimeTypeColumn=cur.getColumnIndex(Images.Media.MIME_TYPE);
+              orientationColumn=cur.getColumnIndex(Images.Media.ORIENTATION);
               String imgPath4=imgPath.getEncodedPath();
               thumbData=cur.getString(dataColumn);
               mimeType=cur.getString(mimeTypeColumn);
+              orientation=cur.getString(orientationColumn);
             }
             jpeg=new File(thumbData);
           }
@@ -89,7 +92,7 @@
             e.printStackTrace();
           }
           if (i == 0) {
-            finalBytes=imageHelper.createThumbnail(bytes,sMaxImageWidth);
+            finalBytes=imageHelper.createThumbnail(bytes,sMaxImageWidth,orientation);
           }
  else {
             finalBytes=bytes;
