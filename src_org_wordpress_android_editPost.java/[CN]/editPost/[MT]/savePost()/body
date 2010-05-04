@@ -39,12 +39,31 @@
     if (publishCB.isChecked()) {
       publishThis=true;
     }
+    settingsDB settingsDB=new settingsDB(this);
+    Vector settingsVector=settingsDB.loadSettings(this,id);
+    String sLocation=settingsVector.get(11).toString();
+    boolean location=false;
+    if (sLocation.equals("1")) {
+      location=true;
+    }
+    Double latitude=0.0;
+    Double longitude=0.0;
+    if (location) {
+      try {
+        Location loc=lm.getLastKnownLocation(provider);
+        latitude=loc.getLatitude();
+        longitude=loc.getLongitude();
+      }
+ catch (      Exception e) {
+        e.printStackTrace();
+      }
+    }
     localDraftsDB lDraftsDB=new localDraftsDB(this);
     if (isPage) {
-      success=lDraftsDB.updateLocalPageDraft(this,id,postID,title,content,images,publishThis);
+      success=lDraftsDB.saveLocalPageDraft(this,id,title,content,images,publishThis);
     }
  else {
-      success=lDraftsDB.updateLocalDraft(this,id,postID,title,content,images,tags,categories,publishThis);
+      success=lDraftsDB.saveLocalDraft(this,id,title,content,images,tags,categories,publishThis,latitude,longitude);
     }
   }
   return success;

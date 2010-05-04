@@ -25,7 +25,7 @@
  else {
       post=lDraftsDB.loadPost(this,postID);
     }
-    HashMap postHashMap=(HashMap)post.get(0);
+    final HashMap postHashMap=(HashMap)post.get(0);
     EditText titleET=(EditText)findViewById(R.id.title);
     EditText contentET=(EditText)findViewById(R.id.content);
     titleET.setText(postHashMap.get("title").toString());
@@ -54,6 +54,43 @@
         }
         TextView tvCategories=(TextView)findViewById(R.id.selectedCategories);
         tvCategories.setText("Selected categories: " + categories);
+      }
+      settingsDB settingsDB=new settingsDB(this);
+      Vector settingsVector=settingsDB.loadSettings(this,id);
+      String sLocation=settingsVector.get(11).toString();
+      boolean location=false;
+      if (sLocation.equals("1")) {
+        location=true;
+      }
+      Double latitude=(Double)postHashMap.get("latitude");
+      Double longitude=(Double)postHashMap.get("longitude");
+      if (latitude != 0.0) {
+        new getAddressTask().execute(latitude,longitude);
+      }
+      if (sLocation.equals("1")) {
+        location=true;
+      }
+      if (location && latitude > 0) {
+        Button updateLocation=(Button)findViewById(R.id.updateLocation);
+        updateLocation.setOnClickListener(new Button.OnClickListener(){
+          public void onClick(          View v){
+            lm=(LocationManager)getSystemService(LOCATION_SERVICE);
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,20000,0,editPost.this);
+            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,20000,0,editPost.this);
+            locationActive=true;
+          }
+        }
+);
+        RelativeLayout locationSection=(RelativeLayout)findViewById(R.id.section4);
+        locationSection.setVisibility(View.VISIBLE);
+      }
+ else       if (location) {
+        lm=(LocationManager)getSystemService(LOCATION_SERVICE);
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,20000,0,editPost.this);
+        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,20000,0,editPost.this);
+        locationActive=true;
+        RelativeLayout locationSection=(RelativeLayout)findViewById(R.id.section4);
+        locationSection.setVisibility(View.VISIBLE);
       }
       Button selectCategories=(Button)findViewById(R.id.selectCategories);
       selectCategories.setOnClickListener(new Button.OnClickListener(){
