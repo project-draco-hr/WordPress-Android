@@ -3,6 +3,7 @@
   if (data != null || requestCode == 4) {
     Bundle extras;
     GridView gridview=(GridView)findViewById(R.id.gridView);
+    Button clearMedia=(Button)findViewById(R.id.clearPicture);
 switch (requestCode) {
 case 0:
       extras=data.getExtras();
@@ -37,10 +38,11 @@ case 3:
 Uri imageUri=data.getData();
 String imgPath=imageUri.getEncodedPath();
 selectedImageIDs.add(selectedImageCtr,imageUri);
-imageUrl.add(selectedImageCtr,imgPath);
+imageUrl.add(selectedImageCtr,imageUri.toString());
 selectedImageCtr++;
 gridview.setVisibility(View.VISIBLE);
 gridview.setAdapter(new ImageAdapter(this));
+clearMedia.setVisibility(View.VISIBLE);
 break;
 case 4:
 if (resultCode == Activity.RESULT_OK) {
@@ -79,6 +81,7 @@ f=new File(SD_CARD_TEMP_DIR);
 try {
 Uri capturedImage=Uri.parse(android.provider.MediaStore.Images.Media.insertImage(getContentResolver(),f.getAbsolutePath(),null,null));
 Log.i("camera","Selected image: " + capturedImage.toString());
+f.delete();
 Bundle bundle=new Bundle();
 bundle.putString("imageURI",capturedImage.toString());
 selectedImageIDs.add(selectedImageCtr,capturedImage);
@@ -86,21 +89,111 @@ imageUrl.add(selectedImageCtr,capturedImage.toString());
 selectedImageCtr++;
 gridview.setVisibility(View.VISIBLE);
 gridview.setAdapter(new ImageAdapter(this));
+clearMedia.setVisibility(View.VISIBLE);
 }
  catch (FileNotFoundException e) {
-e.printStackTrace();
+AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
+dialogBuilder.setTitle(getResources().getText(R.string.file_error));
+dialogBuilder.setMessage(getResources().getText(R.string.file_error_encountered));
+dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+}
+}
+);
+dialogBuilder.setCancelable(true);
+dialogBuilder.create().show();
 }
 }
  else {
-Log.i("Camera","Result code was " + resultCode);
+AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
+dialogBuilder.setTitle(getResources().getText(R.string.file_error));
+dialogBuilder.setMessage(getResources().getText(R.string.file_error_encountered));
+dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+}
+}
+);
+dialogBuilder.setCancelable(true);
+dialogBuilder.create().show();
 }
 break;
 case 5:
-extras=data.getExtras();
-String cats=extras.getString("selectedCategories");
-categories=cats;
-TextView selectedCategoriesTV=(TextView)findViewById(R.id.selectedCategories);
-selectedCategoriesTV.setText(getResources().getText(R.string.selected_categories) + " " + cats);
+break;
+case 6:
+Uri videoUri=data.getData();
+String videoPath=videoUri.getEncodedPath();
+selectedImageIDs.add(selectedImageCtr,videoUri);
+imageUrl.add(selectedImageCtr,videoUri);
+selectedImageCtr++;
+gridview.setVisibility(View.VISIBLE);
+gridview.setAdapter(new ImageAdapter(this));
+clearMedia.setVisibility(View.VISIBLE);
+break;
+case 7:
+if (resultCode == Activity.RESULT_OK) {
+File f=new File(SD_CARD_TEMP_DIR);
+try {
+ContentValues values=new ContentValues(2);
+values.put(MediaStore.Video.Media.MIME_TYPE,"video/3gp");
+Uri capturedVideo=getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,values);
+InputStream is=new FileInputStream(f);
+OutputStream os=getContentResolver().openOutputStream(capturedVideo);
+byte[] buffer=new byte[8192];
+int len;
+while ((len=is.read(buffer)) != -1) {
+os.write(buffer,0,len);
+}
+os.flush();
+is.close();
+os.close();
+sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,capturedVideo));
+f.delete();
+Bundle bundle=new Bundle();
+bundle.putString("imageURI",capturedVideo.toString());
+selectedImageIDs.add(selectedImageCtr,capturedVideo);
+imageUrl.add(selectedImageCtr,capturedVideo.toString());
+selectedImageCtr++;
+gridview.setVisibility(View.VISIBLE);
+gridview.setAdapter(new ImageAdapter(this));
+clearMedia.setVisibility(View.VISIBLE);
+}
+ catch (FileNotFoundException e) {
+AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
+dialogBuilder.setTitle(getResources().getText(R.string.file_error));
+dialogBuilder.setMessage(getResources().getText(R.string.file_error_encountered));
+dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+}
+}
+);
+dialogBuilder.setCancelable(true);
+dialogBuilder.create().show();
+}
+catch (IOException e) {
+AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
+dialogBuilder.setTitle(getResources().getText(R.string.file_error));
+dialogBuilder.setMessage(getResources().getText(R.string.file_error_encountered));
+dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+}
+}
+);
+dialogBuilder.setCancelable(true);
+dialogBuilder.create().show();
+}
+}
+ else {
+AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
+dialogBuilder.setTitle(getResources().getText(R.string.file_error));
+dialogBuilder.setMessage(getResources().getText(R.string.file_error_encountered));
+dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+}
+}
+);
+dialogBuilder.setCancelable(true);
+dialogBuilder.create().show();
+}
 break;
 }
 }

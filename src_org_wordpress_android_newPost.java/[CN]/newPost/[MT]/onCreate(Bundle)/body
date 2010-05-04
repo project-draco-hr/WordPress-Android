@@ -12,6 +12,15 @@
   }
  else {
     setContentView(R.layout.main);
+    lm=(LocationManager)getSystemService(LOCATION_SERVICE);
+    criteria=new Criteria();
+    criteria.setAccuracy(Criteria.ACCURACY_FINE);
+    criteria.setAltitudeRequired(false);
+    criteria.setBearingRequired(false);
+    criteria.setCostAllowed(true);
+    criteria.setPowerRequirement(Criteria.POWER_MEDIUM);
+    provider=lm.getBestProvider(criteria,true);
+    Location curLocation=lm.getLastKnownLocation(provider);
   }
   String action=getIntent().getAction();
   if (Intent.ACTION_SEND.equals(action)) {
@@ -304,6 +313,7 @@
       GridView gridview=(GridView)findViewById(R.id.gridView);
       gridview.setAdapter(null);
       gridview.setVisibility(View.GONE);
+      clearPictureButton.setVisibility(View.GONE);
     }
   }
 );

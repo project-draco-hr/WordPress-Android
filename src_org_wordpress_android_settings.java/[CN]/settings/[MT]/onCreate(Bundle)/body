@@ -19,6 +19,7 @@
     String imagePlacement=categoriesVector.get(4).toString();
     String sCenterThumbnailString=categoriesVector.get(5).toString();
     String sFullSizeImageString=categoriesVector.get(6).toString();
+    String location=categoriesVector.get(11).toString();
     boolean sFullSizeImage=false;
     if (sFullSizeImageString.equals("1")) {
       sFullSizeImage=true;
@@ -26,6 +27,10 @@
     boolean sCenterThumbnail=false;
     if (sCenterThumbnailString.equals("1")) {
       sCenterThumbnail=true;
+    }
+    boolean sLocation=false;
+    if (location.equals("1")) {
+      sLocation=true;
     }
     String maxImageWidth=categoriesVector.get(7).toString();
     String maxImageWidthId=categoriesVector.get(8).toString();
@@ -36,10 +41,14 @@
     passwordET.setText(savedPassword);
     RadioButton aboveTextRB=(RadioButton)findViewById(R.id.aboveText);
     RadioButton belowTextRB=(RadioButton)findViewById(R.id.belowText);
+    aboveTextRB.setTag(0);
+    belowTextRB.setTag(1);
     CheckBox centerThumbnail=(CheckBox)findViewById(R.id.centerThumbnail);
     centerThumbnail.setChecked(sCenterThumbnail);
     CheckBox fullSize=(CheckBox)findViewById(R.id.fullSizeImage);
     fullSize.setChecked(sFullSizeImage);
+    CheckBox locationCB=(CheckBox)findViewById(R.id.location);
+    locationCB.setChecked(sLocation);
     spinner.setSelection(maxImageWidthIdInt);
     if (imagePlacement != null) {
       if (imagePlacement.equals("Above Text")) {
@@ -59,8 +68,14 @@
       EditText passwordET=(EditText)findViewById(R.id.password);
       String password=passwordET.getText().toString();
       RadioGroup imageRG=(RadioGroup)findViewById(R.id.imagePlacement);
-      RadioButton checkedRB=(RadioButton)findViewById(imageRG.getCheckedRadioButtonId());
-      String buttonValue=checkedRB.getText().toString();
+      String buttonValue="";
+      RadioButton aboveTextRB=(RadioButton)findViewById(R.id.aboveText);
+      if (aboveTextRB.isChecked()) {
+        buttonValue="Above Text";
+      }
+ else {
+        buttonValue="Below Text";
+      }
       CheckBox fullSize=(CheckBox)findViewById(R.id.fullSizeImage);
       boolean fullSizeImageValue=fullSize.isChecked();
       Spinner spinner=(Spinner)findViewById(R.id.maxImageWidth);
@@ -69,8 +84,10 @@
       int maxImageWidthIdInt=(int)maxImageWidthId;
       CheckBox centerThumbnail=(CheckBox)findViewById(R.id.centerThumbnail);
       boolean centerThumbnailValue=centerThumbnail.isChecked();
+      CheckBox locationCB=(CheckBox)findViewById(R.id.location);
+      boolean locationValue=locationCB.isChecked();
       settingsDB settingsDB=new settingsDB(settings.this);
-      settingsDB.saveSettings(settings.this,id,xmlrpcPath,username,password,buttonValue,centerThumbnailValue,fullSizeImageValue,maxImageWidth,maxImageWidthIdInt);
+      settingsDB.saveSettings(settings.this,id,xmlrpcPath,username,password,buttonValue,centerThumbnailValue,fullSizeImageValue,maxImageWidth,maxImageWidthIdInt,locationValue);
       Bundle bundle=new Bundle();
       bundle.putString("returnStatus","SAVE");
       Intent mIntent=new Intent();

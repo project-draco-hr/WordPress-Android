@@ -1,7 +1,7 @@
 {
   db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
   Vector returnVector=new Vector();
-  Cursor c=db.query(LOCALDRAFTS_TABLE,new String[]{"title","content","picturePaths","tags","categories","publish"},"id=" + postID,null,null,null,null);
+  Cursor c=db.query(LOCALDRAFTS_TABLE,new String[]{"title","content","picturePaths","tags","categories","publish","latitude","longitude"},"id=" + postID,null,null,null,null);
   int numRows=c.getCount();
   c.moveToFirst();
   for (int i=0; i < numRows; ++i) {
@@ -13,6 +13,8 @@
       returnHash.put("tags",c.getString(3));
       returnHash.put("categories",c.getString(4));
       returnHash.put("publish",c.getInt(5));
+      returnHash.put("latitude",c.getDouble(6));
+      returnHash.put("longitude",c.getDouble(7));
       returnVector.add(i,returnHash);
     }
     c.moveToNext();
