@@ -12,24 +12,6 @@
   }
  else {
     setContentView(R.layout.main);
-    settingsDB settingsDB=new settingsDB(this);
-    Vector settingsVector=settingsDB.loadSettings(this,id);
-    String sLocation=settingsVector.get(11).toString();
-    if (sLocation.equals("1")) {
-      location=true;
-    }
-    if (location) {
-      lm=(LocationManager)getSystemService(LOCATION_SERVICE);
-      criteria=new Criteria();
-      criteria.setAccuracy(Criteria.ACCURACY_FINE);
-      criteria.setAltitudeRequired(false);
-      criteria.setBearingRequired(false);
-      criteria.setCostAllowed(true);
-      criteria.setPowerRequirement(Criteria.POWER_HIGH);
-      provider=lm.getBestProvider(criteria,true);
-      RelativeLayout locationSection=(RelativeLayout)findViewById(R.id.section4);
-      locationSection.setVisibility(View.VISIBLE);
-    }
   }
   String action=getIntent().getAction();
   if (Intent.ACTION_SEND.equals(action)) {
@@ -43,7 +25,6 @@
       for (int i=0; i < accounts.size(); i++) {
         HashMap curHash=(HashMap)accounts.get(i);
         blogNames[i]=escapeUtils.unescapeHtml(curHash.get("blogName").toString());
-        accountUsers[i]=curHash.get("username").toString();
         accountIDs[i]=curHash.get("id").toString();
       }
       if (accounts.size() != 1) {
@@ -55,6 +36,7 @@
             accountName=blogNames[item];
             setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
             setContent();
+            lbsCheck();
           }
         }
 );
@@ -78,6 +60,7 @@
  else {
     selectedImageIDs.clear();
     selectedImageCtr=0;
+    lbsCheck();
   }
   if (accountName != null) {
     this.setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
