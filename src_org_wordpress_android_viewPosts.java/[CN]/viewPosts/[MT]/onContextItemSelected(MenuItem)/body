@@ -22,6 +22,30 @@ i2.putExtra("id",id);
 i2.putExtra("accountName",accountName);
 startActivityForResult(i2,1);
 return true;
+case 3:
+AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewPosts.this);
+dialogBuilder.setTitle(getResources().getText(R.string.delete_post));
+dialogBuilder.setMessage(getResources().getText(R.string.delete_sure_post) + " '" + titles[rowID]+ "'?");
+dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+showDialog(ID_DIALOG_DELETING);
+new Thread(){
+public void run(){
+deletePost();
+}
+}
+.start();
+}
+}
+);
+dialogBuilder.setNegativeButton(getResources().getText(R.string.no),new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+}
+}
+);
+dialogBuilder.setCancelable(true);
+dialogBuilder.create().show();
+return true;
 }
 }
  else if (item.getGroupId() == 2) {
@@ -48,6 +72,30 @@ i2.putExtra("id",id);
 i2.putExtra("accountName",accountName);
 i2.putExtra("isPage",true);
 startActivityForResult(i2,1);
+return true;
+case 3:
+AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewPosts.this);
+dialogBuilder.setTitle(getResources().getText(R.string.delete_page));
+dialogBuilder.setMessage(getResources().getText(R.string.delete_sure_page) + " '" + titles[rowID]+ "'?");
+dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+showDialog(ID_DIALOG_DELETING);
+new Thread(){
+public void run(){
+deletePost();
+}
+}
+.start();
+}
+}
+);
+dialogBuilder.setNegativeButton(getResources().getText(R.string.no),new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+}
+}
+);
+dialogBuilder.setCancelable(true);
+dialogBuilder.create().show();
 return true;
 }
 }

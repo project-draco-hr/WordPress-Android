@@ -68,8 +68,10 @@
     HttpEntity entity=response.getEntity();
     PushbackInputStream is=new PushbackInputStream(entity.getContent());
     int bomCheck=is.read();
-    while (bomCheck != 60) {
+    int stopper=0;
+    while (bomCheck != 60 && stopper < 20) {
       bomCheck=is.read();
+      stopper++;
     }
     is.unread(bomCheck);
     pullParser.setInput(is,"UTF-8");

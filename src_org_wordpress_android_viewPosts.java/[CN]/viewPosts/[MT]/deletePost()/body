@@ -1,0 +1,57 @@
+{
+  Vector settings=new Vector();
+  settingsDB settingsDB=new settingsDB(viewPosts.this);
+  settings=settingsDB.loadSettings(viewPosts.this,id);
+  String sURL="";
+  if (settings.get(0).toString().contains("xmlrpc.php")) {
+    sURL=settings.get(0).toString();
+  }
+ else {
+    sURL=settings.get(0).toString() + "xmlrpc.php";
+  }
+  String sUsername=settings.get(2).toString();
+  String sPassword=settings.get(3).toString();
+  int sBlogId=Integer.parseInt(settings.get(10).toString());
+  String selPostID=String.valueOf(selectedID);
+  client=new XMLRPCClient(sURL);
+  Object[] postParams={"",selPostID,sUsername,sPassword};
+  Object[] pageParams={sBlogId,sUsername,sPassword,selPostID};
+  Object result=null;
+  try {
+    result=(Object)client.call((isPage) ? "wp.deletePage" : "blogger.deletePost",(isPage) ? pageParams : postParams);
+    dismissDialog(ID_DIALOG_DELETING);
+    Thread action=new Thread(){
+      public void run(){
+        Toast.makeText(viewPosts.this,getResources().getText((isPage) ? R.string.page_deleted : R.string.post_deleted),Toast.LENGTH_SHORT).show();
+      }
+    }
+;
+    this.runOnUiThread(action);
+    Thread action2=new Thread(){
+      public void run(){
+        refreshPosts();
+      }
+    }
+;
+    this.runOnUiThread(action2);
+  }
+ catch (  final XMLRPCException e) {
+    dismissDialog(ID_DIALOG_DELETING);
+    Thread action3=new Thread(){
+      public void run(){
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewPosts.this);
+        dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
+        dialogBuilder.setMessage(e.getMessage());
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        dialogBuilder.create().show();
+      }
+    }
+;
+    this.runOnUiThread(action3);
+  }
+}
