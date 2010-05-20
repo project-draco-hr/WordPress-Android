@@ -1,5 +1,5 @@
 {
-  final localDraftsDB lDraftsDB=new localDraftsDB(this);
+  final WordPressDB lDraftsDB=new WordPressDB(this);
   Vector post;
   if (isPage) {
     post=lDraftsDB.loadPageDraft(this,String.valueOf(selectedID));
@@ -60,7 +60,7 @@
     for (int i=0; i < selectedCategories.size(); i++) {
       theCategories[i]=selectedCategories.get(i).toString();
     }
-    settingsDB settingsDB=new settingsDB(this);
+    WordPressDB settingsDB=new WordPressDB(this);
     Vector settingsVector=settingsDB.loadSettings(this,id);
     String sURL="";
     if (settingsVector.get(0).toString().contains("xmlrpc.php")) {
@@ -95,6 +95,22 @@
       }
  else {
         content=content + imageContent;
+      }
+    }
+    if (!isPage) {
+      HashMap globalSettings=settingsDB.getNotificationOptions(this);
+      boolean taglineValue=false;
+      String tagline="";
+      if (globalSettings != null) {
+        if (globalSettings.get("tagline_flag").toString().equals("1")) {
+          taglineValue=true;
+        }
+        if (taglineValue) {
+          tagline=globalSettings.get("tagline").toString();
+          if (!tagline.equals("")) {
+            content+="\n\n<span style=\"font-size: 85%;\">" + tagline + "</span>\n\n";
+          }
+        }
       }
     }
     contentStruct.put("post_type",(isPage) ? "page" : "post");

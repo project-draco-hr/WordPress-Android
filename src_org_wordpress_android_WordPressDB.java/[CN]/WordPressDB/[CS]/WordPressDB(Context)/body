@@ -1,0 +1,62 @@
+{
+  db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
+  db.execSQL(CREATE_TABLE_SETTINGS);
+  db.execSQL(CREATE_TABLE_EULA);
+  db.execSQL(CREATE_TABLE_LOCALDRAFTS);
+  db.execSQL(CREATE_TABLE_LOCALPAGEDRAFTS);
+  db.execSQL(CREATE_TABLE_POSTSTORE);
+  db.execSQL(CREATE_TABLE_PAGES);
+  db.execSQL(CREATE_TABLE_COMMENTS);
+  db.execSQL(CREATE_TABLE_CATEGORIES);
+  if (db.getVersion() <= 1) {
+    try {
+      db.execSQL(ADD_BLOGID);
+      db.execSQL(UPDATE_BLOGID);
+    }
+ catch (    SQLException e) {
+      e.printStackTrace();
+    }
+    db.execSQL(ADD_SOUND_OPTION);
+    db.execSQL(ADD_VIBRATE_OPTION);
+    db.execSQL(ADD_LIGHT_OPTION);
+    db.execSQL(ADD_LOCATION_FLAG);
+    db.execSQL(ADD_LATITUDE);
+    db.execSQL(ADD_LONGITUDE);
+    db.execSQL(ADD_TAGLINE);
+    db.execSQL(ADD_TAGLINE_FLAG);
+    db.setVersion(DATABASE_VERSION);
+  }
+ else   if (db.getVersion() == 2) {
+    db.execSQL(ADD_SOUND_OPTION);
+    db.execSQL(ADD_VIBRATE_OPTION);
+    db.execSQL(ADD_LIGHT_OPTION);
+    db.execSQL(ADD_LOCATION_FLAG);
+    db.execSQL(ADD_LATITUDE);
+    db.execSQL(ADD_LONGITUDE);
+    db.execSQL(ADD_TAGLINE);
+    db.execSQL(ADD_TAGLINE_FLAG);
+    db.setVersion(DATABASE_VERSION);
+  }
+ else   if (db.getVersion() == 3) {
+    db.execSQL(ADD_LOCATION_FLAG);
+    db.execSQL(ADD_LATITUDE);
+    db.execSQL(ADD_LONGITUDE);
+    db.execSQL(ADD_TAGLINE);
+    db.execSQL(ADD_TAGLINE_FLAG);
+    db.setVersion(DATABASE_VERSION);
+  }
+  if (db.getVersion() == 4) {
+    db.execSQL(ADD_LOCATION_FLAG);
+    db.execSQL(ADD_LATITUDE);
+    db.execSQL(ADD_LONGITUDE);
+    db.execSQL(ADD_TAGLINE);
+    db.execSQL(ADD_TAGLINE_FLAG);
+    db.setVersion(DATABASE_VERSION);
+  }
+ else   if (db.getVersion() == 5) {
+    db.execSQL(ADD_TAGLINE);
+    db.execSQL(ADD_TAGLINE_FLAG);
+    db.setVersion(DATABASE_VERSION);
+  }
+  db.close();
+}
