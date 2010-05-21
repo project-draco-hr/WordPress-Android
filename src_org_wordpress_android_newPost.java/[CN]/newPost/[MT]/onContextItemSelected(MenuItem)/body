@@ -40,32 +40,7 @@ videoPickerIntent.setType("video/*");
 startActivityForResult(videoPickerIntent,6);
 return true;
 case 3:
-String vState=android.os.Environment.getExternalStorageState();
-if (!vState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newPost.this);
-dialogBuilder.setTitle(getResources().getText(R.string.sdcard_title));
-dialogBuilder.setMessage(getResources().getText(R.string.sdcard_message));
-dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-public void onClick(DialogInterface dialog,int whichButton){
-}
-}
-);
-dialogBuilder.setCancelable(true);
-dialogBuilder.create().show();
-break;
-}
-SD_CARD_TEMP_DIR=Environment.getExternalStorageDirectory() + File.separator + "wordpress"+ File.separator+ "wp-"+ System.currentTimeMillis()+ ".3gp";
 Intent takeVideoIntent=new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-takeVideoIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT,Uri.fromFile(new File(SD_CARD_TEMP_DIR)));
-File vDirectory=new File(SD_CARD_TEMP_DIR).getParentFile();
-if (!vDirectory.exists() && !vDirectory.mkdirs()) {
-try {
-throw new IOException("Path to file could not be created.");
-}
- catch (IOException e) {
-e.printStackTrace();
-}
-}
 startActivityForResult(takeVideoIntent,7);
 return true;
 }
