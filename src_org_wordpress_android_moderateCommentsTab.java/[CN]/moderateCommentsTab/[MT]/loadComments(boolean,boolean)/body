@@ -1,0 +1,120 @@
+{
+  WordPressDB postStoreDB=new WordPressDB(this);
+  String author, postID, commentID, comment, dateCreated, dateCreatedFormatted, status, authorEmail, authorURL, postTitle;
+  if (!addMore) {
+    Vector loadedPosts=postStoreDB.loadComments(moderateCommentsTab.this,id);
+    if (loadedPosts != null) {
+      HashMap countHash=new HashMap();
+      countHash=(HashMap)loadedPosts.get(0);
+      numRecords=Integer.parseInt(countHash.get("numRecords").toString());
+      if (refreshOnly) {
+        model.clear();
+      }
+ else {
+        model=new ArrayList<CommentEntry>();
+      }
+      checkedComments=new Vector();
+      for (int i=1; i < loadedPosts.size(); i++) {
+        checkedComments.add(i - 1,"false");
+        HashMap contentHash=(HashMap)loadedPosts.get(i);
+        allComments.put(contentHash.get("commentID").toString(),contentHash);
+        author=escapeUtils.unescapeHtml(contentHash.get("author").toString());
+        commentID=contentHash.get("commentID").toString();
+        postID=contentHash.get("postID").toString();
+        comment=escapeUtils.unescapeHtml(contentHash.get("comment").toString());
+        dateCreated=contentHash.get("commentDate").toString();
+        dateCreatedFormatted=contentHash.get("commentDateFormatted").toString();
+        status=contentHash.get("status").toString();
+        authorEmail=escapeUtils.unescapeHtml(contentHash.get("email").toString());
+        authorURL=escapeUtils.unescapeHtml(contentHash.get("url").toString());
+        postTitle=escapeUtils.unescapeHtml(contentHash.get("postTitle").toString());
+        model.add(new CommentEntry(postID,commentID,author,dateCreatedFormatted,comment,status,postTitle,authorURL,authorEmail,URI.create("http://gravatar.com/avatar/" + getMd5Hash(authorEmail.trim()) + "?s=60&d=identicon")));
+      }
+      if (!refreshOnly) {
+        try {
+          ThumbnailBus bus=new ThumbnailBus();
+          thumbs=new ThumbnailAdapter(this,new CommentAdapter(),new SimpleWebImageCache<ThumbnailBus,ThumbnailMessage>(null,null,101,bus),IMAGE_IDS);
+        }
+ catch (        Exception e1) {
+          e1.printStackTrace();
+        }
+        ListView listView=(ListView)findViewById(android.R.id.list);
+        listView.removeFooterView(switcher);
+        listView.addFooterView(switcher);
+        setListAdapter(thumbs);
+        listView.setOnItemClickListener(new OnItemClickListener(){
+          public void onNothingSelected(          AdapterView<?> arg0){
+          }
+          public void onItemClick(          AdapterView<?> arg0,          View arg1,          int position,          long arg3){
+            Intent intent=new Intent(moderateCommentsTab.this,viewComment.class);
+            intent.putExtra("id",id);
+            intent.putExtra("accountName",accountName);
+            intent.putExtra("comment",model.get((int)arg3).comment);
+            intent.putExtra("name",model.get((int)arg3).name);
+            intent.putExtra("email",model.get((int)arg3).authorEmail);
+            intent.putExtra("url",model.get((int)arg3).authorURL);
+            intent.putExtra("date",model.get((int)arg3).dateCreatedFormatted);
+            intent.putExtra("status",model.get((int)arg3).status);
+            intent.putExtra("comment_id",model.get((int)arg3).commentID);
+            intent.putExtra("post_id",model.get((int)arg3).postID);
+            intent.putExtra("position",position);
+            startActivityForResult(intent,1);
+          }
+        }
+);
+        listView.setOnCreateContextMenuListener(new OnCreateContextMenuListener(){
+          public void onCreateContextMenu(          ContextMenu menu,          View v,          ContextMenuInfo menuInfo){
+            AdapterView.AdapterContextMenuInfo info;
+            try {
+              info=(AdapterView.AdapterContextMenuInfo)menuInfo;
+            }
+ catch (            ClassCastException e) {
+              return;
+            }
+            selectedID=info.targetView.getId();
+            rowID=info.position;
+            selectedPostID=model.get(info.position).postID;
+            menu.setHeaderTitle(getResources().getText(R.string.comment_actions));
+            menu.add(0,0,0,getResources().getText(R.string.mark_approved));
+            menu.add(0,1,0,getResources().getText(R.string.mark_unapproved));
+            menu.add(0,2,0,getResources().getText(R.string.mark_spam));
+            menu.add(0,3,0,getResources().getText(R.string.reply));
+            menu.add(0,4,0,getResources().getText(R.string.delete));
+          }
+        }
+);
+      }
+ else {
+        thumbs.notifyDataSetChanged();
+      }
+      return true;
+    }
+ else {
+      return false;
+    }
+  }
+ else {
+    Vector latestComments=postStoreDB.loadMoreComments(moderateCommentsTab.this,id,commentsToLoad);
+    if (latestComments != null) {
+      numRecords+=latestComments.size();
+      Toast.makeText(this,"numRecords is now " + numRecords,Toast.LENGTH_LONG).show();
+      for (int i=latestComments.size(); i > 0; i--) {
+        HashMap contentHash=(HashMap)latestComments.get(i - 1);
+        allComments.put(contentHash.get("commentID").toString(),contentHash);
+        author=escapeUtils.unescapeHtml(contentHash.get("author").toString());
+        commentID=contentHash.get("commentID").toString();
+        postID=contentHash.get("postID").toString();
+        comment=escapeUtils.unescapeHtml(contentHash.get("comment").toString());
+        dateCreated=contentHash.get("commentDate").toString();
+        dateCreatedFormatted=contentHash.get("commentDateFormatted").toString();
+        status=contentHash.get("status").toString();
+        authorEmail=escapeUtils.unescapeHtml(contentHash.get("email").toString());
+        authorURL=escapeUtils.unescapeHtml(contentHash.get("url").toString());
+        postTitle=escapeUtils.unescapeHtml(contentHash.get("postTitle").toString());
+        model.add(new CommentEntry(postID,commentID,author,dateCreatedFormatted,comment,status,postTitle,authorURL,authorEmail,URI.create("http://gravatar.com/avatar/" + getMd5Hash(authorEmail.trim()) + "?s=60&d=identicon")));
+      }
+      thumbs.notifyDataSetChanged();
+    }
+    return true;
+  }
+}

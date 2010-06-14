@@ -1,0 +1,81 @@
+{
+  String sSelCommentID=String.valueOf(selCommentID);
+  ListView lv=getListView();
+  CommentEntry ce=(CommentEntry)lv.getItemAtPosition(position);
+  Vector settings=new Vector();
+  WordPressDB settingsDB=new WordPressDB(moderateCommentsTab.this);
+  settings=settingsDB.loadSettings(moderateCommentsTab.this,id);
+  String sURL="";
+  if (settings.get(0).toString().contains("xmlrpc.php")) {
+    sURL=settings.get(0).toString();
+  }
+ else {
+    sURL=settings.get(0).toString() + "xmlrpc.php";
+  }
+  String sUsername=settings.get(2).toString();
+  String sPassword=settings.get(3).toString();
+  int sBlogId=Integer.parseInt(settings.get(10).toString());
+  client=new XMLRPCClient(sURL);
+  HashMap contentHash, postHash=new HashMap();
+  contentHash=(HashMap)allComments.get(sSelCommentID);
+  postHash.put("status",newStatus);
+  Date d=new Date();
+  SimpleDateFormat sdf=new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
+  String cDate=contentHash.get("commentDate").toString().replace("America/Los_Angeles","PST");
+  try {
+    d=sdf.parse(cDate);
+  }
+ catch (  ParseException pe) {
+    pe.printStackTrace();
+  }
+  postHash.put("date_created_gmt",d);
+  postHash.put("content",contentHash.get("comment"));
+  postHash.put("author",contentHash.get("author"));
+  postHash.put("author_url",contentHash.get("url"));
+  postHash.put("author_email",contentHash.get("email"));
+  Object[] params={sBlogId,sUsername,sPassword,sSelCommentID,postHash};
+  Object result=null;
+  try {
+    result=(Object)client.call("wp.editComment",params);
+    boolean bResult=Boolean.parseBoolean(result.toString());
+    if (bResult) {
+      ce.status=newStatus;
+      model.set(position,ce);
+      settingsDB.updateCommentStatus(moderateCommentsTab.this,id,ce.commentID,newStatus);
+    }
+    dismissDialog(ID_DIALOG_MODERATING);
+    Thread action=new Thread(){
+      public void run(){
+        Toast.makeText(moderateCommentsTab.this,getResources().getText(R.string.comment_moderated),Toast.LENGTH_SHORT).show();
+      }
+    }
+;
+    this.runOnUiThread(action);
+    Thread action2=new Thread(){
+      public void run(){
+        thumbs.notifyDataSetChanged();
+      }
+    }
+;
+    this.runOnUiThread(action2);
+  }
+ catch (  final XMLRPCException e) {
+    dismissDialog(ID_DIALOG_MODERATING);
+    Thread action3=new Thread(){
+      public void run(){
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(moderateCommentsTab.this);
+        dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
+        dialogBuilder.setMessage(e.getMessage());
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        dialogBuilder.create().show();
+      }
+    }
+;
+    this.runOnUiThread(action3);
+  }
+}

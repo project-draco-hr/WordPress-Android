@@ -24,14 +24,15 @@ if (resultCode == RESULT_OK) {
   String comment_id;
   final String action;
   comment_id=extras.getString("comment_id");
+  final int position=extras.getInt("position");
   action=extras.getString("action");
   if (action.equals("approve") || action.equals("hold") || action.equals("spam")) {
     final int commentID=Integer.parseInt(comment_id);
-    showDialog(ID_DIALOG_POSTING);
+    showDialog(ID_DIALOG_MODERATING);
     new Thread(){
       public void run(){
         Looper.prepare();
-        changeCommentStatus(action,commentID);
+        changeCommentStatus(action,commentID,position);
       }
     }
 .start();

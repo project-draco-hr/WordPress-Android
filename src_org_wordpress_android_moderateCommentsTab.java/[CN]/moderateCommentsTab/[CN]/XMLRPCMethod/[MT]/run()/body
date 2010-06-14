@@ -1,8 +1,15 @@
 {
   try {
-    final long t0=System.currentTimeMillis();
+    HashMap countResult=new HashMap();
+    Object[] countParams={sBlogId,sUsername,sPassword,0};
+    try {
+      countResult=(HashMap)client.call("wp.getCommentCount",countParams);
+      totalComments=Integer.valueOf(countResult.get("awaiting_moderation").toString()) + Integer.valueOf(countResult.get("approved").toString());
+    }
+ catch (    XMLRPCException e) {
+      e.printStackTrace();
+    }
     final Object[] result=(Object[])client.call(method,params);
-    final long t1=System.currentTimeMillis();
     handler.post(new Runnable(){
       public void run(){
         callBack.callFinished(result);

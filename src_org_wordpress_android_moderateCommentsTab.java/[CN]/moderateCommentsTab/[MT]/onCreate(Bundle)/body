@@ -9,20 +9,90 @@
     pd=new ProgressDialog(this);
     fromNotification=extras.getBoolean("fromNotification",false);
   }
+  switcher=new ViewSwitcher(this);
+  Button footer=(Button)View.inflate(this,R.layout.list_footer_btn,null);
+  footer.setText(getResources().getText(R.string.load_more) + " " + getResources().getText(R.string.tab_comments));
+  View progress=View.inflate(this,R.layout.list_footer_progress,null);
+  switcher.addView(footer);
+  switcher.addView(progress);
   if (fromNotification) {
     NotificationManager nm=(NotificationManager)getSystemService(NOTIFICATION_SERVICE);
     nm.cancel(22 + Integer.valueOf(id));
-    refreshComments();
+    refreshComments(false,false,false);
   }
   this.setTitle(accountName + " - Moderate Comments");
-  boolean loadedComments=loadComments();
+  boolean loadedComments=loadComments(false,false);
   if (!loadedComments) {
-    refreshComments();
+    refreshComments(false,false,false);
   }
   final ImageButton refresh=(ImageButton)findViewById(R.id.refreshComments);
   refresh.setOnClickListener(new ImageButton.OnClickListener(){
     public void onClick(    View v){
-      refreshComments();
+      refreshComments(false,true,false);
+    }
+  }
+);
+  Button bulkEdit=(Button)findViewById(R.id.bulkEdit);
+  bulkEdit.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      inModeration=!inModeration;
+      showOrHideBulkCheckBoxes();
+    }
+  }
+);
+  ImageButton deleteComments=(ImageButton)findViewById(R.id.deleteComment);
+  deleteComments.setOnClickListener(new ImageButton.OnClickListener(){
+    public void onClick(    View v){
+      showDialog(ID_DIALOG_DELETING);
+      new Thread(){
+        public void run(){
+          Looper.prepare();
+          deleteComments();
+        }
+      }
+.start();
+    }
+  }
+);
+  Button approveComments=(Button)findViewById(R.id.approveComment);
+  approveComments.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      showDialog(ID_DIALOG_MODERATING);
+      new Thread(){
+        public void run(){
+          Looper.prepare();
+          moderateComments("approve");
+        }
+      }
+.start();
+    }
+  }
+);
+  Button unapproveComments=(Button)findViewById(R.id.unapproveComment);
+  unapproveComments.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      showDialog(ID_DIALOG_MODERATING);
+      new Thread(){
+        public void run(){
+          Looper.prepare();
+          moderateComments("hold");
+        }
+      }
+.start();
+    }
+  }
+);
+  Button spamComments=(Button)findViewById(R.id.markSpam);
+  spamComments.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      showDialog(ID_DIALOG_MODERATING);
+      new Thread(){
+        public void run(){
+          Looper.prepare();
+          moderateComments("spam");
+        }
+      }
+.start();
     }
   }
 );

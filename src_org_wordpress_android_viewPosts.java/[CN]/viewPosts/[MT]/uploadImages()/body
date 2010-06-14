@@ -83,8 +83,14 @@
               yRes=resx[1];
             }
  else {
-              xRes="720";
-              yRes="480";
+              if (!sMaxImageWidth.equals("Original Size")) {
+                xRes=sMaxImageWidth;
+                yRes=String.valueOf(Math.round(Integer.valueOf(sMaxImageWidth) * 0.75));
+              }
+ else {
+                xRes="640";
+                yRes="480";
+              }
             }
           }
         }
@@ -116,7 +122,7 @@
           resultURL=contentHash.get("videopress_shortcode").toString() + "\n";
         }
  else {
-          resultURL="<object classid=\"clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B\" width=\"" + xRes + "\" height=\""+ (Integer.valueOf(yRes) + 16)+ "\" codebase=\"http://www.apple.com/qtactivex/qtplugin.cab\"><param name=\"src\" value=\""+ resultURL+ "\" /><param name=\"autoplay\" value=\"false\" /><param name=\"controller\" value=\"true\" /><object type=\"video/quicktime\" data=\""+ resultURL+ "\" width=\""+ xRes+ "\" height=\""+ (Integer.valueOf(yRes) + 16)+ "\"><param name=\"autoplay\" value=\"false\" /><param name=\"controller\" value=\"true\" /></object></object>\n";
+          resultURL="<object classid=\"clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B\" width=\"" + xRes + "\" height=\""+ (Integer.valueOf(yRes) + 16)+ "\" codebase=\"http://www.apple.com/qtactivex/qtplugin.cab\"><param name=\"scale\" value=\"aspect\"><param name=\"src\" value=\""+ resultURL+ "\" /><param name=\"autoplay\" value=\"false\" /><param name=\"controller\" value=\"true\" /><object type=\"video/quicktime\" data=\""+ resultURL+ "\" width=\""+ xRes+ "\" height=\""+ (Integer.valueOf(yRes) + 16)+ "\"><param name=\"scale\" value=\"aspect\"><param name=\"autoplay\" value=\"false\" /><param name=\"controller\" value=\"true\" /></object></object>\n";
         }
         content=content + resultURL;
       }

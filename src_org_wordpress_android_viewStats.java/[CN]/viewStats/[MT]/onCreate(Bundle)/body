@@ -1,0 +1,59 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.view_stats);
+  Bundle extras=getIntent().getExtras();
+  if (extras != null) {
+    id=extras.getString("id");
+  }
+  initStats();
+  Button saveStatsLogin=(Button)findViewById(R.id.saveDotcom);
+  saveStatsLogin.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      EditText dotcomUsername=(EditText)findViewById(R.id.dotcomUsername);
+      EditText dotcomPassword=(EditText)findViewById(R.id.dotcomPassword);
+      String dcUsername=dotcomUsername.getText().toString();
+      String dcPassword=dotcomPassword.getText().toString();
+      if (dcUsername.equals("") || dcPassword.equals("")) {
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewStats.this);
+        dialogBuilder.setTitle(getResources().getText(R.string.error));
+        dialogBuilder.setMessage("Username and Password are required fields.");
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        dialogBuilder.create().show();
+      }
+ else {
+        WordPressDB settingsDB=new WordPressDB(viewStats.this);
+        settingsDB.saveStatsLogin(viewStats.this,id,dcUsername,dcPassword);
+        showOrHideLoginForm();
+        initStats();
+      }
+    }
+  }
+);
+  Button go=(Button)findViewById(R.id.go);
+  go.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      Spinner reportType=(Spinner)findViewById(R.id.reportType);
+      Spinner reportInterval=(Spinner)findViewById(R.id.reportInterval);
+      final String type=parseType(reportType.getSelectedItemPosition());
+      final int interval=parseInterval(reportInterval.getSelectedItemPosition());
+      WordPressDB settingsDB=new WordPressDB(viewStats.this);
+      Vector apiData=settingsDB.loadAPIData(viewStats.this,id);
+      final String apiKey=apiData.get(0).toString();
+      final String apiBlogID=apiData.get(1).toString();
+      showDialog(ID_DIALOG_GET_STATS);
+      Thread action=new Thread(){
+        public void run(){
+          getStatsData(apiKey,apiBlogID,type,interval);
+        }
+      }
+;
+      action.start();
+    }
+  }
+);
+}

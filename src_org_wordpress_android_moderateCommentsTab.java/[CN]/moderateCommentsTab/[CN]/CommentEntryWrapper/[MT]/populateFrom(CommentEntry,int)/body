@@ -1,0 +1,50 @@
+{
+  getName().setText(s.name);
+  String fEmailURL=s.authorURL;
+  if (fEmailURL == "") {
+    fEmailURL=s.emailURL;
+  }
+  getEmailURL().setText(fEmailURL);
+  getComment().setText(s.comment);
+  getPostTitle().setText(getResources().getText(R.string.on) + " " + s.postTitle);
+  row.setId(Integer.valueOf(s.commentID));
+  String prettyComment, textColor="";
+  if (s.status.equals("spam")) {
+    prettyComment=getResources().getText(R.string.spam).toString();
+    textColor="#FF0000";
+  }
+ else   if (s.status.equals("hold")) {
+    prettyComment=getResources().getText(R.string.unapproved).toString();
+    textColor="#D54E21";
+  }
+ else {
+    prettyComment=getResources().getText(R.string.approved).toString();
+    textColor="#006505";
+  }
+  if (inModeration) {
+    getBulkEditGroup().setVisibility(View.VISIBLE);
+  }
+ else {
+    getBulkEditGroup().setVisibility(View.GONE);
+  }
+  getStatus().setText(prettyComment);
+  getStatus().setTextColor(Color.parseColor(textColor));
+  getBulkCheck().setChecked(Boolean.parseBoolean(checkedComments.get(position).toString()));
+  getBulkCheck().setTag(position);
+  getBulkCheck().setOnClickListener(new OnClickListener(){
+    public void onClick(    View arg0){
+      checkedComments.set(position,String.valueOf(getBulkCheck().isChecked()));
+      showOrHideModerateButtons();
+    }
+  }
+);
+  if (s.profileImageUrl != null) {
+    try {
+      getAvatar().setImageResource(R.drawable.placeholder);
+      getAvatar().setTag(s.profileImageUrl.toString());
+    }
+ catch (    Throwable t) {
+      goBlooey(t);
+    }
+  }
+}
