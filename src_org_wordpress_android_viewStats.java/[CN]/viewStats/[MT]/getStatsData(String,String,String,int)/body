@@ -3,7 +3,19 @@
   String DATE_FORMAT="yyyy-MM-dd";
   SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT);
   Calendar c1=Calendar.getInstance();
-  String uriString="http://stats.wordpress.com/csv.php" + "?api_key=" + apiKey + "&blog_id="+ blogID+ "&format=xml&table="+ reportType+ "&end="+ sdf.format(c1.getTime())+ "&days="+ interval+ "&limit=-1";
+  String period="";
+  if (interval == 90) {
+    period="&period=week";
+    interval=12;
+  }
+ else   if (interval == 365) {
+    period="&period=month";
+    interval=11;
+  }
+ else   if (interval == -1) {
+    period="&period=month";
+  }
+  String uriString="http://stats.wordpress.com/csv.php" + "?api_key=" + apiKey + "&blog_id="+ blogID+ "&format=xml&table="+ reportType+ "&end="+ sdf.format(c1.getTime())+ "&days="+ interval+ "&limit=-1"+ period;
   if (!reportType.equals("views")) {
     uriString+="&summarize";
   }

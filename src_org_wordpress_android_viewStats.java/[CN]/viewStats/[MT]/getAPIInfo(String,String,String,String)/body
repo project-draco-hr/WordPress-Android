@@ -6,6 +6,10 @@
   try {
     response=client.execute(postMethod);
     Log.i("WordPress","response = " + response.getStatusLine());
+    int statusCode=response.getStatusLine().getStatusCode();
+    if (statusCode != HttpStatus.SC_OK) {
+      throw new IOException("HTTP status code: " + statusCode + " was returned. "+ response.getStatusLine().getReasonPhrase());
+    }
     try {
       XmlPullParser pullParser=XmlPullParserFactory.newInstance().newPullParser();
       HttpEntity entity=response.getEntity();

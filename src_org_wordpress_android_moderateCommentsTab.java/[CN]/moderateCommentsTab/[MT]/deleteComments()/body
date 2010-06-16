@@ -23,21 +23,38 @@
         result=(Object)client.call("wp.deleteComment",params);
       }
  catch (      final XMLRPCException e) {
+        moderateErrorMsg=e.getMessage();
       }
     }
   }
   dismissDialog(ID_DIALOG_DELETING);
   Thread action=new Thread(){
     public void run(){
-      Toast.makeText(moderateCommentsTab.this,getResources().getText(R.string.comment_moderated),Toast.LENGTH_SHORT).show();
+      if (moderateErrorMsg == "") {
+        Toast.makeText(moderateCommentsTab.this,getResources().getText(R.string.comment_moderated),Toast.LENGTH_SHORT).show();
+      }
+ else {
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(moderateCommentsTab.this);
+        dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
+        dialogBuilder.setMessage(moderateErrorMsg);
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        dialogBuilder.create().show();
+      }
     }
   }
 ;
   this.runOnUiThread(action);
   Thread action2=new Thread(){
     public void run(){
-      pd=new ProgressDialog(moderateCommentsTab.this);
-      refreshComments(false,true,true);
+      if (moderateErrorMsg == "") {
+        pd=new ProgressDialog(moderateCommentsTab.this);
+        refreshComments(false,true,true);
+      }
     }
   }
 ;
