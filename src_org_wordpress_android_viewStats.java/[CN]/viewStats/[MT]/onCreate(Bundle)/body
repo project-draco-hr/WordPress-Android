@@ -4,6 +4,7 @@
   Bundle extras=getIntent().getExtras();
   if (extras != null) {
     id=extras.getString("id");
+    accountName=extras.getString("accountName");
   }
   initStats();
   Button saveStatsLogin=(Button)findViewById(R.id.saveDotcom);
@@ -15,8 +16,8 @@
       String dcPassword=dotcomPassword.getText().toString();
       if (dcUsername.equals("") || dcPassword.equals("")) {
         AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewStats.this);
-        dialogBuilder.setTitle(getResources().getText(R.string.error));
-        dialogBuilder.setMessage("Username and Password are required fields.");
+        dialogBuilder.setTitle(getResources().getText(R.string.required_fields));
+        dialogBuilder.setMessage(getResources().getText(R.string.username_password_required));
         dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
           public void onClick(          DialogInterface dialog,          int whichButton){
           }
@@ -53,6 +54,15 @@
       }
 ;
       action.start();
+    }
+  }
+);
+  TextView wpcomHelp=(TextView)findViewById(R.id.wpcomHelp);
+  wpcomHelp.setOnClickListener(new TextView.OnClickListener(){
+    public void onClick(    View v){
+      Intent intent1=new Intent(Intent.ACTION_VIEW);
+      intent1.setData(Uri.parse("http://en.support.wordpress.com/stats/"));
+      startActivity(intent1);
     }
   }
 );
