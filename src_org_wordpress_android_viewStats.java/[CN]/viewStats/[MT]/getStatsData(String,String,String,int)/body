@@ -24,7 +24,6 @@
   try {
     HttpResponse response;
     response=client.execute(postMethod);
-    Log.i("WordPress","response = " + response.getStatusLine());
     XmlPullParser pullParser=XmlPullParserFactory.newInstance().newPullParser();
     HttpEntity entity=response.getEntity();
     PushbackInputStream is=new PushbackInputStream(entity.getContent());
@@ -259,7 +258,7 @@ catch (            IOException e) {
       this.runOnUiThread(uiThread);
     }
  else {
-      Thread alertDialog=new Thread(){
+      Thread alert=new Thread(){
         public void run(){
           dismissDialog(ID_DIALOG_GET_STATS);
           RelativeLayout filters=(RelativeLayout)findViewById(R.id.filters);
@@ -268,19 +267,41 @@ catch (            IOException e) {
         }
       }
 ;
-      this.runOnUiThread(alertDialog);
+      this.runOnUiThread(alert);
     }
   }
  catch (  ClientProtocolException e) {
     dismissDialog(ID_DIALOG_GET_STATS);
+    errorMsg=e.getMessage();
   }
 catch (  IllegalStateException e) {
     dismissDialog(ID_DIALOG_GET_STATS);
+    errorMsg=e.getMessage();
   }
 catch (  IOException e) {
     dismissDialog(ID_DIALOG_GET_STATS);
+    errorMsg=e.getMessage();
   }
 catch (  XmlPullParserException e) {
     dismissDialog(ID_DIALOG_GET_STATS);
+    errorMsg=e.getMessage();
+  }
+  if (errorMsg != "") {
+    Thread error=new Thread(){
+      public void run(){
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewStats.this);
+        dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
+        dialogBuilder.setMessage(errorMsg);
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        dialogBuilder.create().show();
+      }
+    }
+;
+    this.runOnUiThread(error);
   }
 }

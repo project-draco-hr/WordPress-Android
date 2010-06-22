@@ -180,37 +180,96 @@
     }
   }
 );
-  final Button boldButton=(Button)findViewById(R.id.bold);
+  final EditText contentEdit=(EditText)findViewById(R.id.content);
+  contentEdit.addTextChangedListener(new TextWatcher(){
+    public void afterTextChanged(    Editable s){
+      ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
+      ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
+      ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
+      ToggleButton underlineButton=(ToggleButton)findViewById(R.id.underline);
+      ToggleButton strikeButton=(ToggleButton)findViewById(R.id.strike);
+      int position=Selection.getSelectionStart(contentEdit.getText());
+      if (position < 0) {
+        position=0;
+      }
+      if (position > 0) {
+        if (styleStart > position) {
+          styleStart=position - 1;
+        }
+        if (boldButton.isChecked()) {
+          StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
+          for (int i=0; i < ss.length; i++) {
+            if (ss[i].getStyle() == android.graphics.Typeface.BOLD) {
+              s.removeSpan(ss[i]);
+            }
+          }
+          s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        if (emButton.isChecked()) {
+          StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
+          boolean exists=false;
+          for (int i=0; i < ss.length; i++) {
+            if (ss[i].getStyle() == android.graphics.Typeface.ITALIC) {
+              s.removeSpan(ss[i]);
+            }
+          }
+          s.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        if (bquoteButton.isChecked()) {
+          QuoteSpan[] ss=s.getSpans(styleStart,position,QuoteSpan.class);
+          for (int i=0; i < ss.length; i++) {
+            s.removeSpan(ss[i]);
+          }
+          s.setSpan(new QuoteSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        if (underlineButton.isChecked()) {
+          UnderlineSpan[] ss=s.getSpans(styleStart,position,UnderlineSpan.class);
+          for (int i=0; i < ss.length; i++) {
+            s.removeSpan(ss[i]);
+          }
+          s.setSpan(new UnderlineSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        if (strikeButton.isChecked()) {
+          StrikethroughSpan[] ss=s.getSpans(styleStart,position,StrikethroughSpan.class);
+          for (int i=0; i < ss.length; i++) {
+            s.removeSpan(ss[i]);
+          }
+          s.setSpan(new StrikethroughSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+      }
+    }
+    public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
+    }
+    public void onTextChanged(    CharSequence s,    int start,    int before,    int count){
+    }
+  }
+);
+  final ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
   boldButton.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
-      TextView contentText=(TextView)findViewById(R.id.content);
+      EditText contentText=(EditText)findViewById(R.id.content);
       int selectionStart=contentText.getSelectionStart();
+      styleStart=selectionStart;
       int selectionEnd=contentText.getSelectionEnd();
       if (selectionStart > selectionEnd) {
         int temp=selectionEnd;
         selectionEnd=selectionStart;
         selectionStart=temp;
       }
-      if (selectionStart == -1 || selectionStart == contentText.getText().toString().length() || (selectionStart == selectionEnd)) {
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newPost.this);
-        dialogBuilder.setTitle(getResources().getText(R.string.no_text_selected));
-        dialogBuilder.setMessage(getResources().getText(R.string.select_text_to_bold) + " " + getResources().getText(R.string.howto_select_text));
-        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-          public void onClick(          DialogInterface dialog,          int whichButton){
+      if (selectionEnd > selectionStart) {
+        Spannable str=contentText.getText();
+        StyleSpan[] ss=str.getSpans(selectionStart,selectionEnd,StyleSpan.class);
+        boolean exists=false;
+        for (int i=0; i < ss.length; i++) {
+          if (ss[i].getStyle() == android.graphics.Typeface.BOLD) {
+            str.removeSpan(ss[i]);
+            exists=true;
           }
         }
-);
-        dialogBuilder.setCancelable(true);
-        dialogBuilder.create().show();
-      }
- else {
-        String textToBold=contentText.getText().toString().substring(selectionStart,selectionEnd);
-        textToBold="<strong>" + textToBold + "</strong>";
-        String firstHalf=contentText.getText().toString().substring(0,selectionStart);
-        String lastHalf=contentText.getText().toString().substring(selectionEnd,contentText.getText().toString().length());
-        contentText.setText(firstHalf + textToBold + lastHalf);
-        Editable etext=(Editable)contentText.getText();
-        Selection.setSelection(etext,selectionStart + textToBold.length());
+        if (!exists) {
+          str.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),selectionStart,selectionEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        boldButton.setChecked(false);
       }
     }
   }
@@ -220,6 +279,7 @@
     public void onClick(    View v){
       TextView contentText=(TextView)findViewById(R.id.content);
       int selectionStart=contentText.getSelectionStart();
+      styleStart=selectionStart;
       int selectionEnd=contentText.getSelectionEnd();
       if (selectionStart > selectionEnd) {
         int temp=selectionEnd;
@@ -245,72 +305,116 @@
     }
   }
 );
-  final Button emButton=(Button)findViewById(R.id.em);
+  final ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
   emButton.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
-      TextView contentText=(TextView)findViewById(R.id.content);
+      EditText contentText=(EditText)findViewById(R.id.content);
       int selectionStart=contentText.getSelectionStart();
+      styleStart=selectionStart;
       int selectionEnd=contentText.getSelectionEnd();
       if (selectionStart > selectionEnd) {
         int temp=selectionEnd;
         selectionEnd=selectionStart;
         selectionStart=temp;
       }
-      if (selectionStart == -1 || selectionStart == contentText.getText().toString().length() || (selectionStart == selectionEnd)) {
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newPost.this);
-        dialogBuilder.setTitle(getResources().getText(R.string.no_text_selected));
-        dialogBuilder.setMessage(getResources().getText(R.string.select_text_to_emphasize) + " " + getResources().getText(R.string.howto_select_text));
-        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-          public void onClick(          DialogInterface dialog,          int whichButton){
+      if (selectionEnd > selectionStart) {
+        Spannable str=contentText.getText();
+        StyleSpan[] ss=str.getSpans(selectionStart,selectionEnd,StyleSpan.class);
+        boolean exists=false;
+        for (int i=0; i < ss.length; i++) {
+          if (ss[i].getStyle() == android.graphics.Typeface.ITALIC) {
+            str.removeSpan(ss[i]);
+            exists=true;
           }
         }
-);
-        dialogBuilder.setCancelable(true);
-        dialogBuilder.create().show();
-      }
- else {
-        String textToBold=contentText.getText().toString().substring(selectionStart,selectionEnd);
-        textToBold="<em>" + textToBold + "</em>";
-        String firstHalf=contentText.getText().toString().substring(0,selectionStart);
-        String lastHalf=contentText.getText().toString().substring(selectionEnd,contentText.getText().toString().length());
-        contentText.setText(firstHalf + textToBold + lastHalf);
-        Editable etext=(Editable)contentText.getText();
-        Selection.setSelection(etext,selectionStart + textToBold.length());
+        if (!exists) {
+          str.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),selectionStart,selectionEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        emButton.setChecked(false);
       }
     }
   }
 );
-  final Button bquoteButton=(Button)findViewById(R.id.bquote);
-  bquoteButton.setOnClickListener(new Button.OnClickListener(){
+  final ToggleButton underlineButton=(ToggleButton)findViewById(R.id.underline);
+  underlineButton.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
-      TextView contentText=(TextView)findViewById(R.id.content);
+      EditText contentText=(EditText)findViewById(R.id.content);
       int selectionStart=contentText.getSelectionStart();
+      styleStart=selectionStart;
       int selectionEnd=contentText.getSelectionEnd();
       if (selectionStart > selectionEnd) {
         int temp=selectionEnd;
         selectionEnd=selectionStart;
         selectionStart=temp;
       }
-      if (selectionStart == -1 || selectionStart == contentText.getText().toString().length() || (selectionStart == selectionEnd)) {
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newPost.this);
-        dialogBuilder.setTitle(getResources().getText(R.string.no_text_selected));
-        dialogBuilder.setMessage(getResources().getText(R.string.select_text_to_blockquote) + " " + getResources().getText(R.string.howto_select_text));
-        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-          public void onClick(          DialogInterface dialog,          int whichButton){
-          }
+      if (selectionEnd > selectionStart) {
+        Spannable str=contentText.getText();
+        UnderlineSpan[] ss=str.getSpans(selectionStart,selectionEnd,UnderlineSpan.class);
+        boolean exists=false;
+        for (int i=0; i < ss.length; i++) {
+          str.removeSpan(ss[i]);
+          exists=true;
         }
-);
-        dialogBuilder.setCancelable(true);
-        dialogBuilder.create().show();
+        if (!exists) {
+          str.setSpan(new UnderlineSpan(),selectionStart,selectionEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        underlineButton.setChecked(false);
       }
- else {
-        String textToBold=contentText.getText().toString().substring(selectionStart,selectionEnd);
-        textToBold="<blockquote>" + textToBold + "</blockquote>";
-        String firstHalf=contentText.getText().toString().substring(0,selectionStart);
-        String lastHalf=contentText.getText().toString().substring(selectionEnd,contentText.getText().toString().length());
-        contentText.setText(firstHalf + textToBold + lastHalf);
-        Editable etext=(Editable)contentText.getText();
-        Selection.setSelection(etext,selectionStart + textToBold.length());
+    }
+  }
+);
+  final ToggleButton strikeButton=(ToggleButton)findViewById(R.id.strike);
+  strikeButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      EditText contentText=(EditText)findViewById(R.id.content);
+      int selectionStart=contentText.getSelectionStart();
+      styleStart=selectionStart;
+      int selectionEnd=contentText.getSelectionEnd();
+      if (selectionStart > selectionEnd) {
+        int temp=selectionEnd;
+        selectionEnd=selectionStart;
+        selectionStart=temp;
+      }
+      if (selectionEnd > selectionStart) {
+        Spannable str=contentText.getText();
+        StrikethroughSpan[] ss=str.getSpans(selectionStart,selectionEnd,StrikethroughSpan.class);
+        boolean exists=false;
+        for (int i=0; i < ss.length; i++) {
+          str.removeSpan(ss[i]);
+          exists=true;
+        }
+        if (!exists) {
+          str.setSpan(new StrikethroughSpan(),selectionStart,selectionEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        strikeButton.setChecked(false);
+      }
+    }
+  }
+);
+  final ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
+  bquoteButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      EditText contentText=(EditText)findViewById(R.id.content);
+      int selectionStart=contentText.getSelectionStart();
+      styleStart=selectionStart;
+      int selectionEnd=contentText.getSelectionEnd();
+      if (selectionStart > selectionEnd) {
+        int temp=selectionEnd;
+        selectionEnd=selectionStart;
+        selectionStart=temp;
+      }
+      if (selectionEnd > selectionStart) {
+        Spannable str=contentText.getText();
+        QuoteSpan[] ss=str.getSpans(selectionStart,selectionEnd,QuoteSpan.class);
+        boolean exists=false;
+        for (int i=0; i < ss.length; i++) {
+          str.removeSpan(ss[i]);
+          exists=true;
+        }
+        if (!exists) {
+          str.setSpan(new QuoteSpan(),selectionStart,selectionEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        strikeButton.setChecked(false);
       }
     }
   }
