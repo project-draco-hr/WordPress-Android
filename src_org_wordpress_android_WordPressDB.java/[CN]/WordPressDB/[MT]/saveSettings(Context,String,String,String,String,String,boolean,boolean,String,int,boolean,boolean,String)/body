@@ -11,6 +11,12 @@
   values.put("maxImageWidthId",maxImageWidthId);
   values.put("location",location);
   boolean returnValue=db.update(SETTINGS_TABLE,values,"id=" + id,null) > 0;
+  if (isWPCom) {
+    ContentValues userPass=new ContentValues();
+    userPass.put("username",username);
+    userPass.put("password",password);
+    boolean userPassUpdate=db.update(SETTINGS_TABLE,userPass,"username=\"" + originalUsername + "\" AND dotcomFlag=1",null) > 0;
+  }
   db.close();
   return (returnValue);
 }

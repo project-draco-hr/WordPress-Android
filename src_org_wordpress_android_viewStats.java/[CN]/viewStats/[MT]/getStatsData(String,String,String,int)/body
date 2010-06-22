@@ -209,7 +209,7 @@ catch (            IOException e) {
               tl.addView(tr);
             }
           }
- else           if (reportType.equals("referrers") || reportType.equals("searchterms")) {
+ else           if (reportType.equals("referrers") || reportType.equals("searchterms") || reportType.equals("clicks")) {
             iv.setVisibility(View.GONE);
             Object[] key=numDataSet.toArray();
             Arrays.sort(key);
@@ -222,9 +222,13 @@ catch (            IOException e) {
               col_1.setText(getResources().getText(R.string.report_referrers));
               reportTitle.setText(getResources().getText(R.string.report_referrers));
             }
- else {
+ else             if (reportType.equals("searchterms")) {
               reportTitle.setText(getResources().getText(R.string.report_searchterms));
               col_1.setText(getResources().getText(R.string.report_searchterms));
+            }
+ else {
+              reportTitle.setText(getResources().getText(R.string.report_clicks));
+              col_1.setText(getResources().getText(R.string.report_clicks));
             }
             col_1.setTypeface(Typeface.DEFAULT_BOLD);
             TextView col_2=(TextView)table_row.findViewById(R.id.col2);
@@ -260,16 +264,7 @@ catch (            IOException e) {
           dismissDialog(ID_DIALOG_GET_STATS);
           RelativeLayout filters=(RelativeLayout)findViewById(R.id.filters);
           filters.setVisibility(View.VISIBLE);
-          AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewStats.this);
-          dialogBuilder.setTitle(getResources().getText(R.string.error));
-          dialogBuilder.setMessage("No data was found, please try again.");
-          dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-            public void onClick(            DialogInterface dialog,            int whichButton){
-            }
-          }
-);
-          dialogBuilder.setCancelable(true);
-          dialogBuilder.create().show();
+          Toast.makeText(viewStats.this,getResources().getText(R.string.no_data_found),Toast.LENGTH_SHORT).show();
         }
       }
 ;

@@ -15,11 +15,16 @@
   if (categoriesVector != null) {
     xmlrpcPath=categoriesVector.get(0).toString();
     String savedUsername=categoriesVector.get(2).toString();
+    originalUsername=savedUsername;
     String savedPassword=categoriesVector.get(3).toString();
     String imagePlacement=categoriesVector.get(4).toString();
     String sCenterThumbnailString=categoriesVector.get(5).toString();
     String sFullSizeImageString=categoriesVector.get(6).toString();
     String location=categoriesVector.get(11).toString();
+    String sWPCom=categoriesVector.get(12).toString();
+    if (sWPCom.equals("1")) {
+      isWPCom=true;
+    }
     boolean sFullSizeImage=false;
     if (sFullSizeImageString.equals("1")) {
       sFullSizeImage=true;
@@ -87,7 +92,7 @@
       CheckBox locationCB=(CheckBox)findViewById(R.id.location);
       boolean locationValue=locationCB.isChecked();
       WordPressDB settingsDB=new WordPressDB(settings.this);
-      settingsDB.saveSettings(settings.this,id,xmlrpcPath,username,password,buttonValue,centerThumbnailValue,fullSizeImageValue,maxImageWidth,maxImageWidthIdInt,locationValue);
+      settingsDB.saveSettings(settings.this,id,xmlrpcPath,username,password,buttonValue,centerThumbnailValue,fullSizeImageValue,maxImageWidth,maxImageWidthIdInt,locationValue,isWPCom,originalUsername);
       Bundle bundle=new Bundle();
       bundle.putString("returnStatus","SAVE");
       Intent mIntent=new Intent();
