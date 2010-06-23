@@ -189,14 +189,18 @@
       ToggleButton underlineButton=(ToggleButton)findViewById(R.id.underline);
       ToggleButton strikeButton=(ToggleButton)findViewById(R.id.strike);
       int position=Selection.getSelectionStart(contentEdit.getText());
-      if (position < 0) {
+      if (position < 0 || (position + 1) == cursorLoc) {
         position=0;
       }
       if (position > 0) {
         if (styleStart > position || position > (cursorLoc + 1)) {
-          styleStart=position - 1;
+          if (position - cursorLoc > 1) {
+            styleStart=cursorLoc;
+          }
+ else {
+            styleStart=position - 1;
+          }
         }
-        cursorLoc=position;
         if (boldButton.isChecked()) {
           StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
           for (int i=0; i < ss.length; i++) {
@@ -238,6 +242,7 @@
           s.setSpan(new StrikethroughSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
       }
+      cursorLoc=Selection.getSelectionStart(contentEdit.getText());
     }
     public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
     }
