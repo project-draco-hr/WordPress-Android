@@ -7,6 +7,7 @@
       text=text.replace("&feature=youtube_gdata","");
       text=text.replace("watch?v=","v/");
       text="<object width=\"480\" height=\"385\"><param name=\"movie\" value=\"" + text + "\"></param><param name=\"allowFullScreen\" value=\"true\"></param><param name=\"allowscriptaccess\" value=\"always\"></param><embed src=\""+ text+ "\" type=\"application/x-shockwave-flash\" allowscriptaccess=\"always\" allowfullscreen=\"true\" width=\"480\" height=\"385\"></embed></object>";
+      text=escapeUtils.escapeHtml(text);
       contentET.setText(text);
     }
  else {
@@ -15,11 +16,13 @@
       for (      String item : parts)       try {
         URL url=new URL(item);
         finalText+="<a href=\"" + url + "\">"+ url+ "</a> ";
+        contentET.setText(Html.fromHtml(finalText));
+        isUrl=true;
       }
  catch (      MalformedURLException e) {
         finalText+=item + " ";
+        contentET.setText(finalText);
       }
-      contentET.setText(finalText);
     }
   }
   String type=intent.getType();
