@@ -1,5 +1,7 @@
 {
   Vector apiInfo=null;
+  URI blogHost=URI.create(url);
+  String blogDomain=blogHost.getHost();
   URI uri=URI.create("https://public-api.wordpress.com/getuserblogs.php");
   configureClient(uri,username,password);
   HttpResponse response;
@@ -58,11 +60,10 @@
           }
  else           if (foundURL) {
             curBlogURL=pullParser.getText();
+            URI curBlogHost=URI.create(curBlogURL);
+            String curBlogDomain=curBlogHost.getHost();
             foundURL=false;
-            if (url.endsWith("/")) {
-              url=url.substring(0,url.length() - 1);
-            }
-            if (curBlogURL.equals(url) || storedBlogID.equals(curBlogID)) {
+            if (curBlogDomain.equals(blogDomain) || storedBlogID.equals(curBlogID)) {
               blogID=curBlogID;
               apiInfo=new Vector();
               apiInfo.add(apiKey);

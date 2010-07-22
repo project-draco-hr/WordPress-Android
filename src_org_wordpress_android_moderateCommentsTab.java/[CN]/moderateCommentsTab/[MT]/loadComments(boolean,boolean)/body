@@ -13,6 +13,13 @@
  else {
         model=new ArrayList<CommentEntry>();
       }
+      int sdk_int=0;
+      try {
+        sdk_int=Integer.valueOf(android.os.Build.VERSION.SDK);
+      }
+ catch (      Exception e1) {
+        sdk_int=3;
+      }
       checkedComments=new Vector();
       for (int i=1; i < loadedPosts.size(); i++) {
         checkedComments.add(i - 1,"false");
@@ -28,6 +35,16 @@
         authorEmail=escapeUtils.unescapeHtml(contentHash.get("email").toString());
         authorURL=escapeUtils.unescapeHtml(contentHash.get("url").toString());
         postTitle=escapeUtils.unescapeHtml(contentHash.get("postTitle").toString());
+        if (sdk_int == 3) {
+          postTitle=postTitle.replace("?","'");
+          postTitle=postTitle.replace("?","'");
+          postTitle=postTitle.replace('?','"');
+          postTitle=postTitle.replace('?','"');
+          postTitle=postTitle.replace('?','-');
+          postTitle=postTitle.replaceAll("[^a-zA-Z0-9\'\"-]"," ");
+          author=author.replaceAll("[^a-zA-Z0-9\'\"-]"," ");
+          authorURL=authorURL.replaceAll("[^a-zA-Z0-9:'/'/.-]"," ");
+        }
         model.add(new CommentEntry(postID,commentID,author,dateCreatedFormatted,comment,status,postTitle,authorURL,authorEmail,URI.create("http://gravatar.com/avatar/" + getMd5Hash(authorEmail.trim()) + "?s=60&d=identicon")));
       }
       if (!refreshOnly) {
@@ -40,7 +57,9 @@
         }
         ListView listView=(ListView)findViewById(android.R.id.list);
         listView.removeFooterView(switcher);
-        listView.addFooterView(switcher);
+        if (loadedPosts.size() >= 30) {
+          listView.addFooterView(switcher);
+        }
         setListAdapter(thumbs);
         listView.setOnItemClickListener(new OnItemClickListener(){
           public void onNothingSelected(          AdapterView<?> arg0){
@@ -97,7 +116,6 @@
     Vector latestComments=postStoreDB.loadMoreComments(moderateCommentsTab.this,id,commentsToLoad);
     if (latestComments != null) {
       numRecords+=latestComments.size();
-      Toast.makeText(this,"numRecords is now " + numRecords,Toast.LENGTH_LONG).show();
       for (int i=latestComments.size(); i > 0; i--) {
         HashMap contentHash=(HashMap)latestComments.get(i - 1);
         allComments.put(contentHash.get("commentID").toString(),contentHash);
