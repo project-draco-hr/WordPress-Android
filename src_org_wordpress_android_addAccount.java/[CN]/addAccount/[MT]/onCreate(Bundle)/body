@@ -1,7 +1,21 @@
 {
   super.onCreate(savedInstanceState);
   setContentView(R.layout.add_account);
-  this.setTitle("WordPress - " + getResources().getText(R.string.new_account));
+  this.setTitle("WordPress - " + getResources().getText(R.string.add_account));
+  Bundle extras=getIntent().getExtras();
+  if (extras != null) {
+    wpcom=extras.getBoolean("wpcom",false);
+  }
+  if (wpcom) {
+    TextView urlLabel=(TextView)findViewById(R.id.l_url);
+    urlLabel.setVisibility(View.GONE);
+    EditText urlET=(EditText)findViewById(R.id.url);
+    urlET.setVisibility(View.GONE);
+  }
+ else {
+    ImageView logo=(ImageView)findViewById(R.id.wpcomLogo);
+    logo.setImageDrawable(getResources().getDrawable(R.drawable.wplogo));
+  }
   final Button cancelButton=(Button)findViewById(R.id.cancel);
   final Button saveButton=(Button)findViewById(R.id.save);
   saveButton.setOnClickListener(new Button.OnClickListener(){

@@ -1,6 +1,11 @@
 {
   EditText urlET=(EditText)findViewById(R.id.url);
-  blogURL=urlET.getText().toString();
+  if (wpcom) {
+    blogURL="http://wordpress.com";
+  }
+ else {
+    blogURL=urlET.getText().toString();
+  }
   EditText usernameET=(EditText)findViewById(R.id.username);
   final String username=usernameET.getText().toString();
   EditText passwordET=(EditText)findViewById(R.id.password);
@@ -40,33 +45,26 @@
     client=new XMLRPCClient(fBlogURL);
     XMLRPCMethod method=new XMLRPCMethod("wp.getUsersBlogs",new XMLRPCMethodCallback(){
       public void callFinished(      Object[] result){
-        String[] blogNames=new String[result.length];
-        String[] urls=new String[result.length];
-        int[] blogIds=new int[result.length];
+        final String[] blogNames=new String[result.length];
+        final String[] urls=new String[result.length];
+        final int[] blogIds=new int[result.length];
+        final boolean[] wpcoms=new boolean[result.length];
+        final String[] wpVersions=new String[result.length];
         HashMap contentHash=new HashMap();
-        int ctr=0;
+        int ctr=0, blogCtr=0;
+        WordPressDB settingsDB=new WordPressDB(addAccount.this);
         for (        Object item : result) {
           contentHash=(HashMap)result[ctr];
-          blogNames[ctr]=contentHash.get("blogName").toString();
-          urls[ctr]=contentHash.get("xmlrpc").toString();
-          blogIds[ctr]=Integer.parseInt(contentHash.get("blogid").toString());
-          String blogName=blogNames[ctr];
-          String blogURL=urls[ctr];
-          int blogId=blogIds[ctr];
-          ctr++;
-          WordPressDB settingsDB=new WordPressDB(addAccount.this);
-          boolean noMatch=false;
-          noMatch=settingsDB.checkMatch(addAccount.this,blogName,blogURL,username);
-          if (noMatch) {
-            Thread prompt=new Thread(){
-              public void run(){
-                Toast.makeText(addAccount.this,getResources().getText(R.string.account_already_exists),Toast.LENGTH_SHORT).show();
-              }
-            }
-;
-            runOnUiThread(prompt);
-          }
- else {
+          boolean match=false;
+          match=settingsDB.checkMatch(addAccount.this,contentHash.get("blogName").toString(),contentHash.get("xmlrpc").toString(),username);
+          if (!match) {
+            blogNames[blogCtr]=contentHash.get("blogName").toString();
+            aBlogNames.add(escapeUtils.unescapeHtml(blogNames[blogCtr]));
+            urls[blogCtr]=contentHash.get("xmlrpc").toString();
+            blogIds[blogCtr]=Integer.parseInt(contentHash.get("blogid").toString());
+            String blogName=blogNames[blogCtr];
+            String blogURL=urls[blogCtr];
+            int blogId=blogIds[blogCtr];
             boolean success=false;
             if (blogName == "") {
               blogName="(No Blog Title)";
@@ -75,27 +73,35 @@
             if (blogURL.toLowerCase().contains("wordpress.com")) {
               wpcomFlag=true;
             }
-            HashMap hPost=new HashMap();
-            hPost.put("software_version","software_version");
-            Object[] vParams={1,username,password,hPost};
-            Object versionResult=new Object();
-            try {
-              versionResult=(Object)client.call("wp.getOptions",vParams);
-            }
- catch (            XMLRPCException e) {
-            }
+            wpcoms[blogCtr]=wpcomFlag;
             String wpVersion="";
-            if (versionResult != null) {
+            if (!wpcomFlag) {
+              HashMap hPost=new HashMap();
+              hPost.put("software_version","software_version");
+              Object[] vParams={1,username,password,hPost};
+              Object versionResult=new Object();
               try {
-                contentHash=(HashMap)versionResult;
-                HashMap sv=(HashMap)contentHash.get("software_version");
-                wpVersion=sv.get("value").toString();
+                versionResult=(Object)client.call("wp.getOptions",vParams);
               }
- catch (              Exception e) {
+ catch (              XMLRPCException e) {
+              }
+              if (versionResult != null) {
+                try {
+                  contentHash=(HashMap)versionResult;
+                  HashMap sv=(HashMap)contentHash.get("software_version");
+                  wpVersion=sv.get("value").toString();
+                }
+ catch (                Exception e) {
+                }
               }
             }
-            success=settingsDB.addAccount(addAccount.this,blogURL,blogName,username,password,"Above Text",true,false,"500",5,false,blogId,wpcomFlag,wpVersion);
+ else {
+              wpVersion="3.0";
+            }
+            wpVersions[blogCtr]=wpVersion;
+            blogCtr++;
           }
+          ctr++;
         }
         pd.dismiss();
         if (result.length == 0) {
@@ -111,12 +117,84 @@
           dialogBuilder.create().show();
         }
  else {
-          Bundle bundle=new Bundle();
-          bundle.putString("returnStatus","SAVE");
-          Intent mIntent=new Intent();
-          mIntent.putExtras(bundle);
-          setResult(RESULT_OK,mIntent);
-          finish();
+          if (result.length > 1) {
+            LayoutInflater inflater=(LayoutInflater)addAccount.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final ListView lv=(ListView)inflater.inflate(R.layout.select_blogs_list,null);
+            lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+            lv.setItemsCanFocus(false);
+            ArrayAdapter<CharSequence> blogs=new ArrayAdapter<CharSequence>(addAccount.this,R.layout.blogs_row,aBlogNames);
+            lv.setAdapter(blogs);
+            AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(addAccount.this);
+            dialogBuilder.setTitle("Select Blogs");
+            dialogBuilder.setView(lv);
+            dialogBuilder.setNegativeButton("Add Selected",new DialogInterface.OnClickListener(){
+              public void onClick(              DialogInterface dialog,              int whichButton){
+                SparseBooleanArray selectedItems=lv.getCheckedItemPositions();
+                WordPressDB settingsDB=new WordPressDB(addAccount.this);
+                for (int i=0; i < selectedItems.size(); i++) {
+                  if (selectedItems.get(selectedItems.keyAt(i)) == true) {
+                    int rowID=selectedItems.keyAt(i);
+                    success=settingsDB.addAccount(addAccount.this,urls[rowID],blogNames[rowID],username,password,"Above Text",true,false,"500",5,false,blogIds[rowID],wpcoms[rowID],wpVersions[rowID]);
+                  }
+                }
+                Bundle bundle=new Bundle();
+                bundle.putString("returnStatus","SAVE");
+                Intent mIntent=new Intent();
+                mIntent.putExtras(bundle);
+                setResult(RESULT_OK,mIntent);
+                finish();
+              }
+            }
+);
+            dialogBuilder.setPositiveButton("Add All",new DialogInterface.OnClickListener(){
+              public void onClick(              DialogInterface dialog,              int whichButton){
+                WordPressDB settingsDB=new WordPressDB(addAccount.this);
+                for (int i=0; i < blogNames.length; i++) {
+                  success=settingsDB.addAccount(addAccount.this,urls[i],blogNames[i],username,password,"Above Text",true,false,"500",5,false,blogIds[i],wpcoms[i],wpVersions[i]);
+                }
+                Bundle bundle=new Bundle();
+                bundle.putString("returnStatus","SAVE");
+                Intent mIntent=new Intent();
+                mIntent.putExtras(bundle);
+                setResult(RESULT_OK,mIntent);
+                finish();
+              }
+            }
+);
+            dialogBuilder.setCancelable(true);
+            AlertDialog ad=dialogBuilder.create();
+            ad.setInverseBackgroundForced(true);
+            ad.show();
+            final Button addSelected=ad.getButton(AlertDialog.BUTTON_NEGATIVE);
+            addSelected.setEnabled(false);
+            lv.setOnItemClickListener(new OnItemClickListener(){
+              public void onItemClick(              AdapterView<?> arg0,              View arg1,              int arg2,              long arg3){
+                SparseBooleanArray selectedItems=lv.getCheckedItemPositions();
+                boolean isChecked=false;
+                for (int i=0; i < selectedItems.size(); i++) {
+                  if (selectedItems.get(selectedItems.keyAt(i)) == true) {
+                    isChecked=true;
+                  }
+                }
+                if (!isChecked) {
+                  addSelected.setEnabled(false);
+                }
+ else {
+                  addSelected.setEnabled(true);
+                }
+              }
+            }
+);
+          }
+ else {
+            success=settingsDB.addAccount(addAccount.this,urls[0],blogNames[0],username,password,"Above Text",true,false,"500",5,false,blogIds[0],wpcoms[0],wpVersions[0]);
+            Bundle bundle=new Bundle();
+            bundle.putString("returnStatus","SAVE");
+            Intent mIntent=new Intent();
+            mIntent.putExtras(bundle);
+            setResult(RESULT_OK,mIntent);
+            finish();
+          }
         }
       }
     }
