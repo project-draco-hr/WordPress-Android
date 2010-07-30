@@ -41,6 +41,7 @@ clearMedia.setVisibility(View.VISIBLE);
 break;
 case 4:
 if (resultCode == Activity.RESULT_OK) {
+String path="";
 File f=null;
 int sdk_int=0;
 try {
@@ -78,12 +79,10 @@ dialogBuilder.create().show();
 }
 }
  else {
+path=SD_CARD_TEMP_DIR;
 f=new File(SD_CARD_TEMP_DIR);
 }
-try {
-Uri capturedImage=Uri.parse(android.provider.MediaStore.Images.Media.insertImage(getContentResolver(),f.getAbsolutePath(),null,null));
-Log.i("camera","Selected image: " + capturedImage.toString());
-f.delete();
+Uri capturedImage=Uri.parse(f.getAbsolutePath());
 Bundle bundle=new Bundle();
 bundle.putString("imageURI",capturedImage.toString());
 selectedImageIDs.add(selectedImageCtr,capturedImage);
@@ -92,19 +91,6 @@ selectedImageCtr++;
 gridview.setVisibility(View.VISIBLE);
 gridview.setAdapter(new ImageAdapter(this));
 clearMedia.setVisibility(View.VISIBLE);
-}
- catch (FileNotFoundException e) {
-AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newPost.this);
-dialogBuilder.setTitle(getResources().getText(R.string.file_error));
-dialogBuilder.setMessage(getResources().getText(R.string.file_error_encountered));
-dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-public void onClick(DialogInterface dialog,int whichButton){
-}
-}
-);
-dialogBuilder.setCancelable(true);
-dialogBuilder.create().show();
-}
 }
  else {
 AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(newPost.this);

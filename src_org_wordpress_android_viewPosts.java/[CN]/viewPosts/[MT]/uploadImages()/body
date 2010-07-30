@@ -132,7 +132,7 @@
           if (i == 0 || sFullSizeImage) {
             Uri imageUri=Uri.parse(curImagePath);
             File jpeg=null;
-            String mimeType="", orientation="";
+            String mimeType="", orientation="", path="";
             MediaFile mf=null;
             if (imageUri.toString().contains("content:")) {
               String imgID=imageUri.getLastPathSegment();
@@ -154,12 +154,15 @@
                 thumbData=cur.getString(dataColumn);
                 mimeType=cur.getString(mimeTypeColumn);
                 jpeg=new File(thumbData);
+                path=thumbData;
                 mf.setFilePath(jpeg.getPath());
               }
             }
  else {
-              jpeg=new File(imageUri.toString().replace("file://",""));
+              path=imageUri.toString().replace("file://","");
+              jpeg=new File(path);
             }
+            orientation=imageHelper.getExifOrientation(path,orientation);
             imageTitle=jpeg.getName();
             byte[] finalBytes=null;
             byte[] bytes=new byte[(int)jpeg.length()];
@@ -183,7 +186,7 @@
               e.printStackTrace();
             }
             if (i == 0) {
-              finalBytes=imageHelper.createThumbnail(bytes,sMaxImageWidth,orientation);
+              finalBytes=imageHelper.createThumbnail(bytes,sMaxImageWidth,orientation,false);
             }
  else {
               finalBytes=bytes;
