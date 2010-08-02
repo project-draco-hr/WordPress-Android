@@ -1,8 +1,17 @@
 {
   ImageView imageView;
   if (convertView == null) {
-    LayoutInflater inflater=(LayoutInflater)newPost.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    imageView=(ImageView)inflater.inflate(R.layout.image_view,null);
+    imageView=new ImageView(mContext);
+    float pixels;
+    if (screenDensity > 0) {
+      pixels=95 * ((float)screenDensity / (float)160);
+    }
+ else {
+      pixels=85;
+    }
+    int picSize=(int)pixels;
+    imageView.setLayoutParams(new GridView.LayoutParams(picSize,picSize));
+    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
     Uri tempURI=(Uri)selectedImageIDs.get(position);
     if (!tempURI.toString().contains("video")) {
       String[] projection=new String[]{Images.Thumbnails._ID,Images.Thumbnails.DATA,Images.Media.ORIENTATION};
