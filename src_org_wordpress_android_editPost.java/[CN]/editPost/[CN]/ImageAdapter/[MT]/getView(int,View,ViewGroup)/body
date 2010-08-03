@@ -3,8 +3,8 @@
   if (convertView == null) {
     imageView=new ImageView(mContext);
     float pixels;
-    if (screenDensity > 0) {
-      pixels=95 * ((float)screenDensity / (float)160);
+    if (isLargeScreen) {
+      pixels=95 * ((float)240 / (float)160);
     }
  else {
       pixels=85;
@@ -55,9 +55,10 @@
  catch (      IOException e) {
         e.printStackTrace();
       }
-      orientation=imageHelper.getExifOrientation(path,orientation);
+      imageHelper ih=imageHelper.getInstance();
+      orientation=ih.getExifOrientation(path,orientation);
       imageTitle=jpeg.getName();
-      byte[] finalBytes=imageHelper.createThumbnail(bytes,"150",orientation,true);
+      byte[] finalBytes=ih.createThumbnail(bytes,"150",orientation,true);
       Bitmap resizedBitmap=BitmapFactory.decodeByteArray(finalBytes,0,finalBytes.length);
       imageView.setImageBitmap(resizedBitmap);
     }

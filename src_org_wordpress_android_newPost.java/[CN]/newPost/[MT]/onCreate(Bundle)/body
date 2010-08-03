@@ -6,9 +6,15 @@
     accountName=escapeUtils.unescapeHtml(extras.getString("accountName"));
     isPage=extras.getBoolean("isPage",false);
   }
-  DisplayMetrics dm=new DisplayMetrics();
-  getWindowManager().getDefaultDisplay().getMetrics(dm);
-  screenDensity=dm.densityDpi;
+  Display display=((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+  int width=display.getWidth();
+  int height=display.getHeight();
+  if (height > width) {
+    width=height;
+  }
+  if (width > 480) {
+    isLargeScreen=true;
+  }
   if (isPage) {
     setContentView(R.layout.main_page);
   }
