@@ -1,0 +1,35 @@
+{
+  Thread t=new Thread(){
+    public void run(){
+      if (permaLink != null) {
+        WebView wv=(WebView)findViewById(R.id.webView);
+        wv.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        wv.getSettings().setBuiltInZoomControls(true);
+        wv.getSettings().setJavaScriptEnabled(true);
+        wv.setWebViewClient(new WordPressWebViewClient());
+        if (status.equals("publish")) {
+          wv.loadUrl(permaLink);
+        }
+ else {
+          wv.loadData(html,"text/html","utf-8");
+          Toast.makeText(viewPost.this,"Showing basic HTML preview until post is published.",Toast.LENGTH_SHORT).show();
+        }
+      }
+ else {
+        setProgressBarIndeterminateVisibility(false);
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewPost.this);
+        dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
+        dialogBuilder.setMessage(getResources().getText(R.string.permalink_not_found));
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        dialogBuilder.create().show();
+      }
+    }
+  }
+;
+  this.runOnUiThread(t);
+}

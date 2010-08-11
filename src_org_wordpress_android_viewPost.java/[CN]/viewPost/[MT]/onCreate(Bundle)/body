@@ -16,16 +16,11 @@
  else {
     this.setTitle(escapeUtils.unescapeHtml(accountName) + " - " + getResources().getText(R.string.preview_post));
   }
-  WordPressDB settingsDB=new WordPressDB(this);
-  Vector account=settingsDB.loadSettings(this,id);
-  String blogURL=account.get(0).toString();
-  blogURL=blogURL.replace("https:","http:");
-  blogURL=blogURL.replace("xmlrpc.php","") + "?p=" + postID;
-  WebView wv=(WebView)findViewById(R.id.webView);
-  wv.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-  wv.getSettings().setUserAgentString("Mozilla/5.0 (Linux) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Safari/530.17");
-  wv.getSettings().setBuiltInZoomControls(true);
-  wv.getSettings().setJavaScriptEnabled(true);
-  wv.setWebViewClient(new WordPressWebViewClient());
-  wv.loadUrl(blogURL);
+  Thread t=new Thread(){
+    public void run(){
+      loadPostFromPermalink();
+    }
+  }
+;
+  t.start();
 }
