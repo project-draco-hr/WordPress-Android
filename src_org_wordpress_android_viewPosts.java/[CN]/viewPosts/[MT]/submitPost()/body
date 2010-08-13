@@ -182,12 +182,37 @@
           AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewPosts.this);
           dialogBuilder.setTitle(getResources().getText(R.string.success));
           if (xmlrpcError) {
+            if (vpUpgrade) {
+              dialogBuilder.setMessage(getResources().getText((isPage) ? R.string.page_id : R.string.post_id) + " " + newID+ " "+ getResources().getText(R.string.added_successfully_image_error)+ ": "+ mediaErrorMsg);
+              dialogBuilder.setNegativeButton(getResources().getString(R.string.no),new DialogInterface.OnClickListener(){
+                public void onClick(                DialogInterface dialog,                int whichButton){
+                  boolean isInteger=false;
+                  try {
+                    int i=Integer.parseInt(newID);
+                    isInteger=true;
+                  }
+ catch (                  NumberFormatException e) {
+                  }
+                  if (isInteger) {
+                    clearCounters();
+                    if (isPage) {
+                      lDraftsDB.deletePageDraft(viewPosts.this,String.valueOf(selectedID));
+                    }
+ else {
+                      lDraftsDB.deletePost(viewPosts.this,String.valueOf(selectedID));
+                    }
+                    refreshPosts(false);
+                  }
+                }
+              }
+);
+            }
             dialogBuilder.setMessage(getResources().getText((isPage) ? R.string.page_id : R.string.post_id) + " " + newID+ " "+ getResources().getText(R.string.added_successfully_image_error)+ ": "+ mediaErrorMsg);
           }
  else {
             dialogBuilder.setMessage(getResources().getText((isPage) ? R.string.page_id : R.string.post_id) + " " + newID+ " "+ getResources().getText(R.string.added_successfully));
           }
-          dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          dialogBuilder.setPositiveButton((vpUpgrade) ? getResources().getString(R.string.yes) : "OK",new DialogInterface.OnClickListener(){
             public void onClick(            DialogInterface dialog,            int whichButton){
               boolean isInteger=false;
               try {
@@ -205,6 +230,12 @@
                   lDraftsDB.deletePost(viewPosts.this,String.valueOf(selectedID));
                 }
                 refreshPosts(false);
+              }
+              if (vpUpgrade) {
+                String url="http://videopress.com";
+                Intent i=new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
               }
             }
           }

@@ -110,8 +110,13 @@
           result=(Object)client.call("wp.uploadFile",params);
         }
  catch (        XMLRPCException e) {
-          e.printStackTrace();
           mediaErrorMsg=e.getMessage();
+          if (video) {
+            if (mediaErrorMsg.contains("Invalid file type")) {
+              mediaErrorMsg=getResources().getString(R.string.vp_upgrade);
+              vpUpgrade=true;
+            }
+          }
           xmlrpcError=true;
           break;
         }
@@ -159,45 +164,49 @@
               }
             }
  else {
+              mf=new MediaFile();
               path=imageUri.toString().replace("file://","");
               jpeg=new File(path);
+              mf.setFilePath(path);
             }
             imageHelper ih=imageHelper.getInstance();
             orientation=ih.getExifOrientation(path,orientation);
             imageTitle=jpeg.getName();
             byte[] finalBytes=null;
-            byte[] bytes=new byte[(int)jpeg.length()];
-            DataInputStream in=null;
-            try {
-              in=new DataInputStream(new FileInputStream(jpeg));
-            }
- catch (            FileNotFoundException e) {
-              e.printStackTrace();
-            }
-            try {
-              in.readFully(bytes);
-            }
- catch (            IOException e) {
-              e.printStackTrace();
-            }
-            try {
-              in.close();
-            }
- catch (            IOException e) {
-              e.printStackTrace();
-            }
             if (i == 0) {
+              byte[] bytes=new byte[(int)jpeg.length()];
+              DataInputStream in=null;
+              try {
+                in=new DataInputStream(new FileInputStream(jpeg));
+              }
+ catch (              FileNotFoundException e) {
+                e.printStackTrace();
+              }
+              try {
+                in.readFully(bytes);
+              }
+ catch (              IOException e) {
+                e.printStackTrace();
+              }
+              try {
+                in.close();
+              }
+ catch (              IOException e) {
+                e.printStackTrace();
+              }
               imageHelper ih2=imageHelper.getInstance();
               finalBytes=ih2.createThumbnail(bytes,sMaxImageWidth,orientation,false);
-            }
- else {
-              finalBytes=bytes;
             }
             Map<String,Object> m=new HashMap<String,Object>();
             HashMap hPost=new HashMap();
             m.put("name",imageTitle);
             m.put("type",mimeType);
-            m.put("bits",finalBytes);
+            if (i == 0) {
+              m.put("bits",finalBytes);
+            }
+ else {
+              m.put("bits",mf);
+            }
             m.put("overwrite",true);
             Object[] params={1,sUsername,sPassword,m};
             Object result=null;
