@@ -175,12 +175,17 @@
             EditText titleET=(EditText)findViewById(R.id.title);
             titleET.setText(escapeUtils.unescapeHtml(contentHash.get("title").toString()));
             EditText contentET=(EditText)findViewById(R.id.content);
+            String content="";
             if (contentHash.get("mt_text_more").toString() != "") {
-              contentET.setText(StringHelper.convertHTMLTagsForDisplay(contentHash.get("description").toString() + "<!--more-->\n" + contentHash.get("mt_text_more").toString()));
+              content=StringHelper.convertHTMLTagsForDisplay(contentHash.get("description").toString() + "<!--more-->\n" + contentHash.get("mt_text_more").toString());
             }
  else {
-              contentET.setText(StringHelper.convertHTMLTagsForDisplay(contentHash.get("description").toString()));
+              content=StringHelper.convertHTMLTagsForDisplay(contentHash.get("description").toString());
             }
+            content=content.replace("<p><p>","<p>");
+            content=content.replace("</p></p>","</p>");
+            content=content.replace("<br><br>","<br>");
+            contentET.setText(content);
             String status=contentHash.get("post_status").toString();
             if (!isPage) {
               EditText tagsET=(EditText)findViewById(R.id.tags);
