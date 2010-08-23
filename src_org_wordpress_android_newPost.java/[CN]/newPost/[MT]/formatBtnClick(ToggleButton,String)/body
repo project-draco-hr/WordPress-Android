@@ -1,0 +1,24 @@
+{
+  EditText contentText=(EditText)findViewById(R.id.content);
+  int selectionStart=contentText.getSelectionStart();
+  styleStart=selectionStart;
+  int selectionEnd=contentText.getSelectionEnd();
+  if (selectionStart > selectionEnd) {
+    int temp=selectionEnd;
+    selectionEnd=selectionStart;
+    selectionStart=temp;
+  }
+  if (selectionEnd > selectionStart) {
+    Spannable str=contentText.getText();
+    QuoteSpan[] ss=str.getSpans(selectionStart,selectionEnd,QuoteSpan.class);
+    boolean exists=false;
+    for (int i=0; i < ss.length; i++) {
+      str.removeSpan(ss[i]);
+      exists=true;
+    }
+    if (!exists) {
+      str.setSpan(new QuoteSpan(),selectionStart,selectionEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+    toggleButton.setChecked(false);
+  }
+}
