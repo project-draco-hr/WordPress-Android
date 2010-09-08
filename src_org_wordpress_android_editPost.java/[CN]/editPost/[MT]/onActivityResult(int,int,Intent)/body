@@ -2,8 +2,6 @@
   super.onActivityResult(requestCode,resultCode,data);
   if (data != null || requestCode == 4) {
     Bundle extras;
-    GridView gridview=(GridView)findViewById(R.id.gridView);
-    Button clearMedia=(Button)findViewById(R.id.clearPicture);
 switch (requestCode) {
 case 0:
       extras=data.getExtras();
@@ -32,12 +30,7 @@ break;
 case 3:
 Uri imageUri=data.getData();
 String imgPath=imageUri.getEncodedPath();
-selectedImageIDs.add(selectedImageCtr,imageUri);
-imageUrl.add(selectedImageCtr,imageUri.toString());
-selectedImageCtr++;
-gridview.setVisibility(View.VISIBLE);
-gridview.setAdapter(new ImageAdapter(this));
-clearMedia.setVisibility(View.VISIBLE);
+addMedia(imgPath,imageUri);
 break;
 case 4:
 if (resultCode == Activity.RESULT_OK) {
@@ -84,14 +77,7 @@ try {
 Uri capturedImage=Uri.parse(android.provider.MediaStore.Images.Media.insertImage(getContentResolver(),f.getAbsolutePath(),null,null));
 Log.i("camera","Selected image: " + capturedImage.toString());
 f.delete();
-Bundle bundle=new Bundle();
-bundle.putString("imageURI",capturedImage.toString());
-selectedImageIDs.add(selectedImageCtr,capturedImage);
-imageUrl.add(selectedImageCtr,capturedImage.toString());
-selectedImageCtr++;
-gridview.setVisibility(View.VISIBLE);
-gridview.setAdapter(new ImageAdapter(this));
-clearMedia.setVisibility(View.VISIBLE);
+addMedia(capturedImage.getEncodedPath(),capturedImage);
 }
  catch (FileNotFoundException e) {
 AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
@@ -129,22 +115,12 @@ break;
 case 6:
 Uri videoUri=data.getData();
 String videoPath=videoUri.getEncodedPath();
-selectedImageIDs.add(selectedImageCtr,videoUri);
-imageUrl.add(selectedImageCtr,videoUri);
-selectedImageCtr++;
-gridview.setVisibility(View.VISIBLE);
-gridview.setAdapter(new ImageAdapter(this));
-clearMedia.setVisibility(View.VISIBLE);
+addMedia(videoPath,videoUri);
 break;
 case 7:
 if (resultCode == Activity.RESULT_OK) {
 Uri capturedVideo=data.getData();
-selectedImageIDs.add(selectedImageCtr,capturedVideo);
-imageUrl.add(selectedImageCtr,capturedVideo.toString());
-selectedImageCtr++;
-gridview.setVisibility(View.VISIBLE);
-gridview.setAdapter(new ImageAdapter(this));
-clearMedia.setVisibility(View.VISIBLE);
+addMedia(capturedVideo.getEncodedPath(),capturedVideo);
 }
  else {
 AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);

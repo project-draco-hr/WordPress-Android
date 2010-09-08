@@ -44,14 +44,7 @@
       String[] pPaths=picturePaths.split(",");
       for (int i=0; i < pPaths.length; i++) {
         Uri imagePath=Uri.parse(pPaths[i]);
-        selectedImageIDs.add(selectedImageCtr,imagePath);
-        imageUrl.add(selectedImageCtr,pPaths[i]);
-        selectedImageCtr++;
-        GridView gridview=(GridView)findViewById(R.id.gridView);
-        gridview.setVisibility(View.VISIBLE);
-        gridview.setAdapter(new ImageAdapter(this));
-        Button clearMedia=(Button)findViewById(R.id.clearPicture);
-        clearMedia.setVisibility(View.VISIBLE);
+        addMedia(imagePath.getEncodedPath(),imagePath);
       }
     }
     if (!isPage) {
@@ -453,9 +446,10 @@
       thumbnailUrl.clear();
       selectedImageIDs=new Vector();
       selectedImageCtr=0;
-      GridView gridview=(GridView)findViewById(R.id.gridView);
-      gridview.setVisibility(View.GONE);
-      gridview.setAdapter(null);
+      imgThumbs.clear();
+      Gallery gallery=(Gallery)findViewById(R.id.gallery);
+      gallery.setVisibility(View.GONE);
+      gallery.setAdapter(null);
       clearPictureButton.setVisibility(View.GONE);
     }
   }

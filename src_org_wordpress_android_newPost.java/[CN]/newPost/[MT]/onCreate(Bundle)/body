@@ -22,7 +22,7 @@
     setContentView(R.layout.main);
   }
   String action=getIntent().getAction();
-  if (Intent.ACTION_SEND.equals(action)) {
+  if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
     isAction=true;
     WordPressDB settingsDB=new WordPressDB(this);
     Vector accounts=settingsDB.getAccounts(this);
@@ -334,12 +334,13 @@
   clearPictureButton.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
       imageUrl.clear();
+      imgThumbs.clear();
       thumbnailUrl.clear();
       selectedImageIDs.clear();
       selectedImageCtr=0;
-      GridView gridview=(GridView)findViewById(R.id.gridView);
-      gridview.setAdapter(null);
-      gridview.setVisibility(View.GONE);
+      Gallery gallery=(Gallery)findViewById(R.id.gallery);
+      gallery.setAdapter(null);
+      gallery.setVisibility(View.GONE);
       clearPictureButton.setVisibility(View.GONE);
     }
   }

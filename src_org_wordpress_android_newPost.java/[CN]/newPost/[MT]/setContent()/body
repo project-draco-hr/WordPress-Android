@@ -25,17 +25,21 @@
       }
     }
   }
+  String action=intent.getAction();
   String type=intent.getType();
-  Uri stream=(Uri)intent.getParcelableExtra(Intent.EXTRA_STREAM);
-  if (stream != null && type != null) {
-    String imgPath=stream.getEncodedPath();
-    selectedImageIDs.add(selectedImageCtr,stream);
-    imageUrl.add(selectedImageCtr,imgPath);
-    selectedImageCtr++;
-    GridView gridview=(GridView)findViewById(R.id.gridView);
-    gridview.setVisibility(View.VISIBLE);
-    gridview.setAdapter(new ImageAdapter(newPost.this));
-    Button clearMedia=(Button)findViewById(R.id.clearPicture);
-    clearMedia.setVisibility(View.VISIBLE);
+  ArrayList multi_stream;
+  if (Intent.ACTION_SEND_MULTIPLE.equals(action)) {
+    multi_stream=intent.getParcelableArrayListExtra((Intent.EXTRA_STREAM));
+  }
+ else {
+    multi_stream=new ArrayList();
+    multi_stream.add((Uri)intent.getParcelableExtra(Intent.EXTRA_STREAM));
+  }
+  for (int i=0; i < multi_stream.size(); i++) {
+    Uri curStream=(Uri)multi_stream.get(i);
+    if (curStream != null && type != null) {
+      String imgPath=curStream.getEncodedPath();
+      addMedia(imgPath,curStream);
+    }
   }
 }
