@@ -1,4 +1,10 @@
 {
+  WordPressDB eulaDB=new WordPressDB(this);
+  String uuid=eulaDB.getUUID(this);
+  if (uuid == "") {
+    uuid=UUID.randomUUID().toString();
+    eulaDB.updateUUID(this,uuid);
+  }
   PackageManager pm=getPackageManager();
   String app_version="";
   try {
@@ -11,10 +17,6 @@
       app_version="N/A";
     }
     TelephonyManager tm=(TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-    String device_uuid=tm.getDeviceId();
-    if (device_uuid == null) {
-      device_uuid="N/A";
-    }
     String device_language=getResources().getConfiguration().locale.getLanguage();
     String mobile_country_code=tm.getNetworkCountryIso();
     String mobile_network_number=tm.getNetworkOperator();
@@ -64,7 +66,7 @@ HttpClient client=new DefaultHttpClient();
 HttpPost post=new HttpPost("http://api.wordpress.org/androidapp/update-check/1.0/");
 post.setHeader("Content-Type","application/x-www-form-urlencoded");
 List<NameValuePair> pairs=new ArrayList<NameValuePair>();
-pairs.add(new BasicNameValuePair("device_uuid",device_uuid));
+pairs.add(new BasicNameValuePair("device_uuid",uuid));
 pairs.add(new BasicNameValuePair("app_version",app_version));
 pairs.add(new BasicNameValuePair("device_language",device_language));
 pairs.add(new BasicNameValuePair("mobile_country_code",mobile_country_code));
