@@ -18,6 +18,9 @@
     postIDs=new String[0];
     dateCreated=new String[0];
     dateCreatedFormatted=new String[0];
+    if (pla != null) {
+      pla.notifyDataSetChanged();
+    }
   }
   if (loadedPosts != null) {
     for (int i=0; i < loadedPosts.size(); i++) {
@@ -34,8 +37,8 @@
         dateCreatedFormatted[i]=contentHash.get("postDateFormatted").toString();
       }
     }
-    List postIDList=Arrays.asList(postIDs);
-    List newPostIDList=new ArrayList();
+    List<String> postIDList=Arrays.asList(postIDs);
+    List newPostIDList=new ArrayList<Object>();
     newPostIDList.add("postsHeader");
     newPostIDList.addAll(postIDList);
     postIDs=(String[])newPostIDList.toArray(new String[newPostIDList.size()]);
@@ -75,6 +78,11 @@
     postIDs=StringHelper.mergeStringArrays(draftIDs,postIDs);
     titles=StringHelper.mergeStringArrays(draftTitles,titles);
     dateCreatedFormatted=StringHelper.mergeStringArrays(publish,dateCreatedFormatted);
+  }
+ else {
+    if (pla != null) {
+      pla.notifyDataSetChanged();
+    }
   }
   if (loadedPosts != null || drafts == true) {
     ListView listView=(ListView)findViewById(android.R.id.list);

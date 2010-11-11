@@ -1,4 +1,7 @@
 {
+  if (isFinishing()) {
+    finish();
+  }
   Vector apiInfo=null;
   String DATE_FORMAT="yyyy-MM-dd";
   SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT);
@@ -36,10 +39,10 @@
     is.unread(bomCheck);
     pullParser.setInput(is,"UTF-8");
     int eventType=pullParser.getEventType();
-    HashMap statsData=new HashMap();
+    HashMap<Object,Object> statsData=new HashMap<Object,Object>();
     boolean foundRoot=false;
     boolean foundDataItem=false;
-    final Vector dataSet=new Vector();
+    final Vector<HashMap<String,String>> dataSet=new Vector<HashMap<String,String>>();
     final Vector numDataSet=new Vector();
     String curCol1="";
     int rowCount=0;
@@ -58,7 +61,7 @@
         }
  else {
           foundDataItem=true;
-          HashMap dataRow=new HashMap();
+          HashMap<String,String> dataRow=new HashMap<String,String>();
           for (int i=0; i < pullParser.getAttributeCount(); i++) {
             dataRow.put(pullParser.getAttributeName(i).toString(),pullParser.getAttributeValue(i).toString());
           }
@@ -72,7 +75,12 @@
  else       if (eventType == XmlPullParser.TEXT) {
         if (foundDataItem) {
           String temp=pullParser.getText();
-          numDataSet.add(rowCount,Integer.parseInt(pullParser.getText().toString()));
+          if (pullParser.getText().toString() == "") {
+            numDataSet.add(rowCount,0);
+          }
+ else {
+            numDataSet.add(rowCount,Integer.parseInt(pullParser.getText().toString()));
+          }
           rowCount++;
           foundDataItem=false;
         }
@@ -151,6 +159,9 @@
               }
             }
             float xGrid=100.00f / 6;
+            if (yInterval == 0) {
+              yInterval=1;
+            }
             long numRows=(maxBuffer - minBuffer) / yInterval;
             float yGrid=100.00f / numRows;
             Display display=getWindowManager().getDefaultDisplay();
@@ -301,7 +312,9 @@ catch (  XmlPullParserException e) {
         }
 );
         dialogBuilder.setCancelable(true);
-        dialogBuilder.create().show();
+        if (!isFinishing()) {
+          dialogBuilder.create().show();
+        }
       }
     }
 ;

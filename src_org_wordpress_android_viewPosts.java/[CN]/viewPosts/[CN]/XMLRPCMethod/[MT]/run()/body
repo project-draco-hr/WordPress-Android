@@ -17,7 +17,7 @@
         if (e.getFaultCode() != 500) {
           AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewPosts.this);
           dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
-          String msg=e.getMessage();
+          String msg=e.getLocalizedMessage();
           dialogBuilder.setMessage(e.getFaultString());
           if (msg.contains("403")) {
             dialogBuilder.setMessage(e.getFaultString() + " " + getResources().getString(R.string.load_settings));
@@ -44,7 +44,9 @@
 );
           }
           dialogBuilder.setCancelable(true);
-          dialogBuilder.create().show();
+          if (!isFinishing()) {
+            dialogBuilder.create().show();
+          }
         }
  else {
           WordPressDB postStoreDB=new WordPressDB(viewPosts.this);
@@ -61,14 +63,16 @@ catch (  final XMLRPCException e) {
         closeProgressBar();
         AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(viewPosts.this);
         dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
-        dialogBuilder.setMessage(e.getMessage());
+        dialogBuilder.setMessage(e.getLocalizedMessage());
         dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
           public void onClick(          DialogInterface dialog,          int whichButton){
           }
         }
 );
         dialogBuilder.setCancelable(true);
-        dialogBuilder.create().show();
+        if (!isFinishing()) {
+          dialogBuilder.create().show();
+        }
       }
     }
 );

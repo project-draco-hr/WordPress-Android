@@ -21,7 +21,9 @@
         }
 );
         dialogBuilder.setCancelable(true);
-        dialogBuilder.create().show();
+        if (!isFinishing()) {
+          dialogBuilder.create().show();
+        }
       }
     }
 );
@@ -33,14 +35,16 @@ catch (  final XMLRPCException e) {
         dismissDialog(ID_DIALOG_MODERATING);
         AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(moderateCommentsTab.this);
         dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
-        dialogBuilder.setMessage(e.getMessage());
+        dialogBuilder.setMessage(e.getLocalizedMessage());
         dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
           public void onClick(          DialogInterface dialog,          int whichButton){
           }
         }
 );
         dialogBuilder.setCancelable(true);
-        dialogBuilder.create().show();
+        if (!isFinishing()) {
+          dialogBuilder.create().show();
+        }
       }
     }
 );

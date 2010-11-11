@@ -4,17 +4,37 @@
     blogURL="http://wordpress.com";
   }
  else {
-    blogURL=urlET.getText().toString();
+    blogURL=urlET.getText().toString().trim();
   }
   EditText usernameET=(EditText)findViewById(R.id.username);
-  final String username=usernameET.getText().toString();
+  final String username=usernameET.getText().toString().trim();
   EditText passwordET=(EditText)findViewById(R.id.password);
-  final String password=passwordET.getText().toString();
+  final String password=passwordET.getText().toString().trim();
+  boolean invalidURL=false;
+  try {
+    URI.create(blogURL);
+  }
+ catch (  Exception e1) {
+    invalidURL=true;
+  }
   if (blogURL.equals("") || username.equals("") || password.equals("")) {
     pd.dismiss();
     AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(addAccount.this);
     dialogBuilder.setTitle(getResources().getText(R.string.required_fields));
     dialogBuilder.setMessage(getResources().getText(R.string.url_username_password_required));
+    dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int whichButton){
+      }
+    }
+);
+    dialogBuilder.setCancelable(true);
+    dialogBuilder.create().show();
+  }
+ else   if (invalidURL) {
+    pd.dismiss();
+    AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(addAccount.this);
+    dialogBuilder.setTitle(getResources().getText(R.string.invalid_url));
+    dialogBuilder.setMessage(getResources().getText(R.string.invalid_url_message));
     dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
       public void onClick(      DialogInterface dialog,      int whichButton){
       }
