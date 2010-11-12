@@ -1,0 +1,27 @@
+{
+  boolean returnValue=false;
+  db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
+  HashMap<?,?> firstHash=(HashMap<?,?>)commentValues.get(0);
+  String blogID=firstHash.get("blogID").toString();
+  if (!loadMore) {
+    db.delete(COMMENTS_TABLE,"blogID=" + blogID,null);
+  }
+  for (int i=0; i < commentValues.size(); i++) {
+    ContentValues values=new ContentValues();
+    HashMap<?,?> thisHash=(HashMap<?,?>)commentValues.get(i);
+    values.put("blogID",thisHash.get("blogID").toString());
+    values.put("postID",thisHash.get("postID").toString());
+    values.put("iCommentID",thisHash.get("commentID").toString());
+    values.put("author",thisHash.get("author").toString());
+    values.put("comment",thisHash.get("comment").toString());
+    values.put("commentDate",thisHash.get("commentDate").toString());
+    values.put("commentDateFormatted",thisHash.get("commentDateFormatted").toString());
+    values.put("status",thisHash.get("status").toString());
+    values.put("url",thisHash.get("url").toString());
+    values.put("email",thisHash.get("email").toString());
+    values.put("postTitle",thisHash.get("postTitle").toString());
+    returnValue=db.insert(COMMENTS_TABLE,null,values) > 0;
+  }
+  db.close();
+  return (returnValue);
+}

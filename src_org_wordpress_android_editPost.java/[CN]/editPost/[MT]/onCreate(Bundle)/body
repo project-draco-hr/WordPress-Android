@@ -8,6 +8,7 @@
     postID=extras.getString("postID");
     localDraft=extras.getBoolean("localDraft",false);
     isPage=extras.getBoolean("isPage",false);
+    isNew=extras.getBoolean("isNew",false);
   }
   Display display=((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
   int width=display.getWidth();
@@ -24,17 +25,78 @@
  else {
     setContentView(R.layout.edit);
   }
-  this.setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.edit_page : R.string.edit_post));
+  String action=getIntent().getAction();
+  if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
+    isAction=true;
+    isNew=true;
+    WordPressDB settingsDB=new WordPressDB(this);
+    Vector<?> accounts=settingsDB.getAccounts(this);
+    if (accounts.size() > 0) {
+      final String blogNames[]=new String[accounts.size()];
+      final String accountIDs[]=new String[accounts.size()];
+      for (int i=0; i < accounts.size(); i++) {
+        HashMap<?,?> curHash=(HashMap<?,?>)accounts.get(i);
+        try {
+          blogNames[i]=escapeUtils.unescapeHtml(curHash.get("blogName").toString());
+        }
+ catch (        Exception e) {
+          blogNames[i]="(No Blog Title)";
+        }
+        accountIDs[i]=curHash.get("id").toString();
+      }
+      if (accounts.size() != 1) {
+        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        builder.setTitle(getResources().getText(R.string.select_a_blog));
+        builder.setItems(blogNames,new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int item){
+            id=accountIDs[item];
+            accountName=blogNames[item];
+            setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
+            setContent();
+            lbsCheck();
+          }
+        }
+);
+        AlertDialog alert=builder.create();
+        alert.show();
+      }
+ else {
+        id=accountIDs[0];
+        accountName=blogNames[0];
+        setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
+        setContent();
+      }
+    }
+ else {
+      Intent i=new Intent(this,wpAndroid.class);
+      Toast.makeText(getApplicationContext(),getResources().getText(R.string.no_account),Toast.LENGTH_LONG).show();
+      startActivity(i);
+      finish();
+    }
+  }
+ else {
+    selectedImageIDs.clear();
+    selectedImageCtr=0;
+    if (!isPage) {
+      lbsCheck();
+    }
+  }
+  if (isNew) {
+    setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
+  }
+ else {
+    setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.edit_page : R.string.edit_post));
+  }
   if (localDraft) {
     WordPressDB lDraftsDB=new WordPressDB(this);
-    Vector post;
+    Vector<?> post;
     if (isPage) {
       post=lDraftsDB.loadPageDraft(this,postID);
     }
  else {
       post=lDraftsDB.loadPost(this,postID);
     }
-    final HashMap postHashMap=(HashMap)post.get(0);
+    final HashMap<?,?> postHashMap=(HashMap<?,?>)post.get(0);
     EditText titleET=(EditText)findViewById(R.id.title);
     EditText contentET=(EditText)findViewById(R.id.content);
     titleET.setText(postHashMap.get("title").toString());
@@ -58,33 +120,14 @@
         tvCategories.setText("Selected categories: " + categories);
       }
       WordPressDB settingsDB=new WordPressDB(this);
-      Vector settingsVector=settingsDB.loadSettings(this,id);
+      Vector<?> settingsVector=settingsDB.loadSettings(this,id);
       String sLocation=settingsVector.get(11).toString();
       location=false;
       if (sLocation.equals("1")) {
         location=true;
       }
       if (location) {
-        final Button viewMap=(Button)findViewById(R.id.viewMap);
-        viewMap.setOnClickListener(new TextView.OnClickListener(){
-          public void onClick(          View v){
-            Double latitude=0.0;
-            try {
-              latitude=curLocation.getLatitude();
-            }
- catch (            Exception e) {
-              e.printStackTrace();
-            }
-            if (latitude != 0.0) {
-              String uri="geo:" + latitude + ","+ curLocation.getLongitude();
-              startActivity(new Intent(android.content.Intent.ACTION_VIEW,Uri.parse(uri)));
-            }
- else {
-              Toast.makeText(editPost.this,getResources().getText(R.string.location_toast),Toast.LENGTH_SHORT).show();
-            }
-          }
-        }
-);
+        enableLBSButtons();
       }
       Double latitude=(Double)postHashMap.get("latitude");
       Double longitude=(Double)postHashMap.get("longitude");
@@ -139,9 +182,25 @@
       publishCB.setChecked(true);
     }
   }
+ else   if (isNew) {
+    Button cancelBtn=(Button)findViewById(R.id.cancel);
+    cancelBtn.setText("Upload Now");
+    if (!isAction) {
+      WordPressDB settingsDB=new WordPressDB(this);
+      Vector<?> settingsVector=settingsDB.loadSettings(this,id);
+      String sLocation=settingsVector.get(11).toString();
+      if (!isPage) {
+        location=false;
+        if (sLocation.equals("1")) {
+          location=true;
+        }
+        enableLBSButtons();
+      }
+    }
+  }
  else {
     WordPressDB settingsDB=new WordPressDB(this);
-    Vector categoriesVector=settingsDB.loadSettings(this,id);
+    Vector<?> categoriesVector=settingsDB.loadSettings(this,id);
     String sURL="";
     if (categoriesVector.get(0).toString().contains("xmlrpc.php")) {
       sURL=categoriesVector.get(0).toString();
@@ -158,13 +217,11 @@
       pd=ProgressDialog.show(editPost.this,getResources().getText((isPage) ? R.string.getting_page : R.string.getting_post),getResources().getText((isPage) ? R.string.please_wait_getting_page : R.string.please_wait_getting_post),true,false);
       XMLRPCMethod method=new XMLRPCMethod("metaWeblog.getPost",new XMLRPCMethodCallback(){
         public void callFinished(        Object result){
-          String s="done";
-          s=result.toString();
           pd.dismiss();
           if (result == null) {
           }
  else {
-            HashMap contentHash=(HashMap)result;
+            HashMap<?,?> contentHash=(HashMap<?,?>)result;
             EditText titleET=(EditText)findViewById(R.id.title);
             titleET.setText(escapeUtils.unescapeHtml(contentHash.get("title").toString()));
             EditText contentET=(EditText)findViewById(R.id.content);
@@ -184,15 +241,13 @@
               TextView categoriesTV=(TextView)findViewById(R.id.selectedCategories);
               Object categoriesArray[]=(Object[])contentHash.get("categories");
               if (categoriesArray != null) {
-                int ctr=0;
                 categories="";
-                for (                Object item : categoriesArray) {
+                for (int ctr=0; ctr < categoriesArray.length; ctr++) {
                   String category=categoriesArray[ctr].toString();
                   if (!selectedCategories.contains(category)) {
                     categories+=category + ",";
                     selectedCategories.add(category);
                   }
-                  ctr++;
                 }
                 categories=categories.trim();
                 if (categories.endsWith(",")) {
@@ -235,7 +290,7 @@
   final Button postButton=(Button)findViewById(R.id.post);
   postButton.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
-      if (localDraft) {
+      if (localDraft || isNew) {
         boolean result=savePost();
         if (result) {
           Bundle bundle=new Bundle();
@@ -249,7 +304,6 @@
  else {
         showDialog(ID_DIALOG_POSTING);
         Thread t=new Thread(){
-          String resultCode="";
           public void run(){
             try {
               finalResult=submitPost();
@@ -277,7 +331,7 @@
   final EditText contentEdit=(EditText)findViewById(R.id.content);
   contentEdit.addTextChangedListener(new TextWatcher(){
     public void afterTextChanged(    Editable s){
-      if (localDraft) {
+      if (localDraft || isNew) {
         ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
         ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
         ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
@@ -307,7 +361,6 @@
           }
           if (emButton.isChecked()) {
             StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
-            boolean exists=false;
             for (int i=0; i < ss.length; i++) {
               if (ss[i].getStyle() == android.graphics.Typeface.ITALIC) {
                 s.removeSpan(ss[i]);
@@ -415,27 +468,64 @@
   final Button cancelButton=(Button)findViewById(R.id.cancel);
   cancelButton.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
-      AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
-      dialogBuilder.setTitle(getResources().getText(R.string.cancel_edit));
-      dialogBuilder.setMessage(getResources().getText((isPage) ? R.string.sure_to_cancel_edit_page : R.string.sure_to_cancel_edit));
-      dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
-        public void onClick(        DialogInterface dialog,        int whichButton){
+      if (isNew) {
+        boolean result=savePost();
+        if (result) {
+          WordPressDB lddb=new WordPressDB(editPost.this);
+          int newID=-1;
+          if (isPage) {
+            newID=lddb.getLatestPageDraftID(editPost.this,id);
+          }
+ else {
+            newID=lddb.getLatestDraftID(editPost.this,id);
+          }
           Bundle bundle=new Bundle();
-          bundle.putString("returnStatus","CANCEL");
-          Intent mIntent=new Intent();
-          mIntent.putExtras(bundle);
-          setResult(RESULT_OK,mIntent);
-          finish();
+          if (newID != -1) {
+            if (isAction) {
+              Intent mIntent=new Intent(editPost.this,tabView.class);
+              bundle.putString("activateTab","posts");
+              bundle.putString("id",id);
+              bundle.putInt("uploadID",newID);
+              bundle.putString("accountName",accountName);
+              bundle.putString("action","upload");
+              mIntent.putExtras(bundle);
+              startActivity(mIntent);
+            }
+ else {
+              bundle.putString("returnStatus","OK");
+              bundle.putBoolean("upload",true);
+              bundle.putInt("newID",newID);
+              Intent mIntent=new Intent();
+              mIntent.putExtras(bundle);
+              setResult(RESULT_OK,mIntent);
+            }
+            finish();
+          }
         }
       }
-);
-      dialogBuilder.setNegativeButton(getResources().getText(R.string.no),new DialogInterface.OnClickListener(){
-        public void onClick(        DialogInterface dialog,        int whichButton){
+ else {
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
+        dialogBuilder.setTitle(getResources().getText(R.string.cancel_edit));
+        dialogBuilder.setMessage(getResources().getText((isPage) ? R.string.sure_to_cancel_edit_page : R.string.sure_to_cancel_edit));
+        dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+            Bundle bundle=new Bundle();
+            bundle.putString("returnStatus","CANCEL");
+            Intent mIntent=new Intent();
+            mIntent.putExtras(bundle);
+            setResult(RESULT_OK,mIntent);
+            finish();
+          }
         }
-      }
 );
-      dialogBuilder.setCancelable(true);
-      dialogBuilder.create().show();
+        dialogBuilder.setNegativeButton(getResources().getText(R.string.no),new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        dialogBuilder.create().show();
+      }
     }
   }
 );
@@ -444,7 +534,7 @@
     public void onClick(    View v){
       imageUrl.clear();
       thumbnailUrl.clear();
-      selectedImageIDs=new Vector();
+      selectedImageIDs=new Vector<Uri>();
       selectedImageCtr=0;
       imgThumbs.clear();
       Gallery gallery=(Gallery)findViewById(R.id.gallery);

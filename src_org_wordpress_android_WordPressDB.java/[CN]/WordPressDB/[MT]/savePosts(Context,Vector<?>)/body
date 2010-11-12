@@ -1,0 +1,21 @@
+{
+  boolean returnValue=false;
+  if (postValues.size() != 0) {
+    db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
+    HashMap<?,?> firstHash=(HashMap<?,?>)postValues.get(0);
+    String blogID=firstHash.get("blogID").toString();
+    db.delete(POSTSTORE_TABLE,"blogID=" + blogID,null);
+    for (int i=0; i < postValues.size(); i++) {
+      ContentValues values=new ContentValues();
+      HashMap<?,?> thisHash=(HashMap<?,?>)postValues.get(i);
+      values.put("blogID",thisHash.get("blogID").toString());
+      values.put("postID",thisHash.get("postID").toString());
+      values.put("title",thisHash.get("title").toString());
+      values.put("postDate",thisHash.get("postDate").toString());
+      values.put("postDateFormatted",thisHash.get("postDateFormatted").toString());
+      returnValue=db.insert(POSTSTORE_TABLE,null,values) > 0;
+    }
+    db.close();
+  }
+  return (returnValue);
+}

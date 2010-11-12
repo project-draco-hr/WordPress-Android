@@ -1,5 +1,5 @@
 {
-  Vector settings=new Vector();
+  Vector<Object> settings=new Vector<Object>();
   final WordPressDB settingsDB=new WordPressDB(ctx);
   settings=settingsDB.loadSettings(ctx,id);
   String sURL="";
@@ -13,7 +13,7 @@
   String sPassword=settings.get(3).toString();
   int sBlogId=Integer.parseInt(settings.get(10).toString());
   client=new XMLRPCClient(sURL);
-  HashMap hPost=new HashMap();
+  HashMap<String,Object> hPost=new HashMap<String,Object>();
   hPost.put("status","");
   hPost.put("post_id","");
   hPost.put("number",30);
@@ -24,15 +24,11 @@
   }
  catch (  XMLRPCException e) {
   }
-  List<Object> list=new ArrayList<Object>();
-  String s="done";
   if (result != null) {
     if (result.length > 0) {
-      s=result.toString();
-      Object origComments=result;
       String author, postID, commentID, comment, dateCreated, dateCreatedFormatted, status, authorEmail, authorURL, postTitle;
-      HashMap contentHash=new HashMap();
-      Vector dbVector=new Vector();
+      HashMap<Object,Object> contentHash=new HashMap<Object,Object>();
+      Vector<HashMap<String,String>> dbVector=new Vector<HashMap<String,String>>();
       Date d=new Date();
       SimpleDateFormat sdf=new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
       Calendar cal=Calendar.getInstance();
@@ -40,7 +36,7 @@
       String shortDisplayName="";
       shortDisplayName=tz.getDisplayName(true,TimeZone.SHORT);
       for (int ctr=0; ctr < result.length; ctr++) {
-        HashMap<String,String> dbValues=new HashMap();
+        HashMap<String,String> dbValues=new HashMap<String,String>();
         contentHash=(HashMap)result[ctr];
         comment=contentHash.get("content").toString();
         author=contentHash.get("author").toString();

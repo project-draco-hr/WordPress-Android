@@ -30,7 +30,6 @@
     InputStream inStream=new DataInputStream(new FileInputStream(videoFile.getFilePath()));
     byte[] buffer=new byte[3600];
     int length=-1;
-    long start1=System.currentTimeMillis();
     String chunk=null;
     Log.i("WordPress","converting media file to base64");
     while ((length=inStream.read(buffer)) > 0) {
@@ -38,11 +37,10 @@
       serializer.text(chunk);
     }
     Log.i("WordPress","conversion done!");
-    long end1=System.currentTimeMillis();
     inStream.close();
     serializer.endTag(null,"base64");
   }
- else   if (object instanceof List) {
+ else   if (object instanceof List<?>) {
     serializer.startTag(null,TYPE_ARRAY).startTag(null,TAG_DATA);
     List<Object> list=(List<Object>)object;
     Iterator<Object> iter=list.iterator();

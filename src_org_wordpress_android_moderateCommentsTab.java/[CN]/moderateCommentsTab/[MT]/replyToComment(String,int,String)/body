@@ -1,5 +1,5 @@
 {
-  Vector settings=new Vector();
+  Vector<Object> settings=new Vector<Object>();
   WordPressDB settingsDB=new WordPressDB(moderateCommentsTab.this);
   settings=settingsDB.loadSettings(moderateCommentsTab.this,id);
   String sURL="";
@@ -13,19 +13,15 @@
   String sPassword=settings.get(3).toString();
   int sBlogId=Integer.parseInt(settings.get(10).toString());
   client=new XMLRPCClient(sURL);
-  ListView lv=getListView();
-  Object curListItem;
-  ListAdapter la=lv.getAdapter();
-  HashMap replyHash=new HashMap();
+  HashMap<String,Object> replyHash=new HashMap<String,Object>();
   replyHash.put("comment_parent",commentID);
   replyHash.put("content",comment);
   replyHash.put("author","");
   replyHash.put("author_url","");
   replyHash.put("author_email","");
   Object[] params={sBlogId,sUsername,sPassword,Integer.valueOf(postID),replyHash};
-  Object result=null;
   try {
-    result=(Object)client.call("wp.newComment",params);
+    client.call("wp.newComment",params);
     dismissDialog(ID_DIALOG_REPLYING);
     Thread action=new Thread(){
       public void run(){

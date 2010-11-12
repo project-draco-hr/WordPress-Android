@@ -27,7 +27,7 @@
   if (!mediaError) {
     Thread updateDialog=new Thread(){
       public void run(){
-        loadingDialog.setMessage(getResources().getText((isPage) ? R.string.page_attempt_upload : R.string.post_attempt_upload));
+        postingDialog.setMessage(getResources().getText((isPage) ? R.string.page_attempt_upload : R.string.post_attempt_upload));
       }
     }
 ;
@@ -41,7 +41,7 @@
     }
  else {
       WordPressDB settingsDB=new WordPressDB(this);
-      Vector categoriesVector=settingsDB.loadSettings(this,id);
+      Vector<?> categoriesVector=settingsDB.loadSettings(this,id);
       String sURL="";
       if (categoriesVector.get(0).toString().contains("xmlrpc.php")) {
         sURL=categoriesVector.get(0).toString();
@@ -53,12 +53,6 @@
       String sPassword=categoriesVector.get(3).toString();
       String sImagePlacement=categoriesVector.get(4).toString();
       String sCenterThumbnailString=categoriesVector.get(5).toString();
-      String sFullSizeImageString=categoriesVector.get(6).toString();
-      boolean sFullSizeImage=false;
-      if (sFullSizeImageString.equals("1")) {
-        sFullSizeImage=true;
-      }
-      boolean centerThumbnail=false;
       if (sCenterThumbnailString.equals("1")) {
         centerThumbnail=true;
       }

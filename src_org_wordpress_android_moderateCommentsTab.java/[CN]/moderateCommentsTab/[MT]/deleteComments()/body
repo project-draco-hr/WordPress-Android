@@ -1,5 +1,5 @@
 {
-  Vector settings=new Vector();
+  Vector<Object> settings=new Vector<Object>();
   WordPressDB settingsDB=new WordPressDB(moderateCommentsTab.this);
   settings=settingsDB.loadSettings(moderateCommentsTab.this,id);
   String sURL="";
@@ -18,9 +18,8 @@
       CommentEntry listRow=(CommentEntry)getListView().getItemAtPosition(i);
       String curCommentID=listRow.commentID;
       Object[] params={sBlogId,sUsername,sPassword,curCommentID};
-      Object result=null;
       try {
-        result=(Object)client.call("wp.deleteComment",params);
+        client.call("wp.deleteComment",params);
       }
  catch (      final XMLRPCException e) {
         moderateErrorMsg=e.getLocalizedMessage();

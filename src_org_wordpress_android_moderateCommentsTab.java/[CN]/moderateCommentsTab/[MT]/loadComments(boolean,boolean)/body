@@ -1,10 +1,10 @@
 {
   WordPressDB postStoreDB=new WordPressDB(this);
-  String author, postID, commentID, comment, dateCreated, dateCreatedFormatted, status, authorEmail, authorURL, postTitle;
+  String author, postID, commentID, comment, dateCreatedFormatted, status, authorEmail, authorURL, postTitle;
   if (!addMore) {
-    Vector loadedPosts=postStoreDB.loadComments(moderateCommentsTab.this,id);
+    Vector<?> loadedPosts=postStoreDB.loadComments(moderateCommentsTab.this,id);
     if (loadedPosts != null) {
-      HashMap countHash=new HashMap();
+      HashMap<Object,Object> countHash=new HashMap<Object,Object>();
       countHash=(HashMap)loadedPosts.get(0);
       numRecords=Integer.parseInt(countHash.get("numRecords").toString());
       if (refreshOnly) {
@@ -31,7 +31,6 @@
         commentID=contentHash.get("commentID").toString();
         postID=contentHash.get("postID").toString();
         comment=escapeUtils.unescapeHtml(contentHash.get("comment").toString());
-        dateCreated=contentHash.get("commentDate").toString();
         dateCreatedFormatted=contentHash.get("commentDateFormatted").toString();
         status=contentHash.get("status").toString();
         authorEmail=escapeUtils.unescapeHtml(contentHash.get("email").toString());
@@ -67,8 +66,6 @@
         }
         setListAdapter(thumbs);
         listView.setOnItemClickListener(new OnItemClickListener(){
-          public void onNothingSelected(          AdapterView<?> arg0){
-          }
           public void onItemClick(          AdapterView<?> arg0,          View arg1,          int position,          long arg3){
             Intent intent=new Intent(moderateCommentsTab.this,viewComment.class);
             intent.putExtra("id",id);
@@ -128,7 +125,6 @@
         commentID=contentHash.get("commentID").toString();
         postID=contentHash.get("postID").toString();
         comment=escapeUtils.unescapeHtml(contentHash.get("comment").toString());
-        dateCreated=contentHash.get("commentDate").toString();
         dateCreatedFormatted=contentHash.get("commentDateFormatted").toString();
         status=contentHash.get("status").toString();
         authorEmail=escapeUtils.unescapeHtml(contentHash.get("email").toString());

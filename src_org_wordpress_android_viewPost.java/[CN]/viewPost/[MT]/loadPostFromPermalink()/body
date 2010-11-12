@@ -1,12 +1,10 @@
 {
-  Vector settings=new Vector();
   WordPressDB settingsDB=new WordPressDB(this);
-  settings=settingsDB.loadSettings(this,id);
+  Vector<?> settings=settingsDB.loadSettings(this,id);
   String username=settings.get(2).toString();
   String password=settings.get(3).toString();
   String url=settings.get(0).toString();
   client=new XMLRPCClient(url);
-  HashMap hPost=new HashMap();
   Object[] vParams={postID,username,password};
   Object versionResult=new Object();
   try {
@@ -17,7 +15,7 @@
   String permaLink=null, status="", html="";
   if (versionResult != null) {
     try {
-      HashMap contentHash=(HashMap)versionResult;
+      HashMap<?,?> contentHash=(HashMap<?,?>)versionResult;
       permaLink=contentHash.get("permaLink").toString();
       status=contentHash.get("post_status").toString();
       html=contentHash.get("description").toString();

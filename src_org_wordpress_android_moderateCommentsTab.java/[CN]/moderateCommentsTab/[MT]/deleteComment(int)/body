@@ -1,6 +1,5 @@
 {
-  String sSelCommentID=String.valueOf(selCommentID);
-  Vector settings=new Vector();
+  Vector<Object> settings=new Vector<Object>();
   WordPressDB settingsDB=new WordPressDB(moderateCommentsTab.this);
   settings=settingsDB.loadSettings(moderateCommentsTab.this,id);
   String sURL="";
@@ -15,9 +14,8 @@
   int sBlogId=Integer.parseInt(settings.get(10).toString());
   client=new XMLRPCClient(sURL);
   Object[] params={sBlogId,sUsername,sPassword,selCommentID};
-  Object result=null;
   try {
-    result=(Object)client.call("wp.deleteComment",params);
+    client.call("wp.deleteComment",params);
     dismissDialog(ID_DIALOG_DELETING);
     Thread action=new Thread(){
       public void run(){

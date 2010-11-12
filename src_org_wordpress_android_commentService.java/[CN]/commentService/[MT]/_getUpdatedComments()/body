@@ -1,6 +1,6 @@
 {
   WordPressDB settingsDB=new WordPressDB(this);
-  Vector notificationAccounts=settingsDB.getNotificationAccounts(this);
+  Vector<?> notificationAccounts=settingsDB.getNotificationAccounts(this);
   if (notificationAccounts != null) {
     if (notificationAccounts.size() == 0) {
       this.stopSelf();
@@ -10,7 +10,7 @@
         accountID=notificationAccounts.get(i).toString();
         accountName=settingsDB.getAccountName(this,accountID);
         Log.i("WordPressCommentService","Checking Comments for " + accountName);
-        Vector settings=settingsDB.loadSettings(this,accountID);
+        Vector<?> settings=settingsDB.loadSettings(this,accountID);
         final int latestCommentID=settingsDB.getLatestCommentID(this,accountID);
         String sURL="";
         if (settings.get(0).toString().contains("xmlrpc.php")) {
@@ -22,16 +22,15 @@
         String sUsername=settings.get(2).toString();
         String sPassword=settings.get(3).toString();
         client=new XMLRPCClient(sURL);
-        HashMap hPost=new HashMap();
+        HashMap<String,Object> hPost=new HashMap<String,Object>();
         hPost.put("status","");
         hPost.put("post_id","");
         hPost.put("number",1);
         Object[] params={1,sUsername,sPassword,hPost};
         XMLRPCMethodCallback callBack=new XMLRPCMethodCallback(){
-          public void callFinished(          Object[] result){
-            String s="done";
+          @SuppressWarnings("unchecked") public void callFinished(          Object[] result){
             WordPressDB settingsDB=new WordPressDB(commentService.this);
-            HashMap notificationOptions=settingsDB.getNotificationOptions(commentService.this);
+            HashMap<?,?> notificationOptions=settingsDB.getNotificationOptions(commentService.this);
             boolean sound=false, vibrate=false, light=false;
             if (notificationOptions != null) {
               if (notificationOptions.get("sound").toString().equals("1")) {
@@ -47,10 +46,9 @@
             if (result.length == 0) {
             }
  else {
-              s=result.toString();
-              HashMap contentHash=new HashMap();
-              int ctr=0;
-              for (              Object item : result) {
+              HashMap<Object,Object> contentHash=new HashMap<Object,Object>();
+              ;
+              for (int ctr=0; ctr < result.length; ctr++) {
                 contentHash=(HashMap)result[ctr];
                 ctr++;
               }

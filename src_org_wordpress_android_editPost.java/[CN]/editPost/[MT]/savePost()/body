@@ -15,11 +15,9 @@
   boolean publishThis=false;
   String images="";
   boolean success=false;
-  Vector<Object> myPostVector=new Vector<Object>();
-  String res=null;
   boolean enteredSettings=checkSettings();
   if (!enteredSettings) {
-    res="invalidSettings";
+    finalResult="invalidSettings";
   }
  else   if (title.equals("") || (content.equals("") && selectedImageIDs.size() == 0)) {
     AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
@@ -41,7 +39,7 @@
       publishThis=true;
     }
     WordPressDB settingsDB=new WordPressDB(this);
-    Vector settingsVector=settingsDB.loadSettings(this,id);
+    Vector<?> settingsVector=settingsDB.loadSettings(this,id);
     String sLocation=settingsVector.get(11).toString();
     boolean location=false;
     if (sLocation.equals("1")) {
@@ -61,10 +59,20 @@
     }
     WordPressDB lDraftsDB=new WordPressDB(this);
     if (isPage) {
-      success=lDraftsDB.updateLocalPageDraft(this,id,postID,title,content,images,publishThis);
+      if (isNew) {
+        success=lDraftsDB.saveLocalPageDraft(this,id,title,content,images,publishThis);
+      }
+ else {
+        success=lDraftsDB.updateLocalPageDraft(this,id,postID,title,content,images,publishThis);
+      }
     }
  else {
-      success=lDraftsDB.updateLocalDraft(this,id,postID,title,content,images,tags,categories,publishThis,latitude,longitude);
+      if (isNew) {
+        success=lDraftsDB.saveLocalDraft(this,id,title,content,images,tags,categories,publishThis,latitude,longitude);
+      }
+ else {
+        success=lDraftsDB.updateLocalDraft(this,id,postID,title,content,images,tags,categories,publishThis,latitude,longitude);
+      }
     }
   }
   return success;
