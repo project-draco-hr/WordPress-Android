@@ -1,6 +1,6 @@
 {
   WordPressDB postStoreDB=new WordPressDB(this);
-  Vector loadedPosts;
+  Vector<?> loadedPosts;
   if (isPage) {
     loadedPosts=postStoreDB.loadPages(viewPosts.this,id);
   }
@@ -24,7 +24,7 @@
   }
   if (loadedPosts != null) {
     for (int i=0; i < loadedPosts.size(); i++) {
-      HashMap contentHash=(HashMap)loadedPosts.get(i);
+      HashMap<?,?> contentHash=(HashMap<?,?>)loadedPosts.get(i);
       titles[i]=escapeUtils.unescapeHtml(contentHash.get("title").toString());
       if (isPage) {
         postIDs[i]=contentHash.get("pageID").toString();
@@ -38,40 +38,40 @@
       }
     }
     List<String> postIDList=Arrays.asList(postIDs);
-    List newPostIDList=new ArrayList<Object>();
+    List<String> newPostIDList=new ArrayList<String>();
     newPostIDList.add("postsHeader");
     newPostIDList.addAll(postIDList);
     postIDs=(String[])newPostIDList.toArray(new String[newPostIDList.size()]);
-    List postTitleList=Arrays.asList(titles);
-    List newPostTitleList=new ArrayList();
+    List<String> postTitleList=Arrays.asList(titles);
+    List<CharSequence> newPostTitleList=new ArrayList<CharSequence>();
     newPostTitleList.add(getResources().getText((isPage) ? R.string.tab_pages : R.string.tab_posts));
     newPostTitleList.addAll(postTitleList);
     titles=(String[])newPostTitleList.toArray(new String[newPostTitleList.size()]);
-    List dateList=Arrays.asList(dateCreated);
-    List newDateList=new ArrayList();
+    List<String> dateList=Arrays.asList(dateCreated);
+    List<String> newDateList=new ArrayList<String>();
     newDateList.add("postsHeader");
     newDateList.addAll(dateList);
     dateCreated=(String[])newDateList.toArray(new String[newDateList.size()]);
-    List dateFormattedList=Arrays.asList(dateCreatedFormatted);
-    List newDateFormattedList=new ArrayList();
+    List<String> dateFormattedList=Arrays.asList(dateCreatedFormatted);
+    List<String> newDateFormattedList=new ArrayList<String>();
     newDateFormattedList.add("postsHeader");
     newDateFormattedList.addAll(dateFormattedList);
     dateCreatedFormatted=(String[])newDateFormattedList.toArray(new String[newDateFormattedList.size()]);
   }
   boolean drafts=loadDrafts();
   if (drafts) {
-    List draftIDList=Arrays.asList(draftIDs);
-    List newDraftIDList=new ArrayList();
+    List<String> draftIDList=Arrays.asList(draftIDs);
+    List<String> newDraftIDList=new ArrayList<String>();
     newDraftIDList.add("draftsHeader");
     newDraftIDList.addAll(draftIDList);
     draftIDs=(String[])newDraftIDList.toArray(new String[newDraftIDList.size()]);
-    List titleList=Arrays.asList(draftTitles);
-    List newTitleList=new ArrayList();
+    List<String> titleList=Arrays.asList(draftTitles);
+    List<CharSequence> newTitleList=new ArrayList<CharSequence>();
     newTitleList.add(getResources().getText(R.string.local_drafts));
     newTitleList.addAll(titleList);
     draftTitles=(String[])newTitleList.toArray(new String[newTitleList.size()]);
-    List publishList=Arrays.asList(publish);
-    List newPublishList=new ArrayList();
+    List<String> publishList=Arrays.asList(publish);
+    List<String> newPublishList=new ArrayList<String>();
     newPublishList.add("draftsHeader");
     newPublishList.addAll(publishList);
     publish=(String[])newPublishList.toArray(new String[newPublishList.size()]);

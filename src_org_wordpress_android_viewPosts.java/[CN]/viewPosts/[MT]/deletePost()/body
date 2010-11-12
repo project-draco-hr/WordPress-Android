@@ -1,5 +1,5 @@
 {
-  Vector settings=new Vector();
+  Vector<?> settings=new Vector<Object>();
   WordPressDB settingsDB=new WordPressDB(viewPosts.this);
   settings=settingsDB.loadSettings(viewPosts.this,id);
   String sURL="";
@@ -16,9 +16,8 @@
   client=new XMLRPCClient(sURL);
   Object[] postParams={"",selPostID,sUsername,sPassword};
   Object[] pageParams={sBlogId,sUsername,sPassword,selPostID};
-  Object result=null;
   try {
-    result=(Object)client.call((isPage) ? "wp.deletePage" : "blogger.deletePost",(isPage) ? pageParams : postParams);
+    client.call((isPage) ? "wp.deletePage" : "blogger.deletePost",(isPage) ? pageParams : postParams);
     dismissDialog(ID_DIALOG_DELETING);
     Thread action=new Thread(){
       public void run(){

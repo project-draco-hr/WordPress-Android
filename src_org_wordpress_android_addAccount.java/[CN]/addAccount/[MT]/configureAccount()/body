@@ -64,17 +64,16 @@
     }
     client=new XMLRPCClient(fBlogURL);
     XMLRPCMethod method=new XMLRPCMethod("wp.getUsersBlogs",new XMLRPCMethodCallback(){
-      public void callFinished(      Object[] result){
+      @SuppressWarnings("unchecked") public void callFinished(      Object[] result){
         final String[] blogNames=new String[result.length];
         final String[] urls=new String[result.length];
         final int[] blogIds=new int[result.length];
         final boolean[] wpcoms=new boolean[result.length];
         final String[] wpVersions=new String[result.length];
-        HashMap contentHash=new HashMap();
-        int ctr=0;
+        HashMap<Object,Object> contentHash=new HashMap<Object,Object>();
         WordPressDB settingsDB=new WordPressDB(addAccount.this);
-        for (        Object item : result) {
-          contentHash=(HashMap)result[ctr];
+        for (int ctr=0; ctr < result.length; ctr++) {
+          contentHash=(HashMap<Object,Object>)result[ctr];
           boolean match=false;
           String matchBlogName=contentHash.get("blogName").toString();
           if (matchBlogName.length() == 0) {
@@ -85,10 +84,7 @@
             blogNames[blogCtr]=matchBlogName;
             urls[blogCtr]=contentHash.get("xmlrpc").toString();
             blogIds[blogCtr]=Integer.parseInt(contentHash.get("blogid").toString());
-            String blogName=blogNames[blogCtr];
             String blogURL=urls[blogCtr];
-            int blogId=blogIds[blogCtr];
-            boolean success=false;
             aBlogNames.add(escapeUtils.unescapeHtml(blogNames[blogCtr]));
             boolean wpcomFlag=false;
             if (blogURL.toLowerCase().contains("wordpress.com")) {
@@ -122,7 +118,6 @@
             wpVersions[blogCtr]=wpVersion;
             blogCtr++;
           }
-          ctr++;
         }
         pd.dismiss();
         if (blogCtr == 0) {
