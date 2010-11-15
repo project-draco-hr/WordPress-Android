@@ -156,20 +156,6 @@
         RelativeLayout locationSection=(RelativeLayout)findViewById(R.id.section4);
         locationSection.setVisibility(View.VISIBLE);
       }
-      Button selectCategories=(Button)findViewById(R.id.selectCategories);
-      selectCategories.setOnClickListener(new Button.OnClickListener(){
-        public void onClick(        View v){
-          Bundle bundle=new Bundle();
-          bundle.putString("id",id);
-          if (categories != "") {
-            bundle.putString("categoriesCSV",categories);
-          }
-          Intent i=new Intent(editPost.this,selectCategories.class);
-          i.putExtras(bundle);
-          startActivityForResult(i,5);
-        }
-      }
-);
       String tags=postHashMap.get("tags").toString();
       if (!tags.equals("")) {
         EditText tagsET=(EditText)findViewById(R.id.tags);
@@ -286,6 +272,22 @@
       Object[] params={postID,sUsername,sPassword};
       method.call(params);
     }
+  }
+  if ((localDraft || isNew) && !isPage) {
+    Button selectCategories=(Button)findViewById(R.id.selectCategories);
+    selectCategories.setOnClickListener(new Button.OnClickListener(){
+      public void onClick(      View v){
+        Bundle bundle=new Bundle();
+        bundle.putString("id",id);
+        if (categories != "") {
+          bundle.putString("categoriesCSV",categories);
+        }
+        Intent i=new Intent(editPost.this,selectCategories.class);
+        i.putExtras(bundle);
+        startActivityForResult(i,5);
+      }
+    }
+);
   }
   final Button postButton=(Button)findViewById(R.id.post);
   postButton.setOnClickListener(new Button.OnClickListener(){
