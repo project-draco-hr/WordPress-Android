@@ -10,7 +10,6 @@
     content=contentET.getText().toString();
   }
   content=StringHelper.convertHTMLTagsForUpload(content);
-  CheckBox publishCB=(CheckBox)findViewById(R.id.publish);
   Boolean publishThis=false;
   String imageContent="";
   boolean mediaError=false;
@@ -56,87 +55,112 @@
       if (sCenterThumbnailString.equals("1")) {
         centerThumbnail=true;
       }
-      if (publishCB.isChecked()) {
-        publishThis=true;
-      }
-      Map<String,Object> contentStruct=new HashMap<String,Object>();
-      if (imageContent != "") {
-        if (sImagePlacement.equals("Above Text")) {
-          content=imageContent + content;
-        }
- else {
-          content=content + imageContent;
-        }
-      }
-      contentStruct.put("post_type","post");
-      contentStruct.put("title",title);
-      contentStruct.put("description",content);
-      if (!isPage) {
-        EditText tagsET=(EditText)findViewById(R.id.tags);
-        String tags=tagsET.getText().toString();
-        String[] theCategories=categories.split(",");
-        if (tags != "") {
-          contentStruct.put("mt_keywords",tags);
-        }
-        if (theCategories.length > 0) {
-          contentStruct.put("categories",theCategories);
-        }
-      }
-      client=new XMLRPCClient(sURL);
-      Object[] params={postID,sUsername,sPassword,contentStruct,publishThis};
-      Object result=null;
-      boolean success=false;
-      try {
-        result=(Object)client.call("metaWeblog.editPost",params);
-        success=true;
-      }
- catch (      final XMLRPCException e) {
-        Thread prompt=new Thread(){
-          public void run(){
-            dismissDialog(ID_DIALOG_POSTING);
-            AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
-            dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
-            dialogBuilder.setMessage(e.getMessage());
-            dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-              public void onClick(              DialogInterface dialog,              int whichButton){
-              }
-            }
-);
-            dialogBuilder.setCancelable(true);
-            dialogBuilder.create().show();
-          }
-        }
-;
-        this.runOnUiThread(prompt);
-      }
-      if (success) {
-        newID=result.toString();
-        res="OK";
-      }
- else {
-        res="FAIL";
-      }
+      Spinner spinner=(Spinner)findViewById(R.id.status);
+      int selectedStatus=spinner.getSelectedItemPosition();
+      String status="";
+switch (selectedStatus) {
+case 0:
+        status="draft";
+      break;
+case 1:
+    if (isPage) {
+      status="private";
     }
-  }
  else {
-    Thread prompt=new Thread(){
-      public void run(){
-        dismissDialog(ID_DIALOG_POSTING);
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
-        dialogBuilder.setTitle(getResources().getText(R.string.sdcard_title));
-        dialogBuilder.setMessage(getResources().getText(R.string.sdcard_message));
-        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-          public void onClick(          DialogInterface dialog,          int whichButton){
-          }
-        }
-);
-        dialogBuilder.setCancelable(true);
-        dialogBuilder.create().show();
-      }
+      status="pending";
     }
+  break;
+case 2:
+if (isPage) {
+  status="publish";
+}
+ else {
+  status="private";
+}
+break;
+case 3:
+status="publish";
+break;
+}
+Map<String,Object> contentStruct=new HashMap<String,Object>();
+if (imageContent != "") {
+if (sImagePlacement.equals("Above Text")) {
+content=imageContent + content;
+}
+ else {
+content=content + imageContent;
+}
+}
+contentStruct.put("post_type","post");
+contentStruct.put("title",title);
+contentStruct.put("description",content);
+contentStruct.put("post_status",status);
+if (!isPage) {
+EditText tagsET=(EditText)findViewById(R.id.tags);
+String tags=tagsET.getText().toString();
+String[] theCategories=categories.split(",");
+if (tags != "") {
+contentStruct.put("mt_keywords",tags);
+}
+if (theCategories.length > 0) {
+contentStruct.put("categories",theCategories);
+}
+}
+client=new XMLRPCClient(sURL);
+Object[] params={postID,sUsername,sPassword,contentStruct,publishThis};
+Object result=null;
+boolean success=false;
+try {
+result=(Object)client.call("metaWeblog.editPost",params);
+success=true;
+}
+ catch (final XMLRPCException e) {
+Thread prompt=new Thread(){
+public void run(){
+dismissDialog(ID_DIALOG_POSTING);
+AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
+dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
+dialogBuilder.setMessage(e.getMessage());
+dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+}
+}
+);
+dialogBuilder.setCancelable(true);
+dialogBuilder.create().show();
+}
+}
 ;
-    this.runOnUiThread(prompt);
-    res="mediaError";
-  }
-  return res;
+this.runOnUiThread(prompt);
+}
+if (success) {
+newID=result.toString();
+res="OK";
+}
+ else {
+res="FAIL";
+}
+}
+}
+ else {
+Thread prompt=new Thread(){
+public void run(){
+dismissDialog(ID_DIALOG_POSTING);
+AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
+dialogBuilder.setTitle(getResources().getText(R.string.sdcard_title));
+dialogBuilder.setMessage(getResources().getText(R.string.sdcard_message));
+dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+}
+}
+);
+dialogBuilder.setCancelable(true);
+dialogBuilder.create().show();
+}
+}
+;
+this.runOnUiThread(prompt);
+res="mediaError";
+}
+return res;
 }

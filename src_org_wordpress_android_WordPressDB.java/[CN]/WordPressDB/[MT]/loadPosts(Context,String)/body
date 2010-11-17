@@ -1,7 +1,7 @@
 {
   db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
   Vector<HashMap<String,Object>> returnVector=new Vector<HashMap<String,Object>>();
-  Cursor c=db.query(LOCALDRAFTS_TABLE,new String[]{"id","title","publish","uploaded"},"blogID=" + blogID,null,null,null,"id desc");
+  Cursor c=db.query(LOCALDRAFTS_TABLE,new String[]{"id","title","status","uploaded"},"blogID=" + blogID,null,null,null,"id desc");
   int numRows=c.getCount();
   c.moveToFirst();
   for (int i=0; i < numRows; ++i) {
@@ -9,7 +9,7 @@
       HashMap<String,Object> returnHash=new HashMap<String,Object>();
       returnHash.put("id",c.getInt(0));
       returnHash.put("title",c.getString(1));
-      returnHash.put("publish",c.getInt(2));
+      returnHash.put("status",c.getString(2));
       returnHash.put("uploaded",c.getInt(3));
       returnVector.add(i,returnHash);
     }
