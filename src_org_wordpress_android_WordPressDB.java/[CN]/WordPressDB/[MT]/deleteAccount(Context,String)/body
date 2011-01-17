@@ -5,6 +5,22 @@
   if (rowsAffected > 0) {
     returnValue=true;
   }
+  Vector<HashMap<String,Object>> shortcuts=this.getQuickPressShortcuts(ctx,id);
+  for (int i=0; i < shortcuts.size(); i++) {
+    HashMap<String,Object> shortcutHash=shortcuts.get(i);
+    Intent shortcutIntent=new Intent();
+    shortcutIntent.setClassName(editPost.class.getPackage().getName(),editPost.class.getName());
+    shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    shortcutIntent.setAction(Intent.ACTION_VIEW);
+    Intent broadcastShortcutIntent=new Intent();
+    broadcastShortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT,shortcutIntent);
+    broadcastShortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME,shortcutHash.get("name").toString());
+    broadcastShortcutIntent.putExtra("duplicate",false);
+    broadcastShortcutIntent.setAction("com.android.launcher.action.UNINSTALL_SHORTCUT");
+    ctx.sendBroadcast(broadcastShortcutIntent);
+    deleteQuickPressShortcut(ctx,shortcutHash.get("id").toString());
+  }
   db.close();
   return (returnValue);
 }
