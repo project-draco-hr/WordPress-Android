@@ -2,19 +2,23 @@
   db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
   ContentValues values=new ContentValues();
   values.put("url",url);
-  values.put("blogName",blogName);
   values.put("username",username);
   values.put("password",password);
+  values.put("httpuser",httpuser);
+  values.put("httppassword",httppassword);
   values.put("imagePlacement",imagePlacement);
   values.put("centerThumbnail",centerThumbnail);
   values.put("fullSizeImage",fullSizeImage);
   values.put("maxImageWidth",maxImageWidth);
   values.put("maxImageWidthId",maxImageWidthId);
-  values.put("runService",runService);
-  values.put("blogId",blogId);
-  values.put("dotcomFlag",wpcom);
-  values.put("wpVersion",wpVersion);
-  boolean returnValue=db.insert(SETTINGS_TABLE,null,values) > 0;
+  values.put("location",location);
+  boolean returnValue=db.update(SETTINGS_TABLE,values,"id=" + id,null) > 0;
+  if (isWPCom) {
+    ContentValues userPass=new ContentValues();
+    userPass.put("username",username);
+    userPass.put("password",password);
+    returnValue=db.update(SETTINGS_TABLE,userPass,"username=\"" + originalUsername + "\" AND dotcomFlag=1",null) > 0;
+  }
   db.close();
   return (returnValue);
 }

@@ -62,7 +62,7 @@
       }
       fBlogURL=blogURL + "/xmlrpc.php";
     }
-    client=new XMLRPCClient(fBlogURL);
+    client=new XMLRPCClient(fBlogURL,httpuser,httppassword);
     XMLRPCMethod method=new XMLRPCMethod("wp.getUsersBlogs",new XMLRPCMethodCallback(){
       @SuppressWarnings("unchecked") public void callFinished(      Object[] result){
         final String[] blogNames=new String[result.length];
@@ -154,7 +154,7 @@
                 for (int i=0; i < selectedItems.size(); i++) {
                   if (selectedItems.get(selectedItems.keyAt(i)) == true) {
                     int rowID=selectedItems.keyAt(i);
-                    success=settingsDB.addAccount(addAccount.this,urls[rowID],blogNames[rowID],username,password,"Above Text",true,false,"500",5,false,blogIds[rowID],wpcoms[rowID],wpVersions[rowID]);
+                    success=settingsDB.addAccount(addAccount.this,urls[rowID],blogNames[rowID],username,password,httpuser,httppassword,"Above Text",true,false,"500",5,false,blogIds[rowID],wpcoms[rowID],wpVersions[rowID]);
                   }
                 }
                 Bundle bundle=new Bundle();
@@ -170,7 +170,7 @@
               public void onClick(              DialogInterface dialog,              int whichButton){
                 WordPressDB settingsDB=new WordPressDB(addAccount.this);
                 for (int i=0; i < blogCtr; i++) {
-                  success=settingsDB.addAccount(addAccount.this,urls[i],blogNames[i],username,password,"Above Text",true,false,"500",5,false,blogIds[i],wpcoms[i],wpVersions[i]);
+                  success=settingsDB.addAccount(addAccount.this,urls[i],blogNames[i],username,password,httpuser,httppassword,"Above Text",true,false,"500",5,false,blogIds[i],wpcoms[i],wpVersions[i]);
                 }
                 Bundle bundle=new Bundle();
                 bundle.putString("returnStatus","SAVE");
@@ -207,7 +207,7 @@
 );
           }
  else {
-            success=settingsDB.addAccount(addAccount.this,urls[0],blogNames[0],username,password,"Above Text",true,false,"500",5,false,blogIds[0],wpcoms[0],wpVersions[0]);
+            success=settingsDB.addAccount(addAccount.this,urls[0],blogNames[0],username,password,httpuser,httppassword,"Above Text",true,false,"500",5,false,blogIds[0],wpcoms[0],wpVersions[0]);
             Bundle bundle=new Bundle();
             bundle.putString("returnStatus","SAVE");
             Intent mIntent=new Intent();
