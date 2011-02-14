@@ -10,6 +10,8 @@
   HashMap<?,?> postHashMap=(HashMap<?,?>)post.get(0);
   String title=postHashMap.get("title").toString();
   String content=StringHelper.convertHTMLTagsForUpload(postHashMap.get("content").toString());
+  String password=null;
+  if (postHashMap.get("password") != null)   password=postHashMap.get("password").toString();
   String picturePaths=postHashMap.get("picturePaths").toString();
   if (!picturePaths.equals("")) {
     String[] pPaths=picturePaths.split(",");
@@ -102,6 +104,11 @@
     }
     contentStruct.put("post_type",(isPage) ? "page" : "post");
     contentStruct.put("title",title);
+    long pubDate=Long.parseLong(postHashMap.get("pubDate").toString());
+    if (pubDate != 0) {
+      Date date=new Date(pubDate);
+      contentStruct.put("date_created_gmt",date);
+    }
     content=content.replace("/\n\n/g","</p><p>");
     content=content.replace("/\n/g","<br />");
     contentStruct.put("description",content);
@@ -134,6 +141,9 @@
       }
     }
     client=new XMLRPCClient(sURL,sHttpuser,sHttppassword);
+    if (password != null && !"".equals(password)) {
+      contentStruct.put("wp_password",password);
+    }
     Object[] params={sBlogId,sUsername,sPassword,contentStruct,publishThis};
     Object result=null;
     boolean success=false;

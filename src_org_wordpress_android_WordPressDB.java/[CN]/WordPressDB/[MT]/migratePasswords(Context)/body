@@ -1,0 +1,21 @@
+{
+  db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
+  Cursor c=db.query(SETTINGS_TABLE,new String[]{"id","password","httppassword","dotcom_password"},null,null,null,null,null);
+  int numRows=c.getCount();
+  c.moveToFirst();
+  for (int i=0; i < numRows; i++) {
+    ContentValues values=new ContentValues();
+    if (c.getString(1) != null) {
+      values.put("password",encryptPassword(c.getString(1)));
+    }
+    if (c.getString(2) != null) {
+      values.put("httppassword",encryptPassword(c.getString(2)));
+    }
+    if (c.getString(3) != null) {
+      values.put("dotcom_password",encryptPassword(c.getString(3)));
+    }
+    db.update(SETTINGS_TABLE,values,"id=" + c.getInt(0),null);
+    c.moveToNext();
+  }
+  c.close();
+}

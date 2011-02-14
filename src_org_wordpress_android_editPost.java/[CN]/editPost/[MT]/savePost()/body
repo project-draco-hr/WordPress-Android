@@ -3,9 +3,28 @@
   String title=titleET.getText().toString();
   EditText contentET=(EditText)findViewById(R.id.content);
   String content=escapeUtils.unescapeHtml(Html.toHtml(contentET.getText()));
+  EditText passwordET=(EditText)findViewById(R.id.post_password);
+  String password=passwordET.getText().toString();
   content=content.replace("<p><p>","<p>");
   content=content.replace("</p></p>","</p>");
   content=content.replace("<br><br>","<br>");
+  TextView tvPubDate=(TextView)findViewById(R.id.pubDate);
+  String pubDate=tvPubDate.getText().toString();
+  long pubDateTimestamp=0;
+  if (!pubDate.equals(getResources().getText(R.string.immediately))) {
+    SimpleDateFormat sdf=new SimpleDateFormat("MMM dd, yyyy hh:mm");
+    Date d=new Date();
+    try {
+      d=sdf.parse(pubDate);
+      pubDateTimestamp=d.getTime();
+    }
+ catch (    ParseException e) {
+      e.printStackTrace();
+    }
+catch (    java.text.ParseException e) {
+      e.printStackTrace();
+    }
+  }
   String tags="";
   if (!isPage) {
     EditText tagsET=(EditText)findViewById(R.id.tags);
@@ -82,18 +101,18 @@ e.printStackTrace();
 WordPressDB lDraftsDB=new WordPressDB(this);
 if (isPage) {
 if (isNew) {
-success=lDraftsDB.saveLocalPageDraft(this,id,title,content,images,status);
+success=lDraftsDB.saveLocalPageDraft(this,id,title,content,images,status,password,pubDateTimestamp);
 }
  else {
-success=lDraftsDB.updateLocalPageDraft(this,id,postID,title,content,images,status);
+success=lDraftsDB.updateLocalPageDraft(this,id,postID,title,content,images,status,password,pubDateTimestamp);
 }
 }
  else {
 if (isNew) {
-success=lDraftsDB.saveLocalDraft(this,id,title,content,images,tags,categories,status,latitude,longitude);
+success=lDraftsDB.saveLocalDraft(this,id,title,content,images,tags,categories,status,latitude,longitude,password,pubDateTimestamp);
 }
  else {
-success=lDraftsDB.updateLocalDraft(this,id,postID,title,content,images,tags,categories,status,latitude,longitude);
+success=lDraftsDB.updateLocalDraft(this,id,postID,title,content,images,tags,categories,status,latitude,longitude,password,pubDateTimestamp);
 }
 }
 }

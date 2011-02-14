@@ -3,9 +3,9 @@
   ContentValues values=new ContentValues();
   values.put("url",url);
   values.put("username",username);
-  values.put("password",password);
+  values.put("password",encryptPassword(password));
   values.put("httpuser",httpuser);
-  values.put("httppassword",httppassword);
+  values.put("httppassword",encryptPassword(httppassword));
   values.put("imagePlacement",imagePlacement);
   values.put("centerThumbnail",centerThumbnail);
   values.put("fullSizeImage",fullSizeImage);
@@ -16,7 +16,7 @@
   if (isWPCom) {
     ContentValues userPass=new ContentValues();
     userPass.put("username",username);
-    userPass.put("password",password);
+    userPass.put("password",encryptPassword(password));
     returnValue=db.update(SETTINGS_TABLE,userPass,"username=\"" + originalUsername + "\" AND dotcomFlag=1",null) > 0;
   }
   db.close();

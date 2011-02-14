@@ -105,8 +105,23 @@
     final HashMap<?,?> postHashMap=(HashMap<?,?>)post.get(0);
     EditText titleET=(EditText)findViewById(R.id.title);
     EditText contentET=(EditText)findViewById(R.id.content);
+    EditText passwordET=(EditText)findViewById(R.id.post_password);
     titleET.setText(postHashMap.get("title").toString());
     contentET.setText(Html.fromHtml(postHashMap.get("content").toString()));
+    long pubDate=Long.parseLong(postHashMap.get("pubDate").toString());
+    if (pubDate != 0) {
+      try {
+        Date date=new Date(pubDate);
+        SimpleDateFormat sdf=new SimpleDateFormat("MMM dd, yyyy 'at' hh:mm a");
+        String sPubDate=sdf.format(date);
+        TextView tvPubDate=(TextView)findViewById(R.id.pubDate);
+        tvPubDate.setText(sPubDate);
+      }
+ catch (      Exception e) {
+        e.printStackTrace();
+      }
+    }
+    if (postHashMap.get("password") != null)     passwordET.setText(postHashMap.get("password").toString());
     if (postHashMap.get("status") != null) {
       String status=postHashMap.get("status").toString();
       if (status.equals("draft")) {
@@ -247,6 +262,26 @@
               content=contentHash.get("description").toString();
             }
             contentET.setText(content);
+            SimpleDateFormat sdf=new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
+            Calendar cal=Calendar.getInstance();
+            TimeZone tz=cal.getTimeZone();
+            String shortDisplayName="";
+            shortDisplayName=tz.getDisplayName(true,TimeZone.SHORT);
+            String cDate=contentHash.get("dateCreated").toString().replace(tz.getID(),shortDisplayName);
+            try {
+              Date d=sdf.parse(cDate);
+              SimpleDateFormat sdfOut=new SimpleDateFormat("MMM dd, yyyy hh:mm a");
+              TextView tvPubDate=(TextView)findViewById(R.id.pubDate);
+              tvPubDate.setText(sdfOut.format(d));
+            }
+ catch (            ParseException pe) {
+              pe.printStackTrace();
+            }
+catch (            java.text.ParseException e) {
+              e.printStackTrace();
+            }
+            EditText passwordET=(EditText)findViewById(R.id.post_password);
+            if (contentHash.get("wp_password") != null)             passwordET.setText(contentHash.get("wp_password").toString());
             Toast.makeText(editPost.this,getResources().getText(R.string.html),Toast.LENGTH_SHORT).show();
             String status=contentHash.get("post_status").toString();
             if (!isPage) {
@@ -587,6 +622,19 @@
       gallery.setVisibility(View.GONE);
       gallery.setAdapter(null);
       clearPictureButton.setVisibility(View.GONE);
+    }
+  }
+);
+  Button pubDate=(Button)findViewById(R.id.pubDateButton);
+  pubDate.setOnClickListener(new TextView.OnClickListener(){
+    public void onClick(    View v){
+      Calendar c=Calendar.getInstance();
+      mYear=c.get(Calendar.YEAR);
+      mMonth=c.get(Calendar.MONTH);
+      mDay=c.get(Calendar.DAY_OF_MONTH);
+      mHour=c.get(Calendar.HOUR_OF_DAY);
+      mMinute=c.get(Calendar.MINUTE);
+      showDialog(ID_DIALOG_DATE);
     }
   }
 );

@@ -93,10 +93,31 @@ content=imageContent + content;
 content=content + imageContent;
 }
 }
+EditText passwordET=(EditText)findViewById(R.id.post_password);
+String wpPassword=passwordET.getText().toString();
 contentStruct.put("post_type","post");
 contentStruct.put("title",title);
 contentStruct.put("description",content);
 contentStruct.put("post_status",status);
+TextView tvPubDate=(TextView)findViewById(R.id.pubDate);
+String pubDate=tvPubDate.getText().toString();
+if (!pubDate.equals(getResources().getText(R.string.immediately))) {
+SimpleDateFormat sdf=new SimpleDateFormat("MMM dd, yyyy hh:mm");
+Date d=new Date();
+try {
+d=sdf.parse(pubDate);
+contentStruct.put("date_created_gmt",d);
+}
+ catch (ParseException e) {
+e.printStackTrace();
+}
+catch (java.text.ParseException e) {
+e.printStackTrace();
+}
+}
+if (wpPassword != null && !"".equals(wpPassword)) {
+contentStruct.put("wp_password",wpPassword);
+}
 if (!isPage) {
 EditText tagsET=(EditText)findViewById(R.id.tags);
 String tags=tagsET.getText().toString();
