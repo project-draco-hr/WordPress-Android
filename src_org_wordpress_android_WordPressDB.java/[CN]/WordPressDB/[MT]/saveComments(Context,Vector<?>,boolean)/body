@@ -4,7 +4,14 @@
   HashMap<?,?> firstHash=(HashMap<?,?>)commentValues.get(0);
   String blogID=firstHash.get("blogID").toString();
   if (!loadMore) {
-    db.delete(COMMENTS_TABLE,"blogID=" + blogID,null);
+    try {
+      db.delete(COMMENTS_TABLE,"blogID=" + blogID,null);
+    }
+ catch (    Exception e) {
+      Log.i("WordPress",e.getMessage());
+      db.close();
+      return false;
+    }
   }
   for (int i=0; i < commentValues.size(); i++) {
     ContentValues values=new ContentValues();
@@ -20,7 +27,14 @@
     values.put("url",thisHash.get("url").toString());
     values.put("email",thisHash.get("email").toString());
     values.put("postTitle",thisHash.get("postTitle").toString());
-    returnValue=db.insert(COMMENTS_TABLE,null,values) > 0;
+    try {
+      returnValue=db.insert(COMMENTS_TABLE,null,values) > 0;
+    }
+ catch (    Exception e) {
+      Log.i("WordPress",e.getMessage());
+      db.close();
+      return false;
+    }
   }
   db.close();
   return (returnValue);
