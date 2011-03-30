@@ -18,15 +18,13 @@
   if (width > 480) {
     isLargeScreen=true;
   }
-  String[] items;
   if (isPage) {
     setContentView(R.layout.edit_page);
-    items=new String[]{getResources().getString(R.string.draft),getResources().getString(R.string.post_private),getResources().getString(R.string.publish_post)};
   }
  else {
     setContentView(R.layout.edit);
-    items=new String[]{getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private),getResources().getString(R.string.publish_post)};
   }
+  String[] items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private)};
   Spinner spinner=(Spinner)findViewById(R.id.status);
   ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,items);
   adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -124,27 +122,17 @@
     if (postHashMap.get("password") != null)     passwordET.setText(postHashMap.get("password").toString());
     if (postHashMap.get("status") != null) {
       String status=postHashMap.get("status").toString();
-      if (status.equals("draft")) {
+      if (status.equals("publish")) {
         spinner.setSelection(0,true);
       }
- else       if (status.equals("pending")) {
+ else       if (status.equals("draft")) {
         spinner.setSelection(1,true);
       }
- else       if (status.equals("private")) {
-        if (isPage) {
-          spinner.setSelection(1);
-        }
- else {
-          spinner.setSelection(2);
-        }
+ else       if (status.equals("pending")) {
+        spinner.setSelection(2,true);
       }
- else       if (status.equals("publish")) {
-        if (isPage) {
-          spinner.setSelection(2);
-        }
- else {
-          spinner.setSelection(3);
-        }
+ else       if (status.equals("private")) {
+        spinner.setSelection(3,true);
       }
     }
     String picturePaths=postHashMap.get("picturePaths").toString();
@@ -322,27 +310,17 @@ catch (            java.text.ParseException e) {
 );
             }
             Spinner spinner=(Spinner)findViewById(R.id.status);
-            if (status.equals("draft")) {
+            if (status.equals("publish")) {
               spinner.setSelection(0,true);
             }
- else             if (status.equals("pending")) {
+ else             if (status.equals("draft")) {
               spinner.setSelection(1,true);
             }
- else             if (status.equals("private")) {
-              if (isPage) {
-                spinner.setSelection(1);
-              }
- else {
-                spinner.setSelection(2);
-              }
+ else             if (status.equals("pending")) {
+              spinner.setSelection(2,true);
             }
- else             if (status.equals("publish")) {
-              if (isPage) {
-                spinner.setSelection(2);
-              }
- else {
-                spinner.setSelection(3);
-              }
+ else             if (status.equals("private")) {
+              spinner.setSelection(3,true);
             }
           }
         }
