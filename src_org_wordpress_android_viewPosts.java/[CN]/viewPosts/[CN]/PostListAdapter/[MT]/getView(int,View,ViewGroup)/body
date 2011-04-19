@@ -50,10 +50,22 @@
     wrapper.getTitle().setTextScaleX(1.0f);
     wrapper.getTitle().setTextSize(16);
     wrapper.getDate().setTextColor(Color.parseColor("#888888"));
+    Object[] args={R.id.row_post_id,postIDs[position]};
     try {
-      pv.setTag(R.id.row_post_id,postIDs[position]);
+      Method m=android.view.View.class.getMethod("setTag");
+      m.invoke(pv,args);
     }
- catch (    NumberFormatException e) {
+ catch (    NoSuchMethodException e) {
+      pv.setId(Integer.valueOf(postIDs[position]));
+    }
+catch (    IllegalArgumentException e) {
+      pv.setId(Integer.valueOf(postIDs[position]));
+    }
+catch (    IllegalAccessException e) {
+      pv.setId(Integer.valueOf(postIDs[position]));
+    }
+catch (    InvocationTargetException e) {
+      pv.setId(Integer.valueOf(postIDs[position]));
     }
     if (wrapper.getDate().getHeight() == 0) {
       wrapper.getDate().setHeight((int)wrapper.getTitle().getTextSize() + wrapper.getDate().getPaddingBottom());

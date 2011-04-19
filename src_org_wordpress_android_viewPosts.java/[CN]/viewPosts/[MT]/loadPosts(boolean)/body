@@ -117,7 +117,23 @@
  catch (          ClassCastException e) {
             return;
           }
-          selectedID=(String)info.targetView.getTag(R.id.row_post_id);
+          Object[] args={R.id.row_post_id};
+          try {
+            Method m=android.view.View.class.getMethod("getTag");
+            m.invoke(selectedID,args);
+          }
+ catch (          NoSuchMethodException e) {
+            selectedID=String.valueOf(info.targetView.getId());
+          }
+catch (          IllegalArgumentException e) {
+            selectedID=String.valueOf(info.targetView.getId());
+          }
+catch (          IllegalAccessException e) {
+            selectedID=String.valueOf(info.targetView.getId());
+          }
+catch (          InvocationTargetException e) {
+            selectedID=String.valueOf(info.targetView.getId());
+          }
           rowID=info.position;
           if (totalDrafts > 0 && rowID <= totalDrafts && rowID != 0) {
             menu.clear();
