@@ -63,20 +63,6 @@
       theCategories[i]=selectedCategories.get(i).toString();
     }
     WordPressDB settingsDB=new WordPressDB(this);
-    Vector<?> settingsVector=settingsDB.loadSettings(this,id);
-    String sURL="";
-    if (settingsVector.get(0).toString().contains("xmlrpc.php")) {
-      sURL=settingsVector.get(0).toString();
-    }
- else {
-      sURL=settingsVector.get(0).toString() + "xmlrpc.php";
-    }
-    String sUsername=settingsVector.get(2).toString();
-    String sPassword=settingsVector.get(3).toString();
-    String sHttpuser=settingsVector.get(4).toString();
-    String sHttppassword=settingsVector.get(5).toString();
-    String sImagePlacement=settingsVector.get(6).toString();
-    int sBlogId=Integer.parseInt(settingsVector.get(12).toString());
     Map<String,Object> contentStruct=new HashMap<String,Object>();
     if (imageContent != "") {
       if (sImagePlacement.equals("Above Text")) {
@@ -140,11 +126,11 @@
         contentStruct.put("custom_fields",geo);
       }
     }
-    client=new XMLRPCClient(sURL,sHttpuser,sHttppassword);
+    client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
     if (password != null && !"".equals(password)) {
       contentStruct.put("wp_password",password);
     }
-    Object[] params={sBlogId,sUsername,sPassword,contentStruct,publishThis};
+    Object[] params={blog.getBlogId(),blog.getUsername(),blog.getPassword(),contentStruct,publishThis};
     Object result=null;
     boolean success=false;
     try {

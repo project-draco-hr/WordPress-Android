@@ -1,22 +1,14 @@
 {
-  WordPressDB settingsDB=new WordPressDB(this);
-  Vector<?> settings=settingsDB.loadSettings(this,accountId);
   String errorStr=null;
-  String username=settings.get(2).toString();
-  String password=settings.get(3).toString();
-  String httpuser=settings.get(4).toString();
-  String httppassword=settings.get(5).toString();
-  String blogID=settings.get(12).toString();
-  String url=settings.get(0).toString();
-  client=new XMLRPCClient(url,httpuser,httppassword);
+  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
   Object versionResult=new Object();
   try {
     if (isPage) {
-      Object[] vParams={blogID,postId,username,password};
+      Object[] vParams={blog.getBlogId(),postId,blog.getUsername(),blog.getPassword()};
       versionResult=(Object)client.call("wp.getPage",vParams);
     }
  else {
-      Object[] vParams={postId,username,password};
+      Object[] vParams={postId,blog.getUsername(),blog.getPassword()};
       versionResult=(Object)client.call("metaWeblog.getPost",vParams);
     }
   }

@@ -2,31 +2,6 @@
   String content="";
   String finalThumbnailUrl=null;
   String finalImageUrl=null;
-  WordPressDB settingsDB=new WordPressDB(this);
-  Vector<?> categoriesVector=settingsDB.loadSettings(this,id);
-  String sURL="";
-  if (categoriesVector.get(0).toString().contains("xmlrpc.php")) {
-    sURL=categoriesVector.get(0).toString();
-  }
- else {
-    sURL=categoriesVector.get(0).toString() + "xmlrpc.php";
-  }
-  String sUsername=categoriesVector.get(2).toString();
-  String sPassword=categoriesVector.get(3).toString();
-  String sHttpuser=categoriesVector.get(4).toString();
-  String sHttppassword=categoriesVector.get(5).toString();
-  String sImagePlacement=categoriesVector.get(6).toString();
-  String sCenterThumbnailString=categoriesVector.get(7).toString();
-  String sFullSizeImageString=categoriesVector.get(8).toString();
-  boolean sFullSizeImage=false;
-  if (sFullSizeImageString.equals("1")) {
-    sFullSizeImage=true;
-  }
-  boolean centerThumbnail=false;
-  if (sCenterThumbnailString.equals("1")) {
-    centerThumbnail=true;
-  }
-  String sMaxImageWidth=categoriesVector.get(9).toString();
   for (int it=0; it < selectedImageCtr; it++) {
     final int printCtr=it;
     Thread prompt=new Thread(){
@@ -38,7 +13,7 @@
 ;
     this.runOnUiThread(prompt);
     if (imageUrl.get(it) != null) {
-      client=new XMLRPCClient(sURL,sHttpuser,sHttppassword);
+      client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
       String curImagePath="";
       curImagePath=imageUrl.get(it).toString();
       boolean video=false;
@@ -77,7 +52,7 @@
         m.put("type",mimeType);
         m.put("bits",mf);
         m.put("overwrite",true);
-        Object[] params={1,sUsername,sPassword,m};
+        Object[] params={1,blog.getUsername(),blog.getPassword(),m};
         Object result=null;
         try {
           result=(Object)client.call("wp.uploadFile",params);
@@ -100,7 +75,7 @@
  else {
         for (int i=0; i < 2; i++) {
           curImagePath=imageUrl.get(it).toString();
-          if (i == 0 || sFullSizeImage) {
+          if (i == 0 || blog.isFullSizeImage()) {
             Uri imageUri=Uri.parse(curImagePath);
             File jpeg=null;
             String mimeType="", orientation="";
@@ -167,7 +142,7 @@
               m.put("bits",mf);
             }
             m.put("overwrite",true);
-            Object[] params={1,sUsername,sPassword,m};
+            Object[] params={1,blog.getUsername(),blog.getPassword(),m};
             Object result=null;
             try {
               result=(Object)client.call("wp.uploadFile",params);
@@ -185,7 +160,7 @@
               finalThumbnailUrl=resultURL;
             }
  else {
-              if (sFullSizeImage) {
+              if (blog.isFullSizeImage()) {
                 finalImageUrl=resultURL;
               }
  else {
@@ -196,7 +171,7 @@
             if (centerThumbnail) {
               centerCSS="style=\"display:block;margin-right:auto;margin-left:auto;\" ";
             }
-            if (i != 0 && sFullSizeImage) {
+            if (i != 0 && blog.isFullSizeImage()) {
               if (resultURL != null) {
                 if (sImagePlacement.equals("Above Text")) {
                   content=content + "<a alt=\"image\" href=\"" + finalImageUrl+ "\"><img "+ centerCSS+ "alt=\"image\" src=\""+ finalThumbnailUrl+ "\" /></a><br /><br />";
@@ -207,7 +182,7 @@
               }
             }
  else {
-              if (i == 0 && sFullSizeImage == false && resultURL != null) {
+              if (i == 0 && blog.isFullSizeImage() == false && resultURL != null) {
                 if (sImagePlacement.equals("Above Text")) {
                   content=content + "<img " + centerCSS+ "alt=\"image\" src=\""+ finalThumbnailUrl+ "\" /><br /><br />";
                 }

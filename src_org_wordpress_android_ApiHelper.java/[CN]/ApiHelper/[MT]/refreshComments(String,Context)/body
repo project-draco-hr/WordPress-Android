@@ -1,25 +1,12 @@
 {
-  Vector<Object> settings=new Vector<Object>();
-  final WordPressDB settingsDB=new WordPressDB(ctx);
-  settings=settingsDB.loadSettings(ctx,id);
-  String sURL="";
-  if (settings.get(0).toString().contains("xmlrpc.php")) {
-    sURL=settings.get(0).toString();
-  }
- else {
-    sURL=settings.get(0).toString() + "xmlrpc.php";
-  }
-  String sUsername=settings.get(2).toString();
-  String sPassword=settings.get(3).toString();
-  String sHttpuser=settings.get(4).toString();
-  String sHttppassword=settings.get(5).toString();
-  int sBlogId=Integer.parseInt(settings.get(12).toString());
-  client=new XMLRPCClient(sURL,sHttpuser,sHttppassword);
+  WordPressDB db=new WordPressDB(ctx);
+  Blog blog=new Blog(id,ctx);
+  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
   HashMap<String,Object> hPost=new HashMap<String,Object>();
   hPost.put("status","");
   hPost.put("post_id","");
   hPost.put("number",30);
-  Object[] params={sBlogId,sUsername,sPassword,hPost};
+  Object[] params={blog.getBlogId(),blog.getUsername(),blog.getPassword(),hPost};
   Object[] result=null;
   try {
     result=(Object[])client.call("wp.getComments",params);
@@ -72,7 +59,7 @@
         dbValues.put("postTitle",postTitle);
         dbVector.add(ctr,dbValues);
       }
-      settingsDB.saveComments(ctx,dbVector,false);
+      db.saveComments(ctx,dbVector,false);
     }
   }
 }

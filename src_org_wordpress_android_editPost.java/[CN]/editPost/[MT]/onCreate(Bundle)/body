@@ -3,6 +3,7 @@
   Bundle extras=getIntent().getExtras();
   if (extras != null) {
     id=extras.getString("id");
+    blog=new Blog(id,this);
     accountName=escapeUtils.unescapeHtml(extras.getString("accountName"));
     postID=extras.getString("postID");
     localDraft=extras.getBoolean("localDraft",false);
@@ -153,14 +154,7 @@
         TextView tvCategories=(TextView)findViewById(R.id.selectedCategories);
         tvCategories.setText("Selected categories: " + categories);
       }
-      WordPressDB settingsDB=new WordPressDB(this);
-      Vector<?> settingsVector=settingsDB.loadSettings(this,id);
-      String sLocation=settingsVector.get(13).toString();
-      location=false;
-      if (sLocation.equals("1")) {
-        location=true;
-      }
-      if (location) {
+      if (blog.isLocation()) {
         enableLBSButtons();
       }
       Double latitude=(Double)postHashMap.get("latitude");
@@ -168,7 +162,7 @@
       if (latitude != 0.0) {
         new getAddressTask().execute(latitude,longitude);
       }
-      if (location && latitude > 0) {
+      if (blog.isLocation() && latitude > 0) {
         Button updateLocation=(Button)findViewById(R.id.updateLocation);
         updateLocation.setOnClickListener(new Button.OnClickListener(){
           public void onClick(          View v){
@@ -182,7 +176,7 @@
         RelativeLayout locationSection=(RelativeLayout)findViewById(R.id.section4);
         locationSection.setVisibility(View.VISIBLE);
       }
- else       if (location) {
+ else       if (blog.isLocation()) {
         lm=(LocationManager)getSystemService(LOCATION_SERVICE);
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,20000,0,editPost.this);
         lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,20000,0,editPost.this);
@@ -201,33 +195,13 @@
     Button cancelBtn=(Button)findViewById(R.id.cancel);
     cancelBtn.setText(getResources().getText(R.string.upload_now));
     if (!isAction) {
-      WordPressDB settingsDB=new WordPressDB(this);
-      Vector<?> settingsVector=settingsDB.loadSettings(this,id);
-      String sLocation=settingsVector.get(13).toString();
       if (!isPage) {
-        location=false;
-        if (sLocation.equals("1")) {
-          location=true;
-        }
         enableLBSButtons();
       }
     }
   }
  else {
-    WordPressDB settingsDB=new WordPressDB(this);
-    Vector<?> categoriesVector=settingsDB.loadSettings(this,id);
-    String sURL="";
-    if (categoriesVector.get(0).toString().contains("xmlrpc.php")) {
-      sURL=categoriesVector.get(0).toString();
-    }
- else {
-      sURL=categoriesVector.get(0).toString() + "xmlrpc.php";
-    }
-    String sUsername=categoriesVector.get(2).toString();
-    String sPassword=categoriesVector.get(3).toString();
-    String sHttpuser=categoriesVector.get(4).toString();
-    String sHttppassword=categoriesVector.get(5).toString();
-    client=new XMLRPCClient(sURL,sHttpuser,sHttppassword);
+    client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
     EditText titleET=(EditText)findViewById(R.id.title);
     String setTitle=titleET.getText().toString();
     if (setTitle.equals("")) {
@@ -327,7 +301,7 @@ catch (            java.text.ParseException e) {
         }
       }
 );
-      Object[] params={postID,sUsername,sPassword};
+      Object[] params={postID,blog.getUsername(),blog.getPassword()};
       method.call(params);
     }
   }

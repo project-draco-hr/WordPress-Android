@@ -1,26 +1,12 @@
 {
   String returnString="";
-  WordPressDB settingsDB=new WordPressDB(this);
-  Vector<?> settingsVector=settingsDB.loadSettings(this,id);
-  String sURL="";
-  if (settingsVector.get(0).toString().contains("xmlrpc.php")) {
-    sURL=settingsVector.get(0).toString();
-  }
- else {
-    sURL=settingsVector.get(0).toString() + "xmlrpc.php";
-  }
-  String sUsername=settingsVector.get(2).toString();
-  String sPassword=settingsVector.get(3).toString();
-  String sHttpuser=settingsVector.get(4).toString();
-  String sHttppassword=settingsVector.get(5).toString();
-  int sBlogId=Integer.parseInt(settingsVector.get(12).toString());
   Map<String,Object> struct=new HashMap<String,Object>();
   struct.put("name",category_name);
   struct.put("slug",category_slug);
   struct.put("description",category_desc);
   struct.put("parent_id",parent_id);
-  client=new XMLRPCClient(sURL,sHttpuser,sHttppassword);
-  Object[] params={sBlogId,sUsername,sPassword,struct};
+  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+  Object[] params={blog.getBlogId(),blog.getUsername(),blog.getPassword(),struct};
   Object result=null;
   try {
     result=client.call("wp.newCategory",params);

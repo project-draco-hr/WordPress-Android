@@ -31,32 +31,10 @@
     }
 ;
     this.runOnUiThread(updateDialog);
-    boolean enteredSettings=checkSettings();
-    if (!enteredSettings) {
-      res="invalidSettings";
-    }
- else     if (title.equals("") || (content.equals("") && selectedImageIDs.size() == 0)) {
+    if (title.equals("") || (content.equals("") && selectedImageIDs.size() == 0)) {
       res="emptyFields";
     }
  else {
-      WordPressDB settingsDB=new WordPressDB(this);
-      Vector<?> categoriesVector=settingsDB.loadSettings(this,id);
-      String sURL="";
-      if (categoriesVector.get(0).toString().contains("xmlrpc.php")) {
-        sURL=categoriesVector.get(0).toString();
-      }
- else {
-        sURL=categoriesVector.get(0).toString() + "xmlrpc.php";
-      }
-      String sUsername=categoriesVector.get(2).toString();
-      String sPassword=categoriesVector.get(3).toString();
-      String sHttpuser=categoriesVector.get(4).toString();
-      String sHttppassword=categoriesVector.get(5).toString();
-      String sImagePlacement=categoriesVector.get(6).toString();
-      String sCenterThumbnailString=categoriesVector.get(7).toString();
-      if (sCenterThumbnailString.equals("1")) {
-        centerThumbnail=true;
-      }
       Spinner spinner=(Spinner)findViewById(R.id.status);
       int selectedStatus=spinner.getSelectedItemPosition();
       String status="";
@@ -76,7 +54,7 @@ break;
 }
 Map<String,Object> contentStruct=new HashMap<String,Object>();
 if (imageContent != "") {
-if (sImagePlacement.equals("Above Text")) {
+if (blog.getImagePlacement().equals("Above Text")) {
 content=imageContent + content;
 }
  else {
@@ -120,8 +98,8 @@ if (theCategories.length > 0) {
 contentStruct.put("categories",theCategories);
 }
 }
-client=new XMLRPCClient(sURL,sHttpuser,sHttppassword);
-Object[] params={postID,sUsername,sPassword,contentStruct,publishThis};
+client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+Object[] params={postID,blog.getUsername(),blog.getPassword(),contentStruct,publishThis};
 Object result=null;
 boolean success=false;
 try {

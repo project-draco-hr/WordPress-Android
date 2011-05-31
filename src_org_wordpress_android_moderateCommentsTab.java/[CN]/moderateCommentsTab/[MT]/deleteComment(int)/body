@@ -1,21 +1,6 @@
 {
-  Vector<Object> settings=new Vector<Object>();
-  WordPressDB settingsDB=new WordPressDB(moderateCommentsTab.this);
-  settings=settingsDB.loadSettings(moderateCommentsTab.this,id);
-  String sURL="";
-  if (settings.get(0).toString().contains("xmlrpc.php")) {
-    sURL=settings.get(0).toString();
-  }
- else {
-    sURL=settings.get(0).toString() + "xmlrpc.php";
-  }
-  String sUsername=settings.get(2).toString();
-  String sPassword=settings.get(3).toString();
-  String sHttpuser=settings.get(4).toString();
-  String sHttppassword=settings.get(5).toString();
-  int sBlogId=Integer.parseInt(settings.get(12).toString());
-  client=new XMLRPCClient(sURL,sHttpuser,sHttppassword);
-  Object[] params={sBlogId,sUsername,sPassword,selCommentID};
+  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+  Object[] params={blog.getBlogId(),blog.getUsername(),blog.getPassword(),selCommentID};
   try {
     client.call("wp.deleteComment",params);
     dismissDialog(ID_DIALOG_DELETING);

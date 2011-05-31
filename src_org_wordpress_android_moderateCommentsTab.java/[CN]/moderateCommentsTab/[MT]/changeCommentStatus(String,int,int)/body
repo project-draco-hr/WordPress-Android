@@ -2,22 +2,8 @@
   String sSelCommentID=String.valueOf(selCommentID);
   ListView lv=getListView();
   CommentEntry ce=(CommentEntry)lv.getItemAtPosition(position);
-  Vector<Object> settings=new Vector<Object>();
-  WordPressDB settingsDB=new WordPressDB(moderateCommentsTab.this);
-  settings=settingsDB.loadSettings(moderateCommentsTab.this,id);
-  String sURL="";
-  if (settings.get(0).toString().contains("xmlrpc.php")) {
-    sURL=settings.get(0).toString();
-  }
- else {
-    sURL=settings.get(0).toString() + "xmlrpc.php";
-  }
-  String sUsername=settings.get(2).toString();
-  String sPassword=settings.get(3).toString();
-  String sHttpuser=settings.get(4).toString();
-  String sHttppassword=settings.get(5).toString();
-  int sBlogId=Integer.parseInt(settings.get(12).toString());
-  client=new XMLRPCClient(sURL,sHttpuser,sHttppassword);
+  WordPressDB db=new WordPressDB(this);
+  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
   HashMap contentHash, postHash=new HashMap();
   contentHash=(HashMap)allComments.get(sSelCommentID);
   postHash.put("status",newStatus);
@@ -25,7 +11,7 @@
   postHash.put("author",contentHash.get("author"));
   postHash.put("author_url",contentHash.get("url"));
   postHash.put("author_email",contentHash.get("email"));
-  Object[] params={sBlogId,sUsername,sPassword,sSelCommentID,postHash};
+  Object[] params={blog.getBlogId(),blog.getUsername(),blog.getPassword(),sSelCommentID,postHash};
   Object result=null;
   try {
     result=(Object)client.call("wp.editComment",params);
@@ -33,7 +19,7 @@
     if (bResult) {
       ce.status=newStatus;
       model.set(position,ce);
-      settingsDB.updateCommentStatus(moderateCommentsTab.this,id,ce.commentID,newStatus);
+      db.updateCommentStatus(moderateCommentsTab.this,id,ce.commentID,newStatus);
     }
     dismissDialog(ID_DIALOG_MODERATING);
     Thread action=new Thread(){
