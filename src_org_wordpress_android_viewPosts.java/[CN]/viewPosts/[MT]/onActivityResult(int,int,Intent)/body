@@ -9,21 +9,16 @@ case 0:
         if (returnResult.equals("OK")) {
           boolean uploadNow=false;
           uploadNow=extras.getBoolean("upload");
+          uploadNow=true;
           if (uploadNow) {
-            int uploadID=extras.getInt("newID");
-            selectedID=String.valueOf(uploadID);
+            selectedID=extras.getLong("newID");
             showDialog(ID_DIALOG_POSTING);
-            new Thread(){
-              public void run(){
-                try {
-                  submitResult=submitPost();
-                }
- catch (                IOException e) {
-                  e.printStackTrace();
-                }
-              }
+            try {
+              submitResult=submitPost();
             }
-.start();
+ catch (            IOException e) {
+              e.printStackTrace();
+            }
           }
  else {
             loadPosts(false);

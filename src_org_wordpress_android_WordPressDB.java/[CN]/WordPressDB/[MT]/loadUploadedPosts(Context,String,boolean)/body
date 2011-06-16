@@ -1,0 +1,28 @@
+{
+  db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
+  Vector<HashMap<String,Object>> returnVector=new Vector<HashMap<String,Object>>();
+  Cursor c;
+  if (loadPages)   c=db.query(POSTS_TABLE,new String[]{"id","blogID","postid","title","date_created_gmt","dateCreated"},"blogID=" + blogID + " AND localDraft != 1 AND isPage=1",null,null,null,null);
+ else   c=db.query(POSTS_TABLE,new String[]{"id","blogID","postid","title","date_created_gmt","dateCreated"},"blogID=" + blogID + " AND localDraft != 1 AND isPage=0",null,null,null,null);
+  int numRows=c.getCount();
+  c.moveToFirst();
+  for (int i=0; i < numRows; ++i) {
+    if (c.getString(0) != null) {
+      HashMap<String,Object> returnHash=new HashMap<String,Object>();
+      returnHash.put("id",c.getInt(0));
+      returnHash.put("blogID",c.getString(1));
+      returnHash.put("postID",c.getString(2));
+      returnHash.put("title",c.getString(3));
+      returnHash.put("date_created_gmt",c.getLong(4));
+      returnHash.put("dateCreated",c.getLong(5));
+      returnVector.add(i,returnHash);
+    }
+    c.moveToNext();
+  }
+  c.close();
+  db.close();
+  if (numRows == 0) {
+    returnVector=null;
+  }
+  return returnVector;
+}

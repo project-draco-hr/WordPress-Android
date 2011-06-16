@@ -1,0 +1,33 @@
+{
+  long returnValue=-1;
+  if (post != null) {
+    db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
+    ContentValues values=new ContentValues();
+    values.put("blogID",blogID);
+    values.put("title",post.getTitle());
+    values.put("date_created_gmt",post.getDate_created_gmt());
+    values.put("description",post.getDescription());
+    if (post.getCategories() != null) {
+      JSONArray jsonArray=null;
+      try {
+        jsonArray=new JSONArray(post.getCategories().toString());
+        values.put("categories",jsonArray.toString());
+      }
+ catch (      JSONException e) {
+        e.printStackTrace();
+      }
+    }
+    values.put("localDraft",post.isLocalDraft());
+    values.put("mediaPaths",post.getMediaPaths());
+    values.put("mt_keywords",post.getMt_keywords());
+    values.put("wp_password",post.getWP_password());
+    values.put("post_status",post.getPost_status());
+    values.put("isPage",post.isPage());
+    int pageInt=0;
+    if (post.isPage())     pageInt=1;
+    if (!post.isLocalDraft())     returnValue=db.update(POSTS_TABLE,values,"blogID=" + post.getBlogID() + " AND id="+ post.getId()+ " AND isPage="+ pageInt,null);
+ else     returnValue=db.insert(POSTS_TABLE,null,values);
+    db.close();
+  }
+  return (returnValue);
+}

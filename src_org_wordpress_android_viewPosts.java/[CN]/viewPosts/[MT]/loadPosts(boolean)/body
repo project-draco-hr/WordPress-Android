@@ -2,10 +2,10 @@
   WordPressDB postStoreDB=new WordPressDB(this);
   Vector<?> loadedPosts;
   if (isPage) {
-    loadedPosts=postStoreDB.loadPages(viewPosts.this,id);
+    loadedPosts=postStoreDB.loadUploadedPosts(viewPosts.this,id,true);
   }
  else {
-    loadedPosts=postStoreDB.loadSavedPosts(viewPosts.this,id);
+    loadedPosts=postStoreDB.loadUploadedPosts(viewPosts.this,id,false);
   }
   if (loadedPosts != null) {
     titles=new String[loadedPosts.size()];
@@ -26,16 +26,14 @@
     for (int i=0; i < loadedPosts.size(); i++) {
       HashMap<?,?> contentHash=(HashMap<?,?>)loadedPosts.get(i);
       titles[i]=escapeUtils.unescapeHtml(contentHash.get("title").toString());
-      if (isPage) {
-        postIDs[i]=contentHash.get("pageID").toString();
-        dateCreated[i]=contentHash.get("pageDate").toString();
-        dateCreatedFormatted[i]=contentHash.get("pageDateFormatted").toString();
-      }
- else {
-        postIDs[i]=contentHash.get("postID").toString();
-        dateCreated[i]=contentHash.get("postDate").toString();
-        dateCreatedFormatted[i]=contentHash.get("postDateFormatted").toString();
-      }
+      postIDs[i]=contentHash.get("id").toString();
+      dateCreated[i]=contentHash.get("date_created_gmt").toString();
+      int flags=0;
+      flags|=android.text.format.DateUtils.FORMAT_SHOW_DATE;
+      flags|=android.text.format.DateUtils.FORMAT_ABBREV_MONTH;
+      flags|=android.text.format.DateUtils.FORMAT_SHOW_YEAR;
+      flags|=android.text.format.DateUtils.FORMAT_SHOW_TIME;
+      dateCreatedFormatted[i]=DateUtils.formatDateTime(this,(Long)contentHash.get("date_created_gmt"),flags);
     }
     List<String> postIDList=Arrays.asList(postIDs);
     List<String> newPostIDList=new ArrayList<String>();
@@ -123,16 +121,16 @@
             m.invoke(selectedID,args);
           }
  catch (          NoSuchMethodException e) {
-            selectedID=String.valueOf(info.targetView.getId());
+            selectedID=info.targetView.getId();
           }
 catch (          IllegalArgumentException e) {
-            selectedID=String.valueOf(info.targetView.getId());
+            selectedID=info.targetView.getId();
           }
 catch (          IllegalAccessException e) {
-            selectedID=String.valueOf(info.targetView.getId());
+            selectedID=info.targetView.getId();
           }
 catch (          InvocationTargetException e) {
-            selectedID=String.valueOf(info.targetView.getId());
+            selectedID=info.targetView.getId();
           }
           rowID=info.position;
           if (totalDrafts > 0 && rowID <= totalDrafts && rowID != 0) {

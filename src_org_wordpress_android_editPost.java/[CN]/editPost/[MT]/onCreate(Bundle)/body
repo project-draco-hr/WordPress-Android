@@ -5,10 +5,11 @@
     id=extras.getString("id");
     blog=new Blog(id,this);
     accountName=escapeUtils.unescapeHtml(extras.getString("accountName"));
-    postID=extras.getString("postID");
+    postID=extras.getLong("postID");
     localDraft=extras.getBoolean("localDraft",false);
     isPage=extras.getBoolean("isPage",false);
     isNew=extras.getBoolean("isNew",false);
+    if (!isNew)     post=new Post(id,postID,isPage,this);
   }
   Display display=((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
   int width=display.getWidth();
@@ -92,22 +93,20 @@
  else {
     setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.edit_page : R.string.edit_post));
   }
-  if (localDraft) {
-    WordPressDB lDraftsDB=new WordPressDB(this);
-    Vector<?> post;
-    if (isPage) {
-      post=lDraftsDB.loadPageDraft(this,postID);
+  if (isNew) {
+    if (!isAction) {
+      if (!isPage) {
+        enableLBSButtons();
+      }
     }
+  }
  else {
-      post=lDraftsDB.loadPost(this,postID);
-    }
-    final HashMap<?,?> postHashMap=(HashMap<?,?>)post.get(0);
     EditText titleET=(EditText)findViewById(R.id.title);
     EditText contentET=(EditText)findViewById(R.id.content);
     EditText passwordET=(EditText)findViewById(R.id.post_password);
-    titleET.setText(postHashMap.get("title").toString());
-    contentET.setText(Html.fromHtml(postHashMap.get("content").toString()));
-    long pubDate=Long.parseLong(postHashMap.get("pubDate").toString());
+    titleET.setText(post.getTitle());
+    contentET.setText(Html.fromHtml(post.getDescription() + post.getMt_text_more()));
+    long pubDate=post.getDate_created_gmt();
     if (pubDate != 0) {
       try {
         Date date=new Date(pubDate);
@@ -120,9 +119,9 @@
         e.printStackTrace();
       }
     }
-    if (postHashMap.get("password") != null)     passwordET.setText(postHashMap.get("password").toString());
-    if (postHashMap.get("status") != null) {
-      String status=postHashMap.get("status").toString();
+    if (post.getWP_password() != null)     passwordET.setText(post.getWP_password());
+    if (post.getPost_status() != null) {
+      String status=post.getPost_status();
       if (status.equals("publish")) {
         spinner.setSelection(0,true);
       }
@@ -136,173 +135,23 @@
         spinner.setSelection(3,true);
       }
     }
-    String picturePaths=postHashMap.get("picturePaths").toString();
-    if (!picturePaths.equals("")) {
-      String[] pPaths=picturePaths.split(",");
-      for (int i=0; i < pPaths.length; i++) {
-        Uri imagePath=Uri.parse(pPaths[i]);
-        addMedia(imagePath.getEncodedPath(),imagePath);
-      }
-    }
     if (!isPage) {
-      categories=postHashMap.get("categories").toString();
-      if (!categories.equals("")) {
-        String[] aCategories=categories.split(",");
-        for (int i=0; i < aCategories.length; i++) {
-          selectedCategories.add(aCategories[i]);
-        }
-        TextView tvCategories=(TextView)findViewById(R.id.selectedCategories);
-        tvCategories.setText("Selected categories: " + categories);
-      }
-      if (blog.isLocation()) {
-        enableLBSButtons();
-      }
-      Double latitude=(Double)postHashMap.get("latitude");
-      Double longitude=(Double)postHashMap.get("longitude");
-      if (latitude != 0.0) {
-        new getAddressTask().execute(latitude,longitude);
-      }
-      if (blog.isLocation() && latitude > 0) {
-        Button updateLocation=(Button)findViewById(R.id.updateLocation);
-        updateLocation.setOnClickListener(new Button.OnClickListener(){
-          public void onClick(          View v){
-            lm=(LocationManager)getSystemService(LOCATION_SERVICE);
-            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,20000,0,editPost.this);
-            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,20000,0,editPost.this);
-            locationActive=true;
+      if (post.getCategories() != null) {
+        categories=post.getCategories().toString();
+        if (!categories.equals("")) {
+          String[] aCategories=categories.split(",");
+          for (int i=0; i < aCategories.length; i++) {
+            selectedCategories.add(aCategories[i]);
           }
+          TextView tvCategories=(TextView)findViewById(R.id.selectedCategories);
+          tvCategories.setText("Selected categories: " + categories);
         }
-);
-        RelativeLayout locationSection=(RelativeLayout)findViewById(R.id.section4);
-        locationSection.setVisibility(View.VISIBLE);
-      }
- else       if (blog.isLocation()) {
-        lm=(LocationManager)getSystemService(LOCATION_SERVICE);
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,20000,0,editPost.this);
-        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,20000,0,editPost.this);
-        locationActive=true;
-        RelativeLayout locationSection=(RelativeLayout)findViewById(R.id.section4);
-        locationSection.setVisibility(View.VISIBLE);
-      }
-      String tags=postHashMap.get("tags").toString();
-      if (!tags.equals("")) {
-        EditText tagsET=(EditText)findViewById(R.id.tags);
-        tagsET.setText(tags);
       }
     }
-  }
- else   if (isNew) {
-    Button cancelBtn=(Button)findViewById(R.id.cancel);
-    cancelBtn.setText(getResources().getText(R.string.upload_now));
-    if (!isAction) {
-      if (!isPage) {
-        enableLBSButtons();
-      }
-    }
-  }
- else {
-    client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
-    EditText titleET=(EditText)findViewById(R.id.title);
-    String setTitle=titleET.getText().toString();
-    if (setTitle.equals("")) {
-      pd=ProgressDialog.show(editPost.this,getResources().getText((isPage) ? R.string.getting_page : R.string.getting_post),getResources().getText((isPage) ? R.string.please_wait_getting_page : R.string.please_wait_getting_post),true,false);
-      XMLRPCMethod method=new XMLRPCMethod("metaWeblog.getPost",new XMLRPCMethodCallback(){
-        public void callFinished(        Object result){
-          pd.dismiss();
-          if (result == null) {
-          }
- else {
-            HashMap<?,?> contentHash=(HashMap<?,?>)result;
-            EditText titleET=(EditText)findViewById(R.id.title);
-            titleET.setText(escapeUtils.unescapeHtml(contentHash.get("title").toString()));
-            EditText contentET=(EditText)findViewById(R.id.content);
-            sSlug=contentHash.get("wp_slug").toString();
-            String content="";
-            if (contentHash.get("mt_text_more").toString() != "") {
-              content=contentHash.get("description").toString() + "<!--more-->\n" + contentHash.get("mt_text_more").toString();
-            }
- else {
-              content=contentHash.get("description").toString();
-            }
-            contentET.setText(content);
-            SimpleDateFormat sdf=new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
-            Calendar cal=Calendar.getInstance();
-            TimeZone tz=cal.getTimeZone();
-            String shortDisplayName="";
-            shortDisplayName=tz.getDisplayName(true,TimeZone.SHORT);
-            String cDate=contentHash.get("dateCreated").toString().replace(tz.getID(),shortDisplayName);
-            try {
-              Date d=sdf.parse(cDate);
-              SimpleDateFormat sdfOut=new SimpleDateFormat("MMM dd, yyyy hh:mm a");
-              TextView tvPubDate=(TextView)findViewById(R.id.pubDate);
-              tvPubDate.setText(sdfOut.format(d));
-            }
- catch (            ParseException pe) {
-              pe.printStackTrace();
-            }
-catch (            java.text.ParseException e) {
-              e.printStackTrace();
-            }
-            EditText passwordET=(EditText)findViewById(R.id.post_password);
-            if (contentHash.get("wp_password") != null)             passwordET.setText(contentHash.get("wp_password").toString());
-            Toast.makeText(editPost.this,getResources().getText(R.string.html),Toast.LENGTH_SHORT).show();
-            String status=contentHash.get("post_status").toString();
-            if (!isPage) {
-              EditText tagsET=(EditText)findViewById(R.id.tags);
-              tagsET.setText(escapeUtils.unescapeHtml(contentHash.get("mt_keywords").toString()));
-              TextView categoriesTV=(TextView)findViewById(R.id.selectedCategories);
-              Object categoriesArray[]=(Object[])contentHash.get("categories");
-              if (categoriesArray != null) {
-                categories="";
-                for (int ctr=0; ctr < categoriesArray.length; ctr++) {
-                  String category=categoriesArray[ctr].toString();
-                  if (!selectedCategories.contains(category)) {
-                    categories+=category + ",";
-                    selectedCategories.add(category);
-                  }
-                }
-                categories=categories.trim();
-                if (categories.endsWith(",")) {
-                  categories=categories.substring(0,categories.length() - 1);
-                }
-                if (categories != "") {
-                  categoriesTV.setText(getResources().getText(R.string.selected_categories) + " " + categories);
-                }
-              }
-              Button selectCategories=(Button)findViewById(R.id.selectCategories);
-              selectCategories.setOnClickListener(new Button.OnClickListener(){
-                public void onClick(                View v){
-                  Bundle bundle=new Bundle();
-                  bundle.putString("id",id);
-                  if (categories != "") {
-                    bundle.putString("categoriesCSV",categories);
-                  }
-                  Intent i=new Intent(editPost.this,selectCategories.class);
-                  i.putExtras(bundle);
-                  startActivityForResult(i,5);
-                }
-              }
-);
-            }
-            Spinner spinner=(Spinner)findViewById(R.id.status);
-            if (status.equals("publish")) {
-              spinner.setSelection(0,true);
-            }
- else             if (status.equals("draft")) {
-              spinner.setSelection(1,true);
-            }
- else             if (status.equals("pending")) {
-              spinner.setSelection(2,true);
-            }
- else             if (status.equals("private")) {
-              spinner.setSelection(3,true);
-            }
-          }
-        }
-      }
-);
-      Object[] params={postID,blog.getUsername(),blog.getPassword()};
-      method.call(params);
+    String tags=post.getMt_keywords();
+    if (!tags.equals("")) {
+      EditText tagsET=(EditText)findViewById(R.id.tags);
+      tagsET.setText(tags);
     }
   }
   if ((localDraft || isNew) && !isPage) {
@@ -324,32 +173,15 @@ catch (            java.text.ParseException e) {
   final Button postButton=(Button)findViewById(R.id.post);
   postButton.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
-      if (localDraft || isNew) {
-        boolean result=savePost();
-        if (result) {
-          Bundle bundle=new Bundle();
-          bundle.putString("returnStatus","OK");
-          Intent mIntent=new Intent();
-          mIntent.putExtras(bundle);
-          setResult(RESULT_OK,mIntent);
-          finish();
-        }
-      }
- else {
-        showDialog(ID_DIALOG_POSTING);
-        Thread t=new Thread(){
-          public void run(){
-            try {
-              finalResult=submitPost();
-              mHandler.post(mUpdateResults);
-            }
- catch (            IOException e) {
-              e.printStackTrace();
-            }
-          }
-        }
-;
-        t.start();
+      boolean result=savePost();
+      if (result) {
+        Bundle bundle=new Bundle();
+        bundle.putString("returnStatus","OK");
+        bundle.putLong("newID",post.getId());
+        Intent mIntent=new Intent();
+        mIntent.putExtras(bundle);
+        setResult(RESULT_OK,mIntent);
+        finish();
       }
     }
   }
@@ -502,63 +334,28 @@ catch (            java.text.ParseException e) {
   final Button cancelButton=(Button)findViewById(R.id.cancel);
   cancelButton.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
-      if (isNew) {
-        boolean result=savePost();
-        if (result) {
-          WordPressDB lddb=new WordPressDB(editPost.this);
-          int newID=-1;
-          if (isPage) {
-            newID=lddb.getLatestPageDraftID(editPost.this,id);
-          }
- else {
-            newID=lddb.getLatestDraftID(editPost.this,id);
-          }
-          Bundle bundle=new Bundle();
-          if (newID != -1) {
-            if (isAction) {
-              Intent mIntent=new Intent(editPost.this,tabView.class);
-              bundle.putString("activateTab","posts");
-              bundle.putString("id",id);
-              bundle.putInt("uploadID",newID);
-              bundle.putString("accountName",accountName);
-              bundle.putString("action","upload");
-              mIntent.putExtras(bundle);
-              startActivity(mIntent);
-            }
- else {
-              bundle.putString("returnStatus","OK");
-              bundle.putBoolean("upload",true);
-              bundle.putInt("newID",newID);
-              Intent mIntent=new Intent();
-              mIntent.putExtras(bundle);
-              setResult(RESULT_OK,mIntent);
-            }
-            finish();
-          }
+      boolean result=savePost();
+      if (result) {
+        Bundle bundle=new Bundle();
+        if (isAction) {
+          Intent mIntent=new Intent(editPost.this,tabView.class);
+          bundle.putString("activateTab","posts");
+          bundle.putString("id",id);
+          bundle.putLong("uploadID",post.getId());
+          bundle.putString("accountName",accountName);
+          bundle.putString("action","upload");
+          mIntent.putExtras(bundle);
+          startActivity(mIntent);
         }
-      }
  else {
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(editPost.this);
-        dialogBuilder.setTitle(getResources().getText(R.string.cancel_edit));
-        dialogBuilder.setMessage(getResources().getText((isPage) ? R.string.sure_to_cancel_edit_page : R.string.sure_to_cancel_edit));
-        dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
-          public void onClick(          DialogInterface dialog,          int whichButton){
-            Bundle bundle=new Bundle();
-            bundle.putString("returnStatus","CANCEL");
-            Intent mIntent=new Intent();
-            mIntent.putExtras(bundle);
-            setResult(RESULT_OK,mIntent);
-            finish();
-          }
+          bundle.putString("returnStatus","OK");
+          bundle.putBoolean("upload",true);
+          bundle.putLong("newID",post.getId());
+          Intent mIntent=new Intent();
+          mIntent.putExtras(bundle);
+          setResult(RESULT_OK,mIntent);
         }
-);
-        dialogBuilder.setNegativeButton(getResources().getText(R.string.no),new DialogInterface.OnClickListener(){
-          public void onClick(          DialogInterface dialog,          int whichButton){
-          }
-        }
-);
-        dialogBuilder.setCancelable(true);
-        dialogBuilder.create().show();
+        finish();
       }
     }
   }

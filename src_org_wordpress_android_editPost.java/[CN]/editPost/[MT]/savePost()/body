@@ -77,22 +77,22 @@ longitude=loc.getLongitude();
 e.printStackTrace();
 }
 }
-WordPressDB lDraftsDB=new WordPressDB(this);
-if (isPage) {
 if (isNew) {
-success=lDraftsDB.saveLocalPageDraft(this,id,title,content,images,status,password,pubDateTimestamp);
+post=new Post(id,title,content,images,pubDateTimestamp,categories,tags,status,password,latitude,longitude,editPost.this);
+post.setLocalDraft(true);
+success=post.save();
 }
  else {
-success=lDraftsDB.updateLocalPageDraft(this,id,postID,title,content,images,status,password,pubDateTimestamp);
-}
-}
- else {
-if (isNew) {
-success=lDraftsDB.saveLocalDraft(this,id,title,content,images,tags,categories,status,latitude,longitude,password,pubDateTimestamp);
-}
- else {
-success=lDraftsDB.updateLocalDraft(this,id,postID,title,content,images,tags,categories,status,latitude,longitude,password,pubDateTimestamp);
-}
+post.setTitle(title);
+post.setDescription(content);
+post.setMediaPaths(images);
+post.setDate_created_gmt(pubDateTimestamp);
+post.setMt_keywords(tags);
+post.setPost_status(status);
+post.setWP_password(password);
+post.setLatitude(latitude);
+post.setLongitude(longitude);
+success=post.save();
 }
 }
 return success;
