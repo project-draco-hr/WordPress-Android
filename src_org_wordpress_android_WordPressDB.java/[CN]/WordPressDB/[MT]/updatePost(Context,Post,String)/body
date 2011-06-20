@@ -1,5 +1,5 @@
 {
-  long returnValue=-1;
+  int success=0;
   if (post != null) {
     db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
     ContentValues values=new ContentValues();
@@ -7,6 +7,7 @@
     values.put("title",post.getTitle());
     values.put("date_created_gmt",post.getDate_created_gmt());
     values.put("description",post.getDescription());
+    values.put("uploaded",post.isUploaded());
     if (post.getCategories() != null) {
       JSONArray jsonArray=null;
       try {
@@ -22,10 +23,11 @@
     values.put("mt_keywords",post.getMt_keywords());
     values.put("wp_password",post.getWP_password());
     values.put("post_status",post.getPost_status());
-    values.put("uploaded",post.isUploaded());
     values.put("isPage",post.isPage());
-    returnValue=db.insert(POSTS_TABLE,null,values);
+    int pageInt=0;
+    if (post.isPage())     pageInt=1;
+    success=db.update(POSTS_TABLE,values,"blogID=" + post.getBlogID() + " AND id="+ post.getId()+ " AND isPage="+ pageInt,null);
     db.close();
   }
-  return (returnValue);
+  return (success);
 }

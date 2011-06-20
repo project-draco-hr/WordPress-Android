@@ -116,15 +116,13 @@
     try {
       result=(Object)client.call((post.isLocalDraft() && !post.uploaded) ? "metaWeblog.newPost" : "metaWeblog.editPost",params);
       success=true;
-      ((viewPosts)context).loadingDialog.dismiss();
+      post.setUploaded(true);
+      post.update();
+      return true;
     }
  catch (    final XMLRPCException e) {
-    }
-    if (success && (post.isLocalDraft() && !post.uploaded)) {
-      post.uploaded=true;
-      post.save();
-      res="OK";
+      error=e.getLocalizedMessage();
     }
   }
-  return null;
+  return false;
 }
