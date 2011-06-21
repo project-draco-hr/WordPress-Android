@@ -1,0 +1,52 @@
+{
+switch (item.getItemId()) {
+case 0:
+    showDialog(ID_DIALOG_MODERATING);
+  new Thread(){
+    public void run(){
+      Looper.prepare();
+      changeCommentStatus("approve",selectedID,rowID);
+    }
+  }
+.start();
+return true;
+case 1:
+showDialog(ID_DIALOG_MODERATING);
+new Thread(){
+public void run(){
+Looper.prepare();
+changeCommentStatus("hold",selectedID,rowID);
+}
+}
+.start();
+return true;
+case 2:
+showDialog(ID_DIALOG_MODERATING);
+new Thread(){
+public void run(){
+Looper.prepare();
+changeCommentStatus("spam",selectedID,rowID);
+}
+}
+.start();
+return true;
+case 3:
+Intent i=new Intent(this,ReplyToComment.class);
+i.putExtra("commentID",selectedID);
+i.putExtra("accountName",accountName);
+i.putExtra("postID",selectedPostID);
+startActivityForResult(i,0);
+return true;
+case 4:
+showDialog(ID_DIALOG_DELETING);
+new Thread(){
+public void run(){
+Looper.prepare();
+deleteComment(selectedID);
+}
+}
+.start();
+return true;
+}
+return false;
+}

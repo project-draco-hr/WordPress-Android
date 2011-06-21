@@ -1,0 +1,24 @@
+{
+  closeProgressBar();
+  WordPressDB settingsDB=new WordPressDB(ViewStats.this);
+  if (result != null) {
+    final String apiKey=result.get(0).toString();
+    final String apiBlogID=result.get(1).toString();
+    settingsDB.saveAPIData(ViewStats.this,id,apiKey,apiBlogID);
+    showDialog(ID_DIALOG_GET_STATS);
+    Thread action=new Thread(){
+      public void run(){
+        getStatsData(apiKey,apiBlogID,"views",7);
+      }
+    }
+;
+    action.start();
+  }
+ else {
+    if (firstRun > 0) {
+      Toast.makeText(ViewStats.this,getResources().getText(R.string.invalid_login) + " " + getResources().getText(R.string.site_not_found),Toast.LENGTH_SHORT).show();
+    }
+    firstRun++;
+    showOrHideLoginForm();
+  }
+}

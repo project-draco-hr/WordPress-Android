@@ -1,39 +1,21 @@
 {
 switch (item.getItemId()) {
 case 0:
-    AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(wpAndroid.this);
-  dialogBuilder.setTitle(getResources().getText(R.string.remove_account));
-dialogBuilder.setMessage(getResources().getText(R.string.sure_to_remove_account));
-dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
-public void onClick(DialogInterface dialog,int whichButton){
-  WordPressDB settingsDB=new WordPressDB(wpAndroid.this);
-  boolean deleteSuccess=settingsDB.deleteAccount(wpAndroid.this,selectedID);
-  if (deleteSuccess) {
-    Toast.makeText(wpAndroid.this,getResources().getText(R.string.account_removed_successfully),Toast.LENGTH_SHORT).show();
-    displayAccounts();
-  }
- else {
-    AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(wpAndroid.this);
-    dialogBuilder.setTitle(getResources().getText(R.string.error));
-    dialogBuilder.setMessage(getResources().getText(R.string.could_not_remove_account));
-    dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+    DialogInterface.OnClickListener positiveListener=new DialogInterface.OnClickListener(){
       public void onClick(      DialogInterface dialog,      int whichButton){
+        WordPressDB settingsDB=new WordPressDB(wpAndroid.this);
+        boolean deleteSuccess=settingsDB.deleteAccount(wpAndroid.this,selectedID);
+        if (deleteSuccess) {
+          Toast.makeText(wpAndroid.this,getResources().getText(R.string.account_removed_successfully),Toast.LENGTH_SHORT).show();
+          displayAccounts();
+        }
+ else {
+          AlertUtil.showAlert(wpAndroid.this,R.string.error,R.string.error);
+        }
       }
     }
-);
-    dialogBuilder.setCancelable(true);
-    dialogBuilder.create().show();
-  }
-}
-}
-);
-dialogBuilder.setNegativeButton(getResources().getText(R.string.no),new DialogInterface.OnClickListener(){
-public void onClick(DialogInterface dialog,int whichButton){
-}
-}
-);
-dialogBuilder.setCancelable(false);
-dialogBuilder.create().show();
+;
+  AlertUtil.showAlert(wpAndroid.this,R.string.remove_account,R.string.sure_to_remove_account,getString(R.string.yes),positiveListener,getString(R.string.no),null);
 return true;
 }
 return false;

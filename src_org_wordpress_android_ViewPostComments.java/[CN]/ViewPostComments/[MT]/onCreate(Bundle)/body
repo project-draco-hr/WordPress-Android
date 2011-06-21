@@ -1,0 +1,40 @@
+{
+  super.onCreate(icicle);
+  setContentView(R.layout.viewcomments);
+  Bundle extras=getIntent().getExtras();
+  if (extras != null) {
+    id=extras.getString("id");
+    blog=new Blog(id,this);
+    postID=extras.getString("postID");
+    accountName=extras.getString("accountName");
+  }
+  this.setTitle(accountName + " - " + getResources().getText(R.string.view_comments));
+  HashMap<String,Object> hPost=new HashMap<String,Object>();
+  hPost.put("status","approve");
+  hPost.put("post_id",postID);
+  hPost.put("number",10);
+  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+  XMLRPCMethod method=new XMLRPCMethod("wp.getComments",new XMLRPCMethodCallback(){
+    public void callFinished(    Object[] result){
+      if (result.length == 0) {
+        comments=new String[1];
+        authors=new String[1];
+        comments[0]=getResources().getText(R.string.no_approved_comments).toString();
+        authors[0]="";
+      }
+ else {
+        comments=new String[result.length];
+        authors=new String[result.length];
+        for (int ctr=0; ctr < result.length; ctr++) {
+          HashMap<?,?> contentHash=(HashMap<?,?>)result[ctr];
+          comments[ctr]=contentHash.get("content").toString();
+          authors[ctr]=contentHash.get("author").toString();
+        }
+      }
+      setListAdapter(new CommentListAdapter(ViewPostComments.this));
+    }
+  }
+);
+  Object[] params={1,blog.getUsername(),blog.getPassword(),hPost};
+  method.call(params);
+}

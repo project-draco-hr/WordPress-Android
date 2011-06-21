@@ -4,25 +4,21 @@
   getWindow().addFlags(WindowManager.LayoutParams.FLAG_DITHER);
   boolean eula=checkEULA();
   if (eula == false) {
-    AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(wpAndroid.this);
-    dialogBuilder.setTitle(R.string.eula);
-    dialogBuilder.setMessage(R.string.eula_content);
-    dialogBuilder.setPositiveButton(R.string.accept,new DialogInterface.OnClickListener(){
+    DialogInterface.OnClickListener positiveListener=new DialogInterface.OnClickListener(){
       public void onClick(      DialogInterface dialog,      int whichButton){
         WordPressDB eulaDB=new WordPressDB(wpAndroid.this);
         eulaDB.setEULA(wpAndroid.this);
         displayAccounts();
       }
     }
-);
-    dialogBuilder.setNegativeButton(R.string.decline,new DialogInterface.OnClickListener(){
+;
+    DialogInterface.OnClickListener negativeListener=new DialogInterface.OnClickListener(){
       public void onClick(      DialogInterface dialog,      int whichButton){
         finish();
       }
     }
-);
-    dialogBuilder.setCancelable(false);
-    dialogBuilder.create().show();
+;
+    AlertUtil.showAlert(wpAndroid.this,R.string.eula,R.string.eula_content,getString(R.string.accept),positiveListener,getString(R.string.decline),negativeListener);
   }
  else {
     displayAccounts();

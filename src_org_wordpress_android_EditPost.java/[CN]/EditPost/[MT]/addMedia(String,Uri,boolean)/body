@@ -1,0 +1,65 @@
+{
+  selectedImageIDs.add(selectedImageCtr,curStream);
+  imageUrl.add(selectedImageCtr,imgPath);
+  selectedImageCtr++;
+  if (!imgPath.contains("video")) {
+    String[] projection=new String[]{Images.Thumbnails._ID,Images.Thumbnails.DATA,Images.Media.ORIENTATION};
+    String orientation="", path="";
+    Cursor cur=managedQuery(curStream,projection,null,null,null);
+    File jpeg=null;
+    if (cur != null) {
+      String thumbData="";
+      if (cur.moveToFirst()) {
+        int dataColumn, orientationColumn;
+        dataColumn=cur.getColumnIndex(Images.Media.DATA);
+        orientationColumn=cur.getColumnIndex(Images.Media.ORIENTATION);
+        thumbData=cur.getString(dataColumn);
+        orientation=cur.getString(orientationColumn);
+      }
+      jpeg=new File(thumbData);
+      path=thumbData;
+    }
+ else {
+      path=curStream.toString().replace("file://","");
+      jpeg=new File(curStream.toString().replace("file://",""));
+    }
+    imageTitle=jpeg.getName();
+    byte[] finalBytes=null;
+    byte[] bytes=new byte[(int)jpeg.length()];
+    DataInputStream in=null;
+    try {
+      in=new DataInputStream(new FileInputStream(jpeg));
+    }
+ catch (    FileNotFoundException e) {
+      e.printStackTrace();
+    }
+    try {
+      in.readFully(bytes);
+    }
+ catch (    IOException e) {
+      e.printStackTrace();
+    }
+    try {
+      in.close();
+    }
+ catch (    IOException e) {
+      e.printStackTrace();
+    }
+    ImageHelper ih=ImageHelper.getInstance();
+    orientation=ih.getExifOrientation(path,orientation);
+    imageTitle=jpeg.getName();
+    finalBytes=ih.createThumbnail(bytes,"150",orientation,true);
+    Bitmap resizedBitmap=BitmapFactory.decodeByteArray(finalBytes,0,finalBytes.length);
+    imgThumbs.add(resizedBitmap);
+  }
+ else {
+    imgThumbs.add("video");
+  }
+  if (!noUI) {
+    Gallery gallery=(Gallery)findViewById(R.id.gallery);
+    gallery.setVisibility(View.VISIBLE);
+    gallery.setAdapter(new ImageAdapter(EditPost.this));
+    Button clearMedia=(Button)findViewById(R.id.clearPicture);
+    clearMedia.setVisibility(View.VISIBLE);
+  }
+}
