@@ -135,6 +135,14 @@
         spinner.setSelection(3,true);
       }
     }
+    String picturePaths=post.getMediaPaths();
+    if (!picturePaths.equals("")) {
+      String[] pPaths=picturePaths.split(",");
+      for (int i=0; i < pPaths.length; i++) {
+        Uri imagePath=Uri.parse(pPaths[i]);
+        addMedia(imagePath.getEncodedPath(),imagePath);
+      }
+    }
     if (!isPage) {
       if (post.getCategories() != null) {
         categories=post.getCategories().toString();
@@ -147,6 +155,36 @@
           tvCategories.setText("Selected categories: " + categories);
         }
       }
+    }
+    if (blog.isLocation()) {
+      enableLBSButtons();
+    }
+    Double latitude=post.getLatitude();
+    Double longitude=post.getLongitude();
+    if (latitude != 0.0) {
+      new getAddressTask().execute(latitude,longitude);
+    }
+    if (blog.isLocation() && latitude > 0) {
+      Button updateLocation=(Button)findViewById(R.id.updateLocation);
+      updateLocation.setOnClickListener(new Button.OnClickListener(){
+        public void onClick(        View v){
+          lm=(LocationManager)getSystemService(LOCATION_SERVICE);
+          lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,20000,0,EditPost.this);
+          lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,20000,0,EditPost.this);
+          locationActive=true;
+        }
+      }
+);
+      RelativeLayout locationSection=(RelativeLayout)findViewById(R.id.section4);
+      locationSection.setVisibility(View.VISIBLE);
+    }
+ else     if (blog.isLocation()) {
+      lm=(LocationManager)getSystemService(LOCATION_SERVICE);
+      lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,20000,0,EditPost.this);
+      lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,20000,0,EditPost.this);
+      locationActive=true;
+      RelativeLayout locationSection=(RelativeLayout)findViewById(R.id.section4);
+      locationSection.setVisibility(View.VISIBLE);
     }
     String tags=post.getMt_keywords();
     if (!tags.equals("")) {
@@ -170,8 +208,8 @@
     }
 );
   }
-  final Button postButton=(Button)findViewById(R.id.post);
-  postButton.setOnClickListener(new Button.OnClickListener(){
+  final Button saveButton=(Button)findViewById(R.id.post);
+  saveButton.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
       boolean result=savePost();
       if (result) {

@@ -1,0 +1,62 @@
+{
+  Method exif_getAttribute;
+  Constructor<ExifInterface> exif_construct;
+  String exifOrientation="";
+  int sdk_int=0;
+  try {
+    sdk_int=Integer.valueOf(android.os.Build.VERSION.SDK);
+  }
+ catch (  Exception e1) {
+    sdk_int=3;
+  }
+  if (sdk_int >= 5) {
+    try {
+      exif_construct=android.media.ExifInterface.class.getConstructor(new Class[]{String.class});
+      Object exif=exif_construct.newInstance(path);
+      exif_getAttribute=android.media.ExifInterface.class.getMethod("getAttribute",new Class[]{String.class});
+      try {
+        exifOrientation=(String)exif_getAttribute.invoke(exif,android.media.ExifInterface.TAG_ORIENTATION);
+        if (exifOrientation != null) {
+          if (exifOrientation.equals("1")) {
+            orientation="0";
+          }
+ else           if (exifOrientation.equals("3")) {
+            orientation="180";
+          }
+ else           if (exifOrientation.equals("6")) {
+            orientation="90";
+          }
+ else           if (exifOrientation.equals("8")) {
+            orientation="270";
+          }
+        }
+ else {
+          orientation="0";
+        }
+      }
+ catch (      InvocationTargetException ite) {
+        orientation="0";
+      }
+catch (      IllegalAccessException ie) {
+        System.err.println("unexpected " + ie);
+        orientation="0";
+      }
+    }
+ catch (    NoSuchMethodException nsme) {
+      orientation="0";
+    }
+catch (    IllegalArgumentException e) {
+      orientation="0";
+    }
+catch (    InstantiationException e) {
+      orientation="0";
+    }
+catch (    IllegalAccessException e) {
+      orientation="0";
+    }
+catch (    InvocationTargetException e) {
+      orientation="0";
+    }
+  }
+  return orientation;
+}

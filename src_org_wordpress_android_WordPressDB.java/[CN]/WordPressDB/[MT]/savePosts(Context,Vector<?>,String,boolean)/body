@@ -24,6 +24,14 @@
         }
       }
       values.put("categories",jsonArray.toString());
+      Object[] custom_fields=(Object[])thisHash.get("custom_fields");
+      jsonArray=new JSONArray();
+      if (custom_fields != null) {
+        for (int x=0; x < custom_fields.length; x++) {
+          jsonArray.put(custom_fields[x].toString());
+        }
+      }
+      values.put("custom_fields",jsonArray.toString());
       values.put("mt_excerpt",thisHash.get((isPage) ? "excerpt" : "mt_excerpt").toString());
       values.put("mt_text_more",thisHash.get((isPage) ? "text_more" : "mt_text_more").toString());
       values.put("mt_allow_comments",(Integer)thisHash.get("mt_allow_comments"));
@@ -45,14 +53,6 @@
         values.put("mt_keywords",thisHash.get("mt_keywords").toString());
         values.put("wp_post_format",thisHash.get("wp_post_format").toString());
       }
-      Object[] customFields=(Object[])thisHash.get("custom_fields");
-      jsonArray=new JSONArray();
-      if (cats != null) {
-        for (int x=0; x < customFields.length; x++) {
-          jsonArray.put(customFields[x].toString());
-        }
-      }
-      values.put("custom_fields",jsonArray.toString());
       int result=db.update(POSTS_TABLE,values,"postID=" + postID + " AND isPage="+ isPageInt,null);
       if (result == 0)       returnValue=db.insert(POSTS_TABLE,null,values) > 0;
  else       returnValue=true;
