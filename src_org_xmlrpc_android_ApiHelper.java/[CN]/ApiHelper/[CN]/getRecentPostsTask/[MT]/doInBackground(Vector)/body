@@ -3,15 +3,16 @@
   blog=(Blog)arguments.get(0);
   isPage=(Boolean)arguments.get(1);
   ctx=(Context)arguments.get(2);
+  int numRecords=(Integer)arguments.get(3);
+  loadMore=(Boolean)arguments.get(4);
   client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
   Object[] result=null;
-  int numRecords=10;
   Object[] params={blog.getBlogId(),blog.getUsername(),blog.getPassword(),numRecords};
   try {
     result=(Object[])client.call((isPage) ? "wp.getPages" : "metaWeblog.getRecentPosts",params);
   }
  catch (  XMLRPCException e) {
-    e.printStackTrace();
+    if (loadMore)     ((ViewPosts)ctx).switcher.showPrevious();
   }
   return result;
 }
