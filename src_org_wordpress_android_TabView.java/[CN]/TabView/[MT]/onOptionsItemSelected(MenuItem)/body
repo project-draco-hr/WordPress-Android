@@ -9,10 +9,7 @@ i.putExtras(bundle);
 startActivity(i);
 return true;
 case 1:
-AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(TabView.this);
-dialogBuilder.setTitle(getResources().getText(R.string.remove_account));
-dialogBuilder.setMessage(getResources().getText(R.string.sure_to_remove_account));
-dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
+DialogInterface.OnClickListener positiveListener=new DialogInterface.OnClickListener(){
 public void onClick(DialogInterface dialog,int whichButton){
 WordPressDB settingsDB=new WordPressDB(TabView.this);
 boolean deleteSuccess=settingsDB.deleteAccount(TabView.this,id);
@@ -21,27 +18,12 @@ Toast.makeText(TabView.this,getResources().getText(R.string.blog_removed_success
 finish();
 }
  else {
-AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(TabView.this);
-dialogBuilder.setTitle(getResources().getText(R.string.error));
-dialogBuilder.setMessage(getResources().getText(R.string.could_not_remove_account));
-dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-public void onClick(DialogInterface dialog,int whichButton){
-}
-}
-);
-dialogBuilder.setCancelable(true);
-dialogBuilder.create().show();
+AlertUtil.showAlert(TabView.this,R.string.error,R.string.could_not_remove_account);
 }
 }
 }
-);
-dialogBuilder.setNegativeButton(getResources().getText(R.string.no),new DialogInterface.OnClickListener(){
-public void onClick(DialogInterface dialog,int whichButton){
-}
-}
-);
-dialogBuilder.setCancelable(false);
-dialogBuilder.create().show();
+;
+AlertUtil.showAlert(TabView.this,R.string.remove_account,R.string.sure_to_remove_account,getString(R.string.yes),positiveListener,getString(R.string.no),null);
 return true;
 }
 return false;
