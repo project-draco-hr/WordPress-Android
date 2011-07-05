@@ -4,9 +4,12 @@
   float horstart=border * 2;
   float height=getHeight();
   float width=getWidth() - 1;
-  float max=getMax();
-  float min=getMin();
-  float diff=max - min;
+  double maxY=getMaxY();
+  double minY=getMinY();
+  double diffY=maxY - minY;
+  double maxX=getMaxX();
+  double minX=getMinX();
+  double diffX=maxX - minX;
   float graphheight=height - (2 * border);
   float graphwidth=width - (2 * border);
   paint.setTextAlign(Align.LEFT);
@@ -31,25 +34,28 @@
   }
   paint.setTextAlign(Align.CENTER);
   canvas.drawText(title,(graphwidth / 2) + horstart,border - 4,paint);
-  if (max != min) {
+  if (maxY != minY) {
     paint.setARGB(255,0,119,204);
     paint.setStrokeCap(Paint.Cap.ROUND);
     paint.setStrokeWidth(3);
-    float datalength=values.length;
-    float colwidth=graphwidth / (datalength - 1);
-    float lasth=0;
+    double lastY=0;
+    double lastX=0;
     for (int i=0; i < values.length; i++) {
-      float val=values[i] - min;
-      float rat=val / diff;
-      float h=graphheight * rat;
+      double valY=values[i].valueY - minY;
+      double ratY=valY / diffY;
+      double y=graphheight * ratY;
+      double valX=values[i].valueX - minX;
+      double ratX=valX / diffX;
+      double x=graphwidth * ratX;
       if (i > 0) {
-        float startX=((i - 1) * colwidth) + (horstart + 1);
-        float startY=(border - lasth) + graphheight;
-        float endX=(i * colwidth) + (horstart + 1);
-        float endY=(border - h) + graphheight;
+        float startX=(float)lastX + (horstart + 1);
+        float startY=(float)(border - lastY) + graphheight;
+        float endX=(float)x + (horstart + 1);
+        float endY=(float)(border - y) + graphheight;
         canvas.drawLine(startX,startY,endX,endY,paint);
       }
-      lasth=h;
+      lastY=y;
+      lastX=x;
     }
   }
 }
