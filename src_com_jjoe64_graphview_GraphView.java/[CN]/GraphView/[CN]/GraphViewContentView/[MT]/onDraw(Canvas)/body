@@ -15,6 +15,9 @@
   if (horlabels == null) {
     horlabels=generateHorlabels(graphwidth);
   }
+  if (verlabels == null) {
+    verlabels=generateVerlabels(graphheight);
+  }
   paint.setTextAlign(Align.LEFT);
   int vers=verlabels.length - 1;
   for (int i=0; i < verlabels.length; i++) {
@@ -25,7 +28,7 @@
   int hors=horlabels.length - 1;
   for (int i=0; i < horlabels.length; i++) {
     paint.setColor(Color.DKGRAY);
-    float x=((graphwidth / hors) * i) + horstart;
+    float x=((graphwidth / hors) * i) + horstart + graphOffset;
     canvas.drawLine(x,height - border,x,border,paint);
     paint.setTextAlign(Align.CENTER);
     if (i == horlabels.length - 1)     paint.setTextAlign(Align.RIGHT);
@@ -55,7 +58,7 @@
         if (i > 0) {
           int numSpace=(int)((endX - lastEndX) / 3f) + 1;
           for (int xi=0; xi < numSpace; xi++) {
-            float spaceX=(float)(lastEndX + ((endX - lastEndX) * xi / (numSpace - 1)));
+            float spaceX=(float)(lastEndX + ((endX - lastEndX) * xi / (numSpace - 1))) + graphOffset;
             float spaceY=(float)(lastEndY + ((endY - lastEndY) * xi / (numSpace - 1)));
             float startX=spaceX;
             if (startX - horstart > 1) {
@@ -77,9 +80,9 @@
       double ratX=valX / diffX;
       double x=graphwidth * ratX;
       if (i > 0) {
-        float startX=(float)lastEndX + (horstart + 1);
+        float startX=(float)lastEndX + (horstart + 1) + graphOffset;
         float startY=(float)(border - lastEndY) + graphheight;
-        float endX=(float)x + (horstart + 1);
+        float endX=(float)x + (horstart + 1) + graphOffset;
         float endY=(float)(border - y) + graphheight;
         canvas.drawLine(startX,startY,endX,endY,paint);
       }

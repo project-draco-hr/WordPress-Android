@@ -1,0 +1,22 @@
+{
+  if (!isScrollable()) {
+    return super.onTouchEvent(event);
+  }
+  boolean handled=false;
+  if ((event.getAction() & MotionEvent.ACTION_DOWN) == MotionEvent.ACTION_DOWN) {
+    handled=true;
+  }
+  if ((event.getAction() & MotionEvent.ACTION_UP) == MotionEvent.ACTION_UP) {
+    lastTouchEventX=0;
+    handled=true;
+  }
+  if ((event.getAction() & MotionEvent.ACTION_MOVE) == MotionEvent.ACTION_MOVE) {
+    Log.i("GraphViewContentView","touch action move");
+    if (lastTouchEventX != 0) {
+      onMoveGesture(event.getX() - lastTouchEventX);
+    }
+    lastTouchEventX=event.getX();
+    handled=true;
+  }
+  return handled;
+}
