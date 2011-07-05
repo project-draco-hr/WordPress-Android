@@ -1,0 +1,20 @@
+{
+  this.scalable=scalable;
+  if (scalable == true && scaleDetector == null) {
+    scrollable=true;
+    scaleDetector=new ScaleGestureDetector(getContext(),new ScaleGestureDetector.SimpleOnScaleGestureListener(){
+      @Override public boolean onScale(      ScaleGestureDetector detector){
+        double newSize=viewportSize * detector.getScaleFactor();
+        double diff=newSize - viewportSize;
+        viewportStart+=diff / 2;
+        viewportSize-=diff;
+        verlabels=null;
+        horlabels=null;
+        invalidate();
+        viewVerLabels.invalidate();
+        return true;
+      }
+    }
+);
+  }
+}

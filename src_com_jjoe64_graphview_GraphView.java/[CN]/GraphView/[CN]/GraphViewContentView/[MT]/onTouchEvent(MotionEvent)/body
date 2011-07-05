@@ -3,19 +3,25 @@
     return super.onTouchEvent(event);
   }
   boolean handled=false;
-  if ((event.getAction() & MotionEvent.ACTION_DOWN) == MotionEvent.ACTION_DOWN) {
-    handled=true;
+  if (scalable && scaleDetector != null) {
+    scaleDetector.onTouchEvent(event);
+    handled=scaleDetector.isInProgress();
   }
-  if ((event.getAction() & MotionEvent.ACTION_UP) == MotionEvent.ACTION_UP) {
-    lastTouchEventX=0;
-    handled=true;
-  }
-  if ((event.getAction() & MotionEvent.ACTION_MOVE) == MotionEvent.ACTION_MOVE) {
-    if (lastTouchEventX != 0) {
-      onMoveGesture(event.getX() - lastTouchEventX);
+  if (!handled) {
+    if ((event.getAction() & MotionEvent.ACTION_DOWN) == MotionEvent.ACTION_DOWN) {
+      handled=true;
     }
-    lastTouchEventX=event.getX();
-    handled=true;
+    if ((event.getAction() & MotionEvent.ACTION_UP) == MotionEvent.ACTION_UP) {
+      lastTouchEventX=0;
+      handled=true;
+    }
+    if ((event.getAction() & MotionEvent.ACTION_MOVE) == MotionEvent.ACTION_MOVE) {
+      if (lastTouchEventX != 0) {
+        onMoveGesture(event.getX() - lastTouchEventX);
+      }
+      lastTouchEventX=event.getX();
+      handled=true;
+    }
   }
   return handled;
 }
