@@ -1,6 +1,7 @@
 {
   super.onCreate(icicle);
   Bundle extras=getIntent().getExtras();
+  categories=new JSONArray();
   if (extras != null) {
     id=extras.getString("id");
     blog=new Blog(id,this);
@@ -145,14 +146,18 @@
     }
     if (!isPage) {
       if (post.getCategories() != null) {
-        categories=post.getCategories().toString();
+        categories=post.getCategories();
         if (!categories.equals("")) {
-          String[] aCategories=categories.split(",");
-          for (int i=0; i < aCategories.length; i++) {
-            selectedCategories.add(aCategories[i]);
+          for (int i=0; i < categories.length(); i++) {
+            try {
+              selectedCategories.add(categories.getString(i));
+            }
+ catch (            JSONException e) {
+              e.printStackTrace();
+            }
           }
           TextView tvCategories=(TextView)findViewById(R.id.selectedCategories);
-          tvCategories.setText("Selected categories: " + categories);
+          tvCategories.setText(getResources().getText(R.string.selected_categories) + getCategoriesCSV());
         }
       }
     }
@@ -192,14 +197,14 @@
       tagsET.setText(tags);
     }
   }
-  if ((localDraft || isNew) && !isPage) {
+  if (!isPage) {
     Button selectCategories=(Button)findViewById(R.id.selectCategories);
     selectCategories.setOnClickListener(new Button.OnClickListener(){
       public void onClick(      View v){
         Bundle bundle=new Bundle();
         bundle.putString("id",id);
-        if (categories != "") {
-          bundle.putString("categoriesCSV",categories);
+        if (categories.length() > 0) {
+          bundle.putString("categoriesCSV",getCategoriesCSV());
         }
         Intent i=new Intent(EditPost.this,SelectCategories.class);
         i.putExtras(bundle);
