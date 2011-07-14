@@ -102,6 +102,10 @@
     }
   }
  else {
+    if (post.isUploaded()) {
+      Button uploadNowButton=(Button)findViewById(R.id.cancel);
+      uploadNowButton.setVisibility(View.GONE);
+    }
     EditText titleET=(EditText)findViewById(R.id.title);
     EditText contentET=(EditText)findViewById(R.id.content);
     EditText passwordET=(EditText)findViewById(R.id.post_password);
@@ -221,9 +225,39 @@
         Bundle bundle=new Bundle();
         bundle.putString("returnStatus","OK");
         bundle.putLong("newID",post.getId());
+        if (post.isUploaded())         bundle.putBoolean("upload",true);
         Intent mIntent=new Intent();
         mIntent.putExtras(bundle);
         setResult(RESULT_OK,mIntent);
+        finish();
+      }
+    }
+  }
+);
+  final Button uploadNowButton=(Button)findViewById(R.id.cancel);
+  uploadNowButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      boolean result=savePost();
+      if (result) {
+        Bundle bundle=new Bundle();
+        if (isAction) {
+          Intent mIntent=new Intent(EditPost.this,TabView.class);
+          bundle.putString("activateTab","posts");
+          bundle.putString("id",id);
+          bundle.putLong("uploadID",post.getId());
+          bundle.putString("accountName",accountName);
+          bundle.putString("action","upload");
+          mIntent.putExtras(bundle);
+          startActivity(mIntent);
+        }
+ else {
+          bundle.putString("returnStatus","OK");
+          bundle.putBoolean("upload",true);
+          bundle.putLong("newID",post.getId());
+          Intent mIntent=new Intent();
+          mIntent.putExtras(bundle);
+          setResult(RESULT_OK,mIntent);
+        }
         finish();
       }
     }
@@ -371,35 +405,6 @@
   bquoteButton.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
       formatBtnClick(bquoteButton,"blockquote");
-    }
-  }
-);
-  final Button cancelButton=(Button)findViewById(R.id.cancel);
-  cancelButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      boolean result=savePost();
-      if (result) {
-        Bundle bundle=new Bundle();
-        if (isAction) {
-          Intent mIntent=new Intent(EditPost.this,TabView.class);
-          bundle.putString("activateTab","posts");
-          bundle.putString("id",id);
-          bundle.putLong("uploadID",post.getId());
-          bundle.putString("accountName",accountName);
-          bundle.putString("action","upload");
-          mIntent.putExtras(bundle);
-          startActivity(mIntent);
-        }
- else {
-          bundle.putString("returnStatus","OK");
-          bundle.putBoolean("upload",true);
-          bundle.putLong("newID",post.getId());
-          Intent mIntent=new Intent();
-          mIntent.putExtras(bundle);
-          setResult(RESULT_OK,mIntent);
-        }
-        finish();
-      }
     }
   }
 );
