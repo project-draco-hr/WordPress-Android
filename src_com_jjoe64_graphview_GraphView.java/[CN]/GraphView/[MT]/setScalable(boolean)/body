@@ -8,6 +8,21 @@
         double diff=newSize - viewportSize;
         viewportStart+=diff / 2;
         viewportSize-=diff;
+        if (diff < 0) {
+          if (viewportStart < values[0].valueX) {
+            viewportStart=values[0].valueX;
+          }
+          double overlap=viewportStart + viewportSize - values[values.length - 1].valueX;
+          if (overlap > 0) {
+            if (viewportStart - overlap > values[0].valueX) {
+              viewportStart-=overlap;
+            }
+ else {
+              viewportStart=values[0].valueX;
+              viewportSize=values[values.length - 1].valueX - viewportStart;
+            }
+          }
+        }
         verlabels=null;
         horlabels=null;
         numberformatter=null;
