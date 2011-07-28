@@ -42,53 +42,6 @@
     paint.setARGB(255,0,119,204);
     paint.setStrokeCap(Paint.Cap.ROUND);
     paint.setStrokeWidth(3);
-    GraphViewData[] values=_values();
-    double lastEndY=0;
-    double lastEndX=0;
-    if (drawBackground) {
-      float startY=graphheight + border;
-      for (int i=0; i < values.length; i++) {
-        double valY=values[i].valueY - minY;
-        double ratY=valY / diffY;
-        double y=graphheight * ratY;
-        double valX=values[i].valueX - minX;
-        double ratX=valX / diffX;
-        double x=graphwidth * ratX;
-        float endX=(float)x + (horstart + 1);
-        float endY=(float)(border - y) + graphheight + 2;
-        if (i > 0) {
-          int numSpace=(int)((endX - lastEndX) / 3f) + 1;
-          for (int xi=0; xi < numSpace; xi++) {
-            float spaceX=(float)(lastEndX + ((endX - lastEndX) * xi / (numSpace - 1)));
-            float spaceY=(float)(lastEndY + ((endY - lastEndY) * xi / (numSpace - 1)));
-            float startX=spaceX;
-            if (startX - horstart > 1) {
-              canvas.drawLine(startX,startY,spaceX,spaceY,paintBackground);
-            }
-          }
-        }
-        lastEndY=endY;
-        lastEndX=endX;
-      }
-    }
-    lastEndY=0;
-    lastEndX=0;
-    for (int i=0; i < values.length; i++) {
-      double valY=values[i].valueY - minY;
-      double ratY=valY / diffY;
-      double y=graphheight * ratY;
-      double valX=values[i].valueX - minX;
-      double ratX=valX / diffX;
-      double x=graphwidth * ratX;
-      if (i > 0) {
-        float startX=(float)lastEndX + (horstart + 1);
-        float startY=(float)(border - lastEndY) + graphheight;
-        float endX=(float)x + (horstart + 1);
-        float endY=(float)(border - y) + graphheight;
-        canvas.drawLine(startX,startY,endX,endY,paint);
-      }
-      lastEndY=y;
-      lastEndX=x;
-    }
+    drawData(canvas,graphwidth,graphheight,border,minX,minY,diffX,diffY,horstart);
   }
 }
