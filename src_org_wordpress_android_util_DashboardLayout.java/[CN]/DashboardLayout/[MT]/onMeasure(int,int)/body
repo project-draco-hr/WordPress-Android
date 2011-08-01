@@ -1,0 +1,26 @@
+{
+  mMaxChildWidth=0;
+  mMaxChildHeight=0;
+  int childWidthMeasureSpec=MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec),MeasureSpec.AT_MOST);
+  int childHeightMeasureSpec=MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec),MeasureSpec.AT_MOST);
+  final int count=getChildCount();
+  for (int i=0; i < count; i++) {
+    final View child=getChildAt(i);
+    if (child.getVisibility() == GONE) {
+      continue;
+    }
+    child.measure(childWidthMeasureSpec,childHeightMeasureSpec);
+    mMaxChildWidth=Math.max(mMaxChildWidth,child.getMeasuredWidth());
+    mMaxChildHeight=Math.max(mMaxChildHeight,child.getMeasuredHeight());
+  }
+  childWidthMeasureSpec=MeasureSpec.makeMeasureSpec(mMaxChildWidth,MeasureSpec.EXACTLY);
+  childHeightMeasureSpec=MeasureSpec.makeMeasureSpec(mMaxChildHeight,MeasureSpec.EXACTLY);
+  for (int i=0; i < count; i++) {
+    final View child=getChildAt(i);
+    if (child.getVisibility() == GONE) {
+      continue;
+    }
+    child.measure(childWidthMeasureSpec,childHeightMeasureSpec);
+  }
+  setMeasuredDimension(resolveSize(mMaxChildWidth,widthMeasureSpec),resolveSize(mMaxChildHeight,heightMeasureSpec));
+}

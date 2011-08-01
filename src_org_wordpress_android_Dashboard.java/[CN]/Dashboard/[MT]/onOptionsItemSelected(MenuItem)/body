@@ -1,0 +1,49 @@
+{
+switch (item.getItemId()) {
+case 0:
+    Intent i=new Intent(this,NewAccount.class);
+  startActivityForResult(i,0);
+return true;
+case 1:
+Intent i2=new Intent(this,Preferences.class);
+startActivity(i2);
+finish();
+return true;
+case 2:
+AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(Dashboard.this);
+dialogBuilder.setTitle(getResources().getText(R.string.remove_account));
+dialogBuilder.setMessage(getResources().getText(R.string.sure_to_remove_account));
+dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+WordPressDB settingsDB=new WordPressDB(Dashboard.this);
+boolean deleteSuccess=settingsDB.deleteAccount(Dashboard.this,id);
+if (deleteSuccess) {
+Toast.makeText(Dashboard.this,getResources().getText(R.string.blog_removed_successfully),Toast.LENGTH_SHORT).show();
+finish();
+}
+ else {
+AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(Dashboard.this);
+dialogBuilder.setTitle(getResources().getText(R.string.error));
+dialogBuilder.setMessage(getResources().getText(R.string.could_not_remove_account));
+dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+}
+}
+);
+dialogBuilder.setCancelable(true);
+dialogBuilder.create().show();
+}
+}
+}
+);
+dialogBuilder.setNegativeButton(getResources().getText(R.string.no),new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+}
+}
+);
+dialogBuilder.setCancelable(false);
+dialogBuilder.create().show();
+return true;
+}
+return false;
+}

@@ -1,0 +1,15 @@
+{
+  db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
+  int returnValue=-1;
+  Cursor c=db.query("eula",new String[]{"last_blog_id"},"id=0",null,null,null,null);
+  int numRows=c.getCount();
+  c.moveToFirst();
+  if (numRows == 1) {
+    if (c.getString(0) != null) {
+      returnValue=c.getInt(0);
+    }
+  }
+  c.close();
+  db.close();
+  return returnValue;
+}

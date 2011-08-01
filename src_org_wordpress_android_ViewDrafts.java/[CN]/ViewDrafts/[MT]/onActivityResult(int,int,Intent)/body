@@ -1,0 +1,35 @@
+{
+  super.onActivityResult(requestCode,resultCode,data);
+  if (resultCode == RESULT_OK) {
+    Bundle extras=data.getExtras();
+    String returnResult=extras.getString("returnStatus");
+    if (returnResult != null) {
+switch (requestCode) {
+case 0:
+        if (returnResult.equals("OK")) {
+          boolean uploadNow=false;
+          uploadNow=extras.getBoolean("upload");
+          if (uploadNow) {
+            selectedID=extras.getLong("newID");
+            showDialog(ID_DIALOG_POSTING);
+            try {
+              submitResult=submitPost();
+            }
+ catch (            IOException e) {
+              e.printStackTrace();
+            }
+          }
+ else {
+            loadPosts(false);
+          }
+        }
+      break;
+case 1:
+    if (returnResult.equals("OK")) {
+      refreshPosts(false);
+    }
+  break;
+}
+}
+}
+}

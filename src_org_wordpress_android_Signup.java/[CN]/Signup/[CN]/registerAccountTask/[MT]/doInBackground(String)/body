@@ -1,0 +1,20 @@
+{
+  resultData=new HashMap();
+  XMLRPCClient client=new XMLRPCClient("https://wordpress.com/xmlrpc.php","","");
+  String blogAddress=args[0];
+  String username=args[1];
+  String password=args[2];
+  String email=args[3];
+  Object[] vParams={blogAddress,username,password,email};
+  try {
+    resultData=(HashMap)client.call("wpcom.registerAccount",vParams);
+  }
+ catch (  XMLRPCException e) {
+    xmlrpcError=e.getMessage();
+    return false;
+  }
+  if (resultData.size() > 0) {
+    return true;
+  }
+  return false;
+}

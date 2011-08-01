@@ -57,33 +57,10 @@
     newDateFormattedList.addAll(dateFormattedList);
     dateCreatedFormatted=(String[])newDateFormattedList.toArray(new String[newDateFormattedList.size()]);
   }
-  boolean drafts=loadDrafts();
-  if (drafts) {
-    List<String> draftIDList=Arrays.asList(draftIDs);
-    List<String> newDraftIDList=new ArrayList<String>();
-    newDraftIDList.add("draftsHeader");
-    newDraftIDList.addAll(draftIDList);
-    draftIDs=(String[])newDraftIDList.toArray(new String[newDraftIDList.size()]);
-    List<String> titleList=Arrays.asList(draftTitles);
-    List<CharSequence> newTitleList=new ArrayList<CharSequence>();
-    newTitleList.add(getResources().getText(R.string.local_drafts));
-    newTitleList.addAll(titleList);
-    draftTitles=(String[])newTitleList.toArray(new String[newTitleList.size()]);
-    List<String> publishList=Arrays.asList(publish);
-    List<String> newPublishList=new ArrayList<String>();
-    newPublishList.add("draftsHeader");
-    newPublishList.addAll(publishList);
-    publish=(String[])newPublishList.toArray(new String[newPublishList.size()]);
-    postIDs=StringHelper.mergeStringArrays(draftIDs,postIDs);
-    titles=StringHelper.mergeStringArrays(draftTitles,titles);
-    dateCreatedFormatted=StringHelper.mergeStringArrays(publish,dateCreatedFormatted);
+  if (pla != null) {
+    pla.notifyDataSetChanged();
   }
- else {
-    if (pla != null) {
-      pla.notifyDataSetChanged();
-    }
-  }
-  if (loadedPosts != null || drafts == true) {
+  if (loadedPosts != null) {
     ListView listView=(ListView)findViewById(android.R.id.list);
     if (!isPage) {
       listView.removeFooterView(switcher);

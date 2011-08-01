@@ -13,9 +13,11 @@
   listView.setOnItemClickListener(new OnItemClickListener(){
     public void onItemClick(    AdapterView<?> arg0,    View row,    int position,    long id){
       Bundle bundle=new Bundle();
-      bundle.putString("accountName",EscapeUtils.unescapeHtml(blogNames[position]));
+      bundle.putString("accountName",EscapeUtils.unescapeHtml(blogNames[default_blog]));
       bundle.putString("id",String.valueOf(row.getId()));
-      Intent viewPostsIntent=new Intent(wpAndroid.this,TabView.class);
+      bundle.putString("blavatar",blavatars[default_blog]);
+      bundle.putInt("default_blog",default_blog);
+      Intent viewPostsIntent=new Intent(wpAndroid.this,Dashboard.class);
       viewPostsIntent.putExtras(bundle);
       startActivityForResult(viewPostsIntent,1);
     }
@@ -63,16 +65,12 @@
         url=urlSplit[0];
         url="http://gravatar.com/blavatar/" + ViewComments.getMd5Hash(url.trim()) + "?s=60&d=404";
         blavatars[validBlogCtr]=url;
-        accountNames.add(validBlogCtr,blogNames[i]);
         validBlogCtr++;
       }
     }
     if (validBlogCtr < accounts.size()) {
       accounts=settingsDB.getAccounts(this);
     }
-    ThumbnailBus bus=new ThumbnailBus();
-    thumbs=new ThumbnailAdapter(this,new HomeListAdapter(this),new SimpleWebImageCache<ThumbnailBus,ThumbnailMessage>(null,null,101,bus),IMAGE_IDS);
-    setListAdapter(thumbs);
     Intent intent=new Intent(wpAndroid.this,CommentBroadcastReceiver.class);
     PendingIntent pIntent=PendingIntent.getBroadcast(wpAndroid.this,0,intent,0);
     AlarmManager alarmManager=(AlarmManager)getSystemService(ALARM_SERVICE);
