@@ -1,6 +1,16 @@
 {
   post=posts[0];
-  if (post.getMediaPaths() != "") {
+  nm=(NotificationManager)context.getSystemService("notification");
+  Intent notificationIntent=new Intent(context,Dashboard.class);
+  notificationIntent.setData((Uri.parse("custom://wordpressNotificationIntent" + post.blogID)));
+  notificationIntent.putExtra("fromNotification",true);
+  PendingIntent pendingIntent=PendingIntent.getActivity(context,0,notificationIntent,Intent.FLAG_ACTIVITY_CLEAR_TOP);
+  Notification n=new Notification(R.drawable.wp_logo,"Uploading post",System.currentTimeMillis());
+  n.flags|=Notification.FLAG_AUTO_CANCEL;
+  n.setLatestEventInfo(context,post.blog.getBlogName(),"Uploading post",pendingIntent);
+  notificationID=22 + Integer.valueOf(post.blogID);
+  nm.notify(notificationID,n);
+  if (!post.getMediaPaths().equals("")) {
     String[] pPaths=post.mediaPaths.split(",");
     for (int i=0; i < pPaths.length; i++) {
       Uri imagePath=Uri.parse(pPaths[i]);
@@ -47,7 +57,8 @@
       }
     }
  else {
-      content=post.description + post.mt_text_more;
+      if (post.mt_text_more != null)       content=post.description + post.mt_text_more;
+ else       content=post.description;
     }
     if (!post.isPage) {
       WordPressDB db=new WordPressDB(post.context);
