@@ -1,0 +1,100 @@
+{
+  EditText contentText=(EditText)findViewById(R.id.fullscreen_textbox);
+  int selectionStart=contentText.getSelectionStart();
+  String startTag="<" + tag + ">";
+  String endTag="</" + tag + ">";
+  styleStart=selectionStart;
+  int selectionEnd=contentText.getSelectionEnd();
+  if (selectionStart > selectionEnd) {
+    int temp=selectionEnd;
+    selectionEnd=selectionStart;
+    selectionStart=temp;
+  }
+  if (localDraft || isNew) {
+    if (selectionEnd > selectionStart) {
+      Spannable str=contentText.getText();
+      if (tag.equals("blockquote")) {
+        QuoteSpan[] ss=str.getSpans(selectionStart,selectionEnd,QuoteSpan.class);
+        boolean exists=false;
+        for (int i=0; i < ss.length; i++) {
+          str.removeSpan(ss[i]);
+          exists=true;
+        }
+        if (!exists) {
+          str.setSpan(new QuoteSpan(),selectionStart,selectionEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        toggleButton.setChecked(false);
+      }
+ else       if (tag.equals("strong")) {
+        StyleSpan[] ss=str.getSpans(selectionStart,selectionEnd,StyleSpan.class);
+        boolean exists=false;
+        for (int i=0; i < ss.length; i++) {
+          int style=((StyleSpan)ss[i]).getStyle();
+          if (style == android.graphics.Typeface.BOLD) {
+            str.removeSpan(ss[i]);
+            exists=true;
+          }
+        }
+        if (!exists) {
+          str.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),selectionStart,selectionEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        toggleButton.setChecked(false);
+      }
+ else       if (tag.equals("em")) {
+        StyleSpan[] ss=str.getSpans(selectionStart,selectionEnd,StyleSpan.class);
+        boolean exists=false;
+        for (int i=0; i < ss.length; i++) {
+          int style=((StyleSpan)ss[i]).getStyle();
+          if (style == android.graphics.Typeface.ITALIC) {
+            str.removeSpan(ss[i]);
+            exists=true;
+          }
+        }
+        if (!exists) {
+          str.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),selectionStart,selectionEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        toggleButton.setChecked(false);
+      }
+ else       if (tag.equals("u")) {
+        UnderlineSpan[] ss=str.getSpans(selectionStart,selectionEnd,UnderlineSpan.class);
+        boolean exists=false;
+        for (int i=0; i < ss.length; i++) {
+          str.removeSpan(ss[i]);
+          exists=true;
+        }
+        if (!exists) {
+          str.setSpan(new UnderlineSpan(),selectionStart,selectionEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        toggleButton.setChecked(false);
+      }
+ else       if (tag.equals("strike")) {
+        StrikethroughSpan[] ss=str.getSpans(selectionStart,selectionEnd,StrikethroughSpan.class);
+        boolean exists=false;
+        for (int i=0; i < ss.length; i++) {
+          str.removeSpan(ss[i]);
+          exists=true;
+        }
+        if (!exists) {
+          str.setSpan(new StrikethroughSpan(),selectionStart,selectionEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        toggleButton.setChecked(false);
+      }
+    }
+  }
+ else {
+    String content=contentText.getText().toString();
+    if (selectionEnd > selectionStart) {
+      contentText.setText(content.substring(0,selectionStart) + startTag + content.substring(selectionStart,selectionEnd)+ endTag+ content.substring(selectionEnd,content.length()));
+      toggleButton.setChecked(false);
+      contentText.setSelection(selectionStart + content.substring(selectionStart,selectionEnd).length() + startTag.length()+ endTag.length());
+    }
+ else     if (toggleButton.isChecked()) {
+      contentText.setText(content.substring(0,selectionStart) + startTag + content.substring(selectionStart,content.length()));
+      contentText.setSelection(selectionEnd + startTag.length());
+    }
+ else     if (!toggleButton.isChecked()) {
+      contentText.setText(content.substring(0,selectionStart) + endTag + content.substring(selectionStart,content.length()));
+      contentText.setSelection(selectionEnd + endTag.length());
+    }
+  }
+}

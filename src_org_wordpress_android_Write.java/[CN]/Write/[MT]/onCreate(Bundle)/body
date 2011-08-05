@@ -1,0 +1,161 @@
+{
+  super.onCreate(icicle);
+  requestWindowFeature(Window.FEATURE_NO_TITLE);
+  getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+  Bundle extras=getIntent().getExtras();
+  if (extras != null) {
+    id=extras.getString("id");
+    blog=new Blog(id,this);
+    accountName=EscapeUtils.unescapeHtml(extras.getString("accountName"));
+    postID=extras.getLong("postID");
+    localDraft=extras.getBoolean("localDraft",false);
+    isPage=extras.getBoolean("isPage",false);
+    isNew=extras.getBoolean("isNew",false);
+    setText=extras.getString("setText");
+    if (!isNew)     post=new Post(id,postID,isPage,this);
+  }
+  if (isPage) {
+    setContentView(R.layout.post_fullscreen);
+  }
+ else {
+    setContentView(R.layout.post_fullscreen);
+  }
+  final EditText contentEdit=(EditText)findViewById(R.id.fullscreen_textbox);
+  contentEdit.setText(setText);
+  contentEdit.addTextChangedListener(new TextWatcher(){
+    public void afterTextChanged(    Editable s){
+      if (localDraft || isNew) {
+        ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
+        ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
+        ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
+        ToggleButton underlineButton=(ToggleButton)findViewById(R.id.underline);
+        ToggleButton strikeButton=(ToggleButton)findViewById(R.id.strike);
+        int position=Selection.getSelectionStart(contentEdit.getText());
+        if (position < 0) {
+          position=0;
+        }
+        if (position > 0) {
+          if (styleStart > position || position > (cursorLoc + 1)) {
+            if (position - cursorLoc > 1) {
+              styleStart=cursorLoc;
+            }
+ else {
+              styleStart=position - 1;
+            }
+          }
+          if (boldButton.isChecked()) {
+            StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
+            for (int i=0; i < ss.length; i++) {
+              if (ss[i].getStyle() == android.graphics.Typeface.BOLD) {
+                s.removeSpan(ss[i]);
+              }
+            }
+            s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+          }
+          if (emButton.isChecked()) {
+            StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
+            for (int i=0; i < ss.length; i++) {
+              if (ss[i].getStyle() == android.graphics.Typeface.ITALIC) {
+                s.removeSpan(ss[i]);
+              }
+            }
+            s.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+          }
+          if (bquoteButton.isChecked()) {
+            QuoteSpan[] ss=s.getSpans(styleStart,position,QuoteSpan.class);
+            for (int i=0; i < ss.length; i++) {
+              s.removeSpan(ss[i]);
+            }
+            s.setSpan(new QuoteSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+          }
+          if (underlineButton.isChecked()) {
+            UnderlineSpan[] ss=s.getSpans(styleStart,position,UnderlineSpan.class);
+            for (int i=0; i < ss.length; i++) {
+              s.removeSpan(ss[i]);
+            }
+            s.setSpan(new UnderlineSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+          }
+          if (strikeButton.isChecked()) {
+            StrikethroughSpan[] ss=s.getSpans(styleStart,position,StrikethroughSpan.class);
+            for (int i=0; i < ss.length; i++) {
+              s.removeSpan(ss[i]);
+            }
+            s.setSpan(new StrikethroughSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+          }
+        }
+        cursorLoc=Selection.getSelectionStart(contentEdit.getText());
+      }
+    }
+    public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
+    }
+    public void onTextChanged(    CharSequence s,    int start,    int before,    int count){
+    }
+  }
+);
+  final ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
+  boldButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      formatBtnClick(boldButton,"strong");
+    }
+  }
+);
+  final Button linkButton=(Button)findViewById(R.id.link);
+  linkButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      TextView contentText=(TextView)findViewById(R.id.fullscreen_textbox);
+      int selectionStart=contentText.getSelectionStart();
+      styleStart=selectionStart;
+      int selectionEnd=contentText.getSelectionEnd();
+      if (selectionStart > selectionEnd) {
+        int temp=selectionEnd;
+        selectionEnd=selectionStart;
+        selectionStart=temp;
+      }
+      if (selectionStart == -1 || selectionStart == contentText.getText().toString().length() || (selectionStart == selectionEnd)) {
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(Write.this);
+        dialogBuilder.setTitle(getResources().getText(R.string.no_text_selected));
+        dialogBuilder.setMessage(getResources().getText(R.string.select_text_to_link) + " " + getResources().getText(R.string.howto_select_text));
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        dialogBuilder.create().show();
+      }
+ else {
+        Intent i=new Intent(Write.this,Link.class);
+        startActivityForResult(i,2);
+      }
+    }
+  }
+);
+  final ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
+  emButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      formatBtnClick(emButton,"em");
+    }
+  }
+);
+  final ToggleButton underlineButton=(ToggleButton)findViewById(R.id.underline);
+  underlineButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      formatBtnClick(underlineButton,"u");
+    }
+  }
+);
+  final ToggleButton strikeButton=(ToggleButton)findViewById(R.id.strike);
+  strikeButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      formatBtnClick(strikeButton,"strike");
+    }
+  }
+);
+  final ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
+  bquoteButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      formatBtnClick(bquoteButton,"blockquote");
+    }
+  }
+);
+}

@@ -10,6 +10,8 @@
     localDraft=extras.getBoolean("localDraft",false);
     isPage=extras.getBoolean("isPage",false);
     isNew=extras.getBoolean("isNew",false);
+    setText=extras.getString("setText");
+    option=extras.getString("option");
     if (!isNew)     post=new Post(id,postID,isPage,this);
   }
   Display display=((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
@@ -217,6 +219,19 @@
     }
 );
   }
+  final Button fullScreen=(Button)findViewById(R.id.fullscreen);
+  fullScreen.setOnClickListener(new OnClickListener(){
+    public void onClick(    View v){
+      Intent i=new Intent(EditPost.this,Write.class);
+      i.putExtra("accountName",accountName);
+      i.putExtra("setText",setText);
+      i.putExtra("id",id);
+      i.putExtra("isNew",true);
+      startActivityForResult(i,0);
+      finish();
+    }
+  }
+);
   final Button saveButton=(Button)findViewById(R.id.post);
   saveButton.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
