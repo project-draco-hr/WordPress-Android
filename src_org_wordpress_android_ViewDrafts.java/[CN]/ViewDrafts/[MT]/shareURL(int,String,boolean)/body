@@ -1,0 +1,85 @@
+{
+  String errorStr=null;
+  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+  Object versionResult=new Object();
+  try {
+    if (isPage) {
+      Object[] vParams={blog.getBlogId(),postId,blog.getUsername(),blog.getPassword()};
+      versionResult=(Object)client.call("wp.getPage",vParams);
+    }
+ else {
+      Object[] vParams={postId,blog.getUsername(),blog.getPassword()};
+      versionResult=(Object)client.call("metaWeblog.getPost",vParams);
+    }
+  }
+ catch (  XMLRPCException e) {
+    errorStr=e.getMessage();
+    Log.d("WP","Error",e);
+  }
+  if (errorStr == null && versionResult != null) {
+    try {
+      HashMap<?,?> contentHash=(HashMap<?,?>)versionResult;
+      if ((isPage && !"publish".equals(contentHash.get("page_status").toString())) || (!isPage && !"publish".equals(contentHash.get("post_status").toString()))) {
+        Thread prompt=new Thread(){
+          public void run(){
+            AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(ViewDrafts.this);
+            dialogBuilder.setTitle(getResources().getText(R.string.share_url));
+            if (isPage) {
+              dialogBuilder.setMessage(ViewDrafts.this.getResources().getText(R.string.page_not_published));
+            }
+ else {
+              dialogBuilder.setMessage(ViewDrafts.this.getResources().getText(R.string.post_not_published));
+            }
+            dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+              public void onClick(              DialogInterface dialog,              int whichButton){
+              }
+            }
+);
+            dialogBuilder.setCancelable(true);
+            dialogBuilder.create().show();
+          }
+        }
+;
+        this.runOnUiThread(prompt);
+      }
+ else {
+        String postURL=contentHash.get("permaLink").toString();
+        String shortlink=getShortlinkTagHref(postURL);
+        Intent share=new Intent(Intent.ACTION_SEND);
+        share.setType("text/plain");
+        if (shortlink == null) {
+          share.putExtra(Intent.EXTRA_TEXT,postURL);
+        }
+ else {
+          share.putExtra(Intent.EXTRA_TEXT,shortlink);
+        }
+        share.putExtra(Intent.EXTRA_SUBJECT,contentHash.get("title").toString());
+        startActivity(Intent.createChooser(share,this.getText(R.string.share_url)));
+      }
+    }
+ catch (    Exception e) {
+      errorStr=e.getMessage();
+      Log.d("WP","Error",e);
+    }
+  }
+  loadingDialog.dismiss();
+  if (errorStr != null) {
+    final String fErrorStr=errorStr;
+    Thread prompt=new Thread(){
+      public void run(){
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(ViewDrafts.this);
+        dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
+        dialogBuilder.setMessage(fErrorStr);
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        dialogBuilder.create().show();
+      }
+    }
+;
+    this.runOnUiThread(prompt);
+  }
+}

@@ -1,0 +1,94 @@
+{
+  View pv=convertView;
+  ViewWrapper wrapper=null;
+  if (pv == null) {
+    LayoutInflater inflater=getLayoutInflater();
+    pv=inflater.inflate(R.layout.row_post_page,parent,false);
+    wrapper=new ViewWrapper(pv);
+    if (position == 0) {
+    }
+    pv.setTag(wrapper);
+    wrapper=new ViewWrapper(pv);
+    pv.setTag(wrapper);
+  }
+ else {
+    wrapper=(ViewWrapper)pv.getTag();
+  }
+  String date=dateCreatedFormatted[position];
+  if (date.equals("postsHeader") || date.equals("draftsHeader")) {
+    pv.setBackgroundDrawable(getResources().getDrawable(R.drawable.list_header_bg));
+    wrapper.getTitle().setTextColor(Color.parseColor("#EEEEEE"));
+    wrapper.getTitle().setShadowLayer(1,1,1,Color.parseColor("#444444"));
+    if (largeScreen) {
+      wrapper.getTitle().setPadding(12,0,12,3);
+    }
+ else {
+      wrapper.getTitle().setPadding(8,0,8,2);
+    }
+    wrapper.getTitle().setTextScaleX(1.2f);
+    wrapper.getTitle().setTextSize(17);
+    wrapper.getDate().setHeight(0);
+    if (date.equals("draftsHeader")) {
+      inDrafts=true;
+      date="";
+    }
+ else     if (date.equals("postsHeader")) {
+      inDrafts=false;
+      date="";
+    }
+  }
+ else {
+    pv.setBackgroundDrawable(getResources().getDrawable(R.drawable.list_bg_selector));
+    if (largeScreen) {
+      wrapper.getTitle().setPadding(12,12,12,0);
+    }
+ else {
+      wrapper.getTitle().setPadding(8,8,8,0);
+    }
+    wrapper.getTitle().setTextColor(Color.parseColor("#444444"));
+    wrapper.getTitle().setShadowLayer(0,0,0,Color.parseColor("#444444"));
+    wrapper.getTitle().setTextScaleX(1.0f);
+    wrapper.getTitle().setTextSize(16);
+    wrapper.getDate().setTextColor(Color.parseColor("#888888"));
+    Object[] args={R.id.row_post_id,postIDs[position]};
+    try {
+      Method m=android.view.View.class.getMethod("setTag");
+      m.invoke(pv,args);
+    }
+ catch (    NoSuchMethodException e) {
+      pv.setId(Integer.valueOf(postIDs[position]));
+    }
+catch (    IllegalArgumentException e) {
+      pv.setId(Integer.valueOf(postIDs[position]));
+    }
+catch (    IllegalAccessException e) {
+      pv.setId(Integer.valueOf(postIDs[position]));
+    }
+catch (    InvocationTargetException e) {
+      pv.setId(Integer.valueOf(postIDs[position]));
+    }
+    if (wrapper.getDate().getHeight() == 0) {
+      wrapper.getDate().setHeight((int)wrapper.getTitle().getTextSize() + wrapper.getDate().getPaddingBottom());
+    }
+    String customDate=date;
+    if (customDate.equals("draft")) {
+      customDate=getResources().getText(R.string.draft).toString();
+    }
+ else     if (customDate.equals("pending")) {
+      customDate=getResources().getText(R.string.pending_review).toString();
+    }
+ else     if (customDate.equals("private")) {
+      customDate=getResources().getText(R.string.post_private).toString();
+    }
+ else     if (customDate.equals("publish")) {
+      customDate=getResources().getText(R.string.publish_post).toString();
+      wrapper.getDate().setTextColor(Color.parseColor("#006505"));
+    }
+    date=customDate;
+  }
+  String titleText=titles[position];
+  if (titleText == "")   titleText="(" + getResources().getText(R.string.untitled) + ")";
+  wrapper.getTitle().setText(titleText);
+  wrapper.getDate().setText(date);
+  return pv;
+}

@@ -3,7 +3,7 @@
   Bundle extras=getIntent().getExtras();
   categories=new JSONArray();
   if (extras != null) {
-    id=extras.getString("id");
+    id=extras.getInt("id");
     blog=new Blog(id,this);
     accountName=EscapeUtils.unescapeHtml(extras.getString("accountName"));
     postID=extras.getLong("postID");
@@ -42,7 +42,7 @@
     Vector<?> accounts=settingsDB.getAccounts(this);
     if (accounts.size() > 0) {
       final String blogNames[]=new String[accounts.size()];
-      final String accountIDs[]=new String[accounts.size()];
+      final int accountIDs[]=new int[accounts.size()];
       for (int i=0; i < accounts.size(); i++) {
         HashMap<?,?> curHash=(HashMap<?,?>)accounts.get(i);
         try {
@@ -51,7 +51,7 @@
  catch (        Exception e) {
           blogNames[i]="(No Blog Title)";
         }
-        accountIDs[i]=curHash.get("id").toString();
+        accountIDs[i]=(Integer)curHash.get("id");
       }
       if (accounts.size() != 1) {
         AlertDialog.Builder builder=new AlertDialog.Builder(this);
@@ -208,7 +208,7 @@
     selectCategories.setOnClickListener(new Button.OnClickListener(){
       public void onClick(      View v){
         Bundle bundle=new Bundle();
-        bundle.putString("id",id);
+        bundle.putInt("id",id);
         if (categories.length() > 0) {
           bundle.putString("categoriesCSV",getCategoriesCSV());
         }
