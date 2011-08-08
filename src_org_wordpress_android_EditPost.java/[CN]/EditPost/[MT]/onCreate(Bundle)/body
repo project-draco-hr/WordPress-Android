@@ -3,7 +3,7 @@
   Bundle extras=getIntent().getExtras();
   categories=new JSONArray();
   if (extras != null) {
-    id=extras.getInt("id");
+    id=WordPress.currentBlog.getId();
     blog=new Blog(id,this);
     accountName=EscapeUtils.unescapeHtml(extras.getString("accountName"));
     postID=extras.getLong("postID");
@@ -28,6 +28,47 @@
   }
  else {
     setContentView(R.layout.edit);
+    if (blog.getPostFormats().equals("")) {
+      Vector args=new Vector();
+      args.add(blog);
+      args.add(this);
+      new ApiHelper.getPostFormatsTask().execute(args);
+      postFormatTitles=getResources().getStringArray(R.array.post_formats_array);
+      String defaultPostFormatTitles[]={"aside","audio","chat","gallery","image","link","quote","standard","status","video"};
+      postFormats=defaultPostFormatTitles;
+    }
+ else {
+      try {
+        JSONObject jsonPostFormats=new JSONObject(blog.getPostFormats());
+        postFormats=new String[jsonPostFormats.length()];
+        postFormatTitles=new String[jsonPostFormats.length()];
+        Iterator it=jsonPostFormats.keys();
+        int i=0;
+        while (it.hasNext()) {
+          String key=(String)it.next();
+          String val=(String)jsonPostFormats.get(key);
+          postFormats[i]=key;
+          postFormatTitles[i]=val;
+          i++;
+        }
+        java.util.Arrays.sort(postFormats);
+        java.util.Arrays.sort(postFormatTitles);
+      }
+ catch (      JSONException e) {
+        e.printStackTrace();
+      }
+    }
+    Spinner pfSpinner=(Spinner)findViewById(R.id.postFormat);
+    ArrayAdapter<String> pfAdapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,postFormatTitles);
+    pfAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    pfSpinner.setAdapter(pfAdapter);
+    String activePostFormat="standard";
+    if (!isNew) {
+      if (!post.getWP_post_format().equals(""))       activePostFormat=post.getWP_post_format();
+    }
+    for (int i=0; i < postFormats.length; i++) {
+      if (postFormats[i].equals(activePostFormat))       pfSpinner.setSelection(i);
+    }
   }
   String[] items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private)};
   Spinner spinner=(Spinner)findViewById(R.id.status);
