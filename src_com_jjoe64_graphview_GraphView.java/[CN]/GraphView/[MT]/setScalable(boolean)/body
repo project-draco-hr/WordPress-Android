@@ -9,17 +9,19 @@
         viewportStart+=diff / 2;
         viewportSize-=diff;
         if (diff < 0) {
-          if (viewportStart < values[0].valueX) {
-            viewportStart=values[0].valueX;
+          double minX=getMinX(true);
+          if (viewportStart < minX) {
+            viewportStart=minX;
           }
-          double overlap=viewportStart + viewportSize - values[values.length - 1].valueX;
+          double maxX=getMaxX(true);
+          double overlap=viewportStart + viewportSize - maxX;
           if (overlap > 0) {
-            if (viewportStart - overlap > values[0].valueX) {
+            if (viewportStart - overlap > minX) {
               viewportStart-=overlap;
             }
  else {
-              viewportStart=values[0].valueX;
-              viewportSize=values[values.length - 1].valueX - viewportStart;
+              viewportStart=minX;
+              viewportSize=maxX - viewportStart;
             }
           }
         }
