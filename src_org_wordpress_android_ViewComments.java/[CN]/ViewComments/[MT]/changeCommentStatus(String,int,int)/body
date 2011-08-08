@@ -1,0 +1,61 @@
+{
+  String sSelCommentID=String.valueOf(selCommentID);
+  ListView lv=getListView();
+  CommentEntry ce=(CommentEntry)lv.getItemAtPosition(position);
+  WordPressDB db=new WordPressDB(this);
+  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+  HashMap contentHash, postHash=new HashMap();
+  contentHash=(HashMap)allComments.get(sSelCommentID);
+  postHash.put("status",newStatus);
+  postHash.put("content",contentHash.get("comment"));
+  postHash.put("author",contentHash.get("author"));
+  postHash.put("author_url",contentHash.get("url"));
+  postHash.put("author_email",contentHash.get("email"));
+  Object[] params={blog.getBlogId(),blog.getUsername(),blog.getPassword(),sSelCommentID,postHash};
+  Object result=null;
+  try {
+    result=(Object)client.call("wp.editComment",params);
+    boolean bResult=Boolean.parseBoolean(result.toString());
+    if (bResult) {
+      ce.status=newStatus;
+      model.set(position,ce);
+      db.updateCommentStatus(ViewComments.this,id,ce.commentID,newStatus);
+    }
+    dismissDialog(ID_DIALOG_MODERATING);
+    Thread action=new Thread(){
+      public void run(){
+        Toast.makeText(ViewComments.this,getResources().getText(R.string.comment_moderated),Toast.LENGTH_SHORT).show();
+      }
+    }
+;
+    this.runOnUiThread(action);
+    Thread action2=new Thread(){
+      public void run(){
+        thumbs.notifyDataSetChanged();
+      }
+    }
+;
+    this.runOnUiThread(action2);
+  }
+ catch (  final XMLRPCException e) {
+    dismissDialog(ID_DIALOG_MODERATING);
+    Thread action3=new Thread(){
+      public void run(){
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(ViewComments.this);
+        dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
+        dialogBuilder.setMessage(e.getLocalizedMessage());
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        if (!isFinishing()) {
+          dialogBuilder.create().show();
+        }
+      }
+    }
+;
+    this.runOnUiThread(action3);
+  }
+}

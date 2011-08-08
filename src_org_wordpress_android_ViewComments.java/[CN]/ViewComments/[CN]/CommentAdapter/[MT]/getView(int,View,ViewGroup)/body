@@ -1,0 +1,18 @@
+{
+  View row=convertView;
+  CommentEntryWrapper wrapper=null;
+  if (row == null) {
+    LayoutInflater inflater=getLayoutInflater();
+    row=inflater.inflate(R.layout.row,null);
+    wrapper=new CommentEntryWrapper(row);
+    row.setTag(wrapper);
+  }
+ else {
+    wrapper=(CommentEntryWrapper)row.getTag();
+  }
+  CommentEntry commentEntry=getItem(position);
+  if ("hold".equals(commentEntry.status))   row.setBackgroundDrawable(getResources().getDrawable(R.drawable.comment_pending_bg_selector));
+ else   row.setBackgroundDrawable(getResources().getDrawable(R.drawable.list_bg_selector));
+  wrapper.populateFrom(commentEntry,position);
+  return (row);
+}

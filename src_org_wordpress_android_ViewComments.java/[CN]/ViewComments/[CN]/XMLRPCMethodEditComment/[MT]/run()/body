@@ -1,0 +1,51 @@
+{
+  try {
+    final Object result=(Object)client.call(method,params);
+    handler.post(new Runnable(){
+      public void run(){
+        callBack.callFinished(result);
+      }
+    }
+);
+  }
+ catch (  final XMLRPCFault e) {
+    handler.post(new Runnable(){
+      public void run(){
+        dismissDialog(ID_DIALOG_MODERATING);
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(ViewComments.this);
+        dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
+        dialogBuilder.setMessage(e.getFaultString());
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        if (!isFinishing()) {
+          dialogBuilder.create().show();
+        }
+      }
+    }
+);
+  }
+catch (  final XMLRPCException e) {
+    handler.post(new Runnable(){
+      public void run(){
+        dismissDialog(ID_DIALOG_MODERATING);
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(ViewComments.this);
+        dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
+        dialogBuilder.setMessage(e.getLocalizedMessage());
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        if (!isFinishing()) {
+          dialogBuilder.create().show();
+        }
+      }
+    }
+);
+  }
+}

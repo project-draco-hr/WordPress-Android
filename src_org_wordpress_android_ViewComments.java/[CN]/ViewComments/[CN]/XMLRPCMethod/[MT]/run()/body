@@ -1,0 +1,86 @@
+{
+  try {
+    HashMap<Object,Object> countResult=new HashMap<Object,Object>();
+    Object[] countParams={blog.getBlogId(),blog.getUsername(),blog.getPassword(),0};
+    try {
+      countResult=(HashMap)client.call("wp.getCommentCount",countParams);
+      totalComments=Integer.valueOf(countResult.get("awaiting_moderation").toString()) + Integer.valueOf(countResult.get("approved").toString());
+    }
+ catch (    XMLRPCException e) {
+      e.printStackTrace();
+    }
+    final Object[] result=(Object[])client.call(method,params);
+    handler.post(new Runnable(){
+      public void run(){
+        callBack.callFinished(result);
+      }
+    }
+);
+  }
+ catch (  final XMLRPCFault e) {
+    handler.post(new Runnable(){
+      public void run(){
+        if (pd.isShowing()) {
+          pd.dismiss();
+        }
+        closeProgressBar();
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(ViewComments.this);
+        dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
+        String msg=e.getLocalizedMessage();
+        dialogBuilder.setMessage(e.getFaultString());
+        if (msg.contains("403")) {
+          dialogBuilder.setMessage(e.getFaultString() + " " + getResources().getString(R.string.load_settings));
+          dialogBuilder.setPositiveButton(getResources().getString(R.string.yes),new DialogInterface.OnClickListener(){
+            public void onClick(            DialogInterface dialog,            int whichButton){
+              Intent i=new Intent(ViewComments.this,Settings.class);
+              i.putExtra("id",id);
+              i.putExtra("accountName",accountName);
+              startActivity(i);
+            }
+          }
+);
+          dialogBuilder.setNegativeButton(getResources().getString(R.string.no),new DialogInterface.OnClickListener(){
+            public void onClick(            DialogInterface dialog,            int whichButton){
+            }
+          }
+);
+        }
+ else {
+          dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+            public void onClick(            DialogInterface dialog,            int whichButton){
+            }
+          }
+);
+        }
+        dialogBuilder.setCancelable(true);
+        if (!isFinishing()) {
+          dialogBuilder.create().show();
+        }
+      }
+    }
+);
+  }
+catch (  final XMLRPCException e) {
+    handler.post(new Runnable(){
+      public void run(){
+        if (pd.isShowing()) {
+          pd.dismiss();
+        }
+        closeProgressBar();
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(ViewComments.this);
+        dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
+        dialogBuilder.setMessage(e.getLocalizedMessage());
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        if (!isFinishing()) {
+          dialogBuilder.create().show();
+        }
+      }
+    }
+);
+  }
+}

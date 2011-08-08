@@ -1,0 +1,61 @@
+{
+  super.onActivityResult(requestCode,resultCode,data);
+  if (data != null) {
+    Bundle extras=data.getExtras();
+switch (requestCode) {
+case 0:
+      final String returnText=extras.getString("replyText");
+    if (!returnText.equals("CANCEL")) {
+      final String postID=extras.getString("postID");
+      final int commentID=extras.getInt("commentID");
+      showDialog(ID_DIALOG_REPLYING);
+      new Thread(new Runnable(){
+        public void run(){
+          Looper.prepare();
+          pd=new ProgressDialog(ViewComments.this);
+          replyToComment(postID,commentID,returnText);
+        }
+      }
+).start();
+    }
+  break;
+case 1:
+if (resultCode == RESULT_OK) {
+  String comment_id;
+  final String action;
+  comment_id=extras.getString("comment_id");
+  final int position=extras.getInt("position");
+  action=extras.getString("action");
+  if (action.equals("approve") || action.equals("hold") || action.equals("spam")) {
+    final int commentID=Integer.parseInt(comment_id);
+    showDialog(ID_DIALOG_MODERATING);
+    new Thread(){
+      public void run(){
+        Looper.prepare();
+        changeCommentStatus(action,commentID,position);
+      }
+    }
+.start();
+  }
+ else   if (action.equals("delete")) {
+    final int commentID_del=Integer.parseInt(comment_id);
+    showDialog(ID_DIALOG_DELETING);
+    new Thread(){
+      public void run(){
+        deleteComment(commentID_del);
+      }
+    }
+.start();
+  }
+ else   if (action.equals("reply")) {
+    Intent i=new Intent(this,ReplyToComment.class);
+    i.putExtra("commentID",Integer.parseInt(comment_id));
+    i.putExtra("accountName",accountName);
+    i.putExtra("postID",extras.getString("post_id"));
+    startActivityForResult(i,0);
+  }
+}
+break;
+}
+}
+}
