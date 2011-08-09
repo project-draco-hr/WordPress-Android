@@ -4,22 +4,47 @@
   setContentView(R.layout.viewpost);
   Bundle extras=getIntent().getExtras();
   if (extras != null) {
-    id=extras.getInt("id");
-    blog=new Blog(id,this);
+    id=WordPress.currentBlog.getId();
     postID=extras.getString("postID");
+    accountName=extras.getString("accountName");
     isPage=extras.getBoolean("isPage");
+    loadReader=extras.getBoolean("loadReader");
   }
-  if (isPage) {
-    this.setTitle(EscapeUtils.unescapeHtml(blog.getBlogName()) + " - " + getResources().getText(R.string.preview_page));
+  if (loadReader) {
+    this.setTitle(getResources().getText(R.string.reader));
+    wv=(WebView)findViewById(R.id.webView);
+    wv.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+    backButton=(ImageButton)findViewById(R.id.browserBack);
+    backButton.setVisibility(View.VISIBLE);
+    backButton.setOnClickListener(new Button.OnClickListener(){
+      public void onClick(      View v){
+        wv.goBack();
+      }
+    }
+);
+    forwardButton=(ImageButton)findViewById(R.id.browserForward);
+    forwardButton.setVisibility(View.VISIBLE);
+    forwardButton.setOnClickListener(new Button.OnClickListener(){
+      public void onClick(      View v){
+        wv.goForward();
+      }
+    }
+);
+    new loadReaderTask().execute(null,null,null,null);
   }
  else {
-    this.setTitle(EscapeUtils.unescapeHtml(blog.getBlogName()) + " - " + getResources().getText(R.string.preview_post));
-  }
-  Thread t=new Thread(){
-    public void run(){
-      loadPostFromPermalink();
+    if (isPage) {
+      this.setTitle(EscapeUtils.unescapeHtml(accountName) + " - " + getResources().getText(R.string.preview_page));
     }
-  }
+ else {
+      this.setTitle(EscapeUtils.unescapeHtml(accountName) + " - " + getResources().getText(R.string.preview_post));
+    }
+    Thread t=new Thread(){
+      public void run(){
+        loadPostFromPermalink();
+      }
+    }
 ;
-  t.start();
+    t.start();
+  }
 }

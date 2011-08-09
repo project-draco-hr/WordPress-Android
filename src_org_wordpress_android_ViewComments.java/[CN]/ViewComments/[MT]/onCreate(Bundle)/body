@@ -1,5 +1,6 @@
 {
   super.onCreate(icicle);
+  requestWindowFeature(Window.FEATURE_NO_TITLE);
   setContentView(R.layout.moderatecomments);
   boolean fromNotification=false;
   Bundle extras=getIntent().getExtras();
@@ -9,6 +10,14 @@
     pd=new ProgressDialog(this);
     fromNotification=extras.getBoolean("fromNotification",false);
   }
+  WPTitleBar titleBar=(WPTitleBar)findViewById(R.id.actionBar);
+  titleBar.addRefreshButton();
+  titleBar.refreshButton.setOnClickListener(new ImageButton.OnClickListener(){
+    public void onClick(    View v){
+      refreshComments(false,false,false);
+    }
+  }
+);
   switcher=new ViewSwitcher(this);
   Button footer=(Button)View.inflate(this,R.layout.list_footer_btn,null);
   footer.setText(getResources().getText(R.string.load_more) + " " + getResources().getText(R.string.tab_comments));

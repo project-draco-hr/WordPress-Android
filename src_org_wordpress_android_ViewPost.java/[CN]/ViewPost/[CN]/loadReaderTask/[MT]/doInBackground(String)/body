@@ -1,0 +1,32 @@
+{
+  WordPressDB settingsDB=new WordPressDB(ViewPost.this);
+  Vector<?> settings=settingsDB.loadSettings(ViewPost.this,id);
+  try {
+    String responseContent="<head>" + "<script type=\"text/javascript\">" + "function submitform(){document.loginform.submit();} </script>"+ "</head>"+ "<body onload=\"submitform()\">"+ "<form style=\"visibility:hidden;\" name=\"loginform\" id=\"loginform\" action=\"" + settings.get(0).toString().replace("xmlrpc.php","wp-login.php") + "\" method=\"post\">"+ "<input type=\"text\" name=\"log\" id=\"user_login\" value=\""+ settings.get(2).toString()+ "\"/></label>"+ "<input type=\"password\" name=\"pwd\" id=\"user_pass\" value=\""+ settings.get(3).toString()+ "\" /></label>"+ "<input type=\"submit\" name=\"wp-submit\" id=\"wp-submit\" value=\"Log In\" />"+ "<input type=\"hidden\" name=\"redirect_to\" value=\""+ "http://wordpress.com/reader/mobile"+ "\" />"+ "</form>"+ "</body>";
+    wv.setWebViewClient(new WebViewClient(){
+      public boolean shouldOverrideUrlLoading(      WebView view,      String url){
+        view.loadUrl(url);
+        return false;
+      }
+    }
+);
+    wv.setWebChromeClient(new WebChromeClient(){
+      public void onProgressChanged(      WebView view,      int progress){
+        ViewPost.this.setTitle("Loading...");
+        ViewPost.this.setProgress(progress * 100);
+        if (progress == 100) {
+          ViewPost.this.setTitle(getResources().getText(R.string.reader));
+        }
+      }
+    }
+);
+    wv.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+    wv.getSettings().setBuiltInZoomControls(true);
+    wv.getSettings().setJavaScriptEnabled(true);
+    wv.loadData(responseContent,"text/html",HTTP.UTF_8);
+  }
+ catch (  Exception ex) {
+    ex.printStackTrace();
+  }
+  return null;
+}

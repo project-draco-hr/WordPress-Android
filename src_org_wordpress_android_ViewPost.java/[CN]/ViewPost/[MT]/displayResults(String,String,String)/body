@@ -12,10 +12,10 @@
             ViewPost.this.setProgress(progress * 100);
             if (progress == 100) {
               if (isPage) {
-                ViewPost.this.setTitle(EscapeUtils.unescapeHtml(blog.getBlogName()) + " - " + getResources().getText(R.string.preview_page));
+                ViewPost.this.setTitle(EscapeUtils.unescapeHtml(accountName) + " - " + getResources().getText(R.string.preview_page));
               }
  else {
-                ViewPost.this.setTitle(EscapeUtils.unescapeHtml(blog.getBlogName()) + " - " + getResources().getText(R.string.preview_post));
+                ViewPost.this.setTitle(EscapeUtils.unescapeHtml(accountName) + " - " + getResources().getText(R.string.preview_post));
               }
             }
           }
@@ -39,15 +39,23 @@
           }
         }
  else {
-          String encodedHTML="<html><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><body>" + html + "</body></html>";
-          wv.loadData(encodedHTML,"text/html","utf-8");
+          wv.loadData(html,"text/html","utf-8");
           Toast.makeText(ViewPost.this,getResources().getText(R.string.basic_html),Toast.LENGTH_SHORT).show();
         }
       }
  else {
         setProgressBarIndeterminateVisibility(false);
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(ViewPost.this);
+        dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
+        dialogBuilder.setMessage(getResources().getText(R.string.permalink_not_found));
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
         if (!isFinishing()) {
-          AlertUtil.showAlert(ViewPost.this,R.string.connection_error,R.string.permalink_not_found);
+          dialogBuilder.create().show();
         }
       }
     }
