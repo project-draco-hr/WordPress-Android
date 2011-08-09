@@ -9,6 +9,14 @@
     isPage=extras.getBoolean("viewPages");
     action=extras.getString("action");
   }
+  WPTitleBar titleBar=(WPTitleBar)findViewById(R.id.actionBar);
+  titleBar.addRefreshButton();
+  titleBar.refreshButton.setOnClickListener(new ImageButton.OnClickListener(){
+    public void onClick(    View v){
+      refreshPosts(false);
+    }
+  }
+);
   createSwitcher();
   if (action != null && !isPage) {
     if (action.equals("upload")) {
@@ -40,25 +48,4 @@
   if (width > 480 || height > 480) {
     largeScreen=true;
   }
-  final ImageButton addNewPost=(ImageButton)findViewById(R.id.newPost);
-  addNewPost.setOnClickListener(new ImageButton.OnClickListener(){
-    public void onClick(    View v){
-      Intent i=new Intent(ViewPosts.this,EditPost.class);
-      i.putExtra("accountName",WordPress.currentBlog.getBlogName());
-      i.putExtra("id",id);
-      i.putExtra("isNew",true);
-      if (isPage) {
-        i.putExtra("isPage",true);
-      }
-      startActivityForResult(i,0);
-    }
-  }
-);
-  final ImageButton refresh=(ImageButton)findViewById(R.id.refresh);
-  refresh.setOnClickListener(new ImageButton.OnClickListener(){
-    public void onClick(    View v){
-      refreshPosts(false);
-    }
-  }
-);
 }
