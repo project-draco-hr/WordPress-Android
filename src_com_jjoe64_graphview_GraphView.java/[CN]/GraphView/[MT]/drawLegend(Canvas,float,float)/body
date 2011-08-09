@@ -1,0 +1,29 @@
+{
+  int shapeSize=15;
+  paint.setARGB(180,100,100,100);
+  float legendHeight=(shapeSize + 5) * graphSeries.size() + 5;
+  float lLeft=width - legendWidth - 10;
+  float lTop;
+switch (legendAlign) {
+case TOP:
+    lTop=10;
+  break;
+case MIDDLE:
+lTop=height / 2 - legendHeight / 2;
+break;
+default :
+lTop=height - GraphViewConfig.BORDER - legendHeight- 10;
+}
+float lRight=lLeft + legendWidth;
+float lBottom=lTop + legendHeight;
+canvas.drawRoundRect(new RectF(lLeft,lTop,lRight,lBottom),8,8,paint);
+for (int i=0; i < graphSeries.size(); i++) {
+paint.setColor(graphSeries.get(i).color);
+canvas.drawRect(new RectF(lLeft + 5,lTop + 5 + (i * (shapeSize + 5)),lLeft + 5 + shapeSize,lTop + ((i + 1) * (shapeSize + 5))),paint);
+if (graphSeries.get(i).description != null) {
+paint.setColor(Color.WHITE);
+paint.setTextAlign(Align.LEFT);
+canvas.drawText(graphSeries.get(i).description,lLeft + 5 + shapeSize+ 5,lTop + shapeSize + (i * (shapeSize + 5)),paint);
+}
+}
+}
