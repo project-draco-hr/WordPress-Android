@@ -78,20 +78,45 @@
     final ActionItem takeNewVideo=new ActionItem();
     takeNewVideo.setTitle("Take Video");
     takeNewVideo.setIcon(getResources().getDrawable(R.drawable.media));
-    ImageButton add=(ImageButton)findViewById(R.id.add_small);
-    add.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        qa=new QuickAction(context);
-        qa.addActionItem(newpost);
-        qa.addActionItem(newpage);
-        qa.addActionItem(addOldPhoto);
-        qa.addActionItem(takeNewPhoto);
-        qa.addActionItem(addOldVideo);
-        qa.addActionItem(takeNewVideo);
-        qa.setAnimStyle(QuickAction.ANIM_AUTO);
-        qa.show(v);
-      }
-    }
+    qa=new QuickAction(context);
+    qa.addActionItem(newpost);
+    qa.addActionItem(newpage);
+    qa.addActionItem(addOldPhoto);
+    qa.addActionItem(takeNewPhoto);
+    qa.addActionItem(addOldVideo);
+    qa.addActionItem(takeNewVideo);
+    qa.setAnimStyle(QuickAction.ANIM_AUTO);
+    qa.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener(){
+      @Override public void onItemClick(      int pos){
+        Intent i=new Intent(context,EditPost.class);
+switch (pos) {
+case 1:
+          i.putExtra("isPage",true);
+        break;
+case 2:
+      i.putExtra("option","photolibrary");
+    break;
+case 3:
+  i.putExtra("option","newphoto");
+break;
+case 4:
+i.putExtra("option","videolibrary");
+break;
+case 5:
+i.putExtra("option","newvideo");
+break;
+}
+i.putExtra("isNew",true);
+context.startActivity(i);
+}
+}
 );
-  }
+ImageButton add=(ImageButton)findViewById(R.id.add_small);
+add.setOnClickListener(new View.OnClickListener(){
+public void onClick(View v){
+qa.show(v);
+}
+}
+);
+}
 }

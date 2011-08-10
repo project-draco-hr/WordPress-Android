@@ -1,47 +1,16 @@
 {
 switch (item.getItemId()) {
 case 0:
-    Intent photoPickerIntent=new Intent(Intent.ACTION_PICK);
-  photoPickerIntent.setType("image/*");
-startActivityForResult(photoPickerIntent,3);
-return true;
+    launchPictureLibrary();
+  return true;
 case 1:
-String state=android.os.Environment.getExternalStorageState();
-if (!state.equals(android.os.Environment.MEDIA_MOUNTED)) {
-AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(EditPost.this);
-dialogBuilder.setTitle(getResources().getText(R.string.sdcard_title));
-dialogBuilder.setMessage(getResources().getText(R.string.sdcard_message));
-dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-public void onClick(DialogInterface dialog,int whichButton){
-}
-}
-);
-dialogBuilder.setCancelable(true);
-dialogBuilder.create().show();
-break;
-}
-SD_CARD_TEMP_DIR=Environment.getExternalStorageDirectory() + File.separator + "wordpress"+ File.separator+ "wp-"+ System.currentTimeMillis()+ ".jpg";
-Intent takePictureFromCameraIntent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-takePictureFromCameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT,Uri.fromFile(new File(SD_CARD_TEMP_DIR)));
-File directory=new File(SD_CARD_TEMP_DIR).getParentFile();
-if (!directory.exists() && !directory.mkdirs()) {
-try {
-throw new IOException("Path to file could not be created.");
-}
- catch (IOException e) {
-e.printStackTrace();
-}
-}
-startActivityForResult(takePictureFromCameraIntent,4);
+launchCamera();
 return true;
 case 2:
-Intent videoPickerIntent=new Intent(Intent.ACTION_PICK);
-videoPickerIntent.setType("video/*");
-startActivityForResult(videoPickerIntent,6);
+launchVideoLibrary();
 return true;
 case 3:
-Intent takeVideoIntent=new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-startActivityForResult(takeVideoIntent,7);
+launchVideoCamera();
 return true;
 }
 return false;
