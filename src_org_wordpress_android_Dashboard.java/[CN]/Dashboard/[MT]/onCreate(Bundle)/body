@@ -4,4 +4,16 @@
   getWindow().setFormat(PixelFormat.RGBA_8888);
   getWindow().addFlags(WindowManager.LayoutParams.FLAG_DITHER);
   commentBadge=(TextView)findViewById(R.id.comment_badge);
+  Integer id1=WordPress.currentBlog.getId();
+  blog=new Blog(id1,this);
+  WordPressDB postStoreDB=new WordPressDB(this);
+  loadedPosts=postStoreDB.loadUploadedPosts(Dashboard.this,id1,false);
+  loadedPages=postStoreDB.loadUploadedPosts(Dashboard.this,id1,true);
+  loadedComments=postStoreDB.loadComments(Dashboard.this,id1);
+  TextView pov=(TextView)findViewById(R.id.posts_value);
+  pov.setText(Integer.toString(loadedPosts.size()));
+  TextView pav=(TextView)findViewById(R.id.pages_value);
+  pav.setText(Integer.toString(loadedPages.size()));
+  TextView cov=(TextView)findViewById(R.id.comments_value);
+  cov.setText(Integer.toString(loadedComments.size()));
 }
