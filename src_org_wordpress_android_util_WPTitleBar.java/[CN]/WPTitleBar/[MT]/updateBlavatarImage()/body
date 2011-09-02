@@ -1,0 +1,13 @@
+{
+  ImageView i=(ImageView)findViewById(R.id.blavatar_img);
+  i.setImageDrawable(getResources().getDrawable(R.drawable.wp_logo_home));
+  String url=WordPress.currentBlog.getUrl();
+  url=url.replace("http://","");
+  url=url.replace("https://","");
+  String[] urlSplit=url.split("/");
+  url=urlSplit[0];
+  url="http://gravatar.com/blavatar/" + ViewComments.getMd5Hash(url.trim()) + "?s=60&d=404";
+  ImageHelper ih=new ImageHelper();
+  BitmapDownloaderTask task=ih.new BitmapDownloaderTask(i);
+  task.execute(url);
+}
