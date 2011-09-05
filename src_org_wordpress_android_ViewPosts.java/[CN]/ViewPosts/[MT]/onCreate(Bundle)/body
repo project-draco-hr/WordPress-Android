@@ -4,14 +4,15 @@
   Bundle extras=getIntent().getExtras();
   String action=null;
   if (extras != null) {
-    id=WordPress.currentBlog.getId();
-    blog=new Blog(id,this);
     isPage=extras.getBoolean("viewPages");
     action=extras.getString("action");
   }
-  WPTitleBar titleBar=(WPTitleBar)findViewById(R.id.actionBar);
+  id=WordPress.currentBlog.getId();
+  blog=new Blog(id,this);
+  titleBar=(WPTitleBar)findViewById(R.id.actionBar);
   titleBar.refreshButton.setOnClickListener(new ImageButton.OnClickListener(){
     public void onClick(    View v){
+      titleBar.startRotatingRefreshIcon();
       refreshPosts(false);
     }
   }
@@ -31,6 +32,7 @@
  else {
       boolean loadedPosts=loadPosts(false);
       if (!loadedPosts) {
+        titleBar.startRotatingRefreshIcon();
         refreshPosts(false);
       }
     }
@@ -38,6 +40,7 @@
  else {
     boolean loadedPosts=loadPosts(false);
     if (!loadedPosts) {
+      titleBar.startRotatingRefreshIcon();
       refreshPosts(false);
     }
   }

@@ -1,0 +1,32 @@
+{
+  preShow();
+  int xPos, yPos;
+  int[] location=new int[2];
+  anchor.getLocationOnScreen(location);
+  Rect anchorRect=new Rect(location[0],location[1],location[0] + anchor.getWidth(),location[1] + anchor.getHeight());
+  mRootView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT));
+  mRootView.measure(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT);
+  int rootHeight=mRootView.getMeasuredHeight();
+  int screenWidth=mWindowManager.getDefaultDisplay().getWidth();
+  int screenHeight=mWindowManager.getDefaultDisplay().getHeight();
+  xPos=0;
+  int dyTop=anchorRect.top;
+  int dyBottom=screenHeight - anchorRect.bottom;
+  boolean onTop=(dyTop > dyBottom) ? true : false;
+  if (onTop) {
+    if (rootHeight > dyTop) {
+      yPos=15;
+    }
+ else {
+      yPos=anchorRect.top - rootHeight;
+    }
+  }
+ else {
+    yPos=anchorRect.bottom;
+    if (rootHeight > dyBottom) {
+    }
+  }
+  setAnimationStyle(screenWidth,anchorRect.centerX(),onTop);
+  mWindow.showAtLocation(anchor,Gravity.NO_GRAVITY,xPos,yPos);
+  isShowing=true;
+}

@@ -1,127 +1,13 @@
 {
-  WPTitleBar actionBar=(WPTitleBar)findViewById(R.id.actionBar);
-  actionBar.setOnBlogChangedListener(new OnBlogChangedListener(){
-    @Override public void OnBlogChanged(){
-      updateCommentBadge();
-    }
-  }
-);
   final WordPressDB settingsDB=new WordPressDB(this);
   accounts=settingsDB.getAccounts(this);
   checkStats(accounts.size());
-  if (accounts.size() > 0) {
-    updateCommentBadge();
-    Button writeButton=(Button)findViewById(R.id.dashboard_write_btn);
-    writeButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        Intent i=new Intent(Dashboard.this,EditPost.class);
-        i.putExtra("blavatar",blavatar_url);
-        i.putExtra("id",WordPress.currentBlog.getId());
-        i.putExtra("isNew",true);
-        i.putExtra("option","");
-        startActivity(i);
-      }
-    }
-);
-    Button postsButton=(Button)findViewById(R.id.dashboard_posts_btn);
-    postsButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        Intent i=new Intent(Dashboard.this,ViewPosts.class);
-        i.putExtra("id",WordPress.currentBlog.getId());
-        i.putExtra("blavatar",blavatar_url);
-        i.putExtra("isNew",true);
-        startActivityForResult(i,0);
-      }
-    }
-);
-    Button pagesButton=(Button)findViewById(R.id.dashboard_pages_btn);
-    pagesButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        Intent i=new Intent(Dashboard.this,ViewPosts.class);
-        i.putExtra("id",WordPress.currentBlog.getId());
-        i.putExtra("isNew",true);
-        i.putExtra("blavatar",blavatar_url);
-        i.putExtra("viewPages",true);
-        startActivityForResult(i,0);
-      }
-    }
-);
-    Button commentsButton=(Button)findViewById(R.id.dashboard_comments_btn);
-    commentsButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        Intent i=new Intent(Dashboard.this,ViewComments.class);
-        i.putExtra("id",WordPress.currentBlog.getId());
-        i.putExtra("blavatar",blavatar_url);
-        i.putExtra("isNew",true);
-        startActivityForResult(i,0);
-      }
-    }
-);
-    Button statsButton=(Button)findViewById(R.id.dashboard_stats_btn);
-    statsButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        Intent i=new Intent(Dashboard.this,ViewStats.class);
-        i.putExtra("id",WordPress.currentBlog.getId());
-        i.putExtra("blavatar",blavatar_url);
-        i.putExtra("isNew",true);
-        startActivityForResult(i,0);
-      }
-    }
-);
-    Button settingsButton=(Button)findViewById(R.id.dashboard_settings_btn);
-    settingsButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        Intent i=new Intent(Dashboard.this,Settings.class);
-        i.putExtra("id",WordPress.currentBlog.getId());
-        i.putExtra("blavatar",blavatar_url);
-        i.putExtra("isNew",true);
-        startActivityForResult(i,0);
-      }
-    }
-);
-    Button subsButton=(Button)findViewById(R.id.dashboard_subs_btn);
-    subsButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        Intent i=new Intent(Dashboard.this,About.class);
-        startActivity(i);
-      }
-    }
-);
-    Button picButton=(Button)findViewById(R.id.dashboard_picture_btn);
-    picButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        Intent i=new Intent(Dashboard.this,EditPost.class);
-        i.putExtra("option","newphoto");
-        i.putExtra("isNew",true);
-        startActivity(i);
-      }
-    }
-);
-    Button videoButton=(Button)findViewById(R.id.dashboard_video_btn);
-    videoButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        Intent i=new Intent(Dashboard.this,EditPost.class);
-        i.putExtra("option","newvideo");
-        i.putExtra("isNew",true);
-        startActivity(i);
-      }
-    }
-);
-    final Button quickpress=(Button)findViewById(R.id.quickpress);
-    quickpress.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        Intent i=new Intent(Dashboard.this,EditPost.class);
-        i.putExtra("blavatar",blavatar_url);
-        i.putExtra("id",WordPress.currentBlog.getId());
-        i.putExtra("isNew",true);
-        i.putExtra("option","");
-        startActivity(i);
-      }
-    }
-);
-  }
- else {
+  if (accounts.size() == 0) {
     Intent i=new Intent(Dashboard.this,NewAccount.class);
     startActivityForResult(i,0);
+  }
+ else {
+    WPTitleBar actionBar=(WPTitleBar)findViewById(R.id.actionBar);
+    actionBar.showDashboard();
   }
 }

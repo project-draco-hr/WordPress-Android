@@ -4,8 +4,6 @@
   accounts=settingsDB.getAccounts(context);
   blogNames=new CharSequence[accounts.size()];
   blogIDs=new int[accounts.size()];
-  qaBlogs=new QuickAction(context);
-  qaBlogs.setAnimStyle(QuickAction.ANIM_AUTO);
   for (int i=0; i < accounts.size(); i++) {
     HashMap<?,?> defHash=(HashMap<?,?>)accounts.get(i);
     String curBlogName=EscapeUtils.unescapeHtml(defHash.get("blogName").toString());
@@ -62,63 +60,13 @@
     updateBlavatarImage();
     refreshButton=(Button)findViewById(R.id.action_refresh);
     blogTitle.setText(EscapeUtils.unescapeHtml(WordPress.currentBlog.getBlogName()));
-    final ActionItem newpost=new ActionItem();
-    newpost.setTitle("Add New Post");
-    newpost.setIcon(getResources().getDrawable(R.drawable.posts_tab));
-    final ActionItem newpage=new ActionItem();
-    newpage.setTitle("Add New Page");
-    newpage.setIcon(getResources().getDrawable(R.drawable.pages_tab));
-    final ActionItem addOldPhoto=new ActionItem();
-    addOldPhoto.setTitle("Add Image From Gallery");
-    addOldPhoto.setIcon(getResources().getDrawable(R.drawable.media));
-    final ActionItem takeNewPhoto=new ActionItem();
-    takeNewPhoto.setTitle("Take Photo");
-    takeNewPhoto.setIcon(getResources().getDrawable(R.drawable.media));
-    final ActionItem addOldVideo=new ActionItem();
-    addOldVideo.setTitle("Add Video from Gallery");
-    addOldVideo.setIcon(getResources().getDrawable(R.drawable.media));
-    final ActionItem takeNewVideo=new ActionItem();
-    takeNewVideo.setTitle("Take Video");
-    takeNewVideo.setIcon(getResources().getDrawable(R.drawable.media));
-    qa=new QuickAction(context);
-    qa.addActionItem(newpost);
-    qa.addActionItem(newpage);
-    qa.addActionItem(addOldPhoto);
-    qa.addActionItem(takeNewPhoto);
-    qa.addActionItem(addOldVideo);
-    qa.addActionItem(takeNewVideo);
-    qa.setAnimStyle(QuickAction.ANIM_AUTO);
-    qa.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener(){
-      @Override public void onItemClick(      int pos){
-        Intent i=new Intent(context,EditPost.class);
-switch (pos) {
-case 1:
-          i.putExtra("isPage",true);
-        break;
-case 2:
-      i.putExtra("option","photolibrary");
-    break;
-case 3:
-  i.putExtra("option","newphoto");
-break;
-case 4:
-i.putExtra("option","videolibrary");
-break;
-case 5:
-i.putExtra("option","newvideo");
-break;
-}
-i.putExtra("isNew",true);
-context.startActivity(i);
-}
-}
+    qa=new QuickDashboard(context);
+    ImageButton showDashboard=(ImageButton)findViewById(R.id.home_small);
+    showDashboard.setOnClickListener(new View.OnClickListener(){
+      public void onClick(      View v){
+        qa.show(v);
+      }
+    }
 );
-ImageButton showDashboard=(ImageButton)findViewById(R.id.home_small);
-showDashboard.setOnClickListener(new View.OnClickListener(){
-public void onClick(View v){
-qa.show(v);
-}
-}
-);
-}
+  }
 }
