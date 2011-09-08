@@ -39,7 +39,7 @@
     }
   }
 );
-  Button go=(Button)findViewById(R.id.go);
+  final Button go=(Button)findViewById(R.id.go);
   go.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
       Spinner reportType=(Spinner)findViewById(R.id.reportType);
@@ -58,6 +58,31 @@
       }
 ;
       action.start();
+    }
+  }
+);
+  titleBar=(WPTitleBar)findViewById(R.id.actionBar);
+  titleBar.refreshButton.setOnClickListener(new ImageButton.OnClickListener(){
+    public void onClick(    View v){
+      go.performClick();
+    }
+  }
+);
+  titleBar.setOnBlogChangedListener(new OnBlogChangedListener(){
+    @Override public void OnBlogChanged(){
+      id=WordPress.currentBlog.getId();
+      blog=new Blog(id,ViewStats.this);
+      ImageView iv=(ImageView)findViewById(R.id.chart);
+      iv.setVisibility(View.GONE);
+      RelativeLayout filters=(RelativeLayout)findViewById(R.id.filters);
+      filters.setVisibility(View.GONE);
+      TableLayout tl=(TableLayout)findViewById(R.id.dataTable);
+      tl.removeAllViews();
+      RelativeLayout moderationBar=(RelativeLayout)findViewById(R.id.dotcomLogin);
+      moderationBar.setVisibility(View.GONE);
+      TextView reportTitle=(TextView)findViewById(R.id.chartTitle);
+      reportTitle.setVisibility(View.GONE);
+      initStats();
     }
   }
 );

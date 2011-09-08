@@ -7,7 +7,15 @@
     startActivityForResult(i,0);
   }
  else {
-    WPTitleBar actionBar=(WPTitleBar)findViewById(R.id.actionBar);
-    actionBar.showDashboard();
+    id=WordPress.currentBlog.getId();
+    titleBar=(WPTitleBar)findViewById(R.id.actionBar);
+    titleBar.showDashboard();
+    titleBar.setOnBlogChangedListener(new OnBlogChangedListener(){
+      @Override public void OnBlogChanged(){
+        id=WordPress.currentBlog.getId();
+        blog=new Blog(id,Dashboard.this);
+      }
+    }
+);
   }
 }

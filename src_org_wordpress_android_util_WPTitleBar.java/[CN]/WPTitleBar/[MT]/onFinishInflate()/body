@@ -2,7 +2,8 @@
   super.onFinishInflate();
   final WordPressDB settingsDB=new WordPressDB(context);
   accounts=settingsDB.getAccounts(context);
-  dashboard=(RelativeLayout)findViewById(R.id.dashboard);
+  dashboard=(LinearLayout)findViewById(R.id.dashboard);
+  commentBadge=(TextView)findViewById(R.id.comment_badge);
   blogNames=new CharSequence[accounts.size()];
   blogIDs=new int[accounts.size()];
   for (int i=0; i < accounts.size(); i++) {
@@ -48,6 +49,7 @@
             WordPress.currentBlog=new Blog(blogIDs[pos],context);
             settingsDB.updateLastBlogID(context,blogIDs[pos]);
             updateBlavatarImage();
+            updateCommentBadge();
             if (onBlogChangedListener != null) {
               onBlogChangedListener.OnBlogChanged();
             }
@@ -63,11 +65,10 @@
       public void onClick(      View v){
         if (dashboard.getVisibility() == View.GONE) {
           showDashboardOverlay();
+          isShowingDashboard=true;
         }
  else {
-          Animation fadeOutAnimation=AnimationUtils.loadAnimation(context,R.anim.shrink_from_bottomleft_to_topright);
-          dashboard.startAnimation(fadeOutAnimation);
-          dashboard.setVisibility(View.GONE);
+          hideDashboardOverlay();
         }
       }
     }
@@ -147,7 +148,7 @@
     Button subsButton=(Button)findViewById(R.id.dashboard_subs_btn);
     subsButton.setOnClickListener(new View.OnClickListener(){
       public void onClick(      View v){
-        Intent i=new Intent(context,About.class);
+        Intent i=new Intent(context,ViewPost.class);
         i.putExtra("id",WordPress.currentBlog.getId());
         i.putExtra("loadReader",true);
         context.startActivity(i);

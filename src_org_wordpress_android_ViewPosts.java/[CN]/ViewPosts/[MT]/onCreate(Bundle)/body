@@ -17,6 +17,22 @@
     }
   }
 );
+  titleBar.setOnBlogChangedListener(new OnBlogChangedListener(){
+    @Override public void OnBlogChanged(){
+      ListView listView=(ListView)findViewById(android.R.id.list);
+      listView.removeFooterView(switcher);
+      postIDs=new String[0];
+      pla.notifyDataSetChanged();
+      id=WordPress.currentBlog.getId();
+      blog=new Blog(id,ViewPosts.this);
+      boolean loadedPosts=loadPosts(false);
+      if (!loadedPosts) {
+        titleBar.startRotatingRefreshIcon();
+        refreshPosts(false);
+      }
+    }
+  }
+);
   createSwitcher();
   if (action != null && !isPage) {
     if (action.equals("upload")) {

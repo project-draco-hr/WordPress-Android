@@ -18,6 +18,21 @@
     }
   }
 );
+  titleBar.setOnBlogChangedListener(new OnBlogChangedListener(){
+    @Override public void OnBlogChanged(){
+      ListView listView=(ListView)findViewById(android.R.id.list);
+      listView.removeFooterView(switcher);
+      model.clear();
+      thumbs.notifyDataSetChanged();
+      id=WordPress.currentBlog.getId();
+      blog=new Blog(id,ViewComments.this);
+      boolean loadedComments=loadComments(false,false);
+      if (!loadedComments) {
+        refreshComments(false,false,false);
+      }
+    }
+  }
+);
   switcher=new ViewSwitcher(this);
   Button footer=(Button)View.inflate(this,R.layout.list_footer_btn,null);
   footer.setText(getResources().getText(R.string.load_more) + " " + getResources().getText(R.string.tab_comments));
