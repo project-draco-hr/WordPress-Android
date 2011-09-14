@@ -2,7 +2,66 @@
   super.onCreate(icicle);
   Bundle extras=getIntent().getExtras();
   categories=new JSONArray();
-  if (extras != null) {
+  String action=getIntent().getAction();
+  if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
+    isAction=true;
+    isNew=true;
+    WordPressDB settingsDB=new WordPressDB(this);
+    Vector<?> accounts=settingsDB.getAccounts(this);
+    if (accounts.size() > 0) {
+      final String blogNames[]=new String[accounts.size()];
+      final int accountIDs[]=new int[accounts.size()];
+      for (int i=0; i < accounts.size(); i++) {
+        HashMap<?,?> curHash=(HashMap<?,?>)accounts.get(i);
+        try {
+          blogNames[i]=EscapeUtils.unescapeHtml(curHash.get("blogName").toString());
+        }
+ catch (        Exception e) {
+          blogNames[i]="(No Blog Title)";
+        }
+        accountIDs[i]=(Integer)curHash.get("id");
+        blog=new Blog(accountIDs[i],EditPost.this);
+      }
+      if (accounts.size() != 1) {
+        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        builder.setTitle(getResources().getText(R.string.select_a_blog));
+        builder.setItems(blogNames,new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int item){
+            id=accountIDs[item];
+            blog=new Blog(id,EditPost.this);
+            accountName=blogNames[item];
+            setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
+            setContent();
+            lbsCheck();
+          }
+        }
+);
+        AlertDialog alert=builder.create();
+        alert.show();
+      }
+ else {
+        id=accountIDs[0];
+        blog=new Blog(id,EditPost.this);
+        accountName=blogNames[0];
+        setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
+        setContent();
+      }
+    }
+ else {
+      Intent i=new Intent(this,Dashboard.class);
+      Toast.makeText(getApplicationContext(),getResources().getText(R.string.no_account),Toast.LENGTH_LONG).show();
+      startActivity(i);
+      finish();
+    }
+  }
+ else {
+    selectedImageIDs.clear();
+    selectedImageCtr=0;
+    if (!isPage) {
+      lbsCheck();
+    }
+  }
+  if (extras != null && !isAction) {
     id=WordPress.currentBlog.getId();
     blog=new Blog(id,this);
     accountName=EscapeUtils.unescapeHtml(extras.getString("accountName"));
@@ -74,62 +133,6 @@
   ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,items);
   adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
   spinner.setAdapter(adapter);
-  String action=getIntent().getAction();
-  if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
-    isAction=true;
-    isNew=true;
-    WordPressDB settingsDB=new WordPressDB(this);
-    Vector<?> accounts=settingsDB.getAccounts(this);
-    if (accounts.size() > 0) {
-      final String blogNames[]=new String[accounts.size()];
-      final int accountIDs[]=new int[accounts.size()];
-      for (int i=0; i < accounts.size(); i++) {
-        HashMap<?,?> curHash=(HashMap<?,?>)accounts.get(i);
-        try {
-          blogNames[i]=EscapeUtils.unescapeHtml(curHash.get("blogName").toString());
-        }
- catch (        Exception e) {
-          blogNames[i]="(No Blog Title)";
-        }
-        accountIDs[i]=(Integer)curHash.get("id");
-      }
-      if (accounts.size() != 1) {
-        AlertDialog.Builder builder=new AlertDialog.Builder(this);
-        builder.setTitle(getResources().getText(R.string.select_a_blog));
-        builder.setItems(blogNames,new DialogInterface.OnClickListener(){
-          public void onClick(          DialogInterface dialog,          int item){
-            id=accountIDs[item];
-            accountName=blogNames[item];
-            setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
-            setContent();
-            lbsCheck();
-          }
-        }
-);
-        AlertDialog alert=builder.create();
-        alert.show();
-      }
- else {
-        id=accountIDs[0];
-        accountName=blogNames[0];
-        setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
-        setContent();
-      }
-    }
- else {
-      Intent i=new Intent(this,Dashboard.class);
-      Toast.makeText(getApplicationContext(),getResources().getText(R.string.no_account),Toast.LENGTH_LONG).show();
-      startActivity(i);
-      finish();
-    }
-  }
- else {
-    selectedImageIDs.clear();
-    selectedImageCtr=0;
-    if (!isPage) {
-      lbsCheck();
-    }
-  }
   if (isNew) {
     setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
   }

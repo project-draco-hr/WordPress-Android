@@ -1,13 +1,14 @@
 {
   String postOrPage=(String)(post.isPage() ? context.getResources().getText(R.string.page_id) : context.getResources().getText(R.string.post_id));
+  PendingIntent pendingIntent=PendingIntent.getActivity(context,0,new Intent(context,ViewPosts.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra("id",String.valueOf(post.blog.getId())),PendingIntent.FLAG_UPDATE_CURRENT);
+  n.flags|=Notification.FLAG_AUTO_CANCEL;
   if (result) {
-    Intent notificationIntent=new Intent(context,ViewPosts.class);
-    notificationIntent.setData((Uri.parse("custom://wordpressNotificationIntent" + post.blogID)));
-    notificationIntent.putExtra("id",String.valueOf(post.blog.getId()));
-    PendingIntent pendingIntent=PendingIntent.getActivity(context,0,notificationIntent,Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    Notification n=new Notification();
-    n.flags|=Notification.FLAG_AUTO_CANCEL;
-    n.setLatestEventInfo(context,post.blog.getBlogName(),postOrPage + " " + context.getResources().getText(R.string.uploaded_successfully),pendingIntent);
-    nm.notify(notificationID,n);
+    n.contentView.setTextViewText(R.id.status_text,postOrPage + " " + context.getResources().getText(R.string.uploaded_successfully));
+    n.contentView.setViewVisibility(R.id.status_progress,View.GONE);
   }
+ else {
+    n.contentView.setTextViewText(R.id.status_text,postOrPage + " " + context.getResources().getText(R.string.upload_failed));
+    n.contentView.setViewVisibility(R.id.status_progress,View.GONE);
+  }
+  nm.notify(notificationID,n);
 }

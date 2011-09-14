@@ -4,8 +4,18 @@
   String finalImageUrl=null;
   for (int it=0; it < post.selectedImageCtr; it++) {
     final int printCtr=it;
+    final String statusText="Uploading Media File #" + String.valueOf(printCtr + 1);
+    n.contentView.setTextViewText(R.id.status_text,statusText);
     if (post.imageUrl.get(it) != null) {
       XMLRPCClient client=new XMLRPCClient(post.blog.getUrl(),post.blog.getHttpuser(),post.blog.getHttppassword());
+      client.setUploadProgressListener(new XMLRPCClient.UploadProgressListener(){
+        @Override public void OnUploadProgress(        int progress){
+          n.contentView.setProgressBar(R.id.status_progress,100,progress,false);
+          n.contentView.setTextViewText(R.id.status_text,statusText + " (" + progress+ "%)");
+          nm.notify(notificationID,n);
+        }
+      }
+);
       String curImagePath="";
       curImagePath=post.imageUrl.get(it).toString();
       boolean video=false;
