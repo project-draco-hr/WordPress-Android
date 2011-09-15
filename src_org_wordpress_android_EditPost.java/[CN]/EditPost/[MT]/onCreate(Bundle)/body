@@ -55,22 +55,22 @@
     }
   }
  else {
+    if (extras != null) {
+      id=WordPress.currentBlog.getId();
+      blog=new Blog(id,this);
+      accountName=EscapeUtils.unescapeHtml(extras.getString("accountName"));
+      postID=extras.getLong("postID");
+      localDraft=extras.getBoolean("localDraft",false);
+      isPage=extras.getBoolean("isPage",false);
+      isNew=extras.getBoolean("isNew",false);
+      option=extras.getString("option");
+      if (!isNew)       post=new Post(id,postID,isPage,this);
+    }
     selectedImageIDs.clear();
     selectedImageCtr=0;
     if (!isPage) {
       lbsCheck();
     }
-  }
-  if (extras != null && !isAction) {
-    id=WordPress.currentBlog.getId();
-    blog=new Blog(id,this);
-    accountName=EscapeUtils.unescapeHtml(extras.getString("accountName"));
-    postID=extras.getLong("postID");
-    localDraft=extras.getBoolean("localDraft",false);
-    isPage=extras.getBoolean("isPage",false);
-    isNew=extras.getBoolean("isNew",false);
-    option=extras.getString("option");
-    if (!isNew)     post=new Post(id,postID,isPage,this);
   }
   Display display=((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
   int width=display.getWidth();
