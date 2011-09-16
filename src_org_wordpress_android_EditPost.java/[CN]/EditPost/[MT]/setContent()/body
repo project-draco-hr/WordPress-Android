@@ -20,10 +20,16 @@
       String[] parts=text.split("\\s");
       String finalText="";
       for (      String item : parts)       try {
-        URL url=new URL(item);
-        finalText+="<a href=\"" + url + "\">"+ url+ "</a> ";
-        contentET.setText(Html.fromHtml(finalText));
-        isUrl=true;
+        if (item.equals(":")) {
+          finalText+=item + " ";
+          contentET.setText(finalText);
+        }
+ else {
+          URL url=new URL(item);
+          finalText+="<a href=\"" + url + "\">"+ url+ "</a> ";
+          contentET.setText(Html.fromHtml(finalText));
+          isUrl=true;
+        }
       }
  catch (      MalformedURLException e) {
         finalText+=item + " ";
