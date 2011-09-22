@@ -1,8 +1,9 @@
 {
+  refreshOnly=refresh;
   WordPressDB postStoreDB=new WordPressDB(this);
   String author, postID, commentID, comment, dateCreatedFormatted, status, authorEmail, authorURL, postTitle;
   if (!addMore) {
-    Vector<?> loadedPosts=postStoreDB.loadComments(ViewComments.this,id);
+    Vector<?> loadedPosts=postStoreDB.loadComments(ViewComments.this,WordPress.currentBlog.getId());
     if (loadedPosts != null) {
       HashMap<Object,Object> countHash=new HashMap<Object,Object>();
       countHash=(HashMap)loadedPosts.get(0);
@@ -96,7 +97,9 @@
 );
       }
  else {
-        thumbs.notifyDataSetChanged();
+        if (thumbs != null) {
+          thumbs.notifyDataSetChanged();
+        }
       }
       return true;
     }

@@ -1,0 +1,32 @@
+{
+  if (commentsResult.size() == 0) {
+    if (pd.isShowing()) {
+      pd.dismiss();
+    }
+    titleBar.stopRotatingRefreshIcon();
+  }
+ else {
+    if (commentsResult.size() < 30) {
+      getListView().removeFooterView(switcher);
+    }
+    allComments.putAll(commentsResult);
+    for (int ctr=0; ctr < commentsResult.size(); ctr++) {
+      if (loadMore) {
+        checkedComments.add("false");
+      }
+    }
+    if (!doInBackground) {
+      loadComments(loadMore,refreshOnly);
+    }
+    if (pd.isShowing()) {
+      pd.dismiss();
+    }
+    titleBar.stopRotatingRefreshIcon();
+  }
+  if (!loadMore && !doInBackground) {
+    titleBar.stopRotatingRefreshIcon();
+  }
+ else   if (loadMore) {
+    switcher.showPrevious();
+  }
+}
