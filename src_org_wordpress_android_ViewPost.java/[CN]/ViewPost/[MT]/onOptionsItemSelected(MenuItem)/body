@@ -1,9 +1,29 @@
 {
 switch (item.getItemId()) {
 case 0:
-    Intent i=new Intent(Intent.ACTION_VIEW);
-  i.setData(Uri.parse(wv.getUrl()));
+    finish();
+  break;
+case 1:
+Intent i=new Intent(Intent.ACTION_VIEW);
+i.setData(Uri.parse(wv.getUrl()));
 startActivity(i);
+break;
+case 2:
+wv.reload();
+new Thread(new Runnable(){
+public void run(){
+try {
+HttpClient httpclient=new DefaultHttpClient();
+HttpProtocolParams.setUserAgent(httpclient.getParams(),"wp-android");
+HttpResponse response=httpclient.execute(new HttpGet("http://wordpress.com/reader/mobile/?template=stats&stats_name=home_page_refresh"));
+InputStream content=response.getEntity().getContent();
+}
+ catch (Exception e) {
+}
+}
+}
+).start();
+break;
 }
 return false;
 }
