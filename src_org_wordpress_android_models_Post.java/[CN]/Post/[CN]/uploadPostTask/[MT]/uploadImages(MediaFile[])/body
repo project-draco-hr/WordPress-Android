@@ -2,22 +2,15 @@
   String content="";
   String finalThumbnailUrl=null;
   String finalImageUrl=null;
-  for (int it=0; it < post.selectedImageCtr; it++) {
+  for (int it=0; it < mediaFiles.length; it++) {
+    MediaFile mf=mediaFiles[it];
     final int printCtr=it;
     final String statusText="Uploading Media File #" + String.valueOf(printCtr + 1);
     n.contentView.setTextViewText(R.id.status_text,statusText);
-    if (post.imageUrl.get(it) != null) {
+    if (mf.getFilePath() != "") {
       XMLRPCClient client=new XMLRPCClient(post.blog.getUrl(),post.blog.getHttpuser(),post.blog.getHttppassword());
-      client.setUploadProgressListener(new XMLRPCClient.UploadProgressListener(){
-        @Override public void OnUploadProgress(        int progress){
-          n.contentView.setProgressBar(R.id.status_progress,100,progress,false);
-          n.contentView.setTextViewText(R.id.status_text,statusText + " (" + progress+ "%)");
-          nm.notify(notificationID,n);
-        }
-      }
-);
       String curImagePath="";
-      curImagePath=post.imageUrl.get(it).toString();
+      curImagePath=mf.getFilePath();
       boolean video=false;
       if (curImagePath.contains("video")) {
         video=true;
@@ -26,7 +19,6 @@
         Uri videoUri=Uri.parse(curImagePath);
         File fVideo=null;
         String mimeType="", xRes="", yRes="";
-        MediaFile mf=null;
         if (videoUri.toString().contains("content:")) {
           String[] projection;
           Uri imgPath;
@@ -100,12 +92,11 @@
       }
  else {
         for (int i=0; i < 2; i++) {
-          curImagePath=post.imageUrl.get(it).toString();
+          curImagePath=mf.getFilePath();
           if (i == 0 || post.blog.isFullSizeImage()) {
             Uri imageUri=Uri.parse(curImagePath);
             File jpeg=null;
             String mimeType="", orientation="", path="";
-            MediaFile mf=null;
             if (imageUri.toString().contains("content:")) {
               String[] projection;
               Uri imgPath;
@@ -118,7 +109,6 @@
                 dataColumn=cur.getColumnIndex(Images.Media.DATA);
                 mimeTypeColumn=cur.getColumnIndex(Images.Media.MIME_TYPE);
                 orientationColumn=cur.getColumnIndex(Images.Media.ORIENTATION);
-                mf=new MediaFile();
                 orientation=cur.getString(orientationColumn);
                 thumbData=cur.getString(dataColumn);
                 mimeType=cur.getString(mimeTypeColumn);
@@ -128,7 +118,6 @@
               }
             }
  else {
-              mf=new MediaFile();
               path=imageUri.toString().replace("file://","");
               jpeg=new File(path);
               mf.setFilePath(path);
@@ -164,7 +153,7 @@
                 e.printStackTrace();
               }
               ImageHelper ih2=new ImageHelper();
-              finalBytes=ih2.createThumbnail(bytes,post.blog.getMaxImageWidth(),orientation,false);
+              finalBytes=ih2.createThumbnail(bytes,String.valueOf(mf.getWidth()),orientation,false);
             }
             Map<String,Object> m=new HashMap<String,Object>();
             m.put("name",imageTitle);

@@ -28,23 +28,7 @@
       fileWriter.close();
       FileEntity fEntity=new FileEntity(tempFile,"text/xml; charset=\"UTF-8\"");
       fEntity.setContentType("text/xml");
-      try {
-        CustomMultipartEntity multipartContent=new CustomMultipartEntity(new ProgressListener(){
-          @Override public void transferred(          long num){
-            uploadProgress=(int)((num / (float)totalSize) * 100);
-            if (uploadProgressListener != null) {
-              uploadProgressListener.OnUploadProgress(uploadProgress);
-            }
-          }
-        }
-);
-        multipartContent.addPart("uploaded_file",new FileBody(new File(tempFile.getAbsolutePath())));
-        totalSize=multipartContent.getContentLength();
-        postMethod.setEntity(multipartContent);
-      }
- catch (      Exception e) {
-        System.out.println(e);
-      }
+      postMethod.setEntity(fEntity);
     }
  else {
       StringWriter bodyWriter=new StringWriter();

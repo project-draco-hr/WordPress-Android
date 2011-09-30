@@ -46,6 +46,7 @@ catch (    java.text.ParseException e) {
   }
  else {
     if (!isNew) {
+      post.deleteMediaFiles();
       Spannable s=contentET.getText();
       WPImageSpan[] click_spans=s.getSpans(0,s.length(),WPImageSpan.class);
       if (click_spans.length != 0) {
@@ -59,6 +60,7 @@ catch (    java.text.ParseException e) {
           mf.setFeatured(wpIS.isFeatured());
           mf.setFileName(wpIS.getImageSource().toString());
           mf.setHorizontalAlignment(wpIS.getHorizontalAlignment());
+          mf.setWidth(wpIS.getWidth());
           mf.save(EditPost.this);
         }
       }
@@ -97,6 +99,7 @@ if (isNew) {
 post=new Post(id,title,content,images,pubDateTimestamp,categories.toString(),tags,status,password,latitude,longitude,isPage,postFormat,EditPost.this);
 post.setLocalDraft(true);
 success=post.save();
+post.deleteMediaFiles();
 Spannable s=contentET.getText();
 WPImageSpan[] click_spans=s.getSpans(0,s.length(),WPImageSpan.class);
 if (click_spans.length != 0) {
@@ -110,6 +113,7 @@ mf.setDescription(wpIS.getDescription());
 mf.setFeatured(wpIS.isFeatured());
 mf.setFilePath(wpIS.getImageSource().toString());
 mf.setHorizontalAlignment(wpIS.getHorizontalAlignment());
+mf.setWidth(wpIS.getWidth());
 mf.save(EditPost.this);
 }
 }

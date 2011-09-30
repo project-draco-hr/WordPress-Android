@@ -14,15 +14,6 @@
   n.contentIntent=pendingIntent;
   notificationID=22 + Integer.valueOf(post.blogID);
   nm.notify(notificationID,n);
-  if (!post.getMediaPaths().equals("")) {
-    String[] pPaths=post.mediaPaths.split(",");
-    for (int i=0; i < pPaths.length; i++) {
-      Uri imagePath=Uri.parse(pPaths[i]);
-      post.selectedImageIDs.add(post.selectedImageCtr,imagePath);
-      post.imageUrl.add(post.selectedImageCtr,pPaths[i]);
-      post.selectedImageCtr++;
-    }
-  }
   if (!post.categories.equals("")) {
     String[] aCategories=post.categories.split(",");
     for (int i=0; i < aCategories.length; i++) {
@@ -35,13 +26,15 @@
   Boolean publishThis=false;
   String imageContent="";
   boolean mediaError=false;
-  if (post.selectedImageCtr > 0) {
+  WordPressDB db=new WordPressDB(context);
+  MediaFile[] mediaFiles=db.getMediaFilesForPost(context,post);
+  if (mediaFiles.length > 0) {
     String state=android.os.Environment.getExternalStorageState();
     if (!state.equals(android.os.Environment.MEDIA_MOUNTED)) {
       mediaError=true;
     }
  else {
-      imageContent=uploadImages();
+      imageContent=uploadImages(mediaFiles);
     }
   }
   if (!mediaError) {
@@ -64,7 +57,6 @@
  else       content=post.description;
     }
     if (!post.isPage) {
-      WordPressDB db=new WordPressDB(post.context);
       HashMap<?,?> globalSettings=db.getNotificationOptions(post.context);
       boolean taglineValue=false;
       String tagline="";
@@ -122,13 +114,6 @@
       }
     }
     XMLRPCClient client=new XMLRPCClient(post.blog.getUrl(),post.blog.getHttpuser(),post.blog.getHttppassword());
-    client.setUploadProgressListener(new XMLRPCClient.UploadProgressListener(){
-      @Override public void OnUploadProgress(      int progress){
-        n.contentView.setProgressBar(R.id.status_progress,100,progress,false);
-        nm.notify(notificationID,n);
-      }
-    }
-);
     n.contentView.setTextViewText(R.id.status_text,"Uploading Post");
     nm.notify(notificationID,n);
     if (post.wp_password != null && !"".equals(post.wp_password)) {
@@ -142,7 +127,6 @@
     try {
       result=(Object)client.call((post.isLocalDraft() && !post.uploaded) ? "metaWeblog.newPost" : "metaWeblog.editPost",params);
       success=true;
-      post.setUploaded(true);
       post.update();
       return true;
     }
