@@ -1,0 +1,259 @@
+{
+  super.onCreate(icicle);
+  setContentView(R.layout.edit_content);
+  final Button addPictureButton=(Button)findViewById(R.id.addPictureButton);
+  registerForContextMenu(addPictureButton);
+  addPictureButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      addPictureButton.performLongClick();
+    }
+  }
+);
+  final WPEditText contentEditor=(WPEditText)findViewById(R.id.postContent);
+  Spannable contentText=WordPress.richPostContent;
+  if (contentText != null) {
+    contentEditor.setText(contentText);
+  }
+  contentEditor.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+    @Override public void onFocusChange(    View view,    boolean hasFocus){
+      LinearLayout formatBar=(LinearLayout)findViewById(R.id.formatBar);
+      if (hasFocus) {
+        formatBar.setVisibility(View.VISIBLE);
+        Animation fadeInAnimation=AnimationUtils.loadAnimation(EditContent.this,R.anim.show);
+        formatBar.startAnimation(fadeInAnimation);
+      }
+ else {
+        Animation fadeOutAnimation=AnimationUtils.loadAnimation(EditContent.this,R.anim.disappear);
+        formatBar.startAnimation(fadeOutAnimation);
+        formatBar.setVisibility(View.GONE);
+      }
+    }
+  }
+);
+  contentEditor.setOnEditTextImeBackListener(new WPEditText.EditTextImeBackListener(){
+    @Override public void onImeBack(    WPEditText view,    String text){
+      LinearLayout formatBar=(LinearLayout)findViewById(R.id.formatBar);
+      Animation fadeOutAnimation=AnimationUtils.loadAnimation(EditContent.this,R.anim.disappear);
+      formatBar.startAnimation(fadeOutAnimation);
+      formatBar.setVisibility(View.GONE);
+    }
+  }
+);
+  contentEditor.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      LinearLayout formatBar=(LinearLayout)findViewById(R.id.formatBar);
+      if (!(formatBar.getVisibility() == View.VISIBLE)) {
+        formatBar.setVisibility(View.VISIBLE);
+        Animation fadeInAnimation=AnimationUtils.loadAnimation(EditContent.this,R.anim.show);
+        formatBar.startAnimation(fadeInAnimation);
+      }
+      final Spannable s=contentEditor.getText();
+      WPImageSpan[] click_spans=s.getSpans(contentEditor.getSelectionStart(),contentEditor.getSelectionStart(),WPImageSpan.class);
+      if (click_spans.length != 0) {
+        final WPImageSpan span=click_spans[0];
+        LayoutInflater factory=LayoutInflater.from(EditContent.this);
+        final View alertView=factory.inflate(R.layout.alert_image_options,null);
+        final TextView imageWidthText=(TextView)alertView.findViewById(R.id.imageWidthText);
+        final EditText titleText=(EditText)alertView.findViewById(R.id.title);
+        final EditText descText=(EditText)alertView.findViewById(R.id.description);
+        final EditText caption=(EditText)alertView.findViewById(R.id.caption);
+        final CheckBox featured=(CheckBox)alertView.findViewById(R.id.featuredImage);
+        final SeekBar seekBar=(SeekBar)alertView.findViewById(R.id.imageWidth);
+        final RadioGroup alignmentRG=(RadioGroup)alertView.findViewById(R.id.imageAlignmentGroup);
+        imageWidthText.setText(String.valueOf(span.getWidth()));
+        titleText.setText(span.getTitle());
+        descText.setText(span.getDescription());
+        caption.setText(span.getCaption());
+        featured.setChecked(span.isFeatured());
+switch (span.getHorizontalAlignment()) {
+case 0:
+          alignmentRG.check(R.id.alignLeft);
+        break;
+case 1:
+      alignmentRG.check(R.id.alignCenter);
+    break;
+case 2:
+  alignmentRG.check(R.id.alignRight);
+break;
+}
+seekBar.setMax(1000);
+seekBar.setProgress(span.getWidth());
+seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
+@Override public void onStopTrackingTouch(SeekBar seekBar){
+}
+@Override public void onStartTrackingTouch(SeekBar seekBar){
+}
+@Override public void onProgressChanged(SeekBar seekBar,int progress,boolean fromUser){
+imageWidthText.setText(progress + "px");
+}
+}
+);
+AlertDialog ad=new AlertDialog.Builder(EditContent.this).setTitle("Image Settings").setView(alertView).setPositiveButton("OK",new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+span.setTitle(titleText.getText().toString());
+span.setDescription(descText.getText().toString());
+int checkedID=alignmentRG.getCheckedRadioButtonId();
+if (checkedID == R.id.alignLeft) {
+  span.setHorizontalAlignment(0);
+}
+ else if (checkedID == R.id.alignCenter) {
+  span.setHorizontalAlignment(1);
+}
+ else if (checkedID == R.id.alignRight) {
+  span.setHorizontalAlignment(2);
+}
+span.setWidth(seekBar.getProgress());
+span.setCaption(caption.getText().toString());
+span.setFeatured(featured.isChecked());
+}
+}
+).setNegativeButton("Cancel",new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+}
+}
+).create();
+ad.show();
+}
+ else {
+contentEditor.setMovementMethod(ArrowKeyMovementMethod.getInstance());
+contentEditor.setSelection(contentEditor.getSelectionStart());
+}
+}
+}
+);
+final WPEditText contentEdit=(WPEditText)findViewById(R.id.postContent);
+contentEdit.addTextChangedListener(new TextWatcher(){
+public void afterTextChanged(Editable s){
+ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
+ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
+ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
+ToggleButton underlineButton=(ToggleButton)findViewById(R.id.underline);
+ToggleButton strikeButton=(ToggleButton)findViewById(R.id.strike);
+int position=Selection.getSelectionStart(contentEdit.getText());
+if (position < 0) {
+position=0;
+}
+if (position > 0) {
+if (styleStart > position || position > (cursorLoc + 1)) {
+if (position - cursorLoc > 1) {
+styleStart=cursorLoc;
+}
+ else {
+styleStart=position - 1;
+}
+}
+if (boldButton.isChecked()) {
+StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
+for (int i=0; i < ss.length; i++) {
+if (ss[i].getStyle() == android.graphics.Typeface.BOLD) {
+  s.removeSpan(ss[i]);
+}
+}
+s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+}
+if (emButton.isChecked()) {
+StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
+for (int i=0; i < ss.length; i++) {
+if (ss[i].getStyle() == android.graphics.Typeface.ITALIC) {
+  s.removeSpan(ss[i]);
+}
+}
+s.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+}
+if (bquoteButton.isChecked()) {
+QuoteSpan[] ss=s.getSpans(styleStart,position,QuoteSpan.class);
+for (int i=0; i < ss.length; i++) {
+s.removeSpan(ss[i]);
+}
+s.setSpan(new QuoteSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+}
+if (underlineButton.isChecked()) {
+UnderlineSpan[] ss=s.getSpans(styleStart,position,UnderlineSpan.class);
+for (int i=0; i < ss.length; i++) {
+s.removeSpan(ss[i]);
+}
+s.setSpan(new UnderlineSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+}
+if (strikeButton.isChecked()) {
+StrikethroughSpan[] ss=s.getSpans(styleStart,position,StrikethroughSpan.class);
+for (int i=0; i < ss.length; i++) {
+s.removeSpan(ss[i]);
+}
+s.setSpan(new StrikethroughSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+}
+}
+cursorLoc=Selection.getSelectionStart(contentEdit.getText());
+}
+public void beforeTextChanged(CharSequence s,int start,int count,int after){
+}
+public void onTextChanged(CharSequence s,int start,int before,int count){
+}
+}
+);
+final ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
+boldButton.setOnClickListener(new Button.OnClickListener(){
+public void onClick(View v){
+formatBtnClick(boldButton,"strong");
+}
+}
+);
+final Button linkButton=(Button)findViewById(R.id.link);
+linkButton.setOnClickListener(new Button.OnClickListener(){
+public void onClick(View v){
+WPEditText contentText=(WPEditText)findViewById(R.id.postContent);
+selectionStart=contentText.getSelectionStart();
+styleStart=selectionStart;
+selectionEnd=contentText.getSelectionEnd();
+if (selectionStart > selectionEnd) {
+int temp=selectionEnd;
+selectionEnd=selectionStart;
+selectionStart=temp;
+}
+if (selectionStart == -1 || selectionStart == contentText.getText().toString().length() || (selectionStart == selectionEnd)) {
+AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(EditContent.this);
+dialogBuilder.setTitle(getResources().getText(R.string.no_text_selected));
+dialogBuilder.setMessage(getResources().getText(R.string.select_text_to_link) + " " + getResources().getText(R.string.howto_select_text));
+dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+}
+}
+);
+dialogBuilder.setCancelable(true);
+dialogBuilder.create().show();
+}
+ else {
+Intent i=new Intent(EditContent.this,Link.class);
+startActivityForResult(i,4);
+}
+}
+}
+);
+final ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
+emButton.setOnClickListener(new Button.OnClickListener(){
+public void onClick(View v){
+formatBtnClick(emButton,"em");
+}
+}
+);
+final ToggleButton underlineButton=(ToggleButton)findViewById(R.id.underline);
+underlineButton.setOnClickListener(new Button.OnClickListener(){
+public void onClick(View v){
+formatBtnClick(underlineButton,"u");
+}
+}
+);
+final ToggleButton strikeButton=(ToggleButton)findViewById(R.id.strike);
+strikeButton.setOnClickListener(new Button.OnClickListener(){
+public void onClick(View v){
+formatBtnClick(strikeButton,"strike");
+}
+}
+);
+final ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
+bquoteButton.setOnClickListener(new Button.OnClickListener(){
+public void onClick(View v){
+formatBtnClick(bquoteButton,"blockquote");
+}
+}
+);
+}

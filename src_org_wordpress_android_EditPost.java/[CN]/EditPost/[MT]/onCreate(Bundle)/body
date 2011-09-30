@@ -166,10 +166,10 @@
       uploadNowButton.setVisibility(View.GONE);
     }
     EditText titleET=(EditText)findViewById(R.id.title);
-    EditText contentET=(EditText)findViewById(R.id.postContent);
+    WPEditText contentET=(WPEditText)findViewById(R.id.postContent);
     EditText passwordET=(EditText)findViewById(R.id.post_password);
     titleET.setText(post.getTitle());
-    contentET.setText(Html.fromHtml(post.getDescription() + post.getMt_text_more()));
+    contentET.setText(WPHtml.fromHtml(post.getDescription() + post.getMt_text_more(),EditPost.this,post));
     long pubDate=post.getDate_created_gmt();
     if (pubDate != 0) {
       try {
@@ -204,7 +204,6 @@
       String[] pPaths=picturePaths.split(",");
       for (int i=0; i < pPaths.length; i++) {
         Uri imagePath=Uri.parse(pPaths[i]);
-        addMedia(imagePath.getEncodedPath(),imagePath);
       }
     }
     if (!isPage) {
@@ -276,6 +275,18 @@
     }
 );
   }
+  final WPEditText content=(WPEditText)findViewById(R.id.postContent);
+  content.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+    @Override public void onFocusChange(    View view,    boolean hasFocus){
+      if (hasFocus) {
+        Intent i=new Intent(EditPost.this,EditContent.class);
+        WordPress.richPostContent=content.getText();
+        i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivityForResult(i,0);
+      }
+    }
+  }
+);
   final Button saveButton=(Button)findViewById(R.id.post);
   saveButton.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
@@ -301,166 +312,6 @@
         }
         finish();
       }
-    }
-  }
-);
-  final Button addPictureButton=(Button)findViewById(R.id.addPictureButton);
-  registerForContextMenu(addPictureButton);
-  addPictureButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      addPictureButton.performLongClick();
-    }
-  }
-);
-  final EditText contentEdit=(EditText)findViewById(R.id.postContent);
-  contentEdit.addTextChangedListener(new TextWatcher(){
-    public void afterTextChanged(    Editable s){
-      if (localDraft || isNew) {
-        ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
-        ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
-        ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
-        ToggleButton underlineButton=(ToggleButton)findViewById(R.id.underline);
-        ToggleButton strikeButton=(ToggleButton)findViewById(R.id.strike);
-        int position=Selection.getSelectionStart(contentEdit.getText());
-        if (position < 0) {
-          position=0;
-        }
-        if (position > 0) {
-          if (styleStart > position || position > (cursorLoc + 1)) {
-            if (position - cursorLoc > 1) {
-              styleStart=cursorLoc;
-            }
- else {
-              styleStart=position - 1;
-            }
-          }
-          if (boldButton.isChecked()) {
-            StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
-            for (int i=0; i < ss.length; i++) {
-              if (ss[i].getStyle() == android.graphics.Typeface.BOLD) {
-                s.removeSpan(ss[i]);
-              }
-            }
-            s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-          }
-          if (emButton.isChecked()) {
-            StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
-            for (int i=0; i < ss.length; i++) {
-              if (ss[i].getStyle() == android.graphics.Typeface.ITALIC) {
-                s.removeSpan(ss[i]);
-              }
-            }
-            s.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-          }
-          if (bquoteButton.isChecked()) {
-            QuoteSpan[] ss=s.getSpans(styleStart,position,QuoteSpan.class);
-            for (int i=0; i < ss.length; i++) {
-              s.removeSpan(ss[i]);
-            }
-            s.setSpan(new QuoteSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-          }
-          if (underlineButton.isChecked()) {
-            UnderlineSpan[] ss=s.getSpans(styleStart,position,UnderlineSpan.class);
-            for (int i=0; i < ss.length; i++) {
-              s.removeSpan(ss[i]);
-            }
-            s.setSpan(new UnderlineSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-          }
-          if (strikeButton.isChecked()) {
-            StrikethroughSpan[] ss=s.getSpans(styleStart,position,StrikethroughSpan.class);
-            for (int i=0; i < ss.length; i++) {
-              s.removeSpan(ss[i]);
-            }
-            s.setSpan(new StrikethroughSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-          }
-        }
-        cursorLoc=Selection.getSelectionStart(contentEdit.getText());
-      }
-    }
-    public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
-    }
-    public void onTextChanged(    CharSequence s,    int start,    int before,    int count){
-    }
-  }
-);
-  final ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
-  boldButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      formatBtnClick(boldButton,"strong");
-    }
-  }
-);
-  final Button linkButton=(Button)findViewById(R.id.link);
-  linkButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      TextView contentText=(TextView)findViewById(R.id.postContent);
-      selectionStart=contentText.getSelectionStart();
-      styleStart=selectionStart;
-      selectionEnd=contentText.getSelectionEnd();
-      if (selectionStart > selectionEnd) {
-        int temp=selectionEnd;
-        selectionEnd=selectionStart;
-        selectionStart=temp;
-      }
-      if (selectionStart == -1 || selectionStart == contentText.getText().toString().length() || (selectionStart == selectionEnd)) {
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(EditPost.this);
-        dialogBuilder.setTitle(getResources().getText(R.string.no_text_selected));
-        dialogBuilder.setMessage(getResources().getText(R.string.select_text_to_link) + " " + getResources().getText(R.string.howto_select_text));
-        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-          public void onClick(          DialogInterface dialog,          int whichButton){
-          }
-        }
-);
-        dialogBuilder.setCancelable(true);
-        dialogBuilder.create().show();
-      }
- else {
-        Intent i=new Intent(EditPost.this,Link.class);
-        startActivityForResult(i,2);
-      }
-    }
-  }
-);
-  final ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
-  emButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      formatBtnClick(emButton,"em");
-    }
-  }
-);
-  final ToggleButton underlineButton=(ToggleButton)findViewById(R.id.underline);
-  underlineButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      formatBtnClick(underlineButton,"u");
-    }
-  }
-);
-  final ToggleButton strikeButton=(ToggleButton)findViewById(R.id.strike);
-  strikeButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      formatBtnClick(strikeButton,"strike");
-    }
-  }
-);
-  final ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
-  bquoteButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      formatBtnClick(bquoteButton,"blockquote");
-    }
-  }
-);
-  final Button clearPictureButton=(Button)findViewById(R.id.clearPicture);
-  clearPictureButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      imageUrl.clear();
-      thumbnailUrl.clear();
-      selectedImageIDs=new Vector<Uri>();
-      selectedImageCtr=0;
-      imgThumbs.clear();
-      Gallery gallery=(Gallery)findViewById(R.id.gallery);
-      gallery.setVisibility(View.GONE);
-      gallery.setAdapter(null);
-      clearPictureButton.setVisibility(View.GONE);
     }
   }
 );

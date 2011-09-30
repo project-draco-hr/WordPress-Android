@@ -1,0 +1,20 @@
+{
+  boolean returnValue=false;
+  db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
+  ContentValues values=new ContentValues();
+  values.put("postID",mf.getPostID());
+  values.put("filePath",mf.getFileName());
+  values.put("fileName",mf.getFileName());
+  values.put("title",mf.getTitle());
+  values.put("description",mf.getDescription());
+  values.put("caption",mf.getCaption());
+  values.put("horizontalAlignment",mf.getHorizontalAlignment());
+  values.put("width",mf.getWidth());
+  values.put("height",mf.getHeight());
+  values.put("mimeType",mf.getMIMEType());
+  values.put("featured",mf.isFeatured());
+  int result=db.update(MEDIA_TABLE,values,"postID=" + mf.getPostID() + " AND filePath='"+ mf.getFileName()+ "'",null);
+  if (result == 0)   returnValue=db.insert(MEDIA_TABLE,null,values) > 0;
+  db.close();
+  return (returnValue);
+}

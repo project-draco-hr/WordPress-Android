@@ -1,8 +1,8 @@
 {
   EditText titleET=(EditText)findViewById(R.id.title);
   String title=titleET.getText().toString();
-  EditText contentET=(EditText)findViewById(R.id.postContent);
-  String content=EscapeUtils.unescapeHtml(Html.toHtml(contentET.getText()));
+  WPEditText contentET=(WPEditText)findViewById(R.id.postContent);
+  String content=EscapeUtils.unescapeHtml(WPHtml.toHtml(contentET.getText()));
   EditText passwordET=(EditText)findViewById(R.id.post_password);
   String password=passwordET.getText().toString();
   content=content.replace("<p><p>","<p>");
@@ -45,8 +45,23 @@ catch (    java.text.ParseException e) {
     dialogBuilder.create().show();
   }
  else {
-    for (int it=0; it < selectedImageCtr; it++) {
-      images+=selectedImageIDs.get(it).toString() + ",";
+    if (!isNew) {
+      Spannable s=contentET.getText();
+      WPImageSpan[] click_spans=s.getSpans(0,s.length(),WPImageSpan.class);
+      if (click_spans.length != 0) {
+        for (int i=0; i < click_spans.length; i++) {
+          WPImageSpan wpIS=click_spans[i];
+          images+=wpIS.getImageSource().toString() + ",";
+          MediaFile mf=new MediaFile();
+          mf.setPostID(post.getId());
+          mf.setTitle(wpIS.getTitle());
+          mf.setDescription(wpIS.getDescription());
+          mf.setFeatured(wpIS.isFeatured());
+          mf.setFileName(wpIS.getImageSource().toString());
+          mf.setHorizontalAlignment(wpIS.getHorizontalAlignment());
+          mf.save(EditPost.this);
+        }
+      }
     }
     Spinner spinner=(Spinner)findViewById(R.id.status);
     int selectedStatus=spinner.getSelectedItemPosition();
@@ -82,6 +97,22 @@ if (isNew) {
 post=new Post(id,title,content,images,pubDateTimestamp,categories.toString(),tags,status,password,latitude,longitude,isPage,postFormat,EditPost.this);
 post.setLocalDraft(true);
 success=post.save();
+Spannable s=contentET.getText();
+WPImageSpan[] click_spans=s.getSpans(0,s.length(),WPImageSpan.class);
+if (click_spans.length != 0) {
+for (int i=0; i < click_spans.length; i++) {
+WPImageSpan wpIS=click_spans[i];
+images+=wpIS.getImageSource().toString() + ",";
+MediaFile mf=new MediaFile();
+mf.setPostID(post.getId());
+mf.setTitle(wpIS.getTitle());
+mf.setDescription(wpIS.getDescription());
+mf.setFeatured(wpIS.isFeatured());
+mf.setFilePath(wpIS.getImageSource().toString());
+mf.setHorizontalAlignment(wpIS.getHorizontalAlignment());
+mf.save(EditPost.this);
+}
+}
 }
  else {
 post.setTitle(title);
