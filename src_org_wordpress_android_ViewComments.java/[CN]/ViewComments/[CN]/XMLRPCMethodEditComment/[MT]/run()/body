@@ -11,8 +11,8 @@
  catch (  final XMLRPCFault e) {
     handler.post(new Runnable(){
       public void run(){
-        dismissDialog(ID_DIALOG_MODERATING);
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(ViewComments.this);
+        getActivity().dismissDialog(ID_DIALOG_MODERATING);
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(getActivity().getApplicationContext());
         dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
         dialogBuilder.setMessage(e.getFaultString());
         dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
@@ -21,7 +21,7 @@
         }
 );
         dialogBuilder.setCancelable(true);
-        if (!isFinishing()) {
+        if (!getActivity().isFinishing()) {
           dialogBuilder.create().show();
         }
       }
@@ -31,8 +31,8 @@
 catch (  final XMLRPCException e) {
     handler.post(new Runnable(){
       public void run(){
-        dismissDialog(ID_DIALOG_MODERATING);
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(ViewComments.this);
+        getActivity().dismissDialog(ID_DIALOG_MODERATING);
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(getActivity().getApplicationContext());
         dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
         dialogBuilder.setMessage(e.getLocalizedMessage());
         dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
@@ -41,7 +41,7 @@ catch (  final XMLRPCException e) {
         }
 );
         dialogBuilder.setCancelable(true);
-        if (!isFinishing()) {
+        if (!getActivity().isFinishing()) {
           dialogBuilder.create().show();
         }
       }

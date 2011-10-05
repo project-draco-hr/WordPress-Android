@@ -1,0 +1,30 @@
+{
+  WordPress.currentComment=comment;
+  final String gravatarURL="http://gravatar.com/avatar/" + getMd5Hash(comment.authorEmail) + "?s=200&d=identicon";
+  getGravatar(gravatarURL);
+  getActivity().setTitle(getResources().getText(R.string.view_comment_from) + " " + comment.name);
+  TextView tvName=(TextView)getActivity().findViewById(R.id.commentDetailName);
+  tvName.setText(comment.name);
+  TextView tvEmail=(TextView)getActivity().findViewById(R.id.commentDetailEmail);
+  if (!comment.authorEmail.equals("")) {
+    tvEmail.setText(comment.authorEmail);
+    Linkify.addLinks(tvEmail,Linkify.ALL);
+  }
+ else {
+    tvEmail.setVisibility(View.GONE);
+  }
+  TextView tvURL=(TextView)getActivity().findViewById(R.id.commentDetailUrl);
+  if (!comment.authorURL.equals("")) {
+    tvURL.setText(comment.authorURL);
+    Linkify.addLinks(tvURL,Linkify.ALL);
+  }
+ else {
+    tvURL.setVisibility(View.GONE);
+  }
+  TextView tvComment=(TextView)getActivity().findViewById(R.id.commentDetailComment);
+  tvComment.setText(comment.comment);
+  Linkify.addLinks(tvComment,Linkify.ALL);
+  TextView tvDate=(TextView)getActivity().findViewById(R.id.commentDetailDate);
+  tvDate.setText(comment.dateCreatedFormatted);
+  processCommentStatus();
+}

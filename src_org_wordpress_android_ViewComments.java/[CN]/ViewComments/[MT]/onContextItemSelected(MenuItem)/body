@@ -1,51 +1,19 @@
 {
 switch (item.getItemId()) {
 case 0:
-    showDialog(ID_DIALOG_MODERATING);
-  new Thread(){
-    public void run(){
-      Looper.prepare();
-      changeCommentStatus("approve",selectedID,rowID);
-    }
-  }
-.start();
-return true;
+    onCommentStatusChangeListener.onCommentStatusChanged("approve");
+  return true;
 case 1:
-showDialog(ID_DIALOG_MODERATING);
-new Thread(){
-public void run(){
-Looper.prepare();
-changeCommentStatus("hold",selectedID,rowID);
-}
-}
-.start();
+onCommentStatusChangeListener.onCommentStatusChanged("hold");
 return true;
 case 2:
-showDialog(ID_DIALOG_MODERATING);
-new Thread(){
-public void run(){
-Looper.prepare();
-changeCommentStatus("spam",selectedID,rowID);
-}
-}
-.start();
+onCommentStatusChangeListener.onCommentStatusChanged("spam");
 return true;
 case 3:
-Intent i=new Intent(this,ReplyToComment.class);
-i.putExtra("commentID",selectedID);
-i.putExtra("accountName",accountName);
-i.putExtra("postID",selectedPostID);
-startActivityForResult(i,0);
+onCommentStatusChangeListener.onCommentStatusChanged("reply");
 return true;
 case 4:
-showDialog(ID_DIALOG_DELETING);
-new Thread(){
-public void run(){
-Looper.prepare();
-deleteComment(selectedID);
-}
-}
-.start();
+onCommentStatusChangeListener.onCommentStatusChanged("delete");
 return true;
 }
 return false;

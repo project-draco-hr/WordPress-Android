@@ -1,0 +1,44 @@
+{
+  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+  Object[] params={blog.getBlogId(),blog.getUsername(),blog.getPassword(),selCommentID};
+  try {
+    client.call("wp.deleteComment",params);
+    dismissDialog(ID_DIALOG_DELETING);
+    Thread action=new Thread(){
+      public void run(){
+        Toast.makeText(Comments.this,getResources().getText(R.string.comment_moderated),Toast.LENGTH_SHORT).show();
+      }
+    }
+;
+    runOnUiThread(action);
+    Thread action2=new Thread(){
+      public void run(){
+        pd=new ProgressDialog(Comments.this);
+        commentList.refreshComments(false,true,false);
+      }
+    }
+;
+    runOnUiThread(action2);
+  }
+ catch (  final XMLRPCException e) {
+    dismissDialog(ID_DIALOG_DELETING);
+    Thread action3=new Thread(){
+      public void run(){
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(Comments.this);
+        dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
+        dialogBuilder.setMessage(e.getLocalizedMessage());
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        if (!isFinishing()) {
+          dialogBuilder.create().show();
+        }
+      }
+    }
+;
+    runOnUiThread(action3);
+  }
+}

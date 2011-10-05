@@ -1,0 +1,30 @@
+{
+  String comment_id=WordPress.currentComment.commentID;
+  if (status.equals("approve") || status.equals("hold") || status.equals("spam")) {
+    final int commentID=Integer.parseInt(comment_id);
+    showDialog(ID_DIALOG_MODERATING);
+    new Thread(){
+      public void run(){
+        Looper.prepare();
+        changeCommentStatus(status,commentID);
+      }
+    }
+.start();
+  }
+ else   if (status.equals("delete")) {
+    final int commentID_del=Integer.parseInt(comment_id);
+    showDialog(ID_DIALOG_DELETING);
+    new Thread(){
+      public void run(){
+        deleteComment(commentID_del);
+      }
+    }
+.start();
+  }
+ else   if (status.equals("reply")) {
+    Intent i=new Intent(Comments.this,ReplyToComment.class);
+    i.putExtra("commentID",Integer.parseInt(comment_id));
+    i.putExtra("postID",WordPress.currentComment.postID);
+    startActivityForResult(i,0);
+  }
+}

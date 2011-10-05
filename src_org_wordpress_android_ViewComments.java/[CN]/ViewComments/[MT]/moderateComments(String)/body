@@ -1,9 +1,9 @@
 {
-  WordPressDB db=new WordPressDB(this);
+  WordPressDB db=new WordPressDB(getActivity().getApplicationContext());
   for (int i=0; i < checkedComments.size(); i++) {
     if (checkedComments.get(i).toString().equals("true")) {
       client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
-      CommentEntry listRow=(CommentEntry)getListView().getItemAtPosition(i);
+      Comment listRow=(Comment)getListView().getItemAtPosition(i);
       String curCommentID=listRow.commentID;
       HashMap contentHash, postHash=new HashMap();
       contentHash=(HashMap)allComments.get(curCommentID);
@@ -21,7 +21,7 @@
           checkedComments.set(i,"false");
           listRow.status=newStatus;
           model.set(i,listRow);
-          db.updateCommentStatus(ViewComments.this,id,listRow.commentID,newStatus);
+          db.updateCommentStatus(getActivity().getApplicationContext(),id,listRow.commentID,newStatus);
         }
       }
  catch (      XMLRPCException e) {
@@ -29,14 +29,14 @@
       }
     }
   }
-  dismissDialog(ID_DIALOG_MODERATING);
+  getActivity().dismissDialog(ID_DIALOG_MODERATING);
   Thread action=new Thread(){
     public void run(){
       if (moderateErrorMsg == "") {
-        Toast.makeText(ViewComments.this,getResources().getText(R.string.comments_moderated),Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity().getApplicationContext(),getResources().getText(R.string.comments_moderated),Toast.LENGTH_SHORT).show();
       }
  else {
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(ViewComments.this);
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(getActivity().getApplicationContext());
         dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
         dialogBuilder.setMessage(moderateErrorMsg);
         dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
@@ -45,25 +45,25 @@
         }
 );
         dialogBuilder.setCancelable(true);
-        if (!isFinishing()) {
+        if (!getActivity().isFinishing()) {
           dialogBuilder.create().show();
         }
       }
     }
   }
 ;
-  this.runOnUiThread(action);
+  getActivity().runOnUiThread(action);
   if (moderateErrorMsg == "") {
     checkedCommentTotal=0;
     Thread action2=new Thread(){
       public void run(){
-        pd=new ProgressDialog(ViewComments.this);
+        pd=new ProgressDialog(getActivity().getApplicationContext());
         showOrHideBulkCheckBoxes();
         hideModerationBar();
         thumbs.notifyDataSetChanged();
       }
     }
 ;
-    this.runOnUiThread(action2);
+    getActivity().runOnUiThread(action2);
   }
 }

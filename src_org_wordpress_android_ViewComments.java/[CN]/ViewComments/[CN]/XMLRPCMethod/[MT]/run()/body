@@ -23,8 +23,8 @@
         if (pd.isShowing()) {
           pd.dismiss();
         }
-        titleBar.stopRotatingRefreshIcon();
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(ViewComments.this);
+        onAnimateRefreshButton.onAnimateRefreshButton(false);
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(getActivity().getApplicationContext());
         dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
         String msg=e.getLocalizedMessage();
         dialogBuilder.setMessage(e.getFaultString());
@@ -32,7 +32,7 @@
           dialogBuilder.setMessage(e.getFaultString() + " " + getResources().getString(R.string.load_settings));
           dialogBuilder.setPositiveButton(getResources().getString(R.string.yes),new DialogInterface.OnClickListener(){
             public void onClick(            DialogInterface dialog,            int whichButton){
-              Intent i=new Intent(ViewComments.this,Settings.class);
+              Intent i=new Intent(getActivity().getApplicationContext(),Settings.class);
               i.putExtra("id",id);
               i.putExtra("accountName",accountName);
               startActivity(i);
@@ -53,7 +53,7 @@
 );
         }
         dialogBuilder.setCancelable(true);
-        if (!isFinishing()) {
+        if (!getActivity().isFinishing()) {
           dialogBuilder.create().show();
         }
       }
@@ -66,8 +66,8 @@ catch (  final XMLRPCException e) {
         if (pd.isShowing()) {
           pd.dismiss();
         }
-        titleBar.stopRotatingRefreshIcon();
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(ViewComments.this);
+        onAnimateRefreshButton.onAnimateRefreshButton(false);
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(getActivity().getApplicationContext());
         dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
         dialogBuilder.setMessage(e.getLocalizedMessage());
         dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
@@ -76,7 +76,7 @@ catch (  final XMLRPCException e) {
         }
 );
         dialogBuilder.setCancelable(true);
-        if (!isFinishing()) {
+        if (!getActivity().isFinishing()) {
           dialogBuilder.create().show();
         }
       }
