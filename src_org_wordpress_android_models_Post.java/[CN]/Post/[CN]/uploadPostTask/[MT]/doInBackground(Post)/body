@@ -26,17 +26,33 @@
   Boolean publishThis=false;
   String imageContent="";
   boolean mediaError=false;
-  WordPressDB db=new WordPressDB(context);
-  MediaFile[] mediaFiles=db.getMediaFilesForPost(context,post);
-  if (mediaFiles.length > 0) {
-    String state=android.os.Environment.getExternalStorageState();
-    if (!state.equals(android.os.Environment.MEDIA_MOUNTED)) {
-      mediaError=true;
-    }
+  Spannable s=(Spannable)WPHtml.fromHtml(post.getDescription() + post.getMt_text_more(),context,post);
+  WPImageSpan[] click_spans=s.getSpans(0,s.length(),WPImageSpan.class);
+  if (click_spans.length != 0) {
+    for (int i=0; i < click_spans.length; i++) {
+      WPImageSpan wpIS=click_spans[i];
+      int start=s.getSpanStart(wpIS);
+      int end=s.getSpanEnd(wpIS);
+      MediaFile mf=new MediaFile();
+      mf.setPostID(post.getId());
+      mf.setTitle(wpIS.getTitle());
+      mf.setDescription(wpIS.getDescription());
+      mf.setFeatured(wpIS.isFeatured());
+      mf.setFileName(wpIS.getImageSource().toString());
+      mf.setHorizontalAlignment(wpIS.getHorizontalAlignment());
+      mf.setWidth(wpIS.getWidth());
+      String imgHTML=uploadImage(mf);
+      if (imgHTML != null) {
+        SpannableString ss=new SpannableString(imgHTML);
+        s.setSpan(ss,start,end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        s.removeSpan(wpIS);
+      }
  else {
-      imageContent=uploadImages(mediaFiles);
+        mediaError=true;
+      }
     }
   }
+  WordPressDB db=new WordPressDB(context);
   if (!mediaError) {
     String[] theCategories=new String[post.selectedCategories.size()];
     for (int i=0; i < post.selectedCategories.size(); i++) {
@@ -44,18 +60,7 @@
     }
     Map<String,Object> contentStruct=new HashMap<String,Object>();
     String content="";
-    if (imageContent != "") {
-      if (post.blog.getImagePlacement().equals("Above Text")) {
-        content=imageContent + post.description + post.mt_text_more;
-      }
- else {
-        content=post.description + post.mt_text_more + imageContent;
-      }
-    }
- else {
-      if (post.mt_text_more != null)       content=post.description + post.mt_text_more;
- else       content=post.description;
-    }
+    content=WPHtml.toHtml(s);
     if (!post.isPage) {
       HashMap<?,?> globalSettings=db.getNotificationOptions(post.context);
       boolean taglineValue=false;
@@ -66,7 +71,7 @@
         }
         if (taglineValue) {
           tagline=globalSettings.get("tagline").toString();
-          if (!tagline.equals("")) {
+          if (tagline != null) {
             content+="\n\n<span class=\"post_sig\">" + tagline + "</span>\n\n";
           }
         }
