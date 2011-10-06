@@ -1,0 +1,79 @@
+{
+  Uri curStream=null;
+  String[] projection;
+  HashMap<String,Object> mediaData=new HashMap<String,Object>();
+  String title="", orientation="";
+  byte[] bytes;
+  if (filePath != null) {
+    curStream=Uri.parse(filePath);
+  }
+  if (curStream != null) {
+    if (filePath.contains("video")) {
+      int videoID=Integer.parseInt(curStream.getLastPathSegment());
+      projection=new String[]{Video.Thumbnails._ID,Video.Thumbnails.DATA};
+      ContentResolver crThumb=ctx.getContentResolver();
+      BitmapFactory.Options options=new BitmapFactory.Options();
+      options.inSampleSize=1;
+      Bitmap videoBitmap=MediaStore.Video.Thumbnails.getThumbnail(crThumb,videoID,MediaStore.Video.Thumbnails.MINI_KIND,options);
+      ByteArrayOutputStream stream=new ByteArrayOutputStream();
+      videoBitmap.compress(Bitmap.CompressFormat.PNG,100,stream);
+      bytes=stream.toByteArray();
+      title="Video";
+      videoBitmap=null;
+    }
+ else {
+      projection=new String[]{Images.Thumbnails._ID,Images.Thumbnails.DATA,Images.Media.ORIENTATION};
+      String path="";
+      Cursor cur=ctx.getContentResolver().query(curStream,projection,null,null,null);
+      File jpeg=null;
+      if (cur != null) {
+        String thumbData="";
+        if (cur.moveToFirst()) {
+          int dataColumn, orientationColumn;
+          dataColumn=cur.getColumnIndex(Images.Media.DATA);
+          thumbData=cur.getString(dataColumn);
+          orientationColumn=cur.getColumnIndex(Images.Media.ORIENTATION);
+          orientation=cur.getString(orientationColumn);
+        }
+        jpeg=new File(thumbData);
+        path=thumbData;
+      }
+ else {
+        path=curStream.toString().replace("file://","");
+        jpeg=new File(curStream.toString().replace("file://",""));
+      }
+      title=jpeg.getName();
+      bytes=new byte[(int)jpeg.length()];
+      DataInputStream in=null;
+      try {
+        in=new DataInputStream(new FileInputStream(jpeg));
+      }
+ catch (      FileNotFoundException e) {
+        e.printStackTrace();
+      }
+      try {
+        in.readFully(bytes);
+      }
+ catch (      IOException e) {
+        e.printStackTrace();
+      }
+      try {
+        in.close();
+      }
+ catch (      IOException e) {
+        e.printStackTrace();
+      }
+      title=jpeg.getName();
+      if (orientation == "") {
+        orientation=getExifOrientation(path,orientation);
+      }
+    }
+    mediaData.put("bytes",bytes);
+    mediaData.put("title",title);
+    mediaData.put("orientation",orientation);
+    return mediaData;
+  }
+ else {
+    return null;
+  }
+}
