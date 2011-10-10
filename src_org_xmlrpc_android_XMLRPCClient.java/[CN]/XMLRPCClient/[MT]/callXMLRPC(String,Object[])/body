@@ -2,12 +2,11 @@
   try {
     File tempFile=null;
     if (method.equals("wp.uploadFile")) {
-      String tempFilePath=Environment.getExternalStorageDirectory() + File.separator + "wordpress"+ File.separator+ "wp-"+ System.currentTimeMillis()+ ".xml";
-      File directory=new File(tempFilePath).getParentFile();
-      if (!directory.exists() && !directory.mkdirs()) {
+      String tempFileName="wp-" + System.currentTimeMillis();
+      tempFile=File.createTempFile(tempFileName,null);
+      if (!tempFile.exists() && !tempFile.mkdirs()) {
         throw new XMLRPCException("Path to file could not be created.");
       }
-      tempFile=new File(tempFilePath);
       FileWriter fileWriter=new FileWriter(tempFile);
       serializer.setOutput(fileWriter);
       serializer.startDocument(null,null);
