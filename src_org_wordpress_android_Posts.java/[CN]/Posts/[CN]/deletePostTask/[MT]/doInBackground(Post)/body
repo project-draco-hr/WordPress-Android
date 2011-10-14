@@ -1,0 +1,16 @@
+{
+  boolean result=false;
+  post=params[0];
+  XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+  Object[] postParams={"",post.getPostid(),blog.getUsername(),blog.getPassword()};
+  Object[] pageParams={blog.getBlogId(),blog.getUsername(),blog.getPassword(),post.getPostid()};
+  try {
+    client.call((isPage) ? "wp.deletePage" : "blogger.deletePost",(isPage) ? pageParams : postParams);
+    result=true;
+  }
+ catch (  final XMLRPCException e) {
+    errorMsg=e.getLocalizedMessage();
+    result=false;
+  }
+  return result;
+}

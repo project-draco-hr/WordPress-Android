@@ -1,0 +1,51 @@
+{
+  String result=null;
+  post=params[0];
+  XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+  Object versionResult=new Object();
+  try {
+    if (isPage) {
+      Object[] vParams={blog.getBlogId(),post.getPostid(),blog.getUsername(),blog.getPassword()};
+      versionResult=(Object)client.call("wp.getPage",vParams);
+    }
+ else {
+      Object[] vParams={post.getPostid(),blog.getUsername(),blog.getPassword()};
+      versionResult=(Object)client.call("metaWeblog.getPost",vParams);
+    }
+  }
+ catch (  XMLRPCException e) {
+    errorMsg=e.getMessage();
+    Log.d("WP","Error",e);
+    return null;
+  }
+  if (versionResult != null) {
+    try {
+      HashMap<?,?> contentHash=(HashMap<?,?>)versionResult;
+      if ((isPage && !"publish".equals(contentHash.get("page_status").toString())) || (!isPage && !"publish".equals(contentHash.get("post_status").toString()))) {
+        if (isPage) {
+          errorMsg=getResources().getText(R.string.page_not_published).toString();
+        }
+ else {
+          errorMsg=getResources().getText(R.string.post_not_published).toString();
+        }
+        return null;
+      }
+ else {
+        String postURL=contentHash.get("permaLink").toString();
+        String shortlink=getShortlinkTagHref(postURL);
+        if (shortlink == null) {
+          result=postURL;
+        }
+ else {
+          result=shortlink;
+        }
+      }
+    }
+ catch (    Exception e) {
+      errorMsg=e.getMessage();
+      Log.d("WP","Error",e);
+      return null;
+    }
+  }
+  return result;
+}

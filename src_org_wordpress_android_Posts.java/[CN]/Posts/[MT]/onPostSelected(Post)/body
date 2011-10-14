@@ -1,0 +1,19 @@
+{
+  FragmentManager fm=getSupportFragmentManager();
+  ViewPostFragment f=(ViewPostFragment)fm.findFragmentById(R.id.postDetail);
+  if (post != null) {
+    if (f == null || !f.isInLayout()) {
+      WordPress.currentPost=post;
+      FragmentTransaction ft=fm.beginTransaction();
+      ft.hide(postList);
+      f=new ViewPostFragment();
+      ft.add(R.id.postDetailFragmentContainer,f);
+      ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+      ft.addToBackStack(null);
+      ft.commit();
+    }
+ else {
+      f.loadPost(post);
+    }
+  }
+}

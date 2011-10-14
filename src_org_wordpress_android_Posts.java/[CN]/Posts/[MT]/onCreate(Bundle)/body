@@ -1,0 +1,27 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.posts);
+  FragmentManager fm=getSupportFragmentManager();
+  postList=(ViewPosts)fm.findFragmentById(R.id.postList);
+  Bundle extras=getIntent().getExtras();
+  if (extras != null) {
+    isPage=extras.getBoolean("viewPages");
+  }
+  blog=WordPress.currentBlog;
+  WordPress.currentPost=null;
+  titleBar=(WPTitleBar)findViewById(R.id.postsActionBar);
+  titleBar.refreshButton.setOnClickListener(new ImageButton.OnClickListener(){
+    public void onClick(    View v){
+      postList.refreshPosts(false);
+    }
+  }
+);
+  titleBar.setOnBlogChangedListener(new OnBlogChangedListener(){
+    @Override public void OnBlogChanged(){
+      postList.shouldSelectAfterLoad=true;
+      postList.loadPosts(false);
+    }
+  }
+);
+  attemptToSelectPost();
+}

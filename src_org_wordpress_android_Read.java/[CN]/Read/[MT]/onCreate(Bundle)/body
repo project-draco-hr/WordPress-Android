@@ -1,0 +1,36 @@
+{
+  super.onCreate(icicle);
+  getWindow().setFormat(PixelFormat.RGBA_8888);
+  getWindow().addFlags(WindowManager.LayoutParams.FLAG_DITHER);
+  requestWindowFeature(Window.FEATURE_PROGRESS);
+  setContentView(R.layout.reader);
+  Bundle extras=getIntent().getExtras();
+  if (extras != null) {
+    id=WordPress.currentBlog.getId();
+    postID=extras.getString("postID");
+    accountName=extras.getString("accountName");
+    isPage=extras.getBoolean("isPage");
+    loadReader=extras.getBoolean("loadReader");
+  }
+  if (loadReader) {
+    this.setTitle(getResources().getText(R.string.reader));
+    wv=(WebView)findViewById(R.id.webView);
+    wv.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+    new loadReaderTask().execute(null,null,null,null);
+  }
+ else {
+    if (isPage) {
+      this.setTitle(EscapeUtils.unescapeHtml(accountName) + " - " + getResources().getText(R.string.preview_page));
+    }
+ else {
+      this.setTitle(EscapeUtils.unescapeHtml(accountName) + " - " + getResources().getText(R.string.preview_post));
+    }
+    Thread t=new Thread(){
+      public void run(){
+        loadPostFromPermalink();
+      }
+    }
+;
+    t.start();
+  }
+}

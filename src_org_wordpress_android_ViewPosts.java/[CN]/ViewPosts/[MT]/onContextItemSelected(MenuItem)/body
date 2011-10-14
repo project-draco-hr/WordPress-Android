@@ -1,139 +1,46 @@
 {
+  Post post=new Post(WordPress.currentBlog.getId(),selectedID,isPage,getActivity().getApplicationContext());
   if (item.getGroupId() == 0) {
 switch (item.getItemId()) {
 case 0:
-      Intent i0=new Intent(ViewPosts.this,ViewPost.class);
-    Post post=new Post(id,selectedID,isPage,ViewPosts.this);
-  i0.putExtra("postID",post.getPostid());
-i0.putExtra("id",id);
-i0.putExtra("accountName",accountName);
-startActivity(i0);
-return true;
-case 1:
-Intent i=new Intent(ViewPosts.this,ViewPostComments.class);
-i.putExtra("postID",selectedID);
-i.putExtra("id",id);
-i.putExtra("accountName",accountName);
-startActivity(i);
-return true;
-case 2:
-Intent i2=new Intent(ViewPosts.this,EditPost.class);
-i2.putExtra("postID",selectedID);
-i2.putExtra("id",id);
+      Intent i2=new Intent(getActivity().getApplicationContext(),EditPost.class);
+    i2.putExtra("postID",selectedID);
+  i2.putExtra("id",WordPress.currentBlog.getId());
 i2.putExtra("accountName",accountName);
 startActivityForResult(i2,0);
 return true;
-case 3:
-AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(ViewPosts.this);
-dialogBuilder.setTitle(getResources().getText(R.string.delete_post));
-dialogBuilder.setMessage(getResources().getText(R.string.delete_sure_post) + " '" + titles[rowID]+ "'?");
-dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
-public void onClick(DialogInterface dialog,int whichButton){
-showDialog(ID_DIALOG_DELETING);
-new Thread(){
-public void run(){
-deletePost();
-}
-}
-.start();
-}
-}
-);
-dialogBuilder.setNegativeButton(getResources().getText(R.string.no),new DialogInterface.OnClickListener(){
-public void onClick(DialogInterface dialog,int whichButton){
-}
-}
-);
-dialogBuilder.setCancelable(true);
-if (!isFinishing()) {
-dialogBuilder.create().show();
-}
+case 1:
+onPostActionListener.onPostAction(Posts.POST_DELETE,post);
 return true;
-case 4:
-loadingDialog=ProgressDialog.show(this,getResources().getText(R.string.share_url),getResources().getText(R.string.attempting_fetch_url),true,false);
-Thread action=new Thread(){
-public void run(){
-Looper.prepare();
-shareURL(id,String.valueOf(selectedID),false);
-Looper.loop();
-}
-}
-;
-action.start();
+case 2:
+onPostActionListener.onPostAction(Posts.POST_SHARE,post);
 return true;
 }
 }
  else if (item.getGroupId() == 2) {
 switch (item.getItemId()) {
 case 0:
-Intent i0=new Intent(ViewPosts.this,ViewPost.class);
-i0.putExtra("postID",String.valueOf(selectedID));
-i0.putExtra("id",id);
-i0.putExtra("accountName",accountName);
-i0.putExtra("isPage",true);
-startActivity(i0);
-return true;
-case 1:
-Intent i=new Intent(ViewPosts.this,ViewPostComments.class);
-i.putExtra("postID",String.valueOf(selectedID));
-i.putExtra("id",id);
-i.putExtra("accountName",accountName);
-startActivity(i);
-return true;
-case 2:
-Intent i2=new Intent(ViewPosts.this,EditPost.class);
+Intent i2=new Intent(getActivity().getApplicationContext(),EditPost.class);
 i2.putExtra("postID",selectedID);
-i2.putExtra("id",id);
+i2.putExtra("id",WordPress.currentBlog.getId());
 i2.putExtra("accountName",accountName);
 i2.putExtra("isPage",true);
 startActivityForResult(i2,0);
 return true;
-case 3:
-AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(ViewPosts.this);
-dialogBuilder.setTitle(getResources().getText(R.string.delete_page));
-dialogBuilder.setMessage(getResources().getText(R.string.delete_sure_page) + " '" + titles[rowID]+ "'?");
-dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
-public void onClick(DialogInterface dialog,int whichButton){
-showDialog(ID_DIALOG_DELETING);
-new Thread(){
-public void run(){
-deletePost();
-}
-}
-.start();
-}
-}
-);
-dialogBuilder.setNegativeButton(getResources().getText(R.string.no),new DialogInterface.OnClickListener(){
-public void onClick(DialogInterface dialog,int whichButton){
-}
-}
-);
-dialogBuilder.setCancelable(true);
-if (!isFinishing()) {
-dialogBuilder.create().show();
-}
+case 1:
+onPostActionListener.onPostAction(Posts.POST_DELETE,post);
 return true;
-case 4:
-loadingDialog=ProgressDialog.show(this,getResources().getText(R.string.share_url),getResources().getText(R.string.attempting_fetch_url),true,false);
-Thread action=new Thread(){
-public void run(){
-Looper.prepare();
-shareURL(id,String.valueOf(selectedID),true);
-Looper.loop();
-}
-}
-;
-action.start();
+case 2:
+onPostActionListener.onPostAction(Posts.POST_SHARE,post);
 return true;
 }
 }
  else {
 switch (item.getItemId()) {
 case 0:
-Intent i2=new Intent(ViewPosts.this,EditPost.class);
+Intent i2=new Intent(getActivity().getApplicationContext(),EditPost.class);
 i2.putExtra("postID",selectedID);
-i2.putExtra("id",id);
+i2.putExtra("id",WordPress.currentBlog.getId());
 if (isPage) {
 i2.putExtra("isPage",true);
 }
@@ -155,26 +62,8 @@ e.printStackTrace();
 .start();
 return true;
 case 2:
-AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(ViewPosts.this);
-dialogBuilder.setTitle(getResources().getText(R.string.delete_draft));
-dialogBuilder.setMessage(getResources().getText(R.string.delete_sure) + " '" + titles[rowID]+ "'?");
-dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
-public void onClick(DialogInterface dialog,int whichButton){
-Post post=new Post(id,selectedID,isPage,ViewPosts.this);
-post.delete();
-loadPosts(false);
-}
-}
-);
-dialogBuilder.setNegativeButton(getResources().getText(R.string.no),new DialogInterface.OnClickListener(){
-public void onClick(DialogInterface dialog,int whichButton){
-}
-}
-);
-dialogBuilder.setCancelable(true);
-if (!isFinishing()) {
-dialogBuilder.create().show();
-}
+onPostActionListener.onPostAction(Posts.POST_DELETE,post);
+return true;
 }
 }
 return false;

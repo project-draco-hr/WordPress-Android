@@ -1,11 +1,11 @@
 {
-  WordPressDB postStoreDB=new WordPressDB(this);
+  WordPressDB postStoreDB=new WordPressDB(getActivity().getApplicationContext());
   Vector<?> loadedPosts;
   if (isPage) {
-    loadedPosts=postStoreDB.loadUploadedPosts(ViewPosts.this,id,true);
+    loadedPosts=postStoreDB.loadUploadedPosts(getActivity().getApplicationContext(),WordPress.currentBlog.getId(),true);
   }
  else {
-    loadedPosts=postStoreDB.loadUploadedPosts(ViewPosts.this,id,false);
+    loadedPosts=postStoreDB.loadUploadedPosts(getActivity().getApplicationContext(),WordPress.currentBlog.getId(),false);
   }
   if (loadedPosts != null) {
     titles=new String[loadedPosts.size()];
@@ -34,7 +34,7 @@
       flags|=android.text.format.DateUtils.FORMAT_SHOW_YEAR;
       flags|=android.text.format.DateUtils.FORMAT_SHOW_TIME;
       long localTime=(Long)contentHash.get("date_created_gmt") + TimeZone.getDefault().getOffset((Long)contentHash.get("date_created_gmt"));
-      dateCreatedFormatted[i]=DateUtils.formatDateTime(this,localTime,flags);
+      dateCreatedFormatted[i]=DateUtils.formatDateTime(getActivity().getApplicationContext(),localTime,flags);
     }
     List<String> postIDList=Arrays.asList(postIDs);
     List<String> newPostIDList=new ArrayList<String>();
@@ -84,7 +84,7 @@
     }
   }
   if (loadedPosts != null || drafts == true) {
-    ListView listView=(ListView)findViewById(android.R.id.list);
+    ListView listView=getListView();
     if (!isPage) {
       listView.removeFooterView(switcher);
       if (loadedPosts != null) {
@@ -97,12 +97,17 @@
       pla.notifyDataSetChanged();
     }
  else {
-      pla=new PostListAdapter(ViewPosts.this);
+      pla=new PostListAdapter(getActivity().getApplicationContext());
       listView.setAdapter(pla);
       listView.setOnItemClickListener(new OnItemClickListener(){
-        public void onItemClick(        AdapterView<?> arg0,        View arg1,        int arg2,        long arg3){
-          if (arg1 != null) {
-            arg1.performLongClick();
+        public void onItemClick(        AdapterView<?> arg0,        View v,        int position,        long id){
+          if (v != null) {
+            selectedPosition=position;
+            selectedID=v.getId();
+            Post post=new Post(WordPress.currentBlog.getId(),selectedID,isPage,getActivity().getApplicationContext());
+            WordPress.currentPost=post;
+            onPostSelectedListener.onPostSelected(post);
+            pla.notifyDataSetChanged();
           }
         }
       }
@@ -145,24 +150,32 @@ catch (          InvocationTargetException e) {
             menu.clear();
             if (isPage) {
               menu.setHeaderTitle(getResources().getText(R.string.page_actions));
-              menu.add(2,0,0,getResources().getText(R.string.preview_page));
-              menu.add(2,1,0,getResources().getText(R.string.view_comments));
-              menu.add(2,2,0,getResources().getText(R.string.edit_page));
-              menu.add(2,3,0,getResources().getText(R.string.delete_page));
-              menu.add(2,4,0,getResources().getText(R.string.share_url));
+              menu.add(2,0,0,getResources().getText(R.string.edit_page));
+              menu.add(2,1,0,getResources().getText(R.string.delete_page));
+              menu.add(2,2,0,getResources().getText(R.string.share_url));
             }
  else {
               menu.setHeaderTitle(getResources().getText(R.string.post_actions));
-              menu.add(0,0,0,getResources().getText(R.string.preview_post));
-              menu.add(0,1,0,getResources().getText(R.string.view_comments));
-              menu.add(0,2,0,getResources().getText(R.string.edit_post));
-              menu.add(0,3,0,getResources().getText(R.string.delete_post));
-              menu.add(0,4,0,getResources().getText(R.string.share_url));
+              menu.add(0,0,0,getResources().getText(R.string.edit_post));
+              menu.add(0,1,0,getResources().getText(R.string.delete_post));
+              menu.add(0,2,0,getResources().getText(R.string.share_url));
             }
           }
         }
       }
 );
+    }
+    if (this.shouldSelectAfterLoad) {
+      if (postIDs != null) {
+        if (postIDs.length >= 1) {
+          Post post=new Post(WordPress.currentBlog.getId(),Integer.valueOf(postIDs[1]),isPage,getActivity().getApplicationContext());
+          WordPress.currentPost=post;
+          onPostSelectedListener.onPostSelected(post);
+          selectedPosition=1;
+          pla.notifyDataSetChanged();
+        }
+      }
+      shouldSelectAfterLoad=false;
     }
     return true;
   }
