@@ -159,7 +159,14 @@
     WPEditText contentET=(WPEditText)findViewById(R.id.postContent);
     EditText passwordET=(EditText)findViewById(R.id.post_password);
     titleET.setText(post.getTitle());
-    contentET.setText(WPHtml.fromHtml(post.getDescription() + post.getMt_text_more(),EditPost.this,post));
+    String contentHTML;
+    if (post.getMt_text_more() != "") {
+      contentHTML=post.getDescription() + "<div style=\"display:block;\" id=\"wp-android-more\"><font color=\"#777777\">........" + getResources().getText(R.string.more_tag)+ "</font></div>"+ post.getMt_text_more();
+    }
+ else {
+      contentHTML=post.getDescription();
+    }
+    contentET.setText(WPHtml.fromHtml(contentHTML,EditPost.this,post));
     long pubDate=post.getDate_created_gmt();
     if (pubDate != 0) {
       try {

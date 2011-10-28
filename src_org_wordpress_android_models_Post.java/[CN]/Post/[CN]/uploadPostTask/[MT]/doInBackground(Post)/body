@@ -20,32 +20,39 @@
   Boolean publishThis=false;
   String imageContent="";
   boolean mediaError=false;
-  Spannable s=(Spannable)WPHtml.fromHtml(post.getDescription() + post.getMt_text_more(),context,post);
-  WPImageSpan[] click_spans=s.getSpans(0,s.length(),WPImageSpan.class);
-  if (click_spans.length != 0) {
-    for (int i=0; i < click_spans.length; i++) {
-      WPImageSpan wpIS=click_spans[i];
-      int start=s.getSpanStart(wpIS);
-      int end=s.getSpanEnd(wpIS);
-      MediaFile mf=new MediaFile();
-      mf.setPostID(post.getId());
-      mf.setTitle(wpIS.getTitle());
-      mf.setCaption(wpIS.getCaption());
-      mf.setDescription(wpIS.getDescription());
-      mf.setFeatured(wpIS.isFeatured());
-      mf.setFileName(wpIS.getImageSource().toString());
-      mf.setHorizontalAlignment(wpIS.getHorizontalAlignment());
-      mf.setWidth(wpIS.getWidth());
-      String imgHTML=uploadImage(mf);
-      if (imgHTML != null) {
-        SpannableString ss=new SpannableString(imgHTML);
-        s.setSpan(ss,start,end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        s.removeSpan(wpIS);
-      }
+  Spannable s;
+  String descriptionContent="", moreContent="";
+  for (int x=0; x < 2; x++) {
+    if (x == 0)     s=(Spannable)WPHtml.fromHtml(post.getDescription(),context,post);
+ else     s=(Spannable)WPHtml.fromHtml(post.getMt_text_more(),context,post);
+    WPImageSpan[] click_spans=s.getSpans(0,s.length(),WPImageSpan.class);
+    if (click_spans.length != 0) {
+      for (int i=0; i < click_spans.length; i++) {
+        WPImageSpan wpIS=click_spans[i];
+        int start=s.getSpanStart(wpIS);
+        int end=s.getSpanEnd(wpIS);
+        MediaFile mf=new MediaFile();
+        mf.setPostID(post.getId());
+        mf.setTitle(wpIS.getTitle());
+        mf.setCaption(wpIS.getCaption());
+        mf.setDescription(wpIS.getDescription());
+        mf.setFeatured(wpIS.isFeatured());
+        mf.setFileName(wpIS.getImageSource().toString());
+        mf.setHorizontalAlignment(wpIS.getHorizontalAlignment());
+        mf.setWidth(wpIS.getWidth());
+        String imgHTML=uploadImage(mf);
+        if (imgHTML != null) {
+          SpannableString ss=new SpannableString(imgHTML);
+          s.setSpan(ss,start,end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+          s.removeSpan(wpIS);
+        }
  else {
-        mediaError=true;
+          mediaError=true;
+        }
       }
     }
+    if (x == 0)     descriptionContent=WPHtml.toHtml(s);
+ else     moreContent=WPHtml.toHtml(s);
   }
   WordPressDB db=new WordPressDB(context);
   if (!mediaError) {
@@ -62,8 +69,6 @@
       }
     }
     Map<String,Object> contentStruct=new HashMap<String,Object>();
-    String content="";
-    content=WPHtml.toHtml(s);
     if (!post.isPage) {
       HashMap<?,?> globalSettings=db.getNotificationOptions(post.context);
       boolean taglineValue=false;
@@ -75,7 +80,9 @@
         if (taglineValue) {
           tagline=globalSettings.get("tagline").toString();
           if (tagline != null) {
-            content+="\n\n<span class=\"post_sig\">" + tagline + "</span>\n\n";
+            String tag="\n\n<span class=\"post_sig\">" + tagline + "</span>\n\n";
+            if (moreContent == "")             descriptionContent+=tag;
+ else             moreContent+=tag;
           }
         }
       }
@@ -90,9 +97,8 @@
       Date date=new Date(pubDate);
       contentStruct.put("date_created_gmt",date);
     }
-    content=content.replace("/\n\n/g","</p><p>");
-    content=content.replace("/\n/g","<br />");
-    contentStruct.put("description",content);
+    contentStruct.put("description",descriptionContent);
+    contentStruct.put("mt_text_more",moreContent);
     if (!post.isPage) {
       if (post.mt_keywords != "") {
         contentStruct.put("mt_keywords",post.mt_keywords);

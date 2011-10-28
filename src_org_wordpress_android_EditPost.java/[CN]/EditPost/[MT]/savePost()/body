@@ -99,6 +99,11 @@ e.printStackTrace();
 if (isNew) {
 post=new Post(id,title,content,images,pubDateTimestamp,categories.toString(),tags,status,password,latitude,longitude,isPage,postFormat,EditPost.this);
 post.setLocalDraft(true);
+String needle="<p><font color =\"#777777\">........" + getResources().getText(R.string.more_tag) + "</font></p>";
+if (content.indexOf(needle) >= 0) {
+post.setDescription(content.substring(0,content.indexOf(needle)));
+post.setMt_text_more(content.substring(content.indexOf(needle) + needle.length(),content.length()));
+}
 success=post.save();
 post.deleteMediaFiles();
 Spannable s=contentET.getText();
@@ -122,6 +127,11 @@ mf.save(EditPost.this);
 }
  else {
 post.setTitle(title);
+String needle="<p><font color =\"#777777\">........" + getResources().getText(R.string.more_tag) + "</font></p>";
+if (content.indexOf(needle) >= 0) {
+post.setDescription(content.substring(0,content.indexOf(needle)));
+post.setMt_text_more(content.substring(content.indexOf(needle) + needle.length(),content.length()));
+}
 post.setDescription(content);
 post.setMediaPaths(images);
 post.setDate_created_gmt(pubDateTimestamp);
