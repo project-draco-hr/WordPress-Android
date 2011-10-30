@@ -2,7 +2,7 @@
   super.onFinishInflate();
   final WordPressDB settingsDB=new WordPressDB(context);
   accounts=settingsDB.getAccounts(context);
-  dashboard=(LinearLayout)findViewById(R.id.dashboard);
+  dashboard=(LinearLayout)findViewById(R.id.dashboard_overlay);
   commentBadge=(TextView)findViewById(R.id.comment_badge);
   blogNames=new CharSequence[accounts.size()];
   blogIDs=new int[accounts.size()];
@@ -74,117 +74,6 @@
       }
     }
 );
-    LinearLayout writeButton=(LinearLayout)findViewById(R.id.dashboard_newpost_btn);
-    writeButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        Intent i=new Intent(context,EditPost.class);
-        i.putExtra("id",WordPress.currentBlog.getId());
-        i.putExtra("isNew",true);
-        context.startActivity(i);
-      }
-    }
-);
-    LinearLayout newPageButton=(LinearLayout)findViewById(R.id.dashboard_newpage_btn);
-    newPageButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        Intent i=new Intent(context,EditPost.class);
-        i.putExtra("id",WordPress.currentBlog.getId());
-        i.putExtra("isNew",true);
-        i.putExtra("isPage",true);
-        context.startActivity(i);
-      }
-    }
-);
-    LinearLayout postsButton=(LinearLayout)findViewById(R.id.dashboard_posts_btn);
-    postsButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        Intent i=new Intent(context,Posts.class);
-        context.startActivity(i);
-      }
-    }
-);
-    LinearLayout pagesButton=(LinearLayout)findViewById(R.id.dashboard_pages_btn);
-    pagesButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        Intent i=new Intent(context,Posts.class);
-        i.putExtra("id",WordPress.currentBlog.getId());
-        i.putExtra("isNew",true);
-        i.putExtra("viewPages",true);
-        context.startActivity(i);
-      }
-    }
-);
-    LinearLayout commentsButton=(LinearLayout)findViewById(R.id.dashboard_comments_btn);
-    commentsButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        Intent i=new Intent(context,Comments.class);
-        i.putExtra("id",WordPress.currentBlog.getId());
-        i.putExtra("isNew",true);
-        context.startActivity(i);
-      }
-    }
-);
-    LinearLayout statsButton=(LinearLayout)findViewById(R.id.dashboard_stats_btn);
-    statsButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        Intent i=new Intent(context,ViewStats.class);
-        i.putExtra("id",WordPress.currentBlog.getId());
-        i.putExtra("isNew",true);
-        context.startActivity(i);
-      }
-    }
-);
-    LinearLayout settingsButton=(LinearLayout)findViewById(R.id.dashboard_settings_btn);
-    settingsButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        Intent i=new Intent(context,Settings.class);
-        i.putExtra("id",WordPress.currentBlog.getId());
-        i.putExtra("isNew",true);
-        context.startActivity(i);
-      }
-    }
-);
-    LinearLayout subsButton=(LinearLayout)findViewById(R.id.dashboard_subs_btn);
-    subsButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        Intent i=new Intent(context,Read.class);
-        i.putExtra("id",WordPress.currentBlog.getId());
-        i.putExtra("loadReader",true);
-        context.startActivity(i);
-      }
-    }
-);
-    LinearLayout picButton=(LinearLayout)findViewById(R.id.dashboard_quickphoto_btn);
-    picButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        PackageManager pm=context.getPackageManager();
-        if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-          Intent i=new Intent(context,EditPost.class);
-          i.putExtra("option","newphoto");
-          i.putExtra("isNew",true);
-          context.startActivity(i);
-        }
- else {
-          Toast.makeText(context,getResources().getText(R.string.no_camera_found),Toast.LENGTH_LONG);
-        }
-      }
-    }
-);
-    LinearLayout videoButton=(LinearLayout)findViewById(R.id.dashboard_quickvideo_btn);
-    videoButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(      View v){
-        PackageManager pm=context.getPackageManager();
-        if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-          Intent i=new Intent(context,EditPost.class);
-          i.putExtra("option","newvideo");
-          i.putExtra("isNew",true);
-          context.startActivity(i);
-        }
- else {
-          Toast.makeText(context,getResources().getText(R.string.no_camera_found),Toast.LENGTH_LONG);
-        }
-      }
-    }
-);
+    setupDashboardButtons();
   }
 }
