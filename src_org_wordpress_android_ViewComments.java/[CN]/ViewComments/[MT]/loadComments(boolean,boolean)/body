@@ -6,7 +6,7 @@
     Vector<?> loadedPosts=postStoreDB.loadComments(getActivity().getApplicationContext(),WordPress.currentBlog.getId());
     if (loadedPosts != null) {
       HashMap<Object,Object> countHash=new HashMap<Object,Object>();
-      countHash=(HashMap)loadedPosts.get(0);
+      countHash=(HashMap<Object,Object>)loadedPosts.get(0);
       numRecords=Integer.parseInt(countHash.get("numRecords").toString());
       if (refreshOnly) {
         if (model != null) {
@@ -16,17 +16,10 @@
  else {
         model=new ArrayList<Comment>();
       }
-      int sdk_int=0;
-      try {
-        sdk_int=Integer.valueOf(android.os.Build.VERSION.SDK);
-      }
- catch (      Exception e1) {
-        sdk_int=3;
-      }
-      checkedComments=new Vector();
+      checkedComments=new Vector<String>();
       for (int i=1; i < loadedPosts.size(); i++) {
         checkedComments.add(i - 1,"false");
-        HashMap contentHash=(HashMap)loadedPosts.get(i);
+        HashMap<?,?> contentHash=(HashMap<?,?>)loadedPosts.get(i);
         allComments.put(contentHash.get("commentID").toString(),contentHash);
         author=EscapeUtils.unescapeHtml(contentHash.get("author").toString());
         commentID=contentHash.get("commentID").toString();
@@ -107,11 +100,11 @@
     }
   }
  else {
-    Vector latestComments=postStoreDB.loadMoreComments(getActivity().getApplicationContext(),id,commentsToLoad);
+    Vector<?> latestComments=postStoreDB.loadMoreComments(getActivity().getApplicationContext(),id,commentsToLoad);
     if (latestComments != null) {
       numRecords+=latestComments.size();
       for (int i=latestComments.size(); i > 0; i--) {
-        HashMap contentHash=(HashMap)latestComments.get(i - 1);
+        HashMap<?,?> contentHash=(HashMap<?,?>)latestComments.get(i - 1);
         allComments.put(contentHash.get("commentID").toString(),contentHash);
         author=EscapeUtils.unescapeHtml(contentHash.get("author").toString());
         commentID=contentHash.get("commentID").toString();

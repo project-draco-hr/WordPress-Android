@@ -126,7 +126,7 @@
       if (postFormats[i].equals(activePostFormat))       pfSpinner.setSelection(i);
     }
   }
-  String[] items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private)};
+  String[] items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private),getResources().getString(R.string.local_draft)};
   Spinner spinner=(Spinner)findViewById(R.id.status);
   ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,items);
   adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -151,10 +151,6 @@
     }
   }
  else {
-    if (post.isUploaded()) {
-      Button uploadNowButton=(Button)findViewById(R.id.cancel);
-      uploadNowButton.setVisibility(View.GONE);
-    }
     EditText titleET=(EditText)findViewById(R.id.title);
     WPEditText contentET=(WPEditText)findViewById(R.id.postContent);
     EditText passwordET=(EditText)findViewById(R.id.post_password);
@@ -282,24 +278,7 @@
     public void onClick(    View v){
       boolean result=savePost();
       if (result) {
-        if (post.isUploaded())         post.upload();
-        finish();
-      }
-    }
-  }
-);
-  final Button uploadNowButton=(Button)findViewById(R.id.cancel);
-  uploadNowButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      boolean result=savePost();
-      post.upload();
-      if (result) {
-        Bundle bundle=new Bundle();
-        if (isAction) {
-          Intent mIntent=new Intent(EditPost.this,Dashboard.class);
-          mIntent.putExtras(bundle);
-          startActivity(mIntent);
-        }
+        if (post.isUploaded() || !post.getPost_status().equals("localdraft"))         post.upload();
         finish();
       }
     }

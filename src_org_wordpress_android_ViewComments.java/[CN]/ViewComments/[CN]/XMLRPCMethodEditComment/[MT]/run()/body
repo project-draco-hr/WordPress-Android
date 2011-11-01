@@ -12,18 +12,9 @@
     handler.post(new Runnable(){
       public void run(){
         getActivity().dismissDialog(ID_DIALOG_MODERATING);
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(getActivity().getApplicationContext());
-        dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
-        dialogBuilder.setMessage(e.getFaultString());
-        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-          public void onClick(          DialogInterface dialog,          int whichButton){
-          }
-        }
-);
-        dialogBuilder.setCancelable(true);
-        if (!getActivity().isFinishing()) {
-          dialogBuilder.create().show();
-        }
+        FragmentTransaction ft=getFragmentManager().beginTransaction();
+        WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(e.getFaultString());
+        alert.show(ft,"alert");
       }
     }
 );
@@ -32,18 +23,9 @@ catch (  final XMLRPCException e) {
     handler.post(new Runnable(){
       public void run(){
         getActivity().dismissDialog(ID_DIALOG_MODERATING);
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(getActivity().getApplicationContext());
-        dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
-        dialogBuilder.setMessage(e.getLocalizedMessage());
-        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-          public void onClick(          DialogInterface dialog,          int whichButton){
-          }
-        }
-);
-        dialogBuilder.setCancelable(true);
-        if (!getActivity().isFinishing()) {
-          dialogBuilder.create().show();
-        }
+        FragmentTransaction ft=getFragmentManager().beginTransaction();
+        WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(e.getLocalizedMessage());
+        alert.show(ft,"alert");
       }
     }
 );

@@ -3,7 +3,7 @@
     HashMap<Object,Object> countResult=new HashMap<Object,Object>();
     Object[] countParams={blog.getBlogId(),blog.getUsername(),blog.getPassword(),0};
     try {
-      countResult=(HashMap)client.call("wp.getCommentCount",countParams);
+      countResult=(HashMap<Object,Object>)client.call("wp.getCommentCount",countParams);
       totalComments=Integer.valueOf(countResult.get("awaiting_moderation").toString()) + Integer.valueOf(countResult.get("approved").toString());
     }
  catch (    XMLRPCException e) {
@@ -24,38 +24,9 @@
           pd.dismiss();
         }
         onAnimateRefreshButton.onAnimateRefreshButton(false);
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(getActivity().getApplicationContext());
-        dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
-        String msg=e.getLocalizedMessage();
-        dialogBuilder.setMessage(e.getFaultString());
-        if (msg.contains("403")) {
-          dialogBuilder.setMessage(e.getFaultString() + " " + getResources().getString(R.string.load_settings));
-          dialogBuilder.setPositiveButton(getResources().getString(R.string.yes),new DialogInterface.OnClickListener(){
-            public void onClick(            DialogInterface dialog,            int whichButton){
-              Intent i=new Intent(getActivity().getApplicationContext(),Settings.class);
-              i.putExtra("id",id);
-              i.putExtra("accountName",accountName);
-              startActivity(i);
-            }
-          }
-);
-          dialogBuilder.setNegativeButton(getResources().getString(R.string.no),new DialogInterface.OnClickListener(){
-            public void onClick(            DialogInterface dialog,            int whichButton){
-            }
-          }
-);
-        }
- else {
-          dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-            public void onClick(            DialogInterface dialog,            int whichButton){
-            }
-          }
-);
-        }
-        dialogBuilder.setCancelable(true);
-        if (!getActivity().isFinishing()) {
-          dialogBuilder.create().show();
-        }
+        FragmentTransaction ft=getFragmentManager().beginTransaction();
+        WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(e.getLocalizedMessage());
+        alert.show(ft,"alert");
       }
     }
 );
@@ -67,18 +38,9 @@ catch (  final XMLRPCException e) {
           pd.dismiss();
         }
         onAnimateRefreshButton.onAnimateRefreshButton(false);
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(getActivity().getApplicationContext());
-        dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
-        dialogBuilder.setMessage(e.getLocalizedMessage());
-        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-          public void onClick(          DialogInterface dialog,          int whichButton){
-          }
-        }
-);
-        dialogBuilder.setCancelable(true);
-        if (!getActivity().isFinishing()) {
-          dialogBuilder.create().show();
-        }
+        FragmentTransaction ft=getFragmentManager().beginTransaction();
+        WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(e.getLocalizedMessage());
+        alert.show(ft,"alert");
       }
     }
 );

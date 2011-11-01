@@ -55,41 +55,11 @@
     wrapper.getTitle().setTextScaleX(1.0f);
     wrapper.getTitle().setTextSize(16);
     wrapper.getDate().setTextColor(Color.parseColor("#888888"));
-    Object[] args={R.id.row_post_id,postIDs[position]};
-    try {
-      Method m=android.view.View.class.getMethod("setTag");
-      m.invoke(pv,args);
-    }
- catch (    NoSuchMethodException e) {
-      pv.setId(Integer.valueOf(postIDs[position]));
-    }
-catch (    IllegalArgumentException e) {
-      pv.setId(Integer.valueOf(postIDs[position]));
-    }
-catch (    IllegalAccessException e) {
-      pv.setId(Integer.valueOf(postIDs[position]));
-    }
-catch (    InvocationTargetException e) {
-      pv.setId(Integer.valueOf(postIDs[position]));
-    }
+    pv.setTag(R.id.row_post_id,postIDs[position]);
+    pv.setId(Integer.valueOf(postIDs[position]));
     if (wrapper.getDate().getHeight() == 0) {
       wrapper.getDate().setHeight((int)wrapper.getTitle().getTextSize() + wrapper.getDate().getPaddingBottom());
     }
-    String customDate=date;
-    if (customDate.equals("draft")) {
-      customDate=getResources().getText(R.string.draft).toString();
-    }
- else     if (customDate.equals("pending")) {
-      customDate=getResources().getText(R.string.pending_review).toString();
-    }
- else     if (customDate.equals("private")) {
-      customDate=getResources().getText(R.string.post_private).toString();
-    }
- else     if (customDate.equals("publish")) {
-      customDate=getResources().getText(R.string.publish_post).toString();
-      wrapper.getDate().setTextColor(Color.parseColor("#006505"));
-    }
-    date=customDate;
   }
   String titleText=titles[position];
   if (titleText == "")   titleText="(" + getResources().getText(R.string.untitled) + ")";
