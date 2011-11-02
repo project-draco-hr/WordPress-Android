@@ -77,20 +77,21 @@
           ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(EditContent.this,R.array.alignment_array,android.R.layout.simple_spinner_item);
           adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
           alignmentSpinner.setAdapter(adapter);
-          imageWidthText.setText(String.valueOf(span.getWidth()));
+          imageWidthText.setText(String.valueOf(span.getWidth()) + "px");
           seekBar.setProgress(span.getWidth());
           titleText.setText(span.getTitle());
           caption.setText(span.getCaption());
           alignmentSpinner.setSelection(span.getHorizontalAlignment(),true);
-          seekBar.setMax(1000);
-          seekBar.setProgress(span.getWidth());
+          seekBar.setMax(100);
+          if (span.getWidth() != 0)           seekBar.setProgress(span.getWidth() / 10);
           seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
             @Override public void onStopTrackingTouch(            SeekBar seekBar){
             }
             @Override public void onStartTrackingTouch(            SeekBar seekBar){
             }
             @Override public void onProgressChanged(            SeekBar seekBar,            int progress,            boolean fromUser){
-              imageWidthText.setText(progress + "px");
+              if (progress == 0)               progress=1;
+              imageWidthText.setText(progress * 10 + "px");
             }
           }
 );
@@ -98,7 +99,7 @@
             public void onClick(            DialogInterface dialog,            int whichButton){
               span.setTitle(titleText.getText().toString());
               span.setHorizontalAlignment(alignmentSpinner.getSelectedItemPosition());
-              span.setWidth(seekBar.getProgress());
+              span.setWidth(seekBar.getProgress() * 10);
               span.setCaption(caption.getText().toString());
             }
           }
