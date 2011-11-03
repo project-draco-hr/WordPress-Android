@@ -1,10 +1,4 @@
 {
-  if (db != null) {
-    if (db.isDbLockedByCurrentThread() || db.isDbLockedByOtherThreads()) {
-      Log.i("WordPress","Database is locked.");
-      return;
-    }
-  }
   db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
   db.execSQL(CREATE_TABLE_SETTINGS);
   db.execSQL(CREATE_TABLE_EULA);
@@ -190,7 +184,6 @@
       db.delete(POSTS_TABLE,null,null);
       db.execSQL(CREATE_TABLE_POSTS);
       try {
-        db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
         Cursor c=db.query("localdrafts",new String[]{"blogID","title","content","picturePaths","date","categories","tags","status","password","latitude","longitude"},null,null,null,null,"id desc");
         int numRows=c.getCount();
         c.moveToFirst();
@@ -204,7 +197,6 @@
         }
         c.close();
         db.delete("localdrafts",null,null);
-        db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
         c=db.query("localpagedrafts",new String[]{"blogID","title","content","picturePaths","date","status","password"},null,null,null,null,"id desc");
         numRows=c.getCount();
         c.moveToFirst();
@@ -231,5 +223,4 @@
  catch (  SQLException e) {
     e.printStackTrace();
   }
-  db.close();
 }

@@ -3,9 +3,8 @@
     if (result.length > 0) {
       HashMap<?,?> contentHash=new HashMap<Object,Object>();
       Vector<HashMap<?,?>> dbVector=new Vector<HashMap<?,?>>();
-      WordPressDB postStoreDB=new WordPressDB(getActivity().getApplicationContext());
       if (!loadMore) {
-        postStoreDB.deleteUploadedPosts(getActivity().getApplicationContext(),blog.getId(),isPage);
+        WordPress.wpDB.deleteUploadedPosts(getActivity().getApplicationContext(),blog.getId(),isPage);
       }
       for (int ctr=0; ctr < result.length; ctr++) {
         HashMap<String,Object> dbValues=new HashMap<String,Object>();
@@ -13,7 +12,7 @@
         dbValues.put("blogID",blog.getBlogId());
         dbVector.add(ctr,contentHash);
       }
-      postStoreDB.savePosts(getActivity().getApplicationContext(),dbVector,blog.getId(),isPage);
+      WordPress.wpDB.savePosts(getActivity().getApplicationContext(),dbVector,blog.getId(),isPage);
       numRecords+=20;
       if (loadMore)       switcher.showPrevious();
       loadPosts(loadMore);

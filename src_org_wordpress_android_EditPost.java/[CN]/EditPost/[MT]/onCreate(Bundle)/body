@@ -1,13 +1,13 @@
 {
   super.onCreate(icicle);
   Bundle extras=getIntent().getExtras();
+  if (WordPress.wpDB == null)   WordPress.wpDB=new WordPressDB(this);
   categories=new JSONArray();
   String action=getIntent().getAction();
   if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
     isAction=true;
     isNew=true;
-    WordPressDB settingsDB=new WordPressDB(this);
-    Vector<?> accounts=settingsDB.getAccounts(this);
+    Vector<?> accounts=WordPress.wpDB.getAccounts(this);
     if (accounts.size() > 0) {
       final String blogNames[]=new String[accounts.size()];
       final int accountIDs[]=new int[accounts.size()];

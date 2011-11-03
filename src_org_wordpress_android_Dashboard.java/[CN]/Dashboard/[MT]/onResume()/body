@@ -1,13 +1,12 @@
 {
   super.onResume();
-  final WordPressDB settingsDB=new WordPressDB(this);
-  accounts=settingsDB.getAccounts(this);
+  WordPress.wpDB=new WordPressDB(this);
+  accounts=WordPress.wpDB.getAccounts(this);
   boolean eula=checkEULA();
   if (eula == false) {
     DialogInterface.OnClickListener positiveListener=new DialogInterface.OnClickListener(){
       public void onClick(      DialogInterface dialog,      int whichButton){
-        WordPressDB eulaDB=new WordPressDB(Dashboard.this);
-        eulaDB.setEULA(Dashboard.this);
+        WordPress.wpDB.setEULA(Dashboard.this);
         displayAccounts();
       }
     }
@@ -23,14 +22,4 @@
  else {
     displayAccounts();
   }
-  final NotificationManager nm=(NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-  Intent notificationIntent=new Intent(this,Comments.class);
-  notificationIntent.setData((Uri.parse("custom://wordpressNotificationIntent" + 22)));
-  notificationIntent.putExtra("id",WordPress.currentBlog.getId());
-  notificationIntent.putExtra("fromNotification",true);
-  PendingIntent pendingIntent=PendingIntent.getActivity(this,0,notificationIntent,Intent.FLAG_ACTIVITY_CLEAR_TOP);
-  Notification n=new Notification(R.drawable.notification_icon,"Steve" + ": " + "Wooooooo",System.currentTimeMillis());
-  n.flags|=Notification.FLAG_AUTO_CANCEL;
-  n.setLatestEventInfo(this,"Bob","Steve" + ": " + "wooooo",pendingIntent);
-  nm.notify(22 + Integer.valueOf(22),n);
 }

@@ -1,9 +1,10 @@
 {
-  db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
   ContentValues values=new ContentValues();
   values.put("accountId",accountId);
   values.put("name",name);
-  boolean returnValue=db.insert(QUICKPRESS_SHORTCUTS_TABLE,null,values) > 0;
-  db.close();
+  boolean returnValue=false;
+synchronized (this) {
+    returnValue=db.insert(QUICKPRESS_SHORTCUTS_TABLE,null,values) > 0;
+  }
   return (returnValue);
 }
