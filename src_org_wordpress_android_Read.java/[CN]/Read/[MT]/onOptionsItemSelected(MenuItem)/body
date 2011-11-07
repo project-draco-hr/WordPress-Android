@@ -15,8 +15,11 @@ public void run(){
 try {
 HttpClient httpclient=new DefaultHttpClient();
 HttpProtocolParams.setUserAgent(httpclient.getParams(),"wp-android");
-HttpResponse response=httpclient.execute(new HttpGet("http://wordpress.com/reader/mobile/v2"));
-InputStream content=response.getEntity().getContent();
+String readerURL="http://en.wordpress.com/reader/mobile/v2";
+if ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == 4) {
+readerURL+="/?per_page=20";
+}
+httpclient.execute(new HttpGet(readerURL));
 }
  catch (Exception e) {
 }
