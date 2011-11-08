@@ -69,13 +69,19 @@
     }
   }
 );
-  LinearLayout subsButton=(LinearLayout)findViewById(R.id.dashboard_subs_btn);
-  subsButton.setOnClickListener(new View.OnClickListener(){
+  LinearLayout readButton=(LinearLayout)findViewById(R.id.dashboard_subs_btn);
+  readButton.setOnClickListener(new View.OnClickListener(){
     public void onClick(    View v){
-      Intent i=new Intent(context,Read.class);
-      i.putExtra("id",WordPress.currentBlog.getId());
-      i.putExtra("loadReader",true);
-      context.startActivity(i);
+      int readerBlogID=WordPress.wpDB.getWPCOMBlogID();
+      if (readerBlogID >= 0) {
+        Intent i=new Intent(context,Read.class);
+        i.putExtra("id",readerBlogID);
+        i.putExtra("loadReader",true);
+        context.startActivity(i);
+      }
+ else {
+        Toast.makeText(context,getResources().getText(R.string.wpcom_login_required),Toast.LENGTH_LONG).show();
+      }
     }
   }
 );
