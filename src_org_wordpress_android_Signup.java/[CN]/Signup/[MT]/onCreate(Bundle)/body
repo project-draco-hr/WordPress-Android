@@ -1,17 +1,13 @@
 {
   super.onCreate(savedInstanceState);
-  setContentView(R.layout.signup);
-  setTitle("WordPress - New Account");
-  blogAddressError=(TextView)findViewById(R.id.blogAddressError);
-  usernameError=(TextView)findViewById(R.id.usernameError);
-  passwordError=(TextView)findViewById(R.id.passwordError);
-  emailError=(TextView)findViewById(R.id.emailError);
-  pb=(ProgressBar)findViewById(R.id.loadingSpinner);
-  signUp=(Button)findViewById(R.id.signupBtn);
-  signUp.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      signUpUser();
-    }
-  }
-);
+  requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+  WebView webview=new WebView(this);
+  setContentView(webview);
+  setTitle(getResources().getText(R.string.new_account));
+  setProgressBarIndeterminateVisibility(true);
+  webview.getSettings().setUserAgentString("wp-android");
+  webview.getSettings().setJavaScriptEnabled(true);
+  webview.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+  webview.setWebViewClient(new WordPressWebViewClient());
+  webview.loadUrl("https://en.wordpress.com/signup/?ref=wp-android");
 }
