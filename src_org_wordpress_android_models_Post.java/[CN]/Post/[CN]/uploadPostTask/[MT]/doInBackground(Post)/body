@@ -1,7 +1,7 @@
 {
   post=posts[0];
   nm=(NotificationManager)context.getSystemService("notification");
-  Intent notificationIntent=new Intent(context,ViewPosts.class);
+  Intent notificationIntent=new Intent(context,Posts.class);
   notificationIntent.setData((Uri.parse("custom://wordpressNotificationIntent" + post.blogID)));
   notificationIntent.putExtra("fromNotification",true);
   PendingIntent pendingIntent=PendingIntent.getActivity(context,0,notificationIntent,Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -18,7 +18,6 @@
     post.post_status="publish";
   }
   Boolean publishThis=false;
-  String imageContent="";
   boolean mediaError=false;
   Spannable s;
   String descriptionContent="", moreContent="";
@@ -71,7 +70,7 @@
     }
     Map<String,Object> contentStruct=new HashMap<String,Object>();
     if (!post.isPage) {
-      HashMap<?,?> globalSettings=WordPress.wpDB.getNotificationOptions(post.context);
+      HashMap<?,?> globalSettings=WordPress.wpDB.getNotificationOptions(context);
       boolean taglineValue=false;
       String tagline="";
       if (globalSettings != null) {
@@ -142,11 +141,8 @@
     Object[] params;
     if (post.isLocalDraft() && !post.uploaded)     params=new Object[]{post.blog.getBlogId(),post.blog.getUsername(),post.blog.getPassword(),contentStruct,publishThis};
  else     params=new Object[]{post.getPostid(),post.blog.getUsername(),post.blog.getPassword(),contentStruct,publishThis};
-    Object result=null;
-    boolean success=false;
     try {
-      result=(Object)client.call((post.isLocalDraft() && !post.uploaded) ? "metaWeblog.newPost" : "metaWeblog.editPost",params);
-      success=true;
+      client.call((post.isLocalDraft() && !post.uploaded) ? "metaWeblog.newPost" : "metaWeblog.editPost",params);
       post.setUploaded(true);
       post.update();
       return true;

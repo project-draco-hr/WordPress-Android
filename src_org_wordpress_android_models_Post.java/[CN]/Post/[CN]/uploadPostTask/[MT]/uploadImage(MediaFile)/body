@@ -22,7 +22,7 @@
         Uri imgPath;
         projection=new String[]{Video.Media._ID,Video.Media.DATA,Video.Media.MIME_TYPE,Video.Media.RESOLUTION};
         imgPath=videoUri;
-        Cursor cur=((Activity)post.context).managedQuery(imgPath,projection,null,null,null);
+        Cursor cur=((Activity)context).managedQuery(imgPath,projection,null,null,null);
         String thumbData="";
         if (cur.moveToFirst()) {
           int mimeTypeColumn, resolutionColumn, dataColumn;
@@ -70,11 +70,9 @@
         String mediaErrorMsg=e.getLocalizedMessage();
         if (video) {
           if (mediaErrorMsg.contains("Invalid file type")) {
-            mediaErrorMsg=post.context.getResources().getString(R.string.vp_upgrade);
-            boolean vpUpgrade=true;
+            mediaErrorMsg=context.getResources().getString(R.string.vp_upgrade);
           }
         }
-        boolean xmlrpcError=true;
         return null;
       }
       HashMap<?,?> contentHash=new HashMap<Object,Object>();
@@ -100,7 +98,7 @@
             Uri imgPath;
             projection=new String[]{Images.Media._ID,Images.Media.DATA,Images.Media.MIME_TYPE,Images.Media.ORIENTATION};
             imgPath=imageUri;
-            Cursor cur=((Activity)post.context).managedQuery(imgPath,projection,null,null,null);
+            Cursor cur=((Activity)context).managedQuery(imgPath,projection,null,null,null);
             String thumbData="";
             if (cur.moveToFirst()) {
               int dataColumn, mimeTypeColumn, orientationColumn;
@@ -121,8 +119,6 @@
             mf.setFilePath(path);
           }
           if (jpeg == null) {
-            boolean xmlrpcError=true;
-            String mediaErrorMsg="Media file not found.";
             break;
           }
           ImageHelper ih=new ImageHelper();
@@ -171,7 +167,6 @@
  catch (          XMLRPCException e) {
             e.printStackTrace();
             e.getLocalizedMessage();
-            boolean xmlrpcError=true;
             break;
           }
           HashMap<?,?> contentHash=new HashMap<Object,Object>();
