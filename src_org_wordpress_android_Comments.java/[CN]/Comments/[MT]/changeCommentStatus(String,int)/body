@@ -1,7 +1,7 @@
 {
   String sSelCommentID=String.valueOf(selCommentID);
   WordPressDB db=new WordPressDB(Comments.this);
-  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+  client=new XMLRPCClient(WordPress.currentBlog.getUrl(),WordPress.currentBlog.getHttpuser(),WordPress.currentBlog.getHttppassword());
   HashMap<String,String> contentHash, postHash=new HashMap<String,String>();
   contentHash=(HashMap<String,String>)commentList.allComments.get(sSelCommentID);
   postHash.put("status",newStatus);
@@ -9,7 +9,7 @@
   postHash.put("author",contentHash.get("author"));
   postHash.put("author_url",contentHash.get("url"));
   postHash.put("author_email",contentHash.get("email"));
-  Object[] params={blog.getBlogId(),blog.getUsername(),blog.getPassword(),sSelCommentID,postHash};
+  Object[] params={WordPress.currentBlog.getBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),sSelCommentID,postHash};
   Object result=null;
   try {
     result=(Object)client.call("wp.editComment",params);

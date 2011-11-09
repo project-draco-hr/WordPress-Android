@@ -7,7 +7,6 @@
   if (extras != null) {
     isPage=extras.getBoolean("viewPages");
   }
-  blog=WordPress.currentBlog;
   WordPress.currentPost=null;
   titleBar=(WPTitleBar)findViewById(R.id.postsActionBar);
   titleBar.refreshButton.setOnClickListener(new ImageButton.OnClickListener(){
@@ -19,7 +18,8 @@
   titleBar.setOnBlogChangedListener(new OnBlogChangedListener(){
     @Override public void OnBlogChanged(){
       postList.shouldSelectAfterLoad=true;
-      postList.loadPosts(false);
+      boolean loadedPosts=postList.loadPosts(false);
+      if (!loadedPosts)       postList.refreshPosts(false);
     }
   }
 );

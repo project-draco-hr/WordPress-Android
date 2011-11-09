@@ -9,12 +9,10 @@
     if (fromNotification) {
       WordPress.currentBlog=new Blog(extras.getInt("id"),Comments.this);
       titleBar.refreshBlog();
-      blog=WordPress.currentBlog;
     }
   }
   FragmentManager fm=getSupportFragmentManager();
   commentList=(ViewComments)fm.findFragmentById(R.id.commentList);
-  blog=WordPress.currentBlog;
   WordPress.currentComment=null;
   titleBar.refreshButton.setOnClickListener(new ImageButton.OnClickListener(){
     public void onClick(    View v){
@@ -26,7 +24,8 @@
   titleBar.setOnBlogChangedListener(new OnBlogChangedListener(){
     @Override public void OnBlogChanged(){
       attemptToSelectComment();
-      commentList.loadComments(false,false);
+      boolean commentsLoaded=commentList.loadComments(false,false);
+      if (!commentsLoaded)       commentList.refreshComments(false,false,false);
     }
   }
 );
