@@ -28,5 +28,17 @@
     }
   }
 );
+  WordPress.setOnPostUploadedListener(new WordPress.OnPostUploadedListener(){
+    @Override public void OnPostUploaded(){
+      FragmentManager fm=getSupportFragmentManager();
+      ViewPostFragment f=(ViewPostFragment)fm.findFragmentById(R.id.postDetail);
+      if (f == null) {
+        fm.popBackStack();
+      }
+      attemptToSelectPost();
+      postList.refreshPosts(false);
+    }
+  }
+);
   attemptToSelectPost();
 }
