@@ -2,12 +2,6 @@
   super.onCreate(savedInstanceState);
   requestWindowFeature(Window.FEATURE_NO_TITLE);
   setContentView(R.layout.view_stats);
-  Bundle extras=getIntent().getExtras();
-  if (extras != null) {
-    id=extras.getInt("id");
-    blog=new Blog(id,this);
-    accountName=extras.getString("accountName");
-  }
   initStats();
   Button saveStatsLogin=(Button)findViewById(R.id.saveDotcom);
   saveStatsLogin.setOnClickListener(new Button.OnClickListener(){
@@ -31,7 +25,7 @@
         }
       }
  else {
-        WordPress.wpDB.saveStatsLogin(id,dcUsername,dcPassword);
+        WordPress.wpDB.saveStatsLogin(WordPress.currentBlog.getId(),dcUsername,dcPassword);
         showOrHideLoginForm();
         initStats();
       }
@@ -45,7 +39,7 @@
       Spinner reportInterval=(Spinner)findViewById(R.id.reportInterval);
       final String type=parseType(reportType.getSelectedItemPosition());
       final int interval=parseInterval(reportInterval.getSelectedItemPosition());
-      Vector<?> apiData=WordPress.wpDB.loadAPIData(id);
+      Vector<?> apiData=WordPress.wpDB.loadAPIData(WordPress.currentBlog.getId());
       final String apiKey=apiData.get(0).toString();
       final String apiBlogID=apiData.get(1).toString();
       showDialog(ID_DIALOG_GET_STATS);
@@ -68,8 +62,6 @@
 );
   titleBar.setOnBlogChangedListener(new OnBlogChangedListener(){
     @Override public void OnBlogChanged(){
-      id=WordPress.currentBlog.getId();
-      blog=new Blog(id,ViewStats.this);
       ImageView iv=(ImageView)findViewById(R.id.chart);
       iv.setVisibility(View.GONE);
       RelativeLayout filters=(RelativeLayout)findViewById(R.id.filters);

@@ -1,22 +1,22 @@
 {
   String sUsername, sPassword;
-  if (blog.getApi_key() == null) {
-    if (blog.getDotcom_username() != null) {
-      sUsername=blog.getDotcom_username();
-      sPassword=blog.getDotcom_password();
+  if (WordPress.currentBlog.getApi_key() == null) {
+    if (WordPress.currentBlog.getDotcom_username() != null) {
+      sUsername=WordPress.currentBlog.getDotcom_username();
+      sPassword=WordPress.currentBlog.getDotcom_password();
     }
  else {
-      sUsername=blog.getUsername();
-      sPassword=blog.getPassword();
+      sUsername=WordPress.currentBlog.getUsername();
+      sPassword=WordPress.currentBlog.getPassword();
     }
     showProgressBar();
-    new statsUserDataTask().execute(sUsername,sPassword,blog.getUrl(),String.valueOf(blog.getBlogId()));
+    new statsUserDataTask().execute(sUsername,sPassword,WordPress.currentBlog.getUrl(),String.valueOf(WordPress.currentBlog.getBlogId()));
   }
  else {
     showDialog(ID_DIALOG_GET_STATS);
     Thread action=new Thread(){
       public void run(){
-        getStatsData(blog.getApi_key(),blog.getApi_blogid(),"views",7);
+        getStatsData(WordPress.currentBlog.getApi_key(),WordPress.currentBlog.getApi_blogid(),"views",7);
       }
     }
 ;
