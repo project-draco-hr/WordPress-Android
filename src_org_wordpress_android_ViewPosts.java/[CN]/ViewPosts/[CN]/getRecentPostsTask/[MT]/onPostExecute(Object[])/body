@@ -5,15 +5,15 @@
       HashMap<?,?> contentHash=new HashMap<Object,Object>();
       Vector<HashMap<?,?>> dbVector=new Vector<HashMap<?,?>>();
       if (!loadMore) {
-        WordPress.wpDB.deleteUploadedPosts(blog.getId(),isPage);
+        WordPress.wpDB.deleteUploadedPosts(WordPress.currentBlog.getId(),isPage);
       }
       for (int ctr=0; ctr < result.length; ctr++) {
         HashMap<String,Object> dbValues=new HashMap<String,Object>();
         contentHash=(HashMap<?,?>)result[ctr];
-        dbValues.put("blogID",blog.getBlogId());
+        dbValues.put("blogID",WordPress.currentBlog.getBlogId());
         dbVector.add(ctr,contentHash);
       }
-      WordPress.wpDB.savePosts(dbVector,blog.getId(),isPage);
+      WordPress.wpDB.savePosts(dbVector,WordPress.currentBlog.getId(),isPage);
       numRecords+=20;
       if (loadMore)       switcher.showPrevious();
       loadPosts(loadMore);

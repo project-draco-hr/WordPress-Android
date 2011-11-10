@@ -3,8 +3,10 @@
   String finalThumbnailUrl=null;
   String finalImageUrl=null;
   final int printCtr=0;
-  final String statusText="Uploading Media File #" + String.valueOf(printCtr + 1);
-  n.contentView.setTextViewText(R.id.status_text,statusText);
+  String postOrPage=(String)(post.isPage() ? context.getResources().getText(R.string.page_id) : context.getResources().getText(R.string.post_id));
+  String message=context.getResources().getText(R.string.uploading_media_item) + String.valueOf(printCtr + 1);
+  n.setLatestEventInfo(context,context.getResources().getText(R.string.uploading) + " " + postOrPage,message,n.contentIntent);
+  nm.notify(notificationID,n);
   if (mf.getFileName() != null) {
     XMLRPCClient client=new XMLRPCClient(post.blog.getUrl(),post.blog.getHttpuser(),post.blog.getHttppassword());
     String curImagePath="";
@@ -22,7 +24,7 @@
         Uri imgPath;
         projection=new String[]{Video.Media._ID,Video.Media.DATA,Video.Media.MIME_TYPE,Video.Media.RESOLUTION};
         imgPath=videoUri;
-        Cursor cur=((Activity)context).managedQuery(imgPath,projection,null,null,null);
+        Cursor cur=context.getContentResolver().query(imgPath,projection,null,null,null);
         String thumbData="";
         if (cur.moveToFirst()) {
           int mimeTypeColumn, resolutionColumn, dataColumn;
@@ -98,7 +100,7 @@
             Uri imgPath;
             projection=new String[]{Images.Media._ID,Images.Media.DATA,Images.Media.MIME_TYPE,Images.Media.ORIENTATION};
             imgPath=imageUri;
-            Cursor cur=((Activity)context).managedQuery(imgPath,projection,null,null,null);
+            Cursor cur=context.getContentResolver().query(imgPath,projection,null,null,null);
             String thumbData="";
             if (cur.moveToFirst()) {
               int dataColumn, mimeTypeColumn, orientationColumn;
