@@ -57,8 +57,9 @@
   }
   if (!mediaError) {
     JSONArray categories=post.getCategories();
-    String[] theCategories=new String[categories.length()];
+    String[] theCategories=null;
     if (categories != null) {
+      theCategories=new String[categories.length()];
       for (int i=0; i < categories.length(); i++) {
         try {
           theCategories[i]=categories.getString(i);
@@ -108,8 +109,8 @@
       if (post.mt_keywords != "") {
         contentStruct.put("mt_keywords",post.mt_keywords);
       }
-      if (theCategories.length > 0) {
-        contentStruct.put("categories",theCategories);
+      if (theCategories != null) {
+        if (theCategories.length > 0)         contentStruct.put("categories",theCategories);
       }
     }
     contentStruct.put((post.isPage) ? "page_status" : "post_status",post.post_status);
