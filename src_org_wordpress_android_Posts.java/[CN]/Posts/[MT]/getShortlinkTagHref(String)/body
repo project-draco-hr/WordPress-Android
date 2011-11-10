@@ -1,40 +1,15 @@
 {
-  InputStream in=getResponse(urlString);
-  if (in != null) {
-    XmlPullParser parser=Xml.newPullParser();
+  String html=getHTML(urlString);
+  if (html != "") {
     try {
-      parser.setInput(in,null);
-      int eventType=parser.getEventType();
-      while (eventType != XmlPullParser.END_DOCUMENT) {
-        String name=null;
-        String rel="";
-        String href="";
-switch (eventType) {
-case XmlPullParser.START_TAG:
-          name=parser.getName();
-        for (int i=0; i < parser.getAttributeCount(); i++) {
-          String attrName=parser.getAttributeName(i);
-          String attrValue=parser.getAttributeValue(i);
-          Log.i("WORDPRESS",name + "|" + attrName+ "|"+ attrValue);
-          if (attrName.equals("rel")) {
-            rel=attrValue;
-          }
- else           if (attrName.equals("href")) {
-            href=attrValue;
-          }
-        }
-      if (rel.equals("shortlink")) {
-        return href;
-      }
-    break;
-}
-eventType=parser.next();
-}
-}
- catch (Exception e) {
-e.printStackTrace();
-return null;
-}
-}
-return null;
+      int location=html.indexOf("http://wp.me");
+      String shortlink=html.substring(location,location + 30);
+      shortlink=shortlink.substring(0,shortlink.indexOf("'"));
+      return shortlink;
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+    }
+  }
+  return null;
 }
