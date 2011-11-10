@@ -32,6 +32,8 @@
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 1) {
+      db.delete(POSTS_TABLE,null,null);
+      db.execSQL(CREATE_TABLE_POSTS);
       db.execSQL(ADD_BLOGID);
       db.execSQL(UPDATE_BLOGID);
       db.execSQL(ADD_SOUND_OPTION);
@@ -57,6 +59,8 @@
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 2) {
+      db.delete(POSTS_TABLE,null,null);
+      db.execSQL(CREATE_TABLE_POSTS);
       db.execSQL(ADD_SOUND_OPTION);
       db.execSQL(ADD_VIBRATE_OPTION);
       db.execSQL(ADD_LIGHT_OPTION);
@@ -80,6 +84,8 @@
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 3) {
+      db.delete(POSTS_TABLE,null,null);
+      db.execSQL(CREATE_TABLE_POSTS);
       db.execSQL(ADD_LOCATION_FLAG);
       db.execSQL(ADD_TAGLINE);
       db.execSQL(ADD_TAGLINE_FLAG);
@@ -100,6 +106,8 @@
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 4) {
+      db.delete(POSTS_TABLE,null,null);
+      db.execSQL(CREATE_TABLE_POSTS);
       db.execSQL(ADD_LOCATION_FLAG);
       db.execSQL(ADD_TAGLINE);
       db.execSQL(ADD_TAGLINE_FLAG);
@@ -120,6 +128,8 @@
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 5) {
+      db.delete(POSTS_TABLE,null,null);
+      db.execSQL(CREATE_TABLE_POSTS);
       db.execSQL(ADD_TAGLINE);
       db.execSQL(ADD_TAGLINE_FLAG);
       db.execSQL(ADD_NEW_COMMENT_ID);
@@ -139,6 +149,8 @@
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 6) {
+      db.delete(POSTS_TABLE,null,null);
+      db.execSQL(CREATE_TABLE_POSTS);
       db.execSQL(ADD_NEW_COMMENT_ID);
       db.execSQL(COPY_COMMENT_IDS);
       db.execSQL(ADD_DOTCOM_USERNAME);
@@ -156,6 +168,8 @@
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 7) {
+      db.delete(POSTS_TABLE,null,null);
+      db.execSQL(CREATE_TABLE_POSTS);
       db.execSQL(ADD_UNIQUE_ID);
       db.execSQL(ADD_HTTPUSER);
       db.execSQL(ADD_HTTPPASSWORD);
@@ -165,6 +179,8 @@
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 8) {
+      db.delete(POSTS_TABLE,null,null);
+      db.execSQL(CREATE_TABLE_POSTS);
       db.execSQL(ADD_HTTPUSER);
       db.execSQL(ADD_HTTPPASSWORD);
       db.execSQL(ADD_LAST_BLOG_ID);
@@ -173,6 +189,8 @@
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 9) {
+      db.delete(POSTS_TABLE,null,null);
+      db.execSQL(CREATE_TABLE_POSTS);
       db.execSQL(ADD_HTTPUSER);
       db.execSQL(ADD_HTTPPASSWORD);
       db.execSQL(ADD_LAST_BLOG_ID);
@@ -189,9 +207,10 @@
         c.moveToFirst();
         for (int i=0; i < numRows; ++i) {
           if (c.getString(0) != null) {
-            Post post=new Post(c.getInt(0),c.getString(1),c.getString(2),c.getString(3),c.getLong(4),c.getString(5),c.getString(6),c.getString(7),c.getString(8),c.getDouble(9),c.getDouble(10),false,"",ctx);
+            Post post=new Post(c.getInt(0),c.getString(1),c.getString(2),c.getString(3),c.getLong(4),c.getString(5),c.getString(6),c.getString(7),c.getString(8),c.getDouble(9),c.getDouble(10),false,"",ctx,false);
             post.setLocalDraft(true);
-            post.save();
+            post.setPost_status("localdraft");
+            savePost(post,c.getInt(0));
           }
           c.moveToNext();
         }
@@ -202,10 +221,10 @@
         c.moveToFirst();
         for (int i=0; i < numRows; ++i) {
           if (c.getString(0) != null) {
-            Post post=new Post(c.getInt(0),c.getString(1),c.getString(2),c.getString(3),c.getLong(4),c.getString(5),c.getString(6),null,null,0,0,true,"",ctx);
+            Post post=new Post(c.getInt(0),c.getString(1),c.getString(2),c.getString(3),c.getLong(4),c.getString(5),c.getString(6),null,null,0,0,true,"",ctx,false);
             post.setLocalDraft(true);
             post.setPage(true);
-            post.save();
+            savePost(post,c.getInt(0));
           }
           c.moveToNext();
         }
