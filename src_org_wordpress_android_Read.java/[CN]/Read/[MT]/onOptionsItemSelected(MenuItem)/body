@@ -4,9 +4,11 @@ case 0:
     finish();
   break;
 case 1:
-Intent i=new Intent(Intent.ACTION_VIEW);
-i.setData(Uri.parse(wv.getUrl()));
-startActivity(i);
+if (!wv.getUrl().contains("wp-login.php")) {
+  Intent i=new Intent(Intent.ACTION_VIEW);
+  i.setData(Uri.parse(wv.getUrl()));
+  startActivity(i);
+}
 break;
 case 2:
 wv.reload();
@@ -17,7 +19,7 @@ HttpClient httpclient=new DefaultHttpClient();
 HttpProtocolParams.setUserAgent(httpclient.getParams(),"wp-android");
 String readerURL=Constants.readerURL;
 if ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == 4) {
-readerURL+="/?per_page=20";
+  readerURL+="/?per_page=20";
 }
 httpclient.execute(new HttpGet(readerURL));
 }
