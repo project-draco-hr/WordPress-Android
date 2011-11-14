@@ -39,10 +39,9 @@
       Spinner reportInterval=(Spinner)findViewById(R.id.reportInterval);
       final String type=parseType(reportType.getSelectedItemPosition());
       final int interval=parseInterval(reportInterval.getSelectedItemPosition());
-      Vector<?> apiData=WordPress.wpDB.loadAPIData(WordPress.currentBlog.getId());
-      final String apiKey=apiData.get(0).toString();
-      final String apiBlogID=apiData.get(1).toString();
-      if (!isFinishing())       showDialog(ID_DIALOG_GET_STATS);
+      final String apiKey=WordPress.currentBlog.getApi_key();
+      final String apiBlogID=WordPress.currentBlog.getApi_blogid();
+      if (!isFinishing())       titleBar.startRotatingRefreshIcon();
       Thread action=new Thread(){
         public void run(){
           getStatsData(apiKey,apiBlogID,type,interval);

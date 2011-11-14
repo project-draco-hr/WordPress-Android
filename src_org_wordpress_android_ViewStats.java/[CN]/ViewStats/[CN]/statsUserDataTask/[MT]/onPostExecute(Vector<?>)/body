@@ -2,8 +2,10 @@
   if (result != null) {
     final String apiKey=result.get(0).toString();
     final String apiBlogID=result.get(1).toString();
-    WordPress.wpDB.saveAPIData(WordPress.currentBlog.getBlogId(),apiKey,apiBlogID);
-    if (!isFinishing())     showDialog(ID_DIALOG_GET_STATS);
+    WordPress.currentBlog.setApi_blogid(apiBlogID);
+    WordPress.currentBlog.setApi_key(apiKey);
+    WordPress.currentBlog.save(ViewStats.this,"");
+    if (!isFinishing())     titleBar.startRotatingRefreshIcon();
     Thread action=new Thread(){
       public void run(){
         getStatsData(apiKey,apiBlogID,"views",7);
