@@ -158,17 +158,25 @@
   final WPEditText contentEdit=(WPEditText)findViewById(R.id.postContent);
   contentEdit.addTextChangedListener(new TextWatcher(){
     public void afterTextChanged(    Editable s){
-      if (isBackspace)       return;
+      int position=Selection.getSelectionStart(contentEdit.getText());
+      if (isBackspace && position != 1)       return;
       ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
       ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
       ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
       ToggleButton underlineButton=(ToggleButton)findViewById(R.id.underline);
       ToggleButton strikeButton=(ToggleButton)findViewById(R.id.strike);
-      int position=Selection.getSelectionStart(contentEdit.getText());
       if (position < 0) {
         position=0;
       }
       if (position > 0) {
+        if (styleStart > position || position > (cursorLoc + 1)) {
+          if (position - cursorLoc > 1) {
+            styleStart=cursorLoc;
+          }
+ else {
+            styleStart=position - 1;
+          }
+        }
         if (boldButton.isChecked()) {
           StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
           for (int i=0; i < ss.length; i++) {
