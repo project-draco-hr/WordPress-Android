@@ -32,6 +32,43 @@
   if (contentText != null) {
     contentEditor.setText(contentText);
   }
+  contentEditor.setOnSelectionChangedListener(new WPEditText.OnSelectionChangedListener(){
+    @Override public void onSelectionChanged(){
+      final Spannable s=contentEditor.getText();
+      Object[] spans=s.getSpans(contentEditor.getSelectionStart(),contentEditor.getSelectionStart(),Object.class);
+      ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
+      ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
+      ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
+      ToggleButton underlineButton=(ToggleButton)findViewById(R.id.underline);
+      ToggleButton strikeButton=(ToggleButton)findViewById(R.id.strike);
+      boldButton.setChecked(false);
+      emButton.setChecked(false);
+      bquoteButton.setChecked(false);
+      underlineButton.setChecked(false);
+      strikeButton.setChecked(false);
+      for (      Object span : spans) {
+        if (span instanceof StyleSpan) {
+          StyleSpan ss=(StyleSpan)span;
+          if (ss.getStyle() == android.graphics.Typeface.BOLD) {
+            boldButton.setChecked(true);
+          }
+          if (ss.getStyle() == android.graphics.Typeface.ITALIC) {
+            emButton.setChecked(true);
+          }
+        }
+        if (span instanceof QuoteSpan) {
+          bquoteButton.setChecked(true);
+        }
+        if (span instanceof UnderlineSpan) {
+          underlineButton.setChecked(true);
+        }
+        if (span instanceof StrikethroughSpan) {
+          strikeButton.setChecked(true);
+        }
+      }
+    }
+  }
+);
   contentEditor.setOnFocusChangeListener(new View.OnFocusChangeListener(){
     @Override public void onFocusChange(    View view,    boolean hasFocus){
       RelativeLayout formatBar=(RelativeLayout)findViewById(R.id.formatBar);
@@ -121,6 +158,7 @@
   final WPEditText contentEdit=(WPEditText)findViewById(R.id.postContent);
   contentEdit.addTextChangedListener(new TextWatcher(){
     public void afterTextChanged(    Editable s){
+      if (isBackspace)       return;
       ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
       ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
       ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
@@ -182,6 +220,8 @@
       cursorLoc=Selection.getSelectionStart(contentEdit.getText());
     }
     public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
+      if (count - after == 1)       isBackspace=true;
+ else       isBackspace=false;
     }
     public void onTextChanged(    CharSequence s,    int start,    int before,    int count){
     }
