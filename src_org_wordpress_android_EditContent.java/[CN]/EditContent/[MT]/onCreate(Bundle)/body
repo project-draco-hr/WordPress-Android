@@ -206,22 +206,12 @@
         selectionEnd=selectionStart;
         selectionStart=temp;
       }
-      if (selectionStart == -1 || selectionStart == contentText.getText().toString().length() || (selectionStart == selectionEnd)) {
-        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(EditContent.this);
-        dialogBuilder.setTitle(getResources().getText(R.string.no_text_selected));
-        dialogBuilder.setMessage(getResources().getText(R.string.select_text_to_link) + " " + getResources().getText(R.string.howto_select_text));
-        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-          public void onClick(          DialogInterface dialog,          int whichButton){
-          }
-        }
-);
-        dialogBuilder.setCancelable(true);
-        dialogBuilder.create().show();
+      Intent i=new Intent(EditContent.this,Link.class);
+      if (selectionEnd > selectionStart) {
+        String selectedText=contentText.getText().subSequence(selectionStart,selectionEnd).toString();
+        i.putExtra("selectedText",selectedText);
       }
- else {
-        Intent i=new Intent(EditContent.this,Link.class);
-        startActivityForResult(i,4);
-      }
+      startActivityForResult(i,4);
     }
   }
 );

@@ -1,6 +1,6 @@
 {
   super.onActivityResult(requestCode,resultCode,data);
-  if (data != null || requestCode == 1 || requestCode == 3) {
+  if (data != null && (resultCode != RESULT_CANCELED || (requestCode == 1 || requestCode == 3))) {
     Bundle extras;
 switch (requestCode) {
 case 0:
@@ -50,17 +50,27 @@ finish();
 break;
 case 4:
 extras=data.getExtras();
-String linkText=extras.getString("linkText");
-if (linkText.equals("http://") != true) {
-if (linkText.equals("CANCEL") != true) {
+String linkURL=extras.getString("linkURL");
+if (!linkURL.equals("http://") && !linkURL.equals("")) {
 WPEditText contentText=(WPEditText)findViewById(R.id.postContent);
 if (selectionStart > selectionEnd) {
 int temp=selectionEnd;
 selectionEnd=selectionStart;
 selectionStart=temp;
 }
-Spannable str=contentText.getText();
-str.setSpan(new URLSpan(linkText),selectionStart,selectionEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+Editable str=contentText.getText();
+if (extras.getString("linkText") == null) {
+if (selectionStart < selectionEnd) str.delete(selectionStart,selectionEnd);
+str.insert(selectionStart,linkURL);
+str.setSpan(new URLSpan(linkURL),selectionStart,selectionStart + linkURL.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+contentText.setSelection(selectionStart + linkURL.length());
+}
+ else {
+String linkText=extras.getString("linkText");
+if (selectionStart < selectionEnd) str.delete(selectionStart,selectionEnd);
+str.insert(selectionStart,linkText);
+str.setSpan(new URLSpan(linkURL),selectionStart,selectionStart + linkText.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+contentText.setSelection(selectionStart + linkText.length());
 }
 }
 break;
