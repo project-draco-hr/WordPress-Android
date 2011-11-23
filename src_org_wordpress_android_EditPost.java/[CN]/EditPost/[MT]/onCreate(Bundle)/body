@@ -2,6 +2,15 @@
   super.onCreate(icicle);
   Bundle extras=getIntent().getExtras();
   if (WordPress.wpDB == null)   WordPress.wpDB=new WordPressDB(this);
+  Display display=((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+  int width=display.getWidth();
+  int height=display.getHeight();
+  if (height > width) {
+    width=height;
+  }
+  if (width > 480) {
+    isLargeScreen=true;
+  }
   categories=new JSONArray();
   String action=getIntent().getAction();
   if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
@@ -31,8 +40,6 @@
             blog=new Blog(id,EditPost.this);
             accountName=blogNames[item];
             setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
-            setContent();
-            lbsCheck();
           }
         }
 );
@@ -44,7 +51,6 @@
         blog=new Blog(id,EditPost.this);
         accountName=blogNames[0];
         setTitle(accountName + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
-        setContent();
       }
     }
  else {
@@ -66,15 +72,6 @@
       option=extras.getString("option");
       if (!isNew)       post=new Post(id,postID,isPage,this);
     }
-  }
-  Display display=((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-  int width=display.getWidth();
-  int height=display.getHeight();
-  if (height > width) {
-    width=height;
-  }
-  if (width > 480) {
-    isLargeScreen=true;
   }
   if (isPage) {
     setContentView(R.layout.edit_page);
@@ -123,6 +120,7 @@
       if (postFormats[i].equals(activePostFormat))       pfSpinner.setSelection(i);
     }
     lbsCheck();
+    if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action))     setContent();
   }
   String[] items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private),getResources().getString(R.string.local_draft)};
   Spinner spinner=(Spinner)findViewById(R.id.status);
