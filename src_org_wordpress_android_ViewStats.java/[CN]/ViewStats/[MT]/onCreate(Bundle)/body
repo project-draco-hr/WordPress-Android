@@ -2,6 +2,7 @@
   super.onCreate(savedInstanceState);
   requestWindowFeature(Window.FEATURE_NO_TITLE);
   setContentView(R.layout.view_stats);
+  titleBar=(WPTitleBar)findViewById(R.id.actionBar);
   initStats();
   Button saveStatsLogin=(Button)findViewById(R.id.saveDotcom);
   saveStatsLogin.setOnClickListener(new Button.OnClickListener(){
@@ -42,17 +43,10 @@
       final String apiKey=WordPress.currentBlog.getApi_key();
       final String apiBlogID=WordPress.currentBlog.getApi_blogid();
       if (!isFinishing())       titleBar.startRotatingRefreshIcon();
-      Thread action=new Thread(){
-        public void run(){
-          getStatsData(apiKey,apiBlogID,type,interval);
-        }
-      }
-;
-      action.start();
+      new getStatsDataTask().execute(apiKey,apiBlogID,type,interval);
     }
   }
 );
-  titleBar=(WPTitleBar)findViewById(R.id.actionBar);
   titleBar.refreshButton.setOnClickListener(new ImageButton.OnClickListener(){
     public void onClick(    View v){
       go.performClick();
