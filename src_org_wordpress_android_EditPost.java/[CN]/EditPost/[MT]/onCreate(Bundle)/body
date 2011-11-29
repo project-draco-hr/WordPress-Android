@@ -167,11 +167,15 @@
     long pubDate=post.getDate_created_gmt();
     if (pubDate != 0) {
       try {
-        Date date=new Date(pubDate);
-        SimpleDateFormat sdf=new SimpleDateFormat("MMM dd, yyyy 'at' hh:mm a");
-        String sPubDate=sdf.format(date);
+        int flags=0;
+        flags|=android.text.format.DateUtils.FORMAT_SHOW_DATE;
+        flags|=android.text.format.DateUtils.FORMAT_ABBREV_MONTH;
+        flags|=android.text.format.DateUtils.FORMAT_SHOW_YEAR;
+        flags|=android.text.format.DateUtils.FORMAT_SHOW_TIME;
+        long localTime=pubDate + TimeZone.getDefault().getOffset(pubDate);
+        String formattedDate=DateUtils.formatDateTime(EditPost.this,localTime,flags);
         TextView tvPubDate=(TextView)findViewById(R.id.pubDate);
-        tvPubDate.setText(sPubDate);
+        tvPubDate.setText(formattedDate);
       }
  catch (      Exception e) {
         e.printStackTrace();
