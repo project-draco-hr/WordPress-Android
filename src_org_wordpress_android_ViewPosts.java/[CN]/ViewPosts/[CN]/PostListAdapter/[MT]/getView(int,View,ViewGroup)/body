@@ -15,6 +15,7 @@
     wrapper=(ViewWrapper)pv.getTag();
   }
   String date=dateCreatedFormatted[position];
+  String status_text=statuses[position];
   if (date.equals("postsHeader") || date.equals("draftsHeader")) {
     pv.setBackgroundDrawable(getResources().getDrawable(R.drawable.list_header_bg));
     wrapper.getTitle().setTextColor(Color.parseColor("#EEEEEE"));
@@ -28,13 +29,16 @@
     wrapper.getTitle().setTextScaleX(1.2f);
     wrapper.getTitle().setTextSize(17);
     wrapper.getDate().setHeight(0);
+    wrapper.getStatus().setHeight(0);
     if (date.equals("draftsHeader")) {
       inDrafts=true;
       date="";
+      status_text="";
     }
  else     if (date.equals("postsHeader")) {
       inDrafts=false;
       date="";
+      status_text="";
     }
   }
  else {
@@ -59,11 +63,13 @@
     pv.setId(Integer.valueOf(postIDs[position]));
     if (wrapper.getDate().getHeight() == 0) {
       wrapper.getDate().setHeight((int)wrapper.getTitle().getTextSize() + wrapper.getDate().getPaddingBottom());
+      wrapper.getStatus().setHeight((int)wrapper.getTitle().getTextSize() + wrapper.getStatus().getPaddingBottom());
     }
   }
   String titleText=titles[position];
   if (titleText == "")   titleText="(" + getResources().getText(R.string.untitled) + ")";
   wrapper.getTitle().setText(titleText);
   wrapper.getDate().setText(date);
+  wrapper.getStatus().setText(status_text);
   return pv;
 }

@@ -11,12 +11,14 @@
     postIDs=new String[loadedPosts.size()];
     dateCreated=new String[loadedPosts.size()];
     dateCreatedFormatted=new String[loadedPosts.size()];
+    statuses=new String[loadedPosts.size()];
   }
  else {
     titles=new String[0];
     postIDs=new String[0];
     dateCreated=new String[0];
     dateCreatedFormatted=new String[0];
+    statuses=new String[0];
     if (pla != null) {
       pla.notifyDataSetChanged();
     }
@@ -27,6 +29,21 @@
       titles[i]=EscapeUtils.unescapeHtml(contentHash.get("title").toString());
       postIDs[i]=contentHash.get("id").toString();
       dateCreated[i]=contentHash.get("date_created_gmt").toString();
+      if (contentHash.get("post_status") != null) {
+        String api_status=contentHash.get("post_status").toString();
+        if (api_status.equals("publish")) {
+          statuses[i]=getResources().getText(R.string.publish_post).toString();
+        }
+ else         if (api_status.equals("draft")) {
+          statuses[i]=getResources().getText(R.string.draft).toString();
+        }
+ else         if (api_status.equals("pending")) {
+          statuses[i]=getResources().getText(R.string.pending_review).toString();
+        }
+ else         if (api_status.equals("private")) {
+          statuses[i]=getResources().getText(R.string.post_private).toString();
+        }
+      }
       int flags=0;
       flags|=android.text.format.DateUtils.FORMAT_SHOW_DATE;
       flags|=android.text.format.DateUtils.FORMAT_ABBREV_MONTH;
@@ -55,6 +72,11 @@
     newDateFormattedList.add("postsHeader");
     newDateFormattedList.addAll(dateFormattedList);
     dateCreatedFormatted=(String[])newDateFormattedList.toArray(new String[newDateFormattedList.size()]);
+    List<String> statusList=Arrays.asList(statuses);
+    List<String> newStatusList=new ArrayList<String>();
+    newStatusList.add("postsHeader");
+    newStatusList.addAll(statusList);
+    statuses=(String[])newStatusList.toArray(new String[newStatusList.size()]);
   }
   boolean drafts=loadDrafts();
   if (drafts) {
@@ -73,9 +95,15 @@
     newDraftDateList.add("draftsHeader");
     newDraftDateList.addAll(draftDateList);
     draftDateCreated=(String[])newDraftDateList.toArray(new String[newDraftDateList.size()]);
+    List<String> draftStatusList=Arrays.asList(draftStatuses);
+    List<String> newDraftStatusList=new ArrayList<String>();
+    newDraftStatusList.add("draftsHeader");
+    newDraftStatusList.addAll(draftStatusList);
+    draftStatuses=(String[])newDraftStatusList.toArray(new String[newDraftStatusList.size()]);
     postIDs=StringHelper.mergeStringArrays(draftIDs,postIDs);
     titles=StringHelper.mergeStringArrays(draftTitles,titles);
     dateCreatedFormatted=StringHelper.mergeStringArrays(draftDateCreated,dateCreatedFormatted);
+    statuses=StringHelper.mergeStringArrays(draftStatuses,statuses);
   }
  else {
     if (pla != null) {
