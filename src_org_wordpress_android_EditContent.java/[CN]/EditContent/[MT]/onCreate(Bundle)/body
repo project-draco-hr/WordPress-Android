@@ -158,66 +158,66 @@
   final WPEditText contentEdit=(WPEditText)findViewById(R.id.postContent);
   contentEdit.addTextChangedListener(new TextWatcher(){
     public void afterTextChanged(    Editable s){
-      int position=Selection.getSelectionStart(contentEdit.getText());
-      if (isBackspace && position != 1)       return;
-      ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
-      ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
-      ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
-      ToggleButton underlineButton=(ToggleButton)findViewById(R.id.underline);
-      ToggleButton strikeButton=(ToggleButton)findViewById(R.id.strike);
-      if (position < 0) {
-        position=0;
-      }
-      if (position > 0) {
-        if (styleStart > position || position > (cursorLoc + 1)) {
-          if (position - cursorLoc > 1) {
-            styleStart=cursorLoc;
-          }
- else {
+      try {
+        int position=Selection.getSelectionStart(contentEdit.getText());
+        if (isBackspace && position != 1)         return;
+        ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
+        ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
+        ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
+        ToggleButton underlineButton=(ToggleButton)findViewById(R.id.underline);
+        ToggleButton strikeButton=(ToggleButton)findViewById(R.id.strike);
+        if (position < 0) {
+          position=0;
+        }
+        if (position > 0) {
+          if (styleStart > position) {
             styleStart=position - 1;
           }
-        }
-        if (boldButton.isChecked()) {
-          StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
-          for (int i=0; i < ss.length; i++) {
-            if (ss[i].getStyle() == android.graphics.Typeface.BOLD) {
+          if (boldButton.isChecked()) {
+            StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
+            for (int i=0; i < ss.length; i++) {
+              if (ss[i].getStyle() == android.graphics.Typeface.BOLD) {
+                s.removeSpan(ss[i]);
+              }
+            }
+            s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+          }
+          if (emButton.isChecked()) {
+            StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
+            for (int i=0; i < ss.length; i++) {
+              if (ss[i].getStyle() == android.graphics.Typeface.ITALIC) {
+                s.removeSpan(ss[i]);
+              }
+            }
+            s.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+          }
+          if (bquoteButton.isChecked()) {
+            QuoteSpan[] ss=s.getSpans(styleStart,position,QuoteSpan.class);
+            for (int i=0; i < ss.length; i++) {
               s.removeSpan(ss[i]);
             }
+            s.setSpan(new QuoteSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
           }
-          s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-        if (emButton.isChecked()) {
-          StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
-          for (int i=0; i < ss.length; i++) {
-            if (ss[i].getStyle() == android.graphics.Typeface.ITALIC) {
+          if (underlineButton.isChecked()) {
+            UnderlineSpan[] ss=s.getSpans(styleStart,position,UnderlineSpan.class);
+            for (int i=0; i < ss.length; i++) {
               s.removeSpan(ss[i]);
             }
+            s.setSpan(new UnderlineSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
           }
-          s.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-        if (bquoteButton.isChecked()) {
-          QuoteSpan[] ss=s.getSpans(styleStart,position,QuoteSpan.class);
-          for (int i=0; i < ss.length; i++) {
-            s.removeSpan(ss[i]);
+          if (strikeButton.isChecked()) {
+            StrikethroughSpan[] ss=s.getSpans(styleStart,position,StrikethroughSpan.class);
+            for (int i=0; i < ss.length; i++) {
+              s.removeSpan(ss[i]);
+            }
+            s.setSpan(new StrikethroughSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
           }
-          s.setSpan(new QuoteSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-        if (underlineButton.isChecked()) {
-          UnderlineSpan[] ss=s.getSpans(styleStart,position,UnderlineSpan.class);
-          for (int i=0; i < ss.length; i++) {
-            s.removeSpan(ss[i]);
-          }
-          s.setSpan(new UnderlineSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-        if (strikeButton.isChecked()) {
-          StrikethroughSpan[] ss=s.getSpans(styleStart,position,StrikethroughSpan.class);
-          for (int i=0; i < ss.length; i++) {
-            s.removeSpan(ss[i]);
-          }
-          s.setSpan(new StrikethroughSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
+        cursorLoc=Selection.getSelectionStart(contentEdit.getText());
       }
-      cursorLoc=Selection.getSelectionStart(contentEdit.getText());
+ catch (      Exception e) {
+        e.printStackTrace();
+      }
     }
     public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
       if ((count - after == 1) || (s.length() == 0))       isBackspace=true;
