@@ -17,7 +17,11 @@
   Thread action=new Thread(){
     public void run(){
       if (moderateErrorMsg == "") {
-        Toast.makeText(getActivity().getApplicationContext(),getResources().getText(R.string.comment_moderated),Toast.LENGTH_SHORT).show();
+        String msg=getResources().getText(R.string.comment_moderated).toString();
+        if (checkedCommentTotal > 1)         msg=getResources().getText(R.string.comments_moderated).toString();
+        Toast.makeText(getActivity().getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
+        checkedCommentTotal=0;
+        refreshComments(false,false,false);
       }
  else {
         FragmentTransaction ft=getFragmentManager().beginTransaction();
@@ -28,15 +32,5 @@
   }
 ;
   getActivity().runOnUiThread(action);
-  Thread action2=new Thread(){
-    public void run(){
-      if (moderateErrorMsg == "") {
-        pd=new ProgressDialog(getActivity().getApplicationContext());
-        refreshComments(false,true,true);
-      }
-    }
-  }
-;
-  getActivity().runOnUiThread(action2);
-  checkedCommentTotal=0;
+  pd=new ProgressDialog(getActivity().getApplicationContext());
 }
