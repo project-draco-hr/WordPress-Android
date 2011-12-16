@@ -128,6 +128,14 @@
   ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,items);
   adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
   spinner.setAdapter(adapter);
+  spinner.setOnItemSelectedListener(new OnItemSelectedListener(){
+    @Override public void onItemSelected(    AdapterView<?> arg0,    View arg1,    int arg2,    long arg3){
+      evaluateSaveButtonText();
+    }
+    @Override public void onNothingSelected(    AdapterView<?> arg0){
+    }
+  }
+);
   if (isNew) {
     setTitle(WordPress.currentBlog.getBlogName() + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
   }
@@ -200,6 +208,7 @@
  else       if (status.equals("localdraft")) {
         spinner.setSelection(4,true);
       }
+      evaluateSaveButtonText();
     }
     if (!isPage) {
       if (post.getCategories() != null) {
