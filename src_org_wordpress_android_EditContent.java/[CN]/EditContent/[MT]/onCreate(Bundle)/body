@@ -1,6 +1,10 @@
 {
   super.onCreate(icicle);
   setContentView(R.layout.edit_content);
+  if (WordPress.wpDB == null)   WordPress.wpDB=new WordPressDB(this);
+  if (WordPress.currentBlog == null) {
+    WordPress.currentBlog=new Blog(WordPress.wpDB.getLastBlogID(this),this);
+  }
   final ImageButton addPictureButton=(ImageButton)findViewById(R.id.addPictureButton);
   registerForContextMenu(addPictureButton);
   addPictureButton.setOnClickListener(new Button.OnClickListener(){
