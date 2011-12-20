@@ -1,11 +1,6 @@
 {
   super.onFinishInflate();
-  if (WordPress.wpDB == null)   WordPress.wpDB=new WordPressDB(context);
-  accounts=WordPress.wpDB.getAccounts(context);
-  dashboard=(LinearLayout)findViewById(R.id.dashboard_overlay);
-  commentBadgeText=(TextView)findViewById(R.id.comment_badge_text);
-  blogNames=new CharSequence[accounts.size()];
-  blogIDs=new int[accounts.size()];
+  initViews();
   for (int i=0; i < accounts.size(); i++) {
     HashMap<?,?> defHash=(HashMap<?,?>)accounts.get(i);
     String curBlogName=EscapeUtils.unescapeHtml(defHash.get("blogName").toString());
@@ -35,6 +30,7 @@
     if (blogIDs.length > 0)     WordPress.currentBlog=new Blog(blogIDs[0],context);
   }
   if (WordPress.currentBlog != null) {
+    WordPress.wpDB.updateLastBlogID(WordPress.currentBlog.getId());
     updateBlavatarImage();
     updateCommentBadge();
     refreshButton=(Button)findViewById(R.id.action_refresh);
