@@ -1,0 +1,18 @@
+{
+  InputStream in=getResponse(urlString);
+  if (in != null) {
+    try {
+      String html=convertStreamToString(in);
+      Matcher matcher=rsdLink.matcher(html);
+      if (matcher.find()) {
+        String href=matcher.group(1);
+        return href;
+      }
+    }
+ catch (    IOException e) {
+      Log.e("wp_android","IOEX",e);
+      return null;
+    }
+  }
+  return null;
+}
