@@ -7,12 +7,13 @@
   Bundle extras=getIntent().getExtras();
   if (extras != null) {
     loadReader=extras.getBoolean("loadReader");
+    loadAdmin=extras.getBoolean("loadAdmin");
   }
   if (WordPress.wpDB == null)   WordPress.wpDB=new WordPressDB(this);
   if (WordPress.currentBlog == null) {
     WordPress.currentBlog=new Blog(WordPress.wpDB.getLastBlogID(this),this);
   }
-  if (loadReader) {
+  if (loadReader || loadAdmin) {
     this.setTitle(getResources().getText(R.string.reader));
     wv=(WebView)findViewById(R.id.webView);
     wv.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);

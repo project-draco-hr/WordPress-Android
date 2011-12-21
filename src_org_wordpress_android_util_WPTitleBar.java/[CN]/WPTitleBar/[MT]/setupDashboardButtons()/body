@@ -80,7 +80,7 @@
   readButton.setOnClickListener(new View.OnClickListener(){
     public void onClick(    View v){
       int readerBlogID=WordPress.wpDB.getWPCOMBlogID();
-      if (readerBlogID >= 0 && WordPress.currentBlog.isDotcomFlag()) {
+      if (WordPress.currentBlog.isDotcomFlag()) {
         Intent i=new Intent(context,Read.class);
         i.putExtra("id",readerBlogID);
         i.putExtra("loadReader",true);
@@ -88,7 +88,10 @@
         hideOverlay();
       }
  else {
-        Toast.makeText(context,getResources().getText(R.string.wpcom_login_required),Toast.LENGTH_LONG).show();
+        Intent i=new Intent(context,Read.class);
+        i.putExtra("loadAdmin",true);
+        context.startActivity(i);
+        hideOverlay();
       }
     }
   }
@@ -129,4 +132,5 @@
 );
   commentBadgeText=(TextView)findViewById(R.id.comment_badge_text);
   updateCommentBadge();
+  updateReadButton();
 }

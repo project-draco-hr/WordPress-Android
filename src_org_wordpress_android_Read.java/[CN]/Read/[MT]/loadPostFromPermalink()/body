@@ -19,18 +19,20 @@
   }
 );
   wv.setWebViewClient(new WordPressWebViewClient());
-  int sdk_int=0;
-  try {
-    sdk_int=Integer.valueOf(android.os.Build.VERSION.SDK);
-  }
- catch (  Exception e1) {
-    sdk_int=3;
-  }
-  if (sdk_int >= 8) {
-    wv.loadUrl(WordPress.currentPost.getPermaLink());
-  }
+  if (WordPress.currentPost != null) {
+    int sdk_int=0;
+    try {
+      sdk_int=Integer.valueOf(android.os.Build.VERSION.SDK);
+    }
+ catch (    Exception e1) {
+      sdk_int=3;
+    }
+    if (sdk_int >= 8) {
+      wv.loadUrl(WordPress.currentPost.getPermaLink());
+    }
  else {
-    String url=WordPress.currentPost.getPermaLink().replace("https:","http:");
-    wv.loadUrl(url);
+      String url=WordPress.currentPost.getPermaLink().replace("https:","http:");
+      wv.loadUrl(url);
+    }
   }
 }
