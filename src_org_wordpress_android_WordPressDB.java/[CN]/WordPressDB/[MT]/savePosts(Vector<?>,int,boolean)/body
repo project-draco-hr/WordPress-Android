@@ -63,7 +63,12 @@
       }
  else {
         values.put("mt_keywords",thisHash.get("mt_keywords").toString());
-        values.put("wp_post_format",thisHash.get("wp_post_format").toString());
+        try {
+          values.put("wp_post_format",thisHash.get("wp_post_format").toString());
+        }
+ catch (        Exception e) {
+          values.put("wp_post_format","");
+        }
       }
       int result=db.update(POSTS_TABLE,values,"postID=" + postID + " AND isPage="+ isPageInt,null);
       if (result == 0)       returnValue=db.insert(POSTS_TABLE,null,values) > 0;
