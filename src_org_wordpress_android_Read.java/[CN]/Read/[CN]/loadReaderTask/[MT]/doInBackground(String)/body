@@ -1,7 +1,12 @@
 {
   Vector<?> settings=WordPress.wpDB.loadSettings(WordPress.currentBlog.getId());
   if (WordPress.currentBlog == null) {
-    WordPress.currentBlog=new Blog(WordPress.wpDB.getLastBlogID(Read.this),Read.this);
+    try {
+      WordPress.currentBlog=new Blog(WordPress.wpDB.getLastBlogID(Read.this),Read.this);
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+    }
   }
   loginURL=settings.get(0).toString().replace("xmlrpc.php","wp-login.php");
   String readerURL=Constants.readerURL;
