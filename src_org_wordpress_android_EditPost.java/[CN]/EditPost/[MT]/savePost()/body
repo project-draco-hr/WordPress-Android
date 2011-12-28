@@ -12,18 +12,8 @@
   String pubDate=tvPubDate.getText().toString();
   long pubDateTimestamp=0;
   if (!pubDate.equals(getResources().getText(R.string.immediately))) {
-    SimpleDateFormat sdf=new SimpleDateFormat("MMM dd, yyyy hh:mm a");
-    Date d=new Date();
-    try {
-      d=sdf.parse(pubDate);
-      pubDateTimestamp=d.getTime();
-    }
- catch (    ParseException e) {
-      e.printStackTrace();
-    }
-catch (    java.text.ParseException e) {
-      e.printStackTrace();
-    }
+    if (isCustomPubDate)     pubDateTimestamp=customPubDate;
+ else     if (!isNew)     pubDateTimestamp=post.getDate_created_gmt();
   }
   String tags="", postFormat="";
   if (!isPage) {
@@ -127,6 +117,7 @@ mf.setVideo(wpIS.isVideo());
 mf.save(EditPost.this);
 }
 }
+WordPress.currentPost=post;
 }
  else {
 post.setTitle(title);
