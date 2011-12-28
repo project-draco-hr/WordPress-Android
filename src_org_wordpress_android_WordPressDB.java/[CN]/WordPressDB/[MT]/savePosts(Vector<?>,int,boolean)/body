@@ -5,6 +5,7 @@
       ContentValues values=new ContentValues();
       HashMap<?,?> thisHash=(HashMap<?,?>)postValues.get(i);
       values.put("blogID",blogID);
+      if (thisHash.get((isPage) ? "page_id" : "postid") == null)       return false;
       String postID=thisHash.get((isPage) ? "page_id" : "postid").toString();
       values.put("postid",postID);
       values.put("title",thisHash.get("title").toString());
@@ -41,6 +42,11 @@
       if (custom_fields != null) {
         for (int x=0; x < custom_fields.length; x++) {
           jsonArray.put(custom_fields[x].toString());
+          Map<?,?> customField=(Map<?,?>)custom_fields[x];
+          if (customField.get("key") != null && customField.get("value") != null) {
+            if (customField.get("key").equals("geo_longitude"))             values.put("longitude",customField.get("value").toString());
+            if (customField.get("key").equals("geo_latitude"))             values.put("latitude",customField.get("value").toString());
+          }
         }
       }
       values.put("custom_fields",jsonArray.toString());
