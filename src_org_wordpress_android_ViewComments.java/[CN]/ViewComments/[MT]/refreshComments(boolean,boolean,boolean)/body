@@ -7,14 +7,12 @@
   }
   client=new XMLRPCClient(WordPress.currentBlog.getUrl(),WordPress.currentBlog.getHttpuser(),WordPress.currentBlog.getHttppassword());
   HashMap<String,Object> hPost=new HashMap<String,Object>();
-  hPost.put("status","");
-  hPost.put("post_id","");
   if (loadMore) {
-    hPost.put("offset",numRecords);
-  }
-  if (totalComments != 0 && ((totalComments - numRecords) < 30)) {
-    commentsToLoad=totalComments - numRecords;
-    hPost.put("number",commentsToLoad);
+    ListView listView=this.getListView();
+    scrollPosition=listView.getFirstVisiblePosition();
+    View firstVisibleView=listView.getChildAt(0);
+    scrollPositionTop=(firstVisibleView == null) ? 0 : firstVisibleView.getTop();
+    hPost.put("number",numRecords + 30);
   }
  else {
     hPost.put("number",30);

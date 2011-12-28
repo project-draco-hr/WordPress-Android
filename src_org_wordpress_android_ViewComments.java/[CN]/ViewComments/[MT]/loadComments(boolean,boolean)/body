@@ -1,123 +1,106 @@
 {
   refreshOnly=refresh;
   String author, postID, commentID, comment, dateCreatedFormatted, status, authorEmail, authorURL, postTitle;
-  if (!addMore) {
-    Vector<?> loadedPosts=WordPress.wpDB.loadComments(WordPress.currentBlog.getId());
-    if (loadedPosts != null) {
-      HashMap<Object,Object> countHash=new HashMap<Object,Object>();
-      countHash=(HashMap<Object,Object>)loadedPosts.get(0);
-      numRecords=Integer.parseInt(countHash.get("numRecords").toString());
-      if (refreshOnly) {
-        if (model != null) {
-          model.clear();
-        }
+  Vector<?> loadedPosts=WordPress.wpDB.loadComments(WordPress.currentBlog.getId());
+  if (loadedPosts != null) {
+    numRecords=loadedPosts.size();
+    if (refreshOnly) {
+      if (model != null) {
+        model.clear();
       }
+    }
  else {
+      model=new ArrayList<Comment>();
+    }
+    checkedComments=new Vector<String>();
+    for (int i=0; i < loadedPosts.size(); i++) {
+      checkedComments.add(i,"false");
+      HashMap<?,?> contentHash=(HashMap<?,?>)loadedPosts.get(i);
+      allComments.put(contentHash.get("commentID").toString(),contentHash);
+      author=EscapeUtils.unescapeHtml(contentHash.get("author").toString());
+      commentID=contentHash.get("commentID").toString();
+      postID=contentHash.get("postID").toString();
+      comment=EscapeUtils.unescapeHtml(contentHash.get("comment").toString());
+      dateCreatedFormatted=contentHash.get("commentDateFormatted").toString();
+      status=contentHash.get("status").toString();
+      authorEmail=EscapeUtils.unescapeHtml(contentHash.get("email").toString());
+      authorURL=EscapeUtils.unescapeHtml(contentHash.get("url").toString());
+      postTitle=EscapeUtils.unescapeHtml(contentHash.get("postTitle").toString());
+      if (model == null) {
         model=new ArrayList<Comment>();
       }
-      checkedComments=new Vector<String>();
-      for (int i=1; i < loadedPosts.size(); i++) {
-        checkedComments.add(i - 1,"false");
-        HashMap<?,?> contentHash=(HashMap<?,?>)loadedPosts.get(i);
-        allComments.put(contentHash.get("commentID").toString(),contentHash);
-        author=EscapeUtils.unescapeHtml(contentHash.get("author").toString());
-        commentID=contentHash.get("commentID").toString();
-        postID=contentHash.get("postID").toString();
-        comment=EscapeUtils.unescapeHtml(contentHash.get("comment").toString());
-        dateCreatedFormatted=contentHash.get("commentDateFormatted").toString();
-        status=contentHash.get("status").toString();
-        authorEmail=EscapeUtils.unescapeHtml(contentHash.get("email").toString());
-        authorURL=EscapeUtils.unescapeHtml(contentHash.get("url").toString());
-        postTitle=EscapeUtils.unescapeHtml(contentHash.get("postTitle").toString());
-        if (model == null) {
-          model=new ArrayList<Comment>();
-        }
-        model.add(new Comment(postID,commentID,i - 1,author,dateCreatedFormatted,comment,status,postTitle,authorURL,authorEmail,URI.create("http://gravatar.com/avatar/" + getMd5Hash(authorEmail.trim()) + "?s=60&d=404")));
+      model.add(new Comment(postID,commentID,i,author,dateCreatedFormatted,comment,status,postTitle,authorURL,authorEmail,URI.create("http://gravatar.com/avatar/" + getMd5Hash(authorEmail.trim()) + "?s=60&d=404")));
+    }
+    if (!refreshOnly) {
+      try {
+        ThumbnailBus bus=new ThumbnailBus();
+        thumbs=new ThumbnailAdapter(getActivity(),new CommentAdapter(),new SimpleWebImageCache<ThumbnailBus,ThumbnailMessage>(null,null,101,bus),IMAGE_IDS);
       }
-      if (!refreshOnly) {
-        try {
-          ThumbnailBus bus=new ThumbnailBus();
-          thumbs=new ThumbnailAdapter(getActivity(),new CommentAdapter(),new SimpleWebImageCache<ThumbnailBus,ThumbnailMessage>(null,null,101,bus),IMAGE_IDS);
-        }
- catch (        Exception e1) {
-          e1.printStackTrace();
-        }
-        ListView listView=this.getListView();
-        listView.removeFooterView(switcher);
-        if (loadedPosts.size() >= 30) {
-          listView.addFooterView(switcher);
-        }
-        setListAdapter(thumbs);
-        listView.setOnItemClickListener(new OnItemClickListener(){
-          public void onItemClick(          AdapterView<?> arg0,          View view,          int position,          long id){
-            selectedPosition=position;
-            Comment comment=model.get((int)id);
-            onCommentSelectedListener.onCommentSelected(comment);
-          }
-        }
-);
-        listView.setOnCreateContextMenuListener(new OnCreateContextMenuListener(){
-          public void onCreateContextMenu(          ContextMenu menu,          View v,          ContextMenuInfo menuInfo){
-            AdapterView.AdapterContextMenuInfo info;
-            try {
-              info=(AdapterView.AdapterContextMenuInfo)menuInfo;
-            }
- catch (            ClassCastException e) {
-              return;
-            }
-            WordPress.currentComment=model.get(info.position);
-            menu.setHeaderTitle(getResources().getText(R.string.comment_actions));
-            menu.add(0,0,0,getResources().getText(R.string.mark_approved));
-            menu.add(0,1,0,getResources().getText(R.string.mark_unapproved));
-            menu.add(0,2,0,getResources().getText(R.string.mark_spam));
-            menu.add(0,3,0,getResources().getText(R.string.reply));
-            menu.add(0,4,0,getResources().getText(R.string.delete));
-          }
-        }
-);
+ catch (      Exception e1) {
+        e1.printStackTrace();
       }
+      ListView listView=this.getListView();
+      listView.removeFooterView(switcher);
+      if (loadedPosts.size() % 30 == 0) {
+        listView.addFooterView(switcher);
+      }
+      setListAdapter(thumbs);
+      listView.setOnItemClickListener(new OnItemClickListener(){
+        public void onItemClick(        AdapterView<?> arg0,        View view,        int position,        long id){
+          selectedPosition=position;
+          Comment comment=model.get((int)id);
+          onCommentSelectedListener.onCommentSelected(comment);
+        }
+      }
+);
+      listView.setOnCreateContextMenuListener(new OnCreateContextMenuListener(){
+        public void onCreateContextMenu(        ContextMenu menu,        View v,        ContextMenuInfo menuInfo){
+          AdapterView.AdapterContextMenuInfo info;
+          try {
+            info=(AdapterView.AdapterContextMenuInfo)menuInfo;
+          }
+ catch (          ClassCastException e) {
+            return;
+          }
+          WordPress.currentComment=model.get(info.position);
+          menu.setHeaderTitle(getResources().getText(R.string.comment_actions));
+          menu.add(0,0,0,getResources().getText(R.string.mark_approved));
+          menu.add(0,1,0,getResources().getText(R.string.mark_unapproved));
+          menu.add(0,2,0,getResources().getText(R.string.mark_spam));
+          menu.add(0,3,0,getResources().getText(R.string.reply));
+          menu.add(0,4,0,getResources().getText(R.string.delete));
+        }
+      }
+);
+    }
  else {
-        if (thumbs != null) {
+      if (thumbs != null) {
+        thumbs.notifyDataSetChanged();
+      }
+    }
+    if (this.shouldSelectAfterLoad) {
+      if (model != null) {
+        if (model.size() > 0) {
+          selectedPosition=0;
+          Comment aComment=model.get((int)0);
+          onCommentSelectedListener.onCommentSelected(aComment);
           thumbs.notifyDataSetChanged();
         }
       }
-      if (this.shouldSelectAfterLoad) {
-        if (model != null) {
-          if (model.size() > 0) {
-            selectedPosition=0;
-            Comment aComment=model.get((int)0);
-            onCommentSelectedListener.onCommentSelected(aComment);
-            thumbs.notifyDataSetChanged();
-          }
-        }
-        shouldSelectAfterLoad=false;
-      }
-      return true;
+      shouldSelectAfterLoad=false;
     }
- else {
-      return false;
-    }
-  }
- else {
-    Vector<?> latestComments=WordPress.wpDB.loadMoreComments(getActivity().getApplicationContext(),WordPress.currentBlog.getId(),commentsToLoad);
-    if (latestComments != null) {
-      numRecords+=latestComments.size();
-      for (int i=latestComments.size(); i > 0; i--) {
-        HashMap<?,?> contentHash=(HashMap<?,?>)latestComments.get(i - 1);
-        allComments.put(contentHash.get("commentID").toString(),contentHash);
-        author=EscapeUtils.unescapeHtml(contentHash.get("author").toString());
-        commentID=contentHash.get("commentID").toString();
-        postID=contentHash.get("postID").toString();
-        comment=EscapeUtils.unescapeHtml(contentHash.get("comment").toString());
-        dateCreatedFormatted=contentHash.get("commentDateFormatted").toString();
-        status=contentHash.get("status").toString();
-        authorEmail=EscapeUtils.unescapeHtml(contentHash.get("email").toString());
-        authorURL=EscapeUtils.unescapeHtml(contentHash.get("url").toString());
-        postTitle=EscapeUtils.unescapeHtml(contentHash.get("postTitle").toString());
-        model.add(new Comment(postID,commentID,i,author,dateCreatedFormatted,comment,status,postTitle,authorURL,authorEmail,URI.create("http://gravatar.com/avatar/" + getMd5Hash(authorEmail.trim()) + "?s=100&d=identicon")));
+    if (loadMore && scrollPosition > 0) {
+      ListView listView=this.getListView();
+      try {
+        listView.setSelectionFromTop(scrollPosition,scrollPositionTop);
       }
-      thumbs.notifyDataSetChanged();
+ catch (      Exception e) {
+        e.printStackTrace();
+      }
     }
     return true;
+  }
+ else {
+    return false;
   }
 }
