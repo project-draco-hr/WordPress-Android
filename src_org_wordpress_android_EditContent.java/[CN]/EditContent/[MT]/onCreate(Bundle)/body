@@ -38,9 +38,13 @@
     }
   }
   final WPEditText contentEditor=(WPEditText)findViewById(R.id.postContent);
-  Spannable contentText=WordPress.richPostContent;
-  if (contentText != null) {
-    contentEditor.setText(contentText);
+  if (WordPress.richPostContent != null) {
+    try {
+      contentEditor.setText(WordPress.richPostContent);
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+    }
   }
   contentEditor.setOnSelectionChangedListener(new WPEditText.OnSelectionChangedListener(){
     @Override public void onSelectionChanged(){
@@ -303,8 +307,13 @@
       Spannable more=(Spannable)WPHtml.fromHtml("<br><div style=\"display:block;\" id=\"wp-android-more\"><font color=\"#777777\">........" + getResources().getText(R.string.more_tag) + "</font></div>",EditContent.this,WordPress.currentPost);
       ssb.append(more);
       ssb.append(contentText.getText().subSequence(selectionEnd,contentText.getText().length()));
-      contentText.setText(ssb);
-      contentText.setSelection(selectionEnd + more.length());
+      try {
+        contentText.setText(ssb);
+        contentText.setSelection(selectionEnd + more.length());
+      }
+ catch (      Exception e) {
+        e.printStackTrace();
+      }
     }
   }
 );
