@@ -1,6 +1,7 @@
 {
   try {
     WPEditText contentText=(WPEditText)findViewById(R.id.postContent);
+    Spannable s=contentText.getText();
     int selectionStart=contentText.getSelectionStart();
     styleStart=selectionStart;
     int selectionEnd=contentText.getSelectionEnd();
@@ -11,19 +12,7 @@
     }
     if (selectionEnd > selectionStart) {
       Spannable str=contentText.getText();
-      if (tag.equals("blockquote")) {
-        QuoteSpan[] ss=str.getSpans(selectionStart,selectionEnd,QuoteSpan.class);
-        boolean exists=false;
-        for (int i=0; i < ss.length; i++) {
-          str.removeSpan(ss[i]);
-          exists=true;
-        }
-        if (!exists) {
-          str.setSpan(new QuoteSpan(),selectionStart,selectionEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-        toggleButton.setChecked(false);
-      }
- else       if (tag.equals("strong")) {
+      if (tag.equals("strong")) {
         StyleSpan[] ss=str.getSpans(selectionStart,selectionEnd,StyleSpan.class);
         boolean exists=false;
         for (int i=0; i < ss.length; i++) {
@@ -77,17 +66,65 @@
         }
         toggleButton.setChecked(false);
       }
- else       if (tag.equals("ul")) {
-        BulletSpan[] ss=str.getSpans(selectionStart,selectionEnd,BulletSpan.class);
+ else       if (tag.equals("blockquote")) {
+        QuoteSpan[] ss=str.getSpans(selectionStart,selectionEnd,QuoteSpan.class);
         boolean exists=false;
         for (int i=0; i < ss.length; i++) {
           str.removeSpan(ss[i]);
           exists=true;
         }
         if (!exists) {
-          str.setSpan(new BulletSpan(),selectionStart,selectionEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+          str.setSpan(new QuoteSpan(),selectionStart,selectionEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         toggleButton.setChecked(false);
+      }
+    }
+ else     if (!toggleButton.isChecked()) {
+      if (tag.equals("strong") || tag.equals("em")) {
+        StyleSpan[] ss=s.getSpans(styleStart - 1,styleStart,StyleSpan.class);
+        for (int i=0; i < ss.length; i++) {
+          int tagStart=s.getSpanStart(ss[i]);
+          int tagEnd=s.getSpanEnd(ss[i]);
+          if (ss[i].getStyle() == android.graphics.Typeface.BOLD && tag.equals("strong")) {
+            tagStart=s.getSpanStart(ss[i]);
+            tagEnd=s.getSpanEnd(ss[i]);
+            s.removeSpan(ss[i]);
+            s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),tagStart,tagEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+          }
+          if (ss[i].getStyle() == android.graphics.Typeface.ITALIC && tag.equals("em")) {
+            tagStart=s.getSpanStart(ss[i]);
+            tagEnd=s.getSpanEnd(ss[i]);
+            s.removeSpan(ss[i]);
+            s.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),tagStart,tagEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+          }
+        }
+      }
+ else       if (tag.equals("u")) {
+        UnderlineSpan[] us=s.getSpans(styleStart - 1,styleStart,UnderlineSpan.class);
+        for (int i=0; i < us.length; i++) {
+          int tagStart=s.getSpanStart(us[i]);
+          int tagEnd=s.getSpanEnd(us[i]);
+          s.removeSpan(us[i]);
+          s.setSpan(new UnderlineSpan(),tagStart,tagEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+      }
+ else       if (tag.equals("strike")) {
+        StrikethroughSpan[] ss=s.getSpans(styleStart - 1,styleStart,StrikethroughSpan.class);
+        for (int i=0; i < ss.length; i++) {
+          int tagStart=s.getSpanStart(ss[i]);
+          int tagEnd=s.getSpanEnd(ss[i]);
+          s.removeSpan(ss[i]);
+          s.setSpan(new StrikethroughSpan(),tagStart,tagEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+      }
+ else       if (tag.equals("blockquote")) {
+        QuoteSpan[] ss=s.getSpans(styleStart - 1,styleStart,QuoteSpan.class);
+        for (int i=0; i < ss.length; i++) {
+          int tagStart=s.getSpanStart(ss[i]);
+          int tagEnd=s.getSpanEnd(ss[i]);
+          s.removeSpan(ss[i]);
+          s.setSpan(new QuoteSpan(),tagStart,tagEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
       }
     }
   }

@@ -49,6 +49,7 @@
   contentEditor.setOnSelectionChangedListener(new WPEditText.OnSelectionChangedListener(){
     @Override public void onSelectionChanged(){
       final Spannable s=contentEditor.getText();
+      styleStart=contentEditor.getSelectionStart();
       Object[] spans=s.getSpans(contentEditor.getSelectionStart(),contentEditor.getSelectionStart(),Object.class);
       ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
       ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
@@ -114,6 +115,7 @@
         formatBar.startAnimation(fadeInAnimation);
       }
       final Spannable s=contentEditor.getText();
+      styleStart=contentEditor.getSelectionStart();
       WPImageSpan[] click_spans=s.getSpans(contentEditor.getSelectionStart(),contentEditor.getSelectionStart(),WPImageSpan.class);
       if (click_spans.length != 0) {
         final WPImageSpan span=click_spans[0];
@@ -174,7 +176,7 @@
     public void afterTextChanged(    Editable s){
       try {
         int position=Selection.getSelectionStart(contentEdit.getText());
-        if (isBackspace && position != 1)         return;
+        if ((isBackspace && position != 1) || lastPosition == position)         return;
         ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
         ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
         ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
@@ -183,51 +185,67 @@
         if (position < 0) {
           position=0;
         }
+        lastPosition=position;
         if (position > 0) {
           if (styleStart > position) {
             styleStart=position - 1;
           }
+          boolean exists=false;
           if (boldButton.isChecked()) {
             StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
+            exists=false;
             for (int i=0; i < ss.length; i++) {
               if (ss[i].getStyle() == android.graphics.Typeface.BOLD) {
-                s.removeSpan(ss[i]);
+                exists=true;
               }
             }
-            s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            if (!exists)             s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),styleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
           }
           if (emButton.isChecked()) {
             StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
+            exists=false;
             for (int i=0; i < ss.length; i++) {
               if (ss[i].getStyle() == android.graphics.Typeface.ITALIC) {
-                s.removeSpan(ss[i]);
+                exists=true;
               }
             }
-            s.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            if (!exists)             s.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),styleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
           }
-          if (bquoteButton.isChecked()) {
-            QuoteSpan[] ss=s.getSpans(styleStart,position,QuoteSpan.class);
+          if (emButton.isChecked()) {
+            StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
+            exists=false;
             for (int i=0; i < ss.length; i++) {
-              s.removeSpan(ss[i]);
+              if (ss[i].getStyle() == android.graphics.Typeface.ITALIC) {
+                exists=true;
+              }
             }
-            s.setSpan(new QuoteSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            if (!exists)             s.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),styleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
           }
           if (underlineButton.isChecked()) {
             UnderlineSpan[] ss=s.getSpans(styleStart,position,UnderlineSpan.class);
+            exists=false;
             for (int i=0; i < ss.length; i++) {
-              s.removeSpan(ss[i]);
+              exists=true;
             }
-            s.setSpan(new UnderlineSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            if (!exists)             s.setSpan(new UnderlineSpan(),styleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
           }
           if (strikeButton.isChecked()) {
             StrikethroughSpan[] ss=s.getSpans(styleStart,position,StrikethroughSpan.class);
+            exists=false;
             for (int i=0; i < ss.length; i++) {
-              s.removeSpan(ss[i]);
+              exists=true;
             }
-            s.setSpan(new StrikethroughSpan(),styleStart,position,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            if (!exists)             s.setSpan(new StrikethroughSpan(),styleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+          }
+          if (bquoteButton.isChecked()) {
+            QuoteSpan[] ss=s.getSpans(styleStart,position,QuoteSpan.class);
+            exists=false;
+            for (int i=0; i < ss.length; i++) {
+              exists=true;
+            }
+            if (!exists)             s.setSpan(new QuoteSpan(),styleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
           }
         }
-        cursorLoc=Selection.getSelectionStart(contentEdit.getText());
       }
  catch (      Exception e) {
         e.printStackTrace();
