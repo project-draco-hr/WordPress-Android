@@ -2,13 +2,19 @@
   EditText titleET=(EditText)findViewById(R.id.title);
   String title=titleET.getText().toString();
   WPEditText contentET=(WPEditText)findViewById(R.id.postContent);
-  String content=EscapeUtils.unescapeHtml(WPHtml.toHtml(contentET.getText()));
+  String content="";
   EditText passwordET=(EditText)findViewById(R.id.post_password);
   String password=passwordET.getText().toString();
-  content=content.replace("<p><p>","<p>");
-  content=content.replace("</p></p>","</p>");
-  content=content.replace("<br><br>","<br>");
-  content=content.replace("</strong><strong>","").replace("</em><em>","").replace("</u><u>","").replace("</strike><strike>","").replace("</blockquote><blockquote>","");
+  if (localDraft || isNew) {
+    content=EscapeUtils.unescapeHtml(WPHtml.toHtml(contentET.getText()));
+    content=content.replace("<p><p>","<p>");
+    content=content.replace("</p></p>","</p>");
+    content=content.replace("<br><br>","<br>");
+    content=content.replace("</strong><strong>","").replace("</em><em>","").replace("</u><u>","").replace("</strike><strike>","").replace("</blockquote><blockquote>","");
+  }
+ else {
+    content=contentET.getText().toString();
+  }
   TextView tvPubDate=(TextView)findViewById(R.id.pubDate);
   String pubDate=tvPubDate.getText().toString();
   long pubDateTimestamp=0;
@@ -40,7 +46,7 @@
  else {
     if (!isNew) {
       post.deleteMediaFiles();
-      Spannable s=contentET.getText();
+      Editable s=contentET.getText();
       WPImageSpan[] click_spans=s.getSpans(0,s.length(),WPImageSpan.class);
       if (click_spans.length != 0) {
         for (int i=0; i < click_spans.length; i++) {
@@ -56,6 +62,10 @@
           mf.setHorizontalAlignment(wpIS.getHorizontalAlignment());
           mf.setWidth(wpIS.getWidth());
           mf.save(EditPost.this);
+          int tagStart=s.getSpanStart(wpIS);
+          s.removeSpan(wpIS);
+          s.insert(tagStart,"<img android-uri=\"" + wpIS.getImageSource().toString() + "\" />");
+          content=contentET.getText().toString();
         }
       }
     }

@@ -63,6 +63,7 @@ selectionEnd=selectionStart;
 selectionStart=temp;
 }
 Editable str=contentText.getText();
+if (localDraft) {
 if (extras.getString("linkText") == null) {
 if (selectionStart < selectionEnd) str.delete(selectionStart,selectionEnd);
 str.insert(selectionStart,linkURL);
@@ -75,6 +76,22 @@ if (selectionStart < selectionEnd) str.delete(selectionStart,selectionEnd);
 str.insert(selectionStart,linkText);
 str.setSpan(new URLSpan(linkURL),selectionStart,selectionStart + linkText.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 contentText.setSelection(selectionStart + linkText.length());
+}
+}
+ else {
+if (extras.getString("linkText") == null) {
+if (selectionStart < selectionEnd) str.delete(selectionStart,selectionEnd);
+String urlHTML="<a href=\"" + linkURL + "\">"+ linkURL+ "</a>";
+str.insert(selectionStart,urlHTML);
+contentText.setSelection(selectionStart + urlHTML.length());
+}
+ else {
+String linkText=extras.getString("linkText");
+if (selectionStart < selectionEnd) str.delete(selectionStart,selectionEnd);
+String urlHTML="<a href=\"" + linkURL + "\">"+ linkText+ "</a>";
+str.insert(selectionStart,urlHTML);
+contentText.setSelection(selectionStart + urlHTML.length());
+}
 }
 }
 }

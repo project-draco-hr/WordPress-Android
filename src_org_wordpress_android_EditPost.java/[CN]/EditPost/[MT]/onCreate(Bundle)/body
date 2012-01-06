@@ -227,7 +227,7 @@
         contentET.setText(WPHtml.fromHtml(contentHTML.replaceAll("\uFFFC",""),EditPost.this,post));
       }
  else {
-        contentET.setText(WPHtml.fromHtml(StringHelper.addPTags(contentHTML.replaceAll("\uFFFC","")),EditPost.this,post));
+        contentET.setText(contentHTML.replaceAll("\uFFFC",""));
       }
     }
  catch (    Exception e1) {
@@ -343,6 +343,8 @@
     @Override public void onFocusChange(    View view,    boolean hasFocus){
       if (hasFocus) {
         Intent i=new Intent(EditPost.this,EditContent.class);
+        if (isNew || localDraft)         i.putExtra("localDraft",true);
+ else         i.putExtra("localDraft",false);
         WordPress.richPostContent=content.getText();
         i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivityForResult(i,0);

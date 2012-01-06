@@ -36,6 +36,7 @@
         launchVideoLibrary();
       }
     }
+    localDraft=extras.getBoolean("localDraft");
   }
   final WPEditText contentEditor=(WPEditText)findViewById(R.id.postContent);
   if (WordPress.richPostContent != null) {
@@ -320,17 +321,23 @@
     public void onClick(    View v){
       WPEditText contentText=(WPEditText)findViewById(R.id.postContent);
       selectionEnd=contentText.getSelectionEnd();
-      SpannableStringBuilder ssb=new SpannableStringBuilder();
-      ssb.append(contentText.getText().subSequence(0,selectionEnd));
-      Spannable more=(Spannable)WPHtml.fromHtml("<br><div style=\"display:block;\" id=\"wp-android-more\"><font color=\"#777777\">........" + getResources().getText(R.string.more_tag) + "</font></div>",EditContent.this,WordPress.currentPost);
-      ssb.append(more);
-      ssb.append(contentText.getText().subSequence(selectionEnd,contentText.getText().length()));
-      try {
-        contentText.setText(ssb);
-        contentText.setSelection(selectionEnd + more.length());
+      if (localDraft) {
+        SpannableStringBuilder ssb=new SpannableStringBuilder();
+        ssb.append(contentText.getText().subSequence(0,selectionEnd));
+        Spannable more=(Spannable)WPHtml.fromHtml("<br><div style=\"display:block;\" id=\"wp-android-more\"><font color=\"#777777\">........" + getResources().getText(R.string.more_tag) + "</font></div>",EditContent.this,WordPress.currentPost);
+        ssb.append(more);
+        ssb.append(contentText.getText().subSequence(selectionEnd,contentText.getText().length()));
+        try {
+          contentText.setText(ssb);
+          contentText.setSelection(selectionEnd + more.length());
+        }
+ catch (        Exception e) {
+          e.printStackTrace();
+        }
       }
- catch (      Exception e) {
-        e.printStackTrace();
+ else {
+        Editable str=contentText.getText();
+        str.insert(selectionEnd,"\n\n<!--more-->\n\n");
       }
     }
   }
