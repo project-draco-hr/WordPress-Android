@@ -26,18 +26,24 @@
       is.setWidth(mf.getWidth());
       is.setVideo(mf.isVideo());
       text.setSpan(is,len,text.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+      text.insert(len,"\n\n");
+      AlignmentSpan.Standard as=new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER);
+      text.setSpan(as,text.getSpanStart(is),text.getSpanEnd(is),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+      text.append("\n\n");
     }
   }
- else {
-    if (attributes != null) {
-      text.append("<img");
-      for (int i=0; i < attributes.getLength(); i++) {
-        String aName=attributes.getLocalName(i);
-        if ("".equals(aName))         aName=attributes.getQName(i);
-        text.append(" ");
-        text.append(aName + "=\"" + attributes.getValue(i)+ "\"");
+ else   if (post != null) {
+    if (post.isLocalDraft()) {
+      if (attributes != null) {
+        text.append("<img");
+        for (int i=0; i < attributes.getLength(); i++) {
+          String aName=attributes.getLocalName(i);
+          if ("".equals(aName))           aName=attributes.getQName(i);
+          text.append(" ");
+          text.append(aName + "=\"" + attributes.getValue(i)+ "\"");
+        }
+        text.append(" />\n");
       }
-      text.append(" />\n");
     }
   }
 }
