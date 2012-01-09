@@ -120,8 +120,15 @@
           finish();
         }
       }
-      if (!isNew)       post=new Post(id,postID,isPage,this);
-      WordPress.currentPost=post;
+      if (!isNew) {
+        try {
+          post=new Post(id,postID,isPage,this);
+          WordPress.currentPost=post;
+        }
+ catch (        Exception e) {
+          finish();
+        }
+      }
     }
     if (isNew) {
       setTitle(EscapeUtils.unescapeHtml(WordPress.currentBlog.getBlogName()) + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
