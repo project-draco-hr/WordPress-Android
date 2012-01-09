@@ -139,13 +139,12 @@
       Date dateCreated=new Date(pubDate + (date_created_gmt.getTimezoneOffset() * 60000));
       contentStruct.put("dateCreated",dateCreated);
     }
-    if (post.isLocalDraft()) {
-      descriptionContent=descriptionContent.replace("<p>","").replace("</p>","\n");
-      moreContent=moreContent.replace("<p>","").replace("</p>","\n");
-    }
     if (!moreContent.equals("")) {
       descriptionContent=descriptionContent + "\n\n<!--more-->\n\n" + moreContent;
       post.mt_text_more="";
+    }
+    if (post.isLocalDraft()) {
+      descriptionContent=descriptionContent.replace("<p>","").replace("</p>","\n").replace("<br>","");
     }
     descriptionContent=descriptionContent.replaceAll("\uFFFC","");
     contentStruct.put("description",descriptionContent);
