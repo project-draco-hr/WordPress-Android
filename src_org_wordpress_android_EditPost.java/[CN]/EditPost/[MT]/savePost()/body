@@ -6,7 +6,14 @@
   EditText passwordET=(EditText)findViewById(R.id.post_password);
   String password=passwordET.getText().toString();
   if (localDraft || isNew) {
-    content=EscapeUtils.unescapeHtml(WPHtml.toHtml(contentET.getText()));
+    Editable e=contentET.getText();
+    if (android.os.Build.VERSION.SDK_INT >= 14) {
+      CharacterStyle[] style=e.getSpans(0,e.length(),CharacterStyle.class);
+      for (int i=0; i < style.length; i++) {
+        if (style[i].getClass().getName().equals("android.text.style.SuggestionSpan"))         e.removeSpan(style[i]);
+      }
+    }
+    content=EscapeUtils.unescapeHtml(WPHtml.toHtml(e));
     content=content.replace("<p><p>","<p>");
     content=content.replace("</p></p>","</p>");
     content=content.replace("<br><br>","<br>");
