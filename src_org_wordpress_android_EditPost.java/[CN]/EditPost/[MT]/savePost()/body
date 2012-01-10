@@ -107,8 +107,11 @@ longitude=curLocation.getLongitude();
 e.printStackTrace();
 }
 }
-String needle="";
-if (isNew || localDraft) needle="<p><font color =\"#777777\">........" + getResources().getText(R.string.more_tag) + "</font></p>";
+String needle="", needle2="";
+if (isNew || localDraft) {
+needle="<font color =\"#777777\">........" + getResources().getText(R.string.more_tag) + "</font>";
+needle2="<p>" + needle + "</p>";
+}
  else needle="<!--more-->";
 if (isNew) {
 post=new Post(id,title,content,images,pubDateTimestamp,categories.toString(),tags,status,password,latitude,longitude,isPage,postFormat,EditPost.this,true);
@@ -116,6 +119,10 @@ post.setLocalDraft(true);
 if (content.indexOf(needle) >= 0) {
 post.setDescription(content.substring(0,content.indexOf(needle)));
 post.setMt_text_more(content.substring(content.indexOf(needle) + needle.length(),content.length()));
+}
+ else if (content.indexOf(needle2) >= 0) {
+post.setDescription(content.substring(0,content.indexOf(needle2)));
+post.setMt_text_more(content.substring(content.indexOf(needle2) + needle2.length(),content.length()));
 }
 success=post.save();
 post.deleteMediaFiles();
@@ -144,6 +151,10 @@ post.setTitle(title);
 if (content.indexOf(needle) >= 0) {
 post.setDescription(content.substring(0,content.indexOf(needle)));
 post.setMt_text_more(content.substring(content.indexOf(needle) + needle.length(),content.length()));
+}
+ else if (localDraft && content.indexOf(needle2) >= 0) {
+post.setDescription(content.substring(0,content.indexOf(needle2)));
+post.setMt_text_more(content.substring(content.indexOf(needle2) + needle2.length(),content.length()));
 }
  else {
 post.setDescription(content);
