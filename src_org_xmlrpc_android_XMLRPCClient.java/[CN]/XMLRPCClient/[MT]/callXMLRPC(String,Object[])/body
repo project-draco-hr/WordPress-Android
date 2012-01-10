@@ -1,14 +1,16 @@
 {
   try {
-    File tempFile=null;
+    String tempFileName="wp-" + System.currentTimeMillis();
     if (method.equals("wp.uploadFile")) {
-      String tempFileName="wp-" + System.currentTimeMillis();
-      tempFile=File.createTempFile(tempFileName,null);
-      if (!tempFile.exists() && !tempFile.mkdirs()) {
+      FileOutputStream fos;
+      try {
+        fos=context.openFileOutput(tempFileName,Context.MODE_PRIVATE);
+      }
+ catch (      Exception e) {
         throw new XMLRPCException("Path to file could not be created.");
       }
-      FileWriter fileWriter=new FileWriter(tempFile);
-      serializer.setOutput(fileWriter);
+      if (fos == null)       throw new XMLRPCException("Path to file could not be created.");
+      serializer.setOutput(fos,"utf-8");
       serializer.startDocument(null,null);
       serializer.startTag(null,TAG_METHOD_CALL);
       serializer.startTag(null,TAG_METHOD_NAME).text(method).endTag(null,TAG_METHOD_NAME);
@@ -23,8 +25,9 @@
       }
       serializer.endTag(null,TAG_METHOD_CALL);
       serializer.endDocument();
-      fileWriter.flush();
-      fileWriter.close();
+      fos.flush();
+      fos.close();
+      File tempFile=new File(context.getFilesDir() + "/" + tempFileName);
       FileEntity fEntity=new FileEntity(tempFile,"text/xml; charset=\"UTF-8\"");
       fEntity.setContentType("text/xml");
       postMethod.setEntity(fEntity);
@@ -62,7 +65,7 @@
     Log.i("WordPress","response = " + response.getStatusLine());
     int statusCode=response.getStatusLine().getStatusCode();
     if ((method.equals("wp.uploadFile"))) {
-      tempFile.delete();
+      context.deleteFile(tempFileName);
     }
     if (statusCode != HttpStatus.SC_OK) {
       throw new XMLRPCException("HTTP status code: " + statusCode + " was returned. "+ response.getStatusLine().getReasonPhrase());
