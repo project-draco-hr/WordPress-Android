@@ -72,7 +72,7 @@
           int tagStart=s.getSpanStart(wpIS);
           s.removeSpan(wpIS);
           s.insert(tagStart,"<img android-uri=\"" + wpIS.getImageSource().toString() + "\" />");
-          content=contentET.getText().toString();
+          content=EscapeUtils.unescapeHtml(WPHtml.toHtml(s));
         }
       }
     }
@@ -116,13 +116,13 @@ needle2="<p>" + needle + "</p>";
 if (isNew) {
 post=new Post(id,title,content,images,pubDateTimestamp,categories.toString(),tags,status,password,latitude,longitude,isPage,postFormat,EditPost.this,true);
 post.setLocalDraft(true);
-if (content.indexOf(needle) >= 0) {
-post.setDescription(content.substring(0,content.indexOf(needle)));
-post.setMt_text_more(content.substring(content.indexOf(needle) + needle.length(),content.length()));
-}
- else if (content.indexOf(needle2) >= 0) {
+if (content.indexOf(needle2) >= 0) {
 post.setDescription(content.substring(0,content.indexOf(needle2)));
 post.setMt_text_more(content.substring(content.indexOf(needle2) + needle2.length(),content.length()));
+}
+ else if (content.indexOf(needle) >= 0) {
+post.setDescription(content.substring(0,content.indexOf(needle)));
+post.setMt_text_more(content.substring(content.indexOf(needle) + needle.length(),content.length()));
 }
 success=post.save();
 post.deleteMediaFiles();
@@ -148,16 +148,17 @@ WordPress.currentPost=post;
 }
  else {
 post.setTitle(title);
-if (content.indexOf(needle) >= 0) {
-post.setDescription(content.substring(0,content.indexOf(needle)));
-post.setMt_text_more(content.substring(content.indexOf(needle) + needle.length(),content.length()));
-}
- else if (localDraft && content.indexOf(needle2) >= 0) {
+if (content.indexOf(needle2) >= 0) {
 post.setDescription(content.substring(0,content.indexOf(needle2)));
 post.setMt_text_more(content.substring(content.indexOf(needle2) + needle2.length(),content.length()));
 }
+ else if (localDraft && content.indexOf(needle) >= 0) {
+post.setDescription(content.substring(0,content.indexOf(needle)));
+post.setMt_text_more(content.substring(content.indexOf(needle) + needle.length(),content.length()));
+}
  else {
 post.setDescription(content);
+post.setMt_text_more("");
 }
 post.setMediaPaths(images);
 post.setDate_created_gmt(pubDateTimestamp);
