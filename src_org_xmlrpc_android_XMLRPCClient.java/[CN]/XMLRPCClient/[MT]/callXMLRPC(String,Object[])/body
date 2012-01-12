@@ -1,16 +1,14 @@
 {
+  File tempFile=null;
   try {
-    String tempFileName="wp-" + System.currentTimeMillis();
     if (method.equals("wp.uploadFile")) {
-      FileOutputStream fos;
-      try {
-        fos=context.openFileOutput(tempFileName,Context.MODE_PRIVATE);
-      }
- catch (      Exception e) {
+      String tempFileName="wp-" + System.currentTimeMillis();
+      tempFile=File.createTempFile(tempFileName,null);
+      if (!tempFile.exists() && !tempFile.mkdirs()) {
         throw new XMLRPCException("Path to file could not be created.");
       }
-      if (fos == null)       throw new XMLRPCException("Path to file could not be created.");
-      serializer.setOutput(fos,"utf-8");
+      FileWriter fileWriter=new FileWriter(tempFile);
+      serializer.setOutput(fileWriter);
       serializer.startDocument(null,null);
       serializer.startTag(null,TAG_METHOD_CALL);
       serializer.startTag(null,TAG_METHOD_NAME).text(method).endTag(null,TAG_METHOD_NAME);
@@ -25,9 +23,8 @@
       }
       serializer.endTag(null,TAG_METHOD_CALL);
       serializer.endDocument();
-      fos.flush();
-      fos.close();
-      File tempFile=new File(context.getFilesDir() + "/" + tempFileName);
+      fileWriter.flush();
+      fileWriter.close();
       FileEntity fEntity=new FileEntity(tempFile,"text/xml; charset=\"UTF-8\"");
       fEntity.setContentType("text/xml");
       postMethod.setEntity(fEntity);
@@ -64,9 +61,7 @@
     HttpResponse response=client.execute(postMethod);
     Log.i("WordPress","response = " + response.getStatusLine());
     int statusCode=response.getStatusLine().getStatusCode();
-    if ((method.equals("wp.uploadFile"))) {
-      context.deleteFile(tempFileName);
-    }
+    deleteTempFile(method,tempFile);
     if (statusCode != HttpStatus.SC_OK) {
       throw new XMLRPCException("HTTP status code: " + statusCode + " was returned. "+ response.getStatusLine().getReasonPhrase());
     }
@@ -107,9 +102,11 @@
     }
   }
  catch (  XMLRPCException e) {
+    deleteTempFile(method,tempFile);
     throw e;
   }
 catch (  Exception e) {
+    deleteTempFile(method,tempFile);
     throw new XMLRPCException(e);
   }
 }
