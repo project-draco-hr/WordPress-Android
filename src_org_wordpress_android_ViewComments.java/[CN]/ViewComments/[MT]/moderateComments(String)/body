@@ -3,7 +3,7 @@
     if (checkedComments.get(i).toString().equals("true")) {
       client=new XMLRPCClient(WordPress.currentBlog.getUrl(),WordPress.currentBlog.getHttpuser(),WordPress.currentBlog.getHttppassword());
       Comment listRow=(Comment)getListView().getItemAtPosition(i);
-      String curCommentID=listRow.commentID;
+      int curCommentID=listRow.commentID;
       HashMap<String,String> contentHash, postHash=new HashMap<String,String>();
       contentHash=(HashMap<String,String>)allComments.get(curCommentID);
       postHash.put("status",newStatus);
@@ -40,9 +40,13 @@
         thumbs.notifyDataSetChanged();
       }
  else {
+        checkedCommentTotal=0;
+        hideModerationBar();
+        thumbs.notifyDataSetChanged();
         FragmentTransaction ft=getFragmentManager().beginTransaction();
         WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(moderateErrorMsg);
         alert.show(ft,"alert");
+        moderateErrorMsg="";
       }
     }
   }

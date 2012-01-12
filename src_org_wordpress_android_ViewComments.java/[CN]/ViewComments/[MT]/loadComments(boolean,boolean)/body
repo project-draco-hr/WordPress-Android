@@ -1,6 +1,7 @@
 {
   refreshOnly=refresh;
-  String author, postID, commentID, comment, dateCreatedFormatted, status, authorEmail, authorURL, postTitle;
+  String author, postID, comment, dateCreatedFormatted, status, authorEmail, authorURL, postTitle;
+  int commentID;
   Vector<?> loadedPosts=WordPress.wpDB.loadComments(WordPress.currentBlog.getId());
   if (loadedPosts != null) {
     numRecords=loadedPosts.size();
@@ -16,9 +17,9 @@
     for (int i=0; i < loadedPosts.size(); i++) {
       checkedComments.add(i,"false");
       HashMap<?,?> contentHash=(HashMap<?,?>)loadedPosts.get(i);
-      allComments.put(contentHash.get("commentID").toString(),contentHash);
+      allComments.put((Integer)contentHash.get("commentID"),contentHash);
       author=EscapeUtils.unescapeHtml(contentHash.get("author").toString());
-      commentID=contentHash.get("commentID").toString();
+      commentID=(Integer)contentHash.get("commentID");
       postID=contentHash.get("postID").toString();
       comment=EscapeUtils.unescapeHtml(contentHash.get("comment").toString());
       dateCreatedFormatted=contentHash.get("commentDateFormatted").toString();

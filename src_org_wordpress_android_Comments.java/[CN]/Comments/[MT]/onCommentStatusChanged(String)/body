@@ -1,8 +1,7 @@
 {
   if (WordPress.currentComment != null) {
-    String comment_id=WordPress.currentComment.commentID;
+    final int commentID=WordPress.currentComment.commentID;
     if (status.equals("approve") || status.equals("hold") || status.equals("spam")) {
-      final int commentID=Integer.parseInt(comment_id);
       showDialog(ID_DIALOG_MODERATING);
       new Thread(){
         public void run(){
@@ -13,7 +12,6 @@
 .start();
     }
  else     if (status.equals("delete")) {
-      final int commentID_del=Integer.parseInt(comment_id);
       showDialog(ID_DIALOG_DELETING);
       FragmentManager fm=getSupportFragmentManager();
       ViewCommentFragment f=(ViewCommentFragment)fm.findFragmentById(R.id.commentDetail);
@@ -22,14 +20,14 @@
       }
       new Thread(){
         public void run(){
-          deleteComment(commentID_del);
+          deleteComment(commentID);
         }
       }
 .start();
     }
  else     if (status.equals("reply")) {
       Intent i=new Intent(Comments.this,ReplyToComment.class);
-      i.putExtra("commentID",Integer.parseInt(comment_id));
+      i.putExtra("commentID",commentID);
       i.putExtra("postID",WordPress.currentComment.postID);
       startActivityForResult(i,0);
     }
