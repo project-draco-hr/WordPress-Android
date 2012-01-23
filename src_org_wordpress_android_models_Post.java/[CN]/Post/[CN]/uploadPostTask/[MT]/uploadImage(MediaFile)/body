@@ -146,6 +146,10 @@
             ImageHelper ih2=new ImageHelper();
             finalBytes=ih2.createThumbnail(bytes,String.valueOf(mf.getWidth()),orientation,false);
           }
+          if (finalBytes == null) {
+            error="Could not upload media: Device out of memory.";
+            return null;
+          }
           Map<String,Object> m=new HashMap<String,Object>();
           m.put("name",imageTitle);
           m.put("type",mimeType);
@@ -162,9 +166,8 @@
             result=(Object)client.call("wp.uploadFile",params);
           }
  catch (          XMLRPCException e) {
-            e.printStackTrace();
-            e.getLocalizedMessage();
-            break;
+            error=e.getMessage();
+            return null;
           }
           HashMap<?,?> contentHash=new HashMap<Object,Object>();
           contentHash=(HashMap<?,?>)result;

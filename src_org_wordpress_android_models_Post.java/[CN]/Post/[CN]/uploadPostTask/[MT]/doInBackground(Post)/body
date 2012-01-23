@@ -15,7 +15,6 @@
     post.post_status="publish";
   }
   Boolean publishThis=false;
-  boolean mediaError=false;
   Spannable s;
   String descriptionContent="", moreContent="";
   int moreCount=1;
@@ -94,107 +93,106 @@
       }
     }
   }
-  if (!mediaError) {
-    JSONArray categories=post.getCategories();
-    String[] theCategories=null;
-    if (categories != null) {
-      theCategories=new String[categories.length()];
-      for (int i=0; i < categories.length(); i++) {
-        try {
-          theCategories[i]=categories.getString(i);
-        }
- catch (        JSONException e) {
-          e.printStackTrace();
-        }
+  JSONArray categories=post.getCategories();
+  String[] theCategories=null;
+  if (categories != null) {
+    theCategories=new String[categories.length()];
+    for (int i=0; i < categories.length(); i++) {
+      try {
+        theCategories[i]=categories.getString(i);
+      }
+ catch (      JSONException e) {
+        e.printStackTrace();
       }
     }
-    Map<String,Object> contentStruct=new HashMap<String,Object>();
-    if (!post.isPage && post.isLocalDraft()) {
-      HashMap<?,?> globalSettings=WordPress.wpDB.getNotificationOptions(context);
-      boolean taglineValue=false;
-      String tagline="";
-      if (globalSettings != null) {
-        if (globalSettings.get("tagline_flag").toString().equals("1")) {
-          taglineValue=true;
-        }
-        if (taglineValue) {
-          tagline=globalSettings.get("tagline").toString();
-          if (tagline != null) {
-            String tag="\n\n<span class=\"post_sig\">" + tagline + "</span>\n\n";
-            if (moreContent == "")             descriptionContent+=tag;
- else             moreContent+=tag;
-          }
+  }
+  Map<String,Object> contentStruct=new HashMap<String,Object>();
+  if (!post.isPage && post.isLocalDraft()) {
+    HashMap<?,?> globalSettings=WordPress.wpDB.getNotificationOptions(context);
+    boolean taglineValue=false;
+    String tagline="";
+    if (globalSettings != null) {
+      if (globalSettings.get("tagline_flag").toString().equals("1")) {
+        taglineValue=true;
+      }
+      if (taglineValue) {
+        tagline=globalSettings.get("tagline").toString();
+        if (tagline != null) {
+          String tag="\n\n<span class=\"post_sig\">" + tagline + "</span>\n\n";
+          if (moreContent == "")           descriptionContent+=tag;
+ else           moreContent+=tag;
         }
       }
-      if (!post.getWP_post_format().equals("")) {
-        if (!post.getWP_post_format().equals("standard"))         contentStruct.put("wp_post_format",post.getWP_post_format());
-      }
     }
-    contentStruct.put("post_type",(post.isPage) ? "page" : "post");
-    contentStruct.put("title",post.title);
-    long pubDate=post.date_created_gmt;
-    if (pubDate != 0) {
-      Date date_created_gmt=new Date(pubDate);
-      contentStruct.put("date_created_gmt",date_created_gmt);
-      Date dateCreated=new Date(pubDate + (date_created_gmt.getTimezoneOffset() * 60000));
-      contentStruct.put("dateCreated",dateCreated);
+    if (!post.getWP_post_format().equals("")) {
+      if (!post.getWP_post_format().equals("standard"))       contentStruct.put("wp_post_format",post.getWP_post_format());
     }
-    if (!moreContent.equals("")) {
-      descriptionContent=descriptionContent + "\n\n<!--more-->\n\n" + moreContent;
-      post.mt_text_more="";
+  }
+  contentStruct.put("post_type",(post.isPage) ? "page" : "post");
+  contentStruct.put("title",post.title);
+  long pubDate=post.date_created_gmt;
+  if (pubDate != 0) {
+    Date date_created_gmt=new Date(pubDate);
+    contentStruct.put("date_created_gmt",date_created_gmt);
+    Date dateCreated=new Date(pubDate + (date_created_gmt.getTimezoneOffset() * 60000));
+    contentStruct.put("dateCreated",dateCreated);
+  }
+  if (!moreContent.equals("")) {
+    descriptionContent=descriptionContent + "\n\n<!--more-->\n\n" + moreContent;
+    post.mt_text_more="";
+  }
+  if (post.isLocalDraft()) {
+    descriptionContent=descriptionContent.replace("<p>","").replace("</p>","\n").replace("<br>","");
+  }
+  descriptionContent=descriptionContent.replaceAll("\uFFFC","");
+  contentStruct.put("description",descriptionContent);
+  if (!post.isPage) {
+    if (post.mt_keywords != "") {
+      contentStruct.put("mt_keywords",post.mt_keywords);
     }
-    if (post.isLocalDraft()) {
-      descriptionContent=descriptionContent.replace("<p>","").replace("</p>","\n").replace("<br>","");
+    if (theCategories != null) {
+      if (theCategories.length > 0)       contentStruct.put("categories",theCategories);
     }
-    descriptionContent=descriptionContent.replaceAll("\uFFFC","");
-    contentStruct.put("description",descriptionContent);
-    if (!post.isPage) {
-      if (post.mt_keywords != "") {
-        contentStruct.put("mt_keywords",post.mt_keywords);
-      }
-      if (theCategories != null) {
-        if (theCategories.length > 0)         contentStruct.put("categories",theCategories);
-      }
+  }
+  contentStruct.put((post.isPage) ? "page_status" : "post_status",post.post_status);
+  Double latitude=0.0;
+  Double longitude=0.0;
+  if (!post.isPage) {
+    latitude=(Double)post.getLatitude();
+    longitude=(Double)post.getLongitude();
+    if (latitude > 0) {
+      HashMap<Object,Object> hLatitude=new HashMap<Object,Object>();
+      hLatitude.put("key","geo_latitude");
+      hLatitude.put("value",latitude);
+      HashMap<Object,Object> hLongitude=new HashMap<Object,Object>();
+      hLongitude.put("key","geo_longitude");
+      hLongitude.put("value",longitude);
+      HashMap<Object,Object> hPublic=new HashMap<Object,Object>();
+      hPublic.put("key","geo_public");
+      hPublic.put("value",1);
+      Object[] geo={hLatitude,hLongitude,hPublic};
+      contentStruct.put("custom_fields",geo);
     }
-    contentStruct.put((post.isPage) ? "page_status" : "post_status",post.post_status);
-    Double latitude=0.0;
-    Double longitude=0.0;
-    if (!post.isPage) {
-      latitude=(Double)post.getLatitude();
-      longitude=(Double)post.getLongitude();
-      if (latitude > 0) {
-        HashMap<Object,Object> hLatitude=new HashMap<Object,Object>();
-        hLatitude.put("key","geo_latitude");
-        hLatitude.put("value",latitude);
-        HashMap<Object,Object> hLongitude=new HashMap<Object,Object>();
-        hLongitude.put("key","geo_longitude");
-        hLongitude.put("value",longitude);
-        HashMap<Object,Object> hPublic=new HashMap<Object,Object>();
-        hPublic.put("key","geo_public");
-        hPublic.put("value",1);
-        Object[] geo={hLatitude,hLongitude,hPublic};
-        contentStruct.put("custom_fields",geo);
-      }
-    }
-    XMLRPCClient client=new XMLRPCClient(post.blog.getUrl(),post.blog.getHttpuser(),post.blog.getHttppassword());
-    n.setLatestEventInfo(context,message,message,n.contentIntent);
-    nm.notify(notificationID,n);
-    if (post.wp_password != null) {
-      contentStruct.put("wp_password",post.wp_password);
-    }
-    Object[] params;
-    if (post.isLocalDraft() && !post.uploaded)     params=new Object[]{post.blog.getBlogId(),post.blog.getUsername(),post.blog.getPassword(),contentStruct,publishThis};
- else     params=new Object[]{post.getPostid(),post.blog.getUsername(),post.blog.getPassword(),contentStruct,publishThis};
-    try {
-      client.call((post.isLocalDraft() && !post.uploaded) ? "metaWeblog.newPost" : "metaWeblog.editPost",params);
-      post.setUploaded(true);
-      post.update();
-      return true;
-    }
- catch (    final XMLRPCException e) {
-      error=e.getLocalizedMessage();
-      Log.i("WP",error);
-    }
+  }
+  XMLRPCClient client=new XMLRPCClient(post.blog.getUrl(),post.blog.getHttpuser(),post.blog.getHttppassword());
+  n.setLatestEventInfo(context,message,message,n.contentIntent);
+  nm.notify(notificationID,n);
+  if (post.wp_password != null) {
+    contentStruct.put("wp_password",post.wp_password);
+  }
+  Object[] params;
+  if (post.isLocalDraft() && !post.uploaded)   params=new Object[]{post.blog.getBlogId(),post.blog.getUsername(),post.blog.getPassword(),contentStruct,publishThis};
+ else   params=new Object[]{post.getPostid(),post.blog.getUsername(),post.blog.getPassword(),contentStruct,publishThis};
+  try {
+    client.call((post.isLocalDraft() && !post.uploaded) ? "metaWeblog.newPost" : "metaWeblog.editPost",params);
+    post.setUploaded(true);
+    post.update();
+    return true;
+  }
+ catch (  final XMLRPCException e) {
+    error=e.getLocalizedMessage();
+    mediaError=false;
+    Log.i("WP",error);
   }
   return false;
 }

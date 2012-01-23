@@ -54,7 +54,12 @@
       }
       opts.inSampleSize=sample;
       opts.inJustDecodeBounds=false;
-      bm=BitmapFactory.decodeByteArray(bytes,0,bytes.length,opts);
+      try {
+        bm=BitmapFactory.decodeByteArray(bytes,0,bytes.length,opts);
+      }
+ catch (      Exception e) {
+        return null;
+      }
       float percentage=(float)finalWidth / bm.getWidth();
       float proportionateHeight=bm.getHeight() * percentage;
       finalHeight=(int)Math.rint(proportionateHeight);
