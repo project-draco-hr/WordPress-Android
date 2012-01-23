@@ -1,4 +1,7 @@
 {
+  locationHelper=new LocationHelper();
+  RelativeLayout section4=(RelativeLayout)findViewById(R.id.section4);
+  section4.setVisibility(View.VISIBLE);
   final Button viewMap=(Button)findViewById(R.id.viewMap);
   viewMap.setOnClickListener(new TextView.OnClickListener(){
     public void onClick(    View v){
@@ -19,14 +22,30 @@
     }
   }
 );
-  if (isNew && blog.isLocation()) {
-    Button updateLocation=(Button)findViewById(R.id.updateLocation);
-    updateLocation.setVisibility(View.GONE);
-    lm=(LocationManager)getSystemService(LOCATION_SERVICE);
-    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,20000,0,EditPost.this);
-    lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,20000,0,EditPost.this);
-    locationActive=true;
-    RelativeLayout locationSection=(RelativeLayout)findViewById(R.id.section4);
-    locationSection.setVisibility(View.VISIBLE);
+  Button updateLocation=(Button)findViewById(R.id.updateLocation);
+  updateLocation.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      locationHelper.getLocation(EditPost.this,locationResult);
+    }
+  }
+);
+  Button removeLocation=(Button)findViewById(R.id.removeLocation);
+  removeLocation.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      if (curLocation != null) {
+        curLocation.setLatitude(0.0);
+        curLocation.setLongitude(0.0);
+      }
+      if (post != null) {
+        post.setLatitude(0.0);
+        post.setLongitude(0.0);
+      }
+      TextView locationText=(TextView)findViewById(R.id.locationText);
+      locationText.setText("");
+    }
+  }
+);
+  if (isNew) {
+    locationHelper.getLocation(EditPost.this,locationResult);
   }
 }

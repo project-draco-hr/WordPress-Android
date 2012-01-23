@@ -116,14 +116,22 @@
           WordPress.currentBlog=blog;
         }
  catch (        Exception e) {
-          Toast.makeText(this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
+          Toast.makeText(this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_LONG).show();
           finish();
+          return;
         }
       }
       if (!isNew) {
         try {
           post=new Post(id,postID,isPage,this);
-          WordPress.currentPost=post;
+          if (post == null) {
+            Toast.makeText(this,getResources().getText(R.string.post_not_found),Toast.LENGTH_LONG).show();
+            finish();
+            return;
+          }
+ else {
+            WordPress.currentPost=post;
+          }
         }
  catch (        Exception e) {
           finish();
@@ -181,14 +189,8 @@
       if (!post.getWP_post_format().equals(""))       activePostFormat=post.getWP_post_format();
     }
     for (int i=0; i < postFormats.length; i++) {
-      try {
-        if (postFormats[i].equals(activePostFormat))         pfSpinner.setSelection(i);
-      }
- catch (      Exception e) {
-        e.printStackTrace();
-      }
+      if (postFormats[i].equals(activePostFormat))       pfSpinner.setSelection(i);
     }
-    lbsCheck();
     if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action))     setContent();
   }
   String[] items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private),getResources().getString(R.string.local_draft)};
@@ -204,12 +206,18 @@
     }
   }
 );
-  if (isNew) {
-    if (!isAction) {
-      if (!isPage) {
-        enableLBSButtons();
-      }
+  boolean hasLocationProvider=false;
+  LocationManager locationManager=(LocationManager)getSystemService(LOCATION_SERVICE);
+  List<String> providers=locationManager.getProviders(true);
+  for (  String providerName : providers) {
+    if (providerName.equals(LocationManager.GPS_PROVIDER) || providerName.equals(LocationManager.NETWORK_PROVIDER)) {
+      hasLocationProvider=true;
     }
+  }
+  if (hasLocationProvider && blog.isLocation() && !isPage) {
+    enableLBSButtons();
+  }
+  if (isNew) {
     if (option != null) {
       Intent i=new Intent(EditPost.this,EditContent.class);
       i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -298,35 +306,10 @@
           tvCategories.setText(getResources().getText(R.string.selected_categories) + " " + getCategoriesCSV());
         }
       }
-      if (blog.isLocation()) {
-        enableLBSButtons();
-      }
       Double latitude=post.getLatitude();
       Double longitude=post.getLongitude();
       if (latitude != 0.0) {
         new getAddressTask().execute(latitude,longitude);
-      }
-      if (blog.isLocation() && latitude > 0) {
-        Button updateLocation=(Button)findViewById(R.id.updateLocation);
-        updateLocation.setOnClickListener(new Button.OnClickListener(){
-          public void onClick(          View v){
-            lm=(LocationManager)getSystemService(LOCATION_SERVICE);
-            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,20000,0,EditPost.this);
-            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,20000,0,EditPost.this);
-            locationActive=true;
-          }
-        }
-);
-        RelativeLayout locationSection=(RelativeLayout)findViewById(R.id.section4);
-        locationSection.setVisibility(View.VISIBLE);
-      }
- else       if (blog.isLocation()) {
-        lm=(LocationManager)getSystemService(LOCATION_SERVICE);
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,20000,0,EditPost.this);
-        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,20000,0,EditPost.this);
-        locationActive=true;
-        RelativeLayout locationSection=(RelativeLayout)findViewById(R.id.section4);
-        locationSection.setVisibility(View.VISIBLE);
       }
     }
     String tags=post.getMt_keywords();
