@@ -22,7 +22,6 @@
   categories=new JSONArray();
   String action=getIntent().getAction();
   if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
-    WordPress.richPostContent=null;
     isAction=true;
     isNew=true;
     Vector<?> accounts=WordPress.wpDB.getAccounts(this);
@@ -47,7 +46,7 @@
         }
       }
       if (accounts.size() != 1) {
-        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        AlertDialog.Builder builder=new AlertDialog.Builder(EditPost.this);
         builder.setCancelable(false);
         builder.setTitle(getResources().getText(R.string.select_a_blog));
         builder.setItems(blogNames,new DialogInterface.OnClickListener(){
@@ -139,17 +138,25 @@
       }
     }
     if (isNew) {
+      localDraft=true;
       setTitle(EscapeUtils.unescapeHtml(WordPress.currentBlog.getBlogName()) + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
     }
  else {
       setTitle(EscapeUtils.unescapeHtml(WordPress.currentBlog.getBlogName()) + " - " + getResources().getText((isPage) ? R.string.edit_page : R.string.edit_post));
     }
   }
+  setContentView(R.layout.edit);
   if (isPage) {
-    setContentView(R.layout.edit_page);
+    RelativeLayout section3=(RelativeLayout)findViewById(R.id.section3);
+    section3.setVisibility(View.GONE);
+    RelativeLayout locationWrapper=(RelativeLayout)findViewById(R.id.location_wrapper);
+    locationWrapper.setVisibility(View.GONE);
+    TextView postFormatLabel=(TextView)findViewById(R.id.postFormatLabel);
+    postFormatLabel.setVisibility(View.GONE);
+    Spinner postFormatSpinner=(Spinner)findViewById(R.id.postFormat);
+    postFormatSpinner.setVisibility(View.GONE);
   }
  else {
-    setContentView(R.layout.edit);
     if (blog.getPostFormats().equals("")) {
       Vector<Object> args=new Vector<Object>();
       args.add(blog);
@@ -329,7 +336,7 @@
         }
         Intent i=new Intent(EditPost.this,SelectCategories.class);
         i.putExtras(bundle);
-        startActivityForResult(i,1);
+        startActivityForResult(i,5);
       }
     }
 );
@@ -337,14 +344,183 @@
   final WPEditText content=(WPEditText)findViewById(R.id.postContent);
   content.setOnFocusChangeListener(new View.OnFocusChangeListener(){
     @Override public void onFocusChange(    View view,    boolean hasFocus){
-      if (hasFocus) {
-        Intent i=new Intent(EditPost.this,EditContent.class);
-        if (isNew || localDraft)         i.putExtra("localDraft",true);
- else         i.putExtra("localDraft",false);
-        WordPress.richPostContent=content.getText();
-        i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        startActivityForResult(i,0);
+      if (!isFullScreenEditing && hasFocus)       content.performClick();
+    }
+  }
+);
+  content.setOnClickListener(new EditText.OnClickListener(){
+    public void onClick(    View v){
+      if (!isFullScreenEditing) {
+        isFullScreenEditing=true;
+        content.setFocusableInTouchMode(true);
+        LinearLayout smallEditorWrap=(LinearLayout)findViewById(R.id.postContentEditorSmallWrapper);
+        smallEditorWrap.removeView(content);
+        ScrollView scrollView=(ScrollView)findViewById(R.id.scrollView);
+        scrollView.setVisibility(View.GONE);
+        LinearLayout contentEditorWrap=(LinearLayout)findViewById(R.id.postContentEditorWrapper);
+        contentEditorWrap.addView(content);
+        contentEditorWrap.setVisibility(View.VISIBLE);
+        RelativeLayout formatBar=(RelativeLayout)findViewById(R.id.formatBar);
+        formatBar.setVisibility(View.VISIBLE);
+        content.requestFocus();
       }
+ else {
+        final Spannable s=content.getText();
+        styleStart=content.getSelectionStart();
+        WPImageSpan[] click_spans=s.getSpans(content.getSelectionStart(),content.getSelectionStart(),WPImageSpan.class);
+        if (click_spans.length != 0) {
+          final WPImageSpan span=click_spans[0];
+          if (!span.isVideo()) {
+            LayoutInflater factory=LayoutInflater.from(EditPost.this);
+            final View alertView=factory.inflate(R.layout.alert_image_options,null);
+            final TextView imageWidthText=(TextView)alertView.findViewById(R.id.imageWidthText);
+            final EditText titleText=(EditText)alertView.findViewById(R.id.title);
+            final EditText caption=(EditText)alertView.findViewById(R.id.caption);
+            final SeekBar seekBar=(SeekBar)alertView.findViewById(R.id.imageWidth);
+            final Spinner alignmentSpinner=(Spinner)alertView.findViewById(R.id.alignment_spinner);
+            ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(EditPost.this,R.array.alignment_array,android.R.layout.simple_spinner_item);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            alignmentSpinner.setAdapter(adapter);
+            imageWidthText.setText(String.valueOf(span.getWidth()) + "px");
+            seekBar.setProgress(span.getWidth());
+            titleText.setText(span.getTitle());
+            caption.setText(span.getCaption());
+            alignmentSpinner.setSelection(span.getHorizontalAlignment(),true);
+            seekBar.setMax(100);
+            if (span.getWidth() != 0)             seekBar.setProgress(span.getWidth() / 10);
+            seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
+              @Override public void onStopTrackingTouch(              SeekBar seekBar){
+              }
+              @Override public void onStartTrackingTouch(              SeekBar seekBar){
+              }
+              @Override public void onProgressChanged(              SeekBar seekBar,              int progress,              boolean fromUser){
+                if (progress == 0)                 progress=1;
+                imageWidthText.setText(progress * 10 + "px");
+              }
+            }
+);
+            AlertDialog ad=new AlertDialog.Builder(EditPost.this).setTitle("Image Settings").setView(alertView).setPositiveButton("OK",new DialogInterface.OnClickListener(){
+              public void onClick(              DialogInterface dialog,              int whichButton){
+                span.setTitle(titleText.getText().toString());
+                span.setHorizontalAlignment(alignmentSpinner.getSelectedItemPosition());
+                span.setWidth(seekBar.getProgress() * 10);
+                span.setCaption(caption.getText().toString());
+              }
+            }
+).setNegativeButton("Cancel",new DialogInterface.OnClickListener(){
+              public void onClick(              DialogInterface dialog,              int whichButton){
+              }
+            }
+).create();
+            ad.show();
+          }
+        }
+ else {
+          content.setMovementMethod(ArrowKeyMovementMethod.getInstance());
+          content.setSelection(content.getSelectionStart());
+        }
+      }
+    }
+  }
+);
+  content.setOnEditTextImeBackListener(new WPEditText.EditTextImeBackListener(){
+    @Override public void onImeBack(    WPEditText view,    String text){
+      finishEditing();
+    }
+  }
+);
+  content.addTextChangedListener(new TextWatcher(){
+    public void afterTextChanged(    Editable s){
+      try {
+        int position=Selection.getSelectionStart(content.getText());
+        if ((isBackspace && position != 1) || lastPosition == position || !localDraft)         return;
+        ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
+        ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
+        ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
+        ToggleButton underlineButton=(ToggleButton)findViewById(R.id.underline);
+        ToggleButton strikeButton=(ToggleButton)findViewById(R.id.strike);
+        if (position < 0) {
+          position=0;
+        }
+        lastPosition=position;
+        if (position > 0) {
+          if (styleStart > position) {
+            styleStart=position - 1;
+          }
+          boolean exists=false;
+          if (boldButton.isChecked()) {
+            StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
+            exists=false;
+            for (int i=0; i < ss.length; i++) {
+              if (ss[i].getStyle() == android.graphics.Typeface.BOLD) {
+                exists=true;
+              }
+            }
+            if (!exists)             s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),styleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+          }
+          if (emButton.isChecked()) {
+            StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
+            exists=false;
+            for (int i=0; i < ss.length; i++) {
+              if (ss[i].getStyle() == android.graphics.Typeface.ITALIC) {
+                exists=true;
+              }
+            }
+            if (!exists)             s.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),styleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+          }
+          if (emButton.isChecked()) {
+            StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
+            exists=false;
+            for (int i=0; i < ss.length; i++) {
+              if (ss[i].getStyle() == android.graphics.Typeface.ITALIC) {
+                exists=true;
+              }
+            }
+            if (!exists)             s.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),styleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+          }
+          if (underlineButton.isChecked()) {
+            WPUnderlineSpan[] ss=s.getSpans(styleStart,position,WPUnderlineSpan.class);
+            exists=false;
+            for (int i=0; i < ss.length; i++) {
+              exists=true;
+            }
+            if (!exists)             s.setSpan(new WPUnderlineSpan(),styleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+          }
+          if (strikeButton.isChecked()) {
+            StrikethroughSpan[] ss=s.getSpans(styleStart,position,StrikethroughSpan.class);
+            exists=false;
+            for (int i=0; i < ss.length; i++) {
+              exists=true;
+            }
+            if (!exists)             s.setSpan(new StrikethroughSpan(),styleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+          }
+          if (bquoteButton.isChecked()) {
+            QuoteSpan[] ss=s.getSpans(styleStart,position,QuoteSpan.class);
+            exists=false;
+            for (int i=0; i < ss.length; i++) {
+              exists=true;
+            }
+            if (!exists)             s.setSpan(new QuoteSpan(),styleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+          }
+        }
+      }
+ catch (      Exception e) {
+        e.printStackTrace();
+      }
+    }
+    public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
+      if ((count - after == 1) || (s.length() == 0))       isBackspace=true;
+ else       isBackspace=false;
+    }
+    public void onTextChanged(    CharSequence s,    int start,    int before,    int count){
+    }
+  }
+);
+  final ImageButton addPictureButton=(ImageButton)findViewById(R.id.addPictureButton);
+  registerForContextMenu(addPictureButton);
+  addPictureButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      addPictureButton.performLongClick();
     }
   }
 );
@@ -369,6 +545,72 @@
       mHour=c.get(Calendar.HOUR_OF_DAY);
       mMinute=c.get(Calendar.MINUTE);
       showDialog(ID_DIALOG_DATE);
+    }
+  }
+);
+  final ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
+  boldButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      formatBtnClick(boldButton,"strong");
+    }
+  }
+);
+  final Button linkButton=(Button)findViewById(R.id.link);
+  linkButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      WPEditText contentText=(WPEditText)findViewById(R.id.postContent);
+      selectionStart=contentText.getSelectionStart();
+      styleStart=selectionStart;
+      selectionEnd=contentText.getSelectionEnd();
+      if (selectionStart > selectionEnd) {
+        int temp=selectionEnd;
+        selectionEnd=selectionStart;
+        selectionStart=temp;
+      }
+      Intent i=new Intent(EditPost.this,Link.class);
+      if (selectionEnd > selectionStart) {
+        String selectedText=contentText.getText().subSequence(selectionStart,selectionEnd).toString();
+        i.putExtra("selectedText",selectedText);
+      }
+      startActivityForResult(i,4);
+    }
+  }
+);
+  final ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
+  emButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      formatBtnClick(emButton,"em");
+    }
+  }
+);
+  final ToggleButton underlineButton=(ToggleButton)findViewById(R.id.underline);
+  underlineButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      formatBtnClick(underlineButton,"u");
+    }
+  }
+);
+  final ToggleButton strikeButton=(ToggleButton)findViewById(R.id.strike);
+  strikeButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      formatBtnClick(strikeButton,"strike");
+    }
+  }
+);
+  final ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
+  bquoteButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      formatBtnClick(bquoteButton,"blockquote");
+    }
+  }
+);
+  final Button moreButton=(Button)findViewById(R.id.more);
+  moreButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      WPEditText contentText=(WPEditText)findViewById(R.id.postContent);
+      selectionEnd=contentText.getSelectionEnd();
+      Editable str=contentText.getText();
+      str.insert(selectionEnd,"\n\n<!--more-->\n\n");
     }
   }
 );
