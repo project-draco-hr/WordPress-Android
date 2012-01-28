@@ -1,6 +1,13 @@
 {
   super.onActivityResult(requestCode,resultCode,data);
-  if (resultCode == RESULT_CANCELED)   return;
+  if (resultCode == RESULT_CANCELED) {
+    if (option != null) {
+      Intent intent=new Intent();
+      setResult(Activity.RESULT_CANCELED,intent);
+      finish();
+    }
+    return;
+  }
   if (data != null || ((requestCode == 1 || requestCode == 3))) {
     Bundle extras;
 switch (requestCode) {
@@ -23,14 +30,6 @@ try {
 catch (Exception e) {
 }
 }
- else {
-if (option != null) {
-  Intent intent=new Intent();
-  intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-  setResult(Activity.RESULT_CANCELED,intent);
-  finish();
-}
-}
 break;
 case 2:
 Uri videoUri=data.getData();
@@ -41,14 +40,6 @@ case 3:
 if (resultCode == Activity.RESULT_OK) {
 Uri capturedVideo=data.getData();
 addMedia(capturedVideo.toString(),capturedVideo);
-}
- else {
-if (option != null) {
-Intent intent=new Intent();
-intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-setResult(Activity.RESULT_CANCELED,intent);
-finish();
-}
 }
 break;
 case 4:
