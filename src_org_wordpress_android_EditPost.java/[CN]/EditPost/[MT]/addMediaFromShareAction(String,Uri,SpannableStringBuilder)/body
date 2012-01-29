@@ -11,6 +11,15 @@
   byte[] finalBytes=ih.createThumbnail((byte[])mediaData.get("bytes"),String.valueOf(width / 2),(String)mediaData.get("orientation"),true);
   resizedBitmap=BitmapFactory.decodeByteArray(finalBytes,0,finalBytes.length);
   WPImageSpan is=new WPImageSpan(EditPost.this,resizedBitmap,curStream);
+  String imageWidth=WordPress.currentBlog.getMaxImageWidth();
+  if (!imageWidth.equals("Original Size")) {
+    try {
+      is.setWidth(Integer.valueOf(imageWidth));
+    }
+ catch (    NumberFormatException e) {
+      e.printStackTrace();
+    }
+  }
   is.setTitle(imageTitle);
   is.setImageSource(curStream);
   is.setVideo(imgPath.contains("video"));
