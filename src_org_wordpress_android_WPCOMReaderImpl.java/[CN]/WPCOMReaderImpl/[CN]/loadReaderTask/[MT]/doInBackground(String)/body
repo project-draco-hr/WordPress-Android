@@ -1,0 +1,51 @@
+{
+  if (WordPress.currentBlog == null) {
+    try {
+      WordPress.currentBlog=new Blog(WordPress.wpDB.getLastBlogID(WPCOMReaderImpl.this),WPCOMReaderImpl.this);
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+    }
+  }
+  loginURL=WordPress.currentBlog.getUrl().replace("xmlrpc.php","wp-login.php");
+  if (WordPress.currentBlog.getUrl().lastIndexOf("/") != -1)   loginURL=WordPress.currentBlog.getUrl().substring(0,WordPress.currentBlog.getUrl().lastIndexOf("/")) + "/wp-login.php";
+ else   loginURL=WordPress.currentBlog.getUrl().replace("xmlrpc.php","wp-login.php");
+  String readerURL=Constants.readerURL_v2_1;
+  if ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == 4) {
+  }
+  try {
+    String responseContent="<head>" + "<script type=\"text/javascript\">" + "function submitform(){document.loginform.submit();} </script>"+ "</head>"+ "<body onload=\"submitform()\">"+ "<form style=\"visibility:hidden;\" name=\"loginform\" id=\"loginform\" action=\"" + loginURL + "\" method=\"post\">"+ "<input type=\"text\" name=\"log\" id=\"user_login\" value=\""+ WordPress.currentBlog.getUsername()+ "\"/></label>"+ "<input type=\"password\" name=\"pwd\" id=\"user_pass\" value=\""+ WordPress.currentBlog.getPassword()+ "\" /></label>"+ "<input type=\"submit\" name=\"wp-submit\" id=\"wp-submit\" value=\"Log In\" />"+ "<input type=\"hidden\" name=\"redirect_to\" value=\""+ readerURL+ "\" />"+ "</form>"+ "</body>";
+    wv.setWebViewClient(new WebViewClient(){
+      @Override public boolean shouldOverrideUrlLoading(      WebView view,      String url){
+        view.loadUrl(url);
+        return false;
+      }
+      @Override public void onPageFinished(      WebView view,      String url){
+      }
+    }
+);
+    wv.setWebChromeClient(new WebChromeClient(){
+      public void onProgressChanged(      WebView view,      int progress){
+        WPCOMReaderImpl.this.setTitle("Loading...");
+        WPCOMReaderImpl.this.setProgress(progress * 100);
+        if (progress == 100) {
+          WPCOMReaderImpl.this.setTitle(getResources().getText(R.string.reader));
+        }
+      }
+    }
+);
+    WebSettings webSettings=wv.getSettings();
+    webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+    webSettings.setBuiltInZoomControls(true);
+    webSettings.setJavaScriptEnabled(true);
+    webSettings.setPluginsEnabled(true);
+    webSettings.setDomStorageEnabled(true);
+    webSettings.setUserAgentString("wp-android");
+    webSettings.setSavePassword(false);
+    wv.loadData(Uri.encode(responseContent),"text/html",HTTP.UTF_8);
+  }
+ catch (  Exception ex) {
+    ex.printStackTrace();
+  }
+  return null;
+}

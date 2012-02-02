@@ -1,0 +1,29 @@
+{
+  super.onCreate(icicle);
+  getWindow().setFormat(PixelFormat.RGBA_8888);
+  getWindow().addFlags(WindowManager.LayoutParams.FLAG_DITHER);
+  requestWindowFeature(Window.FEATURE_PROGRESS);
+  setContentView(R.layout.reader);
+  Bundle extras=getIntent().getExtras();
+  if (extras != null) {
+    extras.getString("currentTopic");
+  }
+  WebView wv=(WebView)findViewById(R.id.webView);
+  WebSettings webSettings=wv.getSettings();
+  webSettings.setBuiltInZoomControls(true);
+  webSettings.setJavaScriptEnabled(true);
+  webSettings.setPluginsEnabled(true);
+  webSettings.setDomStorageEnabled(true);
+  webSettings.setUserAgentString("wp-android");
+  wv.addJavascriptInterface(new JavaScriptInterface(this),"Android");
+  this.setTitle("Loading...");
+  wv.setWebChromeClient(new WebChromeClient(){
+    public void onProgressChanged(    WebView view,    int progress){
+      WPCOMReaderTopicsSelector.this.setProgress(progress * 100);
+    }
+  }
+);
+  wv.setWebViewClient(new WordPressWebViewClient());
+  String hybURL=this.getAuthorizeHybridURL(Constants.readerTopicsURL);
+  wv.loadUrl(hybURL);
+}

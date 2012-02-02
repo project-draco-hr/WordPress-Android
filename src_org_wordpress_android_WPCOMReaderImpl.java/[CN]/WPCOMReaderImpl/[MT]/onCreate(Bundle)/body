@@ -1,0 +1,22 @@
+{
+  super.onCreate(icicle);
+  getWindow().setFormat(PixelFormat.RGBA_8888);
+  getWindow().addFlags(WindowManager.LayoutParams.FLAG_DITHER);
+  requestWindowFeature(Window.FEATURE_PROGRESS);
+  setContentView(R.layout.reader);
+  if (WordPress.wpDB == null)   WordPress.wpDB=new WordPressDB(this);
+  if (WordPress.currentBlog == null) {
+    try {
+      WordPress.currentBlog=new Blog(WordPress.wpDB.getLastBlogID(this),this);
+    }
+ catch (    Exception e) {
+      Toast.makeText(this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
+      finish();
+    }
+  }
+  this.setTitle(getResources().getText(R.string.reader));
+  wv=(WebView)findViewById(R.id.webView);
+  wv.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+  wv.getSettings().setUserAgentString("wp-android");
+  new loadReaderTask().execute(null,null,null,null);
+}
