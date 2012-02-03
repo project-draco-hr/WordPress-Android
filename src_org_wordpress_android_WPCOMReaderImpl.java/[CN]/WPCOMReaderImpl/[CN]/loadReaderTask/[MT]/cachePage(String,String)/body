@@ -1,0 +1,30 @@
+{
+  HttpClient httpclient=new DefaultHttpClient();
+  try {
+    HttpProtocolParams.setUserAgent(httpclient.getParams(),"wp-android");
+    HttpGet request=new HttpGet(hybURL);
+    request.setHeader("Cookie",cookie);
+    HttpResponse response=httpclient.execute(request);
+    StatusLine status=response.getStatusLine();
+    if (status.getStatusCode() != 200) {
+      throw new IOException("Invalid response from server when caching the page: " + status.toString());
+    }
+    HttpEntity entity=response.getEntity();
+    InputStream inputStream=(InputStream)entity.getContent();
+    ByteArrayOutputStream content=new ByteArrayOutputStream();
+    int readBytes=0;
+    byte[] sBuffer=new byte[512];
+    while ((readBytes=inputStream.read(sBuffer)) != -1) {
+      content.write(sBuffer,0,readBytes);
+    }
+    String dataAsString=new String(content.toByteArray());
+    return dataAsString;
+  }
+ catch (  Exception e) {
+    Log.d("Error while caching the Topics page",e.getLocalizedMessage());
+    return null;
+  }
+ finally {
+    httpclient.getConnectionManager().shutdown();
+  }
+}

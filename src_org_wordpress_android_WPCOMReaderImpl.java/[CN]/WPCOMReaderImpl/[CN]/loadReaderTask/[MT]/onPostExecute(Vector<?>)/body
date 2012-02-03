@@ -1,17 +1,23 @@
 {
+  CookieManager cookieManager=CookieManager.getInstance();
+  final String cookie=cookieManager.getCookie("wordpress.com");
+  stopRotatingRefreshIcon();
   new Thread(new Runnable(){
     public void run(){
       try {
-        stopRotatingRefreshIcon();
         HttpClient httpclient=new DefaultHttpClient();
         HttpProtocolParams.setUserAgent(httpclient.getParams(),"wp-android");
         String readerURL=Constants.readerURL + "/?template=stats&stats_name=home_page";
-        if ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == 4) {
-          readerURL+="&per_page=20";
-        }
-        httpclient.execute(new HttpGet(readerURL));
+        HttpGet httpGet=new HttpGet(readerURL);
+        httpGet.setHeader("Cookie",cookie);
+        httpclient.execute(httpGet);
+        String hybURL=WPCOMReaderImpl.this.getAuthorizeHybridURL(Constants.readerTopicsURL);
+        WPCOMReaderImpl.this.cachedTopicsPage=cachePage(hybURL,cookie);
+        hybURL=WPCOMReaderImpl.this.getAuthorizeHybridURL(Constants.readerDetailURL);
+        WPCOMReaderImpl.this.cachedDetailPage=cachePage(hybURL,cookie);
       }
  catch (      Exception e) {
+        e.printStackTrace();
       }
     }
   }
