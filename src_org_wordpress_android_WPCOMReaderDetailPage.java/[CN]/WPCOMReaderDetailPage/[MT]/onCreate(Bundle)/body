@@ -7,10 +7,11 @@
   Bundle extras=getIntent().getExtras();
   if (extras != null) {
     cachedPage=extras.getString("cachedPage");
+    requestedURL=extras.getString("requestedURL");
   }
-  this.setTitle("Loading...");
   final WebView wv=(WebView)findViewById(R.id.webView);
   this.setDefaultWebViewSettings(wv);
+  wv.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
   wv.addJavascriptInterface(new JavaScriptInterface(this),"Android");
   wv.setWebViewClient(new WordPressWebViewClient());
   wv.setWebChromeClient(new WebChromeClient(){
@@ -20,5 +21,5 @@
     }
   }
 );
-  wv.loadData(Uri.encode(this.cachedPage),"text/html",HTTP.UTF_8);
+  wv.loadUrl(requestedURL);
 }
