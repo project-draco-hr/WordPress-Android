@@ -349,6 +349,80 @@
     }
   }
 );
+  content.setOnTouchListener(new View.OnTouchListener(){
+    @Override public boolean onTouch(    View v,    MotionEvent event){
+      if (event.getAction() > 1)       scrollDetected=true;
+      if (event.getAction() == 1 && !scrollDetected && isFullScreenEditing) {
+        Layout layout=((TextView)v).getLayout();
+        int x=(int)event.getX();
+        int y=(int)event.getY();
+        if (layout != null) {
+          int line=layout.getLineForVertical(y);
+          int charPosition=layout.getOffsetForHorizontal(line,x);
+          final Spannable s=content.getText();
+          WPImageSpan[] click_spans=s.getSpans(charPosition,charPosition,WPImageSpan.class);
+          if (click_spans.length != 0) {
+            final WPImageSpan span=click_spans[0];
+            if (!span.isVideo()) {
+              LayoutInflater factory=LayoutInflater.from(EditPost.this);
+              final View alertView=factory.inflate(R.layout.alert_image_options,null);
+              final TextView imageWidthText=(TextView)alertView.findViewById(R.id.imageWidthText);
+              final EditText titleText=(EditText)alertView.findViewById(R.id.title);
+              final EditText caption=(EditText)alertView.findViewById(R.id.caption);
+              final SeekBar seekBar=(SeekBar)alertView.findViewById(R.id.imageWidth);
+              final Spinner alignmentSpinner=(Spinner)alertView.findViewById(R.id.alignment_spinner);
+              ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(EditPost.this,R.array.alignment_array,android.R.layout.simple_spinner_item);
+              adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+              alignmentSpinner.setAdapter(adapter);
+              imageWidthText.setText(String.valueOf(span.getWidth()) + "px");
+              seekBar.setProgress(span.getWidth());
+              titleText.setText(span.getTitle());
+              caption.setText(span.getCaption());
+              alignmentSpinner.setSelection(span.getHorizontalAlignment(),true);
+              seekBar.setMax(100);
+              if (span.getWidth() != 0)               seekBar.setProgress(span.getWidth() / 10);
+              seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
+                @Override public void onStopTrackingTouch(                SeekBar seekBar){
+                }
+                @Override public void onStartTrackingTouch(                SeekBar seekBar){
+                }
+                @Override public void onProgressChanged(                SeekBar seekBar,                int progress,                boolean fromUser){
+                  if (progress == 0)                   progress=1;
+                  imageWidthText.setText(progress * 10 + "px");
+                }
+              }
+);
+              AlertDialog ad=new AlertDialog.Builder(EditPost.this).setTitle("Image Settings").setView(alertView).setPositiveButton("OK",new DialogInterface.OnClickListener(){
+                public void onClick(                DialogInterface dialog,                int whichButton){
+                  span.setTitle(titleText.getText().toString());
+                  span.setHorizontalAlignment(alignmentSpinner.getSelectedItemPosition());
+                  span.setWidth(seekBar.getProgress() * 10);
+                  span.setCaption(caption.getText().toString());
+                }
+              }
+).setNegativeButton("Cancel",new DialogInterface.OnClickListener(){
+                public void onClick(                DialogInterface dialog,                int whichButton){
+                }
+              }
+).create();
+              ad.show();
+              scrollDetected=false;
+              return true;
+            }
+          }
+ else {
+            content.setMovementMethod(ArrowKeyMovementMethod.getInstance());
+            content.setSelection(content.getSelectionStart());
+          }
+        }
+      }
+ else       if (event.getAction() == 1) {
+        scrollDetected=false;
+      }
+      return false;
+    }
+  }
+);
   content.setOnClickListener(new EditText.OnClickListener(){
     public void onClick(    View v){
       if (!isFullScreenEditing) {
@@ -369,62 +443,6 @@
           e.printStackTrace();
         }
         content.requestFocus();
-      }
- else {
-        final Spannable s=content.getText();
-        styleStart=content.getSelectionStart();
-        WPImageSpan[] click_spans=s.getSpans(content.getSelectionStart(),content.getSelectionStart(),WPImageSpan.class);
-        if (click_spans.length != 0) {
-          final WPImageSpan span=click_spans[0];
-          if (!span.isVideo()) {
-            LayoutInflater factory=LayoutInflater.from(EditPost.this);
-            final View alertView=factory.inflate(R.layout.alert_image_options,null);
-            final TextView imageWidthText=(TextView)alertView.findViewById(R.id.imageWidthText);
-            final EditText titleText=(EditText)alertView.findViewById(R.id.title);
-            final EditText caption=(EditText)alertView.findViewById(R.id.caption);
-            final SeekBar seekBar=(SeekBar)alertView.findViewById(R.id.imageWidth);
-            final Spinner alignmentSpinner=(Spinner)alertView.findViewById(R.id.alignment_spinner);
-            ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(EditPost.this,R.array.alignment_array,android.R.layout.simple_spinner_item);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            alignmentSpinner.setAdapter(adapter);
-            imageWidthText.setText(String.valueOf(span.getWidth()) + "px");
-            seekBar.setProgress(span.getWidth());
-            titleText.setText(span.getTitle());
-            caption.setText(span.getCaption());
-            alignmentSpinner.setSelection(span.getHorizontalAlignment(),true);
-            seekBar.setMax(100);
-            if (span.getWidth() != 0)             seekBar.setProgress(span.getWidth() / 10);
-            seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
-              @Override public void onStopTrackingTouch(              SeekBar seekBar){
-              }
-              @Override public void onStartTrackingTouch(              SeekBar seekBar){
-              }
-              @Override public void onProgressChanged(              SeekBar seekBar,              int progress,              boolean fromUser){
-                if (progress == 0)                 progress=1;
-                imageWidthText.setText(progress * 10 + "px");
-              }
-            }
-);
-            AlertDialog ad=new AlertDialog.Builder(EditPost.this).setTitle("Image Settings").setView(alertView).setPositiveButton("OK",new DialogInterface.OnClickListener(){
-              public void onClick(              DialogInterface dialog,              int whichButton){
-                span.setTitle(titleText.getText().toString());
-                span.setHorizontalAlignment(alignmentSpinner.getSelectedItemPosition());
-                span.setWidth(seekBar.getProgress() * 10);
-                span.setCaption(caption.getText().toString());
-              }
-            }
-).setNegativeButton("Cancel",new DialogInterface.OnClickListener(){
-              public void onClick(              DialogInterface dialog,              int whichButton){
-              }
-            }
-).create();
-            ad.show();
-          }
-        }
- else {
-          content.setMovementMethod(ArrowKeyMovementMethod.getInstance());
-          content.setSelection(content.getSelectionStart());
-        }
       }
     }
   }
