@@ -193,7 +193,14 @@
     pfSpinner.setAdapter(pfAdapter);
     String activePostFormat="standard";
     if (!isNew) {
-      if (!post.getWP_post_format().equals(""))       activePostFormat=post.getWP_post_format();
+      try {
+        if (!post.getWP_post_format().equals(""))         activePostFormat=post.getWP_post_format();
+      }
+ catch (      Exception e) {
+        Toast.makeText(this,getResources().getText(R.string.post_not_found),Toast.LENGTH_LONG).show();
+        finish();
+        return;
+      }
     }
     for (int i=0; i < postFormats.length; i++) {
       if (postFormats[i].equals(activePostFormat))       pfSpinner.setSelection(i);
@@ -343,14 +350,28 @@
 );
   }
   final WPEditText content=(WPEditText)findViewById(R.id.postContent);
-  content.setOnFocusChangeListener(new View.OnFocusChangeListener(){
-    @Override public void onFocusChange(    View view,    boolean hasFocus){
-      if (!isFullScreenEditing && hasFocus)       content.performClick();
-    }
-  }
-);
   content.setOnTouchListener(new View.OnTouchListener(){
     @Override public boolean onTouch(    View v,    MotionEvent event){
+      if (!isFullScreenEditing) {
+        isFullScreenEditing=true;
+        content.setFocusableInTouchMode(true);
+        try {
+          LinearLayout smallEditorWrap=(LinearLayout)findViewById(R.id.postContentEditorSmallWrapper);
+          smallEditorWrap.removeView(content);
+          ScrollView scrollView=(ScrollView)findViewById(R.id.scrollView);
+          scrollView.setVisibility(View.GONE);
+          LinearLayout contentEditorWrap=(LinearLayout)findViewById(R.id.postContentEditorWrapper);
+          contentEditorWrap.addView(content);
+          contentEditorWrap.setVisibility(View.VISIBLE);
+          RelativeLayout formatBar=(RelativeLayout)findViewById(R.id.formatBar);
+          formatBar.setVisibility(View.VISIBLE);
+        }
+ catch (        Exception e) {
+          e.printStackTrace();
+        }
+        content.requestFocus();
+        return true;
+      }
       float pos=event.getY();
       if (event.getAction() == 0)       lastYPos=pos;
       if (event.getAction() > 1) {
@@ -463,30 +484,6 @@
         if (span instanceof StrikethroughSpan) {
           strikeButton.setChecked(true);
         }
-      }
-    }
-  }
-);
-  content.setOnClickListener(new EditText.OnClickListener(){
-    public void onClick(    View v){
-      if (!isFullScreenEditing) {
-        isFullScreenEditing=true;
-        content.setFocusableInTouchMode(true);
-        try {
-          LinearLayout smallEditorWrap=(LinearLayout)findViewById(R.id.postContentEditorSmallWrapper);
-          smallEditorWrap.removeView(content);
-          ScrollView scrollView=(ScrollView)findViewById(R.id.scrollView);
-          scrollView.setVisibility(View.GONE);
-          LinearLayout contentEditorWrap=(LinearLayout)findViewById(R.id.postContentEditorWrapper);
-          contentEditorWrap.addView(content);
-          contentEditorWrap.setVisibility(View.VISIBLE);
-          RelativeLayout formatBar=(RelativeLayout)findViewById(R.id.formatBar);
-          formatBar.setVisibility(View.VISIBLE);
-        }
- catch (        Exception e) {
-          e.printStackTrace();
-        }
-        content.requestFocus();
       }
     }
   }
