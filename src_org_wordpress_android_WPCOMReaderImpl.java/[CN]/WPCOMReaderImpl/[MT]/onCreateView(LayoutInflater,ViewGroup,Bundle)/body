@@ -1,0 +1,50 @@
+{
+  View v=inflater.inflate(R.layout.reader_wpcom,container,false);
+  if (WordPress.wpDB == null)   WordPress.wpDB=new WordPressDB(getActivity().getApplicationContext());
+  if (WordPress.currentBlog == null) {
+    try {
+      WordPress.currentBlog=new Blog(WordPress.wpDB.getLastBlogID(getActivity().getApplicationContext()),getActivity().getApplicationContext());
+    }
+ catch (    Exception e) {
+      Toast.makeText(getActivity().getApplicationContext(),getResources().getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
+      getActivity().finish();
+    }
+  }
+  topicTV=(TextView)v.findViewById(R.id.topic_title);
+  wv=(WebView)v.findViewById(R.id.webView);
+  wv.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+  wv.addJavascriptInterface(new JavaScriptInterface(getActivity().getApplicationContext()),interfaceNameForJS);
+  this.setDefaultWebViewSettings(wv);
+  new loadReaderTask().execute(null,null,null,null);
+  RelativeLayout rl=(RelativeLayout)v.findViewById(R.id.topicSelector);
+  rl.setOnClickListener(new View.OnClickListener(){
+    public void onClick(    View v){
+      if (onChangePageListener != null)       onChangePageListener.onChangePage(0);
+    }
+  }
+);
+  Button refreshButton=(Button)v.findViewById(R.id.action_refresh);
+  refreshButton.setOnClickListener(new ImageButton.OnClickListener(){
+    public void onClick(    View v){
+      wv.reload();
+      new Thread(new Runnable(){
+        public void run(){
+          try {
+            HttpClient httpclient=new DefaultHttpClient();
+            HttpProtocolParams.setUserAgent(httpclient.getParams(),"wp-android");
+            String readerURL=Constants.readerURL + "/?template=stats&stats_name=home_page_refresh";
+            if ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == 4) {
+              readerURL+="&per_page=20";
+            }
+            httpclient.execute(new HttpGet(readerURL));
+          }
+ catch (          Exception e) {
+          }
+        }
+      }
+).start();
+    }
+  }
+);
+  return v;
+}

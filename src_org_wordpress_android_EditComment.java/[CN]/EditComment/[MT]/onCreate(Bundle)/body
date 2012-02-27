@@ -1,0 +1,55 @@
+{
+  super.onCreate(icicle);
+  if (WordPress.wpDB == null)   WordPress.wpDB=new WordPressDB(this);
+  Display display=((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+  int width=display.getWidth();
+  int height=display.getHeight();
+  if (height > width) {
+    width=height;
+  }
+  if (width > 480) {
+    isLargeScreen=true;
+  }
+  setContentView(R.layout.edit_comment);
+  Comment comment=WordPress.currentComment;
+  final EditText authorNameET=(EditText)this.findViewById(R.id.author_name);
+  authorNameET.setText(comment.name);
+  final EditText authorEmailET=(EditText)this.findViewById(R.id.author_email);
+  authorEmailET.setText(comment.authorEmail);
+  final EditText authorURLET=(EditText)this.findViewById(R.id.author_url);
+  authorURLET.setText(comment.authorURL);
+  final EditText commentContentET=(EditText)this.findViewById(R.id.comment_content);
+  commentContentET.setText(comment.comment);
+  String[] items=new String[]{getResources().getString(R.string.approved),getResources().getString(R.string.pending_review),getResources().getString(R.string.spam)};
+  Spinner spinner=(Spinner)findViewById(R.id.status);
+  ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,items);
+  adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+  spinner.setAdapter(adapter);
+  String status=comment.status;
+  if (status.equals("approve")) {
+    spinner.setSelection(0,true);
+  }
+ else   if (status.equals("hold")) {
+    spinner.setSelection(1,true);
+  }
+ else   if (status.equals("spam")) {
+    spinner.setSelection(2,true);
+  }
+  spinner.setOnItemSelectedListener(new OnItemSelectedListener(){
+    @Override public void onItemSelected(    AdapterView<?> arg0,    View arg1,    int arg2,    long arg3){
+    }
+    @Override public void onNothingSelected(    AdapterView<?> arg0){
+    }
+  }
+);
+  final Button saveButton=(Button)findViewById(R.id.post);
+  saveButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      boolean result=saveComment();
+      if (result) {
+        finish();
+      }
+    }
+  }
+);
+}

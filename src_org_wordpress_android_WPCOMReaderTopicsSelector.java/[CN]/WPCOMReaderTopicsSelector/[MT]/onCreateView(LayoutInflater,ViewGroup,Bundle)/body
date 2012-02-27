@@ -1,0 +1,25 @@
+{
+  View v=inflater.inflate(R.layout.reader,container,false);
+  Bundle extras=getActivity().getIntent().getExtras();
+  if (extras != null) {
+    topicID=extras.getString("currentTopic");
+    cachedTopicsPage=extras.getString("cachedTopicsPage");
+  }
+  final WebView wv=(WebView)v.findViewById(R.id.webView);
+  this.setDefaultWebViewSettings(wv);
+  wv.addJavascriptInterface(new JavaScriptInterface(getActivity().getBaseContext()),"Android");
+  wv.setWebViewClient(new WordPressWebViewClient());
+  String hybURL=this.getAuthorizeHybridURL(Constants.readerTopicsURL);
+  wv.setWebChromeClient(new WebChromeClient(){
+    public void onProgressChanged(    WebView view,    int progress){
+      if (progress == 100) {
+        String methodCall="document.setSelectedTopic('" + WPCOMReaderTopicsSelector.this.topicID + "')";
+        wv.loadUrl("javascript:" + methodCall);
+      }
+    }
+  }
+);
+  if (this.cachedTopicsPage != null)   wv.loadData(Uri.encode(this.cachedTopicsPage),"text/html",HTTP.UTF_8);
+ else   wv.loadUrl(hybURL);
+  return v;
+}

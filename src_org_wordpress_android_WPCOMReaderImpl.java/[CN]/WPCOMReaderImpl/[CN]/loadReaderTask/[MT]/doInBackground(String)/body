@@ -1,7 +1,7 @@
 {
   if (WordPress.currentBlog == null) {
     try {
-      WordPress.currentBlog=new Blog(WordPress.wpDB.getLastBlogID(WPCOMReaderImpl.this),WPCOMReaderImpl.this);
+      WordPress.currentBlog=new Blog(WordPress.wpDB.getLastBlogID(getActivity().getApplicationContext()),getActivity().getApplicationContext());
     }
  catch (    Exception e) {
       e.printStackTrace();
@@ -20,10 +20,7 @@
     wv.setWebViewClient(new WebViewClient(){
       @Override public boolean shouldOverrideUrlLoading(      WebView view,      String url){
         if (url.equalsIgnoreCase(Constants.readerDetailURL)) {
-          Intent i=new Intent(getBaseContext(),WPCOMReaderDetailPage.class);
-          i.putExtra("requestedURL",url);
-          i.putExtra("cachedPage",WPCOMReaderImpl.this.cachedDetailPage);
-          startActivity(i);
+          onPostSelectedListener.onPostSelected(url,WPCOMReaderImpl.this.cachedDetailPage);
           return true;
         }
         view.loadUrl(url);
@@ -35,9 +32,7 @@
 );
     wv.setWebChromeClient(new WebChromeClient(){
       public void onProgressChanged(      WebView view,      int progress){
-        WPCOMReaderImpl.this.setTitle("Loading...");
         if (progress == 100) {
-          WPCOMReaderImpl.this.setTitle(getResources().getText(R.string.reader));
         }
       }
     }
