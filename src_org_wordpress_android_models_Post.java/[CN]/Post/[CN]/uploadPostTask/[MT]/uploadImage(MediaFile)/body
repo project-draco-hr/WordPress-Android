@@ -86,7 +86,7 @@
  else {
       for (int i=0; i < 2; i++) {
         curImagePath=mf.getFileName();
-        if (i == 0 || post.blog.isFullSizeImage()) {
+        if (i == 0 || (post.blog.isFullSizeImage() || post.blog.isScaledImage())) {
           Uri imageUri=Uri.parse(curImagePath);
           File jpeg=null;
           String mimeType="", orientation="", path="";
@@ -122,7 +122,7 @@
           orientation=ih.getExifOrientation(path,orientation);
           String imageTitle=jpeg.getName();
           byte[] finalBytes=null;
-          if (i == 0) {
+          if (i == 0 || post.blog.isScaledImage()) {
             byte[] bytes=new byte[(int)jpeg.length()];
             DataInputStream in=null;
             try {
@@ -144,7 +144,7 @@
               e.printStackTrace();
             }
             ImageHelper ih2=new ImageHelper();
-            finalBytes=ih2.createThumbnail(bytes,String.valueOf(mf.getWidth()),orientation,false);
+            finalBytes=ih2.createThumbnail(bytes,String.valueOf(i == 0 ? mf.getWidth() : post.blog.getScaledImageWidth()),orientation,false);
             if (finalBytes == null) {
               error=context.getResources().getText(R.string.media_error).toString();
               return null;
@@ -153,7 +153,7 @@
           Map<String,Object> m=new HashMap<String,Object>();
           m.put("name",imageTitle);
           m.put("type",mimeType);
-          if (i == 0) {
+          if (i == 0 || post.blog.isScaledImage()) {
             m.put("bits",finalBytes);
           }
  else {
@@ -176,7 +176,7 @@
             finalThumbnailUrl=resultURL;
           }
  else {
-            if (post.blog.isFullSizeImage()) {
+            if (post.blog.isFullSizeImage() || post.blog.isScaledImage()) {
               finalImageUrl=resultURL;
             }
  else {
@@ -200,15 +200,15 @@ break;
 }
 String alignmentCSS="class=\"" + alignment + "\" ";
 if (resultURL != null) {
-if (i != 0 && post.blog.isFullSizeImage()) {
+if (i != 0 && (post.blog.isFullSizeImage() || post.blog.isScaledImage())) {
 content=content + "<a alt=\"image\" href=\"" + finalImageUrl+ "\"><img title=\""+ mf.getTitle()+ "\" "+ alignmentCSS+ "alt=\"image\" src=\""+ finalThumbnailUrl+ "\" /></a>";
 }
  else {
-if (i == 0 && post.blog.isFullSizeImage() == false) {
+if (i == 0 && (post.blog.isFullSizeImage() == false && !post.blog.isScaledImage())) {
 content=content + "<img title=\"" + mf.getTitle()+ "\" "+ alignmentCSS+ "alt=\"image\" src=\""+ finalThumbnailUrl+ "\" />";
 }
 }
-if ((i == 0 && !post.blog.isFullSizeImage()) || i == 1) {
+if ((i == 0 && !post.blog.isFullSizeImage() && !post.blog.isScaledImage()) || i == 1) {
 if (!mf.getCaption().equals("")) {
 content=String.format("[caption id=\"\" align=\"%s\" width=\"%d\" caption=\"%s\"]%s[/caption]",alignment,mf.getWidth(),EscapeUtils.escapeHtml(mf.getCaption()),content);
 }
