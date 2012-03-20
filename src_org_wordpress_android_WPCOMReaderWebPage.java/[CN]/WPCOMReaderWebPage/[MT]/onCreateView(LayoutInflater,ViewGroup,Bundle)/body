@@ -1,0 +1,17 @@
+{
+  View v=inflater.inflate(R.layout.reader_web_page,container,false);
+  progressBar=(ProgressBar)v.findViewById(R.id.progressBar);
+  wv=(WebView)v.findViewById(R.id.webView);
+  this.setDefaultWebViewSettings(wv);
+  wv.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+  wv.addJavascriptInterface(new JavaScriptInterface(getActivity().getApplicationContext()),interfaceNameForJS);
+  wv.setWebViewClient(new DetailWebViewClient());
+  wv.setWebChromeClient(new WebChromeClient(){
+    public void onProgressChanged(    WebView view,    int progress){
+      progressBar.setProgress(progress);
+      if (progress == 100)       progressBar.setVisibility(View.GONE);
+    }
+  }
+);
+  return v;
+}

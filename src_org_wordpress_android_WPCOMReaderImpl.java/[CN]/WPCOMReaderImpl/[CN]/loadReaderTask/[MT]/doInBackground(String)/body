@@ -22,19 +22,17 @@
         if (url.equalsIgnoreCase(Constants.readerDetailURL)) {
           view.stopLoading();
           wv.loadUrl("javascript:Reader2.get_loaded_items();");
-          onPostSelectedListener.onPostSelected(url,WPCOMReaderImpl.this.cachedDetailPage);
+          onPostSelectedListener.onPostSelected(url);
         }
+ else {
+          startRotatingRefreshIcon();
+        }
+      }
+      @Override public void onPageFinished(      WebView view,      String url){
+        stopRotatingRefreshIcon();
       }
       @Override public boolean shouldOverrideUrlLoading(      WebView view,      String url){
         return false;
-      }
-    }
-);
-    wv.setWebChromeClient(new WebChromeClient(){
-      public void onProgressChanged(      WebView view,      int progress){
-        if (progress == 100) {
-          stopRotatingRefreshIcon();
-        }
       }
     }
 );
