@@ -1,5 +1,5 @@
 {
-  View v=inflater.inflate(R.layout.reader,container,false);
+  View v=inflater.inflate(R.layout.reader_detail,container,false);
   Bundle extras=getActivity().getIntent().getExtras();
   if (extras != null) {
     requestedURL=extras.getString("requestedURL");
@@ -7,7 +7,9 @@
   wv=(WebView)v.findViewById(R.id.webView);
   this.setDefaultWebViewSettings(wv);
   wv.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-  wv.setWebViewClient(new WordPressWebViewClient());
+  wv.getSettings().setJavaScriptEnabled(true);
+  wv.addJavascriptInterface(new JavaScriptInterface(getActivity().getApplicationContext()),interfaceNameForJS);
+  wv.setWebViewClient(new DetailWebViewClient());
   wv.setWebChromeClient(new WebChromeClient(){
     public void onProgressChanged(    WebView view,    int progress){
       if (progress == 100) {
@@ -16,5 +18,19 @@
   }
 );
   wv.loadUrl(requestedURL);
+  nextPost=(ImageButton)v.findViewById(R.id.down);
+  nextPost.setOnClickListener(new OnClickListener(){
+    @Override public void onClick(    View v){
+      wv.loadUrl("javascript:Reader2.show_next_item();");
+    }
+  }
+);
+  prevPost=(ImageButton)v.findViewById(R.id.up);
+  prevPost.setOnClickListener(new OnClickListener(){
+    @Override public void onClick(    View v){
+      wv.loadUrl("javascript:Reader2.show_prev_item();");
+    }
+  }
+);
   return v;
 }
