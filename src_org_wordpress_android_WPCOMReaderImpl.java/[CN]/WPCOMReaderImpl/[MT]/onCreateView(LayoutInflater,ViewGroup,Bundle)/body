@@ -15,6 +15,26 @@
   wv=(WebView)v.findViewById(R.id.webView);
   wv.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
   wv.addJavascriptInterface(new JavaScriptInterface(getActivity().getApplicationContext()),interfaceNameForJS);
+  wv.setWebViewClient(new WebViewClient(){
+    @Override public void onPageStarted(    WebView view,    String url,    Bitmap favicon){
+      if (url.equalsIgnoreCase(Constants.readerDetailURL)) {
+        view.stopLoading();
+        wv.loadUrl("javascript:Reader2.get_loaded_items();");
+        wv.loadUrl("javascript:Reader2.get_last_selected_item();");
+        onPostSelectedListener.onPostSelected(url);
+      }
+ else {
+        startRotatingRefreshIcon();
+      }
+    }
+    @Override public void onPageFinished(    WebView view,    String url){
+      stopRotatingRefreshIcon();
+    }
+    @Override public boolean shouldOverrideUrlLoading(    WebView view,    String url){
+      return false;
+    }
+  }
+);
   this.setDefaultWebViewSettings(wv);
   new loadReaderTask().execute(null,null,null,null);
   RelativeLayout rl=(RelativeLayout)v.findViewById(R.id.topicSelector);
