@@ -1,12 +1,13 @@
 {
+  final WPCOMReaderWebPage readerWebPageFragment=(WPCOMReaderWebPage)webPage;
+  final WPCOMReaderDetailPage readerPageDetailFragment=(WPCOMReaderDetailPage)detailPage;
 switch (item.getItemId()) {
 case 0:
     finish();
   break;
 case 1:
-if (readerPager.getCurrentItem() == 2) {
-  final WPCOMReaderDetailPage readerPageDetailFragment=(WPCOMReaderDetailPage)detailPage;
-  if (readerPageDetailFragment != null) {
+if (readerPageDetailFragment != null && readerPageDetailFragment != null) {
+  if (readerPager.getCurrentItem() == 2) {
     runOnUiThread(new Runnable(){
       public void run(){
         readerPageDetailFragment.wv.loadUrl("javascript:Reader2.get_article_permalink();");
@@ -14,6 +15,39 @@ if (readerPager.getCurrentItem() == 2) {
     }
 );
   }
+ else {
+    String url=readerWebPageFragment.wv.getUrl();
+    if (url != null) {
+      Uri uri=Uri.parse(url);
+      if (uri != null) {
+        Intent i=new Intent(Intent.ACTION_VIEW);
+        i.setData(uri);
+        startActivity(i);
+      }
+    }
+  }
+}
+break;
+case 2:
+if (readerWebPageFragment != null && readerPageDetailFragment != null) {
+if (readerPager.getCurrentItem() == 2) {
+runOnUiThread(new Runnable(){
+  public void run(){
+    isShare=true;
+    readerPageDetailFragment.wv.loadUrl("javascript:Reader2.get_article_permalink();");
+  }
+}
+);
+}
+ else {
+String url=readerWebPageFragment.wv.getUrl();
+if (url != null) {
+  Intent share=new Intent(Intent.ACTION_SEND);
+  share.setType("text/plain");
+  share.putExtra(Intent.EXTRA_TEXT,url);
+  startActivity(Intent.createChooser(share,getResources().getText(R.string.share_url)));
+}
+}
 }
 break;
 default :
