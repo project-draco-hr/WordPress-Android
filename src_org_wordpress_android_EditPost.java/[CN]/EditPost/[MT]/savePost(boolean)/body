@@ -5,7 +5,7 @@
   String content="";
   EditText passwordET=(EditText)findViewById(R.id.post_password);
   String password=passwordET.getText().toString();
-  if (localDraft || isNew) {
+  if (localDraft || isNew && !autoSave) {
     Editable e=contentET.getText();
     if (android.os.Build.VERSION.SDK_INT >= 14) {
       CharacterStyle[] style=e.getSpans(0,e.length(),CharacterStyle.class);
@@ -38,7 +38,7 @@
   }
   String images="";
   boolean success=false;
-  if (content.equals("")) {
+  if (content.equals("") && !autoSave) {
     AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(EditPost.this);
     dialogBuilder.setTitle(getResources().getText(R.string.empty_fields));
     dialogBuilder.setMessage(getResources().getText(R.string.title_post_required));
@@ -70,10 +70,12 @@
           mf.setWidth(wpIS.getWidth());
           mf.save(EditPost.this);
           int tagStart=s.getSpanStart(wpIS);
-          s.removeSpan(wpIS);
-          s.insert(tagStart,"<img android-uri=\"" + wpIS.getImageSource().toString() + "\" />");
-          if (localDraft)           content=EscapeUtils.unescapeHtml(WPHtml.toHtml(s));
- else           content=s.toString();
+          if (!autoSave) {
+            s.removeSpan(wpIS);
+            s.insert(tagStart,"<img android-uri=\"" + wpIS.getImageSource().toString() + "\" />");
+            if (localDraft)             content=EscapeUtils.unescapeHtml(WPHtml.toHtml(s));
+ else             content=s.toString();
+          }
         }
       }
     }
@@ -110,13 +112,17 @@ e.printStackTrace();
 }
 String needle="<!--more-->";
 if (isNew) {
-post=new Post(id,title,content,images,pubDateTimestamp,categories.toString(),tags,status,password,latitude,longitude,isPage,postFormat,EditPost.this,true);
+post=new Post(id,title,content,images,pubDateTimestamp,categories.toString(),tags,status,password,latitude,longitude,isPage,postFormat,EditPost.this,true,false);
 post.setLocalDraft(true);
 if (content.indexOf(needle) >= 0) {
 post.setDescription(content.substring(0,content.indexOf(needle)));
 post.setMt_text_more(content.substring(content.indexOf(needle) + needle.length(),content.length()));
 }
 success=post.save();
+if (success) {
+isNew=false;
+isNewDraft=true;
+}
 post.deleteMediaFiles();
 Spannable s=contentET.getText();
 WPImageSpan[] image_spans=s.getSpans(0,s.length(),WPImageSpan.class);
@@ -161,6 +167,7 @@ post.setWP_password(password);
 post.setLatitude(latitude);
 post.setLongitude(longitude);
 post.setWP_post_form(postFormat);
+if (!post.isLocalDraft()) post.setLocalChange(true);
 success=post.update();
 }
 }
