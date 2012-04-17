@@ -4,25 +4,22 @@
     scrollable=true;
     scaleDetector=new ScaleGestureDetector(getContext(),new ScaleGestureDetector.SimpleOnScaleGestureListener(){
       @Override public boolean onScale(      ScaleGestureDetector detector){
-        double newSize=viewportSize * detector.getScaleFactor();
-        double diff=newSize - viewportSize;
-        viewportStart+=diff / 2;
-        viewportSize-=diff;
-        if (diff < 0) {
-          double minX=getMinX(true);
-          if (viewportStart < minX) {
-            viewportStart=minX;
+        double center=viewportStart + viewportSize / 2;
+        viewportSize/=detector.getScaleFactor();
+        viewportStart=center - viewportSize / 2;
+        double minX=getMinX(true);
+        if (viewportStart < minX) {
+          viewportStart=minX;
+        }
+        double maxX=getMaxX(true);
+        double overlap=viewportStart + viewportSize - maxX;
+        if (overlap > 0) {
+          if (viewportStart - overlap > minX) {
+            viewportStart-=overlap;
           }
-          double maxX=getMaxX(true);
-          double overlap=viewportStart + viewportSize - maxX;
-          if (overlap > 0) {
-            if (viewportStart - overlap > minX) {
-              viewportStart-=overlap;
-            }
  else {
-              viewportStart=minX;
-              viewportSize=maxX - viewportStart;
-            }
+            viewportStart=minX;
+            viewportSize=maxX - viewportStart;
           }
         }
         verlabels=null;
