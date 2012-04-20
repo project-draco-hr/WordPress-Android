@@ -1,5 +1,4 @@
 {
-  WordPressDB db=new WordPressDB(Comments.this);
   client=new XMLRPCClient(WordPress.currentBlog.getUrl(),WordPress.currentBlog.getHttpuser(),WordPress.currentBlog.getHttppassword());
   HashMap<String,String> contentHash, postHash=new HashMap<String,String>();
   contentHash=(HashMap<String,String>)commentList.allComments.get(selCommentID);
@@ -16,7 +15,7 @@
     if (bResult) {
       WordPress.currentComment.status=newStatus;
       commentList.model.set(WordPress.currentComment.position,WordPress.currentComment);
-      db.updateCommentStatus(id,WordPress.currentComment.commentID,newStatus);
+      WordPress.wpDB.updateCommentStatus(id,WordPress.currentComment.commentID,newStatus);
     }
     dismissDialog(ID_DIALOG_MODERATING);
     Thread action=new Thread(){
