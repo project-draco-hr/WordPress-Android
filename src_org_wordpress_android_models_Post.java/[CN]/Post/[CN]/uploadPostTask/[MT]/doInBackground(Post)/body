@@ -68,10 +68,11 @@
         moreContent=post.getMt_text_more();
         matcher=pattern.matcher(moreContent);
       }
+      List<String> imageTags=new ArrayList<String>();
       while (matcher.find()) {
-        String tag="";
-        if (x == 0)         tag=descriptionContent.substring(matcher.start(),matcher.end());
- else         tag=moreContent.substring(matcher.start(),matcher.end());
+        imageTags.add(matcher.group());
+      }
+      for (      String tag : imageTags) {
         Pattern p=Pattern.compile("android-uri=\"([^\"]+)\"");
         Matcher m=p.matcher(tag);
         String imgPath="";
@@ -84,11 +85,9 @@
               if (imgHTML != null) {
                 if (x == 0) {
                   descriptionContent=descriptionContent.replace(tag,imgHTML);
-                  matcher=pattern.matcher(descriptionContent);
                 }
  else {
                   moreContent=moreContent.replace(tag,imgHTML);
-                  matcher=pattern.matcher(moreContent);
                 }
               }
  else {
