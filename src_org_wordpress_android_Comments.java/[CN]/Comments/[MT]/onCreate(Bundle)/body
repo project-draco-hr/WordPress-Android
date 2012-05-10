@@ -21,6 +21,7 @@
   WordPress.currentComment=null;
   titleBar.refreshButton.setOnClickListener(new ImageButton.OnClickListener(){
     public void onClick(    View v){
+      popCommentDetail();
       attemptToSelectComment();
       commentList.refreshComments(false,false,false);
     }
@@ -28,11 +29,7 @@
 );
   titleBar.setOnBlogChangedListener(new OnBlogChangedListener(){
     @Override public void OnBlogChanged(){
-      FragmentManager fm=getSupportFragmentManager();
-      ViewCommentFragment f=(ViewCommentFragment)fm.findFragmentById(R.id.commentDetail);
-      if (f == null) {
-        fm.popBackStack();
-      }
+      popCommentDetail();
       attemptToSelectComment();
       boolean commentsLoaded=commentList.loadComments(false,false);
       if (!commentsLoaded)       commentList.refreshComments(false,false,false);
