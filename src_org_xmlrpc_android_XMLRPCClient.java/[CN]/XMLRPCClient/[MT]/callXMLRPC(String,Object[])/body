@@ -67,14 +67,24 @@
     }
     XmlPullParser pullParser=XmlPullParserFactory.newInstance().newPullParser();
     HttpEntity entity=response.getEntity();
-    PushbackInputStream is=new PushbackInputStream(entity.getContent());
-    int bomCheck=is.read();
+    InputStream is=entity.getContent();
+    int bomCheck=-1;
     int stopper=0;
-    while (bomCheck != 60 && stopper < 20) {
-      bomCheck=is.read();
+    String snippet;
+    while ((bomCheck=is.read()) != -1 && stopper <= 5000) {
       stopper++;
+      if (bomCheck == 60) {
+        byte[] chunk=new byte[4];
+        is.read(chunk);
+        snippet=new String(chunk,"UTF8");
+        if (snippet.equals("?xml")) {
+          String start="<" + snippet;
+          List<InputStream> streams=Arrays.asList(new ByteArrayInputStream(start.getBytes()),is);
+          is=new SequenceInputStream(Collections.enumeration(streams));
+          break;
+        }
+      }
     }
-    is.unread(bomCheck);
     pullParser.setInput(is,"UTF-8");
     pullParser.nextTag();
     pullParser.require(XmlPullParser.START_TAG,null,TAG_METHOD_RESPONSE);
