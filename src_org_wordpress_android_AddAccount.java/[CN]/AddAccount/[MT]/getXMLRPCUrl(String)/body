@@ -1,40 +1,18 @@
 {
+  Pattern xmlrpcLink=Pattern.compile("<api\\s*?name=\"WordPress\".*?apiLink=\"(.*?)\"",Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
   InputStream in=getResponse(urlString);
   if (in != null) {
-    XmlPullParser parser=Xml.newPullParser();
     try {
-      parser.setInput(in,null);
-      int eventType=parser.getEventType();
-      while (eventType != XmlPullParser.END_DOCUMENT) {
-        String name="";
-        String apiLink="";
-switch (eventType) {
-case XmlPullParser.START_TAG:
-          name=parser.getName();
-        if (name.equalsIgnoreCase("api")) {
-          for (int i=0; i < parser.getAttributeCount(); i++) {
-            String attrName=parser.getAttributeName(i);
-            String attrValue=parser.getAttributeValue(i);
-            if (attrName.equals("name")) {
-              name=attrValue;
-            }
- else             if (attrName.equals("apiLink")) {
-              apiLink=attrValue;
-            }
-          }
-          if (name.equals("WordPress")) {
-            return apiLink;
-          }
-        }
-      break;
+      String html=convertStreamToString(in);
+      Matcher matcher=xmlrpcLink.matcher(html);
+      if (matcher.find()) {
+        String href=matcher.group(1);
+        return href;
+      }
+    }
+ catch (    IOException e) {
+      return null;
+    }
   }
-  eventType=parser.next();
-}
-}
- catch (Exception e) {
-e.printStackTrace();
-return null;
-}
-}
-return null;
+  return null;
 }
