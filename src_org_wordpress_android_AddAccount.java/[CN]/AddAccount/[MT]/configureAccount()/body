@@ -55,11 +55,13 @@
     if (rsdUrl != null) {
       xmlrpcURL=getXMLRPCUrl(rsdUrl);
     }
+    isCustomURL=false;
     if (xmlrpcURL != null) {
       fBlogURL=xmlrpcURL;
     }
  else {
       fBlogURL=blogURL;
+      isCustomURL=true;
     }
     client=new XMLRPCClient(fBlogURL,httpuser,httppassword);
     XMLRPCMethod method=new XMLRPCMethod("wp.getUsersBlogs",new XMLRPCMethodCallback(){
@@ -80,7 +82,8 @@
           match=WordPress.wpDB.checkMatch(matchBlogName,contentHash.get("xmlrpc").toString(),username);
           if (!match) {
             blogNames[blogCtr]=matchBlogName;
-            urls[blogCtr]=contentHash.get("xmlrpc").toString();
+            if (isCustomURL)             urls[blogCtr]=blogURL;
+ else             urls[blogCtr]=contentHash.get("xmlrpc").toString();
             blogIds[blogCtr]=Integer.parseInt(contentHash.get("blogid").toString());
             String blogURL=urls[blogCtr];
             aBlogNames.add(EscapeUtils.unescapeHtml(blogNames[blogCtr]));
