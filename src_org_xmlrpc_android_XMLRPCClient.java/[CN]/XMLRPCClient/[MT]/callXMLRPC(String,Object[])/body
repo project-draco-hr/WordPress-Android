@@ -70,18 +70,24 @@
     InputStream is=entity.getContent();
     int bomCheck=-1;
     int stopper=0;
-    String snippet;
     while ((bomCheck=is.read()) != -1 && stopper <= 5000) {
       stopper++;
+      String snippet="";
       if (bomCheck == 60) {
-        byte[] chunk=new byte[4];
-        is.read(chunk);
-        snippet=new String(chunk,"UTF8");
+        for (int i=0; i < 4; i++) {
+          byte[] chunk=new byte[1];
+          is.read(chunk);
+          snippet+=new String(chunk,"UTF-8");
+        }
         if (snippet.equals("?xml")) {
           String start="<" + snippet;
           List<InputStream> streams=Arrays.asList(new ByteArrayInputStream(start.getBytes()),is);
           is=new SequenceInputStream(Collections.enumeration(streams));
           break;
+        }
+ else {
+          List<InputStream> streams=Arrays.asList(new ByteArrayInputStream(snippet.getBytes()),is);
+          is=new SequenceInputStream(Collections.enumeration(streams));
         }
       }
     }
