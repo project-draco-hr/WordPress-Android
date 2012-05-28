@@ -23,6 +23,11 @@
     httpConn.setInstanceFollowRedirects(true);
     httpConn.setRequestMethod("GET");
     httpConn.addRequestProperty("user-agent","Mozilla/5.0");
+    if (!httpuser.equals("")) {
+      String credentials=httpuser + ":" + httppassword;
+      String encoded=Base64.encodeBytes(credentials.getBytes());
+      httpConn.setRequestProperty("Authorization","Basic " + encoded);
+    }
     httpConn.connect();
     response=httpConn.getResponseCode();
     if (response == HttpURLConnection.HTTP_OK) {
