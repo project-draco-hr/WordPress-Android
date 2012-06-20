@@ -1,12 +1,20 @@
 {
-  blogNames=new CharSequence[accounts.size()];
-  blogIDs=new int[accounts.size()];
-  for (int i=0; i < accounts.size(); i++) {
-    HashMap<?,?> defHash=(HashMap<?,?>)accounts.get(i);
-    String curBlogName=EscapeUtils.unescapeHtml(defHash.get("blogName").toString());
-    blogNames[i]=curBlogName;
-    blogIDs[i]=Integer.valueOf(defHash.get("id").toString());
-    blogTitle=(TextView)findViewById(R.id.blog_title);
+  int blogCount=accounts.size();
+  if (accounts.size() >= 1 && isDashboard)   blogCount++;
+  blogNames=new CharSequence[blogCount];
+  blogIDs=new int[blogCount];
+  for (int i=0; i < blogCount; i++) {
+    if ((blogCount - 1) == i && isDashboard) {
+      blogNames[i]="+ " + getResources().getText(R.string.add_account);
+      blogIDs[i]=-1;
+    }
+ else {
+      HashMap<?,?> defHash=(HashMap<?,?>)accounts.get(i);
+      String curBlogName=EscapeUtils.unescapeHtml(defHash.get("blogName").toString());
+      blogNames[i]=curBlogName;
+      blogIDs[i]=Integer.valueOf(defHash.get("id").toString());
+      blogTitle=(TextView)findViewById(R.id.blog_title);
+    }
   }
   int lastBlogID=WordPress.wpDB.getLastBlogID(context);
   if (lastBlogID != -1) {
@@ -47,19 +55,25 @@
         dialogBuilder.setTitle(getResources().getText(R.string.choose_blog));
         dialogBuilder.setItems(blogNames,new DialogInterface.OnClickListener(){
           public void onClick(          DialogInterface dialog,          int pos){
-            blogTitle.setText(EscapeUtils.unescapeHtml(blogNames[pos].toString()));
-            try {
-              WordPress.currentBlog=new Blog(blogIDs[pos],context);
+            if (blogIDs[pos] == -1) {
+              Intent i=new Intent(context,NewAccount.class);
+              ((Dashboard)context).startActivityForResult(i,0);
             }
- catch (            Exception e) {
-              e.printStackTrace();
-            }
-            WordPress.wpDB.updateLastBlogID(blogIDs[pos]);
-            updateBlavatarImage();
-            updateCommentBadge();
-            updateReadButton();
-            if (onBlogChangedListener != null) {
-              onBlogChangedListener.OnBlogChanged();
+ else {
+              blogTitle.setText(EscapeUtils.unescapeHtml(blogNames[pos].toString()));
+              try {
+                WordPress.currentBlog=new Blog(blogIDs[pos],context);
+              }
+ catch (              Exception e) {
+                e.printStackTrace();
+              }
+              WordPress.wpDB.updateLastBlogID(blogIDs[pos]);
+              updateBlavatarImage();
+              updateCommentBadge();
+              updateReadButton();
+              if (onBlogChangedListener != null) {
+                onBlogChangedListener.OnBlogChanged();
+              }
             }
           }
         }
