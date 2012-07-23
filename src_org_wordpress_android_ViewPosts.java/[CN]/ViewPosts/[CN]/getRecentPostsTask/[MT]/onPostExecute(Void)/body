@@ -1,0 +1,15 @@
+{
+  if (isCancelled()) {
+    onRefreshListener.onRefresh(false);
+    return;
+  }
+  loadPosts(loadMore);
+  if (loadMore)   switcher.showPrevious();
+  onRefreshListener.onRefresh(false);
+  if (errorMsg != "") {
+    FragmentTransaction ft=getFragmentManager().beginTransaction();
+    WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(errorMsg);
+    alert.show(ft,"alert");
+    errorMsg="";
+  }
+}
