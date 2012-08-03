@@ -1,6 +1,5 @@
 {
   InputStream in=null;
-  int response=-1;
   URL url=null;
   try {
     url=new URL(urlString);
@@ -9,34 +8,26 @@
     e1.printStackTrace();
     return null;
   }
-  URLConnection conn=null;
   try {
-    conn=url.openConnection();
+    HttpGet httpRequest=new HttpGet(url.toURI());
+    HttpClient httpclient=new DefaultHttpClient();
+    HttpResponse response=(HttpResponse)httpclient.execute(httpRequest);
+    HttpEntity entity=response.getEntity();
+    BufferedHttpEntity bufHttpEntity=new BufferedHttpEntity(entity);
+    in=bufHttpEntity.getContent();
+    in.close();
   }
- catch (  IOException e1) {
-    e1.printStackTrace();
-    return null;
+ catch (  ClientProtocolException e) {
+    e.printStackTrace();
   }
-  try {
-    HttpURLConnection httpConn=(HttpURLConnection)conn;
-    httpConn.setAllowUserInteraction(false);
-    httpConn.setInstanceFollowRedirects(true);
-    httpConn.setRequestMethod("GET");
-    httpConn.addRequestProperty("user-agent","Mozilla/5.0");
-    if (!httpuser.equals("")) {
-      String credentials=httpuser + ":" + httppassword;
-      String encoded=Base64.encodeBytes(credentials.getBytes());
-      httpConn.setRequestProperty("Authorization","Basic " + encoded);
-    }
-    httpConn.connect();
-    response=httpConn.getResponseCode();
-    if (response == HttpURLConnection.HTTP_OK) {
-      in=httpConn.getInputStream();
-    }
+catch (  URISyntaxException e) {
+    e.printStackTrace();
   }
- catch (  Exception ex) {
-    ex.printStackTrace();
-    return null;
+catch (  IOException e) {
+    e.printStackTrace();
+  }
+catch (  Exception e) {
+    e.printStackTrace();
   }
   return in;
 }
