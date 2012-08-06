@@ -40,12 +40,14 @@
         thumbs.notifyDataSetChanged();
       }
  else {
-        checkedCommentTotal=0;
-        hideModerationBar();
-        thumbs.notifyDataSetChanged();
-        FragmentTransaction ft=getFragmentManager().beginTransaction();
-        WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(moderateErrorMsg);
-        alert.show(ft,"alert");
+        if (!getActivity().isFinishing()) {
+          checkedCommentTotal=0;
+          hideModerationBar();
+          thumbs.notifyDataSetChanged();
+          FragmentTransaction ft=getFragmentManager().beginTransaction();
+          WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(moderateErrorMsg);
+          alert.show(ft,"alert");
+        }
         moderateErrorMsg="";
       }
     }
