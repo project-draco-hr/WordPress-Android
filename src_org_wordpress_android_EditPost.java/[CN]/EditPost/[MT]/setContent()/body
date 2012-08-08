@@ -3,22 +3,20 @@
   String text=intent.getStringExtra(Intent.EXTRA_TEXT);
   String title=intent.getStringExtra(Intent.EXTRA_SUBJECT);
   if (text != null) {
-    EditText titleET=(EditText)findViewById(R.id.title);
     if (title != null) {
-      titleET.setText(title);
+      mTitleEditText.setText(title);
     }
-    WPEditText contentET=(WPEditText)findViewById(R.id.postContent);
     if (text.contains("youtube_gdata")) {
       text=text.replace("feature=youtube_gdata","");
       text=text.replace("&","");
       text=text.replace("_player","");
       text=text.replace("watch?v=","v/");
       text="<object width=\"480\" height=\"385\"><param name=\"movie\" value=\"" + text + "\"></param><param name=\"allowFullScreen\" value=\"true\"></param><param name=\"allowscriptaccess\" value=\"always\"></param><embed src=\""+ text+ "\" type=\"application/x-shockwave-flash\" allowscriptaccess=\"always\" allowfullscreen=\"true\" width=\"480\" height=\"385\"></embed></object>";
-      contentET.setText(text);
+      mContentEditText.setText(text);
     }
  else {
       text=text.replaceAll("((http|https|ftp|mailto):\\S+)","<a href=\"$1\">$1</a>");
-      contentET.setText(WPHtml.fromHtml(StringHelper.addPTags(text),EditPost.this,post));
+      mContentEditText.setText(WPHtml.fromHtml(StringHelper.addPTags(text),EditPost.this,mPost));
     }
   }
  else {

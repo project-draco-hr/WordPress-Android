@@ -1,0 +1,69 @@
+{
+  mIsNew=true;
+  Vector<?> accounts=WordPress.wpDB.getAccounts(this);
+  if (accounts.size() > 0) {
+    final String blogNames[]=new String[accounts.size()];
+    final int accountIDs[]=new int[accounts.size()];
+    for (int i=0; i < accounts.size(); i++) {
+      HashMap<?,?> curHash=(HashMap<?,?>)accounts.get(i);
+      try {
+        blogNames[i]=EscapeUtils.unescapeHtml(curHash.get("blogName").toString());
+      }
+ catch (      Exception e) {
+        blogNames[i]=curHash.get("url").toString();
+      }
+      accountIDs[i]=(Integer)curHash.get("id");
+      try {
+        mBlog=new Blog(accountIDs[i],EditPost.this);
+      }
+ catch (      Exception e) {
+        Toast.makeText(this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
+        finish();
+      }
+    }
+    if (accounts.size() != 1) {
+      AlertDialog.Builder builder=new AlertDialog.Builder(EditPost.this);
+      builder.setCancelable(false);
+      builder.setTitle(getResources().getText(R.string.select_a_blog));
+      builder.setItems(blogNames,new DialogInterface.OnClickListener(){
+        public void onClick(        DialogInterface dialog,        int item){
+          mBlogID=accountIDs[item];
+          try {
+            mBlog=new Blog(mBlogID,EditPost.this);
+          }
+ catch (          Exception e) {
+            Toast.makeText(EditPost.this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
+            finish();
+          }
+          WordPress.currentBlog=mBlog;
+          WordPress.wpDB.updateLastBlogID(WordPress.currentBlog.getId());
+          mAccountName=blogNames[item];
+          setTitle(EscapeUtils.unescapeHtml(mAccountName) + " - " + getResources().getText((mIsPage) ? R.string.new_page : R.string.new_post));
+        }
+      }
+);
+      AlertDialog alert=builder.create();
+      alert.show();
+    }
+ else {
+      mBlogID=accountIDs[0];
+      try {
+        mBlog=new Blog(mBlogID,EditPost.this);
+      }
+ catch (      Exception e) {
+        Toast.makeText(this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
+        finish();
+      }
+      WordPress.currentBlog=mBlog;
+      WordPress.wpDB.updateLastBlogID(WordPress.currentBlog.getId());
+      mAccountName=blogNames[0];
+      setTitle(EscapeUtils.unescapeHtml(mAccountName) + " - " + getResources().getText((mIsPage) ? R.string.new_page : R.string.new_post));
+    }
+  }
+ else {
+    Toast.makeText(getApplicationContext(),getResources().getText(R.string.no_account),Toast.LENGTH_LONG).show();
+    startActivity(new Intent(this,Dashboard.class));
+    finish();
+    return;
+  }
+}

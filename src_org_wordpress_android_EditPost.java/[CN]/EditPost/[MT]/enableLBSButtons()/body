@@ -1,51 +1,11 @@
 {
-  locationHelper=new LocationHelper();
-  RelativeLayout section4=(RelativeLayout)findViewById(R.id.section4);
-  section4.setVisibility(View.VISIBLE);
-  final Button viewMap=(Button)findViewById(R.id.viewMap);
-  viewMap.setOnClickListener(new TextView.OnClickListener(){
-    public void onClick(    View v){
-      Double latitude=0.0;
-      try {
-        latitude=curLocation.getLatitude();
-      }
- catch (      Exception e) {
-        e.printStackTrace();
-      }
-      if (latitude != 0.0) {
-        String uri="geo:" + latitude + ","+ curLocation.getLongitude();
-        startActivity(new Intent(android.content.Intent.ACTION_VIEW,Uri.parse(uri)));
-      }
- else {
-        Toast.makeText(EditPost.this,getResources().getText(R.string.location_toast),Toast.LENGTH_SHORT).show();
-      }
-    }
-  }
-);
+  mLocationHelper=new LocationHelper();
+  ((RelativeLayout)findViewById(R.id.section4)).setVisibility(View.VISIBLE);
+  Button viewMap=(Button)findViewById(R.id.viewMap);
   Button updateLocation=(Button)findViewById(R.id.updateLocation);
-  updateLocation.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      locationHelper.getLocation(EditPost.this,locationResult);
-    }
-  }
-);
   Button removeLocation=(Button)findViewById(R.id.removeLocation);
-  removeLocation.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      if (curLocation != null) {
-        curLocation.setLatitude(0.0);
-        curLocation.setLongitude(0.0);
-      }
-      if (post != null) {
-        post.setLatitude(0.0);
-        post.setLongitude(0.0);
-      }
-      TextView locationText=(TextView)findViewById(R.id.locationText);
-      locationText.setText("");
-    }
-  }
-);
-  if (isNew) {
-    locationHelper.getLocation(EditPost.this,locationResult);
-  }
+  updateLocation.setOnClickListener(this);
+  removeLocation.setOnClickListener(this);
+  viewMap.setOnClickListener(this);
+  if (mIsNew)   mLocationHelper.getLocation(EditPost.this,locationResult);
 }

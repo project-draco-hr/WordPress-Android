@@ -1,0 +1,98 @@
+{
+  float pos=event.getY();
+  if (event.getAction() == 0)   mLastYPos=pos;
+  if (event.getAction() > 1) {
+    if (((mLastYPos - pos) > 2.0f) || ((pos - mLastYPos) > 2.0f))     mScrollDetected=true;
+  }
+  mLastYPos=pos;
+  if (!mIsFullScreenEditing && event.getAction() == 1) {
+    mIsFullScreenEditing=true;
+    mContentEditText.setFocusableInTouchMode(true);
+    mContentEditText.setHint("");
+    try {
+      ((LinearLayout)findViewById(R.id.postContentEditorSmallWrapper)).removeView(mContentEditText);
+      ((ScrollView)findViewById(R.id.scrollView)).setVisibility(View.GONE);
+      LinearLayout contentEditorWrap=(LinearLayout)findViewById(R.id.postContentEditorWrapper);
+      contentEditorWrap.addView(mContentEditText);
+      contentEditorWrap.setVisibility(View.VISIBLE);
+      ((RelativeLayout)findViewById(R.id.formatBar)).setVisibility(View.VISIBLE);
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+    }
+    mContentEditText.requestFocus();
+    return false;
+  }
+  if (event.getAction() == 1 && !mScrollDetected && mIsFullScreenEditing) {
+    mImeBackPressed=false;
+    Layout layout=((TextView)v).getLayout();
+    int x=(int)event.getX();
+    int y=(int)event.getY();
+    x+=v.getScrollX();
+    y+=v.getScrollY();
+    if (layout != null) {
+      int line=layout.getLineForVertical(y);
+      int charPosition=layout.getOffsetForHorizontal(line,x);
+      final Spannable s=mContentEditText.getText();
+      WPImageSpan[] click_spans=s.getSpans(charPosition,charPosition,WPImageSpan.class);
+      if (click_spans.length != 0) {
+        final WPImageSpan span=click_spans[0];
+        if (!span.isVideo()) {
+          LayoutInflater factory=LayoutInflater.from(EditPost.this);
+          final View alertView=factory.inflate(R.layout.alert_image_options,null);
+          final TextView imageWidthText=(TextView)alertView.findViewById(R.id.imageWidthText);
+          final EditText titleText=(EditText)alertView.findViewById(R.id.title);
+          final EditText caption=(EditText)alertView.findViewById(R.id.caption);
+          final SeekBar seekBar=(SeekBar)alertView.findViewById(R.id.imageWidth);
+          final Spinner alignmentSpinner=(Spinner)alertView.findViewById(R.id.alignment_spinner);
+          ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(EditPost.this,R.array.alignment_array,android.R.layout.simple_spinner_item);
+          adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+          alignmentSpinner.setAdapter(adapter);
+          imageWidthText.setText(String.valueOf(span.getWidth()) + "px");
+          seekBar.setProgress(span.getWidth());
+          titleText.setText(span.getTitle());
+          caption.setText(span.getCaption());
+          alignmentSpinner.setSelection(span.getHorizontalAlignment(),true);
+          seekBar.setMax(100);
+          if (span.getWidth() != 0)           seekBar.setProgress(span.getWidth() / 10);
+          seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
+            @Override public void onStopTrackingTouch(            SeekBar seekBar){
+            }
+            @Override public void onStartTrackingTouch(            SeekBar seekBar){
+            }
+            @Override public void onProgressChanged(            SeekBar seekBar,            int progress,            boolean fromUser){
+              if (progress == 0)               progress=1;
+              imageWidthText.setText(progress * 10 + "px");
+            }
+          }
+);
+          AlertDialog ad=new AlertDialog.Builder(EditPost.this).setTitle(getString(R.string.image_settings)).setView(alertView).setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
+            public void onClick(            DialogInterface dialog,            int whichButton){
+              span.setTitle(titleText.getText().toString());
+              span.setHorizontalAlignment(alignmentSpinner.getSelectedItemPosition());
+              span.setWidth(seekBar.getProgress() * 10);
+              span.setCaption(caption.getText().toString());
+            }
+          }
+).setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
+            public void onClick(            DialogInterface dialog,            int whichButton){
+              dialog.dismiss();
+            }
+          }
+).create();
+          ad.show();
+          mScrollDetected=false;
+          return true;
+        }
+      }
+ else {
+        mContentEditText.setMovementMethod(ArrowKeyMovementMethod.getInstance());
+        mContentEditText.setSelection(mContentEditText.getSelectionStart());
+      }
+    }
+  }
+ else   if (event.getAction() == 1) {
+    mScrollDetected=false;
+  }
+  return false;
+}

@@ -1,0 +1,73 @@
+{
+  try {
+    int position=Selection.getSelectionStart(mContentEditText.getText());
+    if ((mIsBackspace && position != 1) || mLastPosition == position || !mLocalDraft)     return;
+    if (position < 0) {
+      position=0;
+    }
+    mLastPosition=position;
+    if (position > 0) {
+      if (mStyleStart > position) {
+        mStyleStart=position - 1;
+      }
+      boolean exists=false;
+      if (mBoldToggleButton.isChecked()) {
+        StyleSpan[] ss=s.getSpans(mStyleStart,position,StyleSpan.class);
+        exists=false;
+        for (int i=0; i < ss.length; i++) {
+          if (ss[i].getStyle() == android.graphics.Typeface.BOLD) {
+            exists=true;
+          }
+        }
+        if (!exists)         s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),mStyleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+      }
+      if (mEmToggleButton.isChecked()) {
+        StyleSpan[] ss=s.getSpans(mStyleStart,position,StyleSpan.class);
+        exists=false;
+        for (int i=0; i < ss.length; i++) {
+          if (ss[i].getStyle() == android.graphics.Typeface.ITALIC) {
+            exists=true;
+          }
+        }
+        if (!exists)         s.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),mStyleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+      }
+      if (mEmToggleButton.isChecked()) {
+        StyleSpan[] ss=s.getSpans(mStyleStart,position,StyleSpan.class);
+        exists=false;
+        for (int i=0; i < ss.length; i++) {
+          if (ss[i].getStyle() == android.graphics.Typeface.ITALIC) {
+            exists=true;
+          }
+        }
+        if (!exists)         s.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),mStyleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+      }
+      if (mUnderlineToggleButton.isChecked()) {
+        WPUnderlineSpan[] ss=s.getSpans(mStyleStart,position,WPUnderlineSpan.class);
+        exists=false;
+        for (int i=0; i < ss.length; i++) {
+          exists=true;
+        }
+        if (!exists)         s.setSpan(new WPUnderlineSpan(),mStyleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+      }
+      if (mStrikeToggleButton.isChecked()) {
+        StrikethroughSpan[] ss=s.getSpans(mStyleStart,position,StrikethroughSpan.class);
+        exists=false;
+        for (int i=0; i < ss.length; i++) {
+          exists=true;
+        }
+        if (!exists)         s.setSpan(new StrikethroughSpan(),mStyleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+      }
+      if (mBquoteToggleButton.isChecked()) {
+        QuoteSpan[] ss=s.getSpans(mStyleStart,position,QuoteSpan.class);
+        exists=false;
+        for (int i=0; i < ss.length; i++) {
+          exists=true;
+        }
+        if (!exists)         s.setSpan(new QuoteSpan(),mStyleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+      }
+    }
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+  }
+}

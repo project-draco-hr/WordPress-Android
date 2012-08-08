@@ -4,8 +4,9 @@
     AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(EditPost.this);
     dialogBuilder.setTitle(getResources().getText(R.string.sdcard_title));
     dialogBuilder.setMessage(getResources().getText(R.string.sdcard_message));
-    dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+    dialogBuilder.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
       public void onClick(      DialogInterface dialog,      int whichButton){
+        dialog.dismiss();
       }
     }
 );
@@ -13,10 +14,10 @@
     dialogBuilder.create().show();
   }
  else {
-    SD_CARD_TEMP_DIR=Environment.getExternalStorageDirectory() + File.separator + "wordpress"+ File.separator+ "wp-"+ System.currentTimeMillis()+ ".jpg";
+    mMediaCapturePath=Environment.getExternalStorageDirectory() + File.separator + "wordpress"+ File.separator+ "wp-"+ System.currentTimeMillis()+ ".jpg";
     Intent takePictureFromCameraIntent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    takePictureFromCameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT,Uri.fromFile(new File(SD_CARD_TEMP_DIR)));
-    File directory=new File(SD_CARD_TEMP_DIR).getParentFile();
+    takePictureFromCameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT,Uri.fromFile(new File(mMediaCapturePath)));
+    File directory=new File(mMediaCapturePath).getParentFile();
     if (!directory.exists() && !directory.mkdirs()) {
       try {
         throw new IOException("Path to file could not be created.");
@@ -25,6 +26,7 @@
         e.printStackTrace();
       }
     }
-    startActivityForResult(takePictureFromCameraIntent,1);
+    mCurrentActivityRequest=ACTIVITY_REQUEST_CODE_TAKE_PHOTO;
+    startActivityForResult(takePictureFromCameraIntent,ACTIVITY_REQUEST_CODE_TAKE_PHOTO);
   }
 }

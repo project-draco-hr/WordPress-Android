@@ -1,18 +1,17 @@
 {
   try {
-    WPEditText contentText=(WPEditText)findViewById(R.id.postContent);
-    Spannable s=contentText.getText();
-    int selectionStart=contentText.getSelectionStart();
-    styleStart=selectionStart;
-    int selectionEnd=contentText.getSelectionEnd();
+    Spannable s=mContentEditText.getText();
+    int selectionStart=mContentEditText.getSelectionStart();
+    mStyleStart=selectionStart;
+    int selectionEnd=mContentEditText.getSelectionEnd();
     if (selectionStart > selectionEnd) {
       int temp=selectionEnd;
       selectionEnd=selectionStart;
       selectionStart=temp;
     }
-    if (localDraft) {
+    if (mLocalDraft) {
       if (selectionEnd > selectionStart) {
-        Spannable str=contentText.getText();
+        Spannable str=mContentEditText.getText();
         if (tag.equals("strong")) {
           StyleSpan[] ss=str.getSpans(selectionStart,selectionEnd,StyleSpan.class);
           boolean exists=false;
@@ -82,7 +81,7 @@
       }
  else       if (!toggleButton.isChecked()) {
         if (tag.equals("strong") || tag.equals("em")) {
-          StyleSpan[] ss=s.getSpans(styleStart - 1,styleStart,StyleSpan.class);
+          StyleSpan[] ss=s.getSpans(mStyleStart - 1,mStyleStart,StyleSpan.class);
           for (int i=0; i < ss.length; i++) {
             int tagStart=s.getSpanStart(ss[i]);
             int tagEnd=s.getSpanEnd(ss[i]);
@@ -101,7 +100,7 @@
           }
         }
  else         if (tag.equals("u")) {
-          WPUnderlineSpan[] us=s.getSpans(styleStart - 1,styleStart,WPUnderlineSpan.class);
+          WPUnderlineSpan[] us=s.getSpans(mStyleStart - 1,mStyleStart,WPUnderlineSpan.class);
           for (int i=0; i < us.length; i++) {
             int tagStart=s.getSpanStart(us[i]);
             int tagEnd=s.getSpanEnd(us[i]);
@@ -110,7 +109,7 @@
           }
         }
  else         if (tag.equals("strike")) {
-          StrikethroughSpan[] ss=s.getSpans(styleStart - 1,styleStart,StrikethroughSpan.class);
+          StrikethroughSpan[] ss=s.getSpans(mStyleStart - 1,mStyleStart,StrikethroughSpan.class);
           for (int i=0; i < ss.length; i++) {
             int tagStart=s.getSpanStart(ss[i]);
             int tagEnd=s.getSpanEnd(ss[i]);
@@ -119,7 +118,7 @@
           }
         }
  else         if (tag.equals("blockquote")) {
-          QuoteSpan[] ss=s.getSpans(styleStart - 1,styleStart,QuoteSpan.class);
+          QuoteSpan[] ss=s.getSpans(mStyleStart - 1,mStyleStart,QuoteSpan.class);
           for (int i=0; i < ss.length; i++) {
             int tagStart=s.getSpanStart(ss[i]);
             int tagEnd=s.getSpanEnd(ss[i]);
@@ -132,20 +131,20 @@
  else {
       String startTag="<" + tag + ">";
       String endTag="</" + tag + ">";
-      Editable content=contentText.getText();
+      Editable content=mContentEditText.getText();
       if (selectionEnd > selectionStart) {
         content.insert(selectionStart,startTag);
         content.insert(selectionEnd + startTag.length(),endTag);
         toggleButton.setChecked(false);
-        contentText.setSelection(selectionEnd + startTag.length() + endTag.length());
+        mContentEditText.setSelection(selectionEnd + startTag.length() + endTag.length());
       }
  else       if (toggleButton.isChecked()) {
         content.insert(selectionStart,startTag);
-        contentText.setSelection(selectionEnd + startTag.length());
+        mContentEditText.setSelection(selectionEnd + startTag.length());
       }
  else       if (!toggleButton.isChecked()) {
         content.insert(selectionEnd,endTag);
-        contentText.setSelection(selectionEnd + endTag.length());
+        mContentEditText.setSelection(selectionEnd + endTag.length());
       }
     }
   }

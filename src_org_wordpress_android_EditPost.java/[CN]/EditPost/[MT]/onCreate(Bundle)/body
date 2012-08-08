@@ -1,181 +1,122 @@
 {
-  super.onCreate(icicle);
+  super.onCreate(savedInstanceState);
   Bundle extras=getIntent().getExtras();
-  if (WordPress.wpDB == null)   WordPress.wpDB=new WordPressDB(this);
-  if (WordPress.currentBlog == null) {
-    try {
-      WordPress.currentBlog=new Blog(WordPress.wpDB.getLastBlogID(this),this);
-    }
- catch (    Exception e) {
-      Toast.makeText(this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
-      finish();
-    }
-  }
+  initBlog();
   Calendar c=Calendar.getInstance();
   mYear=c.get(Calendar.YEAR);
   mMonth=c.get(Calendar.MONTH);
   mDay=c.get(Calendar.DAY_OF_MONTH);
   mHour=c.get(Calendar.HOUR_OF_DAY);
   mMinute=c.get(Calendar.MINUTE);
-  categories=new JSONArray();
+  mCategories=new JSONArray();
+  mAutoSaveHandler=new Handler();
+  mSelectedCategories=new Vector<String>();
   String action=getIntent().getAction();
   if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
-    isAction=true;
-    isNew=true;
-    Vector<?> accounts=WordPress.wpDB.getAccounts(this);
-    if (accounts.size() > 0) {
-      final String blogNames[]=new String[accounts.size()];
-      final int accountIDs[]=new int[accounts.size()];
-      for (int i=0; i < accounts.size(); i++) {
-        HashMap<?,?> curHash=(HashMap<?,?>)accounts.get(i);
-        try {
-          blogNames[i]=EscapeUtils.unescapeHtml(curHash.get("blogName").toString());
-        }
- catch (        Exception e) {
-          blogNames[i]=curHash.get("url").toString();
-        }
-        accountIDs[i]=(Integer)curHash.get("id");
-        try {
-          blog=new Blog(accountIDs[i],EditPost.this);
-        }
- catch (        Exception e) {
-          Toast.makeText(this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
-          finish();
-        }
-      }
-      if (accounts.size() != 1) {
-        AlertDialog.Builder builder=new AlertDialog.Builder(EditPost.this);
-        builder.setCancelable(false);
-        builder.setTitle(getResources().getText(R.string.select_a_blog));
-        builder.setItems(blogNames,new DialogInterface.OnClickListener(){
-          public void onClick(          DialogInterface dialog,          int item){
-            id=accountIDs[item];
-            try {
-              blog=new Blog(id,EditPost.this);
-            }
- catch (            Exception e) {
-              Toast.makeText(EditPost.this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
-              finish();
-            }
-            WordPress.currentBlog=blog;
-            WordPress.wpDB.updateLastBlogID(WordPress.currentBlog.getId());
-            accountName=blogNames[item];
-            setTitle(EscapeUtils.unescapeHtml(accountName) + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
-          }
-        }
-);
-        AlertDialog alert=builder.create();
-        alert.show();
-      }
- else {
-        id=accountIDs[0];
-        try {
-          blog=new Blog(id,EditPost.this);
-        }
- catch (        Exception e) {
-          Toast.makeText(this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
-          finish();
-        }
-        WordPress.currentBlog=blog;
-        WordPress.wpDB.updateLastBlogID(WordPress.currentBlog.getId());
-        accountName=blogNames[0];
-        setTitle(EscapeUtils.unescapeHtml(accountName) + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
-      }
-    }
- else {
-      Intent i=new Intent(this,Dashboard.class);
-      Toast.makeText(getApplicationContext(),getResources().getText(R.string.no_account),Toast.LENGTH_LONG).show();
-      startActivity(i);
-      finish();
-      return;
-    }
+    getAccounts();
   }
  else {
     if (extras != null) {
+      mAccountName=EscapeUtils.unescapeHtml(extras.getString("accountName"));
+      mPostID=extras.getLong("postID");
+      mLocalDraft=extras.getBoolean("localDraft",false);
+      mIsPage=extras.getBoolean("isPage",false);
+      mIsNew=extras.getBoolean("isNew",false);
+      if (savedInstanceState != null) {
+        mCurrentActivityRequest=savedInstanceState.getInt("currentActivityRequest");
+        if (savedInstanceState.getString("mediaCapturePath") != null)         mMediaCapturePath=savedInstanceState.getString("mediaCapturePath");
+      }
+ else {
+        mOption=extras.getString("option");
+      }
+      if (extras.getBoolean("isQuickPress")) {
+        mBlogID=extras.getInt("id");
+      }
+ else {
+        mBlogID=WordPress.currentBlog.getId();
+      }
       try {
-        id=WordPress.currentBlog.getId();
-        blog=new Blog(id,this);
+        mBlog=new Blog(mBlogID,this);
+        WordPress.currentBlog=mBlog;
       }
  catch (      Exception e) {
-        Toast.makeText(this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_LONG).show();
         finish();
+        return;
       }
-      accountName=EscapeUtils.unescapeHtml(extras.getString("accountName"));
-      postID=extras.getLong("postID");
-      localDraft=extras.getBoolean("localDraft",false);
-      isPage=extras.getBoolean("isPage",false);
-      isNew=extras.getBoolean("isNew",false);
-      option=extras.getString("option");
-      if (extras.getBoolean("isQuickPress")) {
-        id=extras.getInt("id");
+      if (!mIsNew) {
         try {
-          blog=new Blog(id,this);
-          WordPress.currentBlog=blog;
-        }
- catch (        Exception e) {
-          Toast.makeText(this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_LONG).show();
-          finish();
-          return;
-        }
-      }
-      if (!isNew) {
-        try {
-          post=new Post(id,postID,isPage,this);
-          if (post == null) {
+          mPost=new Post(mBlogID,mPostID,mIsPage,this);
+          if (mPost == null) {
             Toast.makeText(this,getResources().getText(R.string.post_not_found),Toast.LENGTH_LONG).show();
             finish();
             return;
           }
  else {
-            WordPress.currentPost=post;
+            WordPress.currentPost=mPost;
           }
         }
  catch (        Exception e) {
+          e.printStackTrace();
           finish();
         }
       }
     }
-    if (isNew) {
-      localDraft=true;
-      setTitle(EscapeUtils.unescapeHtml(WordPress.currentBlog.getBlogName()) + " - " + getResources().getText((isPage) ? R.string.new_page : R.string.new_post));
+    if (mIsNew) {
+      mLocalDraft=true;
+      setTitle(EscapeUtils.unescapeHtml(WordPress.currentBlog.getBlogName()) + " - " + getString((mIsPage) ? R.string.new_page : R.string.new_post));
     }
  else {
-      setTitle(EscapeUtils.unescapeHtml(WordPress.currentBlog.getBlogName()) + " - " + getResources().getText((isPage) ? R.string.edit_page : R.string.edit_post));
+      setTitle(EscapeUtils.unescapeHtml(WordPress.currentBlog.getBlogName()) + " - " + getString((mIsPage) ? R.string.edit_page : R.string.edit_post));
     }
   }
   setContentView(R.layout.edit);
-  if (isPage) {
-    RelativeLayout section3=(RelativeLayout)findViewById(R.id.section3);
-    section3.setVisibility(View.GONE);
-    RelativeLayout locationWrapper=(RelativeLayout)findViewById(R.id.location_wrapper);
-    locationWrapper.setVisibility(View.GONE);
-    TextView postFormatLabel=(TextView)findViewById(R.id.postFormatLabel);
-    postFormatLabel.setVisibility(View.GONE);
-    Spinner postFormatSpinner=(Spinner)findViewById(R.id.postFormat);
-    postFormatSpinner.setVisibility(View.GONE);
+  mContentEditText=(WPEditText)findViewById(R.id.postContent);
+  mTitleEditText=(EditText)findViewById(R.id.title);
+  mPasswordEditText=(EditText)findViewById(R.id.post_password);
+  mLocationText=(TextView)findViewById(R.id.locationText);
+  mBoldToggleButton=(ToggleButton)findViewById(R.id.bold);
+  mEmToggleButton=(ToggleButton)findViewById(R.id.em);
+  mBquoteToggleButton=(ToggleButton)findViewById(R.id.bquote);
+  mUnderlineToggleButton=(ToggleButton)findViewById(R.id.underline);
+  mStrikeToggleButton=(ToggleButton)findViewById(R.id.strike);
+  mCategoriesText=(TextView)findViewById(R.id.selectedCategories);
+  mAddPictureButton=(ImageButton)findViewById(R.id.addPictureButton);
+  mSaveButton=(Button)findViewById(R.id.post);
+  mPubDateButton=(Button)findViewById(R.id.pubDateButton);
+  mPubDateText=(TextView)findViewById(R.id.pubDate);
+  mLinkButton=(Button)findViewById(R.id.link);
+  mMoreButton=(Button)findViewById(R.id.more);
+  mStatusSpinner=(Spinner)findViewById(R.id.status);
+  mTagsEditText=(EditText)findViewById(R.id.tags);
+  if (mIsPage) {
+    ((RelativeLayout)findViewById(R.id.section3)).setVisibility(View.GONE);
+    ((RelativeLayout)findViewById(R.id.location_wrapper)).setVisibility(View.GONE);
+    ((TextView)findViewById(R.id.postFormatLabel)).setVisibility(View.GONE);
+    ((Spinner)findViewById(R.id.postFormat)).setVisibility(View.GONE);
   }
  else {
-    if (blog.getPostFormats().equals("")) {
+    if (mBlog.getPostFormats().equals("")) {
       Vector<Object> args=new Vector<Object>();
-      args.add(blog);
+      args.add(mBlog);
       args.add(this);
       new ApiHelper.getPostFormatsTask().execute(args);
-      postFormatTitles=getResources().getStringArray(R.array.post_formats_array);
+      mPostFormatTitles=getResources().getStringArray(R.array.post_formats_array);
       String defaultPostFormatTitles[]={"aside","audio","chat","gallery","image","link","quote","standard","status","video"};
-      postFormats=defaultPostFormatTitles;
+      mPostFormats=defaultPostFormatTitles;
     }
  else {
       try {
-        JSONObject jsonPostFormats=new JSONObject(blog.getPostFormats());
-        postFormats=new String[jsonPostFormats.length()];
-        postFormatTitles=new String[jsonPostFormats.length()];
+        JSONObject jsonPostFormats=new JSONObject(mBlog.getPostFormats());
+        mPostFormats=new String[jsonPostFormats.length()];
+        mPostFormatTitles=new String[jsonPostFormats.length()];
         Iterator<?> it=jsonPostFormats.keys();
         int i=0;
         while (it.hasNext()) {
           String key=(String)it.next();
           String val=(String)jsonPostFormats.get(key);
-          postFormats[i]=key;
-          postFormatTitles[i]=val;
+          mPostFormats[i]=key;
+          mPostFormatTitles[i]=val;
           i++;
         }
       }
@@ -184,29 +125,28 @@
       }
     }
     Spinner pfSpinner=(Spinner)findViewById(R.id.postFormat);
-    ArrayAdapter<String> pfAdapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,postFormatTitles);
+    ArrayAdapter<String> pfAdapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,mPostFormatTitles);
     pfAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     pfSpinner.setAdapter(pfAdapter);
     String activePostFormat="standard";
-    if (!isNew) {
+    if (!mIsNew) {
       try {
-        if (!post.getWP_post_format().equals(""))         activePostFormat=post.getWP_post_format();
+        if (!mPost.getWP_post_format().equals(""))         activePostFormat=mPost.getWP_post_format();
       }
  catch (      Exception e) {
         e.printStackTrace();
       }
     }
-    for (int i=0; i < postFormats.length; i++) {
-      if (postFormats[i].equals(activePostFormat))       pfSpinner.setSelection(i);
+    for (int i=0; i < mPostFormats.length; i++) {
+      if (mPostFormats[i].equals(activePostFormat))       pfSpinner.setSelection(i);
     }
     if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action))     setContent();
   }
   String[] items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private),getResources().getString(R.string.local_draft)};
-  Spinner spinner=(Spinner)findViewById(R.id.status);
   ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,items);
   adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-  spinner.setAdapter(adapter);
-  spinner.setOnItemSelectedListener(new OnItemSelectedListener(){
+  mStatusSpinner.setAdapter(adapter);
+  mStatusSpinner.setOnItemSelectedListener(new OnItemSelectedListener(){
     @Override public void onItemSelected(    AdapterView<?> arg0,    View arg1,    int arg2,    long arg3){
       evaluateSaveButtonText();
     }
@@ -214,63 +154,37 @@
     }
   }
 );
-  boolean hasLocationProvider=false;
-  LocationManager locationManager=(LocationManager)getSystemService(LOCATION_SERVICE);
-  List<String> providers=locationManager.getProviders(true);
-  for (  String providerName : providers) {
-    if (providerName.equals(LocationManager.GPS_PROVIDER) || providerName.equals(LocationManager.NETWORK_PROVIDER)) {
-      hasLocationProvider=true;
-    }
-  }
-  if (hasLocationProvider && blog.isLocation() && !isPage) {
-    enableLBSButtons();
-  }
-  if (isNew) {
-    if (option != null) {
-      if (option.equals("newphoto"))       launchCamera();
- else       if (option.equals("photolibrary"))       launchPictureLibrary();
- else       if (option.equals("newvideo"))       launchVideoCamera();
- else       if (option.equals("videolibrary"))       launchVideoLibrary();
-      localDraft=extras.getBoolean("localDraft");
+  getLocationProvider();
+  if (mIsNew) {
+    if (mOption != null) {
+      if (mOption.equals("newphoto"))       launchCamera();
+ else       if (mOption.equals("photolibrary"))       launchPictureLibrary();
+ else       if (mOption.equals("newvideo"))       launchVideoCamera();
+ else       if (mOption.equals("videolibrary"))       launchVideoLibrary();
+      mLocalDraft=extras.getBoolean("localDraft");
     }
   }
  else {
-    EditText titleET=(EditText)findViewById(R.id.title);
-    WPEditText contentET=(WPEditText)findViewById(R.id.postContent);
-    EditText passwordET=(EditText)findViewById(R.id.post_password);
-    try {
-      titleET.setText(post.getTitle());
-    }
- catch (    Exception e2) {
-      Toast.makeText(this,getResources().getText(R.string.post_not_found),Toast.LENGTH_LONG).show();
-      finish();
-      return;
-    }
-    if (post.isUploaded()) {
+    mTitleEditText.setText(mPost.getTitle());
+    if (mPost.isUploaded()) {
       items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private)};
       adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,items);
-      spinner.setAdapter(adapter);
+      mStatusSpinner.setAdapter(adapter);
     }
     String contentHTML;
-    if (!post.getMt_text_more().equals("")) {
-      if (post.isLocalDraft())       contentHTML=post.getDescription() + "\n&lt;!--more--&gt;\n" + post.getMt_text_more();
- else       contentHTML=post.getDescription() + "\n<!--more-->\n" + post.getMt_text_more();
+    if (!mPost.getMt_text_more().equals("")) {
+      if (mPost.isLocalDraft())       contentHTML=mPost.getDescription() + "\n&lt;!--more--&gt;\n" + mPost.getMt_text_more();
+ else       contentHTML=mPost.getDescription() + "\n<!--more-->\n" + mPost.getMt_text_more();
     }
- else {
-      contentHTML=post.getDescription();
-    }
+ else     contentHTML=mPost.getDescription();
     try {
-      if (post.isLocalDraft()) {
-        contentET.setText(WPHtml.fromHtml(contentHTML.replaceAll("\uFFFC",""),EditPost.this,post));
-      }
- else {
-        contentET.setText(contentHTML.replaceAll("\uFFFC",""));
-      }
+      if (mPost.isLocalDraft())       mContentEditText.setText(WPHtml.fromHtml(contentHTML.replaceAll("\uFFFC",""),EditPost.this,mPost));
+ else       mContentEditText.setText(contentHTML.replaceAll("\uFFFC",""));
     }
- catch (    Exception e1) {
-      e1.printStackTrace();
+ catch (    Exception e) {
+      e.printStackTrace();
     }
-    long pubDate=post.getDate_created_gmt();
+    long pubDate=mPost.getDate_created_gmt();
     if (pubDate != 0) {
       try {
         int flags=0;
@@ -279,410 +193,75 @@
         flags|=android.text.format.DateUtils.FORMAT_SHOW_YEAR;
         flags|=android.text.format.DateUtils.FORMAT_SHOW_TIME;
         String formattedDate=DateUtils.formatDateTime(EditPost.this,pubDate,flags);
-        TextView tvPubDate=(TextView)findViewById(R.id.pubDate);
-        tvPubDate.setText(formattedDate);
+        mPubDateText.setText(formattedDate);
       }
  catch (      Exception e) {
         e.printStackTrace();
       }
     }
-    if (post.getWP_password() != null)     passwordET.setText(post.getWP_password());
-    if (post.getPost_status() != null) {
-      String status=post.getPost_status();
+    if (mPost.getWP_password() != null)     mPasswordEditText.setText(mPost.getWP_password());
+    if (mPost.getPost_status() != null) {
+      String status=mPost.getPost_status();
       if (status.equals("publish")) {
-        spinner.setSelection(0,true);
+        mStatusSpinner.setSelection(0,true);
       }
  else       if (status.equals("draft")) {
-        spinner.setSelection(1,true);
+        mStatusSpinner.setSelection(1,true);
       }
  else       if (status.equals("pending")) {
-        spinner.setSelection(2,true);
+        mStatusSpinner.setSelection(2,true);
       }
  else       if (status.equals("private")) {
-        spinner.setSelection(3,true);
+        mStatusSpinner.setSelection(3,true);
       }
  else       if (status.equals("localdraft")) {
-        spinner.setSelection(4,true);
+        mStatusSpinner.setSelection(4,true);
       }
       evaluateSaveButtonText();
     }
-    if (!isPage) {
-      if (post.getCategories() != null) {
-        categories=post.getCategories();
-        if (!categories.equals("")) {
-          for (int i=0; i < categories.length(); i++) {
+    if (!mIsPage) {
+      if (mPost.getCategories() != null) {
+        mCategories=mPost.getCategories();
+        if (!mCategories.equals("")) {
+          for (int i=0; i < mCategories.length(); i++) {
             try {
-              selectedCategories.add(categories.getString(i));
+              mSelectedCategories.add(mCategories.getString(i));
             }
  catch (            JSONException e) {
               e.printStackTrace();
             }
           }
-          TextView tvCategories=(TextView)findViewById(R.id.selectedCategories);
-          tvCategories.setText(getResources().getText(R.string.selected_categories) + " " + getCategoriesCSV());
+          mCategoriesText.setText(getString(R.string.selected_categories) + " " + getCategoriesCSV());
         }
       }
-      Double latitude=post.getLatitude();
-      Double longitude=post.getLongitude();
+      Double latitude=mPost.getLatitude();
+      Double longitude=mPost.getLongitude();
       if (latitude != 0.0) {
         new getAddressTask().execute(latitude,longitude);
       }
     }
-    String tags=post.getMt_keywords();
+    String tags=mPost.getMt_keywords();
     if (!tags.equals("")) {
-      EditText tagsET=(EditText)findViewById(R.id.tags);
-      tagsET.setText(tags);
+      mTagsEditText.setText(tags);
     }
   }
-  if (!isPage) {
+  if (!mIsPage) {
     Button selectCategories=(Button)findViewById(R.id.selectCategories);
-    selectCategories.setOnClickListener(new Button.OnClickListener(){
-      public void onClick(      View v){
-        Bundle bundle=new Bundle();
-        bundle.putInt("id",id);
-        if (categories.length() > 0) {
-          bundle.putString("categoriesCSV",getCategoriesCSV());
-        }
-        Intent i=new Intent(EditPost.this,SelectCategories.class);
-        i.putExtras(bundle);
-        startActivityForResult(i,5);
-      }
-    }
-);
+    selectCategories.setOnClickListener(this);
   }
-  final WPEditText content=(WPEditText)findViewById(R.id.postContent);
-  content.setOnTouchListener(new View.OnTouchListener(){
-    @Override public boolean onTouch(    View v,    MotionEvent event){
-      float pos=event.getY();
-      if (event.getAction() == 0)       lastYPos=pos;
-      if (event.getAction() > 1) {
-        if (((lastYPos - pos) > 2.0f) || ((pos - lastYPos) > 2.0f))         scrollDetected=true;
-      }
-      lastYPos=pos;
-      if (!isFullScreenEditing && event.getAction() == 1) {
-        isFullScreenEditing=true;
-        content.setFocusableInTouchMode(true);
-        content.setHint("");
-        try {
-          LinearLayout smallEditorWrap=(LinearLayout)findViewById(R.id.postContentEditorSmallWrapper);
-          smallEditorWrap.removeView(content);
-          ScrollView scrollView=(ScrollView)findViewById(R.id.scrollView);
-          scrollView.setVisibility(View.GONE);
-          LinearLayout contentEditorWrap=(LinearLayout)findViewById(R.id.postContentEditorWrapper);
-          contentEditorWrap.addView(content);
-          contentEditorWrap.setVisibility(View.VISIBLE);
-          RelativeLayout formatBar=(RelativeLayout)findViewById(R.id.formatBar);
-          formatBar.setVisibility(View.VISIBLE);
-        }
- catch (        Exception e) {
-          e.printStackTrace();
-        }
-        content.requestFocus();
-        return false;
-      }
-      if (event.getAction() == 1 && !scrollDetected && isFullScreenEditing) {
-        imeBackPressed=false;
-        Layout layout=((TextView)v).getLayout();
-        int x=(int)event.getX();
-        int y=(int)event.getY();
-        x+=v.getScrollX();
-        y+=v.getScrollY();
-        if (layout != null) {
-          int line=layout.getLineForVertical(y);
-          int charPosition=layout.getOffsetForHorizontal(line,x);
-          final Spannable s=content.getText();
-          WPImageSpan[] click_spans=s.getSpans(charPosition,charPosition,WPImageSpan.class);
-          if (click_spans.length != 0) {
-            final WPImageSpan span=click_spans[0];
-            if (!span.isVideo()) {
-              LayoutInflater factory=LayoutInflater.from(EditPost.this);
-              final View alertView=factory.inflate(R.layout.alert_image_options,null);
-              final TextView imageWidthText=(TextView)alertView.findViewById(R.id.imageWidthText);
-              final EditText titleText=(EditText)alertView.findViewById(R.id.title);
-              final EditText caption=(EditText)alertView.findViewById(R.id.caption);
-              final SeekBar seekBar=(SeekBar)alertView.findViewById(R.id.imageWidth);
-              final Spinner alignmentSpinner=(Spinner)alertView.findViewById(R.id.alignment_spinner);
-              ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(EditPost.this,R.array.alignment_array,android.R.layout.simple_spinner_item);
-              adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-              alignmentSpinner.setAdapter(adapter);
-              imageWidthText.setText(String.valueOf(span.getWidth()) + "px");
-              seekBar.setProgress(span.getWidth());
-              titleText.setText(span.getTitle());
-              caption.setText(span.getCaption());
-              alignmentSpinner.setSelection(span.getHorizontalAlignment(),true);
-              seekBar.setMax(100);
-              if (span.getWidth() != 0)               seekBar.setProgress(span.getWidth() / 10);
-              seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
-                @Override public void onStopTrackingTouch(                SeekBar seekBar){
-                }
-                @Override public void onStartTrackingTouch(                SeekBar seekBar){
-                }
-                @Override public void onProgressChanged(                SeekBar seekBar,                int progress,                boolean fromUser){
-                  if (progress == 0)                   progress=1;
-                  imageWidthText.setText(progress * 10 + "px");
-                }
-              }
-);
-              AlertDialog ad=new AlertDialog.Builder(EditPost.this).setTitle("Image Settings").setView(alertView).setPositiveButton("OK",new DialogInterface.OnClickListener(){
-                public void onClick(                DialogInterface dialog,                int whichButton){
-                  span.setTitle(titleText.getText().toString());
-                  span.setHorizontalAlignment(alignmentSpinner.getSelectedItemPosition());
-                  span.setWidth(seekBar.getProgress() * 10);
-                  span.setCaption(caption.getText().toString());
-                }
-              }
-).setNegativeButton("Cancel",new DialogInterface.OnClickListener(){
-                public void onClick(                DialogInterface dialog,                int whichButton){
-                }
-              }
-).create();
-              ad.show();
-              scrollDetected=false;
-              return true;
-            }
-          }
- else {
-            content.setMovementMethod(ArrowKeyMovementMethod.getInstance());
-            content.setSelection(content.getSelectionStart());
-          }
-        }
-      }
- else       if (event.getAction() == 1) {
-        scrollDetected=false;
-      }
-      return false;
-    }
-  }
-);
-  content.setOnSelectionChangedListener(new WPEditText.OnSelectionChangedListener(){
-    @Override public void onSelectionChanged(){
-      if (!localDraft)       return;
-      final Spannable s=content.getText();
-      styleStart=content.getSelectionStart();
-      Object[] spans=s.getSpans(content.getSelectionStart(),content.getSelectionStart(),Object.class);
-      ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
-      ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
-      ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
-      ToggleButton underlineButton=(ToggleButton)findViewById(R.id.underline);
-      ToggleButton strikeButton=(ToggleButton)findViewById(R.id.strike);
-      boldButton.setChecked(false);
-      emButton.setChecked(false);
-      bquoteButton.setChecked(false);
-      underlineButton.setChecked(false);
-      strikeButton.setChecked(false);
-      for (      Object span : spans) {
-        if (span instanceof StyleSpan) {
-          StyleSpan ss=(StyleSpan)span;
-          if (ss.getStyle() == android.graphics.Typeface.BOLD) {
-            boldButton.setChecked(true);
-          }
-          if (ss.getStyle() == android.graphics.Typeface.ITALIC) {
-            emButton.setChecked(true);
-          }
-        }
-        if (span instanceof QuoteSpan) {
-          bquoteButton.setChecked(true);
-        }
-        if (span instanceof WPUnderlineSpan) {
-          underlineButton.setChecked(true);
-        }
-        if (span instanceof StrikethroughSpan) {
-          strikeButton.setChecked(true);
-        }
-      }
-    }
-  }
-);
-  content.setOnEditTextImeBackListener(new WPEditText.EditTextImeBackListener(){
-    @Override public void onImeBack(    WPEditText view,    String text){
-      finishEditing();
-    }
-  }
-);
-  content.addTextChangedListener(new TextWatcher(){
-    public void afterTextChanged(    Editable s){
-      try {
-        int position=Selection.getSelectionStart(content.getText());
-        if ((isBackspace && position != 1) || lastPosition == position || !localDraft)         return;
-        ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
-        ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
-        ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
-        ToggleButton underlineButton=(ToggleButton)findViewById(R.id.underline);
-        ToggleButton strikeButton=(ToggleButton)findViewById(R.id.strike);
-        if (position < 0) {
-          position=0;
-        }
-        lastPosition=position;
-        if (position > 0) {
-          if (styleStart > position) {
-            styleStart=position - 1;
-          }
-          boolean exists=false;
-          if (boldButton.isChecked()) {
-            StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
-            exists=false;
-            for (int i=0; i < ss.length; i++) {
-              if (ss[i].getStyle() == android.graphics.Typeface.BOLD) {
-                exists=true;
-              }
-            }
-            if (!exists)             s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),styleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-          }
-          if (emButton.isChecked()) {
-            StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
-            exists=false;
-            for (int i=0; i < ss.length; i++) {
-              if (ss[i].getStyle() == android.graphics.Typeface.ITALIC) {
-                exists=true;
-              }
-            }
-            if (!exists)             s.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),styleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-          }
-          if (emButton.isChecked()) {
-            StyleSpan[] ss=s.getSpans(styleStart,position,StyleSpan.class);
-            exists=false;
-            for (int i=0; i < ss.length; i++) {
-              if (ss[i].getStyle() == android.graphics.Typeface.ITALIC) {
-                exists=true;
-              }
-            }
-            if (!exists)             s.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),styleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-          }
-          if (underlineButton.isChecked()) {
-            WPUnderlineSpan[] ss=s.getSpans(styleStart,position,WPUnderlineSpan.class);
-            exists=false;
-            for (int i=0; i < ss.length; i++) {
-              exists=true;
-            }
-            if (!exists)             s.setSpan(new WPUnderlineSpan(),styleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-          }
-          if (strikeButton.isChecked()) {
-            StrikethroughSpan[] ss=s.getSpans(styleStart,position,StrikethroughSpan.class);
-            exists=false;
-            for (int i=0; i < ss.length; i++) {
-              exists=true;
-            }
-            if (!exists)             s.setSpan(new StrikethroughSpan(),styleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-          }
-          if (bquoteButton.isChecked()) {
-            QuoteSpan[] ss=s.getSpans(styleStart,position,QuoteSpan.class);
-            exists=false;
-            for (int i=0; i < ss.length; i++) {
-              exists=true;
-            }
-            if (!exists)             s.setSpan(new QuoteSpan(),styleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-          }
-        }
-      }
- catch (      Exception e) {
-        e.printStackTrace();
-      }
-    }
-    public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
-      if ((count - after == 1) || (s.length() == 0))       isBackspace=true;
- else       isBackspace=false;
-    }
-    public void onTextChanged(    CharSequence s,    int start,    int before,    int count){
-    }
-  }
-);
-  final ImageButton addPictureButton=(ImageButton)findViewById(R.id.addPictureButton);
-  registerForContextMenu(addPictureButton);
-  addPictureButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      addPictureButton.performLongClick();
-    }
-  }
-);
-  final Button saveButton=(Button)findViewById(R.id.post);
-  saveButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      if (autoSaveHandler != null)       autoSaveHandler.removeCallbacks(autoSaveRunnable);
-      boolean result=savePost(false);
-      if (result) {
-        if (post.isUploaded() || !post.getPost_status().equals("localdraft")) {
-          if (option != null) {
-            if (option.equals("newphoto") || option.equals("photolibrary"))             post.setQuickPostType("QuickPhoto");
- else             if (option.equals("newvideo") || option.equals("videolibrary"))             post.setQuickPostType("QuickVideo");
-          }
-          post.upload();
-        }
-        finish();
-      }
-    }
-  }
-);
-  Button pubDate=(Button)findViewById(R.id.pubDateButton);
-  pubDate.setOnClickListener(new TextView.OnClickListener(){
-    public void onClick(    View v){
-      showDialog(ID_DIALOG_DATE);
-    }
-  }
-);
-  final ToggleButton boldButton=(ToggleButton)findViewById(R.id.bold);
-  boldButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      formatBtnClick(boldButton,"strong");
-    }
-  }
-);
-  final Button linkButton=(Button)findViewById(R.id.link);
-  linkButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      WPEditText contentText=(WPEditText)findViewById(R.id.postContent);
-      selectionStart=contentText.getSelectionStart();
-      styleStart=selectionStart;
-      selectionEnd=contentText.getSelectionEnd();
-      if (selectionStart > selectionEnd) {
-        int temp=selectionEnd;
-        selectionEnd=selectionStart;
-        selectionStart=temp;
-      }
-      Intent i=new Intent(EditPost.this,Link.class);
-      if (selectionEnd > selectionStart) {
-        String selectedText=contentText.getText().subSequence(selectionStart,selectionEnd).toString();
-        i.putExtra("selectedText",selectedText);
-      }
-      startActivityForResult(i,4);
-    }
-  }
-);
-  final ToggleButton emButton=(ToggleButton)findViewById(R.id.em);
-  emButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      formatBtnClick(emButton,"em");
-    }
-  }
-);
-  final ToggleButton underlineButton=(ToggleButton)findViewById(R.id.underline);
-  underlineButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      formatBtnClick(underlineButton,"u");
-    }
-  }
-);
-  final ToggleButton strikeButton=(ToggleButton)findViewById(R.id.strike);
-  strikeButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      formatBtnClick(strikeButton,"strike");
-    }
-  }
-);
-  final ToggleButton bquoteButton=(ToggleButton)findViewById(R.id.bquote);
-  bquoteButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      formatBtnClick(bquoteButton,"blockquote");
-    }
-  }
-);
-  final Button moreButton=(Button)findViewById(R.id.more);
-  moreButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      WPEditText contentText=(WPEditText)findViewById(R.id.postContent);
-      selectionEnd=contentText.getSelectionEnd();
-      Editable str=contentText.getText();
-      str.insert(selectionEnd,"\n\n<!--more-->\n\n");
-    }
-  }
-);
+  registerForContextMenu(mAddPictureButton);
+  mContentEditText.setOnSelectionChangedListener(this);
+  mContentEditText.setOnEditTextImeBackListener(this);
+  mContentEditText.setOnTouchListener(this);
+  mContentEditText.addTextChangedListener(this);
+  mAddPictureButton.setOnClickListener(this);
+  mSaveButton.setOnClickListener(this);
+  mPubDateButton.setOnClickListener(this);
+  mBoldToggleButton.setOnClickListener(this);
+  mLinkButton.setOnClickListener(this);
+  mEmToggleButton.setOnClickListener(this);
+  mUnderlineToggleButton.setOnClickListener(this);
+  mStrikeToggleButton.setOnClickListener(this);
+  mBquoteToggleButton.setOnClickListener(this);
+  mMoreButton.setOnClickListener(this);
 }

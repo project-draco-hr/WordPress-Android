@@ -18,16 +18,15 @@
   if (opts.outWidth > opts.outHeight)   conversionFactor=0.40f;
   byte[] finalBytes=ih.createThumbnail(bytes,String.valueOf((int)(width * conversionFactor)),(String)mediaData.get("orientation"),true);
   resizedBitmap=BitmapFactory.decodeByteArray(finalBytes,0,finalBytes.length);
-  WPEditText content=(WPEditText)findViewById(R.id.postContent);
-  int selectionStart=content.getSelectionStart();
-  styleStart=selectionStart;
-  int selectionEnd=content.getSelectionEnd();
+  int selectionStart=mContentEditText.getSelectionStart();
+  mStyleStart=selectionStart;
+  int selectionEnd=mContentEditText.getSelectionEnd();
   if (selectionStart > selectionEnd) {
     int temp=selectionEnd;
     selectionEnd=selectionStart;
     selectionStart=temp;
   }
-  Editable s=content.getText();
+  Editable s=mContentEditText.getText();
   WPImageSpan is=new WPImageSpan(EditPost.this,resizedBitmap,curStream);
   String imageWidth=WordPress.currentBlog.getMaxImageWidth();
   if (!imageWidth.equals("Original Size")) {
@@ -55,7 +54,7 @@
   s.setSpan(as,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
   s.insert(selectionEnd + 1,"\n\n");
   try {
-    content.setSelection(s.length());
+    mContentEditText.setSelection(s.length());
   }
  catch (  Exception e) {
     e.printStackTrace();

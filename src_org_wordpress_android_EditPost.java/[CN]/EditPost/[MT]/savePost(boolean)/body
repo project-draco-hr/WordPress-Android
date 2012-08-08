@@ -1,12 +1,10 @@
 {
-  EditText titleET=(EditText)findViewById(R.id.title);
-  String title=titleET.getText().toString();
-  WPEditText contentET=(WPEditText)findViewById(R.id.postContent);
+  String title=mTitleEditText.getText().toString();
+  String password=mPasswordEditText.getText().toString();
+  String pubDate=mPubDateText.getText().toString();
   String content="";
-  EditText passwordET=(EditText)findViewById(R.id.post_password);
-  String password=passwordET.getText().toString();
-  if (localDraft || isNew && !autoSave) {
-    Editable e=contentET.getText();
+  if (mLocalDraft || mIsNew && !autoSave) {
+    Editable e=mContentEditText.getText();
     if (android.os.Build.VERSION.SDK_INT >= 14) {
       CharacterStyle[] style=e.getSpans(0,e.length(),CharacterStyle.class);
       for (int i=0; i < style.length; i++) {
@@ -20,21 +18,18 @@
     content=content.replace("</strong><strong>","").replace("</em><em>","").replace("</u><u>","").replace("</strike><strike>","").replace("</blockquote><blockquote>","");
   }
  else {
-    content=contentET.getText().toString();
+    content=mContentEditText.getText().toString();
   }
-  TextView tvPubDate=(TextView)findViewById(R.id.pubDate);
-  String pubDate=tvPubDate.getText().toString();
   long pubDateTimestamp=0;
   if (!pubDate.equals(getResources().getText(R.string.immediately))) {
-    if (isCustomPubDate)     pubDateTimestamp=customPubDate;
- else     if (!isNew)     pubDateTimestamp=post.getDate_created_gmt();
+    if (mIsCustomPubDate)     pubDateTimestamp=mCustomPubDate;
+ else     if (!mIsNew)     pubDateTimestamp=mPost.getDate_created_gmt();
   }
   String tags="", postFormat="";
-  if (!isPage) {
-    EditText tagsET=(EditText)findViewById(R.id.tags);
-    tags=tagsET.getText().toString();
+  if (!mIsPage) {
+    tags=mTagsEditText.getText().toString();
     Spinner postFormatSpinner=(Spinner)findViewById(R.id.postFormat);
-    postFormat=postFormats[postFormatSpinner.getSelectedItemPosition()];
+    postFormat=mPostFormats[postFormatSpinner.getSelectedItemPosition()];
   }
   String images="";
   boolean success=false;
@@ -42,8 +37,9 @@
     AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(EditPost.this);
     dialogBuilder.setTitle(getResources().getText(R.string.empty_fields));
     dialogBuilder.setMessage(getResources().getText(R.string.title_post_required));
-    dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+    dialogBuilder.setPositiveButton(getString(R.id.ok),new DialogInterface.OnClickListener(){
       public void onClick(      DialogInterface dialog,      int whichButton){
+        dialog.dismiss();
       }
     }
 );
@@ -51,16 +47,16 @@
     dialogBuilder.create().show();
   }
  else {
-    if (!isNew) {
-      post.deleteMediaFiles();
-      Editable s=contentET.getText();
+    if (!mIsNew) {
+      mPost.deleteMediaFiles();
+      Editable s=mContentEditText.getText();
       WPImageSpan[] click_spans=s.getSpans(0,s.length(),WPImageSpan.class);
       if (click_spans.length != 0) {
         for (int i=0; i < click_spans.length; i++) {
           WPImageSpan wpIS=click_spans[i];
           images+=wpIS.getImageSource().toString() + ",";
           MediaFile mf=new MediaFile();
-          mf.setPostID(post.getId());
+          mf.setPostID(mPost.getId());
           mf.setTitle(wpIS.getTitle());
           mf.setCaption(wpIS.getCaption());
           mf.setDescription(wpIS.getDescription());
@@ -73,14 +69,14 @@
           if (!autoSave) {
             s.removeSpan(wpIS);
             s.insert(tagStart,"<img android-uri=\"" + wpIS.getImageSource().toString() + "\" />");
-            if (localDraft)             content=EscapeUtils.unescapeHtml(WPHtml.toHtml(s));
+            if (mLocalDraft)             content=EscapeUtils.unescapeHtml(WPHtml.toHtml(s));
  else             content=s.toString();
           }
         }
       }
     }
-    Spinner spinner=(Spinner)findViewById(R.id.status);
-    int selectedStatus=spinner.getSelectedItemPosition();
+    final String NEEDLE="<!--more-->";
+    int selectedStatus=mStatusSpinner.getSelectedItemPosition();
     String status="";
 switch (selectedStatus) {
 case 0:
@@ -101,37 +97,36 @@ break;
 }
 Double latitude=0.0;
 Double longitude=0.0;
-if (blog.isLocation()) {
+if (mBlog.isLocation()) {
 try {
-latitude=curLocation.getLatitude();
-longitude=curLocation.getLongitude();
+latitude=mCurrentLocation.getLatitude();
+longitude=mCurrentLocation.getLongitude();
 }
  catch (Exception e) {
 e.printStackTrace();
 }
 }
-String needle="<!--more-->";
-if (isNew) {
-post=new Post(id,title,content,images,pubDateTimestamp,categories.toString(),tags,status,password,latitude,longitude,isPage,postFormat,EditPost.this,true,false);
-post.setLocalDraft(true);
-if (content.indexOf(needle) >= 0) {
-post.setDescription(content.substring(0,content.indexOf(needle)));
-post.setMt_text_more(content.substring(content.indexOf(needle) + needle.length(),content.length()));
+if (mIsNew) {
+mPost=new Post(mBlogID,title,content,images,pubDateTimestamp,mCategories.toString(),tags,status,password,latitude,longitude,mIsPage,postFormat,EditPost.this,true,false);
+mPost.setLocalDraft(true);
+if (content.indexOf(NEEDLE) >= 0) {
+mPost.setDescription(content.substring(0,content.indexOf(NEEDLE)));
+mPost.setMt_text_more(content.substring(content.indexOf(NEEDLE) + NEEDLE.length(),content.length()));
 }
-success=post.save();
+success=mPost.save();
 if (success) {
-isNew=false;
-isNewDraft=true;
+mIsNew=false;
+mIsNewDraft=true;
 }
-post.deleteMediaFiles();
-Spannable s=contentET.getText();
+mPost.deleteMediaFiles();
+Spannable s=mContentEditText.getText();
 WPImageSpan[] image_spans=s.getSpans(0,s.length(),WPImageSpan.class);
 if (image_spans.length != 0) {
 for (int i=0; i < image_spans.length; i++) {
 WPImageSpan wpIS=image_spans[i];
 images+=wpIS.getImageSource().toString() + ",";
 MediaFile mf=new MediaFile();
-mf.setPostID(post.getId());
+mf.setPostID(mPost.getId());
 mf.setTitle(wpIS.getTitle());
 mf.setCaption(wpIS.getCaption());
 mf.setFileName(wpIS.getImageSource().toString());
@@ -142,33 +137,33 @@ mf.setVideo(wpIS.isVideo());
 mf.save(EditPost.this);
 }
 }
-WordPress.currentPost=post;
+WordPress.currentPost=mPost;
 }
  else {
-if (curLocation == null) {
-latitude=post.getLatitude();
-longitude=post.getLongitude();
+if (mCurrentLocation == null) {
+latitude=mPost.getLatitude();
+longitude=mPost.getLongitude();
 }
-post.setTitle(title);
-if (localDraft && content.indexOf(needle) >= 0) {
-post.setDescription(content.substring(0,content.indexOf(needle)));
-post.setMt_text_more(content.substring(content.indexOf(needle) + needle.length(),content.length()));
+mPost.setTitle(title);
+if (mLocalDraft && content.indexOf(NEEDLE) >= 0) {
+mPost.setDescription(content.substring(0,content.indexOf(NEEDLE)));
+mPost.setMt_text_more(content.substring(content.indexOf(NEEDLE) + NEEDLE.length(),content.length()));
 }
  else {
-post.setDescription(content);
-post.setMt_text_more("");
+mPost.setDescription(content);
+mPost.setMt_text_more("");
 }
-post.setMediaPaths(images);
-post.setDate_created_gmt(pubDateTimestamp);
-post.setCategories(categories);
-post.setMt_keywords(tags);
-post.setPost_status(status);
-post.setWP_password(password);
-post.setLatitude(latitude);
-post.setLongitude(longitude);
-post.setWP_post_form(postFormat);
-if (!post.isLocalDraft()) post.setLocalChange(true);
-success=post.update();
+mPost.setMediaPaths(images);
+mPost.setDate_created_gmt(pubDateTimestamp);
+mPost.setCategories(mCategories);
+mPost.setMt_keywords(tags);
+mPost.setPost_status(status);
+mPost.setWP_password(password);
+mPost.setLatitude(latitude);
+mPost.setLongitude(longitude);
+mPost.setWP_post_form(postFormat);
+if (!mPost.isLocalDraft()) mPost.setLocalChange(true);
+success=mPost.update();
 }
 }
 return success;
