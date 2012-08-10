@@ -94,7 +94,7 @@
  else {
       client=new XMLRPCClient(xmlrpcURL,httpuser,httppassword);
       XMLRPCMethod method=new XMLRPCMethod("wp.getUsersBlogs",new XMLRPCMethodCallback(){
-        @SuppressWarnings("unchecked") public void callFinished(        Object[] result){
+        public void callFinished(        Object[] result){
           final String[] blogNames=new String[result.length];
           final String[] urls=new String[result.length];
           final int[] blogIds=new int[result.length];
@@ -183,8 +183,7 @@
                   for (int i=0; i < selectedItems.size(); i++) {
                     if (selectedItems.get(selectedItems.keyAt(i)) == true) {
                       int rowID=selectedItems.keyAt(i);
-                      long blogID=WordPress.wpDB.addAccount(urls[rowID],blogNames[rowID],username,password,httpuser,httppassword,"Above Text",true,false,"500",5,false,blogIds[rowID],wpcoms[rowID],wpVersions[rowID]);
-                      success=blogID > 0;
+                      WordPress.wpDB.addAccount(urls[rowID],blogNames[rowID],username,password,httpuser,httppassword,"Above Text",true,false,"500",5,false,blogIds[rowID],wpcoms[rowID],wpVersions[rowID]);
                     }
                   }
                   Bundle bundle=new Bundle();
@@ -199,8 +198,7 @@
               dialogBuilder.setPositiveButton("Add All",new DialogInterface.OnClickListener(){
                 public void onClick(                DialogInterface dialog,                int whichButton){
                   for (int i=0; i < blogCtr; i++) {
-                    long blogID=WordPress.wpDB.addAccount(urls[i],blogNames[i],username,password,httpuser,httppassword,"Above Text",true,false,"500",5,false,blogIds[i],wpcoms[i],wpVersions[i]);
-                    success=blogID > 0;
+                    WordPress.wpDB.addAccount(urls[i],blogNames[i],username,password,httpuser,httppassword,"Above Text",true,false,"500",5,false,blogIds[i],wpcoms[i],wpVersions[i]);
                   }
                   Bundle bundle=new Bundle();
                   bundle.putString("returnStatus","SAVE");
@@ -237,8 +235,7 @@
 );
             }
  else {
-              long blogID=WordPress.wpDB.addAccount(urls[0],blogNames[0],username,password,httpuser,httppassword,"Above Text",true,false,"500",5,false,blogIds[0],wpcoms[0],wpVersions[0]);
-              success=blogID > 0;
+              WordPress.wpDB.addAccount(urls[0],blogNames[0],username,password,httpuser,httppassword,"Above Text",true,false,"500",5,false,blogIds[0],wpcoms[0],wpVersions[0]);
               Bundle bundle=new Bundle();
               bundle.putString("returnStatus","SAVE");
               Intent mIntent=new Intent();

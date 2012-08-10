@@ -3,30 +3,12 @@
   setContentView(R.layout.about);
   if (BlackBerryUtils.getInstance().isBlackBerry()) {
     TextView appTitle=(TextView)findViewById(R.id.about_first_line);
-    appTitle.setText(getResources().getText(R.string.app_title_blackberry));
+    appTitle.setText(getString(R.string.app_title_blackberry));
   }
   TextView version=(TextView)findViewById(R.id.about_version);
-  PackageManager pm=getPackageManager();
-  try {
-    PackageInfo pi=pm.getPackageInfo("org.wordpress.android",0);
-    version.setText(getResources().getText(R.string.version) + " " + pi.versionName);
-  }
- catch (  NameNotFoundException e) {
-  }
+  version.setText(getString(R.string.version) + " " + WordPress.versionName);
   Button tos=(Button)findViewById(R.id.about_tos);
-  tos.setOnClickListener(new View.OnClickListener(){
-    public void onClick(    View v){
-      Uri uri=Uri.parse(tos_url);
-      startActivity(new Intent(Intent.ACTION_VIEW,uri));
-    }
-  }
-);
+  tos.setOnClickListener(this);
   Button pp=(Button)findViewById(R.id.about_privacy);
-  pp.setOnClickListener(new View.OnClickListener(){
-    public void onClick(    View v){
-      Uri uri=Uri.parse(automattic_url + privacy_policy_url);
-      startActivity(new Intent(Intent.ACTION_VIEW,uri));
-    }
-  }
-);
+  pp.setOnClickListener(this);
 }
