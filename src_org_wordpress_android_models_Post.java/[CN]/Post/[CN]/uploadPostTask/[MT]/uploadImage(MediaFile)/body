@@ -10,16 +10,16 @@
     if (curImagePath.contains("video")) {
       video=true;
     }
-    String tempFileName="wp-" + System.currentTimeMillis();
-    try {
-      context.openFileOutput(tempFileName,Context.MODE_PRIVATE);
-    }
- catch (    FileNotFoundException e) {
-      error="Could not create temp file for media upload.";
-      return null;
-    }
-    File tempFile=context.getFileStreamPath(tempFileName);
     if (video) {
+      String tempFileName="wp-" + System.currentTimeMillis();
+      try {
+        context.openFileOutput(tempFileName,Context.MODE_PRIVATE);
+      }
+ catch (      FileNotFoundException e) {
+        error="Could not create temp file for media upload.";
+        return null;
+      }
+      File tempFile=context.getFileStreamPath(tempFileName);
       Uri videoUri=Uri.parse(curImagePath);
       File fVideo=null;
       String mimeType="", xRes="", yRes="";
@@ -94,6 +94,15 @@
     }
  else {
       for (int i=0; i < 2; i++) {
+        String tempFileName="wp-" + System.currentTimeMillis();
+        try {
+          context.openFileOutput(tempFileName,Context.MODE_PRIVATE);
+        }
+ catch (        FileNotFoundException e) {
+          error="Could not create temp file for media upload.";
+          return null;
+        }
+        File tempFile=context.getFileStreamPath(tempFileName);
         curImagePath=mf.getFileName();
         if (i == 0 || (post.blog.isFullSizeImage() || post.blog.isScaledImage())) {
           Uri imageUri=Uri.parse(curImagePath);
@@ -152,8 +161,10 @@
  catch (            IOException e) {
               e.printStackTrace();
             }
+            String width=String.valueOf(i == 0 ? mf.getWidth() : post.blog.getScaledImageWidth());
+            if (post.blog.getMaxImageWidth().equals("Original Size") && i == 0)             width="Original Size";
             ImageHelper ih2=new ImageHelper();
-            finalBytes=ih2.createThumbnail(bytes,String.valueOf(i == 0 ? mf.getWidth() : post.blog.getScaledImageWidth()),orientation,false);
+            finalBytes=ih2.createThumbnail(bytes,width,orientation,false);
             if (finalBytes == null) {
               error=context.getResources().getText(R.string.media_error).toString();
               return null;
