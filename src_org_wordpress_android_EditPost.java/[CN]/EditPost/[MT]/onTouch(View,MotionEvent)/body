@@ -43,6 +43,7 @@
           final TextView imageWidthText=(TextView)alertView.findViewById(R.id.imageWidthText);
           final EditText titleText=(EditText)alertView.findViewById(R.id.title);
           final EditText caption=(EditText)alertView.findViewById(R.id.caption);
+          final CheckBox featured=(CheckBox)alertView.findViewById(R.id.featuredImage);
           final SeekBar seekBar=(SeekBar)alertView.findViewById(R.id.imageWidth);
           final Spinner alignmentSpinner=(Spinner)alertView.findViewById(R.id.alignment_spinner);
           ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(EditPost.this,R.array.alignment_array,android.R.layout.simple_spinner_item);
@@ -52,6 +53,7 @@
           seekBar.setProgress(span.getWidth());
           titleText.setText(span.getTitle());
           caption.setText(span.getCaption());
+          featured.setChecked(span.isFeatured());
           alignmentSpinner.setSelection(span.getHorizontalAlignment(),true);
           seekBar.setMax(100);
           if (span.getWidth() != 0)           seekBar.setProgress(span.getWidth() / 10);
@@ -72,6 +74,16 @@
               span.setHorizontalAlignment(alignmentSpinner.getSelectedItemPosition());
               span.setWidth(seekBar.getProgress() * 10);
               span.setCaption(caption.getText().toString());
+              span.setFeatured(featured.isChecked());
+              if (featured.isChecked()) {
+                WPImageSpan[] click_spans=s.getSpans(0,s.length(),WPImageSpan.class);
+                if (click_spans.length > 1) {
+                  for (int i=0; i < click_spans.length; i++) {
+                    WPImageSpan verifySpan=click_spans[i];
+                    if (verifySpan != span)                     verifySpan.setFeatured(false);
+                  }
+                }
+              }
             }
           }
 ).setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
