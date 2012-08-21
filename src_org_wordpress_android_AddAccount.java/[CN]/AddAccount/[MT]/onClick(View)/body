@@ -1,0 +1,38 @@
+{
+switch (v.getId()) {
+case R.id.save:
+    if (mSystemService.getActiveNetworkInfo() == null) {
+      AlertUtil.showAlert(AddAccount.this,R.string.no_network_title,R.string.no_network_message);
+    }
+ else {
+      pd=ProgressDialog.show(AddAccount.this,getString(R.string.account_setup),getString(R.string.attempting_configure),true,false);
+      Thread action=new Thread(){
+        public void run(){
+          Looper.prepare();
+          configureAccount();
+          Looper.loop();
+        }
+      }
+;
+      action.start();
+    }
+  break;
+case R.id.cancel:
+Bundle bundle=new Bundle();
+bundle.putString("returnStatus","CANCEL");
+Intent mIntent=new Intent();
+mIntent.putExtras(bundle);
+setResult(RESULT_OK,mIntent);
+finish();
+break;
+case R.id.settingsButton:
+Intent settings=new Intent(AddAccount.this,AddAcountSettings.class);
+settings.putExtra("httpuser",httpuser);
+settings.putExtra("httppassword",httppassword);
+startActivityForResult(settings,R.id.settingsButton);
+break;
+case R.id.wordpressdotcom:
+startActivity(new Intent(AddAccount.this,Signup.class));
+break;
+}
+}

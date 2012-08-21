@@ -1,74 +1,34 @@
 {
   super.onCreate(savedInstanceState);
   setContentView(R.layout.add_account);
+  mUserNameEdit=(EditText)findViewById(R.id.username);
+  mSettingsButton=(Button)findViewById(R.id.settingsButton);
+  mCancelButton=(Button)findViewById(R.id.cancel);
+  mSaveButton=(Button)findViewById(R.id.save);
+  mSignUpButton=(Button)findViewById(R.id.wordpressdotcom);
+  mUrlEdit=(EditText)findViewById(R.id.url);
+  mUsernameEdit=(EditText)findViewById(R.id.username);
+  mPasswordEdit=(EditText)findViewById(R.id.password);
+  mSystemService=(ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
   Bundle extras=getIntent().getExtras();
   if (extras != null) {
     wpcom=extras.getBoolean("wpcom",false);
     String username=extras.getString("username");
     if (username != null) {
-      EditText usernameET=(EditText)findViewById(R.id.username);
-      usernameET.setText(username);
+      mUserNameEdit.setText(username);
     }
   }
   if (wpcom) {
-    TextView urlLabel=(TextView)findViewById(R.id.l_url);
-    urlLabel.setVisibility(View.GONE);
-    EditText urlET=(EditText)findViewById(R.id.url);
-    urlET.setVisibility(View.GONE);
+    ((TextView)findViewById(R.id.l_url)).setVisibility(View.GONE);
+    ((EditText)findViewById(R.id.url)).setVisibility(View.GONE);
   }
  else {
     ImageView logo=(ImageView)findViewById(R.id.wpcomLogo);
     logo.setImageDrawable(getResources().getDrawable(R.drawable.wplogo));
   }
-  final Button settingsButton=(Button)findViewById(R.id.settingsButton);
-  if (!wpcom) {
-    settingsButton.setOnClickListener(new Button.OnClickListener(){
-      public void onClick(      View v){
-        Intent settings=new Intent(AddAccount.this,AddAcountSettings.class);
-        settings.putExtra("httpuser",httpuser);
-        settings.putExtra("httppassword",httppassword);
-        startActivityForResult(settings,R.id.settingsButton);
-      }
-    }
-);
-  }
- else {
-    settingsButton.setVisibility(View.GONE);
-  }
-  final Button cancelButton=(Button)findViewById(R.id.cancel);
-  final Button saveButton=(Button)findViewById(R.id.save);
-  saveButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      pd=ProgressDialog.show(AddAccount.this,getResources().getText(R.string.account_setup),getResources().getText(R.string.attempting_configure),true,false);
-      Thread action=new Thread(){
-        public void run(){
-          Looper.prepare();
-          configureAccount();
-          Looper.loop();
-        }
-      }
-;
-      action.start();
-    }
-  }
-);
-  cancelButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      Bundle bundle=new Bundle();
-      bundle.putString("returnStatus","CANCEL");
-      Intent mIntent=new Intent();
-      mIntent.putExtras(bundle);
-      setResult(RESULT_OK,mIntent);
-      finish();
-    }
-  }
-);
-  Button signUp=(Button)findViewById(R.id.wordpressdotcom);
-  signUp.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      Intent signupIntent=new Intent(AddAccount.this,Signup.class);
-      startActivity(signupIntent);
-    }
-  }
-);
+  if (wpcom)   mSettingsButton.setVisibility(View.GONE);
+ else   mSettingsButton.setOnClickListener(this);
+  mSaveButton.setOnClickListener(this);
+  mCancelButton.setOnClickListener(this);
+  mSignUpButton.setOnClickListener(this);
 }

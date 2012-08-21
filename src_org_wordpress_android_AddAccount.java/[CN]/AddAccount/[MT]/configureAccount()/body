@@ -1,16 +1,13 @@
 {
-  EditText urlET=(EditText)findViewById(R.id.url);
+  boolean invalidURL=false;
   if (wpcom) {
-    blogURL="http://wordpress.com";
+    blogURL=URL_WORDPRESS;
   }
  else {
-    blogURL=urlET.getText().toString().trim();
+    blogURL=mUrlEdit.getText().toString().trim();
   }
-  EditText usernameET=(EditText)findViewById(R.id.username);
-  final String username=usernameET.getText().toString().trim();
-  EditText passwordET=(EditText)findViewById(R.id.password);
-  final String password=passwordET.getText().toString().trim();
-  boolean invalidURL=false;
+  final String username=mUsernameEdit.getText().toString().trim();
+  final String password=mPasswordEdit.getText().toString().trim();
   try {
     URI.create(blogURL);
   }
@@ -19,29 +16,11 @@
   }
   if (blogURL.equals("") || username.equals("") || password.equals("")) {
     pd.dismiss();
-    AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(AddAccount.this);
-    dialogBuilder.setTitle(getResources().getText(R.string.required_fields));
-    dialogBuilder.setMessage(getResources().getText(R.string.url_username_password_required));
-    dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-      public void onClick(      DialogInterface dialog,      int whichButton){
-      }
-    }
-);
-    dialogBuilder.setCancelable(true);
-    dialogBuilder.create().show();
+    AlertUtil.showAlert(AddAccount.this,R.string.required_fields,R.string.url_username_password_required);
   }
  else   if (invalidURL) {
     pd.dismiss();
-    AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(AddAccount.this);
-    dialogBuilder.setTitle(getResources().getText(R.string.invalid_url));
-    dialogBuilder.setMessage(getResources().getText(R.string.invalid_url_message));
-    dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-      public void onClick(      DialogInterface dialog,      int whichButton){
-      }
-    }
-);
-    dialogBuilder.setCancelable(true);
-    dialogBuilder.create().show();
+    AlertUtil.showAlert(AddAccount.this,R.string.invalid_url,R.string.invalid_url_message);
   }
  else {
     if (!(blogURL.toLowerCase().contains("http://")) && !(blogURL.toLowerCase().contains("https://"))) {
@@ -80,16 +59,7 @@
     }
     if (xmlrpcURL == null) {
       pd.dismiss();
-      AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(AddAccount.this);
-      dialogBuilder.setTitle(getResources().getText(R.string.error));
-      dialogBuilder.setMessage(getResources().getText(R.string.no_site_error));
-      dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-        public void onClick(        DialogInterface dialog,        int whichButton){
-        }
-      }
-);
-      dialogBuilder.setCancelable(true);
-      dialogBuilder.create().show();
+      AlertUtil.showAlert(AddAccount.this,R.string.error,R.string.no_site_error);
     }
  else {
       client=new XMLRPCClient(xmlrpcURL,httpuser,httppassword);
@@ -151,20 +121,16 @@
           }
           pd.dismiss();
           if (blogCtr == 0) {
-            AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(AddAccount.this);
-            dialogBuilder.setTitle("No Blogs Found");
             String additionalText="";
             if (result.length > 0) {
-              additionalText=" additional ";
+              additionalText=getString(R.string.additional);
             }
-            dialogBuilder.setMessage("No " + additionalText + "blogs were found for that account.");
-            dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+            AlertUtil.showAlert(AddAccount.this,R.string.no_blogs_found,String.format(getString(R.string.no_blogs_message),additionalText),getString(R.string.ok),new DialogInterface.OnClickListener(){
               public void onClick(              DialogInterface dialog,              int whichButton){
+                dialog.dismiss();
               }
             }
 );
-            dialogBuilder.setCancelable(true);
-            dialogBuilder.create().show();
           }
  else {
             if (blogCtr > 1) {
@@ -175,9 +141,9 @@
               ArrayAdapter<CharSequence> blogs=new ArrayAdapter<CharSequence>(AddAccount.this,R.layout.blogs_row,aBlogNames);
               lv.setAdapter(blogs);
               AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(AddAccount.this);
-              dialogBuilder.setTitle("Select Blogs");
+              dialogBuilder.setTitle(R.string.select_blogs);
               dialogBuilder.setView(lv);
-              dialogBuilder.setNegativeButton("Add Selected",new DialogInterface.OnClickListener(){
+              dialogBuilder.setNegativeButton(R.string.add_selected,new DialogInterface.OnClickListener(){
                 public void onClick(                DialogInterface dialog,                int whichButton){
                   SparseBooleanArray selectedItems=lv.getCheckedItemPositions();
                   for (int i=0; i < selectedItems.size(); i++) {
@@ -195,7 +161,7 @@
                 }
               }
 );
-              dialogBuilder.setPositiveButton("Add All",new DialogInterface.OnClickListener(){
+              dialogBuilder.setPositiveButton(R.string.add_all,new DialogInterface.OnClickListener(){
                 public void onClick(                DialogInterface dialog,                int whichButton){
                   for (int i=0; i < blogCtr; i++) {
                     WordPress.wpDB.addAccount(urls[i],blogNames[i],username,password,httpuser,httppassword,"Above Text",true,false,"500",5,false,blogIds[i],wpcoms[i],wpVersions[i]);
