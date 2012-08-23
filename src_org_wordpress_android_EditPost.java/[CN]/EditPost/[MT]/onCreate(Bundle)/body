@@ -1,7 +1,6 @@
 {
   super.onCreate(savedInstanceState);
   Bundle extras=getIntent().getExtras();
-  initBlog();
   Calendar c=Calendar.getInstance();
   mYear=c.get(Calendar.YEAR);
   mMonth=c.get(Calendar.MONTH);
@@ -13,9 +12,10 @@
   mSelectedCategories=new Vector<String>();
   String action=getIntent().getAction();
   if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
-    if (!getAccounts())     return;
+    if (!selectBlogForShareAction())     return;
   }
  else {
+    initBlog();
     if (extras != null) {
       mAccountName=EscapeUtils.unescapeHtml(extras.getString("accountName"));
       mPostID=extras.getLong("postID");
@@ -40,8 +40,7 @@
         WordPress.currentBlog=mBlog;
       }
  catch (      Exception e) {
-        Toast.makeText(this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_LONG).show();
-        finish();
+        showBlogErrorAndFinish();
         return;
       }
       if (!mIsNew) {
