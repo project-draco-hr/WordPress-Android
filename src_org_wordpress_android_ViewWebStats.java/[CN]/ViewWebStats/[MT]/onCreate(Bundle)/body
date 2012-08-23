@@ -1,0 +1,69 @@
+{
+  super.onCreate(savedInstanceState);
+  requestWindowFeature(Window.FEATURE_NO_TITLE);
+  setContentView(R.layout.view_web_stats);
+  webView=(WebView)findViewById(R.id.webView);
+  webView.setWebViewClient(new StatsWebViewClient());
+  WebSettings webSettings=webView.getSettings();
+  webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+  webSettings.setBuiltInZoomControls(true);
+  webSettings.setJavaScriptEnabled(true);
+  webSettings.setPluginsEnabled(true);
+  webSettings.setDomStorageEnabled(true);
+  webSettings.setSavePassword(false);
+  titleBar=(WPTitleBar)findViewById(R.id.actionBar);
+  titleBar.refreshButton.setOnClickListener(new ImageButton.OnClickListener(){
+    public void onClick(    View v){
+      reloadStats();
+    }
+  }
+);
+  titleBar.setOnBlogChangedListener(new OnBlogChangedListener(){
+    @Override public void OnBlogChanged(){
+      if (currentTask != null) {
+        currentTask.cancel(true);
+        currentTask=null;
+      }
+      authed=false;
+      isRetrying=false;
+      hideLoginForm();
+      webView.clearView();
+      webView.setVisibility(View.INVISIBLE);
+      webView.clearHistory();
+      webView.clearCache(false);
+      initStats();
+    }
+  }
+);
+  Button saveStatsLogin=(Button)findViewById(R.id.saveDotcom);
+  saveStatsLogin.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      EditText dotcomUsername=(EditText)findViewById(R.id.dotcomUsername);
+      EditText dotcomPassword=(EditText)findViewById(R.id.dotcomPassword);
+      String dcUsername=dotcomUsername.getText().toString();
+      String dcPassword=dotcomPassword.getText().toString();
+      if (dcUsername.equals("") || dcPassword.equals("")) {
+        showErrorDialog(getResources().getText(R.string.required_fields).toString(),getResources().getText(R.string.username_password_required).toString());
+      }
+ else {
+        WordPress.currentBlog.setDotcom_username(dcUsername);
+        WordPress.currentBlog.setDotcom_password(dcPassword);
+        WordPress.currentBlog.save(ViewWebStats.this,WordPress.currentBlog.getUsername());
+        hideLoginForm();
+        initStats();
+      }
+    }
+  }
+);
+  TextView wpcomHelp=(TextView)findViewById(R.id.wpcomHelp);
+  wpcomHelp.setOnClickListener(new TextView.OnClickListener(){
+    public void onClick(    View v){
+      Intent intent=new Intent(Intent.ACTION_VIEW);
+      intent.setData(Uri.parse("http://en.support.wordpress.com/stats/"));
+      startActivity(intent);
+    }
+  }
+);
+  CookieSyncManager.createInstance(this);
+  this.initStats();
+}
