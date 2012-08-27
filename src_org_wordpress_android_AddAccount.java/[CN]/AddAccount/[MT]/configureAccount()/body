@@ -143,7 +143,16 @@
                 for (int i=0; i < selectedItems.size(); i++) {
                   if (selectedItems.get(selectedItems.keyAt(i)) == true) {
                     int rowID=selectedItems.keyAt(i);
-                    WordPress.wpDB.addAccount(urls[rowID],blogNames[rowID],username,password,httpuser,httppassword,"Above Text",true,false,"500",5,false,blogIds[rowID],wpcoms[rowID],wpVersions[rowID]);
+                    long blogID=-1;
+                    blogID=WordPress.wpDB.addAccount(urls[rowID],blogNames[rowID],username,password,httpuser,httppassword,"Above Text",true,false,"500",5,false,blogIds[rowID],wpcoms[rowID],wpVersions[rowID]);
+                    if (i == 0) {
+                      try {
+                        if (blogID >= 0)                         WordPress.currentBlog=new Blog((int)blogID,AddAccount.this);
+                      }
+ catch (                      Exception e) {
+                        e.printStackTrace();
+                      }
+                    }
                   }
                 }
                 Bundle bundle=new Bundle();
@@ -158,7 +167,16 @@
             dialogBuilder.setPositiveButton(R.string.add_all,new DialogInterface.OnClickListener(){
               public void onClick(              DialogInterface dialog,              int whichButton){
                 for (int i=0; i < blogCtr; i++) {
-                  WordPress.wpDB.addAccount(urls[i],blogNames[i],username,password,httpuser,httppassword,"Above Text",true,false,"500",5,false,blogIds[i],wpcoms[i],wpVersions[i]);
+                  long blogID=-1;
+                  blogID=WordPress.wpDB.addAccount(urls[i],blogNames[i],username,password,httpuser,httppassword,"Above Text",true,false,"500",5,false,blogIds[i],wpcoms[i],wpVersions[i]);
+                  if (i == 0) {
+                    try {
+                      if (blogID >= 0)                       WordPress.currentBlog=new Blog((int)blogID,AddAccount.this);
+                    }
+ catch (                    Exception e) {
+                      e.printStackTrace();
+                    }
+                  }
                 }
                 Bundle bundle=new Bundle();
                 bundle.putString("returnStatus","SAVE");
@@ -195,7 +213,13 @@
 );
           }
  else {
-            WordPress.wpDB.addAccount(urls[0],blogNames[0],username,password,httpuser,httppassword,"Above Text",true,false,"500",5,false,blogIds[0],wpcoms[0],wpVersions[0]);
+            long blogID=WordPress.wpDB.addAccount(urls[0],blogNames[0],username,password,httpuser,httppassword,"Above Text",true,false,"500",5,false,blogIds[0],wpcoms[0],wpVersions[0]);
+            try {
+              if (blogID >= 0)               WordPress.currentBlog=new Blog((int)blogID,AddAccount.this);
+            }
+ catch (            Exception e) {
+              e.printStackTrace();
+            }
             Bundle bundle=new Bundle();
             bundle.putString("returnStatus","SAVE");
             Intent mIntent=new Intent();

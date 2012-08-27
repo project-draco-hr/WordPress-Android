@@ -1,7 +1,44 @@
 {
   AlertDialog.Builder b=new AlertDialog.Builder(getActivity());
-  b.setTitle(R.string.error);
-  b.setPositiveButton("OK",this);
-  b.setMessage(this.getArguments().getString("alert-message"));
-  return b.create();
+  if (!isXMLRPC) {
+    b.setTitle(R.string.error);
+    b.setPositiveButton("OK",this);
+    b.setMessage(this.getArguments().getString("alert-message"));
+    return b.create();
+  }
+ else {
+    String error=this.getArguments().getString("alert-error");
+    String message=this.getArguments().getString("alert-message");
+    if (error.contains("code 403")) {
+      b.setIcon(android.R.drawable.ic_dialog_alert);
+      b.setTitle(R.string.connection_error);
+      b.setMessage(R.string.incorrect_credentials);
+      b.setCancelable(true);
+      b.setPositiveButton(R.string.yes,new DialogInterface.OnClickListener(){
+        @Override public void onClick(        DialogInterface dialog,        int which){
+          Intent settingsIntent=new Intent(getActivity(),Settings.class);
+          getActivity().startActivity(settingsIntent);
+        }
+      }
+);
+      b.setNegativeButton(R.string.no,new DialogInterface.OnClickListener(){
+        @Override public void onClick(        DialogInterface dialog,        int which){
+        }
+      }
+);
+      return b.create();
+    }
+ else {
+      b.setIcon(android.R.drawable.ic_dialog_alert);
+      b.setTitle(R.string.connection_error);
+      b.setMessage((error.contains("code 405")) ? error : message);
+      b.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener(){
+        @Override public void onClick(        DialogInterface dialog,        int which){
+        }
+      }
+);
+      b.setCancelable(true);
+      return b.create();
+    }
+  }
 }
