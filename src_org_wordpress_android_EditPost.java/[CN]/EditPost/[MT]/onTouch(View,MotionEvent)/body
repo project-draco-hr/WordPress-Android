@@ -34,9 +34,9 @@
       int line=layout.getLineForVertical(y);
       int charPosition=layout.getOffsetForHorizontal(line,x);
       final Spannable s=mContentEditText.getText();
-      WPImageSpan[] click_spans=s.getSpans(charPosition,charPosition,WPImageSpan.class);
-      if (click_spans.length != 0) {
-        final WPImageSpan span=click_spans[0];
+      WPImageSpan[] image_spans=s.getSpans(charPosition,charPosition,WPImageSpan.class);
+      if (image_spans.length != 0) {
+        final WPImageSpan span=image_spans[0];
         if (!span.isVideo()) {
           LayoutInflater factory=LayoutInflater.from(EditPost.this);
           final View alertView=factory.inflate(R.layout.alert_image_options,null);
@@ -45,6 +45,10 @@
           final EditText caption=(EditText)alertView.findViewById(R.id.caption);
           final CheckBox featuredCheckBox=(CheckBox)alertView.findViewById(R.id.featuredImage);
           final CheckBox featuredInPostCheckBox=(CheckBox)alertView.findViewById(R.id.featuredInPost);
+          if (WordPress.currentBlog.isFeaturedImageCapable()) {
+            featuredCheckBox.setVisibility(View.VISIBLE);
+            featuredInPostCheckBox.setVisibility(View.VISIBLE);
+          }
           featuredCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener(){
             @Override public void onCheckedChanged(            CompoundButton buttonView,            boolean isChecked){
               if (isChecked) {
@@ -111,6 +115,7 @@
             }
           }
 ).create();
+          ad.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
           ad.show();
           mImeBackPressed=true;
           mScrollDetected=false;

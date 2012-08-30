@@ -3,27 +3,34 @@
   Blog blog=WordPress.currentBlog;
   XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
   if (!commentsOnly) {
-    if (!blog.isDotcomFlag()) {
-      HashMap<String,String> hPost=new HashMap<String,String>();
-      hPost.put("software_version","software_version");
-      Object[] vParams={blog.getBlogId(),blog.getUsername(),blog.getPassword(),hPost};
-      Object versionResult=new Object();
+    HashMap<String,String> hPost=new HashMap<String,String>();
+    hPost.put("software_version","software_version");
+    hPost.put("post_thumbnail","post_thumbnail");
+    Object[] vParams={blog.getBlogId(),blog.getUsername(),blog.getPassword(),hPost};
+    Object versionResult=new Object();
+    try {
+      versionResult=(Object)client.call("wp.getOptions",vParams);
+    }
+ catch (    XMLRPCException e) {
+    }
+    if (versionResult != null) {
       try {
-        versionResult=(Object)client.call("wp.getOptions",vParams);
-      }
- catch (      XMLRPCException e) {
-      }
-      if (versionResult != null) {
-        try {
-          HashMap<?,?> contentHash=(HashMap<?,?>)versionResult;
+        HashMap<?,?> contentHash=(HashMap<?,?>)versionResult;
+        if (!blog.isDotcomFlag()) {
           HashMap<?,?> sv=(HashMap<?,?>)contentHash.get("software_version");
           String wpVersion=sv.get("value").toString();
           if (wpVersion.length() > 0) {
             blog.setWpVersion(wpVersion);
           }
         }
- catch (        Exception e) {
+        HashMap<?,?> featuredImageHash=(HashMap<?,?>)contentHash.get("post_thumbnail");
+        if (featuredImageHash != null) {
+          boolean featuredImageCapable=Boolean.parseBoolean(featuredImageHash.get("value").toString());
+          blog.setFeaturedImageCapable(featuredImageCapable);
         }
+        blog.save(Dashboard.this,"");
+      }
+ catch (      Exception e) {
       }
     }
     Vector<Object> args=new Vector<Object>();
