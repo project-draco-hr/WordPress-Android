@@ -90,11 +90,28 @@
  else           if (foundURL) {
             curBlogURL=pullParser.getText();
             foundURL=false;
-            if (!curBlogURL.endsWith("/"))             curBlogURL+="/";
-            if (((curBlogURL.equals(url) || (curBlogURL.equals(wwwURL))) || storedBlogID.equals(curBlogID)) && !curBlogID.equals("1")) {
-              apiInfo=new Vector<String>();
-              apiInfo.add(apiKey);
-              apiInfo.add(curBlogID);
+            HashMap<?,?> jetpackClientIDOption=null;
+            try {
+              jetpackClientIDOption=WordPress.currentBlog.getBlogOptions() != null ? (HashMap<?,?>)WordPress.currentBlog.getBlogOptions().get("jetpack_client_id") : null;
+            }
+ catch (            JSONException e) {
+              e.printStackTrace();
+            }
+            if (jetpackClientIDOption != null) {
+              String jetpackClientIDString=jetpackClientIDOption.get("value").toString();
+              if (jetpackClientIDString.equals(curBlogID) && !curBlogID.equals("1")) {
+                apiInfo=new Vector<String>();
+                apiInfo.add(apiKey);
+                apiInfo.add(curBlogID);
+              }
+            }
+ else {
+              if (!curBlogURL.endsWith("/"))               curBlogURL+="/";
+              if (((curBlogURL.equals(url) || (curBlogURL.equals(wwwURL))) || storedBlogID.equals(curBlogID)) && !curBlogID.equals("1")) {
+                apiInfo=new Vector<String>();
+                apiInfo.add(apiKey);
+                apiInfo.add(curBlogID);
+              }
             }
           }
         }

@@ -6,6 +6,7 @@
     HashMap<String,String> hPost=new HashMap<String,String>();
     hPost.put("software_version","software_version");
     hPost.put("post_thumbnail","post_thumbnail");
+    hPost.put("jetpack_client_id","jetpack_client_id");
     Object[] vParams={blog.getBlogId(),blog.getUsername(),blog.getPassword(),hPost};
     Object versionResult=new Object();
     try {
@@ -16,6 +17,7 @@
     if (versionResult != null) {
       try {
         HashMap<?,?> contentHash=(HashMap<?,?>)versionResult;
+        blog.setBlogOptions(new JSONObject(contentHash));
         if (!blog.isDotcomFlag()) {
           HashMap<?,?> sv=(HashMap<?,?>)contentHash.get("software_version");
           String wpVersion=sv.get("value").toString();
