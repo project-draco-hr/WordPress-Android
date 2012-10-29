@@ -1,12 +1,6 @@
 {
   AlertDialog.Builder b=new AlertDialog.Builder(getActivity());
-  if (!isXMLRPC) {
-    b.setTitle(R.string.error);
-    b.setPositiveButton("OK",this);
-    b.setMessage(this.getArguments().getString("alert-message"));
-    return b.create();
-  }
- else {
+  if (isXMLRPC) {
     String error=this.getArguments().getString("alert-error");
     if (error == null)     error=getString(R.string.error_generic);
     String message=this.getArguments().getString("alert-message");
@@ -42,5 +36,32 @@
       b.setCancelable(true);
       return b.create();
     }
+  }
+ else   if (isLoadMore) {
+    String error=this.getArguments().getString("alert-error");
+    String message=this.getArguments().getString("alert-message");
+    b.setIcon(android.R.drawable.ic_dialog_alert);
+    b.setTitle(error);
+    b.setMessage(message);
+    b.setCancelable(true);
+    b.setPositiveButton(R.string.yes,new DialogInterface.OnClickListener(){
+      @Override public void onClick(      DialogInterface dialog,      int which){
+        OnDialogConfirmListener act=(OnDialogConfirmListener)getActivity();
+        act.onDialogConfirm();
+      }
+    }
+);
+    b.setNegativeButton(R.string.no,new DialogInterface.OnClickListener(){
+      @Override public void onClick(      DialogInterface dialog,      int which){
+      }
+    }
+);
+    return b.create();
+  }
+ else {
+    b.setTitle(R.string.error);
+    b.setPositiveButton("OK",this);
+    b.setMessage(this.getArguments().getString("alert-message"));
+    return b.create();
   }
 }
