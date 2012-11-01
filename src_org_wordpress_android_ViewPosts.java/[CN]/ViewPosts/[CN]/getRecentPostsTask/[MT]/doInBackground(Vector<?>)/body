@@ -1,4 +1,5 @@
 {
+  boolean success=false;
   Vector<?> arguments=args[0];
   WordPress.currentBlog=(Blog)arguments.get(0);
   isPage=(Boolean)arguments.get(1);
@@ -11,6 +12,7 @@
     result=(Object[])client.call((isPage) ? "wp.getPages" : "metaWeblog.getRecentPosts",params);
     if (result != null) {
       if (result.length > 0) {
+        success=true;
         HashMap<?,?> contentHash=new HashMap<Object,Object>();
         Vector<HashMap<?,?>> dbVector=new Vector<HashMap<?,?>>();
         if (!loadMore) {
@@ -43,5 +45,5 @@
  catch (  XMLRPCException e) {
     errorMsg=e.getLocalizedMessage();
   }
-  return null;
+  return success;
 }
