@@ -1,9 +1,14 @@
 {
   float colwidth=(graphwidth - (2 * border)) / values.length;
+  paint.setStrokeWidth(style.thickness);
+  paint.setColor(style.color);
   for (int i=0; i < values.length; i++) {
     float valY=(float)(values[i].valueY - minY);
     float ratY=(float)(valY / diffY);
     float y=graphheight * ratY;
+    if (style.getValueDependentColor() != null) {
+      paint.setColor(style.getValueDependentColor().get(values[i]));
+    }
     canvas.drawRect((i * colwidth) + horstart,(border - y) + graphheight,((i * colwidth) + horstart) + (colwidth - 1),graphheight + border - 1,paint);
   }
 }
