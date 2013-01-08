@@ -19,14 +19,12 @@ case ACTIVITY_REQUEST_CODE_TAKE_PHOTO:
 if (resultCode == Activity.RESULT_OK) {
 try {
   File f=new File(mMediaCapturePath);
-  Uri capturedImage=Uri.parse(android.provider.MediaStore.Images.Media.insertImage(getContentResolver(),f.getAbsolutePath(),null,null));
-  f.delete();
-  addMedia(capturedImage.toString(),capturedImage);
+  Uri capturedImageUri=Uri.fromFile(f);
+  f=null;
+  addMedia(capturedImageUri.toString(),capturedImageUri);
+  sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,Uri.parse("file://" + Environment.getExternalStorageDirectory())));
 }
- catch (FileNotFoundException e) {
-  e.printStackTrace();
-}
-catch (Exception e) {
+ catch (Exception e) {
   e.printStackTrace();
 }
 catch (OutOfMemoryError e) {
