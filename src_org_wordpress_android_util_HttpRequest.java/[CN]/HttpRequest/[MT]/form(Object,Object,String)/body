@@ -1,0 +1,19 @@
+{
+  final boolean first=!form;
+  if (first) {
+    contentType(CONTENT_TYPE_FORM,charset);
+    form=true;
+  }
+  charset=getValidCharset(charset);
+  try {
+    openOutput();
+    if (!first)     output.write('&');
+    output.write(URLEncoder.encode(name.toString(),charset));
+    output.write('=');
+    if (value != null)     output.write(URLEncoder.encode(value.toString(),charset));
+  }
+ catch (  IOException e) {
+    throw new HttpRequestException(e);
+  }
+  return this;
+}

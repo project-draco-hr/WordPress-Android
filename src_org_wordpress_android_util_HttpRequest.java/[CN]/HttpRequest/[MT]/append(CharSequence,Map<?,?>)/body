@@ -1,0 +1,24 @@
+{
+  final String baseUrl=url.toString();
+  if (params == null || params.isEmpty())   return baseUrl;
+  final StringBuilder result=new StringBuilder(baseUrl);
+  addPathSeparator(baseUrl,result);
+  addParamPrefix(baseUrl,result);
+  Entry<?,?> entry;
+  Object value;
+  Iterator<?> iterator=params.entrySet().iterator();
+  entry=(Entry<?,?>)iterator.next();
+  result.append(entry.getKey().toString());
+  result.append('=');
+  value=entry.getValue();
+  if (value != null)   result.append(value);
+  while (iterator.hasNext()) {
+    result.append('&');
+    entry=(Entry<?,?>)iterator.next();
+    result.append(entry.getKey().toString());
+    result.append('=');
+    value=entry.getValue();
+    if (value != null)     result.append(value);
+  }
+  return result.toString();
+}

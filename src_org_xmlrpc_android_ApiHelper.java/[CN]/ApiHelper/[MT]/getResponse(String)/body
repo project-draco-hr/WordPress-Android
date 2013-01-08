@@ -1,33 +1,9 @@
 {
-  InputStream in=null;
-  URL url=null;
-  try {
-    url=new URL(urlString);
+  HttpRequest request=getHttpRequest(urlString);
+  if (request != null) {
+    return request.body();
   }
- catch (  MalformedURLException e1) {
-    e1.printStackTrace();
+ else {
     return null;
   }
-  try {
-    HttpGet httpRequest=new HttpGet(url.toURI());
-    HttpClient httpclient=new DefaultHttpClient();
-    HttpResponse response=(HttpResponse)httpclient.execute(httpRequest);
-    HttpEntity entity=response.getEntity();
-    BufferedHttpEntity bufHttpEntity=new BufferedHttpEntity(entity);
-    in=bufHttpEntity.getContent();
-    in.close();
-  }
- catch (  ClientProtocolException e) {
-    e.printStackTrace();
-  }
-catch (  URISyntaxException e) {
-    e.printStackTrace();
-  }
-catch (  IOException e) {
-    e.printStackTrace();
-  }
-catch (  Exception e) {
-    e.printStackTrace();
-  }
-  return in;
 }

@@ -1,0 +1,16 @@
+{
+  try {
+    HttpRequest request=HttpRequest.get(urlString);
+    if (request.code() == HttpURLConnection.HTTP_MOVED_PERM || request.code() == HttpURLConnection.HTTP_MOVED_TEMP) {
+      String location=request.location();
+      if (location != null) {
+        request=HttpRequest.get(location);
+      }
+    }
+    return request;
+  }
+ catch (  HttpRequestException e) {
+    e.printStackTrace();
+    return null;
+  }
+}

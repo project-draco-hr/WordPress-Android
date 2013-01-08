@@ -1,0 +1,21 @@
+{
+  final String baseUrl=url.toString();
+  if (params == null || params.length == 0)   return baseUrl;
+  if (params.length % 2 != 0)   throw new IllegalArgumentException("Must specify an even number of parameter names/values");
+  final StringBuilder result=new StringBuilder(baseUrl);
+  addPathSeparator(baseUrl,result);
+  addParamPrefix(baseUrl,result);
+  Object value;
+  result.append(params[0]);
+  result.append('=');
+  value=params[1];
+  if (value != null)   result.append(value);
+  for (int i=2; i < params.length; i+=2) {
+    result.append('&');
+    result.append(params[i]);
+    result.append('=');
+    value=params[i + 1];
+    if (value != null)     result.append(value);
+  }
+  return result.toString();
+}

@@ -1,0 +1,15 @@
+{
+  final OutputStream output;
+  try {
+    output=new BufferedOutputStream(new FileOutputStream(file),bufferSize);
+  }
+ catch (  FileNotFoundException e) {
+    throw new HttpRequestException(e);
+  }
+  return new CloseOperation<HttpRequest>(output,ignoreCloseExceptions){
+    @Override protected HttpRequest run() throws HttpRequestException, IOException {
+      return receive(output);
+    }
+  }
+.call();
+}

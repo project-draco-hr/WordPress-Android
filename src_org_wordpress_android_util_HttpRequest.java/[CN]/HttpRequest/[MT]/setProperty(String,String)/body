@@ -1,0 +1,16 @@
+{
+  final PrivilegedAction<String> action;
+  if (value != null)   action=new PrivilegedAction<String>(){
+    public String run(){
+      return System.setProperty(name,value);
+    }
+  }
+;
+ else   action=new PrivilegedAction<String>(){
+    public String run(){
+      return System.clearProperty(name);
+    }
+  }
+;
+  return AccessController.doPrivileged(action);
+}
