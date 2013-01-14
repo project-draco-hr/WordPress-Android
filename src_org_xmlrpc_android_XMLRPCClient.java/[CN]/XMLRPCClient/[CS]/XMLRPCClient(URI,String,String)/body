@@ -2,7 +2,12 @@
   postMethod=new HttpPost(uri);
   postMethod.addHeader("Content-Type","text/xml");
   postMethod.addHeader("charset","UTF-8");
-  postMethod.addHeader("User-Agent","wp-android/" + WordPress.versionName);
+  if (DeviceUtils.getInstance().isBlackBerry()) {
+    postMethod.addHeader("User-Agent",DeviceUtils.getBlackBerryUserAgent());
+  }
+ else {
+    postMethod.addHeader("User-Agent","wp-android/" + WordPress.versionName);
+  }
   httpParams=postMethod.getParams();
   HttpProtocolParams.setUseExpectContinue(httpParams,false);
   UsernamePasswordCredentials creds=new UsernamePasswordCredentials(httpuser,httppasswd);
