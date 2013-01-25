@@ -203,7 +203,10 @@
     return true;
   }
  catch (  final XMLRPCException e) {
-    error=String.format(context.getResources().getText(R.string.error_upload).toString(),post.isPage() ? context.getResources().getText(R.string.page).toString() : context.getResources().getText(R.string.post).toString());
+    String exceptionMessage=e.getMessage();
+    if (exceptionMessage.indexOf(": ") > -1)     exceptionMessage=exceptionMessage.substring(exceptionMessage.indexOf(": ") + 2,exceptionMessage.length());
+    if (exceptionMessage.indexOf("[code") > -1)     exceptionMessage=exceptionMessage.substring(0,exceptionMessage.indexOf("[code"));
+    error=String.format(context.getResources().getText(R.string.error_upload).toString(),post.isPage() ? context.getResources().getText(R.string.page).toString() : context.getResources().getText(R.string.post).toString()) + " " + exceptionMessage;
     mediaError=false;
     Log.i("WP",error);
   }
