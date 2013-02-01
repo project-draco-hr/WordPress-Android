@@ -3,14 +3,10 @@
   if (data != null) {
     Bundle bundle=data.getExtras();
     String status=bundle.getString("returnStatus");
-    if (status.equals("CANCEL") && WordPress.currentBlog == null) {
+    if (status.equals("CANCEL") && WordPress.getCurrentBlog(Dashboard.this) == null) {
       finish();
     }
  else     if (!status.equals("CANCEL")) {
-      if (titleBar == null)       titleBar=(WPTitleBar)findViewById(R.id.dashboardActionBar);
-      titleBar.reloadBlogs();
-      titleBar.updateBlogSelector(true);
-      titleBar.startRotatingRefreshIcon();
       new refreshBlogContentTask().execute(true);
     }
   }

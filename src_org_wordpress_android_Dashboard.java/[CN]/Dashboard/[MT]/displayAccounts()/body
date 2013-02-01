@@ -5,34 +5,8 @@
     startActivityForResult(i,0);
   }
  else {
-    id=WordPress.currentBlog.getId();
-    titleBar=(WPTitleBar)findViewById(R.id.dashboardActionBar);
-    titleBar.isHome=true;
-    titleBar.refreshBlog();
-    titleBar.updateBlogSelector(true);
-    titleBar.showDashboard(600);
-    titleBar.setOnBlogChangedListener(new OnBlogChangedListener(){
-      @Override public void OnBlogChanged(){
-        id=WordPress.currentBlog.getId();
-        try {
-          blog=new Blog(id,Dashboard.this);
-        }
- catch (        Exception e) {
-          Toast.makeText(Dashboard.this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
-          finish();
-        }
-        titleBar.startRotatingRefreshIcon();
-        new refreshBlogContentTask().execute(false);
-      }
-    }
-);
-    titleBar.refreshButton.setOnClickListener(new ImageButton.OnClickListener(){
-      public void onClick(      View v){
-        titleBar.startRotatingRefreshIcon();
-        new refreshBlogContentTask().execute(false);
-      }
-    }
-);
-    new refreshBlogContentTask().execute(false);
+    id=WordPress.getCurrentBlog(Dashboard.this).getId();
+    setupDashboardButtons();
+    updateCommentBadge();
   }
 }

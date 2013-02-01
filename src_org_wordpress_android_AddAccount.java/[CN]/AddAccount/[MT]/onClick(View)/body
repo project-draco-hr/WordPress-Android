@@ -1,6 +1,6 @@
 {
-switch (v.getId()) {
-case R.id.save:
+  int id=v.getId();
+  if (id == R.id.save) {
     if (mSystemService.getActiveNetworkInfo() == null) {
       AlertUtil.showAlert(AddAccount.this,R.string.no_network_title,R.string.no_network_message);
     }
@@ -16,23 +16,22 @@ case R.id.save:
 ;
       action.start();
     }
-  break;
-case R.id.cancel:
-Bundle bundle=new Bundle();
-bundle.putString("returnStatus","CANCEL");
-Intent mIntent=new Intent();
-mIntent.putExtras(bundle);
-setResult(RESULT_OK,mIntent);
-finish();
-break;
-case R.id.settingsButton:
-Intent settings=new Intent(AddAccount.this,AddAcountSettings.class);
-settings.putExtra("httpuser",httpuser);
-settings.putExtra("httppassword",httppassword);
-startActivityForResult(settings,R.id.settingsButton);
-break;
-case R.id.wordpressdotcom:
-startActivity(new Intent(AddAccount.this,Signup.class));
-break;
-}
+  }
+ else   if (id == R.id.cancel) {
+    Bundle bundle=new Bundle();
+    bundle.putString("returnStatus","CANCEL");
+    Intent mIntent=new Intent();
+    mIntent.putExtras(bundle);
+    setResult(RESULT_OK,mIntent);
+    finish();
+  }
+ else   if (id == R.id.settingsButton) {
+    Intent settings=new Intent(AddAccount.this,AddAcountSettings.class);
+    settings.putExtra("httpuser",httpuser);
+    settings.putExtra("httppassword",httppassword);
+    startActivityForResult(settings,R.id.settingsButton);
+  }
+ else   if (id == R.id.wordpressdotcom) {
+    startActivity(new Intent(AddAccount.this,Signup.class));
+  }
 }

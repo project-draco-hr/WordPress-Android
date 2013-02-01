@@ -1,7 +1,9 @@
 {
   super.onCreate(savedInstanceState);
-  requestWindowFeature(Window.FEATURE_NO_TITLE);
   setContentView(R.layout.view_web_stats);
+  ActionBar actionBar=getActionBar();
+  actionBar.setHomeButtonEnabled(true);
+  actionBar.setDisplayHomeAsUpEnabled(true);
   webView=(WebView)findViewById(R.id.webView);
   webView.setWebViewClient(new StatsWebViewClient());
   WebSettings webSettings=webView.getSettings();
@@ -13,31 +15,6 @@
   webSettings.setSavePassword(false);
   clearCookies();
   webView.clearCache(false);
-  titleBar=(WPTitleBar)findViewById(R.id.actionBar);
-  titleBar.refreshButton.setOnClickListener(new ImageButton.OnClickListener(){
-    public void onClick(    View v){
-      reloadStats();
-    }
-  }
-);
-  titleBar.setOnBlogChangedListener(new OnBlogChangedListener(){
-    @Override public void OnBlogChanged(){
-      if (currentTask != null) {
-        currentTask.cancel(true);
-        currentTask=null;
-      }
-      authed=false;
-      isRetrying=false;
-      hideLoginForm();
-      webView.clearView();
-      webView.setVisibility(View.INVISIBLE);
-      webView.clearHistory();
-      webView.clearCache(false);
-      clearCookies();
-      initStats();
-    }
-  }
-);
   Button saveStatsLogin=(Button)findViewById(R.id.saveDotcom);
   saveStatsLogin.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){

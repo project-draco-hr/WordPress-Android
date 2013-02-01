@@ -1,6 +1,9 @@
 {
   super.onCreate(savedInstanceState);
   setContentView(R.layout.posts);
+  ActionBar actionBar=getSupportActionBar();
+  actionBar.setHomeButtonEnabled(true);
+  actionBar.setDisplayHomeAsUpEnabled(true);
   FragmentManager fm=getSupportFragmentManager();
   postList=(ViewPosts)fm.findFragmentById(R.id.postList);
   postList.setListShown(true);
@@ -24,21 +27,6 @@
     }
   }
   WordPress.currentPost=null;
-  titleBar=(WPTitleBar)findViewById(R.id.postsActionBar);
-  titleBar.refreshButton.setOnClickListener(new ImageButton.OnClickListener(){
-    public void onClick(    View v){
-      checkForLocalChanges(true);
-    }
-  }
-);
-  titleBar.setOnBlogChangedListener(new OnBlogChangedListener(){
-    @Override public void OnBlogChanged(){
-      popPostDetail();
-      attemptToSelectPost();
-      postList.loadPosts(false);
-    }
-  }
-);
   WordPress.setOnPostUploadedListener(new WordPress.OnPostUploadedListener(){
     @Override public void OnPostUploaded(){
       if (isFinishing())       return;

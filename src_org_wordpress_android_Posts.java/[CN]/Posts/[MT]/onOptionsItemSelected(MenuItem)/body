@@ -1,12 +1,21 @@
 {
-switch (item.getItemId()) {
-case 0:
+  int itemId=item.getItemId();
+  if (itemId == R.id.menu_refresh) {
+    postList.refreshPosts(false);
+  }
+ else   if (itemId == R.id.menu_new_post) {
     Intent i=new Intent(this,EditPost.class);
-  i.putExtra("id",WordPress.currentBlog.getId());
-i.putExtra("isNew",true);
-if (isPage) i.putExtra("isPage",true);
-startActivity(i);
-return true;
-}
-return false;
+    i.putExtra("id",WordPress.currentBlog.getId());
+    i.putExtra("isNew",true);
+    if (isPage)     i.putExtra("isPage",true);
+    startActivity(i);
+    return true;
+  }
+ else   if (itemId == android.R.id.home) {
+    Intent intent=new Intent(this,Dashboard.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    startActivity(intent);
+    return true;
+  }
+  return false;
 }

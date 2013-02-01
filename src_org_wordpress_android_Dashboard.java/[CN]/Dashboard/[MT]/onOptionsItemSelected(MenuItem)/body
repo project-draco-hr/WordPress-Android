@@ -1,54 +1,61 @@
 {
-switch (item.getItemId()) {
-case 0:
+  int itemId=item.getItemId();
+  if (itemId == R.id.menu_refresh) {
+    refreshMenuItem=item;
+    new refreshBlogContentTask().execute(true);
+    return true;
+  }
+ else   if (itemId == R.id.menu_add_account) {
     Intent i=new Intent(this,NewAccount.class);
-  startActivityForResult(i,0);
-return true;
-case 1:
-Intent i2=new Intent(this,Preferences.class);
-startActivity(i2);
-return true;
-case 2:
-AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(Dashboard.this);
-dialogBuilder.setTitle(getResources().getText(R.string.remove_account));
-dialogBuilder.setMessage(getResources().getText(R.string.sure_to_remove_account));
-dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
-public void onClick(DialogInterface dialog,int whichButton){
-boolean deleteSuccess=WordPress.wpDB.deleteAccount(Dashboard.this,id);
-if (deleteSuccess) {
-Toast.makeText(Dashboard.this,getResources().getText(R.string.blog_removed_successfully),Toast.LENGTH_SHORT).show();
-WordPress.wpDB.deleteLastBlogID();
-WordPress.currentBlog=null;
-titleBar.reloadBlogs();
-displayAccounts();
-}
+    startActivityForResult(i,0);
+    return true;
+  }
+ else   if (itemId == R.id.menu_preferences) {
+    Intent i2=new Intent(this,Preferences.class);
+    startActivity(i2);
+    return true;
+  }
+ else   if (itemId == R.id.menu_remove_account) {
+    AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(Dashboard.this);
+    dialogBuilder.setTitle(getResources().getText(R.string.remove_account));
+    dialogBuilder.setMessage(getResources().getText(R.string.sure_to_remove_account));
+    dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int whichButton){
+        boolean deleteSuccess=WordPress.wpDB.deleteAccount(Dashboard.this,id);
+        if (deleteSuccess) {
+          Toast.makeText(Dashboard.this,getResources().getText(R.string.blog_removed_successfully),Toast.LENGTH_SHORT).show();
+          WordPress.wpDB.deleteLastBlogID();
+          WordPress.currentBlog=null;
+          displayAccounts();
+        }
  else {
-AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(Dashboard.this);
-dialogBuilder.setTitle(getResources().getText(R.string.error));
-dialogBuilder.setMessage(getResources().getText(R.string.could_not_remove_account));
-dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-public void onClick(DialogInterface dialog,int whichButton){
-}
-}
+          AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(Dashboard.this);
+          dialogBuilder.setTitle(getResources().getText(R.string.error));
+          dialogBuilder.setMessage(getResources().getText(R.string.could_not_remove_account));
+          dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+            public void onClick(            DialogInterface dialog,            int whichButton){
+            }
+          }
 );
-dialogBuilder.setCancelable(true);
-dialogBuilder.create().show();
-}
-}
-}
+          dialogBuilder.setCancelable(true);
+          dialogBuilder.create().show();
+        }
+      }
+    }
 );
-dialogBuilder.setNegativeButton(getResources().getText(R.string.no),new DialogInterface.OnClickListener(){
-public void onClick(DialogInterface dialog,int whichButton){
-}
-}
+    dialogBuilder.setNegativeButton(getResources().getText(R.string.no),new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int whichButton){
+      }
+    }
 );
-dialogBuilder.setCancelable(false);
-dialogBuilder.create().show();
-return true;
-case 3:
-Intent intent=new Intent(this,About.class);
-startActivity(intent);
-return true;
-}
-return false;
+    dialogBuilder.setCancelable(false);
+    dialogBuilder.create().show();
+    return true;
+  }
+ else   if (itemId == R.id.menu_about) {
+    Intent intent=new Intent(this,About.class);
+    startActivity(intent);
+    return true;
+  }
+  return false;
 }

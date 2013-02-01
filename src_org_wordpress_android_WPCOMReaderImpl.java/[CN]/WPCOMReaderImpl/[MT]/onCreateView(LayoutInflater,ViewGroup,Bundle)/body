@@ -10,7 +10,6 @@
       getActivity().finish();
     }
   }
-  topicTV=(TextView)v.findViewById(R.id.topic_title);
   refreshIcon=(ImageView)v.findViewById(R.id.refresh_icon);
   wv=(WebView)v.findViewById(R.id.webView);
   wv.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
@@ -25,7 +24,6 @@
           onPostSelectedListener.onPostSelected(url);
         }
  else {
-          startRotatingRefreshIcon();
         }
         if (url.contains("chrome=no")) {
           loadDetailListener.onLoadDetail();
@@ -33,7 +31,6 @@
       }
     }
     @Override public void onPageFinished(    WebView view,    String url){
-      stopRotatingRefreshIcon();
     }
     @Override public boolean shouldOverrideUrlLoading(    WebView view,    String url){
       return false;
@@ -42,36 +39,5 @@
 );
   this.setDefaultWebViewSettings(wv);
   new loadReaderTask().execute(null,null,null,null);
-  RelativeLayout rl=(RelativeLayout)v.findViewById(R.id.topicSelector);
-  rl.setOnClickListener(new View.OnClickListener(){
-    public void onClick(    View v){
-      showTopicsListener.showTopics();
-    }
-  }
-);
-  Button refreshButton=(Button)v.findViewById(R.id.action_refresh);
-  refreshButton.setOnClickListener(new ImageButton.OnClickListener(){
-    public void onClick(    View v){
-      startRotatingRefreshIcon();
-      wv.reload();
-      new Thread(new Runnable(){
-        public void run(){
-          try {
-            HttpClient httpclient=new DefaultHttpClient();
-            HttpProtocolParams.setUserAgent(httpclient.getParams(),"wp-android-native");
-            String readerURL=Constants.readerURL + "/?template=stats&stats_name=home_page_refresh";
-            if ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == 4) {
-              readerURL+="&per_page=20";
-            }
-            httpclient.execute(new HttpGet(readerURL));
-          }
- catch (          Exception e) {
-          }
-        }
-      }
-).start();
-    }
-  }
-);
   return v;
 }
