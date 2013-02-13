@@ -1,0 +1,21 @@
+{
+  if (result && !mediaError) {
+    WordPress.postUploaded();
+    nm.cancel(notificationID);
+  }
+ else {
+    if (mediaError)     WordPress.postUploaded();
+    String postOrPage=(String)(post.isPage() ? context.getResources().getText(R.string.page_id) : context.getResources().getText(R.string.post_id));
+    Intent notificationIntent=new Intent(context,Posts.class);
+    notificationIntent.setData((Uri.parse("custom://wordpressNotificationIntent" + post.getBlogID())));
+    notificationIntent.putExtra("fromNotification",true);
+    notificationIntent.putExtra("errorMessage",error);
+    PendingIntent pendingIntent=PendingIntent.getActivity(context,0,notificationIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+    n.flags|=Notification.FLAG_AUTO_CANCEL;
+    String errorText=context.getResources().getText(R.string.upload_failed).toString();
+    if (mediaError)     errorText=context.getResources().getText(R.string.media) + " " + context.getResources().getText(R.string.error);
+    n.setLatestEventInfo(context,(mediaError) ? errorText : context.getResources().getText(R.string.upload_failed),(mediaError) ? error : postOrPage + " " + errorText+ ": "+ error,pendingIntent);
+    nm.notify(notificationID,n);
+  }
+  stopSelf();
+}

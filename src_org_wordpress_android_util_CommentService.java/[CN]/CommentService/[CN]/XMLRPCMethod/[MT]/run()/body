@@ -1,0 +1,24 @@
+{
+  try {
+    final Object[] result;
+    result=(Object[])client.call(method,params);
+    handler.post(new Runnable(){
+      public void run(){
+        callBack.callFinished(result);
+        Looper.myLooper().quit();
+      }
+    }
+);
+  }
+ catch (  final XMLRPCFault e) {
+    e.printStackTrace();
+  }
+catch (  final XMLRPCException e) {
+    handler.post(new Runnable(){
+      public void run(){
+        e.printStackTrace();
+      }
+    }
+);
+  }
+}

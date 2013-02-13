@@ -1,0 +1,107 @@
+{
+  Vector<?> notificationAccounts=WordPress.wpDB.getNotificationAccounts(this);
+  if (notificationAccounts != null) {
+    if (notificationAccounts.size() == 0) {
+      this.stopSelf();
+    }
+ else {
+      for (int i=0; i < notificationAccounts.size(); i++) {
+        accountID=(Integer)notificationAccounts.get(i);
+        Blog blog;
+        try {
+          blog=new Blog(accountID,CommentService.this);
+        }
+ catch (        Exception e1) {
+          return;
+        }
+        accountName=EscapeUtils.unescapeHtml(blog.getBlogName());
+        final int latestCommentID=blog.getLastCommentId();
+        String sURL="";
+        if (blog.getUrl().contains("xmlrpc.php")) {
+          sURL=blog.getUrl();
+        }
+ else {
+          sURL=blog.getUrl() + "xmlrpc.php";
+        }
+        String sUsername=blog.getUsername();
+        String sPassword=blog.getPassword();
+        String sHttpuser=blog.getHttpuser();
+        String sHttppassword=blog.getHttppassword();
+        client=new XMLRPCClient(sURL,sHttpuser,sHttppassword);
+        HashMap<String,Object> hPost=new HashMap<String,Object>();
+        hPost.put("status","");
+        hPost.put("post_id","");
+        hPost.put("number",1);
+        Object[] params={1,sUsername,sPassword,hPost};
+        XMLRPCMethodCallback callBack=new XMLRPCMethodCallback(){
+          @SuppressWarnings("unchecked") public void callFinished(          Object[] result){
+            HashMap<?,?> notificationOptions=WordPress.wpDB.getNotificationOptions(CommentService.this);
+            boolean sound=false, vibrate=false, light=false;
+            if (notificationOptions != null) {
+              if (notificationOptions.get("sound").toString().equals("1")) {
+                sound=true;
+              }
+              if (notificationOptions.get("vibrate").toString().equals("1")) {
+                vibrate=true;
+              }
+              if (notificationOptions.get("light").toString().equals("1")) {
+                light=true;
+              }
+            }
+            if (result.length == 0) {
+            }
+ else {
+              HashMap<Object,Object> contentHash=new HashMap<Object,Object>();
+              for (int ctr=0; ctr < result.length; ctr++) {
+                contentHash=(HashMap<Object,Object>)result[ctr];
+                ctr++;
+              }
+              String commentID=contentHash.get("comment_id").toString();
+              if (latestCommentID == 0) {
+                WordPress.wpDB.updateLatestCommentID(accountID,Integer.valueOf(commentID));
+              }
+ else               if (Integer.valueOf(commentID) > latestCommentID) {
+                final NotificationManager nm=(NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+                Intent notificationIntent=new Intent(CommentService.this,Comments.class);
+                notificationIntent.setData((Uri.parse("custom://wordpressNotificationIntent" + accountID)));
+                notificationIntent.putExtra("id",accountID);
+                notificationIntent.putExtra("fromNotification",true);
+                PendingIntent pendingIntent=PendingIntent.getActivity(CommentService.this,0,notificationIntent,Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                String comment=contentHash.get("content").toString();
+                String author=contentHash.get("author").toString();
+                Notification n=new Notification(R.drawable.notification_icon,author + ": " + comment,System.currentTimeMillis());
+                if (sound) {
+                  n.defaults|=Notification.DEFAULT_SOUND;
+                }
+                if (vibrate) {
+                  n.defaults|=Notification.DEFAULT_VIBRATE;
+                }
+                if (light) {
+                  n.ledARGB=0xff0000ff;
+                  n.ledOnMS=1000;
+                  n.ledOffMS=5000;
+                  n.flags|=Notification.FLAG_SHOW_LIGHTS;
+                }
+                n.flags|=Notification.FLAG_AUTO_CANCEL;
+                n.setLatestEventInfo(CommentService.this,accountName,author + ": " + comment,pendingIntent);
+                nm.notify(22 + Integer.valueOf(accountID),n);
+                WordPress.wpDB.updateLatestCommentID(accountID,Integer.valueOf(commentID));
+              }
+ else {
+              }
+            }
+          }
+        }
+;
+        final Object[] result;
+        try {
+          result=(Object[])client.call("wp.getComments",params);
+          callBack.callFinished(result);
+        }
+ catch (        XMLRPCException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+}
