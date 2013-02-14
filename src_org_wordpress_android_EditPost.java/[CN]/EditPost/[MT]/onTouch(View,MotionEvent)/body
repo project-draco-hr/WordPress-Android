@@ -5,26 +5,7 @@
     if (((mLastYPos - pos) > 2.0f) || ((pos - mLastYPos) > 2.0f))     mScrollDetected=true;
   }
   mLastYPos=pos;
-  if (!mIsFullScreenEditing && event.getAction() == 1) {
-    mIsFullScreenEditing=true;
-    mContentEditText.setFocusableInTouchMode(true);
-    mContentEditText.setHint("");
-    try {
-      ((LinearLayout)findViewById(R.id.postContentEditorSmallWrapper)).removeView(mContentEditText);
-      ((ScrollView)findViewById(R.id.scrollView)).setVisibility(View.GONE);
-      LinearLayout contentEditorWrap=(LinearLayout)findViewById(R.id.postContentEditorWrapper);
-      contentEditorWrap.addView(mContentEditText);
-      contentEditorWrap.setVisibility(View.VISIBLE);
-      ((RelativeLayout)findViewById(R.id.formatBar)).setVisibility(View.VISIBLE);
-    }
- catch (    Exception e) {
-      e.printStackTrace();
-    }
-    mContentEditText.requestFocus();
-    return false;
-  }
-  if (event.getAction() == 1 && !mScrollDetected && mIsFullScreenEditing) {
-    mImeBackPressed=false;
+  if (event.getAction() == 1 && !mScrollDetected) {
     Layout layout=((TextView)v).getLayout();
     int x=(int)event.getX();
     int y=(int)event.getY();
@@ -117,7 +98,6 @@
 ).create();
           ad.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
           ad.show();
-          mImeBackPressed=true;
           mScrollDetected=false;
           return true;
         }

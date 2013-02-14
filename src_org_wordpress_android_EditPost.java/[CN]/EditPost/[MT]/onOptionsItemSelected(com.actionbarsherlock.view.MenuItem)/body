@@ -1,0 +1,23 @@
+{
+  int itemId=item.getItemId();
+  if (itemId == R.id.menu_edit_post) {
+    if (mAutoSaveHandler != null)     mAutoSaveHandler.removeCallbacks(autoSaveRunnable);
+    if (savePost(false)) {
+      if (mPost.isUploaded() || !mPost.getPost_status().equals("localdraft")) {
+        if (mOption != null) {
+          if (mOption.equals("newphoto") || mOption.equals("photolibrary"))           mPost.setQuickPostType("QuickPhoto");
+ else           if (mOption.equals("newvideo") || mOption.equals("videolibrary"))           mPost.setQuickPostType("QuickVideo");
+        }
+        WordPress.currentPost=mPost;
+        startService(new Intent(this,PostUploadService.class));
+      }
+      finish();
+    }
+    return true;
+  }
+ else   if (itemId == android.R.id.home) {
+    showCancelAlert();
+    return true;
+  }
+  return false;
+}

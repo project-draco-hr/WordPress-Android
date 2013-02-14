@@ -1,6 +1,9 @@
 {
   super.onCreate(savedInstanceState);
   Bundle extras=getIntent().getExtras();
+  ActionBar actionBar=getSupportActionBar();
+  actionBar.setHomeButtonEnabled(true);
+  actionBar.setDisplayHomeAsUpEnabled(true);
   Calendar c=Calendar.getInstance();
   mYear=c.get(Calendar.YEAR);
   mMonth=c.get(Calendar.MONTH);
@@ -81,16 +84,19 @@
   mStrikeToggleButton=(ToggleButton)findViewById(R.id.strike);
   mCategoriesText=(TextView)findViewById(R.id.selectedCategories);
   mAddPictureButton=(ImageButton)findViewById(R.id.addPictureButton);
-  mSaveButton=(Button)findViewById(R.id.post);
   mPubDateButton=(Button)findViewById(R.id.pubDateButton);
   mPubDateText=(TextView)findViewById(R.id.pubDate);
   mLinkButton=(Button)findViewById(R.id.link);
   mMoreButton=(Button)findViewById(R.id.more);
   mStatusSpinner=(Spinner)findViewById(R.id.status);
   mTagsEditText=(EditText)findViewById(R.id.tags);
+  mFormatBar=(RelativeLayout)findViewById(R.id.formatBar);
+  ((TextView)findViewById(R.id.statusLabel)).setText(getResources().getString(R.string.status).toUpperCase());
+  ((TextView)findViewById(R.id.postFormatLabel)).setText(getResources().getString(R.string.post_format).toUpperCase());
+  ((TextView)findViewById(R.id.pubDateLabel)).setText(getResources().getString(R.string.publish_date).toUpperCase());
   if (mIsPage) {
+    ((LinearLayout)findViewById(R.id.section2)).setVisibility(View.GONE);
     ((RelativeLayout)findViewById(R.id.section3)).setVisibility(View.GONE);
-    ((RelativeLayout)findViewById(R.id.location_wrapper)).setVisibility(View.GONE);
     ((TextView)findViewById(R.id.postFormatLabel)).setVisibility(View.GONE);
     ((Spinner)findViewById(R.id.postFormat)).setVisibility(View.GONE);
   }
@@ -147,23 +153,13 @@
   mStatusSpinner.setAdapter(adapter);
   mStatusSpinner.setOnItemSelectedListener(new OnItemSelectedListener(){
     @Override public void onItemSelected(    AdapterView<?> arg0,    View arg1,    int arg2,    long arg3){
-      evaluateSaveButtonText();
     }
     @Override public void onNothingSelected(    AdapterView<?> arg0){
     }
   }
 );
   getLocationProvider();
-  if (mIsNew) {
-    if (mOption != null) {
-      if (mOption.equals("newphoto"))       launchCamera();
- else       if (mOption.equals("photolibrary"))       launchPictureLibrary();
- else       if (mOption.equals("newvideo"))       launchVideoCamera();
- else       if (mOption.equals("videolibrary"))       launchVideoLibrary();
-      mLocalDraft=extras.getBoolean("localDraft");
-    }
-  }
- else {
+  if (!mIsNew) {
     mTitleEditText.setText(mPost.getTitle());
     if (mPost.isUploaded()) {
       items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private)};
@@ -216,7 +212,6 @@
  else       if (status.equals("localdraft")) {
         mStatusSpinner.setSelection(4,true);
       }
-      evaluateSaveButtonText();
     }
     if (!mIsPage) {
       if (mPost.getCategories() != null) {
@@ -230,6 +225,7 @@
               e.printStackTrace();
             }
           }
+          mCategoriesText.setVisibility(View.VISIBLE);
           mCategoriesText.setText(getString(R.string.selected_categories) + " " + getCategoriesCSV());
         }
       }
@@ -250,11 +246,10 @@
   }
   registerForContextMenu(mAddPictureButton);
   mContentEditText.setOnSelectionChangedListener(this);
-  mContentEditText.setOnEditTextImeBackListener(this);
   mContentEditText.setOnTouchListener(this);
   mContentEditText.addTextChangedListener(this);
+  mContentEditText.setOnFocusChangeListener(this);
   mAddPictureButton.setOnClickListener(this);
-  mSaveButton.setOnClickListener(this);
   mPubDateButton.setOnClickListener(this);
   mBoldToggleButton.setOnClickListener(this);
   mLinkButton.setOnClickListener(this);
