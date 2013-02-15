@@ -112,20 +112,23 @@
     }
  else {
       try {
-        JSONObject jsonPostFormats=new JSONObject(mBlog.getPostFormats());
-        mPostFormats=new String[jsonPostFormats.length()];
-        mPostFormatTitles=new String[jsonPostFormats.length()];
-        Iterator<?> it=jsonPostFormats.keys();
+        Gson gson=new Gson();
+        Type type=new TypeToken<HashMap<String,String>>(){
+        }
+.getType();
+        HashMap<String,String> jsonPostFormats=gson.fromJson(mBlog.getPostFormats(),type);
+        mPostFormats=new String[jsonPostFormats.size()];
+        mPostFormatTitles=new String[jsonPostFormats.size()];
         int i=0;
-        while (it.hasNext()) {
-          String key=(String)it.next();
-          String val=(String)jsonPostFormats.get(key);
+        for (        HashMap.Entry<String,String> entry : jsonPostFormats.entrySet()) {
+          String key=entry.getKey();
+          String val=entry.getValue();
           mPostFormats[i]=key;
           mPostFormatTitles[i]=val;
           i++;
         }
       }
- catch (      JSONException e) {
+ catch (      Exception e) {
         e.printStackTrace();
       }
     }

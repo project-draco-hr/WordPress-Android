@@ -2,9 +2,12 @@
   try {
     HashMap<?,?> postFormats=(HashMap<?,?>)result;
     if (postFormats.size() > 0) {
-      JSONObject jsonPostFormats=new JSONObject(postFormats);
-      blog.setPostFormats(jsonPostFormats.toString());
-      blog.save(ctx,null);
+      Gson gson=new Gson();
+      String postFormatsJson=gson.toJson(postFormats);
+      if (postFormatsJson != null) {
+        blog.setPostFormats(postFormatsJson);
+        blog.save(ctx,null);
+      }
     }
   }
  catch (  Exception e) {
