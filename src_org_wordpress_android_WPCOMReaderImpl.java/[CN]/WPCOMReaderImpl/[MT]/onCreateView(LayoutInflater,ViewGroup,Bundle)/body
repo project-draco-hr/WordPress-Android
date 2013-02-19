@@ -10,7 +10,6 @@
       getActivity().finish();
     }
   }
-  refreshIcon=(ImageView)v.findViewById(R.id.refresh_icon);
   wv=(WebView)v.findViewById(R.id.webView);
   wv.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
   wv.addJavascriptInterface(new JavaScriptInterface(getActivity().getApplicationContext()),interfaceNameForJS);
@@ -24,6 +23,7 @@
           onPostSelectedListener.onPostSelected(url);
         }
  else {
+          ((WPCOMReaderPager)getActivity()).startAnimatingButton();
         }
         if (url.contains("chrome=no")) {
           loadDetailListener.onLoadDetail();
@@ -31,6 +31,7 @@
       }
     }
     @Override public void onPageFinished(    WebView view,    String url){
+      if (getActivity() != null && !getActivity().isFinishing())       ((WPCOMReaderPager)getActivity()).stopAnimatingButton();
     }
     @Override public boolean shouldOverrideUrlLoading(    WebView view,    String url){
       return false;
