@@ -1,16 +1,20 @@
 {
-switch (item.getItemId()) {
-case 0:
-    pd=ProgressDialog.show(SelectCategories.this,getResources().getText(R.string.refreshing_categories),getResources().getText(R.string.attempting_categories_refresh),true,true);
-  Thread th=new Thread(){
-    public void run(){
-      finalResult=getCategories();
-      mHandler.post(mUpdateResults);
-    }
+  int itemId=item.getItemId();
+  if (itemId == R.id.menu_refresh) {
+    refreshCategories();
+    return true;
   }
-;
-th.start();
-return true;
-}
-return false;
+ else   if (itemId == R.id.menu_new_category) {
+    Bundle bundle=new Bundle();
+    bundle.putInt("id",id);
+    Intent i=new Intent(SelectCategories.this,AddCategory.class);
+    i.putExtras(bundle);
+    startActivityForResult(i,0);
+    return true;
+  }
+ else   if (itemId == android.R.id.home) {
+    saveAndFinish();
+    return true;
+  }
+  return super.onOptionsItemSelected(item);
 }
