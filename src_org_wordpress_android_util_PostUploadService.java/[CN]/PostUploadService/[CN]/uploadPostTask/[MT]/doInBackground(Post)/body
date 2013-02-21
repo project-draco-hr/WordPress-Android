@@ -44,7 +44,7 @@
           mf.setFileName(wpIS.getImageSource().toString());
           mf.setHorizontalAlignment(wpIS.getHorizontalAlignment());
           mf.setWidth(wpIS.getWidth());
-          String imgHTML=uploadImage(mf);
+          String imgHTML=uploadMediaFile(mf);
           if (imgHTML != null) {
             SpannableString ss=new SpannableString(imgHTML);
             s.setSpan(ss,start,end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -82,7 +82,7 @@
           if (!imgPath.equals("")) {
             MediaFile mf=WordPress.wpDB.getMediaFile(imgPath,post);
             if (mf != null) {
-              String imgHTML=uploadImage(mf);
+              String imgHTML=uploadMediaFile(mf);
               if (imgHTML != null) {
                 if (x == 0) {
                   descriptionContent=descriptionContent.replace(tag,imgHTML);
@@ -102,6 +102,7 @@
       }
     }
   }
+  if (mediaError)   return false;
   JSONArray categories=post.getCategories();
   String[] theCategories=null;
   if (categories != null) {
@@ -203,10 +204,7 @@
     return true;
   }
  catch (  final XMLRPCException e) {
-    String exceptionMessage=e.getMessage();
-    if (exceptionMessage.indexOf(": ") > -1)     exceptionMessage=exceptionMessage.substring(exceptionMessage.indexOf(": ") + 2,exceptionMessage.length());
-    if (exceptionMessage.indexOf("[code") > -1)     exceptionMessage=exceptionMessage.substring(0,exceptionMessage.indexOf("[code"));
-    error=String.format(context.getResources().getText(R.string.error_upload).toString(),post.isPage() ? context.getResources().getText(R.string.page).toString() : context.getResources().getText(R.string.post).toString()) + " " + exceptionMessage;
+    error=String.format(context.getResources().getText(R.string.error_upload).toString(),post.isPage() ? context.getResources().getText(R.string.page).toString() : context.getResources().getText(R.string.post).toString()) + " " + cleanXMLRPCErrorMessage(e.getMessage());
     mediaError=false;
     Log.i("WP",error);
   }

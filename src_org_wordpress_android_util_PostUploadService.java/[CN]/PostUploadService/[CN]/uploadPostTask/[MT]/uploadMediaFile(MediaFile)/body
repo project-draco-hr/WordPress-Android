@@ -16,7 +16,7 @@
         context.openFileOutput(tempFileName,Context.MODE_PRIVATE);
       }
  catch (      FileNotFoundException e) {
-        error="Could not create temp file for media upload.";
+        error=getResources().getString(R.string.file_error_create);
         mediaError=true;
         return null;
       }
@@ -74,13 +74,7 @@
         result=(Object)client.callUploadFile("wp.uploadFile",params,tempFile);
       }
  catch (      XMLRPCException e) {
-        String mediaErrorMsg=e.getLocalizedMessage();
-        if (video) {
-          if (mediaErrorMsg.contains("Invalid file type")) {
-            mediaErrorMsg=context.getResources().getString(R.string.vp_upgrade);
-          }
-        }
-        error=context.getResources().getText(R.string.error_media_upload).toString();
+        error=context.getResources().getString(R.string.error_media_upload) + ": " + cleanXMLRPCErrorMessage(e.getMessage());
         return null;
       }
       HashMap<?,?> contentHash=new HashMap<Object,Object>();
@@ -192,7 +186,7 @@
             result=(Object)client.callUploadFile("wp.uploadFile",params,tempFile);
           }
  catch (          XMLRPCException e) {
-            error=e.getMessage();
+            error=context.getResources().getString(R.string.error_media_upload) + ": " + cleanXMLRPCErrorMessage(e.getMessage());
             mediaError=true;
             return null;
           }
