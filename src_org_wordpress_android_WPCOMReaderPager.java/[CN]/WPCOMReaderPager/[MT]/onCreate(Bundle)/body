@@ -1,5 +1,17 @@
 {
   super.onCreate(savedInstanceState);
+  if (savedInstanceState != null) {
+    readerPage=getSupportFragmentManager().getFragment(savedInstanceState,WPCOMReaderImpl.class.getName());
+    topicPage=getSupportFragmentManager().getFragment(savedInstanceState,WPCOMReaderTopicsSelector.class.getName());
+    detailPage=getSupportFragmentManager().getFragment(savedInstanceState,WPCOMReaderDetailPage.class.getName());
+    webPage=getSupportFragmentManager().getFragment(savedInstanceState,WPCOMReaderWebPage.class.getName());
+  }
+  createMenuDrawer(R.layout.reader_wpcom_pager);
+  readerPager=(WPViewPager)findViewById(R.id.pager);
+  readerPager.setOffscreenPageLimit(3);
+  readerAdapter=new ReaderPagerAdapter(super.getSupportFragmentManager());
+  readerPager.setAdapter(readerAdapter);
+  readerPager.setCurrentItem(1,true);
   ActionBar actionBar=getSupportActionBar();
   actionBar.setDisplayShowCustomEnabled(true);
   actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -13,5 +25,4 @@
   }
 );
   actionBar.setCustomView(topicSelector);
-  createMenuDrawer(R.layout.reader_wpcom_pager);
 }
