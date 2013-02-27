@@ -140,7 +140,15 @@
           String imageTitle=jpeg.getName();
           byte[] finalBytes=null;
           if (i == 0 || post.getBlog().isScaledImage()) {
-            byte[] bytes=new byte[(int)jpeg.length()];
+            byte[] bytes;
+            try {
+              bytes=new byte[(int)jpeg.length()];
+            }
+ catch (            OutOfMemoryError er) {
+              error=context.getString(R.string.out_of_memory);
+              mediaError=true;
+              return null;
+            }
             DataInputStream in=null;
             try {
               in=new DataInputStream(new FileInputStream(jpeg));
