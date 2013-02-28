@@ -118,20 +118,14 @@
   }
   Map<String,Object> contentStruct=new HashMap<String,Object>();
   if (!post.isPage() && post.isLocalDraft()) {
-    HashMap<?,?> globalSettings=WordPress.wpDB.getNotificationOptions(context);
-    boolean taglineValue=false;
+    SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(context);
     String tagline="";
-    if (globalSettings != null) {
-      if (globalSettings.get("tagline_flag") != null) {
-        if (globalSettings.get("tagline_flag").toString().equals("1"))         taglineValue=true;
-      }
-      if (taglineValue) {
-        tagline=globalSettings.get("tagline").toString();
-        if (tagline != null) {
-          String tag="\n\n<span class=\"post_sig\">" + tagline + "</span>\n\n";
-          if (moreContent == "")           descriptionContent+=tag;
- else           moreContent+=tag;
-        }
+    if (prefs.getBoolean("wp_pref_signature_enabled",false)) {
+      tagline=prefs.getString("wp_pref_post_signature","");
+      if (tagline != null) {
+        String tag="\n\n<span class=\"post_sig\">" + tagline + "</span>\n\n";
+        if (moreContent == "")         descriptionContent+=tag;
+ else         moreContent+=tag;
       }
     }
     if (!post.getWP_post_format().equals("")) {

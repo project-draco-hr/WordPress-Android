@@ -10,5 +10,17 @@
       finish();
     }
   }
-  displayAccounts();
+  addPreferencesFromResource(R.xml.preferences);
+  preferenceChangeListener=new OnPreferenceChangeListener(){
+    @Override public boolean onPreferenceChange(    Preference preference,    Object newValue){
+      preference.setSummary(newValue.toString());
+      return true;
+    }
+  }
+;
+  notificationIntervalPreference=(ListPreference)findPreference("wp_pref_notifications_interval");
+  notificationIntervalPreference.setOnPreferenceChangeListener(preferenceChangeListener);
+  taglineTextPreference=(EditTextPreference)findPreference("wp_pref_post_signature");
+  taglineTextPreference.setOnPreferenceChangeListener(preferenceChangeListener);
+  displayPreferences();
 }
