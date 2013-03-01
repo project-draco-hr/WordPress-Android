@@ -1,0 +1,57 @@
+{
+  EditText usernameET=(EditText)findViewById(R.id.username);
+  WordPress.currentBlog.setUsername(usernameET.getText().toString());
+  EditText passwordET=(EditText)findViewById(R.id.password);
+  WordPress.currentBlog.setPassword(passwordET.getText().toString());
+  EditText httpuserET=(EditText)findViewById(R.id.httpuser);
+  WordPress.currentBlog.setHttpuser(httpuserET.getText().toString());
+  EditText httppasswordET=(EditText)findViewById(R.id.httppassword);
+  WordPress.currentBlog.setHttppassword(httppasswordET.getText().toString());
+  CheckBox fullSize=(CheckBox)findViewById(R.id.fullSizeImage);
+  WordPress.currentBlog.setFullSizeImage(fullSize.isChecked());
+  CheckBox scaledImage=(CheckBox)findViewById(R.id.scaledImage);
+  WordPress.currentBlog.setScaledImage(scaledImage.isChecked());
+  if (WordPress.currentBlog.isScaledImage()) {
+    EditText scaledImgWidth=(EditText)findViewById(R.id.scaledImageWidth);
+    boolean error=false;
+    int width=0;
+    try {
+      width=Integer.parseInt(scaledImgWidth.getText().toString().trim());
+    }
+ catch (    NumberFormatException e) {
+      error=true;
+    }
+    if (width == 0)     error=true;
+    if (error) {
+      AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(Settings.this);
+      dialogBuilder.setTitle(getResources().getText(R.string.error));
+      dialogBuilder.setMessage(getResources().getText(R.string.scaled_image_error));
+      dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+        public void onClick(        DialogInterface dialog,        int whichButton){
+        }
+      }
+);
+      dialogBuilder.setCancelable(true);
+      dialogBuilder.create().show();
+      return;
+    }
+ else {
+      WordPress.currentBlog.setScaledImageWidth(width);
+    }
+  }
+  Spinner spinner=(Spinner)findViewById(R.id.maxImageWidth);
+  WordPress.currentBlog.setMaxImageWidth(spinner.getSelectedItem().toString());
+  long maxImageWidthId=spinner.getSelectedItemId();
+  int maxImageWidthIdInt=(int)maxImageWidthId;
+  WordPress.currentBlog.setMaxImageWidthId(maxImageWidthIdInt);
+  CheckBox locationCB=(CheckBox)findViewById(R.id.location);
+  WordPress.currentBlog.setLocation(locationCB.isChecked());
+  WordPress.currentBlog.save(Settings.this,originalUsername);
+  Bundle bundle=new Bundle();
+  bundle.putString("returnStatus","SAVE");
+  Intent mIntent=new Intent();
+  mIntent.putExtras(bundle);
+  setResult(RESULT_OK,mIntent);
+  finish();
+  super.onPause();
+}
