@@ -1,28 +1,23 @@
 {
   super.onActivityResult(requestCode,resultCode,data);
-  if (data != null) {
-    Bundle extras=data.getExtras();
 switch (requestCode) {
-case 0:
-      String action=extras.getString("returnStatus");
-    if (action.equals("SAVE")) {
-      Bundle bundle=new Bundle();
-      bundle.putString("returnStatus",action);
-      Intent mIntent=new Intent();
-      mIntent.putExtras(bundle);
-      setResult(RESULT_OK,mIntent);
-      finish();
+case CREATE_ACCOUNT_REQUEST:
+    if (resultCode == RESULT_OK && data != null) {
+      String username=data.getStringExtra("username");
+      if (username != null) {
+        Intent i=new Intent(NewAccount.this,AddAccount.class);
+        i.putExtra("wpcom",true);
+        i.putExtra("username",username);
+        startActivityForResult(i,EXISTING_COM_ACCOUNT_REQUEST);
+      }
     }
   break;
-case 1:
-String username=extras.getString("username");
-if (username != null) {
-Intent i=new Intent(NewAccount.this,AddAccount.class);
-i.putExtra("wpcom",true);
-i.putExtra("username",username);
-startActivityForResult(i,0);
+case EXISTING_COM_ACCOUNT_REQUEST:
+case EXISTING_ORG_ACCOUNT_REQUEST:
+if (resultCode == RESULT_OK) {
+  setResult(RESULT_OK);
+  finish();
 }
 break;
-}
 }
 }
