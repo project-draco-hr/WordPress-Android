@@ -1,17 +1,10 @@
 {
-  if (blogIDs[pos] == -1) {
-    Intent i=new Intent(this,NewAccount.class);
-    startActivityForResult(i,0);
+  try {
+    WordPress.currentBlog=new Blog(blogIDs[pos],this);
+    onBlogChanged();
   }
- else {
-    try {
-      WordPress.currentBlog=new Blog(blogIDs[pos],this);
-      WordPress.wpDB.updateLastBlogId(blogIDs[pos]);
-      onBlogChanged();
-    }
- catch (    Exception e) {
-      e.printStackTrace();
-    }
+ catch (  Exception e) {
+    e.printStackTrace();
   }
   return true;
 }

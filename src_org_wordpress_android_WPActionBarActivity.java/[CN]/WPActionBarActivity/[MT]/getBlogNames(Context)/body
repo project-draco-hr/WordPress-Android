@@ -1,22 +1,19 @@
 {
-  Vector<?> accounts=WordPress.wpDB.getAccounts(context);
-  blogIDs=new int[accounts.size()];
+  Vector<HashMap<String,Object>> accounts=WordPress.wpDB.getAccounts(context);
   int blogCount=accounts.size();
-  if (accounts.size() >= 1)   blogCount++;
-  String[] blogNames=new String[blogCount];
   blogIDs=new int[blogCount];
+  String[] blogNames=new String[blogCount];
   for (int i=0; i < blogCount; i++) {
-    if ((blogCount - 1) == i) {
-      blogNames[i]="+ " + context.getResources().getText(R.string.add_account);
-      blogIDs[i]=-1;
+    HashMap<String,Object> account=accounts.get(i);
+    String name;
+    if (account.get("blogName") != null) {
+      name=EscapeUtils.unescapeHtml(account.get("blogName").toString());
     }
  else {
-      HashMap<?,?> accountHash=(HashMap<?,?>)accounts.get(i);
-      String curBlogName=accountHash.get("url").toString();
-      if (accountHash.get("blogName") != null)       curBlogName=EscapeUtils.unescapeHtml(accountHash.get("blogName").toString());
-      blogNames[i]=curBlogName;
-      blogIDs[i]=Integer.valueOf(accountHash.get("id").toString());
+      name=account.get("url").toString();
     }
+    blogNames[i]=name;
+    blogIDs[i]=Integer.valueOf(account.get("id").toString());
   }
   return blogNames;
 }
