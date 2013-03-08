@@ -9,7 +9,7 @@
   if (rowsAffected > 0) {
     returnValue=true;
   }
-  Vector<HashMap<String,Object>> shortcuts=this.getQuickPressShortcuts(ctx,id);
+  Vector<HashMap<String,Object>> shortcuts=getQuickPressShortcuts(id);
   for (int i=0; i < shortcuts.size(); i++) {
     HashMap<String,Object> shortcutHash=shortcuts.get(i);
     Intent shortcutIntent=new Intent();
@@ -23,7 +23,7 @@
     broadcastShortcutIntent.putExtra("duplicate",false);
     broadcastShortcutIntent.setAction("com.android.launcher.action.UNINSTALL_SHORTCUT");
     ctx.sendBroadcast(broadcastShortcutIntent);
-    deleteQuickPressShortcut(ctx,shortcutHash.get("id").toString());
+    deleteQuickPressShortcut(shortcutHash.get("id").toString());
   }
   return (returnValue);
 }

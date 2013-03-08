@@ -1,0 +1,19 @@
+{
+  Vector<HashMap<String,Object>> accounts=WordPress.wpDB.getAccounts();
+  int blogCount=accounts.size();
+  blogIDs=new int[blogCount];
+  String[] blogNames=new String[blogCount];
+  for (int i=0; i < blogCount; i++) {
+    HashMap<String,Object> account=accounts.get(i);
+    String name;
+    if (account.get("blogName") != null) {
+      name=EscapeUtils.unescapeHtml(account.get("blogName").toString());
+    }
+ else {
+      name=account.get("url").toString();
+    }
+    blogNames[i]=name;
+    blogIDs[i]=Integer.valueOf(account.get("id").toString());
+  }
+  return blogNames;
+}

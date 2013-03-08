@@ -1,5 +1,5 @@
 {
-  context=ctx;
+  this.context=ctx;
   db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
   db.execSQL(CREATE_TABLE_SETTINGS);
   db.execSQL(CREATE_TABLE_EULA);
@@ -35,7 +35,7 @@
       db.execSQL(ADD_FEATURED_IN_POST);
       db.execSQL(ADD_HOME_URL);
       db.execSQL(ADD_BLOG_OPTIONS);
-      migratePasswords(ctx);
+      migratePasswords();
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 1) {
@@ -68,7 +68,7 @@
       db.execSQL(ADD_FEATURED_IN_POST);
       db.execSQL(ADD_HOME_URL);
       db.execSQL(ADD_BLOG_OPTIONS);
-      migratePasswords(ctx);
+      migratePasswords();
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 2) {
@@ -99,7 +99,7 @@
       db.execSQL(ADD_FEATURED_IN_POST);
       db.execSQL(ADD_HOME_URL);
       db.execSQL(ADD_BLOG_OPTIONS);
-      migratePasswords(ctx);
+      migratePasswords();
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 3) {
@@ -127,7 +127,7 @@
       db.execSQL(ADD_FEATURED_IN_POST);
       db.execSQL(ADD_HOME_URL);
       db.execSQL(ADD_BLOG_OPTIONS);
-      migratePasswords(ctx);
+      migratePasswords();
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 4) {
@@ -155,7 +155,7 @@
       db.execSQL(ADD_FEATURED_IN_POST);
       db.execSQL(ADD_HOME_URL);
       db.execSQL(ADD_BLOG_OPTIONS);
-      migratePasswords(ctx);
+      migratePasswords();
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 5) {
@@ -182,7 +182,7 @@
       db.execSQL(ADD_FEATURED_IN_POST);
       db.execSQL(ADD_HOME_URL);
       db.execSQL(ADD_BLOG_OPTIONS);
-      migratePasswords(ctx);
+      migratePasswords();
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 6) {
@@ -207,7 +207,7 @@
       db.execSQL(ADD_FEATURED_IN_POST);
       db.execSQL(ADD_HOME_URL);
       db.execSQL(ADD_BLOG_OPTIONS);
-      migratePasswords(ctx);
+      migratePasswords();
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 7) {
@@ -224,7 +224,7 @@
       db.execSQL(ADD_FEATURED_IN_POST);
       db.execSQL(ADD_HOME_URL);
       db.execSQL(ADD_BLOG_OPTIONS);
-      migratePasswords(ctx);
+      migratePasswords();
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 8) {
@@ -240,7 +240,7 @@
       db.execSQL(ADD_FEATURED_IN_POST);
       db.execSQL(ADD_HOME_URL);
       db.execSQL(ADD_BLOG_OPTIONS);
-      migratePasswords(ctx);
+      migratePasswords();
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 9) {
@@ -256,7 +256,7 @@
       db.execSQL(ADD_FEATURED_IN_POST);
       db.execSQL(ADD_HOME_URL);
       db.execSQL(ADD_BLOG_OPTIONS);
-      migratePasswords(ctx);
+      migratePasswords();
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 10) {
@@ -268,7 +268,7 @@
         c.moveToFirst();
         for (int i=0; i < numRows; ++i) {
           if (c.getString(0) != null) {
-            Post post=new Post(c.getInt(0),c.getString(1),c.getString(2),c.getString(3),c.getLong(4),c.getString(5),c.getString(6),c.getString(7),c.getString(8),c.getDouble(9),c.getDouble(10),false,"",ctx,false,false);
+            Post post=new Post(c.getInt(0),c.getString(1),c.getString(2),c.getString(3),c.getLong(4),c.getString(5),c.getString(6),c.getString(7),c.getString(8),c.getDouble(9),c.getDouble(10),false,"",false,false);
             post.setLocalDraft(true);
             post.setPost_status("localdraft");
             savePost(post,c.getInt(0));
@@ -282,7 +282,7 @@
         c.moveToFirst();
         for (int i=0; i < numRows; ++i) {
           if (c.getString(0) != null) {
-            Post post=new Post(c.getInt(0),c.getString(1),c.getString(2),c.getString(3),c.getLong(4),c.getString(5),"","",c.getString(6),0,0,true,"",ctx,false,false);
+            Post post=new Post(c.getInt(0),c.getString(1),c.getString(2),c.getString(3),c.getLong(4),c.getString(5),"","",c.getString(6),0,0,true,"",false,false);
             post.setLocalDraft(true);
             post.setPost_status("localdraft");
             post.setPage(true);
@@ -331,11 +331,11 @@
       db.setVersion(DATABASE_VERSION);
     }
  else     if (db.getVersion() == 15) {
-      HashMap<?,?> notificationOptions=getNotificationOptions(ctx);
+      HashMap<?,?> notificationOptions=getNotificationOptions();
       if (notificationOptions != null) {
         SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(ctx);
         SharedPreferences.Editor editor=settings.edit();
-        String interval=getInterval(ctx);
+        String interval=getInterval();
         if (interval != "") {
           editor.putString("wp_pref_notifications_interval",interval);
         }

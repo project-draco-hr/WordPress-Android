@@ -1,0 +1,29 @@
+{
+  if (currentBlog == null) {
+    Vector<HashMap<String,Object>> accounts=WordPress.wpDB.getAccounts();
+    int lastBlogId=WordPress.wpDB.getLastBlogId();
+    if (lastBlogId != -1) {
+      try {
+        for (        HashMap<String,Object> account : accounts) {
+          int id=Integer.valueOf(account.get("id").toString());
+          if (id == lastBlogId) {
+            currentBlog=new Blog(id);
+          }
+        }
+      }
+ catch (      Exception e) {
+        e.printStackTrace();
+      }
+    }
+    if (currentBlog == null && accounts.size() > 0) {
+      try {
+        int id=Integer.valueOf(accounts.get(0).get("id").toString());
+        WordPress.currentBlog=new Blog(id);
+      }
+ catch (      Exception e) {
+        e.printStackTrace();
+      }
+    }
+  }
+  return currentBlog;
+}
