@@ -7,6 +7,14 @@
     int accountId=(Integer)account.get("id");
     Preference blogSettingsPreference=new Preference(this);
     blogSettingsPreference.setTitle(blogName);
+    try {
+      URL blogUrl=new URL(account.get("url").toString());
+      if (!blogName.equals(blogUrl.getHost())) {
+        blogSettingsPreference.setSummary(blogUrl.getHost());
+      }
+    }
+ catch (    MalformedURLException e) {
+    }
     Intent intent=new Intent(this,Settings.class);
     intent.putExtra("id",accountId);
     blogSettingsPreference.setIntent(intent);
