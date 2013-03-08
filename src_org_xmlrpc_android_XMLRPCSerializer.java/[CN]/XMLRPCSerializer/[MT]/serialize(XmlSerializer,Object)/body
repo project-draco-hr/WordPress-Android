@@ -24,7 +24,7 @@
     serializer.startTag(null,TYPE_DATE_TIME_ISO8601).text(sDate).endTag(null,TYPE_DATE_TIME_ISO8601);
   }
  else   if (object instanceof byte[]) {
-    String value=Base64.encodeBytes((byte[])object);
+    String value=Base64.encodeToString((byte[])object,Base64.DEFAULT);
     serializer.startTag(null,TYPE_BASE64).text(value).endTag(null,TYPE_BASE64);
   }
  else   if (object instanceof MediaFile) {
@@ -35,7 +35,7 @@
     int length=-1;
     String chunk=null;
     while ((length=inStream.read(buffer)) > 0) {
-      chunk=Base64.encodeBytes(buffer,0,length);
+      chunk=Base64.encodeToString(buffer,0,length,Base64.DEFAULT);
       serializer.text(chunk);
     }
     inStream.close();
