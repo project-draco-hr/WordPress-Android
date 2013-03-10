@@ -2,7 +2,7 @@
   boolean commentsOnly=params[0];
   XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
   if (!commentsOnly) {
-    HashMap<String,String> hPost=new HashMap<String,String>();
+    Map<String,String> hPost=new HashMap<String,String>();
     hPost.put("software_version","software_version");
     hPost.put("post_thumbnail","post_thumbnail");
     hPost.put("jetpack_client_id","jetpack_client_id");
@@ -16,18 +16,18 @@
     }
     if (versionResult != null) {
       try {
-        HashMap<?,?> blogOptions=(HashMap<?,?>)versionResult;
+        Map<?,?> blogOptions=(HashMap<?,?>)versionResult;
         Gson gson=new Gson();
         String blogOptionsJson=gson.toJson(blogOptions);
         if (blogOptionsJson != null)         blog.setBlogOptions(blogOptionsJson);
         if (!blog.isDotcomFlag()) {
-          HashMap<?,?> sv=(HashMap<?,?>)blogOptions.get("software_version");
+          Map<?,?> sv=(HashMap<?,?>)blogOptions.get("software_version");
           String wpVersion=sv.get("value").toString();
           if (wpVersion.length() > 0) {
             blog.setWpVersion(wpVersion);
           }
         }
-        HashMap<?,?> featuredImageHash=(HashMap<?,?>)blogOptions.get("post_thumbnail");
+        Map<?,?> featuredImageHash=(HashMap<?,?>)blogOptions.get("post_thumbnail");
         if (featuredImageHash != null) {
           boolean featuredImageCapable=Boolean.parseBoolean(featuredImageHash.get("value").toString());
           blog.setFeaturedImageCapable(featuredImageCapable);
@@ -40,12 +40,12 @@
  catch (      Exception e) {
       }
     }
-    Vector<Object> args=new Vector<Object>();
+    List<Object> args=new Vector<Object>();
     args.add(blog);
     args.add(context);
     new ApiHelper.getPostFormatsTask().execute(args);
   }
-  HashMap<String,Object> hPost=new HashMap<String,Object>();
+  Map<String,Object> hPost=new HashMap<String,Object>();
   hPost.put("number",30);
   Object[] commentParams={blog.getBlogId(),blog.getUsername(),blog.getPassword(),hPost};
   try {

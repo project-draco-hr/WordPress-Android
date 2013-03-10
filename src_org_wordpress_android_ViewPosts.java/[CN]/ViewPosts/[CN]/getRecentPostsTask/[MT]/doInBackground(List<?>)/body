@@ -1,6 +1,6 @@
 {
   boolean success=false;
-  Vector<?> arguments=args[0];
+  List<?> arguments=args[0];
   WordPress.currentBlog=(Blog)arguments.get(0);
   isPage=(Boolean)arguments.get(1);
   int recordCount=(Integer)arguments.get(2);
@@ -13,14 +13,14 @@
     if (result != null) {
       if (result.length > 0) {
         success=true;
-        HashMap<?,?> contentHash=new HashMap<Object,Object>();
-        Vector<HashMap<?,?>> dbVector=new Vector<HashMap<?,?>>();
+        Map<?,?> contentHash=new HashMap<Object,Object>();
+        List<Map<?,?>> dbVector=new Vector<Map<?,?>>();
         if (!loadMore) {
           WordPress.wpDB.deleteUploadedPosts(WordPress.currentBlog.getId(),isPage);
         }
         for (int ctr=0; ctr < result.length; ctr++) {
-          HashMap<String,Object> dbValues=new HashMap<String,Object>();
-          contentHash=(HashMap<?,?>)result[ctr];
+          Map<String,Object> dbValues=new HashMap<String,Object>();
+          contentHash=(Map<?,?>)result[ctr];
           dbValues.put("blogID",WordPress.currentBlog.getBlogId());
           dbVector.add(ctr,contentHash);
         }
