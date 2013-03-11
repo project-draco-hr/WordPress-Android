@@ -1,0 +1,16 @@
+{
+  super.onCreate(savedInstanceState);
+  this.setTitle(getResources().getText(R.string.wp_admin));
+  mWebView.setWebChromeClient(new WordPressWebChromeClient(this,getTitle()));
+  mWebView.getSettings().setJavaScriptEnabled(true);
+  mWebView.getSettings().setPluginsEnabled(true);
+  mWebView.getSettings().setDomStorageEnabled(true);
+  String dashboardUrl;
+  if (mBlog.getUrl().lastIndexOf("/") != -1) {
+    dashboardUrl=mBlog.getUrl().substring(0,mBlog.getUrl().lastIndexOf("/")) + "/wp-admin";
+  }
+ else {
+    dashboardUrl=mBlog.getUrl().replace("xmlrpc.php","wp-admin");
+  }
+  loadAuthenticatedUrl(dashboardUrl);
+}

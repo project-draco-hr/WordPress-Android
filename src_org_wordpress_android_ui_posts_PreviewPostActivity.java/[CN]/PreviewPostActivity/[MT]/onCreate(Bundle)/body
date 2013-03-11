@@ -1,0 +1,13 @@
+{
+  super.onCreate(savedInstanceState);
+  boolean isPage=getIntent().getBooleanExtra("isPage",false);
+  if (isPage) {
+    this.setTitle(EscapeUtils.unescapeHtml(WordPress.currentBlog.getBlogName()) + " - " + getResources().getText(R.string.preview_page));
+  }
+ else {
+    this.setTitle(EscapeUtils.unescapeHtml(WordPress.currentBlog.getBlogName()) + " - " + getResources().getText(R.string.preview_post));
+  }
+  mWebView.setWebChromeClient(new WordPressWebChromeClient(this,getTitle()));
+  mWebView.getSettings().setJavaScriptEnabled(true);
+  loadPostPreview(WordPress.currentPost);
+}
