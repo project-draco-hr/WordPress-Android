@@ -1,0 +1,62 @@
+{
+  Post post=new Post(WordPress.currentBlog.getId(),selectedID,isPage);
+  if (post.getId() < 0) {
+    if (!getActivity().isFinishing()) {
+      FragmentTransaction ft=getFragmentManager().beginTransaction();
+      WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(getString(R.string.post_not_found));
+      alert.show(ft,"alert");
+    }
+    return false;
+  }
+  if (item.getGroupId() == 0) {
+switch (item.getItemId()) {
+case 0:
+      Intent i2=new Intent(getActivity().getApplicationContext(),EditPostActivity.class);
+    i2.putExtra("postID",selectedID);
+  i2.putExtra("id",WordPress.currentBlog.getId());
+startActivityForResult(i2,0);
+return true;
+case 1:
+onPostActionListener.onPostAction(PostsActivity.POST_DELETE,post);
+return true;
+case 2:
+onPostActionListener.onPostAction(PostsActivity.POST_SHARE,post);
+return true;
+}
+}
+ else if (item.getGroupId() == 2) {
+switch (item.getItemId()) {
+case 0:
+Intent i2=new Intent(getActivity().getApplicationContext(),EditPostActivity.class);
+i2.putExtra("postID",selectedID);
+i2.putExtra("id",WordPress.currentBlog.getId());
+i2.putExtra("isPage",true);
+startActivityForResult(i2,0);
+return true;
+case 1:
+onPostActionListener.onPostAction(PostsActivity.POST_DELETE,post);
+return true;
+case 2:
+onPostActionListener.onPostAction(PostsActivity.POST_SHARE,post);
+return true;
+}
+}
+ else {
+switch (item.getItemId()) {
+case 0:
+Intent i2=new Intent(getActivity().getApplicationContext(),EditPostActivity.class);
+i2.putExtra("postID",selectedID);
+i2.putExtra("id",WordPress.currentBlog.getId());
+if (isPage) {
+i2.putExtra("isPage",true);
+}
+i2.putExtra("localDraft",true);
+startActivityForResult(i2,0);
+return true;
+case 1:
+onPostActionListener.onPostAction(PostsActivity.POST_DELETE,post);
+return true;
+}
+}
+return false;
+}

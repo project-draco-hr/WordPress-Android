@@ -1,0 +1,57 @@
+{
+  client=new XMLRPCClient(WordPress.currentBlog.getUrl(),WordPress.currentBlog.getHttpuser(),WordPress.currentBlog.getHttppassword());
+  Map<String,String> contentHash, postHash=new HashMap<String,String>();
+  contentHash=(Map<String,String>)commentList.allComments.get(selCommentID);
+  postHash.put("status",newStatus);
+  postHash.put("content",contentHash.get("comment"));
+  postHash.put("author",contentHash.get("author"));
+  postHash.put("author_url",contentHash.get("url"));
+  postHash.put("author_email",contentHash.get("email"));
+  Object[] params={WordPress.currentBlog.getBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),selCommentID,postHash};
+  Object result=null;
+  try {
+    result=(Object)client.call("wp.editComment",params);
+    boolean bResult=Boolean.parseBoolean(result.toString());
+    if (bResult) {
+      WordPress.currentComment.status=newStatus;
+      commentList.model.set(WordPress.currentComment.position,WordPress.currentComment);
+      WordPress.wpDB.updateCommentStatus(id,WordPress.currentComment.commentID,newStatus);
+    }
+    dismissDialog(ID_DIALOG_MODERATING);
+    Thread action=new Thread(){
+      public void run(){
+        Toast.makeText(CommentsActivity.this,getResources().getText(R.string.comment_moderated),Toast.LENGTH_SHORT).show();
+      }
+    }
+;
+    runOnUiThread(action);
+    Thread action2=new Thread(){
+      public void run(){
+        commentList.thumbs.notifyDataSetChanged();
+      }
+    }
+;
+    runOnUiThread(action2);
+  }
+ catch (  final XMLRPCException e) {
+    dismissDialog(ID_DIALOG_MODERATING);
+    Thread action3=new Thread(){
+      public void run(){
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(CommentsActivity.this);
+        dialogBuilder.setTitle(getResources().getText(R.string.connection_error));
+        dialogBuilder.setMessage(getResources().getText(R.string.error_moderate_comment));
+        dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        if (!isFinishing()) {
+          dialogBuilder.create().show();
+        }
+      }
+    }
+;
+    runOnUiThread(action3);
+  }
+}

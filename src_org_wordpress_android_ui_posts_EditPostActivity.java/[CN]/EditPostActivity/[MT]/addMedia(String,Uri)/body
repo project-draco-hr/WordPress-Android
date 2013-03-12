@@ -1,0 +1,78 @@
+{
+  Bitmap resizedBitmap=null;
+  ImageHelper ih=new ImageHelper();
+  Display display=getWindowManager().getDefaultDisplay();
+  int width=display.getWidth();
+  int height=display.getHeight();
+  if (width > height)   width=height;
+  Map<String,Object> mediaData=ih.getImageBytesForPath(imgPath,EditPostActivity.this);
+  if (mediaData == null) {
+    Toast.makeText(EditPostActivity.this,getResources().getText(R.string.gallery_error),Toast.LENGTH_SHORT).show();
+    return;
+  }
+  BitmapFactory.Options opts=new BitmapFactory.Options();
+  opts.inJustDecodeBounds=true;
+  byte[] bytes=(byte[])mediaData.get("bytes");
+  BitmapFactory.decodeByteArray(bytes,0,bytes.length,opts);
+  float conversionFactor=0.25f;
+  if (opts.outWidth > opts.outHeight)   conversionFactor=0.40f;
+  byte[] finalBytes=ih.createThumbnail(bytes,String.valueOf((int)(width * conversionFactor)),(String)mediaData.get("orientation"),true);
+  if (finalBytes == null) {
+    Toast.makeText(EditPostActivity.this,getResources().getText(R.string.out_of_memory),Toast.LENGTH_SHORT).show();
+    return;
+  }
+  resizedBitmap=BitmapFactory.decodeByteArray(finalBytes,0,finalBytes.length);
+  int selectionStart=mContentEditText.getSelectionStart();
+  mStyleStart=selectionStart;
+  int selectionEnd=mContentEditText.getSelectionEnd();
+  if (selectionStart > selectionEnd) {
+    int temp=selectionEnd;
+    selectionEnd=selectionStart;
+    selectionStart=temp;
+  }
+  Editable s=mContentEditText.getText();
+  WPImageSpan is=new WPImageSpan(EditPostActivity.this,resizedBitmap,curStream);
+  String imageWidth=WordPress.currentBlog.getMaxImageWidth();
+  if (!imageWidth.equals("Original Size")) {
+    try {
+      is.setWidth(Integer.valueOf(imageWidth));
+    }
+ catch (    NumberFormatException e) {
+      e.printStackTrace();
+    }
+  }
+  is.setTitle((String)mediaData.get("title"));
+  is.setImageSource(curStream);
+  if (imgPath.contains("video")) {
+    is.setVideo(true);
+  }
+  int line=0, column=0;
+  try {
+    line=mContentEditText.getLayout().getLineForOffset(selectionStart);
+    column=mContentEditText.getSelectionStart() - mContentEditText.getLayout().getLineStart(line);
+  }
+ catch (  Exception ex) {
+  }
+  WPImageSpan[] image_spans=s.getSpans(selectionStart,selectionEnd,WPImageSpan.class);
+  if (image_spans.length != 0) {
+    s.insert(selectionEnd,"\n\n");
+    selectionStart=selectionStart + 2;
+    selectionEnd=selectionEnd + 2;
+  }
+ else   if (column != 0) {
+    s.insert(selectionEnd,"\n");
+    selectionStart=selectionStart + 1;
+    selectionEnd=selectionEnd + 1;
+  }
+  s.insert(selectionStart," ");
+  s.setSpan(is,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+  AlignmentSpan.Standard as=new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER);
+  s.setSpan(as,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+  s.insert(selectionEnd + 1,"\n\n");
+  try {
+    mContentEditText.setSelection(s.length());
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+  }
+}

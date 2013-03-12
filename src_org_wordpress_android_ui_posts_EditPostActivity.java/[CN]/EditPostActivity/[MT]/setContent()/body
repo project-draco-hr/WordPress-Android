@@ -1,0 +1,38 @@
+{
+  Intent intent=getIntent();
+  String text=intent.getStringExtra(Intent.EXTRA_TEXT);
+  String title=intent.getStringExtra(Intent.EXTRA_SUBJECT);
+  if (text != null) {
+    if (title != null) {
+      mTitleEditText.setText(title);
+    }
+    if (text.contains("youtube_gdata")) {
+      text=text.replace("feature=youtube_gdata","");
+      text=text.replace("&","");
+      text=text.replace("_player","");
+      text=text.replace("watch?v=","v/");
+      text="<object width=\"480\" height=\"385\"><param name=\"movie\" value=\"" + text + "\"></param><param name=\"allowFullScreen\" value=\"true\"></param><param name=\"allowscriptaccess\" value=\"always\"></param><embed src=\""+ text+ "\" type=\"application/x-shockwave-flash\" allowscriptaccess=\"always\" allowfullscreen=\"true\" width=\"480\" height=\"385\"></embed></object>";
+      mContentEditText.setText(text);
+    }
+ else {
+      text=text.replaceAll("((http|https|ftp|mailto):\\S+)","<a href=\"$1\">$1</a>");
+      mContentEditText.setText(WPHtml.fromHtml(StringHelper.addPTags(text),EditPostActivity.this,mPost));
+    }
+  }
+ else {
+    String action=intent.getAction();
+    final String type=intent.getType();
+    final ArrayList<Uri> multi_stream;
+    if (Intent.ACTION_SEND_MULTIPLE.equals(action)) {
+      multi_stream=intent.getParcelableArrayListExtra((Intent.EXTRA_STREAM));
+    }
+ else {
+      multi_stream=new ArrayList<Uri>();
+      multi_stream.add((Uri)intent.getParcelableExtra(Intent.EXTRA_STREAM));
+    }
+    List<Serializable> params=new Vector<Serializable>();
+    params.add(multi_stream);
+    params.add(type);
+    new processAttachmentsTask().execute(params);
+  }
+}

@@ -1,0 +1,58 @@
+{
+  final ReaderWebPageFragment readerWebPageFragment=(ReaderWebPageFragment)webPage;
+  final ReaderDetailPageFragment readerPageDetailFragment=(ReaderDetailPageFragment)detailPage;
+  int itemId=item.getItemId();
+  if (itemId == 0) {
+    ReaderImplFragment readerPageFragment=(ReaderImplFragment)readerPage;
+    readerPageFragment.refreshReader();
+    return true;
+  }
+ else   if (itemId == 1) {
+    if (readerPageDetailFragment != null && readerPageDetailFragment != null) {
+      if (readerPager.getCurrentItem() == 2) {
+        runOnUiThread(new Runnable(){
+          public void run(){
+            readerPageDetailFragment.wv.loadUrl("javascript:Reader2.get_article_permalink();");
+          }
+        }
+);
+      }
+ else {
+        String url=readerWebPageFragment.wv.getUrl();
+        if (url != null) {
+          Uri uri=Uri.parse(url);
+          if (uri != null) {
+            Intent i=new Intent(Intent.ACTION_VIEW);
+            i.setData(uri);
+            startActivity(i);
+          }
+        }
+      }
+    }
+    return true;
+  }
+ else   if (itemId == 2) {
+    if (readerWebPageFragment != null && readerPageDetailFragment != null) {
+      if (readerPager.getCurrentItem() == 2) {
+        runOnUiThread(new Runnable(){
+          public void run(){
+            isShare=true;
+            readerPageDetailFragment.wv.loadUrl("javascript:Reader2.get_article_permalink();");
+          }
+        }
+);
+      }
+ else {
+        String url=readerWebPageFragment.wv.getUrl();
+        if (url != null) {
+          Intent share=new Intent(Intent.ACTION_SEND);
+          share.setType("text/plain");
+          share.putExtra(Intent.EXTRA_TEXT,url);
+          startActivity(Intent.createChooser(share,getResources().getText(R.string.share_url)));
+        }
+      }
+    }
+    return true;
+  }
+  return super.onOptionsItemSelected(item);
+}

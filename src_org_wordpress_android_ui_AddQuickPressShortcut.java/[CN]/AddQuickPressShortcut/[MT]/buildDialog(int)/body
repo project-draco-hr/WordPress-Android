@@ -1,0 +1,50 @@
+{
+  final int position=positionParam;
+  AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(AddQuickPressShortcut.this);
+  dialogBuilder.setTitle(R.string.quickpress_add_alert_title);
+  final EditText quickPressShortcutName=new EditText(AddQuickPressShortcut.this);
+  quickPressShortcutName.setText("QP " + EscapeUtils.unescapeHtml(accountNames.get(position)));
+  dialogBuilder.setView(quickPressShortcutName);
+  dialogBuilder.setPositiveButton(R.string.add,new DialogInterface.OnClickListener(){
+    public void onClick(    DialogInterface dialog,    int which){
+      if (TextUtils.isEmpty(quickPressShortcutName.getText())) {
+        Toast t=Toast.makeText(AddQuickPressShortcut.this,R.string.quickpress_add_error,Toast.LENGTH_LONG);
+        t.show();
+      }
+ else {
+        Intent shortcutIntent=new Intent();
+        shortcutIntent.setClassName(EditPostActivity.class.getPackage().getName(),EditPostActivity.class.getName());
+        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        shortcutIntent.putExtra("id",accountIDs[position]);
+        shortcutIntent.putExtra("isQuickPress",true);
+        shortcutIntent.putExtra("accountName",EscapeUtils.unescapeHtml(accountNames.get(position)));
+        shortcutIntent.putExtra("isNew",true);
+        Intent addIntent=new Intent();
+        addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT,shortcutIntent);
+        addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME,quickPressShortcutName.getText().toString());
+        addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,Intent.ShortcutIconResource.fromContext(AddQuickPressShortcut.this,R.drawable.app_icon));
+        WordPress.wpDB.addQuickPressShortcut(accountIDs[position],quickPressShortcutName.getText().toString());
+        if (WordPress.currentBlog == null) {
+          try {
+            WordPress.currentBlog=new Blog(accountIDs[position]);
+            WordPress.wpDB.updateLastBlogId(accountIDs[position]);
+          }
+ catch (          Exception e) {
+          }
+        }
+        addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+        AddQuickPressShortcut.this.sendBroadcast(addIntent);
+        AddQuickPressShortcut.this.finish();
+      }
+    }
+  }
+);
+  dialogBuilder.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener(){
+    public void onClick(    DialogInterface dialog,    int which){
+    }
+  }
+);
+  dialogBuilder.setCancelable(false);
+  dialogBuilder.create().show();
+}

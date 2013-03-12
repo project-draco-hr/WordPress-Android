@@ -1,0 +1,30 @@
+{
+  super.onActivityResult(requestCode,resultCode,data);
+  if (data != null) {
+    final Bundle extras=data.getExtras();
+switch (requestCode) {
+case 0:
+      if (extras.getString("continue").equals("TRUE")) {
+        final String category_name=extras.getString("category_name");
+        final String category_slug=extras.getString("category_slug");
+        final String category_desc=extras.getString("category_desc");
+        final int parent_id=extras.getInt("parent_id");
+        if (loadTextArray.contains(category_name)) {
+        }
+ else {
+          pd=ProgressDialog.show(SelectCategoriesActivity.this,getResources().getText(R.string.cat_adding_category),getResources().getText(R.string.cat_attempt_add_category),true,true);
+          Thread th=new Thread(){
+            public void run(){
+              finalResult=addCategory(category_name,category_slug,category_desc,parent_id);
+              if (finalResult.equals("addCategory_success"))               loadTextArray.add(category_name);
+              mHandler.post(mUpdateResults);
+            }
+          }
+;
+          th.start();
+        }
+        break;
+      }
+  }
+}
+}

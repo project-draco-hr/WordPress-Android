@@ -1,0 +1,38 @@
+{
+  super.onCreate(savedInstanceState);
+  createMenuDrawer(R.layout.posts);
+  ActionBar actionBar=getSupportActionBar();
+  actionBar.setHomeButtonEnabled(true);
+  actionBar.setDisplayHomeAsUpEnabled(true);
+  FragmentManager fm=getSupportFragmentManager();
+  postList=(ViewPostsFragment)fm.findFragmentById(R.id.postList);
+  postList.setListShown(true);
+  Bundle extras=getIntent().getExtras();
+  if (extras != null) {
+    isPage=extras.getBoolean("viewPages");
+    String errorMessage=extras.getString("errorMessage");
+    if (errorMessage != null) {
+      AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(PostsActivity.this);
+      dialogBuilder.setTitle(getResources().getText(R.string.error));
+      dialogBuilder.setMessage(errorMessage);
+      dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+        public void onClick(        DialogInterface dialog,        int whichButton){
+        }
+      }
+);
+      dialogBuilder.setCancelable(true);
+      if (!isFinishing()) {
+        dialogBuilder.create().show();
+      }
+    }
+  }
+  WordPress.currentPost=null;
+  WordPress.setOnPostUploadedListener(new WordPress.OnPostUploadedListener(){
+    @Override public void OnPostUploaded(){
+      if (isFinishing())       return;
+      checkForLocalChanges(false);
+    }
+  }
+);
+  attemptToSelectPost();
+}

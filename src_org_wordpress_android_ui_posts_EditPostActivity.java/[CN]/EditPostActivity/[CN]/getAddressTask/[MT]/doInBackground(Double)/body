@@ -1,0 +1,20 @@
+{
+  Geocoder gcd=new Geocoder(EditPostActivity.this,Locale.getDefault());
+  String finalText="";
+  List<Address> addresses;
+  try {
+    addresses=gcd.getFromLocation(args[0],args[1],1);
+    String locality="", adminArea="", country="";
+    if (addresses.get(0).getLocality() != null)     locality=addresses.get(0).getLocality();
+    if (addresses.get(0).getAdminArea() != null)     adminArea=addresses.get(0).getAdminArea();
+    if (addresses.get(0).getCountryName() != null)     country=addresses.get(0).getCountryName();
+    if (addresses.size() > 0) {
+      finalText=((locality.equals("")) ? locality : locality + ", ") + ((adminArea.equals("")) ? adminArea : adminArea + " ") + country;
+      if (finalText.equals(""))       finalText=getString(R.string.location_not_found);
+    }
+  }
+ catch (  IOException e) {
+    e.printStackTrace();
+  }
+  return finalText;
+}

@@ -1,0 +1,59 @@
+{
+  EditText authorNameET=(EditText)findViewById(R.id.author_name);
+  String authorName=authorNameET.getText().toString();
+  EditText authorEmailET=(EditText)findViewById(R.id.author_email);
+  String authorEmail=authorEmailET.getText().toString();
+  EditText authorURLET=(EditText)findViewById(R.id.author_url);
+  String authorURL=authorURLET.getText().toString();
+  EditText contentET=(EditText)findViewById(R.id.comment_content);
+  String content=contentET.getText().toString();
+  Spinner spinner=(Spinner)findViewById(R.id.status);
+  int selectedStatus=spinner.getSelectedItemPosition();
+  String status="";
+switch (selectedStatus) {
+case 0:
+    status="approve";
+  break;
+case 1:
+status="hold";
+break;
+case 2:
+status="spam";
+break;
+}
+CharSequence dialogMsg="";
+if (content.equals("")) {
+dialogMsg=getResources().getText(R.string.content_required);
+}
+if (!dialogMsg.equals("")) {
+AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(EditCommentActivity.this);
+dialogBuilder.setTitle(getResources().getText(R.string.required_field));
+dialogBuilder.setMessage(dialogMsg);
+dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+public void onClick(DialogInterface dialog,int whichButton){
+}
+}
+);
+dialogBuilder.setCancelable(true);
+dialogBuilder.create().show();
+return false;
+}
+Comment comment=WordPress.currentComment;
+if (authorName.equals(comment.name) && authorEmail.equals(comment.authorEmail) && authorURL.equals(comment.authorURL)&& content.equals(comment.comment)) {
+return true;
+}
+final Map<String,String> postHash=new HashMap<String,String>();
+postHash.put("status",status);
+postHash.put("content",content);
+postHash.put("author",authorName);
+postHash.put("author_url",authorURL);
+postHash.put("author_email",authorEmail);
+showDialog(ID_DIALOG_SAVING);
+new Thread(){
+public void run(){
+updateComment(postHash);
+}
+}
+.start();
+return false;
+}

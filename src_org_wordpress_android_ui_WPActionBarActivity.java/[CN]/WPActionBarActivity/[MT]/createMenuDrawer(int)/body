@@ -1,0 +1,123 @@
+{
+  getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+  menuDrawer=MenuDrawer.attach(this,MenuDrawer.MENU_DRAG_CONTENT);
+  menuDrawer.setContentView(contentView);
+  menuDrawer.setMenuView(R.layout.menu_drawer);
+  LinearLayout postsButton=(LinearLayout)findViewById(R.id.menu_posts_btn);
+  postsButton.setOnClickListener(new View.OnClickListener(){
+    public void onClick(    View v){
+      menuDrawer.closeMenu();
+      Intent i=new Intent(WPActionBarActivity.this,PostsActivity.class);
+      i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+      startActivityWithDelay(i);
+    }
+  }
+);
+  LinearLayout pagesButton=(LinearLayout)findViewById(R.id.menu_pages_btn);
+  pagesButton.setOnClickListener(new View.OnClickListener(){
+    public void onClick(    View v){
+      Intent i=new Intent(WPActionBarActivity.this,PostsActivity.class);
+      i.putExtra("id",WordPress.currentBlog.getId());
+      i.putExtra("isNew",true);
+      i.putExtra("viewPages",true);
+      i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+      menuDrawer.closeMenu();
+      startActivityWithDelay(i);
+    }
+  }
+);
+  LinearLayout commentsButton=(LinearLayout)findViewById(R.id.menu_comments_btn);
+  commentsButton.setOnClickListener(new View.OnClickListener(){
+    public void onClick(    View v){
+      Intent i=new Intent(WPActionBarActivity.this,CommentsActivity.class);
+      i.putExtra("id",WordPress.currentBlog.getId());
+      i.putExtra("isNew",true);
+      i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+      menuDrawer.closeMenu();
+      startActivityWithDelay(i);
+    }
+  }
+);
+  LinearLayout picButton=(LinearLayout)findViewById(R.id.menu_quickphoto_btn);
+  picButton.setOnClickListener(new View.OnClickListener(){
+    public void onClick(    View v){
+      PackageManager pm=WPActionBarActivity.this.getPackageManager();
+      Intent i=new Intent(WPActionBarActivity.this,EditPostActivity.class);
+      if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+        i.putExtra("option","newphoto");
+      }
+ else {
+        i.putExtra("option","photolibrary");
+      }
+      i.putExtra("isNew",true);
+      menuDrawer.closeMenu();
+      startActivityWithDelay(i);
+    }
+  }
+);
+  LinearLayout videoButton=(LinearLayout)findViewById(R.id.menu_quickvideo_btn);
+  videoButton.setOnClickListener(new View.OnClickListener(){
+    public void onClick(    View v){
+      PackageManager pm=WPActionBarActivity.this.getPackageManager();
+      Intent i=new Intent(WPActionBarActivity.this,EditPostActivity.class);
+      if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+        i.putExtra("option","newvideo");
+      }
+ else {
+        i.putExtra("option","videolibrary");
+      }
+      i.putExtra("isNew",true);
+      menuDrawer.closeMenu();
+      startActivityWithDelay(i);
+    }
+  }
+);
+  LinearLayout statsButton=(LinearLayout)findViewById(R.id.menu_stats_btn);
+  statsButton.setOnClickListener(new View.OnClickListener(){
+    public void onClick(    View v){
+      Intent i=new Intent(WPActionBarActivity.this,ViewWebStats.class);
+      i.putExtra("id",WordPress.currentBlog.getId());
+      i.putExtra("isNew",true);
+      i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+      menuDrawer.closeMenu();
+      startActivityWithDelay(i);
+    }
+  }
+);
+  LinearLayout dashboardButton=(LinearLayout)findViewById(R.id.menu_dashboard_btn);
+  dashboardButton.setOnClickListener(new View.OnClickListener(){
+    public void onClick(    View v){
+      Intent i=new Intent(WPActionBarActivity.this,DashboardActivity.class);
+      i.putExtra("loadAdmin",true);
+      i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+      menuDrawer.closeMenu();
+      startActivityWithDelay(i);
+    }
+  }
+);
+  LinearLayout settingsButton=(LinearLayout)findViewById(R.id.menu_settings_btn);
+  settingsButton.setOnClickListener(new View.OnClickListener(){
+    public void onClick(    View v){
+      Intent i=new Intent(WPActionBarActivity.this,PreferencesActivity.class);
+      i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+      menuDrawer.closeMenu();
+      startActivityWithDelay(i);
+    }
+  }
+);
+  LinearLayout readButton=(LinearLayout)findViewById(R.id.menu_reader_btn);
+  readButton.setOnClickListener(new View.OnClickListener(){
+    public void onClick(    View v){
+      int readerBlogID=WordPress.wpDB.getWPCOMBlogID();
+      if (WordPress.currentBlog.isDotcomFlag()) {
+        Intent i=new Intent(WPActionBarActivity.this,ReaderPagerActivity.class);
+        i.putExtra("id",readerBlogID);
+        i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        menuDrawer.closeMenu();
+        startActivityWithDelay(i);
+      }
+    }
+  }
+);
+  updateMenuDrawer();
+}
