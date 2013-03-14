@@ -1,0 +1,38 @@
+{
+  View v=convertView;
+  Object item=getItem(position);
+  if (v == null) {
+    v=getLayoutInflater().inflate(R.layout.menu_drawer_row,parent,false);
+  }
+  TextView titleTextView=(TextView)v.findViewById(R.id.menu_row_title);
+  titleTextView.setText(((MenuDrawerItem)item).mTitle);
+  ImageView iconImageView=(ImageView)v.findViewById(R.id.menu_row_icon);
+  iconImageView.setImageResource(((MenuDrawerItem)item).mIconRes);
+  v.setTag(R.id.mdActiveViewPosition,position);
+  if (position == mActivePosition) {
+    int bottom=v.getPaddingBottom();
+    int top=v.getPaddingTop();
+    int right=v.getPaddingRight();
+    int left=v.getPaddingLeft();
+    v.setBackgroundResource(R.drawable.menu_drawer_selected);
+    v.setPadding(left,top,right,bottom);
+  }
+ else {
+    v.setBackgroundResource(R.drawable.md_list_selector);
+  }
+  TextView bagdeTextView=(TextView)v.findViewById(R.id.menu_row_badge);
+  if (position == 2 && WordPress.currentBlog != null) {
+    int commentCount=WordPress.currentBlog.getUnmoderatedCommentCount();
+    if (commentCount > 0) {
+      bagdeTextView.setVisibility(View.VISIBLE);
+    }
+ else {
+      bagdeTextView.setVisibility(View.GONE);
+    }
+    bagdeTextView.setText(String.valueOf(commentCount));
+  }
+ else {
+    bagdeTextView.setVisibility(View.GONE);
+  }
+  return v;
+}
