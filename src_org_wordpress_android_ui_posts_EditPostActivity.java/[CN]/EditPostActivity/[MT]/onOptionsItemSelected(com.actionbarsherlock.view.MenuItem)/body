@@ -4,9 +4,9 @@
     if (mAutoSaveHandler != null)     mAutoSaveHandler.removeCallbacks(autoSaveRunnable);
     if (savePost(false)) {
       if (mPost.isUploaded() || !mPost.getPost_status().equals("localdraft")) {
-        if (mOption != null) {
-          if (mOption.equals("newphoto") || mOption.equals("photolibrary"))           mPost.setQuickPostType("QuickPhoto");
- else           if (mOption.equals("newvideo") || mOption.equals("videolibrary"))           mPost.setQuickPostType("QuickVideo");
+        if (mQuickMediaType >= 0) {
+          if (mQuickMediaType == Constants.QUICK_POST_PHOTO_CAMERA || mQuickMediaType == Constants.QUICK_POST_PHOTO_LIBRARY)           mPost.setQuickPostType("QuickPhoto");
+ else           if (mQuickMediaType == Constants.QUICK_POST_VIDEO_CAMERA || mQuickMediaType == Constants.QUICK_POST_VIDEO_LIBRARY)           mPost.setQuickPostType("QuickVideo");
         }
         WordPress.currentPost=mPost;
         startService(new Intent(this,PostUploadService.class));

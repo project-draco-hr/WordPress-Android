@@ -30,7 +30,7 @@
         if (savedInstanceState.getString("mediaCapturePath") != null)         mMediaCapturePath=savedInstanceState.getString("mediaCapturePath");
       }
  else {
-        mOption=extras.getString("option");
+        mQuickMediaType=extras.getInt("quick-media");
       }
       if (extras.getBoolean("isQuickPress")) {
         mBlogID=extras.getInt("id");
@@ -154,15 +154,17 @@
   ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,items);
   adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
   mStatusSpinner.setAdapter(adapter);
-  mStatusSpinner.setOnItemSelectedListener(new OnItemSelectedListener(){
-    @Override public void onItemSelected(    AdapterView<?> arg0,    View arg1,    int arg2,    long arg3){
-    }
-    @Override public void onNothingSelected(    AdapterView<?> arg0){
+  getLocationProvider();
+  if (mIsNew) {
+    if (mQuickMediaType >= 0) {
+      if (mQuickMediaType == Constants.QUICK_POST_PHOTO_CAMERA)       launchCamera();
+ else       if (mQuickMediaType == Constants.QUICK_POST_PHOTO_LIBRARY)       launchPictureLibrary();
+ else       if (mQuickMediaType == Constants.QUICK_POST_VIDEO_CAMERA)       launchVideoCamera();
+ else       if (mQuickMediaType == Constants.QUICK_POST_VIDEO_LIBRARY)       launchVideoLibrary();
+      mLocalDraft=extras.getBoolean("localDraft");
     }
   }
-);
-  getLocationProvider();
-  if (!mIsNew) {
+ else {
     mTitleEditText.setText(mPost.getTitle());
     if (mPost.isUploaded()) {
       items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private)};
