@@ -5,8 +5,6 @@
     LayoutInflater inflater=getActivity().getLayoutInflater();
     pv=inflater.inflate(R.layout.row_post_page,parent,false);
     wrapper=new ViewWrapper(pv);
-    if (position == 0) {
-    }
     pv.setTag(wrapper);
     wrapper=new ViewWrapper(pv);
     pv.setTag(wrapper);
@@ -14,46 +12,11 @@
  else {
     wrapper=(ViewWrapper)pv.getTag();
   }
-  String date=dateCreatedFormatted[position];
-  String status_text=statuses[position];
-  if (date.equals("postsHeader") || date.equals("draftsHeader")) {
-    wrapper.getTitle().setTextColor(Color.parseColor("#464646"));
-    wrapper.getTitle().setPadding(20,0,20,3);
-    wrapper.getTitle().setTextSize(17);
-    wrapper.getTitle().setTypeface(null,Typeface.BOLD);
-    wrapper.getDate().setHeight(0);
-    wrapper.getStatus().setHeight(0);
-    if (date.equals("draftsHeader")) {
-      inDrafts=true;
-      date="";
-      status_text="";
-    }
- else     if (date.equals("postsHeader")) {
-      inDrafts=false;
-      date="";
-      status_text="";
-    }
-  }
- else {
-    if (position == selectedPosition && sdk_version >= 11 && detailViewVisible) {
-      pv.setBackgroundDrawable(getResources().getDrawable(R.drawable.list_highlight_bg));
-    }
- else {
-      pv.setBackgroundDrawable(getResources().getDrawable(R.drawable.list_bg_selector));
-    }
-    wrapper.getTitle().setPadding(12,12,12,0);
-    wrapper.getTitle().setTextColor(Color.parseColor("#444444"));
-    wrapper.getTitle().setShadowLayer(0,0,0,Color.parseColor("#444444"));
-    wrapper.getTitle().setTextScaleX(1.0f);
-    wrapper.getTitle().setTextSize(18);
-    wrapper.getTitle().setTypeface(null,Typeface.NORMAL);
-    wrapper.getDate().setTextColor(Color.parseColor("#888888"));
-    pv.setTag(R.id.row_post_id,postIDs[position]);
-    pv.setId(Integer.valueOf(postIDs[position]));
-    wrapper.getDate().setHeight((int)wrapper.getTitle().getTextSize() + wrapper.getDate().getPaddingBottom());
-    wrapper.getStatus().setHeight((int)wrapper.getTitle().getTextSize() + wrapper.getStatus().getPaddingBottom());
-  }
-  String titleText=titles[position];
+  String date=mDateCreatedFormatted[position];
+  String status_text=mStatuses[position];
+  pv.setTag(R.id.row_post_id,mPostIDs[position]);
+  pv.setId(Integer.valueOf(mPostIDs[position]));
+  String titleText=mTitles[position];
   if (titleText == "")   titleText="(" + getResources().getText(R.string.untitled) + ")";
   wrapper.getTitle().setText(titleText);
   wrapper.getDate().setText(date);
