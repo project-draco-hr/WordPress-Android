@@ -1,0 +1,27 @@
+{
+  mListView=new ListView(this);
+  mListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+  mListView.setDivider(null);
+  mListView.setDividerHeight(0);
+  mListView.setCacheColorHint(android.R.color.transparent);
+  String[] blogNames=getBlogNames();
+  if (blogNames.length > 1) {
+    LayoutInflater layoutInflater=(LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    mBlogSpinner=(Spinner)layoutInflater.inflate(R.layout.blog_spinner,null);
+    mBlogSpinner.setOnItemSelectedListener(mItemSelectedListener);
+    SpinnerAdapter mSpinnerAdapter=new ArrayAdapter<String>(getSupportActionBar().getThemedContext(),R.layout.sherlock_spinner_dropdown_item,blogNames);
+    mBlogSpinner.setAdapter(mSpinnerAdapter);
+    mListView.addHeaderView(mBlogSpinner);
+  }
+  mListView.setOnItemClickListener(mItemClickListener);
+  mListView.setOnScrollListener(new AbsListView.OnScrollListener(){
+    @Override public void onScrollStateChanged(    AbsListView view,    int scrollState){
+    }
+    @Override public void onScroll(    AbsListView view,    int firstVisibleItem,    int visibleItemCount,    int totalItemCount){
+      mMenuDrawer.invalidate();
+    }
+  }
+);
+  mMenuDrawer.setMenuView(mListView);
+  updateMenuDrawer();
+}
