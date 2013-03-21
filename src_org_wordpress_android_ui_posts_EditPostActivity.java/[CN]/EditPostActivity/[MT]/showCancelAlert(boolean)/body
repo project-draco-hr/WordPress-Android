@@ -5,11 +5,18 @@
   dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
     public void onClick(    DialogInterface dialog,    int whichButton){
       if (mIsNewDraft)       mPost.delete();
-      Bundle bundle=new Bundle();
-      bundle.putString("returnStatus","CANCEL");
-      Intent mIntent=new Intent();
-      mIntent.putExtras(bundle);
-      setResult(RESULT_OK,mIntent);
+      if (isUpPress) {
+        Intent intent=new Intent(EditPostActivity.this,PostsActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+      }
+ else {
+        Bundle bundle=new Bundle();
+        bundle.putString("returnStatus","CANCEL");
+        Intent mIntent=new Intent();
+        mIntent.putExtras(bundle);
+        setResult(RESULT_OK,mIntent);
+      }
       finish();
     }
   }
