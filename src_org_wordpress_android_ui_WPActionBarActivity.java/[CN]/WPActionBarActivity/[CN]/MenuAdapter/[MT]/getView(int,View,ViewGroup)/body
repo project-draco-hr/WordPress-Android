@@ -8,8 +8,10 @@
   titleTextView.setText(((MenuDrawerItem)item).mTitle);
   ImageView iconImageView=(ImageView)v.findViewById(R.id.menu_row_icon);
   iconImageView.setImageResource(((MenuDrawerItem)item).mIconRes);
-  v.setTag(R.id.mdActiveViewPosition,position);
-  if ((position + 1) == mActivePosition) {
+  v.setTag((mIsDotComBlog) ? position : position + 1);
+  int positionCheck=mActivePosition;
+  if (!mIsDotComBlog)   positionCheck--;
+  if ((position) == positionCheck) {
     int bottom=v.getPaddingBottom();
     int top=v.getPaddingTop();
     int right=v.getPaddingRight();
@@ -21,7 +23,7 @@
     v.setBackgroundResource(R.drawable.md_list_selector);
   }
   TextView bagdeTextView=(TextView)v.findViewById(R.id.menu_row_badge);
-  if (position == 2 && WordPress.currentBlog != null) {
+  if (position == 3 && WordPress.currentBlog != null) {
     int commentCount=WordPress.currentBlog.getUnmoderatedCommentCount();
     if (commentCount > 0) {
       bagdeTextView.setVisibility(View.VISIBLE);
