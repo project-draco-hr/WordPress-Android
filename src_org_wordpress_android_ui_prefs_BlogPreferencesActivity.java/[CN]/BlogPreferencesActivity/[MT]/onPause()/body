@@ -1,5 +1,6 @@
 {
   super.onPause();
+  if (mBlogDeleted)   return;
   EditText usernameET=(EditText)findViewById(R.id.username);
   blog.setUsername(usernameET.getText().toString());
   EditText passwordET=(EditText)findViewById(R.id.password);
@@ -48,6 +49,7 @@
   CheckBox locationCB=(CheckBox)findViewById(R.id.location);
   blog.setLocation(locationCB.isChecked());
   blog.save(originalUsername);
+  if (WordPress.currentBlog.getId() == blog.getId())   WordPress.currentBlog=blog;
   Bundle bundle=new Bundle();
   bundle.putString("returnStatus","SAVE");
   Intent mIntent=new Intent();
