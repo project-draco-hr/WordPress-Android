@@ -1,0 +1,19 @@
+{
+  try {
+    final JSONArray notesArray=notes.getJSONArray(NOTES_KEY);
+    getNotesAdapter().clear();
+    for (int i=0; i < notesArray.length(); i++) {
+      JSONObject noteJson=notesArray.getJSONObject(i);
+      getNotesAdapter().add(new Note(noteJson));
+    }
+    runOnUiThread(new Runnable(){
+      @Override public void run(){
+        getNotesAdapter().notifyDataSetChanged();
+      }
+    }
+);
+  }
+ catch (  JSONException e) {
+    Log.e(TAG,"Couldn't retrieve notes",e);
+  }
+}

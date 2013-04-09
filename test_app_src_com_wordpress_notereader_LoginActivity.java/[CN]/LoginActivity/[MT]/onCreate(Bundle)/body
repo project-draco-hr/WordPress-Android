@@ -1,0 +1,31 @@
+{
+  super.onCreate(savedInstanceState);
+  getConfigProperties();
+  setContentView(R.layout.login);
+  final Oauth oauth=new Oauth(mConfig.getProperty(OAUTH_ID_NAME),mConfig.getProperty(OAUTH_SECRET_NAME),mConfig.getProperty(OAUTH_REDIRECT_URI));
+  Button button=(Button)findViewById(R.id.signin_button);
+  final EditText usernameField=(EditText)findViewById(R.id.username);
+  final EditText passwordField=(EditText)findViewById(R.id.password);
+  button.setOnClickListener(new View.OnClickListener(){
+    public void onClick(    View v){
+      oauth.requestAccessToken(usernameField.getText().toString(),passwordField.getText().toString(),new OauthTokenResponseHandler(){
+        @Override public void onSuccess(        final OauthToken token){
+          runOnUiThread(new Runnable(){
+            @Override public void run(){
+              Intent result=new Intent();
+              result.putExtra(OAUTH_TOKEN_EXTRA,token.toString());
+              setResult(Activity.RESULT_OK,result);
+              finish();
+            }
+          }
+);
+        }
+        @Override public void onFailure(        Throwable e,        JSONObject response){
+          Log.d(TAG,String.format("Failed %s",response));
+        }
+      }
+);
+    }
+  }
+);
+}
