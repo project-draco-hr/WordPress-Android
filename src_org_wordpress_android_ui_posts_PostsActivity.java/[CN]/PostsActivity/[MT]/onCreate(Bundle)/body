@@ -1,72 +1,39 @@
 {
   super.onCreate(savedInstanceState);
-  if (WordPress.shouldRestoreSelectedActivity && WordPress.getCurrentBlog() != null && !(this instanceof PagesActivity)) {
-    WordPress.shouldRestoreSelectedActivity=false;
-    SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
-    int lastActivitySelection=settings.getInt("wp_pref_last_activity",-1);
-    if (lastActivitySelection >= 0) {
-      Intent i=null;
-switch (lastActivitySelection) {
-case READER_ACTIVITY:
-        i=new Intent(this,ReaderActivity.class);
-      break;
-case PAGES_ACTIVITY:
-    i=new Intent(this,PagesActivity.class);
-  i.putExtra("viewPages",true);
-break;
-case COMMENTS_ACTIVITY:
-i=new Intent(this,CommentsActivity.class);
-break;
-case STATS_ACTIVITY:
-i=new Intent(this,StatsActivity.class);
-break;
-case VIEW_SITE_ACTIVITY:
-i=new Intent(this,ViewSiteActivity.class);
-break;
-case DASHBOARD_ACTIVITY:
-i=new Intent(this,DashboardActivity.class);
-break;
-}
-if (i != null) {
-startActivity(i);
-finish();
-}
-}
-}
-createMenuDrawer(R.layout.posts);
-ActionBar actionBar=getSupportActionBar();
-actionBar.setDisplayShowTitleEnabled(true);
-FragmentManager fm=getSupportFragmentManager();
-postList=(ViewPostsFragment)fm.findFragmentById(R.id.postList);
-postList.setListShown(true);
-Bundle extras=getIntent().getExtras();
-if (extras != null) {
-isPage=extras.getBoolean("viewPages");
-String errorMessage=extras.getString("errorMessage");
-if (errorMessage != null) {
-AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(PostsActivity.this);
-dialogBuilder.setTitle(getResources().getText(R.string.error));
-dialogBuilder.setMessage(errorMessage);
-dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-public void onClick(DialogInterface dialog,int whichButton){
-}
-}
+  createMenuDrawer(R.layout.posts);
+  ActionBar actionBar=getSupportActionBar();
+  actionBar.setDisplayShowTitleEnabled(true);
+  FragmentManager fm=getSupportFragmentManager();
+  postList=(ViewPostsFragment)fm.findFragmentById(R.id.postList);
+  postList.setListShown(true);
+  Bundle extras=getIntent().getExtras();
+  if (extras != null) {
+    isPage=extras.getBoolean("viewPages");
+    String errorMessage=extras.getString("errorMessage");
+    if (errorMessage != null) {
+      AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(PostsActivity.this);
+      dialogBuilder.setTitle(getResources().getText(R.string.error));
+      dialogBuilder.setMessage(errorMessage);
+      dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+        public void onClick(        DialogInterface dialog,        int whichButton){
+        }
+      }
 );
-dialogBuilder.setCancelable(true);
-if (!isFinishing()) {
-dialogBuilder.create().show();
-}
-}
-}
-if (isPage) setTitle(getString(R.string.pages));
- else setTitle(getString(R.string.posts));
-WordPress.currentPost=null;
-WordPress.setOnPostUploadedListener(new WordPress.OnPostUploadedListener(){
-@Override public void OnPostUploaded(){
-if (isFinishing()) return;
-checkForLocalChanges(false);
-}
-}
+      dialogBuilder.setCancelable(true);
+      if (!isFinishing()) {
+        dialogBuilder.create().show();
+      }
+    }
+  }
+  if (isPage)   setTitle(getString(R.string.pages));
+ else   setTitle(getString(R.string.posts));
+  WordPress.currentPost=null;
+  WordPress.setOnPostUploadedListener(new WordPress.OnPostUploadedListener(){
+    @Override public void OnPostUploaded(){
+      if (isFinishing())       return;
+      checkForLocalChanges(false);
+    }
+  }
 );
-attemptToSelectPost();
+  attemptToSelectPost();
 }
