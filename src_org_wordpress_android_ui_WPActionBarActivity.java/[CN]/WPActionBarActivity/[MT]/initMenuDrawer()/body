@@ -11,15 +11,17 @@
   }
   mListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
     public void onItemClick(    AdapterView<?> parent,    View view,    int position,    long id){
-      SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WPActionBarActivity.this);
-      SharedPreferences.Editor editor=settings.edit();
-      MenuDrawerItem item=mAdapter.getItem(position);
-      if (item.hasItemId())       editor.putInt(LAST_ACTIVITY_PREFERENCE,item.getItemId());
-      Intent intent=null;
-      if (!item.isSelected())       intent=item.selectItem();
-      editor.commit();
+      int menuPosition=position - mListView.getHeaderViewsCount();
+      if (menuPosition < 0 || menuPosition >= mAdapter.getCount())       return;
+      MenuDrawerItem item=mAdapter.getItem(menuPosition);
+      if (item.hasItemId()) {
+        SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WPActionBarActivity.this);
+        SharedPreferences.Editor editor=settings.edit();
+        editor.putInt(LAST_ACTIVITY_PREFERENCE,item.getItemId());
+        editor.commit();
+      }
+      if (!item.isSelected())       item.selectItem();
       mMenuDrawer.closeMenu();
-      if (intent != null)       startActivityWithDelay(intent);
     }
   }
 );
@@ -33,22 +35,15 @@
 );
   mMenuDrawer.setMenuView(mListView);
   mListView.setAdapter(mAdapter);
-  mMenuItems.add(new MenuDrawerItem(READER_ACTIVITY,R.string.reader,R.drawable.dashboard_icon_subs){
-    @Override public Boolean isVisible(){
-      return WordPress.currentBlog != null && WordPress.currentBlog.isDotcomFlag();
-    }
-    @Override public Boolean isSelected(){
-      return WPActionBarActivity.this instanceof ReaderActivity;
-    }
-    @Override public Intent onSelectItem(){
-      if (!(WPActionBarActivity.this instanceof ReaderActivity))       mShouldFinish=true;
-      int readerBlogID=WordPress.wpDB.getWPCOMBlogID();
-      Intent intent=new Intent(WPActionBarActivity.this,ReaderActivity.class);
-      intent.putExtra("id",readerBlogID);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-      return intent;
-    }
-  }
-);
+  mMenuItems.add(new ReaderMenuItem());
+  mMenuItems.add(new PostsMenuItem());
+  mMenuItems.add(new PagesMenuItem());
+  mMenuItems.add(new CommentsMenuItem());
+  mMenuItems.add(new StatsMenuItem());
+  mMenuItems.add(new QuickPhotoMenuItem());
+  mMenuItems.add(new QuickVideoMenuItem());
+  mMenuItems.add(new ViewSiteMenuItem());
+  mMenuItems.add(new AdminMenuItem());
+  mMenuItems.add(new SettingsMenuItem());
   updateMenuDrawer();
 }
