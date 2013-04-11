@@ -1,0 +1,24 @@
+{
+  restClient.getNotifications(new JsonHttpResponseHandler(){
+    @Override public void onSuccess(    int responseCode,    JSONObject response){
+      try {
+        JSONArray notesJSON=response.getJSONArray("notes");
+        final List<Note> notesList=new ArrayList<Note>(notesJSON.length());
+        for (int i=0; i < notesJSON.length(); i++) {
+          Note n=new Note(notesJSON.getJSONObject(i));
+          notesList.add(n);
+        }
+        runOnUiThread(new Runnable(){
+          @Override public void run(){
+            displayNotes(notesList);
+          }
+        }
+);
+      }
+ catch (      JSONException e) {
+        Log.e(TAG,"Did not receive any notes",e);
+      }
+    }
+  }
+);
+}
