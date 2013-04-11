@@ -1,7 +1,6 @@
 {
   View view=super.getView(position,convertView,parent);
-  Note note=getItem(position);
-  Log.d(TAG,String.format("Display note %s",note.toJSONObject()));
+  final Note note=getItem(position);
   TextView detailText=(TextView)view.findViewById(R.id.note_detail);
   if (note.isCommentType()) {
     detailText.setText(Html.fromHtml(note.queryJSON("body.items[last].html","Couldn't find note body")).toString().trim());
@@ -10,5 +9,8 @@
  else {
     detailText.setVisibility(View.GONE);
   }
+  final ImageView iconView=(ImageView)view.findViewById(R.id.note_icon);
+  iconView.setImageResource(R.drawable.placeholder);
+  iconView.setTag(note.getIconURL());
   return view;
 }
