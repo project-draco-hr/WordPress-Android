@@ -1,0 +1,14 @@
+{
+  View view=super.getView(position,convertView,parent);
+  Note note=getItem(position);
+  Log.d(TAG,String.format("Display note %s",note.toJSONObject()));
+  TextView detailText=(TextView)view.findViewById(R.id.note_detail);
+  if (note.isCommentType()) {
+    detailText.setText(Html.fromHtml(note.queryJSON("body.items[last].html","Couldn't find note body")).toString().trim());
+    detailText.setVisibility(View.VISIBLE);
+  }
+ else {
+    detailText.setVisibility(View.GONE);
+  }
+  return view;
+}
