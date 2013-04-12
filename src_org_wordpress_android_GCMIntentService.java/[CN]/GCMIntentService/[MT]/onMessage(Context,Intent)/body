@@ -1,0 +1,20 @@
+{
+  Log.v("WORDPRESS","Received Message");
+  Bundle extras=intent.getExtras();
+  if (extras == null)   return;
+  String message=extras.getString("message");
+  SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(context);
+  boolean sound, vibrate, light;
+  sound=prefs.getBoolean("wp_pref_notification_sound",false);
+  vibrate=prefs.getBoolean("wp_pref_notification_vibrate",false);
+  light=prefs.getBoolean("wp_pref_notification_light",false);
+  NotificationCompat.Builder mBuilder=new NotificationCompat.Builder(this).setSmallIcon(R.drawable.notification_icon).setContentTitle("New Notification").setContentText(message).setAutoCancel(true);
+  if (sound)   mBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+  if (vibrate)   mBuilder.setVibrate(new long[]{500,500,500});
+  if (light)   mBuilder.setLights(0xff0000ff,1000,5000);
+  Intent resultIntent=new Intent(this,CommentsActivity.class);
+  PendingIntent pendingIntent=PendingIntent.getActivity(context,0,resultIntent,Intent.FLAG_ACTIVITY_CLEAR_TOP);
+  mBuilder.setContentIntent(pendingIntent);
+  NotificationManager mNotificationManager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+  mNotificationManager.notify(0,mBuilder.build());
+}
