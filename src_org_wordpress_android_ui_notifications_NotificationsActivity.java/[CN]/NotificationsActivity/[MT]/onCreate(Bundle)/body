@@ -9,7 +9,8 @@
   Blog blog=getCurrentBlog();
   restClient.requestAccessToken(blog.getUsername(),blog.getPassword(),new OauthTokenResponseHandler(){
     @Override public void onStart(){
-      Log.d(TAG,"Requesting token");
+      startAnimatingRefreshButton(mRefreshMenuItem);
+      shouldAnimateRefreshButton=true;
     }
     @Override public void onSuccess(    OauthToken token){
       refreshNotes();
@@ -18,7 +19,6 @@
       Log.e(TAG,String.format("Failed: %s",response),e);
     }
     @Override public void onFinish(){
-      Log.d(TAG,"Done requesting token");
     }
   }
 );

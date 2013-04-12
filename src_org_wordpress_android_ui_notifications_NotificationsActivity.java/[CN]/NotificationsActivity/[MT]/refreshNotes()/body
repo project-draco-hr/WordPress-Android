@@ -1,5 +1,8 @@
 {
   restClient.getNotifications(new JsonHttpResponseHandler(){
+    @Override public void onStart(){
+      startAnimatingRefreshButton(mRefreshMenuItem);
+    }
     @Override public void onSuccess(    int responseCode,    JSONObject response){
       try {
         JSONArray notesJSON=response.getJSONArray("notes");
@@ -18,6 +21,9 @@
  catch (      JSONException e) {
         Log.e(TAG,"Did not receive any notes",e);
       }
+    }
+    public void onFinish(){
+      stopAnimatingRefreshButton(mRefreshMenuItem);
     }
   }
 );
