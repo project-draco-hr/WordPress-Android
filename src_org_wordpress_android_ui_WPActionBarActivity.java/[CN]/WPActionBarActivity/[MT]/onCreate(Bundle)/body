@@ -12,22 +12,4 @@
   mMenuItems.add(new ViewSiteMenuItem());
   mMenuItems.add(new AdminMenuItem());
   mMenuItems.add(new SettingsMenuItem());
-  if (WordPress.shouldRestoreSelectedActivity && WordPress.getCurrentBlog() != null && !(this instanceof PagesActivity)) {
-    WordPress.shouldRestoreSelectedActivity=false;
-    SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
-    int lastActivitySelection=settings.getInt(LAST_ACTIVITY_PREFERENCE,-1);
-    if (lastActivitySelection > MenuDrawerItem.NO_ITEM_ID) {
-      Iterator<MenuDrawerItem> itemIterator=mMenuItems.iterator();
-      while (itemIterator.hasNext()) {
-        MenuDrawerItem item=itemIterator.next();
-        if (item.hasItemId() && item.getItemId() == lastActivitySelection && !item.isSelected() && item.isVisible()) {
-          mFirstLaunch=true;
-          Log.d(TAG,String.format("Switch to %d",item.getItemId()));
-          item.selectItem();
-          finish();
-          break;
-        }
-      }
-    }
-  }
 }
