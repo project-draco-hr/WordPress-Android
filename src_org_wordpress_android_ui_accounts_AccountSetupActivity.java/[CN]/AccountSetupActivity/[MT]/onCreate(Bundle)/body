@@ -25,8 +25,20 @@
     ImageView logo=(ImageView)findViewById(R.id.wpcomLogo);
     logo.setImageDrawable(getResources().getDrawable(R.drawable.wplogo));
   }
-  if (wpcom)   mSettingsButton.setVisibility(View.GONE);
- else   mSettingsButton.setOnClickListener(this);
+  if (wpcom) {
+    mSettingsButton.setVisibility(View.GONE);
+    if (!mAuthOnly && WordPress.hasValidWPComCredentials(this)) {
+      setupBlogs();
+    }
+ else     if (mAuthOnly) {
+      SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(AccountSetupActivity.this);
+      String username=settings.getString("wp_pref_wpcom_username",null);
+      if (username != null)       mUsernameEdit.setText(username);
+    }
+  }
+ else {
+    mSettingsButton.setOnClickListener(this);
+  }
   mSaveButton.setOnClickListener(this);
   mSignUpButton.setOnClickListener(this);
 }

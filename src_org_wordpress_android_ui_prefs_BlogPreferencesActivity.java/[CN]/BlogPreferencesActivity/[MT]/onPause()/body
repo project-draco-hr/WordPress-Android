@@ -1,18 +1,12 @@
 {
   super.onPause();
   if (mBlogDeleted)   return;
-  EditText usernameET=(EditText)findViewById(R.id.username);
-  blog.setUsername(usernameET.getText().toString());
-  EditText passwordET=(EditText)findViewById(R.id.password);
-  blog.setPassword(passwordET.getText().toString());
-  EditText httpuserET=(EditText)findViewById(R.id.httpuser);
-  blog.setHttpuser(httpuserET.getText().toString());
-  EditText httppasswordET=(EditText)findViewById(R.id.httppassword);
-  blog.setHttppassword(httppasswordET.getText().toString());
-  CheckBox fullSize=(CheckBox)findViewById(R.id.fullSizeImage);
-  blog.setFullSizeImage(fullSize.isChecked());
-  CheckBox scaledImage=(CheckBox)findViewById(R.id.scaledImage);
-  blog.setScaledImage(scaledImage.isChecked());
+  blog.setUsername(mUsernameET.getText().toString());
+  blog.setPassword(mPasswordET.getText().toString());
+  blog.setHttpuser(mHttpUsernameET.getText().toString());
+  blog.setHttppassword(mHttpPasswordET.getText().toString());
+  blog.setFullSizeImage(mFullSizeCB.isChecked());
+  blog.setScaledImage(mScaledCB.isChecked());
   if (blog.isScaledImage()) {
     EditText scaledImgWidth=(EditText)findViewById(R.id.scaledImageWidth);
     boolean error=false;
@@ -41,13 +35,11 @@
       blog.setScaledImageWidth(width);
     }
   }
-  Spinner spinner=(Spinner)findViewById(R.id.maxImageWidth);
-  blog.setMaxImageWidth(spinner.getSelectedItem().toString());
-  long maxImageWidthId=spinner.getSelectedItemId();
+  blog.setMaxImageWidth(mImageWidthSpinner.getSelectedItem().toString());
+  long maxImageWidthId=mImageWidthSpinner.getSelectedItemId();
   int maxImageWidthIdInt=(int)maxImageWidthId;
   blog.setMaxImageWidthId(maxImageWidthIdInt);
-  CheckBox locationCB=(CheckBox)findViewById(R.id.location);
-  blog.setLocation(locationCB.isChecked());
+  blog.setLocation(mLocationCB.isChecked());
   blog.save(originalUsername);
   if (WordPress.currentBlog.getId() == blog.getId())   WordPress.currentBlog=blog;
   Bundle bundle=new Bundle();

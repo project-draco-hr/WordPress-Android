@@ -1,6 +1,11 @@
 {
   if (wpcom) {
     blogURL=URL_WORDPRESS;
+    if (WordPress.hasValidWPComCredentials(AccountSetupActivity.this)) {
+      SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(AccountSetupActivity.this);
+      mUsernameEdit.setText(settings.getString("wp_pref_wpcom_username",""));
+      mPasswordEdit.setText(WordPressDB.decryptPassword(settings.getString("wp_pref_wpcom_password","")));
+    }
   }
  else {
     blogURL=mUrlEdit.getText().toString().trim();
@@ -9,7 +14,7 @@
   final String password=mPasswordEdit.getText().toString().trim();
   if (blogURL.equals("") || username.equals("") || password.equals("")) {
     pd.dismiss();
-    AlertUtil.showAlert(AddAccountActivity.this,R.string.required_fields,R.string.url_username_password_required);
+    AlertUtil.showAlert(AccountSetupActivity.this,R.string.required_fields,R.string.url_username_password_required);
     return;
   }
   if (!(blogURL.toLowerCase().startsWith("http://")) && !(blogURL.toLowerCase().startsWith("https://"))) {
@@ -17,7 +22,7 @@
   }
   if (!URLUtil.isValidUrl(blogURL)) {
     pd.dismiss();
-    AlertUtil.showAlert(AddAccountActivity.this,R.string.invalid_url,R.string.invalid_url_message);
+    AlertUtil.showAlert(AccountSetupActivity.this,R.string.invalid_url,R.string.invalid_url_message);
     return;
   }
   String rsdUrl=getRSDMetaTagHrefRegEx(blogURL);
@@ -57,18 +62,25 @@
   }
   if (xmlrpcURL == null) {
     pd.dismiss();
-    AlertUtil.showAlert(AddAccountActivity.this,R.string.error,R.string.no_site_error);
+    AlertUtil.showAlert(AccountSetupActivity.this,R.string.error,R.string.no_site_error);
   }
  else {
     client=new XMLRPCClient(xmlrpcURL,httpuser,httppassword);
     XMLRPCMethod method=new XMLRPCMethod("wp.getUsersBlogs",new XMLRPCMethodCallback(){
       public void callFinished(      Object[] result){
-        if (mAuthOnly) {
-          SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(AddAccountActivity.this);
+        if (wpcom) {
+          SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(AccountSetupActivity.this);
           SharedPreferences.Editor editor=settings.edit();
           editor.putString("wp_pref_wpcom_username",username);
           editor.putString("wp_pref_wpcom_password",WordPressDB.encryptPassword(password));
           editor.commit();
+        }
+        if (mAuthOnly) {
+          WordPress.wpDB.updateWPComCredentials(username,password);
+          if (WordPress.currentBlog != null && WordPress.currentBlog.isDotcomFlag()) {
+            WordPress.currentBlog.setUsername(username);
+            WordPress.currentBlog.setPassword(password);
+          }
           finish();
           return;
         }
@@ -123,7 +135,7 @@
               }
             }
  else {
-              wpVersion="3.4";
+              wpVersion="3.5";
             }
             wpVersions[blogCtr]=wpVersion;
             blogCtr++;
@@ -135,7 +147,7 @@
           if (result.length > 0) {
             additionalText=getString(R.string.additional);
           }
-          AlertUtil.showAlert(AddAccountActivity.this,R.string.no_blogs_found,String.format(getString(R.string.no_blogs_message),additionalText),getString(R.string.ok),new DialogInterface.OnClickListener(){
+          AlertUtil.showAlert(AccountSetupActivity.this,R.string.no_blogs_found,String.format(getString(R.string.no_blogs_message),additionalText),getString(R.string.ok),new DialogInterface.OnClickListener(){
             public void onClick(            DialogInterface dialog,            int whichButton){
               dialog.dismiss();
             }
@@ -144,13 +156,13 @@
         }
  else {
           if (blogCtr > 1) {
-            LayoutInflater inflater=(LayoutInflater)AddAccountActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater=(LayoutInflater)AccountSetupActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final ListView lv=(ListView)inflater.inflate(R.layout.select_blogs_list,null);
             lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
             lv.setItemsCanFocus(false);
-            ArrayAdapter<CharSequence> blogs=new ArrayAdapter<CharSequence>(AddAccountActivity.this,R.layout.blogs_row,aBlogNames);
+            ArrayAdapter<CharSequence> blogs=new ArrayAdapter<CharSequence>(AccountSetupActivity.this,R.layout.blogs_row,aBlogNames);
             lv.setAdapter(blogs);
-            AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(AddAccountActivity.this);
+            AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(AccountSetupActivity.this);
             dialogBuilder.setTitle(R.string.select_blogs);
             dialogBuilder.setView(lv);
             dialogBuilder.setNegativeButton(R.string.add_selected,new DialogInterface.OnClickListener(){

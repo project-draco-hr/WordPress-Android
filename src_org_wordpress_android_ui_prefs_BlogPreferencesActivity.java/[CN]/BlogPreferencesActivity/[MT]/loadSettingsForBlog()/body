@@ -4,36 +4,28 @@
   ((TextView)findViewById(R.id.l_section3)).setText(getResources().getString(R.string.location).toUpperCase(Locale.getDefault()));
   ((TextView)findViewById(R.id.l_maxImageWidth)).setText(getResources().getString(R.string.max_thumbnail_px_width).toUpperCase(Locale.getDefault()));
   ((TextView)findViewById(R.id.l_httpuser)).setText(getResources().getString(R.string.http_credentials).toUpperCase(Locale.getDefault()));
-  Spinner spinner=(Spinner)this.findViewById(R.id.maxImageWidth);
   ArrayAdapter<Object> spinnerArrayAdapter=new ArrayAdapter<Object>(this,R.layout.spinner_textview,new String[]{"Original Size","100","200","300","400","500","600","700","800","900","1000","1100","1200","1300","1400","1500","1600","1700","1800","1900","2000"});
   spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-  spinner.setAdapter(spinnerArrayAdapter);
-  EditText usernameET=(EditText)findViewById(R.id.username);
-  usernameET.setText(blog.getUsername());
+  mImageWidthSpinner.setAdapter(spinnerArrayAdapter);
+  mUsernameET.setText(blog.getUsername());
   originalUsername=blog.getUsername();
-  EditText passwordET=(EditText)findViewById(R.id.password);
-  passwordET.setText(blog.getPassword());
-  EditText httpUserET=(EditText)findViewById(R.id.httpuser);
-  httpUserET.setText(blog.getHttpuser());
-  EditText httpPasswordET=(EditText)findViewById(R.id.httppassword);
-  httpPasswordET.setText(blog.getHttppassword());
+  mPasswordET.setText(blog.getPassword());
+  mHttpUsernameET.setText(blog.getHttpuser());
+  mHttpPasswordET.setText(blog.getHttppassword());
   TextView httpUserLabel=(TextView)findViewById(R.id.l_httpuser);
   if (blog.isDotcomFlag()) {
-    httpPasswordET.setVisibility(View.GONE);
+    mHttpUsernameET.setVisibility(View.GONE);
+    mHttpPasswordET.setVisibility(View.GONE);
     httpUserLabel.setVisibility(View.GONE);
-    httpUserET.setVisibility(View.GONE);
   }
  else {
-    httpPasswordET.setVisibility(View.VISIBLE);
+    mHttpUsernameET.setVisibility(View.VISIBLE);
+    mHttpPasswordET.setVisibility(View.VISIBLE);
     httpUserLabel.setVisibility(View.VISIBLE);
-    httpUserET.setVisibility(View.VISIBLE);
   }
-  CheckBox fullSize=(CheckBox)findViewById(R.id.fullSizeImage);
-  fullSize.setChecked(blog.isFullSizeImage());
-  CheckBox scaledImage=(CheckBox)findViewById(R.id.scaledImage);
-  scaledImage.setChecked(blog.isScaledImage());
-  EditText scaledImageWidth=(EditText)findViewById(R.id.scaledImageWidth);
-  scaledImageWidth.setText("" + blog.getScaledImageWidth());
+  mFullSizeCB.setChecked(blog.isFullSizeImage());
+  mScaledCB.setChecked(blog.isScaledImage());
+  this.mScaledImageWidthET.setText("" + blog.getScaledImageWidth());
   showScaledSetting(blog.isScaledImage());
   ((CheckBox)findViewById(R.id.scaledImage)).setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
@@ -67,14 +59,13 @@
       hasLocationProvider=true;
     }
   }
-  CheckBox locationCB=(CheckBox)findViewById(R.id.location);
   if (hasLocationProvider) {
-    locationCB.setChecked(blog.isLocation());
+    mLocationCB.setChecked(blog.isLocation());
   }
  else {
-    locationCB.setChecked(false);
+    mLocationCB.setChecked(false);
     RelativeLayout locationLayout=(RelativeLayout)findViewById(R.id.section3);
     locationLayout.setVisibility(View.GONE);
   }
-  spinner.setSelection(blog.getMaxImageWidthId());
+  mImageWidthSpinner.setSelection(blog.getMaxImageWidthId());
 }

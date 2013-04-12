@@ -1,0 +1,17 @@
+{
+  if (mSystemService.getActiveNetworkInfo() == null) {
+    AlertUtil.showAlert(AccountSetupActivity.this,R.string.no_network_title,R.string.no_network_message);
+  }
+ else {
+    pd=ProgressDialog.show(AccountSetupActivity.this,getString(R.string.account_setup),getString(R.string.attempting_configure),true,false);
+    Thread action=new Thread(){
+      public void run(){
+        Looper.prepare();
+        configureAccount();
+        Looper.loop();
+      }
+    }
+;
+    action.start();
+  }
+}
