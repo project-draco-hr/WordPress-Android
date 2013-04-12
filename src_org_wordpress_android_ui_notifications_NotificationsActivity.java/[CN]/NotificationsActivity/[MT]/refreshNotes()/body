@@ -1,10 +1,13 @@
 {
   restClient.getNotifications(new NotesResponseHandler(){
     @Override public void onStart(){
+      super.onStart();
+      mFirstLoadComplete=false;
       startAnimatingRefreshButton(mRefreshMenuItem);
     }
     @Override public void onSuccess(    List<Note> notes){
-      mNotes=notes;
+      mNotesAdapter.clear();
+      mNotesAdapter.addAll(notes);
       runOnUiThread(new Runnable(){
         @Override public void run(){
           displayNotes();
@@ -13,6 +16,8 @@
 );
     }
     public void onFinish(){
+      super.onFinish();
+      mFirstLoadComplete=true;
       stopAnimatingRefreshButton(mRefreshMenuItem);
     }
   }

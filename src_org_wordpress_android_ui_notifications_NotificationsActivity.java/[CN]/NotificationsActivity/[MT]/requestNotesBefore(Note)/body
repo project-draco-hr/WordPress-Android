@@ -1,17 +1,10 @@
 {
   RequestParams params=new RequestParams();
+  Log.d(TAG,String.format("Requesting more notes before %s",note.queryJSON("timestamp","")));
   params.put("before",note.queryJSON("timestamp",""));
   restClient.getNotifications(params,new NotesResponseHandler(){
-    @Override public void onStart(){
-      mLoadingMore=true;
-    }
-    @Override public void onFinish(){
-      mLoadingMore=false;
-    }
     @Override public void onSuccess(    List<Note> notes){
-      List<Note> newNotes=new ArrayList<Note>(mNotes);
-      newNotes.addAll(notes);
-      mNotes=newNotes;
+      mNotesAdapter.addAll(notes);
       runOnUiThread(new Runnable(){
         @Override public void run(){
           displayNotes();
