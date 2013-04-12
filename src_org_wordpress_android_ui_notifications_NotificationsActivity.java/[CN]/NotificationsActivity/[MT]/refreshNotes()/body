@@ -6,11 +6,12 @@
       startAnimatingRefreshButton(mRefreshMenuItem);
     }
     @Override public void onSuccess(    List<Note> notes){
-      mNotesAdapter.clear();
-      mNotesAdapter.addAll(notes);
+      final NotificationsListFragment.NotesAdapter adapter=mNotesList.getNotesAdapter();
+      adapter.clear();
+      adapter.addAll(notes);
       runOnUiThread(new Runnable(){
         @Override public void run(){
-          displayNotes();
+          adapter.notifyDataSetChanged();
         }
       }
 );

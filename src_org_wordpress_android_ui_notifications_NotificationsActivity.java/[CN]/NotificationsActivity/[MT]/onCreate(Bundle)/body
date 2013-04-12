@@ -4,15 +4,12 @@
   ActionBar actionBar=getSupportActionBar();
   actionBar.setDisplayShowTitleEnabled(true);
   setTitle(getString(R.string.notifications));
-  mNotesAdapter=new NotesAdapter();
+  Blog blog=getCurrentBlog();
   FragmentManager fm=getSupportFragmentManager();
   mNotesList=(NotificationsListFragment)fm.findFragmentById(R.id.notes_list);
   mNotesList.setNoteProvider(new NoteProvider());
-  ListView notesList=mNotesList.getListView();
-  View progress=View.inflate(this,R.layout.list_footer_progress,null);
-  notesList.addFooterView(progress);
-  mNotesList.setListAdapter(mNotesAdapter);
-  Blog blog=getCurrentBlog();
+  mNotesList.setOnNoteClickListener(new NoteClickListener());
+  Log.d(TAG,"Setting notes adapter");
   restClient.requestAccessToken(blog.getUsername(),blog.getPassword(),new OauthTokenResponseHandler(){
     @Override public void onStart(){
       startAnimatingRefreshButton(mRefreshMenuItem);

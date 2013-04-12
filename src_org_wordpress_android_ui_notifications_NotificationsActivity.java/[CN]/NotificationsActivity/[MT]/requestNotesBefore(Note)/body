@@ -4,10 +4,11 @@
   params.put("before",note.queryJSON("timestamp",""));
   restClient.getNotifications(params,new NotesResponseHandler(){
     @Override public void onSuccess(    List<Note> notes){
-      mNotesAdapter.addAll(notes);
+      final NotificationsListFragment.NotesAdapter adapter=mNotesList.getNotesAdapter();
+      adapter.addAll(notes);
       runOnUiThread(new Runnable(){
         @Override public void run(){
-          displayNotes();
+          adapter.notifyDataSetChanged();
         }
       }
 );

@@ -1,0 +1,20 @@
+{
+  if (note == null)   return;
+  FragmentManager fm=getSupportFragmentManager();
+  NotificationsDetailFragment f=(NotificationsDetailFragment)fm.findFragmentById(R.id.commentDetail);
+  if (f == null || !f.isInLayout()) {
+    FragmentTransaction ft=fm.beginTransaction();
+    ft.hide(mNotesList);
+    f=new NotificationsDetailFragment();
+    Bundle args=new Bundle();
+    args.putBoolean("LOL",true);
+    f.setArguments(args);
+    ft.add(R.id.note_fragment_container,f);
+    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+    ft.addToBackStack(null);
+    ft.commit();
+  }
+ else {
+    f.loadNote(note);
+  }
+}
