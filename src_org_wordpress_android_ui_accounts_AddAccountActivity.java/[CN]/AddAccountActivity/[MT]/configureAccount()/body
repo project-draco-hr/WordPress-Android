@@ -63,6 +63,15 @@
     client=new XMLRPCClient(xmlrpcURL,httpuser,httppassword);
     XMLRPCMethod method=new XMLRPCMethod("wp.getUsersBlogs",new XMLRPCMethodCallback(){
       public void callFinished(      Object[] result){
+        if (mAuthOnly) {
+          SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(AddAccountActivity.this);
+          SharedPreferences.Editor editor=settings.edit();
+          editor.putString("wp_pref_wpcom_username",username);
+          editor.putString("wp_pref_wpcom_password",WordPressDB.encryptPassword(password));
+          editor.commit();
+          finish();
+          return;
+        }
         final String[] blogNames=new String[result.length];
         final String[] urls=new String[result.length];
         final String[] homeURLs=new String[result.length];

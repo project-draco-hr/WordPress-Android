@@ -1,5 +1,22 @@
 {
   super.onCreate(savedInstanceState);
+  try {
+    if (WordPress.hasValidWPComCredentials(this)) {
+      GCMRegistrar.checkDevice(this);
+      GCMRegistrar.checkManifest(this);
+      String regId=GCMRegistrar.getRegistrationId(this);
+      String gcmId=WordPress.config.getProperty("gcm.id").toString();
+      if (gcmId != null && regId.equals("")) {
+        GCMRegistrar.register(this,gcmId);
+      }
+ else {
+        Log.v("WORDPRESS","Already registered for GCM");
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.v("WORDPRESS","Could not register for GCM: " + e.getMessage());
+  }
   createMenuDrawer(R.layout.posts);
   ActionBar actionBar=getSupportActionBar();
   actionBar.setDisplayShowTitleEnabled(true);

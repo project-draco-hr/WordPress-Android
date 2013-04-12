@@ -1,0 +1,23 @@
+{
+  SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
+  PreferenceCategory wpcomCategory=(PreferenceCategory)findPreference("wp_pref_wpcom_auth");
+  wpcomCategory.removeAll();
+  if (WordPress.hasValidWPComCredentials(PreferencesActivity.this)) {
+    String username=settings.getString("wp_pref_wpcom_username",null);
+    Preference usernamePref=new Preference(this);
+    usernamePref.setTitle(getString(R.string.username));
+    usernamePref.setSummary(username);
+    usernamePref.setSelectable(false);
+    Preference signOutPref=new Preference(this);
+    signOutPref.setTitle(getString(R.string.sign_out));
+    signOutPref.setOnPreferenceClickListener(signOutPreferenceClickListener);
+    wpcomCategory.addPreference(usernamePref);
+    wpcomCategory.addPreference(signOutPref);
+  }
+ else {
+    Preference signInPref=new Preference(this);
+    signInPref.setTitle(getString(R.string.sign_in));
+    signInPref.setOnPreferenceClickListener(signInPreferenceClickListener);
+    wpcomCategory.addPreference(signInPref);
+  }
+}
