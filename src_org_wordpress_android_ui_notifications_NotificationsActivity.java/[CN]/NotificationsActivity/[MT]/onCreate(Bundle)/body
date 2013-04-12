@@ -6,6 +6,10 @@
   setTitle(getString(R.string.notifications));
   FragmentManager fm=getSupportFragmentManager();
   mNotesList=(NotificationsListFragment)fm.findFragmentById(R.id.notes_list);
+  mNotesList.setNoteProvider(new NoteProvider());
+  ListView notesList=mNotesList.getListView();
+  View progress=View.inflate(this,R.layout.list_footer_progress,null);
+  notesList.addFooterView(progress);
   Blog blog=getCurrentBlog();
   restClient.requestAccessToken(blog.getUsername(),blog.getPassword(),new OauthTokenResponseHandler(){
     @Override public void onStart(){

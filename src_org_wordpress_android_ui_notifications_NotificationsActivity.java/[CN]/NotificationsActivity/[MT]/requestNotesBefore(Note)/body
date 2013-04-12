@@ -1,0 +1,24 @@
+{
+  RequestParams params=new RequestParams();
+  params.put("before",note.queryJSON("timestamp",""));
+  restClient.getNotifications(params,new NotesResponseHandler(){
+    @Override public void onStart(){
+      mLoadingMore=true;
+    }
+    @Override public void onFinish(){
+      mLoadingMore=false;
+    }
+    @Override public void onSuccess(    List<Note> notes){
+      List<Note> newNotes=new ArrayList<Note>(mNotes);
+      newNotes.addAll(notes);
+      mNotes=newNotes;
+      runOnUiThread(new Runnable(){
+        @Override public void run(){
+          displayNotes();
+        }
+      }
+);
+    }
+  }
+);
+}
