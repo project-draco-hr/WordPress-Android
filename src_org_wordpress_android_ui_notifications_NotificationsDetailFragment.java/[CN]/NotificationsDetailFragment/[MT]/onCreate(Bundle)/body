@@ -1,0 +1,17 @@
+{
+  super.onCreate(bundle);
+  Bundle arguments=getArguments();
+  if (arguments != null) {
+    if (arguments.containsKey(NOTE_ID_ARGUMENT)) {
+      String noteId=arguments.getString(NOTE_ID_ARGUMENT);
+      RequestParams params=new RequestParams();
+      params.put("ids",noteId);
+      restClient.getNotifications(params,new NoteResponseHandler(){
+        @Override public void onSuccess(        Note note){
+          loadNote(note);
+        }
+      }
+);
+    }
+  }
+}
