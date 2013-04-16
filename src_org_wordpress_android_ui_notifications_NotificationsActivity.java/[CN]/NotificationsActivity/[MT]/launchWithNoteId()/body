@@ -1,0 +1,17 @@
+{
+  Intent intent=getIntent();
+  if (intent.hasExtra(NOTE_ID_EXTRA)) {
+    RequestParams params=new RequestParams();
+    params.put("ids",intent.getStringExtra(NOTE_ID_EXTRA));
+    restClient.getNotifications(params,new NotesResponseHandler(){
+      @Override public void onStart(){
+        Log.d(TAG,"Finding note to display!");
+      }
+      @Override public void onSuccess(      List<Note> notes){
+        Note note=notes.get(0);
+        openNote(note);
+      }
+    }
+);
+  }
+}
