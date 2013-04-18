@@ -1,0 +1,16 @@
+{
+  if (listener == null)   return;
+  try {
+    backgroundCalls.put(threadId,this);
+    Object o=this.callXMLRPC(methodName,params,tempFile);
+    listener.onSuccess(threadId,o);
+  }
+ catch (  CancelException ex) {
+  }
+catch (  XMLRPCException ex) {
+    listener.onFailure(threadId,ex);
+  }
+ finally {
+    backgroundCalls.remove(threadId);
+  }
+}

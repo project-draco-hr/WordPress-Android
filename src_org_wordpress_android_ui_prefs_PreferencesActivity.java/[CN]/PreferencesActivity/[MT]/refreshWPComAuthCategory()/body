@@ -1,9 +1,8 @@
 {
-  SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
   PreferenceCategory wpcomCategory=(PreferenceCategory)findPreference("wp_pref_wpcom_auth");
   wpcomCategory.removeAll();
   if (WordPress.hasValidWPComCredentials(PreferencesActivity.this)) {
-    String username=settings.getString("wp_pref_wpcom_username",null);
+    String username=mSettings.getString("wp_pref_wpcom_username",null);
     Preference usernamePref=new Preference(this);
     usernamePref.setTitle(getString(R.string.username));
     usernamePref.setSummary(username);
@@ -13,11 +12,14 @@
     signOutPref.setOnPreferenceClickListener(signOutPreferenceClickListener);
     wpcomCategory.addPreference(usernamePref);
     wpcomCategory.addPreference(signOutPref);
+    loadNotifications();
   }
  else {
     Preference signInPref=new Preference(this);
     signInPref.setTitle(getString(R.string.sign_in));
     signInPref.setOnPreferenceClickListener(signInPreferenceClickListener);
     wpcomCategory.addPreference(signInPref);
+    PreferenceScreen rootScreen=(PreferenceScreen)findPreference("wp_pref_root");
+    rootScreen.removePreference(mNotificationsGroup);
   }
 }
