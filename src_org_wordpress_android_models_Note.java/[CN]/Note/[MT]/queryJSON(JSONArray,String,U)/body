@@ -1,0 +1,40 @@
+{
+  int indexStart=query.indexOf(QUERY_ARRAY_INDEX_START);
+  int indexEnd=query.indexOf(QUERY_ARRAY_INDEX_END);
+  if (indexStart == -1 || indexEnd == -1 || indexStart > indexEnd) {
+    Log.d(TAG,String.format("Incorrect query for array index %s",query));
+    return defaultObject;
+  }
+  String indexStr=query.substring(indexStart + 1,indexEnd);
+  int index;
+  if (indexStr.equals(QUERY_ARRAY_FIRST)) {
+    index=0;
+  }
+ else   if (indexStr.equals(QUERY_ARRAY_LAST)) {
+    index=-1;
+  }
+ else {
+    index=Integer.parseInt(indexStr);
+  }
+  if (index < 0) {
+    index=source.length() + index;
+  }
+  String remainingQuery=query.substring(indexEnd + 1);
+  try {
+    if (remainingQuery.indexOf(QUERY_ARRAY_INDEX_START) == 0) {
+      return queryJSON(source.getJSONArray(index),remainingQuery,defaultObject);
+    }
+ else     if (remainingQuery.indexOf(QUERY_SEPERATOR) == 0) {
+      return queryJSON(source.getJSONObject(index),remainingQuery.substring(1),defaultObject);
+    }
+ else     if (!remainingQuery.equals("")) {
+      Log.d(TAG,String.format("Incorrect query for next object %s",remainingQuery));
+      return defaultObject;
+    }
+    return (U)source.get(index);
+  }
+ catch (  JSONException e) {
+    Log.e(TAG,String.format("Could not complete query %s",query),e);
+    return defaultObject;
+  }
+}
