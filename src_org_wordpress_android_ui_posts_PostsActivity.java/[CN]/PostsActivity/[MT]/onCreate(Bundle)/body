@@ -1,5 +1,10 @@
 {
   super.onCreate(savedInstanceState);
+  if (WordPress.wpDB == null) {
+    Toast.makeText(this,R.string.fatal_db_error,Toast.LENGTH_LONG).show();
+    finish();
+    return;
+  }
   if (WordPress.shouldRestoreSelectedActivity && WordPress.getCurrentBlog() != null && !(this instanceof PagesActivity)) {
     WordPress.shouldRestoreSelectedActivity=false;
     SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
@@ -27,20 +32,7 @@
   if (extras != null) {
     isPage=extras.getBoolean("viewPages");
     String errorMessage=extras.getString("errorMessage");
-    if (errorMessage != null) {
-      AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(PostsActivity.this);
-      dialogBuilder.setTitle(getResources().getText(R.string.error));
-      dialogBuilder.setMessage(errorMessage);
-      dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-        public void onClick(        DialogInterface dialog,        int whichButton){
-        }
-      }
-);
-      dialogBuilder.setCancelable(true);
-      if (!isFinishing()) {
-        dialogBuilder.create().show();
-      }
-    }
+    if (errorMessage != null)     showPostUploadErrorAlert(errorMessage);
   }
   if (isPage)   setTitle(getString(R.string.pages));
  else   setTitle(getString(R.string.posts));
