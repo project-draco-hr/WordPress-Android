@@ -1,0 +1,20 @@
+{
+  if (WordPress.hasValidWPComCredentials(ctx)) {
+    String notificationId=null;
+    try {
+      GCMRegistrar.checkDevice(ctx);
+      GCMRegistrar.checkManifest(ctx);
+      notificationId=GCMRegistrar.getRegistrationId(ctx);
+      String gcmId=WordPress.config.getProperty("gcm.id").toString();
+      if (gcmId != null && notificationId.equals("")) {
+        GCMRegistrar.register(ctx,gcmId);
+      }
+ else {
+        Log.v("WORDPRESS","Already registered for GCM");
+      }
+    }
+ catch (    Exception e) {
+      Log.v("WORDPRESS","Could not register for GCM: " + e.getMessage());
+    }
+  }
+}
