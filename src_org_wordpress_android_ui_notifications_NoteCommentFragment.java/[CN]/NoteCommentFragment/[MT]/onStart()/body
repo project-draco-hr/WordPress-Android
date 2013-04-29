@@ -11,4 +11,12 @@
   mCommentText.setText(Html.fromHtml(getNote().getCommentText(),new AsyncImageGetter(mCommentText),null));
   mReplyField.setOnReplyListener(new ReplyListener());
   mDetailHeader.setText(getNote().getSubject());
+  final String url=getNote().queryJSON("body.items[last].header_link","");
+  mDetailHeader.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      Intent intent=new Intent(Intent.ACTION_VIEW,Uri.parse(url));
+      startActivity(intent);
+    }
+  }
+);
 }
