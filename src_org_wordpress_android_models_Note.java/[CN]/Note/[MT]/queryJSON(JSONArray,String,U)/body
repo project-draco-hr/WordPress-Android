@@ -2,7 +2,6 @@
   int indexStart=query.indexOf(QUERY_ARRAY_INDEX_START);
   int indexEnd=query.indexOf(QUERY_ARRAY_INDEX_END);
   if (indexStart == -1 || indexEnd == -1 || indexStart > indexEnd) {
-    Log.d(TAG,String.format("Incorrect query for array index %s",query));
     return defaultObject;
   }
   String indexStr=query.substring(indexStart + 1,indexEnd);
@@ -31,9 +30,19 @@
       Log.d(TAG,String.format("Incorrect query for next object %s",remainingQuery));
       return defaultObject;
     }
-    return (U)source.get(index);
+    Object result=source.get(index);
+    if (result.getClass().isAssignableFrom(defaultObject.getClass())) {
+      return (U)result;
+    }
+ else {
+      return defaultObject;
+    }
   }
- catch (  JSONException e) {
+ catch (  java.lang.ClassCastException e) {
+    Log.e(TAG,String.format("Could not cast object at %s",query),e);
+    return defaultObject;
+  }
+catch (  JSONException e) {
     Log.e(TAG,String.format("Could not complete query %s",query),e);
     return defaultObject;
   }
