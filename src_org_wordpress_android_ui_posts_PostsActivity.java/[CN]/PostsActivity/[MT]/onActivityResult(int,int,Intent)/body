@@ -1,6 +1,16 @@
 {
-  if (requestCode == ACTIVITY_EDIT_POST && resultCode == RESULT_OK && data != null) {
-    if (data.getBooleanExtra("shouldRefresh",false))     postList.loadPosts(false);
+  if (data != null) {
+    if (requestCode == ACTIVITY_EDIT_POST && resultCode == RESULT_OK) {
+      if (data.getBooleanExtra("shouldRefresh",false))       postList.loadPosts(false);
+    }
+ else     if (requestCode == ACTIVITY_ADD_COMMENT) {
+      Bundle extras=data.getExtras();
+      final String returnText=extras.getString("commentText");
+      if (!returnText.equals("CANCEL")) {
+        final String postID=extras.getString("postID");
+        new PostsActivity.addCommentTask().execute(postID,returnText);
+      }
+    }
   }
   super.onActivityResult(requestCode,resultCode,data);
 }
