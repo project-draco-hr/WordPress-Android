@@ -4,12 +4,14 @@
   ActionBar actionBar=getSupportActionBar();
   actionBar.setDisplayShowTitleEnabled(true);
   setTitle(getString(R.string.notifications));
-  Blog blog=getCurrentBlog();
+  SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
+  String username=settings.getString("wp_pref_wpcom_username",null);
+  String password=WordPressDB.decryptPassword(settings.getString("wp_pref_wpcom_password",null));
   FragmentManager fm=getSupportFragmentManager();
   mNotesList=(NotificationsListFragment)fm.findFragmentById(R.id.notes_list);
   mNotesList.setNoteProvider(new NoteProvider());
   mNotesList.setOnNoteClickListener(new NoteClickListener());
-  restClient.requestAccessToken(blog.getUsername(),blog.getPassword(),new OauthTokenResponseHandler(){
+  restClient.requestAccessToken(username,password,new OauthTokenResponseHandler(){
     @Override public void onStart(){
       startAnimatingRefreshButton(mRefreshMenuItem);
       shouldAnimateRefreshButton=true;
@@ -19,9 +21,10 @@
       refreshNotes();
     }
     @Override public void onFailure(    Throwable e,    JSONObject response){
-      Log.e(TAG,String.format("Failed: %s",response),e);
+      stopAnimatingRefreshButton(mRefreshMenuItem);
     }
     @Override public void onFinish(){
+      Log.d(TAG,String.format("Finished requesting access token"));
     }
   }
 );
