@@ -1,5 +1,24 @@
 {
   if (note == null)   return;
+  if (note.isUnread()) {
+    restClient.markNoteAsRead(note,new JsonHttpResponseHandler(){
+      @Override public void onStart(){
+        Log.d(TAG,"Marking note as read");
+      }
+      @Override public void onFailure(      Throwable e,      JSONObject response){
+        Log.d(TAG,String.format("Failed to mark as read %s",response),e);
+      }
+      @Override public void onSuccess(      int status,      JSONObject response){
+        Log.d(TAG,String.format("Note is read: %s",response));
+        note.setUnreadCount("0");
+        mNotesList.getNotesAdapter().notifyDataSetChanged();
+      }
+      @Override public void onFinish(){
+        Log.d(TAG,"Completed mark as read request");
+      }
+    }
+);
+  }
   FragmentManager fm=getSupportFragmentManager();
   if (fm.getBackStackEntryCount() > 0) {
     fm.popBackStack();
