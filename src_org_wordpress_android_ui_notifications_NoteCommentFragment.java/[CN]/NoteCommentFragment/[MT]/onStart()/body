@@ -2,7 +2,6 @@
   super.onStart();
   httpClient.get(getNote().getIconURL(),new BitmapResponseHandler(){
     @Override public void onSuccess(    int statusCode,    Bitmap bitmap){
-      Log.d(TAG,String.format("Set the image bitmap on %s",mFollowRow));
       mFollowRow.getImageView().setImageBitmap(bitmap);
     }
   }
@@ -31,4 +30,9 @@
   }
 );
   mFollowRow.setListener(new FollowListener());
+  Bundle arguments=getArguments();
+  if (arguments != null && arguments.containsKey(NotificationsActivity.NOTE_REPLY_EXTRA)) {
+    mReplyField.setText(arguments.getString(NotificationsActivity.NOTE_REPLY_EXTRA));
+    mReplyField.requestFocus();
+  }
 }
