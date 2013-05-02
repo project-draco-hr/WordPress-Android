@@ -29,6 +29,12 @@
     return;
   }
   NotificationFragment noteFragment=(NotificationFragment)fragment;
+  Intent intent=getIntent();
+  if (intent.hasExtra(NOTE_ID_EXTRA) && intent.getStringExtra(NOTE_ID_EXTRA).equals(note.getId())) {
+    if (intent.hasExtra(NOTE_REPLY_EXTRA)) {
+      fragment.setArguments(intent.getExtras());
+    }
+  }
   noteFragment.setNote(note);
   FragmentTransaction transaction=fm.beginTransaction();
   View container=findViewById(R.id.note_fragment_container);
