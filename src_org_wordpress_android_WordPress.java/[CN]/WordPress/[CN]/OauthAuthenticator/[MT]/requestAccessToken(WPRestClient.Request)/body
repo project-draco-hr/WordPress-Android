@@ -1,0 +1,17 @@
+{
+  final SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WordPress.this);
+  String username=settings.getString("wp_pref_wpcom_username",null);
+  String password=WordPressDB.decryptPassword(settings.getString("wp_pref_wpcom_password",null));
+  Oauth oauth=new Oauth(config.getProperty(APP_ID_PROPERTY),config.getProperty(APP_SECRET_PROPERTY),config.getProperty(APP_REDIRECT_PROPERTY));
+  oauth.requestAccessToken(username,password,new OauthTokenResponseHandler(){
+    @Override public void onSuccess(    OauthToken token){
+      settings.edit().putString(ACCESS_TOKEN_PREFERENCE,token.toString()).apply();
+      request.setAccessToken(token);
+      request.send();
+    }
+    @Override public void onFailure(    Throwable e,    JSONObject response){
+      request.abort(e,response.toString());
+    }
+  }
+);
+}
