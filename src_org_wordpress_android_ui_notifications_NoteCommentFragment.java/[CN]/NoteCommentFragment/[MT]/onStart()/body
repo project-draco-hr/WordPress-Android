@@ -6,7 +6,16 @@
     }
   }
 );
-  mCommentText.setText(Html.fromHtml(getNote().getCommentText(),new AsyncImageGetter(mCommentText),null));
+  SpannableStringBuilder html=(SpannableStringBuilder)getNote().getCommentBody();
+  Html.ImageGetter imgGetter=new AsyncImageGetter(mCommentText);
+  ImageSpan imgs[]=html.getSpans(0,html.length(),ImageSpan.class);
+  for (  ImageSpan img : imgs) {
+    ImageSpan remote=new ImageSpan(imgGetter.getDrawable(img.getSource()),img.getSource());
+    html.setSpan(remote,html.getSpanStart(img),html.getSpanEnd(img),html.getSpanFlags(img));
+    html.removeSpan(img);
+  }
+  mCommentText.setText(html);
+  mCommentText.setMovementMethod(LinkMovementMethod.getInstance());
   mReplyField.setOnReplyListener(new ReplyListener());
   mDetailHeader.setText(getNote().getSubject());
   final String url=getNote().queryJSON("body.items[last].header_link","");

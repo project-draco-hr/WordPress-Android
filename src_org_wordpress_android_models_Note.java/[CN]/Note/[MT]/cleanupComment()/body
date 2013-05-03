@@ -1,0 +1,20 @@
+{
+  if (isCommentType()) {
+    String commentRaw=getCommentText();
+    SpannableStringBuilder html=(SpannableStringBuilder)Html.fromHtml(commentRaw);
+    ImageSpan imgs[]=html.getSpans(0,html.length(),ImageSpan.class);
+    for (    ImageSpan img : imgs) {
+      String emoticon=Emoticons.lookupImageSmiley(img.getSource());
+      if (!emoticon.equals("")) {
+        html.replace(html.getSpanStart(img),html.getSpanEnd(img),emoticon);
+        html.removeSpan(img);
+      }
+    }
+    QuoteSpan spans[]=html.getSpans(0,html.length(),QuoteSpan.class);
+    for (    QuoteSpan span : spans) {
+      html.setSpan(new WPHtml.WPQuoteSpan(),html.getSpanStart(span),html.getSpanEnd(span),html.getSpanFlags(span));
+      html.removeSpan(span);
+    }
+    mComment=html;
+  }
+}
