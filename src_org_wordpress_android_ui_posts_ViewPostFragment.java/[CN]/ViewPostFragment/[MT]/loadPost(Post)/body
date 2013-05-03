@@ -7,6 +7,7 @@
   TextView tv=(TextView)getActivity().findViewById(R.id.viewPostTextView);
   ImageButton shareURLButton=(ImageButton)getActivity().findViewById(R.id.sharePostLink);
   ImageButton viewPostButton=(ImageButton)getActivity().findViewById(R.id.viewPost);
+  ImageButton addCommentButton=(ImageButton)getActivity().findViewById(R.id.addComment);
   tv.setVisibility(View.GONE);
   webView.setVisibility(View.VISIBLE);
   String html=StringUtils.addPTags(post.getDescription() + "\n\n" + post.getMt_text_more());
@@ -15,9 +16,16 @@
   if (post.isLocalDraft()) {
     shareURLButton.setVisibility(View.GONE);
     viewPostButton.setVisibility(View.GONE);
+    addCommentButton.setVisibility(View.GONE);
   }
  else {
     shareURLButton.setVisibility(View.VISIBLE);
     viewPostButton.setVisibility(View.VISIBLE);
+    if (post.isMt_allow_comments()) {
+      addCommentButton.setVisibility(View.VISIBLE);
+    }
+ else {
+      addCommentButton.setVisibility(View.GONE);
+    }
   }
 }
