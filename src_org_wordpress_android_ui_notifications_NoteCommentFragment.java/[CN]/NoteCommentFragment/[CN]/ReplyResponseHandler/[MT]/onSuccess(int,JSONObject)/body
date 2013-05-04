@@ -1,4 +1,16 @@
 {
-  mNotificationManager.cancel("reply",0xFF);
-  mToast.show();
+  Log.d(TAG,String.format("Apply response to note %s",response));
+  if (getActivity() != null) {
+    mReply.setCommentJson(response);
+    mRow.setReply(mReply);
+    httpClient.get(mReply.getAvatarUrl(),new BitmapResponseHandler(){
+      @Override public void onSuccess(      int status,      Bitmap bitmap){
+        mRow.getImageView().setImageBitmap(bitmap);
+      }
+    }
+);
+  }
+ else {
+    mToast.show();
+  }
 }
