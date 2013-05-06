@@ -1,5 +1,11 @@
 {
-  Bitmap bitmap=BitmapFactory.decodeByteArray(responseBody,0,responseBody.length);
+  Bitmap bitmap;
+  try {
+    bitmap=BitmapFactory.decodeByteArray(responseBody,0,responseBody.length);
+  }
+ catch (  OutOfMemoryError error) {
+    bitmap=null;
+  }
   if (bitmap == null) {
     super.sendSuccessMessage(statusCode,responseBody);
   }
