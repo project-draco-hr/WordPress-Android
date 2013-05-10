@@ -16,6 +16,12 @@
   String iconURL=extras.getString("icon");
   Bitmap largeIconBitmap=null;
   if (iconURL != null) {
+    try {
+      iconURL=URLDecoder.decode(iconURL,"UTF-8");
+    }
+ catch (    UnsupportedEncodingException e) {
+      e.printStackTrace();
+    }
     float screenDensity=getResources().getDisplayMetrics().densityDpi;
     int size=Math.round(64 * (screenDensity / 160));
     String resizedURL=iconURL.replaceAll("(?<=[?&;])s=[0-9]*","s=" + size);
