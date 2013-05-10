@@ -18,6 +18,35 @@
   mCommentText.setMovementMethod(LinkMovementMethod.getInstance());
   mReplyField.setOnReplyListener(mReplyListener);
   mDetailHeader.setText(getNote().getSubject());
+  Map<String,JSONObject> noteActions=getNote().getActions();
+  if (noteActions.containsKey(APPROVE_TAG)) {
+    mApproveButton.setImageResource(R.drawable.moderate_approve);
+    mApproveButton.setVisibility(View.VISIBLE);
+    mApproveButton.setOnClickListener(mModerateClickListener);
+    mApproveButton.setTag(APPROVE_TAG);
+  }
+  if (noteActions.containsKey(UNAPPROVE_TAG)) {
+    mApproveButton.setImageResource(R.drawable.moderate_unapprove);
+    mApproveButton.setVisibility(View.VISIBLE);
+    mApproveButton.setOnClickListener(mModerateClickListener);
+    mApproveButton.setTag(UNAPPROVE_TAG);
+  }
+  if (noteActions.containsKey(SPAM_TAG)) {
+    mSpamButton.setVisibility(View.VISIBLE);
+    mSpamButton.setOnClickListener(mModerateClickListener);
+    mSpamButton.setTag(SPAM_TAG);
+  }
+ else {
+    mSpamButton.setVisibility(View.GONE);
+  }
+  if (noteActions.containsKey(TRASH_TAG)) {
+    mTrashButton.setVisibility(View.VISIBLE);
+    mTrashButton.setOnClickListener(mModerateClickListener);
+    mTrashButton.setTag(TRASH_TAG);
+  }
+ else {
+    mTrashButton.setVisibility(View.GONE);
+  }
   String url=getNote().queryJSON("body.items[last].header_link","");
   if (!url.equals("")) {
     mDetailHeader.setUrl(url);

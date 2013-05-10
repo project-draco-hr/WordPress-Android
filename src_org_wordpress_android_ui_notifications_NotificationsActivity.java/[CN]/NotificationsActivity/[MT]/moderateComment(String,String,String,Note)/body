@@ -1,0 +1,30 @@
+{
+  WordPress.restClient.moderateComment(siteId,commentId,status,new JsonHttpResponseHandler(){
+    @Override public void onSuccess(    int statusCode,    JSONObject response){
+      RequestParams params=new RequestParams();
+      params.put("ids",originalNote.getId());
+      WordPress.restClient.getNotifications(params,new NotesResponseHandler(){
+        @Override public void onStart(){
+          Log.d(TAG,"Finding note to display!");
+        }
+        @Override public void onSuccess(        List<Note> notes){
+          if (!notes.isEmpty()) {
+            Note updatedNote=notes.get(0);
+            updateNote(originalNote,updatedNote);
+          }
+        }
+      }
+);
+    }
+    @Override public void onFailure(    Throwable e,    String response){
+      if (isFinishing())       return;
+      Toast.makeText(NotificationsActivity.this,getString(R.string.error_moderate_comment),Toast.LENGTH_LONG).show();
+      FragmentManager fm=getSupportFragmentManager();
+      NoteCommentFragment f=(NoteCommentFragment)fm.findFragmentById(R.id.note_fragment_container);
+      if (f != null) {
+        f.animateModeration(false);
+      }
+    }
+  }
+);
+}
