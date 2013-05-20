@@ -1,10 +1,13 @@
 {
-  Button followButton=getFollowButton();
+  ImageButton followButton=getFollowButton();
+  View followDivider=getFollowDivider();
   try {
     if (actionJSON.getString(TYPE_FIELD).equals(ACTION_TYPE)) {
       mParams=actionJSON.getJSONObject(PARAMS_FIELD);
       followButton.setVisibility(VISIBLE);
       followButton.setOnClickListener(new ClickListener());
+      followButton.setOnLongClickListener(new LongClickListener());
+      followDivider.setVisibility(VISIBLE);
       getSiteTextView().setText(getSiteDomain());
       setClickable(true);
     }
@@ -12,15 +15,17 @@
       mParams=null;
       followButton.setVisibility(GONE);
       followButton.setOnClickListener(null);
+      followDivider.setVisibility(GONE);
       getSiteTextView().setText("");
       setClickable(false);
     }
     if (hasParams())     setSiteUrl(mParams.optString(BLOG_URL_PARAM,null));
-    updateLabel();
+    updateButton();
   }
  catch (  JSONException e) {
     Log.e(TAG,String.format("Could not set action from %s",actionJSON),e);
     getFollowButton().setVisibility(GONE);
+    getFollowDivider().setVisibility(GONE);
     getSiteTextView().setText("");
     setClickable(false);
     mParams=null;
