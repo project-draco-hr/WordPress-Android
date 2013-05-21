@@ -14,19 +14,23 @@
   mReplyField.setOnReplyListener(mReplyListener);
   mDetailHeader.setText(getNote().getSubject());
   Map<String,JSONObject> noteActions=getNote().getActions();
+  boolean hasModerateAction=false;
   if (noteActions.containsKey(APPROVE_TAG)) {
+    hasModerateAction=true;
     mApproveButton.setImageResource(R.drawable.moderate_approve);
     mApproveButton.setVisibility(View.VISIBLE);
     mApproveButton.setOnClickListener(mModerateClickListener);
     mApproveButton.setTag(APPROVE_TAG);
   }
   if (noteActions.containsKey(UNAPPROVE_TAG)) {
+    hasModerateAction=true;
     mApproveButton.setImageResource(R.drawable.moderate_unapprove);
     mApproveButton.setVisibility(View.VISIBLE);
     mApproveButton.setOnClickListener(mModerateClickListener);
     mApproveButton.setTag(UNAPPROVE_TAG);
   }
   if (noteActions.containsKey(SPAM_TAG)) {
+    hasModerateAction=true;
     mSpamButton.setVisibility(View.VISIBLE);
     mSpamButton.setOnClickListener(mModerateClickListener);
     mSpamButton.setTag(SPAM_TAG);
@@ -35,6 +39,7 @@
     mSpamButton.setVisibility(View.GONE);
   }
   if (noteActions.containsKey(TRASH_TAG)) {
+    hasModerateAction=true;
     mTrashButton.setVisibility(View.VISIBLE);
     mTrashButton.setOnClickListener(mModerateClickListener);
     mTrashButton.setTag(TRASH_TAG);
@@ -42,12 +47,13 @@
  else {
     mTrashButton.setVisibility(View.GONE);
   }
+  if (!hasModerateAction)   mModerateSection.setVisibility(View.GONE);
   String url=getNote().queryJSON("body.items[last].header_link","");
   if (!url.equals("")) {
     mDetailHeader.setUrl(url);
   }
   JSONObject followAction=getNote().queryJSON("body.items[last].action",new JSONObject());
-  mFollowRow.setDefaultText(getNote().queryJSON("body.items[-1].header_text",""));
+  mFollowRow.setDefaultText(EscapeUtils.unescapeHtml(getNote().queryJSON("body.items[-1].header_text","")));
   mFollowRow.setAction(followAction);
   mFollowRow.setListener(new FollowListener(getActivity().getApplicationContext()));
   Bundle arguments=getArguments();
