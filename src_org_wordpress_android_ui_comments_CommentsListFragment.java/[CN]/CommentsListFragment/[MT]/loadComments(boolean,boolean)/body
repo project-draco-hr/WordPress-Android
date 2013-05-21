@@ -33,25 +33,18 @@
       model.add(new Comment(postID,commentID,i,author,dateCreatedFormatted,comment,status,postTitle,authorURL,authorEmail,URI.create("http://gravatar.com/avatar/" + StringUtils.getMd5Hash(authorEmail.trim()) + "?s=140&d=404")));
     }
     if (!refreshOnly) {
-      try {
-        ThumbnailBus bus=new ThumbnailBus();
-        thumbs=new ThumbnailAdapter(getActivity(),new CommentAdapter(),new SimpleWebImageCache<ThumbnailBus,ThumbnailMessage>(null,null,101,bus),IMAGE_IDS);
-      }
- catch (      Exception e1) {
-        e1.printStackTrace();
-      }
       ListView listView=this.getListView();
       listView.removeFooterView(switcher);
       if (loadedPosts.size() % 30 == 0) {
         listView.addFooterView(switcher);
       }
-      setListAdapter(thumbs);
+      setListAdapter(new CommentAdapter());
       listView.setOnItemClickListener(new OnItemClickListener(){
         public void onItemClick(        AdapterView<?> arg0,        View view,        int position,        long id){
           selectedPosition=position;
           Comment comment=model.get((int)id);
           onCommentSelectedListener.onCommentSelected(comment);
-          thumbs.notifyDataSetChanged();
+          getListView().invalidateViews();
         }
       }
 );
@@ -77,9 +70,7 @@
 );
     }
  else {
-      if (thumbs != null) {
-        thumbs.notifyDataSetChanged();
-      }
+      getListView().invalidateViews();
     }
     if (this.shouldSelectAfterLoad) {
       if (model != null) {
