@@ -1,0 +1,19 @@
+{
+  String url=getAbsoluteURL(path);
+  if (params != null) {
+    StringBuilder query=new StringBuilder();
+    try {
+      for (      Map.Entry<String,String> entry : params.entrySet()) {
+        query.append(URLEncoder.encode(entry.getKey(),PARAMS_ENCODING));
+        query.append("=");
+        query.append(URLEncoder.encode(entry.getValue(),PARAMS_ENCODING));
+        query.append("&");
+      }
+    }
+ catch (    UnsupportedEncodingException uee) {
+      throw new RuntimeException("Encoding not supported: " + PARAMS_ENCODING,uee);
+    }
+    url=String.format("%s?%s",url,query);
+  }
+  return url;
+}
