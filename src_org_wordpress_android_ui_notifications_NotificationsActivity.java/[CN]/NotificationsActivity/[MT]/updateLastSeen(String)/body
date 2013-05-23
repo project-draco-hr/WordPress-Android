@@ -1,19 +1,12 @@
 {
-  restClient.markNotificationsSeen(timestamp,new JsonHttpResponseHandler(){
-    @Override public void onSuccess(    int status,    JSONObject response){
+  restClient.markNotificationsSeen(timestamp,new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject response){
       Log.d(TAG,String.format("Set last seen time %s",response));
     }
-    @Override public void onFailure(    Throwable e,    JSONObject response){
-      Log.d(TAG,String.format("Failed to set last seen time %s",response),e);
-    }
-    @Override public void onFailure(    Throwable e,    JSONArray response){
-      Log.d(TAG,String.format("Failed to set last seen time %s",response),e);
-    }
-    @Override public void onFailure(    Throwable e,    String response){
-      Log.d(TAG,String.format("Failed to set last seen time %s",response),e);
-    }
-    @Override public void onFailure(    Throwable e){
-      Log.d(TAG,"Failed to set last seen time %s",e);
+  }
+,new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+      Log.d(TAG,String.format("Could not set last seen time %s",error));
     }
   }
 );

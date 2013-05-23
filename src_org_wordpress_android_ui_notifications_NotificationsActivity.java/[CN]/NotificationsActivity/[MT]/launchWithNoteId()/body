@@ -1,13 +1,10 @@
 {
   Intent intent=getIntent();
   if (intent.hasExtra(NOTE_ID_EXTRA)) {
-    RequestParams params=new RequestParams();
+    Map<String,String> params=new HashMap<String,String>();
     params.put("ids",intent.getStringExtra(NOTE_ID_EXTRA));
-    restClient.getNotifications(params,new NotesResponseHandler(){
-      @Override public void onStart(){
-        Log.d(TAG,"Finding note to display!");
-      }
-      @Override public void onSuccess(      List<Note> notes){
+    NotesResponseHandler handler=new NotesResponseHandler(){
+      @Override public void onNotes(      List<Note> notes){
         if (!notes.isEmpty()) {
           Note note=notes.get(0);
           openNote(note);
@@ -17,6 +14,7 @@
         }
       }
     }
-);
+;
+    restClient.getNotifications(params,handler,handler);
   }
 }

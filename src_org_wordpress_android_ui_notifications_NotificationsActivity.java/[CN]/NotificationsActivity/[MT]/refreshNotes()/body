@@ -1,12 +1,10 @@
 {
-  restClient.getNotifications(new NotesResponseHandler(){
-    @Override public void onStart(){
-      super.onStart();
-      mFirstLoadComplete=false;
-      shouldAnimateRefreshButton=true;
-      startAnimatingRefreshButton(mRefreshMenuItem);
-    }
-    @Override public void onSuccess(    List<Note> notes){
+  mFirstLoadComplete=false;
+  shouldAnimateRefreshButton=true;
+  startAnimatingRefreshButton(mRefreshMenuItem);
+  NotesResponseHandler handler=new NotesResponseHandler(){
+    @Override public void onNotes(    List<Note> notes){
+      mFirstLoadComplete=true;
       final NotificationsListFragment.NotesAdapter adapter=mNotesList.getNotesAdapter();
       adapter.clear();
       adapter.addAll(notes);
@@ -15,12 +13,8 @@
         updateLastSeen(notes.get(0).getTimestamp());
       }
     }
-    @Override public void onFinish(){
-      super.onFinish();
+    @Override public void onErrorResponse(    VolleyError error){
       mFirstLoadComplete=true;
-      stopAnimatingRefreshButton(mRefreshMenuItem);
-    }
-    @Override public void showError(){
       final NotificationsListFragment.NotesAdapter adapter=mNotesList.getNotesAdapter();
       adapter.clear();
       adapter.addAll(new ArrayList<Note>());
@@ -28,5 +22,6 @@
       Toast.makeText(NotificationsActivity.this,getString(R.string.error_refresh),Toast.LENGTH_LONG).show();
     }
   }
-);
+;
+  restClient.getNotifications(handler,handler);
 }

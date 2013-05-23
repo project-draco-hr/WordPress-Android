@@ -1,13 +1,14 @@
 {
-  RequestParams params=new RequestParams();
+  Map<String,String> params=new HashMap<String,String>();
   Log.d(TAG,String.format("Requesting more notes before %s",note.queryJSON("timestamp","")));
   params.put("before",note.queryJSON("timestamp",""));
-  restClient.getNotifications(params,new NotesResponseHandler(){
-    @Override public void onSuccess(    List<Note> notes){
+  NotesResponseHandler handler=new NotesResponseHandler(){
+    @Override public void onNotes(    List<Note> notes){
       NotificationsListFragment.NotesAdapter adapter=mNotesList.getNotesAdapter();
       adapter.addAll(notes);
       adapter.notifyDataSetChanged();
     }
   }
-);
+;
+  restClient.getNotifications(params,handler,handler);
 }

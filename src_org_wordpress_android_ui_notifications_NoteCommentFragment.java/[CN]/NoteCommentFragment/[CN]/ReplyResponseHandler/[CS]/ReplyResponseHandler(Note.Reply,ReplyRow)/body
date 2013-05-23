@@ -1,7 +1,13 @@
 {
-  super();
   mReply=reply;
   mRow=row;
   mNotificationManager=(NotificationManager)getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-  prepareNotifications();
+  Intent failureIntent=new Intent(getActivity(),PostsActivity.class);
+  failureIntent.setAction(Intent.ACTION_EDIT);
+  failureIntent.addFlags(NotificationsActivity.FLAG_FROM_NOTE);
+  failureIntent.putExtra(NotificationsActivity.NOTE_ID_EXTRA,getNote().getId());
+  failureIntent.putExtra(NotificationsActivity.NOTE_REPLY_EXTRA,mReply.getContent());
+  failureIntent.putExtra(NotificationsActivity.FROM_NOTIFICATION_EXTRA,true);
+  mFailureNotification=new NotificationCompat.Builder(getActivity()).setContentTitle("Reply failed").setContentText("Tap to try again").setTicker("Reply failed").setWhen(0).setSmallIcon(R.drawable.notification_icon).setContentIntent(PendingIntent.getActivity(getActivity(),0x0,failureIntent,0x0)).build();
+  mToast=Toast.makeText(getActivity(),R.string.note_reply_successful,Toast.LENGTH_SHORT);
 }
