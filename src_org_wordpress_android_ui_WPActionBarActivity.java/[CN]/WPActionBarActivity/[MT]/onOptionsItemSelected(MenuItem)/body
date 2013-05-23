@@ -9,5 +9,42 @@
     Intent i=new Intent(this,PreferencesActivity.class);
     startActivityForResult(i,SETTINGS_REQUEST);
   }
+ else   if (item.getItemId() == R.id.menu_signout) {
+    AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(this);
+    dialogBuilder.setTitle(getResources().getText(R.string.sign_out));
+    dialogBuilder.setMessage(getString(R.string.sign_out_confirm));
+    dialogBuilder.setPositiveButton(R.string.sign_out,new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int whichButton){
+        Blog currentBlog=WordPress.getCurrentBlog();
+        if (currentBlog != null) {
+          WordPress.UnregisterWPComToken(WPActionBarActivity.this,GCMRegistrar.getRegistrationId(WPActionBarActivity.this));
+          try {
+            GCMRegistrar.checkDevice(WPActionBarActivity.this);
+            GCMRegistrar.unregister(WPActionBarActivity.this);
+          }
+ catch (          Exception e) {
+            Log.v("WORDPRESS","Could not unregister for GCM: " + e.getMessage());
+          }
+          SharedPreferences.Editor editor=PreferenceManager.getDefaultSharedPreferences(WPActionBarActivity.this).edit();
+          editor.remove(WordPress.WPCOM_USERNAME_PREFERENCE);
+          editor.remove(WordPress.WPCOM_PASSWORD_PREFERENCE);
+          editor.remove(WordPress.ACCESS_TOKEN_PREFERENCE);
+          editor.commit();
+          WordPress.restClient.clearAccessToken();
+          currentBlog.setPassword("");
+          currentBlog.save("");
+        }
+        finish();
+      }
+    }
+);
+    dialogBuilder.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int whichButton){
+      }
+    }
+);
+    dialogBuilder.setCancelable(true);
+    if (!isFinishing())     dialogBuilder.create().show();
+  }
   return super.onOptionsItemSelected(item);
 }

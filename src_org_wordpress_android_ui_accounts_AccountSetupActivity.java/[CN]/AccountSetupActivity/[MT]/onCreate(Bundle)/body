@@ -11,32 +11,34 @@
   mSystemService=(ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
   Bundle extras=getIntent().getExtras();
   if (extras != null) {
-    wpcom=extras.getBoolean("wpcom",false);
+    mIsWpcom=extras.getBoolean("wpcom",false);
     mAuthOnly=extras.getBoolean("auth-only",false);
     String username=extras.getString("username");
     if (username != null) {
       mUsernameEdit.setText(username);
     }
   }
-  if (wpcom) {
+  if (mIsWpcom) {
     ((EditText)findViewById(R.id.url)).setVisibility(View.GONE);
   }
  else {
     ImageView logo=(ImageView)findViewById(R.id.wpcomLogo);
     logo.setImageDrawable(getResources().getDrawable(R.drawable.wplogo));
   }
-  if (wpcom) {
+  if (mIsWpcom) {
     mSettingsButton.setVisibility(View.GONE);
     if (!mAuthOnly && WordPress.hasValidWPComCredentials(this)) {
       setupBlogs();
     }
- else     if (mAuthOnly) {
-      SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(AccountSetupActivity.this);
-      String username=settings.getString("wp_pref_wpcom_username",null);
-      if (username != null)       mUsernameEdit.setText(username);
-    }
   }
  else {
+    if (mAuthOnly) {
+      Blog currentBlog=WordPress.getCurrentBlog();
+      if (currentBlog != null) {
+        mUrlEdit.setText(currentBlog.getHomeURL());
+        mUsernameEdit.requestFocus();
+      }
+    }
     mSettingsButton.setOnClickListener(this);
   }
   mSaveButton.setOnClickListener(this);

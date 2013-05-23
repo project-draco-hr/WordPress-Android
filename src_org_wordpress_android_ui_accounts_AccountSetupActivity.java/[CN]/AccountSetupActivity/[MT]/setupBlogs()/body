@@ -3,7 +3,12 @@
     AlertUtil.showAlert(AccountSetupActivity.this,R.string.no_network_title,R.string.no_network_message);
   }
  else {
-    pd=ProgressDialog.show(AccountSetupActivity.this,getString(R.string.account_setup),getString(R.string.attempting_configure),true,false);
+    mProgressDialog=ProgressDialog.show(AccountSetupActivity.this,getString(R.string.account_setup),getString(R.string.attempting_configure),true,false);
+    if (mIsWpcom && WordPress.hasValidWPComCredentials(AccountSetupActivity.this)) {
+      SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(AccountSetupActivity.this);
+      mUsernameEdit.setText(settings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,""));
+      mPasswordEdit.setText(WordPressDB.decryptPassword(settings.getString(WordPress.WPCOM_PASSWORD_PREFERENCE,"")));
+    }
     Thread action=new Thread(){
       public void run(){
         Looper.prepare();

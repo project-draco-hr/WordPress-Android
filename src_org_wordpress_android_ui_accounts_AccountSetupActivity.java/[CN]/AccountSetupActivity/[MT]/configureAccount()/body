@@ -1,57 +1,52 @@
 {
-  if (wpcom) {
-    blogURL=URL_WORDPRESS;
-    if (WordPress.hasValidWPComCredentials(AccountSetupActivity.this)) {
-      SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(AccountSetupActivity.this);
-      mUsernameEdit.setText(settings.getString("wp_pref_wpcom_username",""));
-      mPasswordEdit.setText(WordPressDB.decryptPassword(settings.getString("wp_pref_wpcom_password","")));
-    }
+  if (mIsWpcom) {
+    mBlogURL=URL_WORDPRESS;
   }
  else {
-    blogURL=mUrlEdit.getText().toString().trim();
+    mBlogURL=mUrlEdit.getText().toString().trim();
   }
   final String username=mUsernameEdit.getText().toString().trim();
   final String password=mPasswordEdit.getText().toString().trim();
-  if (blogURL.equals("") || username.equals("") || password.equals("")) {
-    pd.dismiss();
+  if (mBlogURL.equals("") || username.equals("") || password.equals("")) {
+    mProgressDialog.dismiss();
     AlertUtil.showAlert(AccountSetupActivity.this,R.string.required_fields,R.string.url_username_password_required);
     return;
   }
-  if (!(blogURL.toLowerCase().startsWith("http://")) && !(blogURL.toLowerCase().startsWith("https://"))) {
-    blogURL="http://" + blogURL;
+  if (!(mBlogURL.toLowerCase().startsWith("http://")) && !(mBlogURL.toLowerCase().startsWith("https://"))) {
+    mBlogURL="http://" + mBlogURL;
   }
-  if (!URLUtil.isValidUrl(blogURL)) {
-    pd.dismiss();
+  if (!URLUtil.isValidUrl(mBlogURL)) {
+    mProgressDialog.dismiss();
     AlertUtil.showAlert(AccountSetupActivity.this,R.string.invalid_url,R.string.invalid_url_message);
     return;
   }
-  String rsdUrl=getRSDMetaTagHrefRegEx(blogURL);
+  String rsdUrl=getRSDMetaTagHrefRegEx(mBlogURL);
   if (rsdUrl == null) {
-    rsdUrl=getRSDMetaTagHref(blogURL);
+    rsdUrl=getRSDMetaTagHref(mBlogURL);
   }
   if (rsdUrl != null) {
-    xmlrpcURL=ApiHelper.getXMLRPCUrl(rsdUrl);
-    if (xmlrpcURL == null)     xmlrpcURL=rsdUrl.replace("?rsd","");
+    mXmlrpcURL=ApiHelper.getXMLRPCUrl(rsdUrl);
+    if (mXmlrpcURL == null)     mXmlrpcURL=rsdUrl.replace("?rsd","");
   }
  else {
-    isCustomURL=false;
+    mIsCustomURL=false;
     try {
-      client=new XMLRPCClient(blogURL,httpuser,httppassword);
+      mClient=new XMLRPCClient(mBlogURL,mHttpuser,mHttppassword);
       try {
-        client.call("system.listMethods");
-        xmlrpcURL=blogURL;
-        isCustomURL=true;
+        mClient.call("system.listMethods");
+        mXmlrpcURL=mBlogURL;
+        mIsCustomURL=true;
       }
  catch (      XMLRPCException e) {
-        String guessURL=blogURL;
+        String guessURL=mBlogURL;
         if (guessURL.substring(guessURL.length() - 1,guessURL.length()).equals("/")) {
           guessURL=guessURL.substring(0,guessURL.length() - 1);
         }
         guessURL+="/xmlrpc.php";
-        client=new XMLRPCClient(guessURL,httpuser,httppassword);
+        mClient=new XMLRPCClient(guessURL,mHttpuser,mHttppassword);
         try {
-          client.call("system.listMethods");
-          xmlrpcURL=guessURL;
+          mClient.call("system.listMethods");
+          mXmlrpcURL=guessURL;
         }
  catch (        XMLRPCException ex) {
         }
@@ -60,29 +55,40 @@
  catch (    Exception e) {
     }
   }
-  if (xmlrpcURL == null) {
-    pd.dismiss();
+  if (mXmlrpcURL == null) {
+    mProgressDialog.dismiss();
     AlertUtil.showAlert(AccountSetupActivity.this,R.string.error,R.string.no_site_error);
   }
  else {
-    client=new XMLRPCClient(xmlrpcURL,httpuser,httppassword);
+    mClient=new XMLRPCClient(mXmlrpcURL,mHttpuser,mHttppassword);
     XMLRPCMethod method=new XMLRPCMethod("wp.getUsersBlogs",new XMLRPCMethodCallback(){
       public void callFinished(      Object[] result){
-        if (wpcom) {
+        if (mIsWpcom) {
           SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(AccountSetupActivity.this);
           SharedPreferences.Editor editor=settings.edit();
-          editor.putString("wp_pref_wpcom_username",username);
-          editor.putString("wp_pref_wpcom_password",WordPressDB.encryptPassword(password));
+          editor.putString(WordPress.WPCOM_USERNAME_PREFERENCE,username);
+          editor.putString(WordPress.WPCOM_PASSWORD_PREFERENCE,WordPressDB.encryptPassword(password));
           editor.commit();
           WordPress.registerForCloudMessaging(AccountSetupActivity.this);
           WordPress.restClient.get("me",null,null);
         }
         if (mAuthOnly) {
-          WordPress.wpDB.updateWPComCredentials(username,password);
-          if (WordPress.currentBlog != null && WordPress.currentBlog.isDotcomFlag()) {
-            WordPress.currentBlog.setUsername(username);
-            WordPress.currentBlog.setPassword(password);
+          Blog currentBlog=WordPress.getCurrentBlog();
+          if (currentBlog != null) {
+            if (mIsWpcom) {
+              WordPress.wpDB.updateWPComCredentials(username,password);
+              if (currentBlog != null && currentBlog.isDotcomFlag()) {
+                currentBlog.setUsername(username);
+                currentBlog.setPassword(password);
+              }
+            }
+ else {
+              currentBlog.setUsername(username);
+              currentBlog.setPassword(password);
+            }
+            currentBlog.save("");
           }
+          setResult(RESULT_OK);
           finish();
           return;
         }
@@ -93,7 +99,7 @@
         final boolean[] wpcoms=new boolean[result.length];
         final String[] wpVersions=new String[result.length];
         Map<Object,Object> contentHash=new HashMap<Object,Object>();
-        blogCtr=0;
+        mBlogCtr=0;
         for (int ctr=0; ctr < result.length; ctr++) {
           contentHash=(Map<Object,Object>)result[ctr];
           boolean match=false;
@@ -103,18 +109,18 @@
           }
           match=WordPress.wpDB.checkMatch(matchBlogName,contentHash.get("xmlrpc").toString(),username);
           if (!match) {
-            blogNames[blogCtr]=matchBlogName;
-            if (isCustomURL)             urls[blogCtr]=blogURL;
- else             urls[blogCtr]=contentHash.get("xmlrpc").toString();
-            homeURLs[blogCtr]=contentHash.get("url").toString();
-            blogIds[blogCtr]=Integer.parseInt(contentHash.get("blogid").toString());
-            String blogURL=urls[blogCtr];
-            aBlogNames.add(EscapeUtils.unescapeHtml(blogNames[blogCtr]));
+            blogNames[mBlogCtr]=matchBlogName;
+            if (mIsCustomURL)             urls[mBlogCtr]=mBlogURL;
+ else             urls[mBlogCtr]=contentHash.get("xmlrpc").toString();
+            homeURLs[mBlogCtr]=contentHash.get("url").toString();
+            blogIds[mBlogCtr]=Integer.parseInt(contentHash.get("blogid").toString());
+            String blogURL=urls[mBlogCtr];
+            mBlogNames.add(EscapeUtils.unescapeHtml(blogNames[mBlogCtr]));
             boolean wpcomFlag=false;
             if (blogURL.toLowerCase().contains("wordpress.com")) {
               wpcomFlag=true;
             }
-            wpcoms[blogCtr]=wpcomFlag;
+            wpcoms[mBlogCtr]=wpcomFlag;
             String wpVersion="";
             if (!wpcomFlag) {
               Map<String,String> hPost=new HashMap<String,String>();
@@ -122,7 +128,7 @@
               Object[] vParams={1,username,password,hPost};
               Object versionResult=new Object();
               try {
-                versionResult=(Object)client.call("wp.getOptions",vParams);
+                versionResult=(Object)mClient.call("wp.getOptions",vParams);
               }
  catch (              XMLRPCException e) {
               }
@@ -139,12 +145,12 @@
  else {
               wpVersion="3.5";
             }
-            wpVersions[blogCtr]=wpVersion;
-            blogCtr++;
+            wpVersions[mBlogCtr]=wpVersion;
+            mBlogCtr++;
           }
         }
-        pd.dismiss();
-        if (blogCtr == 0) {
+        mProgressDialog.dismiss();
+        if (mBlogCtr == 0) {
           String additionalText="";
           if (result.length > 0) {
             additionalText=getString(R.string.additional);
@@ -157,12 +163,12 @@
 );
         }
  else {
-          if (blogCtr > 1) {
+          if (mBlogCtr > 1) {
             LayoutInflater inflater=(LayoutInflater)AccountSetupActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final ListView lv=(ListView)inflater.inflate(R.layout.select_blogs_list,null);
             lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
             lv.setItemsCanFocus(false);
-            ArrayAdapter<CharSequence> blogs=new ArrayAdapter<CharSequence>(AccountSetupActivity.this,R.layout.blogs_row,aBlogNames);
+            ArrayAdapter<CharSequence> blogs=new ArrayAdapter<CharSequence>(AccountSetupActivity.this,R.layout.blogs_row,mBlogNames);
             lv.setAdapter(blogs);
             AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(AccountSetupActivity.this);
             dialogBuilder.setTitle(R.string.select_blogs);
@@ -174,7 +180,7 @@
                   if (selectedItems.get(selectedItems.keyAt(i)) == true) {
                     int rowID=selectedItems.keyAt(i);
                     long blogID=-1;
-                    blogID=WordPress.wpDB.addAccount(urls[rowID],homeURLs[rowID],blogNames[rowID],username,password,httpuser,httppassword,"Above Text",false,false,"500",5,false,blogIds[rowID],wpcoms[rowID],wpVersions[rowID]);
+                    blogID=WordPress.wpDB.addAccount(urls[rowID],homeURLs[rowID],blogNames[rowID],username,password,mHttpuser,mHttppassword,"Above Text",false,false,"500",5,false,blogIds[rowID],wpcoms[rowID],wpVersions[rowID]);
                     if (i == 0) {
                       if (blogID >= 0) {
                         WordPress.setCurrentBlog((int)blogID);
@@ -189,9 +195,9 @@
 );
             dialogBuilder.setPositiveButton(R.string.add_all,new DialogInterface.OnClickListener(){
               public void onClick(              DialogInterface dialog,              int whichButton){
-                for (int i=0; i < blogCtr; i++) {
+                for (int i=0; i < mBlogCtr; i++) {
                   long blogID=-1;
-                  blogID=WordPress.wpDB.addAccount(urls[i],homeURLs[i],blogNames[i],username,password,httpuser,httppassword,"Above Text",false,false,"500",5,false,blogIds[i],wpcoms[i],wpVersions[i]);
+                  blogID=WordPress.wpDB.addAccount(urls[i],homeURLs[i],blogNames[i],username,password,mHttpuser,mHttppassword,"Above Text",false,false,"500",5,false,blogIds[i],wpcoms[i],wpVersions[i]);
                   if (i == 0) {
                     if (blogID >= 0) {
                       WordPress.setCurrentBlog((int)blogID);
@@ -229,7 +235,7 @@
 );
           }
  else {
-            long blogID=WordPress.wpDB.addAccount(urls[0],homeURLs[0],blogNames[0],username,password,httpuser,httppassword,"Above Text",false,false,"500",5,false,blogIds[0],wpcoms[0],wpVersions[0]);
+            long blogID=WordPress.wpDB.addAccount(urls[0],homeURLs[0],blogNames[0],username,password,mHttpuser,mHttppassword,"Above Text",false,false,"500",5,false,blogIds[0],wpcoms[0],wpVersions[0]);
             if (blogID >= 0) {
               WordPress.setCurrentBlog((int)blogID);
             }

@@ -1,7 +1,7 @@
 {
   try {
     final Object[] result;
-    result=(Object[])client.call(method,params);
+    result=(Object[])mClient.call(method,params);
     handler.post(new Runnable(){
       public void run(){
         callBack.callFinished(result);
@@ -12,7 +12,7 @@
  catch (  final XMLRPCFault e) {
     handler.post(new Runnable(){
       public void run(){
-        pd.dismiss();
+        mProgressDialog.dismiss();
         String message=e.getMessage();
         if (message.contains("code 403")) {
           Thread shake=new Thread(){
@@ -48,7 +48,7 @@ catch (  final XMLRPCException e) {
       public void run(){
         Throwable couse=e.getCause();
         e.printStackTrace();
-        pd.dismiss();
+        mProgressDialog.dismiss();
         String message=e.getMessage();
         if (couse instanceof HttpHostConnectException) {
         }

@@ -7,4 +7,10 @@
     startActivityForResult(i,ADD_ACCOUNT_REQUEST);
     return;
   }
+  if (currentBlog.getPassword().equals("") && !mReauthCanceled) {
+    Intent authIntent=new Intent(this,AccountSetupActivity.class);
+    if (currentBlog.isDotcomFlag())     authIntent.putExtra("wpcom",true);
+    authIntent.putExtra("auth-only",true);
+    startActivityForResult(authIntent,AUTHENTICATE_REQUEST);
+  }
 }
