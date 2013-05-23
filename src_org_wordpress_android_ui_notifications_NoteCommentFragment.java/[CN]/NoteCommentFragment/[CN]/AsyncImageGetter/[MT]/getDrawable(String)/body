@@ -1,16 +1,20 @@
 {
   Drawable loading=getResources().getDrawable(R.drawable.app_icon);
   final RemoteDrawable remote=new RemoteDrawable(loading);
-  httpClient.get(source,new BitmapResponseHandler(){
-    @Override public void onSuccess(    int statusCode,    Bitmap bitmap){
-      Drawable drawable=new BitmapDrawable(getResources(),bitmap);
-      int oldHeight=remote.getBounds().height();
-      remote.remote=drawable;
-      remote.setBounds(0,0,drawable.getIntrinsicWidth(),drawable.getIntrinsicHeight());
-      int newHeight=remote.getBounds().height();
-      mView.invalidate();
-      mView.setHeight(mView.getHeight() + newHeight - oldHeight);
-      mView.setEllipsize(null);
+  WordPress.imageLoader.get(source,new ImageLoader.ImageListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+    }
+    @Override public void onResponse(    ImageContainer response,    boolean isImmediate){
+      if (response.getBitmap() != null) {
+        Drawable drawable=new BitmapDrawable(getResources(),response.getBitmap());
+        int oldHeight=remote.getBounds().height();
+        remote.remote=drawable;
+        remote.setBounds(0,0,drawable.getIntrinsicWidth(),drawable.getIntrinsicHeight());
+        int newHeight=remote.getBounds().height();
+        mView.invalidate();
+        mView.setHeight(mView.getHeight() + newHeight - oldHeight);
+        mView.setEllipsize(null);
+      }
     }
   }
 );

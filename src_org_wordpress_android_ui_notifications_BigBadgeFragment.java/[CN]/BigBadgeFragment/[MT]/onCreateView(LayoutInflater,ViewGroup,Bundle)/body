@@ -1,6 +1,6 @@
 {
   View view=inflater.inflate(R.layout.notifications_big_badge,parent,false);
-  mBadgeImageView=(ImageView)view.findViewById(R.id.badge);
+  mBadgeImageView=(NetworkImageView)view.findViewById(R.id.badge);
   TextView bodyTextView=(TextView)view.findViewById(R.id.body);
   bodyTextView.setMovementMethod(LinkMovementMethod.getInstance());
   String noteHTML=JSONUtil.queryJSON(getNote().toJSONObject(),"body.html","");
@@ -8,19 +8,7 @@
   bodyTextView.setText(Html.fromHtml(noteHTML));
   String iconURL=getNote().getIconURL();
   if (!iconURL.equals("")) {
-    AsyncHttpClient client=new AsyncHttpClient();
-    String[] allowedContentTypes=new String[]{"image/png"};
-    client.get(iconURL,new BinaryHttpResponseHandler(allowedContentTypes){
-      @Override public void onSuccess(      byte[] fileData){
-        Bitmap badge=BitmapFactory.decodeByteArray(fileData,0,fileData.length);
-        if (badge != null) {
-          mBadgeImageView.setImageBitmap(badge);
-          Animation pop=AnimationUtils.loadAnimation(getActivity().getBaseContext(),R.anim.pop);
-          mBadgeImageView.startAnimation(pop);
-        }
-      }
-    }
-);
+    mBadgeImageView.setImageUrl(iconURL,WordPress.imageLoader);
   }
   return view;
 }
