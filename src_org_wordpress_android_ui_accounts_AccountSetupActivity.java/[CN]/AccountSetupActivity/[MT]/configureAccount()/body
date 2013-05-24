@@ -63,6 +63,7 @@
     mClient=new XMLRPCClient(mXmlrpcURL,mHttpuser,mHttppassword);
     XMLRPCMethod method=new XMLRPCMethod("wp.getUsersBlogs",new XMLRPCMethodCallback(){
       public void callFinished(      Object[] result){
+        Blog currentBlog=WordPress.getCurrentBlog();
         if (mIsWpcom) {
           SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(AccountSetupActivity.this);
           SharedPreferences.Editor editor=settings.edit();
@@ -73,7 +74,6 @@
           WordPress.restClient.get("me",null,null);
         }
         if (mAuthOnly) {
-          Blog currentBlog=WordPress.getCurrentBlog();
           if (currentBlog != null) {
             if (mIsWpcom) {
               WordPress.wpDB.updateWPComCredentials(username,password);
@@ -147,6 +147,16 @@
             }
             wpVersions[mBlogCtr]=wpVersion;
             mBlogCtr++;
+          }
+ else {
+            if (currentBlog != null && currentBlog.getPassword().equals("") && currentBlog.getUrl().equals(contentHash.get("xmlrpc").toString())) {
+              currentBlog.setUsername(username);
+              currentBlog.setPassword(password);
+              currentBlog.save("");
+              setResult(RESULT_OK);
+              finish();
+              return;
+            }
           }
         }
         mProgressDialog.dismiss();
