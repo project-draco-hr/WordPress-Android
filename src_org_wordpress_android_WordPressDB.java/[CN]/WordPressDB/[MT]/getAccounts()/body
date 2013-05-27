@@ -1,25 +1,23 @@
 {
-  Cursor c=db.query(SETTINGS_TABLE,new String[]{"id","blogName","username","runService","blogId","url"},null,null,null,null,null);
-  int id;
-  String blogName, username, url;
-  int blogId;
-  int runService;
+  Cursor c=db.query(SETTINGS_TABLE,new String[]{"id","blogName","username","blogId","url","dotcomFlag","password"},null,null,null,null,null);
+  SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this.context);
+  String wpcomUsername=settings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,"");
   int numRows=c.getCount();
   c.moveToFirst();
   List<Map<String,Object>> accounts=new Vector<Map<String,Object>>();
   for (int i=0; i < numRows; i++) {
-    id=c.getInt(0);
-    blogName=c.getString(1);
-    username=c.getString(2);
-    runService=c.getInt(3);
-    blogId=c.getInt(4);
-    url=c.getString(5);
-    if (id > 0) {
+    int id=c.getInt(0);
+    String blogName=c.getString(1);
+    String username=c.getString(2);
+    int blogId=c.getInt(3);
+    String url=c.getString(4);
+    boolean isWPCom=c.getInt(5) > 0;
+    String password=c.getString(6);
+    if (((isWPCom && username.equals(wpcomUsername)) || !isWPCom) && !password.equals("") && id > 0) {
       Map<String,Object> thisHash=new HashMap<String,Object>();
       thisHash.put("id",id);
       thisHash.put("blogName",blogName);
       thisHash.put("username",username);
-      thisHash.put("runService",runService);
       thisHash.put("blogId",blogId);
       thisHash.put("url",url);
       accounts.add(thisHash);
