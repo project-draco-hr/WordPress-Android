@@ -1,15 +1,27 @@
 {
-  Drawable loading=getResources().getDrawable(R.drawable.app_icon);
-  final RemoteDrawable remote=new RemoteDrawable(loading);
+  Drawable loading=getResources().getDrawable(R.drawable.remote_image);
+  Drawable failed=getResources().getDrawable(R.drawable.remote_failed);
+  if (getActivity() == null) {
+    return failed;
+  }
+  final RemoteDrawable remote=new RemoteDrawable(loading,failed);
   WordPress.imageLoader.get(source,new ImageLoader.ImageListener(){
     @Override public void onErrorResponse(    VolleyError error){
+      Log.e(TAG,"Failed to load image",error);
+      remote.displayFailed();
+      mView.invalidate();
     }
     @Override public void onResponse(    ImageContainer response,    boolean isImmediate){
       if (response.getBitmap() != null) {
+        if (mView == null) {
+          return;
+        }
         Drawable drawable=new BitmapDrawable(getResources(),response.getBitmap());
-        int oldHeight=remote.getBounds().height();
-        remote.remote=drawable;
-        remote.setBounds(0,0,drawable.getIntrinsicWidth(),drawable.getIntrinsicHeight());
+        final int oldHeight=remote.getBounds().height();
+        remote.setRemoteDrawable(drawable);
+        if (isImmediate) {
+          return;
+        }
         int newHeight=remote.getBounds().height();
         mView.invalidate();
         mView.setHeight(mView.getHeight() + newHeight - oldHeight);

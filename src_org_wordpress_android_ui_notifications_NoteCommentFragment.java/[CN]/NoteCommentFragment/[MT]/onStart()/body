@@ -2,11 +2,25 @@
   super.onStart();
   mFollowRow.getImageView().setImageUrl(getNote().getIconURL(),WordPress.imageLoader);
   SpannableStringBuilder html=(SpannableStringBuilder)getNote().getCommentBody();
-  Html.ImageGetter imgGetter=new AsyncImageGetter(mCommentText);
+  final Html.ImageGetter imgGetter=new AsyncImageGetter(mCommentText);
   ImageSpan imgs[]=html.getSpans(0,html.length(),ImageSpan.class);
   for (  ImageSpan img : imgs) {
-    ImageSpan remote=new ImageSpan(imgGetter.getDrawable(img.getSource()),img.getSource());
-    html.setSpan(remote,html.getSpanStart(img),html.getSpanEnd(img),html.getSpanFlags(img));
+    final String src=img.getSource();
+    final RemoteDrawable remoteDrawable=(RemoteDrawable)imgGetter.getDrawable(src);
+    ClickableSpan clickListener=new ClickableSpan(){
+      @Override public void onClick(      View v){
+        if (remoteDrawable.didFail()) {
+          imgGetter.getDrawable(src);
+        }
+      }
+    }
+;
+    ImageSpan remote=new ImageSpan(remoteDrawable,img.getSource());
+    int spanStart=html.getSpanStart(img);
+    int spanEnd=html.getSpanEnd(img);
+    int spanFlags=html.getSpanFlags(img);
+    html.setSpan(remote,spanStart,spanEnd,spanFlags);
+    html.setSpan(clickListener,spanStart,spanEnd,spanFlags);
     html.removeSpan(img);
   }
   mCommentText.setText(html);
