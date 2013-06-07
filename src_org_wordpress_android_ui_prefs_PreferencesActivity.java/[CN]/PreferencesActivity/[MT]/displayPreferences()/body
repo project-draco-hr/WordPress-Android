@@ -1,34 +1,5 @@
 {
-  List<Map<String,Object>> accounts=WordPress.wpDB.getAccounts();
-  if (accounts.size() > 0) {
-    for (int i=0; i < accounts.size(); i++) {
-      Map<String,Object> curHash=accounts.get(i);
-      String curBlogName=curHash.get("blogName").toString();
-      String accountID=curHash.get("id").toString();
-      int runService=Integer.valueOf(curHash.get("runService").toString());
-      PreferenceScreen selectBlogsCategory=(PreferenceScreen)findPreference("wp_pref_notification_blogs");
-      CheckBoxPreference blogNotificationPreference=new CheckBoxPreference(this);
-      blogNotificationPreference.setKey(accountID);
-      blogNotificationPreference.setTitle(EscapeUtils.unescapeHtml(curBlogName));
-      blogNotificationPreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener(){
-        @Override public boolean onPreferenceChange(        Preference preference,        Object newValue){
-          int blogID;
-          try {
-            blogID=Integer.valueOf(preference.getKey());
-            WordPress.wpDB.updateNotificationFlag(blogID,(Boolean)newValue);
-          }
- catch (          NumberFormatException e) {
-            e.printStackTrace();
-          }
-          return true;
-        }
-      }
-);
-      if (runService == 1)       blogNotificationPreference.setChecked(true);
- else       blogNotificationPreference.setChecked(false);
-      selectBlogsCategory.addPreference(blogNotificationPreference);
-    }
-  }
+  refreshWPComAuthCategory();
   if (taglineTextPreference.getText() == null || taglineTextPreference.getText().equals("")) {
     if (DeviceUtils.getInstance().isBlackBerry()) {
       taglineTextPreference.setSummary(R.string.posted_from_blackberry);
@@ -41,13 +12,6 @@
   }
  else {
     taglineTextPreference.setSummary(taglineTextPreference.getText());
-  }
-  if (notificationIntervalPreference.getValue() == null || notificationIntervalPreference.getValue().equals("")) {
-    notificationIntervalPreference.setValue("10 Minutes");
-    notificationIntervalPreference.setSummary("10 Minutes");
-  }
- else {
-    notificationIntervalPreference.setSummary(notificationIntervalPreference.getValue());
   }
   if (DeviceUtils.getInstance().isBlackBerry()) {
     PreferenceCategory appAboutSectionName=(PreferenceCategory)findPreference("wp_pref_app_about_section");

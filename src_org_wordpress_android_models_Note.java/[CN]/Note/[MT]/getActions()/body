@@ -1,0 +1,20 @@
+{
+  if (mActions == null) {
+    try {
+      JSONArray actions=queryJSON("body.actions",new JSONArray());
+      mActions=new HashMap<String,JSONObject>(actions.length());
+      for (int i=0; i < actions.length(); i++) {
+        JSONObject action=actions.getJSONObject(i);
+        String actionType=JSONUtil.queryJSON(action,"type","");
+        if (!actionType.equals("")) {
+          mActions.put(actionType,action);
+        }
+      }
+    }
+ catch (    JSONException e) {
+      Log.e(TAG,"Could not find actions",e);
+      mActions=new HashMap<String,JSONObject>();
+    }
+  }
+  return mActions;
+}

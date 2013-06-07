@@ -1,0 +1,44 @@
+{
+  restClient.getNotifications(new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject response){
+      latestNotes=response;
+      File file=new File(context.getCacheDir(),NOTES_CACHE);
+      if (file.exists()) {
+        file.delete();
+      }
+      FileWriter writer=null;
+      try {
+        String json=response.toString();
+        writer=new FileWriter(file);
+        writer.write(json,0,json.length());
+        writer.close();
+        Log.d(TAG,String.format("Wrote notes json to %s",file));
+      }
+ catch (      IOException e) {
+        Log.d(TAG,String.format("Failed to cache notifications to %s",file));
+      }
+ finally {
+        try {
+          if (writer != null) {
+            writer.close();
+          }
+        }
+ catch (        IOException e) {
+          writer=null;
+        }
+      }
+      Log.d(TAG,String.format("Store file here %s",file));
+      if (listener != null) {
+        listener.onResponse(response);
+      }
+    }
+  }
+,new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+      if (errorListener != null) {
+        errorListener.onErrorResponse(error);
+      }
+    }
+  }
+);
+}

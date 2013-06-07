@@ -1,0 +1,80 @@
+{
+  super.onStart();
+  mFollowRow.getImageView().setImageUrl(getNote().getIconURL(),WordPress.imageLoader);
+  SpannableStringBuilder html=(SpannableStringBuilder)getNote().getCommentBody();
+  final Html.ImageGetter imgGetter=new AsyncImageGetter(mCommentText);
+  ImageSpan imgs[]=html.getSpans(0,html.length(),ImageSpan.class);
+  for (  ImageSpan img : imgs) {
+    final String src=img.getSource();
+    final RemoteDrawable remoteDrawable=(RemoteDrawable)imgGetter.getDrawable(src);
+    ClickableSpan clickListener=new ClickableSpan(){
+      @Override public void onClick(      View v){
+        if (remoteDrawable.didFail()) {
+          imgGetter.getDrawable(src);
+        }
+      }
+    }
+;
+    ImageSpan remote=new ImageSpan(remoteDrawable,img.getSource());
+    int spanStart=html.getSpanStart(img);
+    int spanEnd=html.getSpanEnd(img);
+    int spanFlags=html.getSpanFlags(img);
+    html.setSpan(remote,spanStart,spanEnd,spanFlags);
+    html.setSpan(clickListener,spanStart,spanEnd,spanFlags);
+    html.removeSpan(img);
+  }
+  mCommentText.setText(html);
+  mCommentText.setMovementMethod(LinkMovementMethod.getInstance());
+  mReplyField.setOnReplyListener(mReplyListener);
+  mDetailHeader.setText(getNote().getSubject());
+  Map<String,JSONObject> noteActions=getNote().getActions();
+  boolean hasModerateAction=false;
+  if (noteActions.containsKey(APPROVE_TAG)) {
+    hasModerateAction=true;
+    mApproveButton.setImageResource(R.drawable.moderate_approve);
+    mApproveButton.setVisibility(View.VISIBLE);
+    mApproveButton.setOnClickListener(mModerateClickListener);
+    mApproveButton.setTag(APPROVE_TAG);
+  }
+  if (noteActions.containsKey(UNAPPROVE_TAG)) {
+    hasModerateAction=true;
+    mApproveButton.setImageResource(R.drawable.moderate_unapprove);
+    mApproveButton.setVisibility(View.VISIBLE);
+    mApproveButton.setOnClickListener(mModerateClickListener);
+    mApproveButton.setTag(UNAPPROVE_TAG);
+  }
+  if (noteActions.containsKey(SPAM_TAG)) {
+    hasModerateAction=true;
+    mSpamButton.setVisibility(View.VISIBLE);
+    mSpamButton.setOnClickListener(mModerateClickListener);
+    mSpamButton.setTag(SPAM_TAG);
+  }
+ else {
+    mSpamButton.setVisibility(View.GONE);
+  }
+  if (noteActions.containsKey(TRASH_TAG)) {
+    hasModerateAction=true;
+    mTrashButton.setVisibility(View.VISIBLE);
+    mTrashButton.setOnClickListener(mModerateClickListener);
+    mTrashButton.setTag(TRASH_TAG);
+  }
+ else {
+    mTrashButton.setVisibility(View.GONE);
+  }
+  if (!hasModerateAction)   mModerateSection.setVisibility(View.GONE);
+  String url=getNote().queryJSON("body.items[last].header_link","");
+  if (!url.equals("")) {
+    mDetailHeader.setUrl(url);
+  }
+  JSONObject followAction=getNote().queryJSON("body.items[last].action",new JSONObject());
+  mFollowRow.setDefaultText(EscapeUtils.unescapeHtml(getNote().queryJSON("body.items[-1].header_text","")));
+  mFollowRow.setAction(followAction);
+  mFollowRow.setListener(new FollowListener(getActivity().getApplicationContext()));
+  Bundle arguments=getArguments();
+  if (arguments != null && (arguments.containsKey(NotificationsActivity.NOTE_REPLY_EXTRA) || arguments.containsKey(NotificationsActivity.NOTE_INSTANT_REPLY_EXTRA))) {
+    if (arguments.containsKey(NotificationsActivity.NOTE_REPLY_EXTRA))     mReplyField.setText(arguments.getString(NotificationsActivity.NOTE_REPLY_EXTRA));
+    mReplyField.mTextField.requestFocus();
+    InputMethodManager inputMethodManager=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+    if (inputMethodManager != null)     inputMethodManager.showSoftInput(mReplyField.mTextField,0);
+  }
+}

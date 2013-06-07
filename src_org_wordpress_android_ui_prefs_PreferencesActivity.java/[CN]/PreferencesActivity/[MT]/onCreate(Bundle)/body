@@ -1,5 +1,6 @@
 {
   super.onCreate(icicle);
+  overridePendingTransition(R.anim.slide_up,R.anim.do_nothing);
   setTitle(getResources().getText(R.string.settings));
   ActionBar ab=getSupportActionBar();
   ab.setDisplayHomeAsUpEnabled(true);
@@ -13,6 +14,7 @@
     }
   }
   addPreferencesFromResource(R.xml.preferences);
+  mNotificationsGroup=(PreferenceGroup)findPreference("wp_pref_notifications_category");
   preferenceChangeListener=new OnPreferenceChangeListener(){
     @Override public boolean onPreferenceChange(    Preference preference,    Object newValue){
       preference.setSummary(newValue.toString());
@@ -20,9 +22,23 @@
     }
   }
 ;
-  notificationIntervalPreference=(ListPreference)findPreference("wp_pref_notifications_interval");
-  notificationIntervalPreference.setOnPreferenceChangeListener(preferenceChangeListener);
   taglineTextPreference=(EditTextPreference)findPreference("wp_pref_post_signature");
   taglineTextPreference.setOnPreferenceChangeListener(preferenceChangeListener);
+  Preference signOutPreference=(Preference)findPreference("wp_pref_sign_out");
+  signOutPreference.setOnPreferenceClickListener(signOutPreferenceClickListener);
+  mSettings=PreferenceManager.getDefaultSharedPreferences(this);
+  if (WordPress.hasValidWPComCredentials(PreferencesActivity.this)) {
+    String settingsJson=mSettings.getString("wp_pref_notification_settings",null);
+    if (settingsJson == null) {
+      new WPComXMLRPCApi().getNotificationSettings(new XMLRPCCallback(){
+        public void onSuccess(        long id,        Object result){
+          refreshWPComAuthCategory();
+        }
+        public void onFailure(        long id,        XMLRPCException error){
+        }
+      }
+,this);
+    }
+  }
   displayPreferences();
 }

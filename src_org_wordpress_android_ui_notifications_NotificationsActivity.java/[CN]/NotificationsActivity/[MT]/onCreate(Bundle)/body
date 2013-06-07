@@ -1,0 +1,54 @@
+{
+  super.onCreate(savedInstanceState);
+  createMenuDrawer(R.layout.notifications);
+  ActionBar actionBar=getSupportActionBar();
+  actionBar.setDisplayShowTitleEnabled(true);
+  setTitle(getResources().getString(R.string.notifications));
+  FragmentManager fm=getSupportFragmentManager();
+  fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
+  mNotesList=(NotificationsListFragment)fm.findFragmentById(R.id.notes_list);
+  mNotesList.setNoteProvider(new NoteProvider());
+  mNotesList.setOnNoteClickListener(new NoteClickListener());
+  try {
+    if (WordPress.latestNotes != null) {
+      mNotesList.getNotesAdapter().addAll(parseNotes(WordPress.latestNotes));
+    }
+  }
+ catch (  JSONException e) {
+    Log.e(TAG,"No cached notes");
+  }
+  fragmentDetectors.add(new FragmentDetector(){
+    @Override public Fragment getFragment(    Note note){
+      if (note.isCommentType()) {
+        Fragment fragment=new NoteCommentFragment();
+        return fragment;
+      }
+      return null;
+    }
+  }
+);
+  fragmentDetectors.add(new FragmentDetector(){
+    @Override public Fragment getFragment(    Note note){
+      if (note.isSingleLineListTemplate()) {
+        Fragment fragment=new SingleLineListFragment();
+        return fragment;
+      }
+      return null;
+    }
+  }
+);
+  fragmentDetectors.add(new FragmentDetector(){
+    @Override public Fragment getFragment(    Note note){
+      Log.d(TAG,String.format("Is it a big badge template? %b",note.isBigBadgeTemplate()));
+      if (note.isBigBadgeTemplate()) {
+        Fragment fragment=new BigBadgeFragment();
+        return fragment;
+      }
+      return null;
+    }
+  }
+);
+  GCMIntentService.activeNotificationsMap.clear();
+  launchWithNoteId();
+  refreshNotes();
+}

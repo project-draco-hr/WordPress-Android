@@ -1,0 +1,26 @@
+{
+  final SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(context);
+  String gcmToken=GCMRegistrar.getRegistrationId(context);
+  if (gcmToken == null)   return;
+  if (!WordPress.hasValidWPComCredentials(context))   return;
+  Object[] params={settings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,""),WordPressDB.decryptPassword(settings.getString(WordPress.WPCOM_PASSWORD_PREFERENCE,"")),gcmToken,"android"};
+  client.callAsync(new XMLRPCCallback(){
+    public void onSuccess(    long id,    Object result){
+      Log.v("WORDPRESS","Push notification settings retrieved!");
+      if (callback != null) {
+        callback.onSuccess(id,result);
+      }
+      Gson gson=new Gson();
+      Editor editor=settings.edit();
+      editor.putString("wp_pref_notification_settings",gson.toJson(result));
+      editor.commit();
+    }
+    public void onFailure(    long id,    XMLRPCException error){
+      if (callback != null) {
+        callback.onFailure(id,error);
+      }
+      Log.v("WORDPRESS",error.getMessage());
+    }
+  }
+,"wpcom.get_mobile_push_notification_settings",params);
+}

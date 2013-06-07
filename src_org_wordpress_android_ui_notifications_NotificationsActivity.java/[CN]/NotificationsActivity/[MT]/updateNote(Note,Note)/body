@@ -1,0 +1,18 @@
+{
+  if (isFinishing())   return;
+  int position=mNotesList.getNotesAdapter().getPosition(originalNote);
+  if (position >= 0) {
+    mNotesList.getNotesAdapter().remove(originalNote);
+    mNotesList.getNotesAdapter().insert(updatedNote,position);
+    mNotesList.getNotesAdapter().notifyDataSetChanged();
+    if (position == mNotesList.getListView().getCheckedItemPosition()) {
+      FragmentManager fm=getSupportFragmentManager();
+      NoteCommentFragment f=(NoteCommentFragment)fm.findFragmentById(R.id.note_fragment_container);
+      if (f != null) {
+        f.setNote(updatedNote);
+        f.onStart();
+        f.animateModeration(false);
+      }
+    }
+  }
+}

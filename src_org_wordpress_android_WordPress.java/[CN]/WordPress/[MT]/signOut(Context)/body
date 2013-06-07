@@ -1,0 +1,19 @@
+{
+  unregisterWPComToken(context,GCMRegistrar.getRegistrationId(context));
+  try {
+    GCMRegistrar.checkDevice(context);
+    GCMRegistrar.unregister(context);
+  }
+ catch (  Exception e) {
+    Log.v("WORDPRESS","Could not unregister for GCM: " + e.getMessage());
+  }
+  SharedPreferences.Editor editor=PreferenceManager.getDefaultSharedPreferences(context).edit();
+  editor.remove(WordPress.WPCOM_USERNAME_PREFERENCE);
+  editor.remove(WordPress.WPCOM_PASSWORD_PREFERENCE);
+  editor.remove(WordPress.ACCESS_TOKEN_PREFERENCE);
+  editor.commit();
+  wpDB.deactivateAccounts();
+  wpDB.updateLastBlogId(-1);
+  currentBlog=null;
+  restClient.clearAccessToken();
+}
