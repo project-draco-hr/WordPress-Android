@@ -1,49 +1,5 @@
 {
-  if (getEnabledBlogsCount() > 0) {
-    int UPDATE_INTERVAL=3600000;
-    ListPreference notificationIntervalPreference=(ListPreference)findPreference("wp_pref_notifications_interval");
-    String notificationInterval=notificationIntervalPreference.getValue();
-    if (notificationInterval.equals("5 Minutes")) {
-      UPDATE_INTERVAL=300000;
-    }
- else     if (notificationInterval.equals("10 Minutes")) {
-      UPDATE_INTERVAL=600000;
-    }
- else     if (notificationInterval.equals("15 Minutes")) {
-      UPDATE_INTERVAL=900000;
-    }
- else     if (notificationInterval.equals("30 Minutes")) {
-      UPDATE_INTERVAL=1800000;
-    }
- else     if (notificationInterval.equals("1 Hour")) {
-      UPDATE_INTERVAL=3600000;
-    }
- else     if (notificationInterval.equals("3 Hours")) {
-      UPDATE_INTERVAL=10800000;
-    }
- else     if (notificationInterval.equals("6 Hours")) {
-      UPDATE_INTERVAL=21600000;
-    }
- else     if (notificationInterval.equals("12 Hours")) {
-      UPDATE_INTERVAL=43200000;
-    }
- else     if (notificationInterval.equals("Daily")) {
-      UPDATE_INTERVAL=86400000;
-    }
-    Intent intent=new Intent(PreferencesActivity.this,CommentBroadcastReceiver.class);
-    PendingIntent pIntent=PendingIntent.getBroadcast(PreferencesActivity.this,0,intent,0);
-    AlarmManager alarmManager=(AlarmManager)getSystemService(ALARM_SERVICE);
-    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis() + (5 * 1000),UPDATE_INTERVAL,pIntent);
-  }
- else {
-    Intent stopIntent=new Intent(PreferencesActivity.this,CommentBroadcastReceiver.class);
-    PendingIntent stopPIntent=PendingIntent.getBroadcast(PreferencesActivity.this,0,stopIntent,0);
-    AlarmManager alarmManager=(AlarmManager)getSystemService(ALARM_SERVICE);
-    alarmManager.cancel(stopPIntent);
-    Intent service=new Intent(PreferencesActivity.this,CommentService.class);
-    stopService(service);
-  }
-  Intent intent=new Intent();
-  setResult(RESULT_OK,intent);
+  overridePendingTransition(R.anim.do_nothing,R.anim.slide_down);
+  setResult(RESULT_OK);
   super.onPause();
 }

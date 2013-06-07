@@ -1,3 +1,17 @@
 {
   WordPress.wpDB.updateLastBlogId(WordPress.currentBlog.getId());
+  Iterator<MenuDrawerItem> itemIterator=mMenuItems.iterator();
+  while (itemIterator.hasNext()) {
+    MenuDrawerItem item=itemIterator.next();
+    if (item.isSelected() && !item.isVisible()) {
+      mAdapter.getItem(0).selectItem();
+      if (item.hasItemId()) {
+        SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WPActionBarActivity.this);
+        SharedPreferences.Editor editor=settings.edit();
+        editor.putInt(LAST_ACTIVITY_PREFERENCE,item.getItemId());
+        editor.commit();
+      }
+      break;
+    }
+  }
 }

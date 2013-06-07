@@ -1,0 +1,74 @@
+{
+  try {
+    final Object[] result;
+    result=(Object[])mClient.call(method,params);
+    handler.post(new Runnable(){
+      public void run(){
+        callBack.callFinished(result);
+      }
+    }
+);
+  }
+ catch (  final XMLRPCFault e) {
+    handler.post(new Runnable(){
+      public void run(){
+        mProgressDialog.dismiss();
+        String message=e.getMessage();
+        if (message.contains("code 403")) {
+          Thread shake=new Thread(){
+            public void run(){
+              Animation shake=AnimationUtils.loadAnimation(AccountSetupActivity.this,R.anim.shake);
+              findViewById(R.id.section1).startAnimation(shake);
+              Toast.makeText(AccountSetupActivity.this,getString(R.string.invalid_login),Toast.LENGTH_SHORT).show();
+            }
+          }
+;
+          runOnUiThread(shake);
+        }
+ else {
+          AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(AccountSetupActivity.this);
+          dialogBuilder.setTitle(getString(R.string.connection_error));
+          if (message.contains("404"))           message=getString(R.string.xmlrpc_error);
+          dialogBuilder.setMessage(message);
+          dialogBuilder.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
+            public void onClick(            DialogInterface dialog,            int whichButton){
+              dialog.dismiss();
+            }
+          }
+);
+          dialogBuilder.setCancelable(true);
+          dialogBuilder.create().show();
+        }
+      }
+    }
+);
+  }
+catch (  final XMLRPCException e) {
+    handler.post(new Runnable(){
+      public void run(){
+        Throwable couse=e.getCause();
+        e.printStackTrace();
+        mProgressDialog.dismiss();
+        String message=e.getMessage();
+        if (couse instanceof HttpHostConnectException) {
+        }
+ else {
+          AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(AccountSetupActivity.this);
+          dialogBuilder.setTitle(getString(R.string.connection_error));
+          if (message.contains("404"))           message=getString(R.string.xmlrpc_error);
+          dialogBuilder.setMessage(message);
+          dialogBuilder.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
+            public void onClick(            DialogInterface dialog,            int whichButton){
+              dialog.dismiss();
+            }
+          }
+);
+          dialogBuilder.setCancelable(true);
+          dialogBuilder.create().show();
+        }
+        e.printStackTrace();
+      }
+    }
+);
+  }
+}

@@ -1,0 +1,28 @@
+{
+  View view=super.getView(position,convertView,parent);
+  final Note note=getItem(position);
+  TextView detailText=(TextView)view.findViewById(R.id.note_detail);
+  if (note.isCommentType()) {
+    detailText.setText(note.getCommentPreview());
+    detailText.setVisibility(View.VISIBLE);
+  }
+ else {
+    detailText.setVisibility(View.GONE);
+  }
+  final NetworkImageView avatarView=(NetworkImageView)view.findViewById(R.id.note_avatar);
+  avatarView.setDefaultImageResId(R.drawable.placeholder);
+  avatarView.setImageUrl(note.getIconURL(),WordPress.imageLoader);
+  int imageID=getResources().getIdentifier("note_icon_" + note.getType(),"drawable",getActivity().getPackageName());
+  if (imageID > 0) {
+    final ImageView iconView=(ImageView)view.findViewById(R.id.note_icon);
+    iconView.setImageResource(imageID);
+  }
+  final TextView unreadIndicator=(TextView)view.findViewById(R.id.unread_indicator);
+  if (note.isUnread()) {
+    unreadIndicator.setVisibility(View.VISIBLE);
+  }
+ else {
+    unreadIndicator.setVisibility(View.GONE);
+  }
+  return view;
+}

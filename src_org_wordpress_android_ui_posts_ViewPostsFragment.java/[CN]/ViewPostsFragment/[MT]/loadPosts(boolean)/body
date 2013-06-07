@@ -60,10 +60,10 @@
   }
   boolean drafts=loadDrafts();
   if (drafts) {
-    mPostIDs=StringHelper.mergeStringArrays(mDraftIDs,mPostIDs);
-    mTitles=StringHelper.mergeStringArrays(mDraftTitles,mTitles);
-    mDateCreatedFormatted=StringHelper.mergeStringArrays(mDraftDateCreated,mDateCreatedFormatted);
-    mStatuses=StringHelper.mergeStringArrays(mDraftStatuses,mStatuses);
+    mPostIDs=StringUtils.mergeStringArrays(mDraftIDs,mPostIDs);
+    mTitles=StringUtils.mergeStringArrays(mDraftTitles,mTitles);
+    mDateCreatedFormatted=StringUtils.mergeStringArrays(mDraftDateCreated,mDateCreatedFormatted);
+    mStatuses=StringUtils.mergeStringArrays(mDraftStatuses,mStatuses);
   }
  else {
     if (mPostListAdapter != null) {
@@ -74,6 +74,8 @@
     ListView listView=getListView();
     listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
     listView.setBackgroundColor(getResources().getColor(R.color.list_row_bg));
+    listView.setDivider(getResources().getDrawable(R.drawable.list_divider));
+    listView.setDividerHeight(1);
     listView.removeFooterView(switcher);
     if (loadedPosts != null) {
       if (loadedPosts.size() >= 20) {
@@ -192,6 +194,7 @@ catch (          InvocationTargetException e) {
  else {
     if (loadedPosts == null) {
       refreshPosts(false);
+      if (!isPage)       new ApiHelper.RefreshBlogContentTask(getActivity(),WordPress.getCurrentBlog()).execute(false);
     }
     return false;
   }

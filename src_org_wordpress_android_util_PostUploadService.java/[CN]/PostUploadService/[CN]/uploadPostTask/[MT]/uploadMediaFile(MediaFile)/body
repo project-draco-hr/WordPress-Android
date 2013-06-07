@@ -62,6 +62,10 @@
  else {
         fVideo=new File(videoUri.toString().replace("file://",""));
       }
+      if (fVideo == null) {
+        error=context.getResources().getString(R.string.error_media_upload) + ".";
+        return null;
+      }
       String imageTitle=fVideo.getName();
       Map<String,Object> m=new HashMap<String,Object>();
       m.put("name",imageTitle);
@@ -71,7 +75,7 @@
       Object[] params={1,post.getBlog().getUsername(),post.getBlog().getPassword(),m};
       Object result=null;
       try {
-        result=(Object)client.callUploadFile("wp.uploadFile",params,tempFile);
+        result=(Object)client.call("wp.uploadFile",params,tempFile);
       }
  catch (      XMLRPCException e) {
         error=context.getResources().getString(R.string.error_media_upload) + ": " + cleanXMLRPCErrorMessage(e.getMessage());
@@ -196,7 +200,7 @@
           Object[] params={1,post.getBlog().getUsername(),post.getBlog().getPassword(),m};
           Object result=null;
           try {
-            result=(Object)client.callUploadFile("wp.uploadFile",params,tempFile);
+            result=(Object)client.call("wp.uploadFile",params,tempFile);
           }
  catch (          XMLRPCException e) {
             error=context.getResources().getString(R.string.error_media_upload) + ": " + cleanXMLRPCErrorMessage(e.getMessage());

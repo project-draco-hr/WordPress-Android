@@ -1,0 +1,17 @@
+{
+  Intent intent=getIntent();
+  if (intent.hasExtra(NOTE_ID_EXTRA)) {
+    Map<String,String> params=new HashMap<String,String>();
+    params.put("ids",intent.getStringExtra(NOTE_ID_EXTRA));
+    NotesResponseHandler handler=new NotesResponseHandler(){
+      @Override public void onNotes(      List<Note> notes){
+        if (!notes.isEmpty()) {
+          Note note=notes.get(0);
+          openNote(note);
+        }
+      }
+    }
+;
+    restClient.getNotifications(params,handler,handler);
+  }
+}

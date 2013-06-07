@@ -5,8 +5,10 @@
   String message=context.getResources().getText(R.string.uploading) + " " + postOrPage;
   n=new Notification(R.drawable.notification_icon,message,System.currentTimeMillis());
   Intent notificationIntent=new Intent(context,PostsActivity.class);
+  notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK);
+  notificationIntent.setAction("android.intent.action.MAIN");
+  notificationIntent.addCategory("android.intent.category.LAUNCHER");
   notificationIntent.setData((Uri.parse("custom://wordpressNotificationIntent" + post.getBlogID())));
-  notificationIntent.putExtra("fromNotification",true);
   PendingIntent pendingIntent=PendingIntent.getActivity(context,0,notificationIntent,Intent.FLAG_ACTIVITY_CLEAR_TOP);
   n.setLatestEventInfo(context,message,message,pendingIntent);
   notificationID=22 + Integer.valueOf(post.getBlogID());

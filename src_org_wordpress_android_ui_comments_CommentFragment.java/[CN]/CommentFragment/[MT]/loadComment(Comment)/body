@@ -1,7 +1,9 @@
 {
   WordPress.currentComment=comment;
-  final String gravatarURL="http://gravatar.com/avatar/" + getMd5Hash(comment.authorEmail) + "?s=200&d=mm";
-  getGravatar(gravatarURL);
+  final String gravatarURL="http://gravatar.com/avatar/" + StringUtils.getMd5Hash(comment.authorEmail) + "?s=200&d=mm";
+  NetworkImageView gravatar=(NetworkImageView)getActivity().findViewById(R.id.gravatar);
+  gravatar.setDefaultImageResId(R.drawable.placeholder);
+  gravatar.setImageUrl(gravatarURL,WordPress.imageLoader);
   TextView tvName=(TextView)getActivity().findViewById(R.id.commentDetailName);
   String authName=comment.name;
   if (authName.length() <= 0)   tvName.setText(R.string.anonymous);

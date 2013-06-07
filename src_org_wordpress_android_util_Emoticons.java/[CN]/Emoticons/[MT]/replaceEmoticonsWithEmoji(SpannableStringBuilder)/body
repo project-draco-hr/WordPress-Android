@@ -1,0 +1,13 @@
+{
+  ImageSpan imgs[]=html.getSpans(0,html.length(),ImageSpan.class);
+  for (  ImageSpan img : imgs) {
+    String emoticon=Emoticons.lookupImageSmiley(img.getSource());
+    if (!emoticon.equals("")) {
+      int start=html.getSpanStart(img);
+      html.replace(start,html.getSpanEnd(img),emoticon);
+      html.setSpan(new ForegroundColorSpan(EMOTICON_COLOR),start,start + emoticon.length(),Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+      html.removeSpan(img);
+    }
+  }
+  return html;
+}

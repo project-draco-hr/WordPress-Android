@@ -2,12 +2,12 @@
   final ReaderWebPageFragment readerWebPageFragment=(ReaderWebPageFragment)webPage;
   final ReaderDetailPageFragment readerPageDetailFragment=(ReaderDetailPageFragment)detailPage;
   int itemId=item.getItemId();
-  if (itemId == 0) {
+  if (itemId == R.id.menu_refresh) {
     ReaderImplFragment readerPageFragment=(ReaderImplFragment)readerPage;
     readerPageFragment.refreshReader();
     return true;
   }
- else   if (itemId == 1) {
+ else   if (itemId == R.id.menu_browser) {
     if (readerPageDetailFragment != null && readerPageDetailFragment != null) {
       if (readerPager.getCurrentItem() == 2) {
         runOnUiThread(new Runnable(){
@@ -31,7 +31,7 @@
     }
     return true;
   }
- else   if (itemId == 2) {
+ else   if (itemId == R.id.menu_share_link) {
     if (readerWebPageFragment != null && readerPageDetailFragment != null) {
       if (readerPager.getCurrentItem() == 2) {
         runOnUiThread(new Runnable(){
@@ -58,6 +58,9 @@
     if (readerPager.getCurrentItem() > 1) {
       readerPager.setCurrentItem(readerPager.getCurrentItem() - 1);
       supportInvalidateOptionsMenu();
+      if (readerPager.getCurrentItem() == 1) {
+        mMenuDrawer.setDrawerIndicatorEnabled(true);
+      }
       return true;
     }
   }
