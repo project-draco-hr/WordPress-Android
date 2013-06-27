@@ -41,6 +41,11 @@
       db.execSQL(ADD_FEATURED_IN_POST);
       db.execSQL(ADD_HOME_URL);
       db.execSQL(ADD_BLOG_OPTIONS);
+      db.execSQL(ADD_MEDIA_FILE_URL);
+      db.execSQL(ADD_MEDIA_THUMBNAIL_PATH);
+      db.execSQL(ADD_MEDIA_THUMBNAIL_URL);
+      db.execSQL(ADD_MEDIA_UNIQUE_ID);
+      db.execSQL(ADD_MEDIA_BLOG_ID);
       migratePasswords();
       db.setVersion(DATABASE_VERSION);
     }
@@ -372,6 +377,15 @@
  else     if (db.getVersion() == 16) {
       migrateWPComAccount();
       db.setVersion(DATABASE_VERSION);
+    }
+ else     if (db.getVersion() == 17) {
+      db.execSQL(ADD_MEDIA_FILE_URL);
+      db.execSQL(ADD_MEDIA_THUMBNAIL_PATH);
+      db.execSQL(ADD_MEDIA_THUMBNAIL_URL);
+      db.execSQL(ADD_MEDIA_UNIQUE_ID);
+      db.execSQL(ADD_MEDIA_BLOG_ID);
+      db.setVersion(DATABASE_VERSION);
+      migrateWPComAccount();
     }
   }
  catch (  SQLException e) {

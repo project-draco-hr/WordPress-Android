@@ -1,0 +1,17 @@
+{
+  super.onCreate(savedInstanceState);
+  Log.d("WordPress","MediaBrowserActivity started");
+  if (WordPress.wpDB == null) {
+    Toast.makeText(this,R.string.fatal_db_error,Toast.LENGTH_LONG).show();
+    Log.d("WordPress","MediaBrowserActivity DB is null - finishing");
+    finish();
+    return;
+  }
+  createMenuDrawer(R.layout.media_browser_activity);
+  ActionBar actionBar=getSupportActionBar();
+  actionBar.setDisplayShowTitleEnabled(true);
+  FragmentManager fm=getSupportFragmentManager();
+  fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
+  mMediaItemListFragment=(MediaItemListFragment)fm.findFragmentById(R.id.mediaItemListFragment);
+  mMediaItemListFragment.setListShown(true);
+}

@@ -1,0 +1,27 @@
+{
+  Log.d("WordPress","ApiHelper - starting getMediaTask");
+  List<?> arguments=params[0];
+  WordPress.currentBlog=(Blog)arguments.get(0);
+  if (WordPress.currentBlog == null) {
+    Log.e("WordPress","ApiHelper - current blog is null");
+    return false;
+  }
+  client=new XMLRPCClient(WordPress.currentBlog.getUrl(),WordPress.currentBlog.getHttpuser(),WordPress.currentBlog.getHttppassword());
+  Object[] apiParams={WordPress.currentBlog.getBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword()};
+  Object[] results=null;
+  try {
+    results=(Object[])client.call("wp.getMediaLibrary",apiParams);
+  }
+ catch (  XMLRPCException e) {
+    Log.e("WordPress","ApiHelper - failed to get media library");
+    Log.e("WordPress",e.getMessage());
+  }
+  if (results != null) {
+    Map<?,?> resultMap;
+    for (    Object result : results) {
+      resultMap=(Map<?,?>)result;
+      WordPress.wpDB.saveMediaFile(new MediaFile(String.valueOf(WordPress.currentBlog.getBlogId()),resultMap));
+    }
+  }
+  return true;
+}
