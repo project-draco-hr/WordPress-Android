@@ -1,8 +1,10 @@
 {
   TextView title=(TextView)view.findViewById(R.id.media_listitem_title);
   title.setText(cursor.getString(cursor.getColumnIndex("title")));
+  NetworkImageView thumbnail=(NetworkImageView)view.findViewById(R.id.media_listitem_thumbnail);
+  thumbnail.setDefaultImageResId(R.drawable.placeholder);
   String fileURL=cursor.getString(cursor.getColumnIndex("fileURL"));
-  ImageView thumbnail=(ImageView)view.findViewById(R.id.media_listitem_thumbnail);
-  if (isValidImage(fileURL))   loadThumbnail(thumbnail,context,cursor);
+  String thumbnailURL=cursor.getString(cursor.getColumnIndex("thumbnailURL"));
+  if (isValidImage(fileURL))   thumbnail.setImageUrl(thumbnailURL,WordPress.imageLoader);
  else   thumbnail.setImageDrawable(null);
 }
