@@ -13,7 +13,6 @@
     results=(Object[])client.call("wp.getMediaLibrary",apiParams);
   }
  catch (  XMLRPCException e) {
-    Log.e("WordPress","ApiHelper - failed to get media library");
     Log.e("WordPress",e.getMessage());
   }
   if (results != null) {
@@ -22,6 +21,9 @@
       resultMap=(Map<?,?>)result;
       WordPress.wpDB.saveMediaFile(new MediaFile(String.valueOf(WordPress.currentBlog.getBlogId()),resultMap));
     }
+    return true;
   }
-  return true;
+ else {
+    return false;
+  }
 }
