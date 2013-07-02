@@ -1,0 +1,16 @@
+{
+  FragmentManager fm=getSupportFragmentManager();
+  mMediaItemFragment=(MediaItemFragment)fm.findFragmentById(R.id.mediaItemFragment);
+  if (mMediaItemFragment == null || !mMediaItemFragment.isInLayout()) {
+    FragmentTransaction ft=fm.beginTransaction();
+    ft.hide(mMediaItemListFragment);
+    mMediaItemFragment=MediaItemFragment.newInstance(mediaId);
+    ft.add(R.id.media_browser_container,mMediaItemFragment);
+    ft.addToBackStack(null);
+    ft.commit();
+    mMenuDrawer.setDrawerIndicatorEnabled(false);
+  }
+ else {
+    mMediaItemFragment.loadMedia(mediaId);
+  }
+}

@@ -1,0 +1,25 @@
+{
+  if (!cursor.moveToFirst())   return;
+  mTitleView.setText(cursor.getString(cursor.getColumnIndex("title")));
+  mCaptionView.setText(cursor.getString(cursor.getColumnIndex("caption")));
+  mDescriptionView.setText(cursor.getString(cursor.getColumnIndex("description")));
+  String date=MediaUtils.getDate(cursor.getLong(cursor.getColumnIndex("date_created_gmt")));
+  mDateView.setText("Uploaded on: " + date);
+  String fileName=cursor.getString(cursor.getColumnIndex("fileName"));
+  mFileNameView.setText("File name: " + fileName);
+  String fileURL=cursor.getString(cursor.getColumnIndex("fileURL"));
+  String fileType=fileURL.replaceAll(".*\\.(\\w+)$","$1").toUpperCase();
+  mFileTypeView.setText("File type: " + fileType);
+  String imageUrl=cursor.getString(cursor.getColumnIndex("fileURL"));
+  if (MediaUtils.isValidImage(imageUrl)) {
+    mImageView.setImageUrl(imageUrl,WordPress.imageLoader);
+    mImageView.setVisibility(View.VISIBLE);
+    String dimensions=cursor.getString(cursor.getColumnIndex("width")) + "x" + cursor.getString(cursor.getColumnIndex("height"));
+    mDimensionsView.setText("Dimensions: " + dimensions);
+    mDimensionsView.setVisibility(View.VISIBLE);
+  }
+ else {
+    mImageView.setVisibility(View.GONE);
+    mDimensionsView.setVisibility(View.GONE);
+  }
+}
