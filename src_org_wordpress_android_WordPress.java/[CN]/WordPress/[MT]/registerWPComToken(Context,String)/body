@@ -2,7 +2,8 @@
   SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(ctx);
   String uuid=settings.getString("wp_pref_notifications_uuid",null);
   if (uuid == null)   return;
-  Object[] params={settings.getString(WPCOM_USERNAME_PREFERENCE,""),WordPressDB.decryptPassword(settings.getString(WPCOM_PASSWORD_PREFERENCE,"")),token,uuid,"android",false};
+  String deviceName=DeviceUtils.getInstance().getDeviceName(ctx);
+  Object[] params={settings.getString(WPCOM_USERNAME_PREFERENCE,""),WordPressDB.decryptPassword(settings.getString(WPCOM_PASSWORD_PREFERENCE,"")),token,uuid,"android",false,deviceName};
   XMLRPCClient client=new XMLRPCClient(URI.create(Constants.wpcomXMLRPCURL),"","");
   client.callAsync(new XMLRPCCallback(){
     public void onSuccess(    long id,    Object result){
@@ -10,7 +11,7 @@
       new WPComXMLRPCApi().getNotificationSettings(null,ctx);
     }
     public void onFailure(    long id,    XMLRPCException error){
-      Log.v("WORDPRESS",error.getMessage());
+      Log.e("WORDPRESS",error.getMessage());
     }
   }
 ,"wpcom.mobile_push_register_token",params);
