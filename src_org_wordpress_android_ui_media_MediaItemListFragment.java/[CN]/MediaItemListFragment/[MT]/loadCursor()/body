@@ -3,5 +3,9 @@
   if (blog != null) {
     String blogId=String.valueOf(blog.getBlogId());
     mCursor=WordPress.wpDB.getMediaFilesForBlog(blogId);
+    if (mCursor.moveToFirst()) {
+      String mediaId=mCursor.getString(mCursor.getColumnIndex("uuid"));
+      mListener.onMediaItemSelected(mediaId);
+    }
   }
 }
