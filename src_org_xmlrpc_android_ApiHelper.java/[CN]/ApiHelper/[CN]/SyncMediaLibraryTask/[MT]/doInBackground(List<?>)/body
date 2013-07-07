@@ -15,11 +15,14 @@
     Log.e("WordPress",e.getMessage());
   }
   if (results != null) {
+    String blogId=String.valueOf(WordPress.currentBlog.getBlogId());
+    WordPress.wpDB.updateMediaForSync(blogId);
     Map<?,?> resultMap;
     for (    Object result : results) {
       resultMap=(Map<?,?>)result;
-      WordPress.wpDB.saveMediaFile(new MediaFile(String.valueOf(WordPress.currentBlog.getBlogId()),resultMap));
+      WordPress.wpDB.saveMediaFile(new MediaFile(blogId,resultMap));
     }
+    WordPress.wpDB.deleteUnsyncedMedia(blogId);
     return true;
   }
  else {

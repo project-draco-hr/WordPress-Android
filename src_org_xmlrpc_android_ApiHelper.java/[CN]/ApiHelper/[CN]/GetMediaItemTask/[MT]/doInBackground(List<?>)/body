@@ -1,0 +1,25 @@
+{
+  List<?> arguments=params[0];
+  WordPress.currentBlog=(Blog)arguments.get(0);
+  if (WordPress.currentBlog == null) {
+    Log.e("WordPress","ApiHelper - current blog is null");
+    return null;
+  }
+  client=new XMLRPCClient(WordPress.currentBlog.getUrl(),WordPress.currentBlog.getHttpuser(),WordPress.currentBlog.getHttppassword());
+  Object[] apiParams={WordPress.currentBlog.getBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),mMediaId};
+  Map<?,?> results=null;
+  try {
+    results=(Map<?,?>)client.call("wp.getMediaItem",apiParams);
+  }
+ catch (  XMLRPCException e) {
+    Log.e("WordPress",e.getMessage());
+  }
+  if (results != null) {
+    MediaFile mediaFile=new MediaFile(String.valueOf(WordPress.currentBlog.getBlogId()),results);
+    mediaFile.save();
+    return mediaFile;
+  }
+ else {
+    return null;
+  }
+}

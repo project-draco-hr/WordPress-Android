@@ -14,16 +14,14 @@
   mediaFile.setMIMEType(mimeType);
   ApiHelper.UploadMediaTask task=new ApiHelper.UploadMediaTask(mContext,mediaFile,new Callback(){
     @Override public void onSuccess(    String id){
-      mUploadInProgress=false;
-      WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,"uploaded");
-      sendUpdateBroadcast();
-      mHandler.post(FetchQueueTask);
+      WordPress.wpDB.deleteMediaFile(blogIdStr,mediaId);
+      fetchMediaFile(id);
     }
     @Override public void onFailure(){
-      mUploadInProgress=false;
       WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,"failed");
+      mUploadInProgress=false;
       sendUpdateBroadcast();
-      mHandler.post(FetchQueueTask);
+      mHandler.post(fetchQueueTask);
     }
   }
 );
@@ -32,5 +30,5 @@
   List<Object> apiArgs=new ArrayList<Object>();
   apiArgs.add(WordPress.getCurrentBlog());
   task.execute(apiArgs);
-  mHandler.post(FetchQueueTask);
+  mHandler.post(fetchQueueTask);
 }

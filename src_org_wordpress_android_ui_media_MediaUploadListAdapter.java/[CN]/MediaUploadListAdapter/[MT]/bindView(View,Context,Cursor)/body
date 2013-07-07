@@ -1,8 +1,9 @@
 {
   TextView textView=(TextView)view.findViewById(R.id.media_upload_listitem_filename);
   textView.setText(cursor.getString(cursor.getColumnIndex("fileName")));
-  ImageView imageView=(ImageView)view.findViewById(R.id.media_upload_listitem_image);
+  final ImageView imageView=(ImageView)view.findViewById(R.id.media_upload_listitem_image);
   final String filePath=cursor.getString(cursor.getColumnIndex("filePath"));
+  final String thumbnailUrl=cursor.getString(cursor.getColumnIndex("thumbnailURL"));
   if (MediaUtils.isValidImage(filePath)) {
     Bitmap bitmap=WordPress.localImageCache.get(filePath);
     if (bitmap != null) {
@@ -19,6 +20,18 @@
 );
       task.execute(filePath);
     }
+  }
+ else   if (thumbnailUrl != null && !thumbnailUrl.equals("")) {
+    WordPress.imageLoader.get(thumbnailUrl,new ImageListener(){
+      @Override public void onErrorResponse(      VolleyError arg0){
+      }
+      @Override public void onResponse(      ImageContainer arg0,      boolean arg1){
+        if (arg0 != null && arg0.getBitmap() != null) {
+          imageView.setImageBitmap(arg0.getBitmap());
+        }
+      }
+    }
+);
   }
  else {
     imageView.setImageBitmap(null);
