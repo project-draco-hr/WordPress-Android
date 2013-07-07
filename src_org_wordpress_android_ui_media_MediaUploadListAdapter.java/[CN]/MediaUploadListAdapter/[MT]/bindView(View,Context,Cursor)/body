@@ -1,7 +1,28 @@
 {
-  ImageView imageView=(ImageView)view.findViewById(R.id.media_upload_listitem_image);
   TextView textView=(TextView)view.findViewById(R.id.media_upload_listitem_filename);
   textView.setText(cursor.getString(cursor.getColumnIndex("fileName")));
+  ImageView imageView=(ImageView)view.findViewById(R.id.media_upload_listitem_image);
+  final String filePath=cursor.getString(cursor.getColumnIndex("filePath"));
+  if (MediaUtils.isValidImage(filePath)) {
+    Bitmap bitmap=WordPress.localImageCache.get(filePath);
+    if (bitmap != null) {
+      imageView.setImageBitmap(bitmap);
+    }
+ else {
+      int width=imageView.getLayoutParams().width;
+      int height=imageView.getLayoutParams().height;
+      BitmapWorkerTask task=new BitmapWorkerTask(imageView,width,height,new BitmapWorkerCallback(){
+        @Override public void onBitmapReady(        Bitmap bitmap){
+          WordPress.localImageCache.put(filePath,bitmap);
+        }
+      }
+);
+      task.execute(filePath);
+    }
+  }
+ else {
+    imageView.setImageBitmap(null);
+  }
   String uploadState=cursor.getString(cursor.getColumnIndex("uploadState"));
   ProgressBar progressBar=(ProgressBar)view.findViewById(R.id.media_upload_listitem_progress);
   if (uploadState.equals("uploading")) {
