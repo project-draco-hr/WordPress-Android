@@ -1,6 +1,19 @@
 {
   super.onCreateView(inflater,container,savedInstanceState);
-  mGridView=(GridView)inflater.inflate(R.layout.media_grid_fragment,container);
+  View view=inflater.inflate(R.layout.media_grid_fragment,container);
+  mGridView=(GridView)view.findViewById(R.id.media_gridview);
   mGridView.setOnItemClickListener(this);
-  return mGridView;
+  View spinnerContainer=view.findViewById(R.id.media_filter_spinner_container);
+  spinnerContainer.setOnClickListener(new OnClickListener(){
+    @Override public void onClick(    View v){
+      if (mSpinner != null) {
+        mSpinner.performClick();
+      }
+    }
+  }
+);
+  mSpinner=(IcsSpinner)view.findViewById(R.id.media_filter_spinner);
+  mSpinner.setOnItemSelectedListener(mFilterSelectedListener);
+  refreshSpinnerAdapter();
+  return view;
 }

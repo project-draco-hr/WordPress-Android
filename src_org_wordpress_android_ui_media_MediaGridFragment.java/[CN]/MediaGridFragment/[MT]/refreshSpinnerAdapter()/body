@@ -1,0 +1,11 @@
+{
+  if (getActivity() == null)   return;
+  Context context=((WPActionBarActivity)getActivity()).getSupportActionBar().getThemedContext();
+  String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+  int countAll=WordPress.wpDB.getMediaCountAll(blogId);
+  int countImages=WordPress.wpDB.getMediaCountImages(blogId);
+  int countUnattached=WordPress.wpDB.getMediaCountUnattached(blogId);
+  String[] filters=new String[]{getResources().getString(R.string.all) + " (" + countAll+ ")",getResources().getString(R.string.images) + " (" + countImages+ ")",getResources().getString(R.string.unattached) + " (" + countUnattached+ ")"};
+  SpinnerAdapter adapter=new ArrayAdapter<String>(context,R.layout.sherlock_spinner_dropdown_item,filters);
+  mSpinner.setAdapter(adapter);
+}
