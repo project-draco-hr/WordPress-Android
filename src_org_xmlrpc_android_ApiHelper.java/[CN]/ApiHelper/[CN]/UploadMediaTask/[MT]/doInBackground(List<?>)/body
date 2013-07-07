@@ -1,0 +1,30 @@
+{
+  List<?> arguments=params[0];
+  WordPress.currentBlog=(Blog)arguments.get(0);
+  if (WordPress.currentBlog == null) {
+    Log.e("WordPress","UploadMediaTask: ApiHelper - current blog is null");
+    return null;
+  }
+  client=new XMLRPCClient(WordPress.currentBlog.getUrl(),WordPress.currentBlog.getHttpuser(),WordPress.currentBlog.getHttppassword());
+  byte[] bits=readFile(new File(mMediaFile.getFilePath()));
+  Map<String,Object> data=new HashMap<String,Object>();
+  data.put("name",mMediaFile.getFileName());
+  data.put("type",mMediaFile.getMIMEType());
+  data.put("bits",bits);
+  data.put("overwrite",true);
+  Object[] apiParams={1,WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),data};
+  Map<?,?> resultMap=null;
+  try {
+    resultMap=(HashMap<?,?>)client.call("wp.uploadFile",apiParams,getTempFile(mContext));
+  }
+ catch (  XMLRPCException e) {
+    Log.e("WordPress","XMLRPCException: " + e.getMessage());
+  }
+  if (resultMap == null) {
+    return null;
+  }
+ else {
+    if (resultMap.containsKey("id"))     return (String)resultMap.get("id");
+  }
+  return null;
+}

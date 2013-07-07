@@ -1,0 +1,50 @@
+{
+  ImageView imageView=(ImageView)view.findViewById(R.id.media_upload_listitem_image);
+  TextView textView=(TextView)view.findViewById(R.id.media_upload_listitem_filename);
+  textView.setText(cursor.getString(cursor.getColumnIndex("fileName")));
+  String uploadState=cursor.getString(cursor.getColumnIndex("uploadState"));
+  ProgressBar progressBar=(ProgressBar)view.findViewById(R.id.media_upload_listitem_progress);
+  if (uploadState.equals("uploading")) {
+    progressBar.setVisibility(View.VISIBLE);
+  }
+ else {
+    progressBar.setVisibility(View.GONE);
+  }
+  Button retryButton=(Button)view.findViewById(R.id.media_upload_listitem_button_retry);
+  Button editButton=(Button)view.findViewById(R.id.media_upload_listitem_button_edit);
+  Button queuedButton=(Button)view.findViewById(R.id.media_upload_listitem_button_queued);
+  Button uploadingButton=(Button)view.findViewById(R.id.media_upload_listitem_button_uploading);
+  if (uploadState.equals("failed")) {
+    retryButton.setVisibility(View.VISIBLE);
+    editButton.setVisibility(View.GONE);
+    queuedButton.setVisibility(View.GONE);
+    uploadingButton.setVisibility(View.GONE);
+  }
+ else   if (uploadState.equals("queued")) {
+    retryButton.setVisibility(View.GONE);
+    editButton.setVisibility(View.GONE);
+    queuedButton.setVisibility(View.VISIBLE);
+    uploadingButton.setVisibility(View.GONE);
+  }
+ else   if (uploadState.equals("uploading")) {
+    retryButton.setVisibility(View.GONE);
+    editButton.setVisibility(View.GONE);
+    queuedButton.setVisibility(View.GONE);
+    uploadingButton.setVisibility(View.VISIBLE);
+  }
+ else   if (uploadState.equals("uploaded")) {
+    retryButton.setVisibility(View.GONE);
+    editButton.setVisibility(View.VISIBLE);
+    queuedButton.setVisibility(View.GONE);
+    uploadingButton.setVisibility(View.GONE);
+  }
+  retryButton.setOnClickListener(this);
+  editButton.setOnClickListener(this);
+  queuedButton.setOnClickListener(this);
+  uploadingButton.setOnClickListener(this);
+  String mediaId=cursor.getString(cursor.getColumnIndex("mediaId"));
+  retryButton.setTag(mediaId);
+  editButton.setTag(mediaId);
+  queuedButton.setTag(mediaId);
+  uploadingButton.setTag(mediaId);
+}

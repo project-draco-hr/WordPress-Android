@@ -1,0 +1,37 @@
+{
+  if (!cursor.moveToFirst())   return;
+  mUploadInProgress=true;
+  int blogId=Integer.valueOf(cursor.getString((cursor.getColumnIndex("blogId"))));
+  final String blogIdStr=String.valueOf(blogId);
+  final String mediaId=cursor.getString(cursor.getColumnIndex("mediaId"));
+  String fileName=cursor.getString(cursor.getColumnIndex("fileName"));
+  String filePath=cursor.getString(cursor.getColumnIndex("filePath"));
+  String mimeType=cursor.getString(cursor.getColumnIndex("mimeType"));
+  MediaFile mediaFile=new MediaFile();
+  mediaFile.setBlogId(blogIdStr);
+  mediaFile.setFileName(fileName);
+  mediaFile.setFilePath(filePath);
+  mediaFile.setMIMEType(mimeType);
+  mediaFile.save();
+  ApiHelper.UploadMediaTask task=new ApiHelper.UploadMediaTask(mContext,mediaFile,new Callback(){
+    @Override public void onSuccess(    String id){
+      mUploadInProgress=false;
+      WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,"uploaded");
+      sendUpdateBroadcast();
+      mHandler.post(FetchQueueTask);
+    }
+    @Override public void onFailure(){
+      mUploadInProgress=false;
+      WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,"failed");
+      sendUpdateBroadcast();
+      mHandler.post(FetchQueueTask);
+    }
+  }
+);
+  WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,"uploading");
+  sendUpdateBroadcast();
+  List<Object> apiArgs=new ArrayList<Object>();
+  apiArgs.add(WordPress.getCurrentBlog());
+  task.execute(apiArgs);
+  mHandler.post(FetchQueueTask);
+}

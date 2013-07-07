@@ -1,5 +1,15 @@
 {
   super.onOptionsItemSelected(item);
-  finish();
+  int itemId=item.getItemId();
+  if (itemId == android.R.id.home) {
+    finish();
+    return true;
+  }
+ else   if (itemId == R.id.menu_media_upload_clear_uploaded) {
+    String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+    WordPress.wpDB.clearMediaUploaded(blogId);
+    if (mMediaUploadFragment != null)     mMediaUploadFragment.refresh();
+    return true;
+  }
   return false;
 }

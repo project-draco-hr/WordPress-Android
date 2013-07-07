@@ -1,0 +1,24 @@
+{
+  if (path == null)   return;
+  String fileName=new String(path).replaceAll("^.*/([A-Za-z0-9_-]+)\\.\\w+$","$1");
+  String fileType=new String(path).replaceAll(".*\\.(\\w+)$","$1").toLowerCase();
+  List<Object> apiArgs=new ArrayList<Object>();
+  apiArgs.add(WordPress.getCurrentBlog());
+  MediaFile mediaFile=new MediaFile();
+  mediaFile.setTitle(fileName + "." + fileType);
+  mediaFile.setFilePath(path);
+  mediaFile.setUploadState("queued");
+  String mimeType=MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileType);
+  mediaFile.setMIMEType(mimeType);
+  mediaFile.save();
+  ApiHelper.UploadMediaTask task=new ApiHelper.UploadMediaTask(getActivity().getApplicationContext(),mediaFile,new Callback(){
+    @Override public void onSuccess(){
+      Toast.makeText(getActivity(),"Successfully uploaded image",Toast.LENGTH_SHORT).show();
+    }
+    @Override public void onFailure(){
+      Toast.makeText(getActivity(),"OnFailure MediaUploadActivity",Toast.LENGTH_SHORT).show();
+    }
+  }
+);
+  task.execute(apiArgs);
+}
