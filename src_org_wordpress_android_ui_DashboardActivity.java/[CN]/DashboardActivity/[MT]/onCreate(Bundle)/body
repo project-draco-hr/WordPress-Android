@@ -1,10 +1,32 @@
 {
+  requestWindowFeature(Window.FEATURE_PROGRESS);
   super.onCreate(savedInstanceState);
-  createMenuDrawer(this.findViewById(R.id.webview_wrapper));
-  this.setTitle(getResources().getText(R.string.wp_admin));
+  setContentView(R.layout.webview);
+  getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+  setTitle(R.string.view_admin);
+  ActionBar ab=getSupportActionBar();
+  ab.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+  ab.setDisplayShowTitleEnabled(true);
+  mWebView=(WebView)findViewById(R.id.webView);
+  mWebView.getSettings().setUserAgentString(Constants.USER_AGENT);
+  mWebView.getSettings().setBuiltInZoomControls(true);
+  mWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+  Bundle extras=getIntent().getExtras();
+  if (extras.containsKey("blogID")) {
+    try {
+      mBlog=new Blog(extras.getInt("blogID",-1));
+    }
+ catch (    Exception e) {
+      mBlog=WordPress.getCurrentBlog();
+    }
+  }
+  if (mBlog == null) {
+    Toast.makeText(this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
+    finish();
+  }
+  mWebView.setWebViewClient(new WordPressWebViewClient(mBlog));
   mWebView.setWebChromeClient(new WordPressWebChromeClient(this));
-  mWebView.getSettings().setJavaScriptEnabled(true);
-  mWebView.getSettings().setPluginsEnabled(true);
-  mWebView.getSettings().setDomStorageEnabled(true);
+  mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+  mWebView.getSettings().setSavePassword(false);
   loadDashboard();
 }
