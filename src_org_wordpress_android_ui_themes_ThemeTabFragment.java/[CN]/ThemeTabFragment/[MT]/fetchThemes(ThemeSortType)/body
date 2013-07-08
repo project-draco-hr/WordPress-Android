@@ -1,0 +1,27 @@
+{
+  String sort="trending";
+switch (themeSortType) {
+case A_Z:
+case FRIENDS_OF_WP:
+case POPULAR:
+    sort="popular";
+  break;
+case NEWEST:
+sort="newest";
+break;
+case TRENDING:
+default :
+}
+String siteId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+WordPress.restClient.getThemes(siteId,sort,0,0,new Listener(){
+@Override public void onResponse(JSONObject response){
+new FetchThemesTask().execute(response);
+}
+}
+,new ErrorListener(){
+@Override public void onErrorResponse(VolleyError response){
+Log.d("WordPress","Failed to download themes: " + response.getMessage());
+}
+}
+);
+}

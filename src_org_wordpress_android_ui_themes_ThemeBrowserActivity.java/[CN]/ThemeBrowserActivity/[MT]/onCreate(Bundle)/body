@@ -1,0 +1,29 @@
+{
+  super.onCreate(savedInstanceState);
+  if (WordPress.wpDB == null) {
+    Toast.makeText(this,R.string.fatal_db_error,Toast.LENGTH_LONG).show();
+    Log.e("WordPress","ThemeActivity DB is null - finishing ThemeActivity");
+    finish();
+    return;
+  }
+  setTitle(R.string.themes);
+  createMenuDrawer(R.layout.theme_browser_activity);
+  mThemePagerAdapter=new ThemePagerAdapter(getSupportFragmentManager());
+  final ActionBar actionBar=getSupportActionBar();
+  actionBar.setDisplayShowTitleEnabled(true);
+  actionBar.setHomeButtonEnabled(true);
+  actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+  mViewPager=(ViewPager)findViewById(R.id.theme_browser_pager);
+  mViewPager.setAdapter(mThemePagerAdapter);
+  mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+    @Override public void onPageSelected(    int position){
+      actionBar.setSelectedNavigationItem(position);
+    }
+  }
+);
+  for (int i=0; i < mThemePagerAdapter.getCount(); i++) {
+    actionBar.addTab(actionBar.newTab().setText(mThemePagerAdapter.getPageTitle(i)).setTabListener(this));
+  }
+  FragmentManager fm=getSupportFragmentManager();
+  fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
+}
