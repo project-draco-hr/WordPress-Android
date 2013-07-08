@@ -3,7 +3,7 @@
   String password=mPasswordEditText.getText().toString();
   String pubDate=mPubDateText.getText().toString();
   String content="";
-  if (mLocalDraft || mIsNew && !autoSave) {
+  if (mLocalDraft || mIsNew && !isAutoSave) {
     Editable e=mContentEditText.getText();
     if (android.os.Build.VERSION.SDK_INT >= 14) {
       CharacterStyle[] style=e.getSpans(0,e.length(),CharacterStyle.class);
@@ -33,7 +33,7 @@
   }
   String images="";
   boolean success=false;
-  if (content.equals("") && !autoSave) {
+  if (content.equals("") && !isAutoSave && !isDraftSave) {
     AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(EditPostActivity.this);
     dialogBuilder.setTitle(getResources().getText(R.string.empty_fields));
     dialogBuilder.setMessage(getResources().getText(R.string.title_post_required));
@@ -67,7 +67,7 @@
           mf.setWidth(wpIS.getWidth());
           mf.save();
           int tagStart=s.getSpanStart(wpIS);
-          if (!autoSave) {
+          if (!isAutoSave) {
             s.removeSpan(wpIS);
             s.insert(tagStart,"<img android-uri=\"" + wpIS.getImageSource().toString() + "\" />");
             if (mLocalDraft)             content=EscapeUtils.unescapeHtml(WPHtml.toHtml(s));
@@ -91,9 +91,6 @@ status="pending";
 break;
 case 3:
 status="private";
-break;
-case 4:
-status="localdraft";
 break;
 }
 Double latitude=0.0;
