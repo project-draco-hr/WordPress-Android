@@ -1,27 +1,18 @@
 {
-  String sort="trending";
+  String blogId=getBlogId();
 switch (themeSortType) {
 case A_Z:
+    return WordPress.wpDB.getThemesAtoZ(blogId);
 case FRIENDS_OF_WP:
+  return WordPress.wpDB.getThemesFriendsOfWP(blogId);
 case POPULAR:
-    sort="popular";
-  break;
+return WordPress.wpDB.getThemesPopularity(blogId);
 case NEWEST:
-sort="newest";
-break;
+return WordPress.wpDB.getThemesNewest(blogId);
+case PREMIUM:
+return WordPress.wpDB.getThemesPremium(blogId);
 case TRENDING:
 default :
+return WordPress.wpDB.getThemesTrending(blogId);
 }
-String siteId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
-WordPress.restClient.getThemes(siteId,sort,0,0,new Listener(){
-@Override public void onResponse(JSONObject response){
-new FetchThemesTask().execute(response);
-}
-}
-,new ErrorListener(){
-@Override public void onErrorResponse(VolleyError response){
-Log.d("WordPress","Failed to download themes: " + response.getMessage());
-}
-}
-);
 }

@@ -1,0 +1,15 @@
+{
+  String screenshotURL=cursor.getString(cursor.getColumnIndex("screenshotURL"));
+  final ImageView imageView=(ImageView)view.findViewById(R.id.theme_grid_item_image);
+  imageView.setImageBitmap(null);
+  WordPress.imageLoader.get(screenshotURL,new ImageListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+    }
+    @Override public void onResponse(    ImageContainer response,    boolean isImmediate){
+      if (response != null && response.getBitmap() != null)       imageView.setImageBitmap(response.getBitmap());
+ else       imageView.setImageBitmap(null);
+    }
+  }
+,getGridWidth(context),getGridHeight(context));
+  updateGridWidth(mContext,view);
+}
