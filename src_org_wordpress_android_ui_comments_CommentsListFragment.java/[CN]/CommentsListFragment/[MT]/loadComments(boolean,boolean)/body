@@ -2,9 +2,9 @@
   refreshOnly=refresh;
   String author, postID, comment, dateCreatedFormatted, status, authorEmail, authorURL, postTitle;
   int commentID;
-  List<Map<String,Object>> loadedPosts=WordPress.wpDB.loadComments(WordPress.currentBlog.getId());
-  if (loadedPosts != null) {
-    numRecords=loadedPosts.size();
+  List<Map<String,Object>> loadedComments=WordPress.wpDB.loadComments(WordPress.currentBlog.getId());
+  if (loadedComments != null) {
+    numRecords=loadedComments.size();
     if (refreshOnly) {
       if (model != null) {
         model.clear();
@@ -14,9 +14,9 @@
       model=new ArrayList<Comment>();
     }
     checkedComments=new Vector<String>();
-    for (int i=0; i < loadedPosts.size(); i++) {
+    for (int i=0; i < loadedComments.size(); i++) {
       checkedComments.add(i,"false");
-      Map<String,Object> contentHash=loadedPosts.get(i);
+      Map<String,Object> contentHash=loadedComments.get(i);
       allComments.put((Integer)contentHash.get("commentID"),contentHash);
       author=EscapeUtils.unescapeHtml(contentHash.get("author").toString());
       commentID=(Integer)contentHash.get("commentID");
@@ -35,7 +35,7 @@
     if (!refreshOnly) {
       ListView listView=this.getListView();
       listView.removeFooterView(switcher);
-      if (loadedPosts.size() % 30 == 0) {
+      if (loadedComments.size() % 30 == 0) {
         listView.addFooterView(switcher);
       }
       setListAdapter(new CommentAdapter());
