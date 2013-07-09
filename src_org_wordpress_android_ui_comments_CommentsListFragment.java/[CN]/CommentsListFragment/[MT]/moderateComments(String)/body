@@ -6,6 +6,10 @@
       int curCommentID=listRow.commentID;
       Map<String,String> contentHash, postHash=new HashMap<String,String>();
       contentHash=(Map<String,String>)allComments.get(curCommentID);
+      if (contentHash.get("status").equals(newStatus)) {
+        checkedComments.set(i,"false");
+        continue;
+      }
       postHash.put("status",newStatus);
       postHash.put("content",contentHash.get("comment"));
       postHash.put("author",contentHash.get("author"));
@@ -19,6 +23,7 @@
         if (bResult) {
           checkedComments.set(i,"false");
           listRow.status=newStatus;
+          contentHash.put("status",newStatus);
           model.set(i,listRow);
           WordPress.wpDB.updateCommentStatus(WordPress.currentBlog.getId(),listRow.commentID,newStatus);
         }

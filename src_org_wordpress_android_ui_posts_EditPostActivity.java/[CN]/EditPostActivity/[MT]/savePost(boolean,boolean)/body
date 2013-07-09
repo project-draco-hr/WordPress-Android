@@ -1,0 +1,170 @@
+{
+  String title=mTitleEditText.getText().toString();
+  String password=mPasswordEditText.getText().toString();
+  String pubDate=mPubDateText.getText().toString();
+  String content="";
+  if (mLocalDraft || mIsNew && !isAutoSave) {
+    Editable e=mContentEditText.getText();
+    if (android.os.Build.VERSION.SDK_INT >= 14) {
+      CharacterStyle[] style=e.getSpans(0,e.length(),CharacterStyle.class);
+      for (int i=0; i < style.length; i++) {
+        if (style[i].getClass().getName().equals("android.text.style.SuggestionSpan"))         e.removeSpan(style[i]);
+      }
+    }
+    content=EscapeUtils.unescapeHtml(WPHtml.toHtml(e));
+    content=content.replace("<p><p>","<p>");
+    content=content.replace("</p></p>","</p>");
+    content=content.replace("<br><br>","<br>");
+    content=content.replace("</strong><strong>","").replace("</em><em>","").replace("</u><u>","").replace("</strike><strike>","").replace("</blockquote><blockquote>","");
+  }
+ else {
+    content=mContentEditText.getText().toString();
+  }
+  long pubDateTimestamp=0;
+  if (!pubDate.equals(getResources().getText(R.string.immediately))) {
+    if (mIsCustomPubDate)     pubDateTimestamp=mCustomPubDate;
+ else     if (!mIsNew)     pubDateTimestamp=mPost.getDate_created_gmt();
+  }
+  String tags="", postFormat="";
+  if (!mIsPage) {
+    tags=mTagsEditText.getText().toString();
+    Spinner postFormatSpinner=(Spinner)findViewById(R.id.postFormat);
+    postFormat=mPostFormats[postFormatSpinner.getSelectedItemPosition()];
+  }
+  String images="";
+  boolean success=false;
+  if (content.equals("") && !isAutoSave && !isDraftSave) {
+    AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(EditPostActivity.this);
+    dialogBuilder.setTitle(getResources().getText(R.string.empty_fields));
+    dialogBuilder.setMessage(getResources().getText(R.string.title_post_required));
+    dialogBuilder.setPositiveButton(android.R.string.ok,new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int whichButton){
+        dialog.dismiss();
+      }
+    }
+);
+    dialogBuilder.setCancelable(true);
+    dialogBuilder.create().show();
+  }
+ else {
+    if (!mIsNew) {
+      mPost.deleteMediaFiles();
+      Editable s=mContentEditText.getText();
+      WPImageSpan[] click_spans=s.getSpans(0,s.length(),WPImageSpan.class);
+      if (click_spans.length != 0) {
+        for (int i=0; i < click_spans.length; i++) {
+          WPImageSpan wpIS=click_spans[i];
+          images+=wpIS.getImageSource().toString() + ",";
+          MediaFile mf=new MediaFile();
+          mf.setPostID(mPost.getId());
+          mf.setTitle(wpIS.getTitle());
+          mf.setCaption(wpIS.getCaption());
+          mf.setDescription(wpIS.getDescription());
+          mf.setFeatured(wpIS.isFeatured());
+          mf.setFeaturedInPost(wpIS.isFeaturedInPost());
+          mf.setFileName(wpIS.getImageSource().toString());
+          mf.setHorizontalAlignment(wpIS.getHorizontalAlignment());
+          mf.setWidth(wpIS.getWidth());
+          mf.save();
+          int tagStart=s.getSpanStart(wpIS);
+          if (!isAutoSave) {
+            s.removeSpan(wpIS);
+            s.insert(tagStart,"<img android-uri=\"" + wpIS.getImageSource().toString() + "\" />");
+            if (mLocalDraft)             content=EscapeUtils.unescapeHtml(WPHtml.toHtml(s));
+ else             content=s.toString();
+          }
+        }
+      }
+    }
+    final String moreTag="<!--more-->";
+    int selectedStatus=mStatusSpinner.getSelectedItemPosition();
+    String status="";
+switch (selectedStatus) {
+case 0:
+      status="publish";
+    break;
+case 1:
+  status="draft";
+break;
+case 2:
+status="pending";
+break;
+case 3:
+status="private";
+break;
+}
+Double latitude=0.0;
+Double longitude=0.0;
+if (mBlog.isLocation()) {
+try {
+latitude=mCurrentLocation.getLatitude();
+longitude=mCurrentLocation.getLongitude();
+}
+ catch (Exception e) {
+e.printStackTrace();
+}
+}
+if (mIsNew) {
+mPost=new Post(mBlogID,title,content,images,pubDateTimestamp,mCategories.toString(),tags,status,password,latitude,longitude,mIsPage,postFormat,true,false);
+mPost.setLocalDraft(true);
+if (content.indexOf(moreTag) >= 0) {
+mPost.setDescription(content.substring(0,content.indexOf(moreTag)));
+mPost.setMt_text_more(content.substring(content.indexOf(moreTag) + moreTag.length(),content.length()));
+}
+success=mPost.save();
+if (success) {
+mIsNew=false;
+mIsNewDraft=true;
+}
+mPost.deleteMediaFiles();
+Spannable s=mContentEditText.getText();
+WPImageSpan[] image_spans=s.getSpans(0,s.length(),WPImageSpan.class);
+if (image_spans.length != 0) {
+for (int i=0; i < image_spans.length; i++) {
+WPImageSpan wpIS=image_spans[i];
+images+=wpIS.getImageSource().toString() + ",";
+MediaFile mf=new MediaFile();
+mf.setPostID(mPost.getId());
+mf.setTitle(wpIS.getTitle());
+mf.setCaption(wpIS.getCaption());
+mf.setFeatured(wpIS.isFeatured());
+mf.setFeaturedInPost(wpIS.isFeaturedInPost());
+mf.setFileName(wpIS.getImageSource().toString());
+mf.setFilePath(wpIS.getImageSource().toString());
+mf.setHorizontalAlignment(wpIS.getHorizontalAlignment());
+mf.setWidth(wpIS.getWidth());
+mf.setVideo(wpIS.isVideo());
+mf.save();
+}
+}
+WordPress.currentPost=mPost;
+}
+ else {
+if (mCurrentLocation == null) {
+latitude=mPost.getLatitude();
+longitude=mPost.getLongitude();
+}
+mPost.setTitle(title);
+if (mLocalDraft && content.indexOf(moreTag) >= 0) {
+mPost.setDescription(content.substring(0,content.indexOf(moreTag)));
+mPost.setMt_text_more(content.substring(content.indexOf(moreTag) + moreTag.length(),content.length()));
+}
+ else {
+mPost.setDescription(content);
+mPost.setMt_text_more("");
+}
+mPost.setMediaPaths(images);
+mPost.setDate_created_gmt(pubDateTimestamp);
+mPost.setCategories(mCategories);
+mPost.setMt_keywords(tags);
+mPost.setPost_status(status);
+mPost.setWP_password(password);
+mPost.setLatitude(latitude);
+mPost.setLongitude(longitude);
+mPost.setWP_post_form(postFormat);
+if (!mPost.isLocalDraft()) mPost.setLocalChange(true);
+success=mPost.update();
+}
+}
+return success;
+}

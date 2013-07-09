@@ -2,15 +2,13 @@
   int itemId=item.getItemId();
   if (itemId == R.id.menu_edit_post) {
     if (mAutoSaveHandler != null)     mAutoSaveHandler.removeCallbacks(autoSaveRunnable);
-    if (savePost(false)) {
-      if (mPost.isUploaded() || !mPost.getPost_status().equals("localdraft")) {
-        if (mQuickMediaType >= 0) {
-          if (mQuickMediaType == Constants.QUICK_POST_PHOTO_CAMERA || mQuickMediaType == Constants.QUICK_POST_PHOTO_LIBRARY)           mPost.setQuickPostType("QuickPhoto");
- else           if (mQuickMediaType == Constants.QUICK_POST_VIDEO_CAMERA || mQuickMediaType == Constants.QUICK_POST_VIDEO_LIBRARY)           mPost.setQuickPostType("QuickVideo");
-        }
-        WordPress.currentPost=mPost;
-        startService(new Intent(this,PostUploadService.class));
+    if (savePost(false,false)) {
+      if (mQuickMediaType >= 0) {
+        if (mQuickMediaType == Constants.QUICK_POST_PHOTO_CAMERA || mQuickMediaType == Constants.QUICK_POST_PHOTO_LIBRARY)         mPost.setQuickPostType("QuickPhoto");
+ else         if (mQuickMediaType == Constants.QUICK_POST_VIDEO_CAMERA || mQuickMediaType == Constants.QUICK_POST_VIDEO_LIBRARY)         mPost.setQuickPostType("QuickVideo");
       }
+      WordPress.currentPost=mPost;
+      startService(new Intent(this,PostUploadService.class));
       Intent i=new Intent();
       i.putExtra("shouldRefresh",true);
       setResult(RESULT_OK,i);
