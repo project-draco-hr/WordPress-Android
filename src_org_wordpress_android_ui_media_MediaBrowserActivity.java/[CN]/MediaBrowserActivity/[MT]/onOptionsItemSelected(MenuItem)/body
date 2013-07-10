@@ -28,5 +28,22 @@
     }
     return true;
   }
+ else   if (itemId == R.id.menu_edit_media) {
+    String mediaId=mMediaItemFragment.getMediaId();
+    FragmentManager fm=getSupportFragmentManager();
+    if (mMediaEditFragment == null || !mMediaEditFragment.isInLayout()) {
+      FragmentTransaction ft=fm.beginTransaction();
+      ft.hide(mMediaItemFragment);
+      mMediaEditFragment=MediaEditFragment.newInstance(mediaId);
+      ft.add(R.id.media_browser_container,mMediaEditFragment);
+      ft.addToBackStack(null);
+      ft.commit();
+      mMenuDrawer.setDrawerIndicatorEnabled(false);
+    }
+ else {
+      mMediaItemFragment.loadMedia(mediaId);
+    }
+    if (mSearchView != null)     mSearchView.clearFocus();
+  }
   return super.onOptionsItemSelected(item);
 }
