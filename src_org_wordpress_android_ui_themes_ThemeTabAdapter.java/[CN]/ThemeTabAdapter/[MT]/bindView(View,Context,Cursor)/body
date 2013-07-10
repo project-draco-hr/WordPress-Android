@@ -1,13 +1,27 @@
 {
-  String screenshotURL=cursor.getString(cursor.getColumnIndex("screenshotURL"));
+  final String screenshotURL=cursor.getString(cursor.getColumnIndex("screenshotURL"));
   final ImageView imageView=(ImageView)view.findViewById(R.id.theme_grid_item_image);
-  imageView.setImageBitmap(null);
-  WordPress.imageLoader.get(screenshotURL,new ImageListener(){
+  ViewHolder holder=(ViewHolder)imageView.getTag();
+  if (holder == null) {
+    holder=new ViewHolder();
+    holder.requestURL=screenshotURL;
+    imageView.setTag(holder);
+  }
+  if (!holder.requestURL.equals(screenshotURL)) {
+    imageView.setImageBitmap(null);
+    holder.requestURL=screenshotURL;
+  }
+  WordPress.imageLoader.get(holder.requestURL,new ImageListener(){
     @Override public void onErrorResponse(    VolleyError error){
     }
     @Override public void onResponse(    ImageContainer response,    boolean isImmediate){
-      if (response != null && response.getBitmap() != null)       imageView.setImageBitmap(response.getBitmap());
- else       imageView.setImageBitmap(null);
+      ViewHolder holder=(ViewHolder)imageView.getTag();
+      if (holder != null) {
+        String url=holder.requestURL;
+        if (response != null && response.getBitmap() != null && response.getRequestUrl().equals(url)) {
+          imageView.setImageBitmap(response.getBitmap());
+        }
+      }
     }
   }
 ,getGridWidth(context),getGridHeight(context));
