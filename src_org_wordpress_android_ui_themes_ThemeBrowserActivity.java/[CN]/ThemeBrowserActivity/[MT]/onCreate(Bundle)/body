@@ -13,18 +13,21 @@
   final ActionBar actionBar=getSupportActionBar();
   actionBar.setDisplayShowTitleEnabled(true);
   actionBar.setHomeButtonEnabled(true);
-  actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
   mViewPager=(ViewPager)findViewById(R.id.theme_browser_pager);
   mViewPager.setAdapter(mThemePagerAdapter);
   mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
     @Override public void onPageSelected(    int position){
-      actionBar.setSelectedNavigationItem(position);
+      mTabView.setSelectedTab(position);
     }
   }
 );
-  for (int i=0; i < mThemePagerAdapter.getCount(); i++) {
-    actionBar.addTab(actionBar.newTab().setText(mThemePagerAdapter.getPageTitle(i)).setTabListener(this).setTag(i));
+  mTabView=(HorizontalTabView)findViewById(R.id.horizontalTabView1);
+  mTabView.setTabListener(this);
+  for (int i=0; i < ThemeSortType.values().length; i++) {
+    String title=ThemeSortType.values()[i].getTitle();
+    mTabView.addTab(mTabView.newTab().setText(title));
   }
+  mTabView.setSelectedTab(0);
   FragmentManager fm=getSupportFragmentManager();
   fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
 }
