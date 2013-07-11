@@ -2,9 +2,10 @@
   if (WordPress.getCurrentBlog() == null)   return;
   if (!mIsRefreshing) {
     mIsRefreshing=true;
+    mListener.onMediaItemListDownloadStart();
     List<Object> apiArgs=new ArrayList<Object>();
     apiArgs.add(WordPress.getCurrentBlog());
-    mGetMediaTask=new ApiHelper.SyncMediaLibraryTask(mCallback);
-    mGetMediaTask.execute(apiArgs);
+    ApiHelper.SyncMediaLibraryTask getMediaTask=new ApiHelper.SyncMediaLibraryTask(offset,mFilter,mCallback);
+    getMediaTask.execute(apiArgs);
   }
 }

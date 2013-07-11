@@ -6,7 +6,12 @@
     return false;
   }
   client=new XMLRPCClient(WordPress.currentBlog.getUrl(),WordPress.currentBlog.getHttpuser(),WordPress.currentBlog.getHttppassword());
-  Object[] apiParams={WordPress.currentBlog.getBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword()};
+  Map<String,Object> filter=new HashMap<String,Object>();
+  filter.put("number",50);
+  filter.put("offset",mOffset);
+  if (mFilter == Filter.IMAGES)   filter.put("mime_type","images/*");
+ else   if (mFilter == Filter.UNATTACHED)   filter.put("parent_id",0);
+  Object[] apiParams={WordPress.currentBlog.getBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),filter};
   Object[] results=null;
   try {
     results=(Object[])client.call("wp.getMediaLibrary",apiParams);
@@ -16,13 +21,11 @@
   }
   if (results != null) {
     String blogId=String.valueOf(WordPress.currentBlog.getBlogId());
-    WordPress.wpDB.updateMediaForSync(blogId);
     Map<?,?> resultMap;
     for (    Object result : results) {
       resultMap=(Map<?,?>)result;
       WordPress.wpDB.saveMediaFile(new MediaFile(blogId,resultMap));
     }
-    WordPress.wpDB.deleteUnsyncedMedia(blogId);
     return true;
   }
  else {
