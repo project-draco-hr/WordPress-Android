@@ -1,0 +1,20 @@
+{
+  String siteId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+  String themeId=mPreviewFragment.getThemeId();
+  WordPress.restClient.setTheme(siteId,themeId,new Listener(){
+    @Override public void onResponse(    JSONObject arg0){
+      Toast.makeText(ThemeBrowserActivity.this,"Successfully set theme!",Toast.LENGTH_LONG).show();
+      FragmentManager fm=getSupportFragmentManager();
+      if (fm.getBackStackEntryCount() > 0) {
+        popThemeDetailsFragment();
+        invalidateOptionsMenu();
+      }
+    }
+  }
+,new ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError arg0){
+      Toast.makeText(ThemeBrowserActivity.this,"Failed to set theme. Please try again later.",Toast.LENGTH_LONG).show();
+    }
+  }
+);
+}
