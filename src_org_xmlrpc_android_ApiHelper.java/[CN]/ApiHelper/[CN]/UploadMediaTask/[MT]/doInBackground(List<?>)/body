@@ -1,18 +1,19 @@
 {
   List<?> arguments=params[0];
   WordPress.currentBlog=(Blog)arguments.get(0);
-  if (WordPress.currentBlog == null) {
+  Blog blog=WordPress.currentBlog;
+  if (blog == null) {
     Log.e("WordPress","UploadMediaTask: ApiHelper - current blog is null");
     return null;
   }
-  client=new XMLRPCClient(WordPress.currentBlog.getUrl(),WordPress.currentBlog.getHttpuser(),WordPress.currentBlog.getHttppassword());
+  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
   byte[] bits=readFile(new File(mMediaFile.getFilePath()));
   Map<String,Object> data=new HashMap<String,Object>();
   data.put("name",mMediaFile.getFileName());
   data.put("type",mMediaFile.getMIMEType());
   data.put("bits",bits);
   data.put("overwrite",true);
-  Object[] apiParams={1,WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),data};
+  Object[] apiParams={1,blog.getUsername(),blog.getPassword(),data};
   if (mContext == null)   return null;
   Map<?,?> resultMap=null;
   try {
@@ -21,11 +22,6 @@
  catch (  XMLRPCException e) {
     Log.e("WordPress","XMLRPCException: " + e.getMessage());
   }
-  if (resultMap == null) {
-    return null;
-  }
- else {
-    if (resultMap.containsKey("id"))     return (String)resultMap.get("id");
-  }
+  if (resultMap != null && resultMap.containsKey("id"))   return (String)resultMap.get("id");
   return null;
 }

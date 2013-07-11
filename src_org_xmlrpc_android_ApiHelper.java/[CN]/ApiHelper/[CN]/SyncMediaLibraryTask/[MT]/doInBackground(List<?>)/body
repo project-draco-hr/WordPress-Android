@@ -1,17 +1,19 @@
 {
   List<?> arguments=params[0];
   WordPress.currentBlog=(Blog)arguments.get(0);
-  if (WordPress.currentBlog == null) {
+  Blog blog=WordPress.currentBlog;
+  if (blog == null) {
     Log.e("WordPress","ApiHelper - current blog is null");
     return false;
   }
-  client=new XMLRPCClient(WordPress.currentBlog.getUrl(),WordPress.currentBlog.getHttpuser(),WordPress.currentBlog.getHttppassword());
+  String blogId=String.valueOf(blog.getBlogId());
+  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
   Map<String,Object> filter=new HashMap<String,Object>();
   filter.put("number",50);
   filter.put("offset",mOffset);
   if (mFilter == Filter.IMAGES)   filter.put("mime_type","images/*");
  else   if (mFilter == Filter.UNATTACHED)   filter.put("parent_id",0);
-  Object[] apiParams={WordPress.currentBlog.getBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),filter};
+  Object[] apiParams={blog.getBlogId(),blog.getUsername(),blog.getPassword(),filter};
   Object[] results=null;
   try {
     results=(Object[])client.call("wp.getMediaLibrary",apiParams);
@@ -19,8 +21,7 @@
  catch (  XMLRPCException e) {
     Log.e("WordPress",e.getMessage());
   }
-  if (results != null) {
-    String blogId=String.valueOf(WordPress.currentBlog.getBlogId());
+  if (results != null && blogId != null) {
     Map<?,?> resultMap;
     for (    Object result : results) {
       resultMap=(Map<?,?>)result;
@@ -28,7 +29,5 @@
     }
     return true;
   }
- else {
-    return false;
-  }
+  return false;
 }
