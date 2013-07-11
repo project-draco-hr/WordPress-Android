@@ -3,7 +3,10 @@
   title.setText(cursor.getString(cursor.getColumnIndex("title")));
   String thumbnailURL=cursor.getString(cursor.getColumnIndex("thumbnailURL"));
   NetworkImageView imageView=(NetworkImageView)view.findViewById(R.id.media_grid_item_image);
-  imageView.setImageUrl(thumbnailURL,WordPress.imageLoader);
+  if (thumbnailURL != null) {
+    imageView.setImageUrl(thumbnailURL,WordPress.imageLoader);
+    imageView.setTag(thumbnailURL);
+  }
   String fileURL=cursor.getString(cursor.getColumnIndex("fileURL"));
   String fileType=fileURL.replaceAll(".*\\.(\\w+)$","$1").toUpperCase();
   TextView fileTypeView=(TextView)view.findViewById(R.id.media_grid_item_filetype);
