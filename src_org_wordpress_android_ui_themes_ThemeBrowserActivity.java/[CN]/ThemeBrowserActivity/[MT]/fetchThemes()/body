@@ -1,5 +1,7 @@
 {
   String siteId=getBlogId();
+  mFetchingThemes=true;
+  startAnimatingRefreshButton();
   WordPress.restClient.getThemes(siteId,0,0,new Listener(){
     @Override public void onResponse(    JSONObject response){
       new FetchThemesTask().execute(response);
@@ -9,6 +11,9 @@
     @Override public void onErrorResponse(    VolleyError response){
       Toast.makeText(ThemeBrowserActivity.this,R.string.theme_fetch_failed,Toast.LENGTH_LONG).show();
       Log.d("WordPress","Failed to download themes: " + response.getMessage());
+      mFetchingThemes=false;
+      stopAnimatingRefreshButton();
+      refreshFragments();
     }
   }
 );
