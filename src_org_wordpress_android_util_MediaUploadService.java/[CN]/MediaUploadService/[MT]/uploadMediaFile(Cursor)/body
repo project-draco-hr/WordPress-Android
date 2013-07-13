@@ -1,13 +1,11 @@
 {
   if (!cursor.moveToFirst())   return;
   mUploadInProgress=true;
-  int blogId=Integer.valueOf(cursor.getString((cursor.getColumnIndex("blogId"))));
-  final String blogIdStr=String.valueOf(blogId);
+  final String blogIdStr=cursor.getString((cursor.getColumnIndex("blogId")));
   final String mediaId=cursor.getString(cursor.getColumnIndex("mediaId"));
   String fileName=cursor.getString(cursor.getColumnIndex("fileName"));
   String filePath=cursor.getString(cursor.getColumnIndex("filePath"));
   String mimeType=cursor.getString(cursor.getColumnIndex("mimeType"));
-  cursor.close();
   MediaFile mediaFile=new MediaFile();
   mediaFile.setBlogId(blogIdStr);
   mediaFile.setFileName(fileName);
@@ -22,7 +20,7 @@
       WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,"failed");
       mUploadInProgress=false;
       sendUpdateBroadcast();
-      mHandler.post(fetchQueueTask);
+      mHandler.post(mFetchQueueTask);
     }
   }
 );
@@ -31,5 +29,5 @@
   List<Object> apiArgs=new ArrayList<Object>();
   apiArgs.add(WordPress.getCurrentBlog());
   task.execute(apiArgs);
-  mHandler.post(fetchQueueTask);
+  mHandler.post(mFetchQueueTask);
 }
