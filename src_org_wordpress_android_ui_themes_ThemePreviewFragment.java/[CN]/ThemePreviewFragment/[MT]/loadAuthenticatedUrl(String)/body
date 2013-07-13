@@ -1,4 +1,9 @@
 {
-  String postData=String.format("log=%s&pwd=%s&redirect_to=%s",mBlog.getUsername(),mBlog.getPassword(),url);
-  mWebView.postUrl(getLoginUrl(),postData.getBytes());
+  try {
+    String postData=String.format("log=%s&pwd=%s&redirect_to=%s",mBlog.getUsername(),mBlog.getPassword(),URLEncoder.encode(url,"UTF-8"));
+    mWebView.postUrl(getLoginUrl(),postData.getBytes());
+  }
+ catch (  UnsupportedEncodingException e) {
+    e.printStackTrace();
+  }
 }
