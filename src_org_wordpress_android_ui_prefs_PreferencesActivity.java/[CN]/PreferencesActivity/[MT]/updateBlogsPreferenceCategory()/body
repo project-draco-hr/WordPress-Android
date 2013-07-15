@@ -2,6 +2,7 @@
   PreferenceCategory blogsCategory=(PreferenceCategory)findPreference("wp_pref_category_blogs");
   blogsCategory.removeAll();
   List<Map<String,Object>> accounts=WordPress.wpDB.getAccounts();
+  int order=0;
   for (  Map<String,Object> account : accounts) {
     String blogName=EscapeUtils.unescapeHtml(account.get("blogName").toString());
     int accountId=(Integer)account.get("id");
@@ -18,13 +19,13 @@
     Intent intent=new Intent(this,BlogPreferencesActivity.class);
     intent.putExtra("id",accountId);
     blogSettingsPreference.setIntent(intent);
-    blogSettingsPreference.setOrder(0);
+    blogSettingsPreference.setOrder(order++);
     blogsCategory.addPreference(blogSettingsPreference);
   }
   Preference addBlogPreference=new Preference(this);
   addBlogPreference.setTitle(R.string.add_account);
   Intent intent=new Intent(this,NewAccountActivity.class);
   addBlogPreference.setIntent(intent);
-  addBlogPreference.setOrder(1);
+  addBlogPreference.setOrder(order++);
   blogsCategory.addPreference(addBlogPreference);
 }
