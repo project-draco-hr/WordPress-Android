@@ -2,10 +2,15 @@
   String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
   Theme theme=WordPress.wpDB.getTheme(blogId,themeId);
   if (theme != null) {
-    mNameView.setText(theme.getName());
+    if (mNameView != null) {
+      mNameView.setText(theme.getName());
+    }
     mImageView.setImageUrl(theme.getScreenshotURL(),WordPress.imageLoader);
     mDescriptionView.setText(Html.fromHtml(theme.getDescription()));
     mDescriptionView.setMovementMethod(LinkMovementMethod.getInstance());
     mPreviewURL=theme.getPreviewURL();
+    if (getDialog() != null) {
+      getDialog().setTitle(theme.getName());
+    }
   }
 }
