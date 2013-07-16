@@ -1,21 +1,24 @@
 {
   super.onCreateView(inflater,container,savedInstanceState);
   View view=inflater.inflate(R.layout.media_grid_fragment,container);
-  mGridView=(GridView)view.findViewById(R.id.media_gridview);
+  mGridView=(MultiSelectGridView)view.findViewById(R.id.media_gridview);
   mGridView.setOnItemClickListener(this);
   mGridView.setRecyclerListener(this);
-  View spinnerContainer=view.findViewById(R.id.media_filter_spinner_container);
-  spinnerContainer.setOnClickListener(new OnClickListener(){
+  mGridView.setMultiSelectListener(this);
+  mSpinnerContainer=view.findViewById(R.id.media_filter_spinner_container);
+  mSpinnerContainer.setOnClickListener(new OnClickListener(){
     @Override public void onClick(    View v){
-      if (mSpinner != null) {
+      if (mSpinner != null && !isInMultiSelect()) {
         mSpinner.performClick();
       }
     }
   }
 );
-  mFilters=new String[3];
+  mFiltersText=new String[Filter.values().length];
   mSpinner=(IcsSpinner)view.findViewById(R.id.media_filter_spinner);
   mSpinner.setOnItemSelectedListener(mFilterSelectedListener);
-  refreshSpinnerAdapter();
+  setupSpinnerAdapter();
+  mCheckedItems=new ArrayList<String>();
+  restoreState(savedInstanceState);
   return view;
 }

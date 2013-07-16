@@ -1,6 +1,10 @@
 {
   super.onCreateOptionsMenu(menu);
   stopAnimatingRefreshButton();
+  ActionBar actionBar=getSupportActionBar();
+  actionBar.setDisplayShowCustomEnabled(false);
+  actionBar.setDisplayShowHomeEnabled(true);
+  actionBar.setDisplayShowTitleEnabled(true);
   MenuInflater inflater=getSupportMenuInflater();
   if (mMediaItemFragment != null && !mMediaItemFragment.isInLayout() && mMediaItemFragment.isVisible()) {
     inflater.inflate(R.menu.media_details,menu);
@@ -8,9 +12,25 @@
  else   if (mMediaEditFragment != null && !mMediaEditFragment.isInLayout() && mMediaEditFragment.isVisible()) {
     inflater.inflate(R.menu.media_edit,menu);
   }
+ else   if (isInMultiSelect()) {
+    actionBar.setCustomView(R.layout.media_multiselect_actionbar);
+    actionBar.setDisplayShowCustomEnabled(true);
+    actionBar.setDisplayShowHomeEnabled(false);
+    actionBar.setDisplayShowTitleEnabled(false);
+    TextView text=(TextView)findViewById(R.id.media_mutliselect_actionbar_count);
+    text.setText(mMultiSelectCount + "");
+    ImageButton button=(ImageButton)findViewById(R.id.media_multiselect_actionbar_ok);
+    button.setOnClickListener(this);
+    button=(ImageButton)findViewById(R.id.media_multiselect_actionbar_share);
+    button.setOnClickListener(this);
+    button=(ImageButton)findViewById(R.id.media_multiselect_actionbar_post);
+    button.setOnClickListener(this);
+    button=(ImageButton)findViewById(R.id.media_multiselect_actionbar_trash);
+    button.setOnClickListener(this);
+  }
  else {
     inflater.inflate(R.menu.media,menu);
-    refreshMenuItem=menu.findItem(R.id.menu_refresh);
+    mRefreshMenuItem=menu.findItem(R.id.menu_refresh);
     startAnimatingRefreshButton();
   }
   return true;
