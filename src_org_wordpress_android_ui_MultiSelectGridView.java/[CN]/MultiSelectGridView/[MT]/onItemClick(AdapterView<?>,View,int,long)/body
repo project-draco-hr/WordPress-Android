@@ -1,0 +1,16 @@
+{
+  if (!isInMultiSelectMode()) {
+    mOnItemClickListener.onItemClick(parent,view,position,id);
+    return;
+  }
+  Cursor cursor=((CursorAdapter)parent.getAdapter()).getCursor();
+  String mediaId=cursor.getString(cursor.getColumnIndex("mediaId"));
+  CheckableFrameLayout frameLayout=((CheckableFrameLayout)view);
+  if (getSelectedItems().contains(mediaId)) {
+    frameLayout.setChecked(false);
+  }
+ else {
+    frameLayout.setChecked(true);
+  }
+  notifyMultiSelectCountChanged();
+}
