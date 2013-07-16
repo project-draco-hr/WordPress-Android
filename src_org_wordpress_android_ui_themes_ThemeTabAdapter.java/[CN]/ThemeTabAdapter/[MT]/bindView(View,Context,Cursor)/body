@@ -1,6 +1,6 @@
 {
   final String screenshotURL=cursor.getString(cursor.getColumnIndex("screenshotURL"));
-  final ImageView imageView=(ImageView)view.findViewById(R.id.theme_grid_item_image);
+  final NetworkImageView imageView=(NetworkImageView)view.findViewById(R.id.theme_grid_item_image);
   ViewHolder holder=(ViewHolder)imageView.getTag();
   if (holder == null) {
     holder=new ViewHolder();
@@ -11,19 +11,9 @@
     imageView.setImageBitmap(null);
     holder.requestURL=screenshotURL;
   }
-  WordPress.imageLoader.get(holder.requestURL,new ImageListener(){
-    @Override public void onErrorResponse(    VolleyError error){
-    }
-    @Override public void onResponse(    ImageContainer response,    boolean isImmediate){
-      ViewHolder holder=(ViewHolder)imageView.getTag();
-      if (holder != null) {
-        String url=holder.requestURL;
-        if (response != null && response.getBitmap() != null && response.getRequestUrl().equals(url)) {
-          imageView.setImageBitmap(response.getBitmap());
-        }
-      }
-    }
-  }
-,getGridWidth(context),getGridHeight(context));
-  updateGridWidth(mContext,view);
+  FrameLayout.LayoutParams params=(LayoutParams)imageView.getLayoutParams();
+  params.width=getGridWidth(context);
+  params.height=getGridHeight(context);
+  imageView.setImageUrl(screenshotURL,WordPress.imageLoader);
+  view.setLayoutParams(new GridView.LayoutParams(params.width,params.height));
 }

@@ -3,7 +3,7 @@
   if (itemId == android.R.id.home) {
     FragmentManager fm=getSupportFragmentManager();
     if (fm.getBackStackEntryCount() > 0) {
-      popMediaItemDetails();
+      fm.popBackStack();
       return true;
     }
   }
@@ -44,6 +44,23 @@
       mMediaItemFragment.loadMedia(mediaId);
     }
     if (mSearchView != null)     mSearchView.clearFocus();
+  }
+ else   if (itemId == R.id.menu_save_media) {
+    mMediaEditFragment.editMedia();
+  }
+ else   if (itemId == R.id.menu_delete) {
+    Builder builder=new AlertDialog.Builder(this).setMessage(R.string.confirm_delete_media).setCancelable(true).setPositiveButton(R.string.delete,new OnClickListener(){
+      @Override public void onClick(      DialogInterface dialog,      int which){
+        if (mMediaItemFragment != null && mMediaItemFragment.isVisible()) {
+          ArrayList<String> ids=new ArrayList<String>(1);
+          ids.add(mMediaItemFragment.getMediaId());
+          onDeleteMedia(ids);
+        }
+      }
+    }
+).setNegativeButton(R.string.cancel,null);
+    AlertDialog dialog=builder.create();
+    dialog.show();
   }
   return super.onOptionsItemSelected(item);
 }
