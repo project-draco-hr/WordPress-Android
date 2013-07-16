@@ -6,9 +6,12 @@
   WordPress.restClient.setTheme(siteId,themeId,new Listener(){
     @Override public void onResponse(    JSONObject arg0){
       Toast.makeText(ThemeBrowserActivity.this,R.string.theme_set_success,Toast.LENGTH_LONG).show();
+      if (isXLarge(ThemeBrowserActivity.this)) {
+        mDetailsFragment.dismiss();
+      }
       FragmentManager fm=getSupportFragmentManager();
       if (fm.getBackStackEntryCount() > 0) {
-        popThemeDetailsFragment();
+        popThemeFragment();
         invalidateOptionsMenu();
       }
     }
