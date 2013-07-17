@@ -1,0 +1,37 @@
+{
+  XMLRPCClient client=new XMLRPCClient(post.getBlog().getUrl(),post.getBlog().getHttpuser(),post.getBlog().getHttppassword());
+  String tempFileName="wp-" + System.currentTimeMillis();
+  try {
+    context.openFileOutput(tempFileName,Context.MODE_PRIVATE);
+  }
+ catch (  FileNotFoundException e) {
+    mediaError=true;
+    error=context.getString(R.string.file_not_found);
+    return null;
+  }
+  File tempFile=context.getFileStreamPath(tempFileName);
+  Object[] params={1,post.getBlog().getUsername(),post.getBlog().getPassword(),pictureParams};
+  Object result=null;
+  try {
+    result=(Object)client.call("wp.uploadFile",params,tempFile);
+  }
+ catch (  XMLRPCException e) {
+    error=context.getResources().getString(R.string.error_media_upload) + ": " + cleanXMLRPCErrorMessage(e.getMessage());
+    mediaError=true;
+    return null;
+  }
+  Map<?,?> contentHash=(HashMap<?,?>)result;
+  String pictureURL=contentHash.get("url").toString();
+  if (mf.isFeatured()) {
+    try {
+      if (contentHash.get("id") != null) {
+        featuredImageID=Integer.parseInt(contentHash.get("id").toString());
+        if (!mf.isFeaturedInPost())         return "";
+      }
+    }
+ catch (    NumberFormatException e) {
+      e.printStackTrace();
+    }
+  }
+  return pictureURL;
+}
