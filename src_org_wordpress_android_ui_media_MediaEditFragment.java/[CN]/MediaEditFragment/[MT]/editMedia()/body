@@ -4,10 +4,11 @@
   final String title=mTitleView.getText().toString();
   final String description=mDescriptionView.getText().toString();
   final Blog currentBlog=WordPress.getCurrentBlog();
-  ApiHelper.EditMediaItemTask task=new ApiHelper.EditMediaItemTask(mediaId,title,description,new ApiHelper.EditMediaItemTask.Callback(){
+  final String caption=mCaptionView.getText().toString();
+  ApiHelper.EditMediaItemTask task=new ApiHelper.EditMediaItemTask(mediaId,title,description,caption,new ApiHelper.EditMediaItemTask.Callback(){
     @Override public void onSuccess(){
       String blogId=String.valueOf(currentBlog.getBlogId());
-      WordPress.wpDB.updateMediaFile(blogId,mediaId,title,description);
+      WordPress.wpDB.updateMediaFile(blogId,mediaId,title,description,caption);
       if (getActivity() != null)       Toast.makeText(getActivity(),R.string.media_edit_success,Toast.LENGTH_LONG).show();
       setMediaUpdating(false);
       mCallback.onEditCompleted(mediaId,true);
