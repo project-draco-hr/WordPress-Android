@@ -8,21 +8,21 @@
     @Override public void onSuccess(){
       String blogId=String.valueOf(currentBlog.getBlogId());
       WordPress.wpDB.updateMediaFile(blogId,mediaId,title,description);
-      Toast.makeText(getActivity(),"SUCCESS!!",Toast.LENGTH_LONG).show();
-      mUpdatingMedia=false;
+      Toast.makeText(getActivity(),R.string.media_edit_success,Toast.LENGTH_LONG).show();
+      setMediaUpdating(false);
       mCallback.onEditCompleted(true);
     }
     @Override public void onFailure(){
-      Toast.makeText(getActivity(),"Failure!!",Toast.LENGTH_LONG).show();
-      mUpdatingMedia=false;
+      Toast.makeText(getActivity(),R.string.media_edit_failure,Toast.LENGTH_LONG).show();
+      setMediaUpdating(false);
       mCallback.onEditCompleted(false);
     }
   }
 );
   List<Object> apiArgs=new ArrayList<Object>();
   apiArgs.add(currentBlog);
-  if (!mUpdatingMedia) {
-    mUpdatingMedia=true;
+  if (!isMediaUpdating()) {
+    setMediaUpdating(true);
     task.execute(apiArgs);
   }
 }
