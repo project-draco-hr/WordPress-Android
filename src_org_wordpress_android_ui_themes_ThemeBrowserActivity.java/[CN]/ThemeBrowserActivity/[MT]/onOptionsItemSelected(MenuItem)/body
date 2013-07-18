@@ -8,19 +8,18 @@
       return true;
     }
   }
- else   if (itemId == R.id.menu_search) {
-    mSearchMenuItem=item;
-    mSearchMenuItem.setOnActionExpandListener(this);
-    mSearchView=(SearchView)item.getActionView();
-    mSearchView.setOnQueryTextListener(this);
-    return true;
-  }
- else   if (itemId == R.id.menu_activate) {
-    handleMenuActivateTheme(null);
-    return true;
-  }
  else   if (itemId == R.id.menu_refresh) {
     fetchThemes();
+    return true;
+  }
+ else   if (itemId == R.id.menu_search) {
+    FragmentTransaction ft=getSupportFragmentManager().beginTransaction();
+    if (mSearchFragment == null) {
+      mSearchFragment=ThemeSearchFragment.newInstance();
+    }
+    ft.add(R.id.theme_browser_container,mSearchFragment,ThemeSearchFragment.TAG);
+    ft.addToBackStack(null);
+    ft.commit();
     return true;
   }
   return super.onOptionsItemSelected(item);
