@@ -1,6 +1,7 @@
 {
   if (WordPress.getCurrentBlog() == null)   return;
-  if (!mIsRefreshing) {
+  if (offset == 0 || !mIsRefreshing && (System.currentTimeMillis() - mLastRefreshTime > MIN_REFERSH_INTERVAL_MS)) {
+    mLastRefreshTime=System.currentTimeMillis();
     mIsRefreshing=true;
     mListener.onMediaItemListDownloadStart();
     List<Object> apiArgs=new ArrayList<Object>();
