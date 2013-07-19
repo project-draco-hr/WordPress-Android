@@ -4,6 +4,7 @@
     FragmentManager fm=getSupportFragmentManager();
     if (fm.getBackStackEntryCount() > 0) {
       fm.popBackStack();
+      setupBaseLayout();
       return true;
     }
   }
@@ -35,13 +36,13 @@
       FragmentTransaction ft=fm.beginTransaction();
       ft.hide(mMediaItemFragment);
       mMediaEditFragment=MediaEditFragment.newInstance(mediaId);
-      ft.add(R.id.media_browser_container,mMediaEditFragment);
+      ft.add(R.id.media_browser_container,mMediaEditFragment,MediaEditFragment.TAG);
       ft.addToBackStack(null);
       ft.commit();
       mMenuDrawer.setDrawerIndicatorEnabled(false);
     }
  else {
-      mMediaItemFragment.loadMedia(mediaId);
+      mMediaEditFragment.loadMedia(mediaId);
     }
     if (mSearchView != null)     mSearchView.clearFocus();
   }
