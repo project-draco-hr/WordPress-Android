@@ -19,13 +19,13 @@
     @Override public void onFailure(){
       WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,"failed");
       mUploadInProgress=false;
-      sendUpdateBroadcast();
+      sendUpdateBroadcast(mediaId);
       mHandler.post(mFetchQueueTask);
     }
   }
 );
   WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,"uploading");
-  sendUpdateBroadcast();
+  sendUpdateBroadcast(mediaId);
   List<Object> apiArgs=new ArrayList<Object>();
   apiArgs.add(WordPress.getCurrentBlog());
   task.execute(apiArgs);

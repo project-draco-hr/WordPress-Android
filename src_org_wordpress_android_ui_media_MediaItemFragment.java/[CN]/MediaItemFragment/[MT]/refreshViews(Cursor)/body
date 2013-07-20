@@ -8,8 +8,14 @@
   String fileName=cursor.getString(cursor.getColumnIndex("fileName"));
   mFileNameView.setText("File name: " + fileName);
   String fileURL=cursor.getString(cursor.getColumnIndex("fileURL"));
-  String fileType=fileURL.replaceAll(".*\\.(\\w+)$","$1").toUpperCase();
-  mFileTypeView.setText("File type: " + fileType);
+  if (fileURL != null) {
+    String fileType=fileURL.replaceAll(".*\\.(\\w+)$","$1").toUpperCase();
+    mFileTypeView.setText("File type: " + fileType);
+    mFileTypeView.setVisibility(View.VISIBLE);
+  }
+ else {
+    mFileTypeView.setVisibility(View.GONE);
+  }
   String imageUrl=cursor.getString(cursor.getColumnIndex("fileURL"));
   if (MediaUtils.isValidImage(imageUrl)) {
     int width=cursor.getInt(cursor.getColumnIndex("width"));

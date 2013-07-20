@@ -1,0 +1,24 @@
+{
+  super.onActivityResult(requestCode,resultCode,data);
+  if (data != null || requestCode == RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO || requestCode == RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO) {
+    String path=null;
+switch (requestCode) {
+case RequestCode.ACTIVITY_REQUEST_CODE_PICTURE_LIBRARY:
+      Uri imageUri=data.getData();
+    path=getRealPathFromURI(imageUri);
+  queueImageFileForUpload(path);
+break;
+case RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO:
+if (resultCode == Activity.RESULT_OK) {
+path=mMediaCapturePath;
+mMediaCapturePath=null;
+queueImageFileForUpload(path);
+}
+break;
+case RequestCode.ACTIVITY_REQUEST_CODE_VIDEO_LIBRARY:
+break;
+case RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO:
+break;
+}
+}
+}
