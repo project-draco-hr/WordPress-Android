@@ -1,0 +1,21 @@
+{
+  Blog blog=WordPress.getCurrentBlog();
+  if (blog == null)   return;
+  String blogId=String.valueOf(blog.getBlogId());
+  GregorianCalendar startDate=new GregorianCalendar(startYear,startMonth,startDay);
+  GregorianCalendar endDate=new GregorianCalendar(endYear,endMonth,endDay);
+  mCursor=WordPress.wpDB.getMediaFilesForBlog(blogId,startDate.getTimeInMillis(),endDate.getTimeInMillis());
+  if (mCursor != null && mCursor.getCount() > 0 && mGridAdapter != null) {
+    mGridAdapter.swapCursor(mCursor);
+    mResultView.setVisibility(View.VISIBLE);
+    SimpleDateFormat fmt=new SimpleDateFormat("dd-MMM-yyyy");
+    fmt.setCalendar(startDate);
+    String formattedStart=fmt.format(startDate.getTime());
+    String formattedEnd=fmt.format(endDate.getTime());
+    mResultView.setText("Displaying media from " + formattedStart + " to "+ formattedEnd);
+  }
+ else {
+    mResultView.setVisibility(View.VISIBLE);
+    mResultView.setText(getResources().getString(R.string.empty_fields));
+  }
+}
