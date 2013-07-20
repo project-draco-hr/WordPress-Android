@@ -12,13 +12,6 @@
     String fileName=cursor.getString(cursor.getColumnIndex("fileName"));
     filenameView.setText("File name: " + fileName);
   }
-  TextView dimensionView=(TextView)view.findViewById(R.id.media_grid_item_dimension);
-  if (dimensionView != null) {
-    int width=cursor.getInt(cursor.getColumnIndex("width"));
-    int height=cursor.getInt(cursor.getColumnIndex("height"));
-    String dimensions=width + "x" + height;
-    dimensionView.setText("Dimensions: " + dimensions);
-  }
   String thumbnailURL=cursor.getString(cursor.getColumnIndex("thumbnailURL"));
   NetworkImageView imageView=(NetworkImageView)view.findViewById(R.id.media_grid_item_image);
   if (thumbnailURL != null) {
@@ -33,6 +26,19 @@
   }
  else {
     fileTypeView.setText(fileType);
+  }
+  TextView dimensionView=(TextView)view.findViewById(R.id.media_grid_item_dimension);
+  if (dimensionView != null) {
+    if (MediaUtils.isValidImage(fileURL)) {
+      int width=cursor.getInt(cursor.getColumnIndex("width"));
+      int height=cursor.getInt(cursor.getColumnIndex("height"));
+      String dimensions=width + "x" + height;
+      dimensionView.setText("Dimensions: " + dimensions);
+      dimensionView.setVisibility(View.VISIBLE);
+    }
+ else {
+      dimensionView.setVisibility(View.GONE);
+    }
   }
   final int position=cursor.getPosition();
   CheckableFrameLayout frameLayout=(CheckableFrameLayout)view;
