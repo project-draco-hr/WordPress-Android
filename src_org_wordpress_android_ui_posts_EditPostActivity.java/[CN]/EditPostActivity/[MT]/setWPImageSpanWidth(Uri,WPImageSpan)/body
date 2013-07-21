@@ -1,0 +1,20 @@
+{
+  String imageWidth=WordPress.currentBlog.getMaxImageWidth();
+  int imageWidthBlogSetting=Integer.MAX_VALUE;
+  if (!imageWidth.equals("Original Size")) {
+    try {
+      imageWidthBlogSetting=Integer.valueOf(imageWidth);
+    }
+ catch (    NumberFormatException e) {
+      e.printStackTrace();
+    }
+  }
+  int[] dimensions=ImageHelper.getImageSize(curStream,EditPostActivity.this);
+  int imageWidthPictureSetting=dimensions[0] == 0 ? Integer.MAX_VALUE : dimensions[0];
+  if (Math.min(imageWidthPictureSetting,imageWidthBlogSetting) == Integer.MAX_VALUE) {
+    is.setWidth(1024);
+  }
+ else {
+    is.setWidth(Math.min(imageWidthPictureSetting,imageWidthBlogSetting));
+  }
+}
