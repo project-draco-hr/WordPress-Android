@@ -10,9 +10,8 @@
   mDay=c.get(Calendar.DAY_OF_MONTH);
   mHour=c.get(Calendar.HOUR_OF_DAY);
   mMinute=c.get(Calendar.MINUTE);
-  mCategories=new JSONArray();
+  mCategories=new ArrayList<String>();
   mAutoSaveHandler=new Handler();
-  mSelectedCategories=new Vector<String>();
   String action=getIntent().getAction();
   if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
     mIsExternalInstance=true;
@@ -84,7 +83,6 @@
   mBquoteToggleButton=(ToggleButton)findViewById(R.id.bquote);
   mUnderlineToggleButton=(ToggleButton)findViewById(R.id.underline);
   mStrikeToggleButton=(ToggleButton)findViewById(R.id.strike);
-  mCategoriesText=(TextView)findViewById(R.id.selectedCategories);
   mAddPictureButton=(ImageButton)findViewById(R.id.addPictureButton);
   mPubDateButton=(Button)findViewById(R.id.pubDateButton);
   mPubDateText=(TextView)findViewById(R.id.pubDate);
@@ -97,8 +95,9 @@
   ((TextView)findViewById(R.id.postFormatLabel)).setText(getResources().getString(R.string.post_format).toUpperCase());
   ((TextView)findViewById(R.id.pubDateLabel)).setText(getResources().getString(R.string.publish_date).toUpperCase());
   if (mIsPage) {
-    ((LinearLayout)findViewById(R.id.section2)).setVisibility(View.GONE);
-    ((RelativeLayout)findViewById(R.id.section3)).setVisibility(View.GONE);
+    ((LinearLayout)findViewById(R.id.sectionTags)).setVisibility(View.GONE);
+    ((FlowLayout)findViewById(R.id.sectionCategories)).setVisibility(View.GONE);
+    ((RelativeLayout)findViewById(R.id.sectionLocation)).setVisibility(View.GONE);
     ((TextView)findViewById(R.id.postFormatLabel)).setVisibility(View.GONE);
     ((Spinner)findViewById(R.id.postFormat)).setVisibility(View.GONE);
   }
@@ -221,20 +220,8 @@
       }
     }
     if (!mIsPage) {
-      if (mPost.getCategories() != null) {
-        mCategories=mPost.getCategories();
-        if (!mCategories.equals("")) {
-          for (int i=0; i < mCategories.length(); i++) {
-            try {
-              mSelectedCategories.add(mCategories.getString(i));
-            }
- catch (            JSONException e) {
-              e.printStackTrace();
-            }
-          }
-          mCategoriesText.setVisibility(View.VISIBLE);
-          mCategoriesText.setText(getString(R.string.selected_categories) + " " + getCategoriesCSV());
-        }
+      if (mPost.getJSONCategories() != null) {
+        mCategories=JSONUtil.fromJSONArrayToStringList(mPost.getJSONCategories());
       }
       Double latitude=mPost.getLatitude();
       Double longitude=mPost.getLongitude();
@@ -247,10 +234,7 @@
       mTagsEditText.setText(tags);
     }
   }
-  if (!mIsPage) {
-    Button selectCategories=(Button)findViewById(R.id.selectCategories);
-    selectCategories.setOnClickListener(this);
-  }
+  populateSelectedCategories();
   registerForContextMenu(mAddPictureButton);
   mContentEditText.setOnSelectionChangedListener(this);
   mContentEditText.setOnEditTextImeBackListener(this);
