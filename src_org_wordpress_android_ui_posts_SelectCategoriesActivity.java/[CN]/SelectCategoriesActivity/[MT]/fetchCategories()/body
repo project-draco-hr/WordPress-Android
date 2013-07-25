@@ -1,5 +1,5 @@
 {
-  String returnMessage="";
+  String returnMessage;
   Object result[]=null;
   Object[] params={blog.getBlogId(),blog.getUsername(),blog.getPassword()};
   client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
@@ -12,15 +12,15 @@
     e.printStackTrace();
   }
   if (success) {
-    int size=result.length;
-    WordPress.wpDB.clearCategories(id);
-    for (int i=0; i < size; i++) {
-      Map<?,?> curHash=(Map<?,?>)result[i];
+    WordPress.wpDB.clearCategories(blog.getId());
+    for (    Object aResult : result) {
+      Map<?,?> curHash=(Map<?,?>)aResult;
       String categoryName=curHash.get("categoryName").toString();
       String categoryID=curHash.get("categoryId").toString();
+      String categoryParentID=curHash.get("parentId").toString();
       int convertedCategoryID=Integer.parseInt(categoryID);
-      WordPress.wpDB.insertCategory(id,convertedCategoryID,categoryName);
-      textArray.add(categoryName);
+      int convertedCategoryParentID=Integer.parseInt(categoryParentID);
+      WordPress.wpDB.insertCategory(blog.getId(),convertedCategoryID,convertedCategoryParentID,categoryName);
     }
     returnMessage="gotCategories";
   }

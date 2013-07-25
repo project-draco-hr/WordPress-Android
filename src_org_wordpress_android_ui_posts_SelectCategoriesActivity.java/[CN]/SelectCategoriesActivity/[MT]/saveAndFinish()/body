@@ -1,16 +1,11 @@
 {
   String selectedCategories="";
   SparseBooleanArray selectedItems=lv.getCheckedItemPositions();
-  List<Integer> rCheckedItems=new Vector<Integer>();
   for (int i=0; i < selectedItems.size(); i++) {
     if (selectedItems.get(selectedItems.keyAt(i)) == true) {
-      rCheckedItems.add(selectedItems.keyAt(i));
-      selectedCategories+=loadTextArray.get(selectedItems.keyAt(i)).toString() + ",";
+      String categoryName=mCategoryLevels.get(selectedItems.keyAt(i)).getCategory().getName();
+      selectedCategories+=categoryName + ",";
     }
-  }
-  long finalCheckedItems[]=new long[rCheckedItems.size()];
-  for (int x=0; x < rCheckedItems.size(); x++) {
-    finalCheckedItems[x]=Long.parseLong(rCheckedItems.get(x).toString());
   }
   Bundle bundle=new Bundle();
   selectedCategories=selectedCategories.trim();
@@ -18,7 +13,6 @@
     selectedCategories=selectedCategories.substring(0,selectedCategories.length() - 1);
   }
   bundle.putString("selectedCategories",selectedCategories);
-  bundle.putLongArray("checkedItems",finalCheckedItems);
   Intent mIntent=new Intent();
   mIntent.putExtras(bundle);
   setResult(RESULT_OK,mIntent);
