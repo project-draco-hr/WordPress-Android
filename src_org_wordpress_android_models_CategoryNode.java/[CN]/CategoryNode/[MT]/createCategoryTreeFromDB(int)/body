@@ -1,0 +1,23 @@
+{
+  List<String> stringCategories=WordPress.wpDB.loadCategories(blogId);
+  SparseArray<CategoryNode> categoryMap=new SparseArray<CategoryNode>();
+  CategoryNode rootCategory=new CategoryNode(-1,-1,"");
+  CategoryNode currentRootNode;
+  for (  String name : stringCategories) {
+    int categoryId=WordPress.wpDB.getCategoryId(blogId,name);
+    int parentId=WordPress.wpDB.getCategoryParentId(blogId,name);
+    CategoryNode node=new CategoryNode(categoryId,parentId,name);
+    categoryMap.put(categoryId,node);
+  }
+  for (int i=0; i < categoryMap.size(); i++) {
+    CategoryNode category=categoryMap.valueAt(i);
+    if (category.getParentId() == 0) {
+      currentRootNode=rootCategory;
+    }
+ else {
+      currentRootNode=categoryMap.get(category.getParentId());
+    }
+    currentRootNode.children.put(category.getName(),categoryMap.get(category.getCategoryId()));
+  }
+  return rootCategory;
+}
