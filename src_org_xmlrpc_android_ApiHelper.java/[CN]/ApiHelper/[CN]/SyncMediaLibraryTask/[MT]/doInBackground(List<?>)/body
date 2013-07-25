@@ -4,7 +4,7 @@
   Blog blog=WordPress.currentBlog;
   if (blog == null) {
     Log.e("WordPress","ApiHelper - current blog is null");
-    return false;
+    return -1;
   }
   String blogId=String.valueOf(blog.getBlogId());
   client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
@@ -32,7 +32,7 @@
       WordPress.wpDB.saveMediaFile(mediaFile);
     }
     WordPress.wpDB.deleteFilesMarkedForDeleted(blogId);
-    return true;
+    return results.length;
   }
-  return false;
+  return -1;
 }

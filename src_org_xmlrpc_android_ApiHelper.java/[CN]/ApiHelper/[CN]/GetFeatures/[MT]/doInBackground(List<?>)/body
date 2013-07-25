@@ -1,0 +1,17 @@
+{
+  List<?> arguments=params[0];
+  Blog blog=(Blog)arguments.get(0);
+  if (blog == null)   return null;
+  Object[] apiParams=new Object[]{blog.getBlogId(),blog.getUsername(),blog.getPassword()};
+  Map<?,?> resultMap=null;
+  try {
+    resultMap=(HashMap<?,?>)client.call("wpcom.getFeatures",apiParams);
+  }
+ catch (  XMLRPCException e) {
+    Log.e("WordPress","XMLRPCException: " + e.getMessage());
+  }
+  if (resultMap != null) {
+    return new FeatureSet(blog.getBlogId(),resultMap);
+  }
+  return null;
+}
