@@ -1,19 +1,19 @@
 {
-  String siteId=getBlogId();
+  final String siteId=getBlogId();
   if (themeId == null) {
     themeId=mPreviewFragment.getThemeId();
   }
+  final String currentThemeId=themeId;
   final WeakReference<ThemeBrowserActivity> ref=new WeakReference<ThemeBrowserActivity>(this);
   WordPress.restClient.setTheme(siteId,themeId,new Listener(){
     @Override public void onResponse(    JSONObject arg0){
       Toast.makeText(ThemeBrowserActivity.this,R.string.theme_set_success,Toast.LENGTH_LONG).show();
+      WordPress.wpDB.setCurrentTheme(siteId,currentThemeId);
       if (mDetailsFragment != null) {
         mDetailsFragment.onThemeActivated(true);
       }
-      if (ref.get() != null && mIsRunning) {
-        if (Utils.isXLarge(ThemeBrowserActivity.this)) {
-          mDetailsFragment.dismiss();
-        }
+      refreshViewPager();
+      if (ref.get() != null && mIsRunning && fragment instanceof ThemePreviewFragment) {
         FragmentManager fm=ref.get().getSupportFragmentManager();
         if (fm.getBackStackEntryCount() > 0) {
           fm.popBackStack();
