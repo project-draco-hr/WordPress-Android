@@ -14,6 +14,13 @@
   mediaFile.setDateCreatedGMT(System.currentTimeMillis());
   mediaFile.setMediaId(String.valueOf(System.currentTimeMillis()));
   String mimeType=MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileType);
+  if (mimeType.startsWith("image")) {
+    BitmapFactory.Options bfo=new BitmapFactory.Options();
+    bfo.inJustDecodeBounds=true;
+    BitmapFactory.decodeFile(path,bfo);
+    mediaFile.setWidth(bfo.outWidth);
+    mediaFile.setHeight(bfo.outHeight);
+  }
   mediaFile.setMIMEType(mimeType);
   mediaFile.save();
   mCallback.onMediaAdded(mediaFile.getMediaId());
