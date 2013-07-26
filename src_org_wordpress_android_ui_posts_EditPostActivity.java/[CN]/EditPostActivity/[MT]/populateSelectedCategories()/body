@@ -1,15 +1,5 @@
 {
   ViewGroup sectionCategories=((ViewGroup)findViewById(R.id.sectionCategories));
-  boolean uncategorizedAlone=false;
-  if (mCategories.size() == 0) {
-    mCategories.add(UNCATEGORIZED_LABEL);
-    uncategorizedAlone=true;
-  }
- else {
-    if (mCategories.size() == 1 && mCategories.get(0).equals(UNCATEGORIZED_LABEL)) {
-      uncategorizedAlone=true;
-    }
-  }
   List<View> viewsToRemove=new ArrayList<View>();
   for (int i=0; i < sectionCategories.getChildCount(); i++) {
     View v=sectionCategories.getChildAt(i);
@@ -23,21 +13,21 @@
   }
   viewsToRemove.clear();
   LayoutInflater layoutInflater=getLayoutInflater();
-  List<View> categoryButtons=new ArrayList<View>();
   for (int i=0; i < mCategories.size(); i++) {
     String categoryName=mCategories.get(i);
     Button buttonCategory=(Button)layoutInflater.inflate(R.layout.category_button,null);
     buttonCategory.setText(categoryName);
     buttonCategory.setTag(CATEGORY_PREFIX_TAG + categoryName);
     buttonCategory.setOnClickListener(this);
-    if (uncategorizedAlone) {
-      buttonCategory.setCompoundDrawables(null,null,null,null);
-      buttonCategory.setEnabled(false);
-      buttonCategory.setPadding(buttonCategory.getPaddingLeft(),buttonCategory.getPaddingTop(),buttonCategory.getPaddingLeft(),buttonCategory.getPaddingBottom());
-    }
     sectionCategories.addView(buttonCategory);
   }
-  View selectCategory=layoutInflater.inflate(R.layout.category_select_button,null);
+  Button selectCategory=(Button)layoutInflater.inflate(R.layout.category_select_button,null);
+  if (mCategories.size() == 0) {
+    selectCategory.setText(getResources().getText(R.string.category));
+  }
+ else {
+    selectCategory.setText("");
+  }
   selectCategory.setOnClickListener(this);
   sectionCategories.addView(selectCategory);
 }
