@@ -1,0 +1,28 @@
+{
+  if (WordPress.getCurrentBlog() == null)   return;
+  String blogId=WordPress.getCurrentBlog().getBlogId() + "";
+  int[] timeframes=new int[]{0,1};
+  Random random=new Random();
+  String[] word1=new String[]{"My ","The ","This "};
+  String[] word2=new String[]{"awesome ","hip ","cool ","great ","funny ","hilarious ","geeky ","trendy "};
+  String[] word3=new String[]{"video ","clip ","screenshot ","cat picture ","article ","website "};
+  String word4="is ";
+  String[] word5=new String[]{"the greatest thing ever!","full of awesome!","making me ROFL!","the new cool thing"};
+  for (  Stats.Category category : Stats.Category.values()) {
+    for (int i=0; i < 10; i++) {
+      ContentValues values=new ContentValues();
+      values.put("blogId",blogId);
+      values.put("category",category.name().toLowerCase());
+      if (category == Category.TAGS_AND_CATEGORIES) {
+        if (random.nextBoolean())         values.put("entryType","tag");
+ else         values.put("entryType","category");
+      }
+      values.put("entry",word1[random.nextInt(word1.length)] + word2[random.nextInt(word2.length)] + word3[random.nextInt(word3.length)]+ word4+ word5[random.nextInt(word5.length)]);
+      values.put("total",random.nextInt(999));
+      values.put("timeframe",timeframes[random.nextInt(timeframes.length)]);
+      if (random.nextBoolean())       values.put("imageUrl","http://placekitten.com/50/50");
+      if (random.nextBoolean())       values.put("url","http://www.google.com");
+      db.insert(STATS_TABLE,null,values);
+    }
+  }
+}
