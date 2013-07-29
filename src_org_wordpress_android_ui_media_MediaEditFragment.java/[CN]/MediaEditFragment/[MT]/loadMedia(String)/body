@@ -1,0 +1,16 @@
+{
+  mMediaId=mediaId;
+  Blog blog=WordPress.getCurrentBlog();
+  if (blog != null && getActivity() != null) {
+    String blogId=String.valueOf(blog.getBlogId());
+    Cursor cursor;
+    if (mMediaId == null) {
+      cursor=WordPress.wpDB.getFirstMediaFileForBlog(blogId);
+    }
+ else {
+      cursor=WordPress.wpDB.getMediaFile(blogId,mMediaId);
+    }
+    refreshViews(cursor);
+    cursor.close();
+  }
+}

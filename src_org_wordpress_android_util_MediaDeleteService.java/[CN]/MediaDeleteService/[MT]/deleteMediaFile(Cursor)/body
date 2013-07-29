@@ -1,0 +1,25 @@
+{
+  if (!cursor.moveToFirst())   return;
+  mDeleteInProgress=true;
+  final String blogId=cursor.getString((cursor.getColumnIndex("blogId")));
+  final String mediaId=cursor.getString(cursor.getColumnIndex("mediaId"));
+  ApiHelper.DeleteMediaTask task=new ApiHelper.DeleteMediaTask(mediaId,new Callback(){
+    @Override public void onSuccess(){
+      if (WordPress.getCurrentBlog() != null && mediaId != null) {
+        WordPress.wpDB.deleteMediaFile(blogId,mediaId);
+      }
+      mDeleteInProgress=false;
+      mHandler.post(mFetchQueueTask);
+    }
+    @Override public void onFailure(){
+      WordPress.wpDB.updateMediaUploadState(blogId,mediaId,"deleted");
+      mDeleteInProgress=false;
+      mHandler.post(mFetchQueueTask);
+    }
+  }
+);
+  List<Object> apiArgs=new ArrayList<Object>();
+  apiArgs.add(WordPress.getCurrentBlog());
+  task.execute(apiArgs);
+  mHandler.post(mFetchQueueTask);
+}

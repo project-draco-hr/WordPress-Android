@@ -1,0 +1,37 @@
+{
+  View view=inflater.inflate(R.layout.theme_details_fragment,container,false);
+  mNameView=(TextView)view.findViewById(R.id.theme_details_fragment_name);
+  mImageView=(NetworkImageView)view.findViewById(R.id.theme_details_fragment_image);
+  mDescriptionView=(TextView)view.findViewById(R.id.theme_details_fragment_details_description);
+  mCurrentThemeView=(View)view.findViewById(R.id.theme_details_fragment_current_theme_container);
+  mLivePreviewButton=(Button)view.findViewById(R.id.theme_details_fragment_preview_button);
+  mActivateThemeButton=(Button)view.findViewById(R.id.theme_details_fragment_activate_button);
+  mViewSiteButton=(Button)view.findViewById(R.id.theme_details_fragment_view_site_button);
+  mViewSiteButton.setOnClickListener(new OnClickListener(){
+    @Override public void onClick(    View v){
+      Intent intent=new Intent(getActivity(),ViewSiteActivity.class);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+      startActivity(intent);
+    }
+  }
+);
+  mLivePreviewButton.setOnClickListener(new OnClickListener(){
+    @Override public void onClick(    View v){
+      if (mPreviewURL != null)       mCallback.onLivePreviewClicked(getThemeId(),mPreviewURL);
+    }
+  }
+);
+  mActivateThemeButton.setOnClickListener(new OnClickListener(){
+    @Override public void onClick(    View v){
+      String themeId=getThemeId();
+      if (themeId != null) {
+        mCallback.onActivateThemeClicked(themeId,ThemeDetailsFragment.this);
+        mActivateThemeButton.setEnabled(false);
+        mActivateThemeButton.setText(R.string.theme_activating_button);
+      }
+    }
+  }
+);
+  loadTheme(getThemeId());
+  return view;
+}

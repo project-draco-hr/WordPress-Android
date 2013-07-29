@@ -1,0 +1,22 @@
+{
+  Cursor cursor=db.rawQuery("SELECT name, description, screenshotURL, previewURL, isCurrentTheme FROM " + THEMES_TABLE + " WHERE blogId=? AND themeId=?",new String[]{blogId,themeId});
+  if (cursor.moveToFirst()) {
+    String name=cursor.getString(0);
+    String description=cursor.getString(1);
+    String screenshotURL=cursor.getString(2);
+    String previewURL=cursor.getString(3);
+    boolean isCurrentTheme=cursor.getInt(4) == 1;
+    Theme theme=new Theme();
+    theme.setThemeId(themeId);
+    theme.setName(name);
+    theme.setDescription(description);
+    theme.setScreenshotURL(screenshotURL);
+    theme.setPreviewURL(previewURL);
+    theme.setIsCurrentTheme(isCurrentTheme);
+    cursor.close();
+    return theme;
+  }
+ else {
+    return null;
+  }
+}

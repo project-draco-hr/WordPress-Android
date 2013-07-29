@@ -1,0 +1,20 @@
+{
+  CheckableFrameLayout frameLayout=((CheckableFrameLayout)view);
+  if (!isInMultiSelectMode()) {
+    getSelectedItems().clear();
+    notifyMultiSelectCountChanged();
+    frameLayout.setChecked(true);
+    mOnItemClickListener.onItemClick(parent,view,position,id);
+    mAdapter.notifyDataSetChanged();
+    return;
+  }
+  Cursor cursor=((CursorAdapter)parent.getAdapter()).getCursor();
+  String mediaId=cursor.getString(cursor.getColumnIndex("mediaId"));
+  if (getSelectedItems().contains(mediaId)) {
+    frameLayout.setChecked(false);
+  }
+ else {
+    frameLayout.setChecked(true);
+  }
+  notifyMultiSelectCountChanged();
+}

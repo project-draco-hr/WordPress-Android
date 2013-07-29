@@ -1,0 +1,43 @@
+{
+  super.onCreate(savedInstanceState);
+  if (WordPress.wpDB == null) {
+    Toast.makeText(this,R.string.fatal_db_error,Toast.LENGTH_LONG).show();
+    finish();
+    return;
+  }
+  if (WordPress.getCurrentBlog() != null && !WordPress.getCurrentBlog().isDotcomFlag()) {
+    Intent intent=new Intent(ThemeBrowserActivity.this,PostsActivity.class);
+    intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+    startActivityWithDelay(intent);
+    finish();
+  }
+  setTitle(R.string.themes);
+  createMenuDrawer(R.layout.theme_browser_activity);
+  mThemePagerAdapter=new ThemePagerAdapter(getSupportFragmentManager());
+  mTabFragments=new ThemeTabFragment[mThemePagerAdapter.getCount()];
+  final ActionBar actionBar=getSupportActionBar();
+  actionBar.setDisplayShowTitleEnabled(true);
+  actionBar.setHomeButtonEnabled(true);
+  mProgressBar=(ProgressBar)findViewById(R.id.progressBar);
+  mViewPager=(ViewPager)findViewById(R.id.theme_browser_pager);
+  mViewPager.setAdapter(mThemePagerAdapter);
+  mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+    @Override public void onPageSelected(    int position){
+      mTabView.setSelectedTab(position);
+    }
+  }
+);
+  mTabView=(HorizontalTabView)findViewById(R.id.horizontalTabView1);
+  mTabView.setTabListener(this);
+  for (int i=0; i < ThemeSortType.values().length; i++) {
+    String title=ThemeSortType.values()[i].getTitle();
+    mTabView.addTab(mTabView.newTab().setText(title));
+  }
+  mTabView.setSelectedTab(0);
+  FragmentManager fm=getSupportFragmentManager();
+  fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
+  setupBaseLayout();
+  mPreviewFragment=(ThemePreviewFragment)fm.findFragmentByTag(ThemePreviewFragment.TAG);
+  mDetailsFragment=(ThemeDetailsFragment)fm.findFragmentByTag(ThemeDetailsFragment.TAG);
+  mSearchFragment=(ThemeSearchFragment)fm.findFragmentByTag(ThemeSearchFragment.TAG);
+}

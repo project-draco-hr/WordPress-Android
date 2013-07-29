@@ -1,0 +1,17 @@
+{
+  FragmentManager fm=getSupportFragmentManager();
+  if (!Utils.isXLarge(ThemeBrowserActivity.this)) {
+    FragmentTransaction ft=fm.beginTransaction();
+    if (mSearchFragment != null && mSearchFragment.isVisible())     fm.popBackStack();
+    setupBaseLayout();
+    mDetailsFragment=ThemeDetailsFragment.newInstance(themeId);
+    ft.add(R.id.theme_browser_container,mDetailsFragment,ThemeDetailsFragment.TAG);
+    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+    ft.addToBackStack(null);
+    ft.commit();
+  }
+ else {
+    mDetailsFragment=ThemeDetailsFragment.newInstance(themeId);
+    mDetailsFragment.show(getSupportFragmentManager(),ThemeDetailsFragment.TAG);
+  }
+}

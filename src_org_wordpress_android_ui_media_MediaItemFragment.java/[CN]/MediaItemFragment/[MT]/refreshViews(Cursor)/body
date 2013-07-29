@@ -1,0 +1,66 @@
+{
+  if (!cursor.moveToFirst())   return;
+  mTitleView.setText(cursor.getString(cursor.getColumnIndex("title")));
+  mCaptionView.setText(cursor.getString(cursor.getColumnIndex("caption")));
+  mDescriptionView.setText(cursor.getString(cursor.getColumnIndex("description")));
+  String state=cursor.getString(cursor.getColumnIndex("uploadState"));
+  mIsLocal=MediaUtils.isLocalFile(state);
+  if (mIsLocal)   getSherlockActivity().invalidateOptionsMenu();
+  inflateImageView();
+  String date=MediaUtils.getDate(cursor.getLong(cursor.getColumnIndex("date_created_gmt")));
+  if (mIsLocal)   mDateView.setText("Added on: " + date);
+ else   mDateView.setText("Uploaded on: " + date);
+  String fileName=cursor.getString(cursor.getColumnIndex("fileName"));
+  mFileNameView.setText("File name: " + fileName);
+  String fileURL=cursor.getString(cursor.getColumnIndex("fileURL"));
+  if (fileURL != null) {
+    String fileType=fileURL.replaceAll(".*\\.(\\w+)$","$1").toUpperCase();
+    mFileTypeView.setText("File type: " + fileType);
+    mFileTypeView.setVisibility(View.VISIBLE);
+  }
+ else {
+    mFileTypeView.setVisibility(View.GONE);
+  }
+  String imageUri=cursor.getString(cursor.getColumnIndex("fileURL"));
+  if (imageUri == null)   imageUri=cursor.getString(cursor.getColumnIndex("filePath"));
+  if (MediaUtils.isValidImage(imageUri)) {
+    int width=cursor.getInt(cursor.getColumnIndex("width"));
+    int height=cursor.getInt(cursor.getColumnIndex("height"));
+    float screenWidth;
+    View parentView=(View)mImageView.getParent();
+    if (this.isInLayout()) {
+      screenWidth=parentView.getMeasuredWidth();
+    }
+ else {
+      screenWidth=getActivity().getResources().getDisplayMetrics().widthPixels;
+    }
+    float screenHeight=getActivity().getResources().getDisplayMetrics().heightPixels;
+    if (width > 0 && height > 0) {
+      String dimensions=width + "x" + height;
+      mDimensionsView.setText("Dimensions: " + dimensions);
+      mDimensionsView.setVisibility(View.VISIBLE);
+    }
+ else {
+      mDimensionsView.setVisibility(View.GONE);
+    }
+    if (width > screenWidth) {
+      height=(int)(height / (width / screenWidth));
+    }
+ else     if (height > screenHeight) {
+      width=(int)(width / (height / screenHeight));
+    }
+    if (mIsLocal) {
+      final String filePath=cursor.getString(cursor.getColumnIndex("filePath"));
+      loadLocalImage(mImageView,filePath,width,height);
+    }
+ else {
+      ((NetworkImageView)mImageView).setImageUrl(imageUri + "?w=" + screenWidth,WordPress.imageLoader);
+    }
+    mImageView.setVisibility(View.VISIBLE);
+    mImageView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,height));
+  }
+ else {
+    mImageView.setVisibility(View.GONE);
+    mDimensionsView.setVisibility(View.GONE);
+  }
+}

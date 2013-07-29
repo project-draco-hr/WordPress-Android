@@ -1,34 +1,9 @@
 {
-  String state=android.os.Environment.getExternalStorageState();
-  if (!state.equals(android.os.Environment.MEDIA_MOUNTED)) {
-    AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(EditPostActivity.this);
-    dialogBuilder.setTitle(getResources().getText(R.string.sdcard_title));
-    dialogBuilder.setMessage(getResources().getText(R.string.sdcard_message));
-    dialogBuilder.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
-      public void onClick(      DialogInterface dialog,      int whichButton){
-        dialog.dismiss();
-      }
+  MediaUtils.launchCamera(this,new LaunchCameraCallback(){
+    @Override public void onMediaCapturePathReady(    String mediaCapturePath){
+      mMediaCapturePath=mediaCapturePath;
+      mCurrentActivityRequest=RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO;
     }
+  }
 );
-    dialogBuilder.setCancelable(true);
-    dialogBuilder.create().show();
-  }
- else {
-    String dcimFolderName=Environment.DIRECTORY_DCIM;
-    if (dcimFolderName == null)     dcimFolderName="DCIM";
-    mMediaCapturePath=Environment.getExternalStorageDirectory() + File.separator + dcimFolderName+ File.separator+ "Camera"+ File.separator+ "wp-"+ System.currentTimeMillis()+ ".jpg";
-    Intent takePictureFromCameraIntent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    takePictureFromCameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT,Uri.fromFile(new File(mMediaCapturePath)));
-    File directory=new File(mMediaCapturePath).getParentFile();
-    if (!directory.exists() && !directory.mkdirs()) {
-      try {
-        throw new IOException("Path to file could not be created.");
-      }
- catch (      IOException e) {
-        e.printStackTrace();
-      }
-    }
-    mCurrentActivityRequest=ACTIVITY_REQUEST_CODE_TAKE_PHOTO;
-    startActivityForResult(takePictureFromCameraIntent,ACTIVITY_REQUEST_CODE_TAKE_PHOTO);
-  }
 }

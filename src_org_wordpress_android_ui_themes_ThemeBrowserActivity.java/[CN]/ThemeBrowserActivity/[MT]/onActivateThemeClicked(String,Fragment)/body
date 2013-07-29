@@ -1,0 +1,33 @@
+{
+  final String siteId=getBlogId();
+  if (themeId == null) {
+    themeId=mPreviewFragment.getThemeId();
+  }
+  final String currentThemeId=themeId;
+  final WeakReference<ThemeBrowserActivity> ref=new WeakReference<ThemeBrowserActivity>(this);
+  WordPress.restClient.setTheme(siteId,themeId,new Listener(){
+    @Override public void onResponse(    JSONObject arg0){
+      Toast.makeText(ThemeBrowserActivity.this,R.string.theme_set_success,Toast.LENGTH_LONG).show();
+      WordPress.wpDB.setCurrentTheme(siteId,currentThemeId);
+      if (mDetailsFragment != null) {
+        mDetailsFragment.onThemeActivated(true);
+      }
+      refreshViewPager();
+      if (ref.get() != null && mIsRunning && fragment instanceof ThemePreviewFragment) {
+        FragmentManager fm=ref.get().getSupportFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+          fm.popBackStack();
+          setupBaseLayout();
+          invalidateOptionsMenu();
+        }
+      }
+    }
+  }
+,new ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError arg0){
+      if (mDetailsFragment.isVisible())       mDetailsFragment.onThemeActivated(false);
+      Toast.makeText(ref.get(),R.string.theme_set_failed,Toast.LENGTH_LONG).show();
+    }
+  }
+);
+}

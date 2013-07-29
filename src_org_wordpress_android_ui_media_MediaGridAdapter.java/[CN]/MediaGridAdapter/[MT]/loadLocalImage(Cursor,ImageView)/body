@@ -1,0 +1,23 @@
+{
+  final String filePath=cursor.getString(cursor.getColumnIndex("filePath"));
+  if (MediaUtils.isValidImage(filePath)) {
+    imageView.setTag(filePath);
+    Bitmap bitmap=WordPress.localImageCache.get(filePath);
+    if (bitmap != null) {
+      imageView.setImageBitmap(bitmap);
+    }
+ else {
+      if (mLocalImageRequestQueue.contains(filePath))       return;
+      mLocalImageRequestQueue.add(filePath);
+      int maxWidth=mContext.getResources().getDisplayMetrics().widthPixels;
+      int width=(int)(maxWidth * 11.0f / 24.0f);
+      BitmapWorkerTask task=new BitmapWorkerTask(imageView,width,width,new BitmapWorkerCallback(){
+        @Override public void onBitmapReady(        String path,        Bitmap bitmap){
+          WordPress.localImageCache.put(path,bitmap);
+        }
+      }
+);
+      task.execute(filePath);
+    }
+  }
+}
