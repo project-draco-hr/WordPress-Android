@@ -1,0 +1,10 @@
+{
+  mNavPosition=position;
+  ViewType viewType=ViewType.values()[mNavPosition];
+  mActionbarNavText.setText(viewType.getLabel());
+  FragmentManager fm=getSupportFragmentManager();
+  StatsNavDialogFragment navFragment=(StatsNavDialogFragment)fm.findFragmentByTag(StatsNavDialogFragment.TAG);
+  if (navFragment != null)   navFragment.dismissAllowingStateLoss();
+  mStatsPhoneFragment=StatsPhoneFragment.newInstance(viewType);
+  fm.beginTransaction().replace(R.id.stats_container,mStatsPhoneFragment,StatsPhoneFragment.TAG).commit();
+}

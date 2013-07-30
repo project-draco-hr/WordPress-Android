@@ -5,25 +5,26 @@
     finish();
     return;
   }
-  setTitle(R.string.stats);
+  setTitle("");
   createMenuDrawer(R.layout.stats_activity);
   final ActionBar actionBar=getSupportActionBar();
-  actionBar.setDisplayShowTitleEnabled(true);
-  actionBar.setHomeButtonEnabled(true);
-  actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-  ArrayAdapter<String> adapter=new ArrayAdapter<String>(getBaseContext(),R.layout.sherlock_spinner_item,ViewType.toStringArray());
-  ActionBar.OnNavigationListener navigationListener=new OnNavigationListener(){
-    @Override public boolean onNavigationItemSelected(    int itemPosition,    long itemId){
-      FragmentManager fm=getSupportFragmentManager();
-      mStatsPhoneFragment=(StatsPhoneFragment)fm.findFragmentByTag(StatsPhoneFragment.TAG);
-      mStatsPhoneFragment=StatsPhoneFragment.newInstance(ViewType.values()[itemPosition]);
-      fm.beginTransaction().replace(R.id.stats_container,mStatsPhoneFragment).commit();
-      return false;
+  actionBar.setDisplayShowCustomEnabled(true);
+  actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+  mActionbarNav=getLayoutInflater().inflate(R.layout.stats_ab_navigation,null,false);
+  actionBar.setCustomView(mActionbarNav);
+  mActionbarNavText=(TextView)mActionbarNav.findViewById(R.id.stats_ab_nav_text);
+  mActionbarNavText.setText(ViewType.values()[mNavPosition].getLabel());
+  mActionbarNavText.setOnClickListener(new OnClickListener(){
+    @Override public void onClick(    View v){
+      if (!isFinishing())       showViews();
     }
   }
-;
-  getSupportActionBar().setListNavigationCallbacks(adapter,navigationListener);
+);
   FragmentManager fm=getSupportFragmentManager();
-  mStatsPhoneFragment=StatsPhoneFragment.newInstance(ViewType.TOP_POSTS_AND_PAGES);
-  fm.beginTransaction().add(R.id.stats_container,mStatsPhoneFragment).commit();
+  mStatsPhoneFragment=(StatsPhoneFragment)fm.findFragmentByTag(StatsPhoneFragment.TAG);
+  if (mStatsPhoneFragment == null) {
+    mStatsPhoneFragment=StatsPhoneFragment.newInstance(ViewType.TOP_POSTS_AND_PAGES);
+    fm.beginTransaction().add(R.id.stats_container,mStatsPhoneFragment).commit();
+  }
+  mNavFragment=(DialogFragment)fm.findFragmentByTag(StatsNavDialogFragment.TAG);
 }
