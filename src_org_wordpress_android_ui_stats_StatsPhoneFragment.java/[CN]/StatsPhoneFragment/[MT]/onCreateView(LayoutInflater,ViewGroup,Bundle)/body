@@ -1,14 +1,12 @@
 {
   View view=inflater.inflate(R.layout.stats_pager_fragment,container,false);
-  mViewPager=(ViewPager)view.findViewById(R.id.stats_viewpager);
-  mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
-    @Override public void onPageSelected(    int position){
-      mTabView.setSelectedTab(position);
-    }
-  }
-);
-  mTabView=(HorizontalTabView)view.findViewById(R.id.stats_tabs);
-  mTabView.setTabListener(this);
-  refreshViews();
-  return view;
+switch (getStatsViewType()) {
+case TOTALS_FOLLOWERS_AND_SHARES:
+    initTotalsFollowersAndShares(view);
+  break;
+default :
+initViewPager(view);
+}
+mFragment=(StatsAbsCategoryFragment)getActivity().getSupportFragmentManager().findFragmentByTag(StatsAbsCategoryFragment.TAG);
+return view;
 }

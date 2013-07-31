@@ -1,0 +1,18 @@
+{
+  mViewPager=(ViewPager)view.findViewById(R.id.stats_pager_viewpager);
+  mViewPager.setVisibility(View.VISIBLE);
+  mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+    @Override public void onPageSelected(    int position){
+      mTabView.setSelectedTab(position);
+    }
+  }
+);
+  mTabView=(HorizontalTabView)view.findViewById(R.id.stats_pager_tabs);
+  mTabView.setVisibility(View.VISIBLE);
+  mTabView.setTabListener(this);
+  Stats.ViewType viewType=getStatsViewType();
+  Stats.Timeframe[] timeframes=getTimeframe(viewType);
+  initViewPagerAdapter(viewType,timeframes);
+  addTabs(timeframes);
+  mTabView.setSelectedTab(0);
+}
