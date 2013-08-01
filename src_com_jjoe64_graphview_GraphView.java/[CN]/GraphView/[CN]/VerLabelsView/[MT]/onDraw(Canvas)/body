@@ -1,6 +1,21 @@
 {
   paint.setStrokeWidth(0);
+  if (textHeight == null || textWidth == null) {
+    paint.setTextSize(getGraphViewStyle().getTextSize());
+    double testX=((getMaxX(true) - getMinX(true)) * 0.783) + getMinX(true);
+    String testLabel=formatLabel(testX,true);
+    paint.getTextBounds(testLabel,0,testLabel.length(),textBounds);
+    textHeight=(textBounds.height());
+    textWidth=(textBounds.width());
+  }
+  if (getGraphViewStyle().getVerticalLabelsWidth() == 0 && getLayoutParams().width != textWidth + GraphViewConfig.BORDER) {
+    setLayoutParams(new LayoutParams((int)(textWidth + GraphViewConfig.BORDER),LayoutParams.FILL_PARENT));
+  }
+ else   if (getGraphViewStyle().getVerticalLabelsWidth() != 0 && getGraphViewStyle().getVerticalLabelsWidth() != getLayoutParams().width) {
+    setLayoutParams(new LayoutParams(getGraphViewStyle().getVerticalLabelsWidth(),LayoutParams.FILL_PARENT));
+  }
   float border=GraphViewConfig.BORDER;
+  border+=textHeight;
   float height=getHeight();
   float graphheight=height - (2 * border);
   if (verlabels == null) {
