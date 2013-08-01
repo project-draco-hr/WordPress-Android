@@ -1,19 +1,12 @@
 {
   View view=inflater.inflate(R.layout.stats_pager_fragment,container,false);
-  mViewPager=(ViewPager)view.findViewById(R.id.stats_pager_viewpager);
-  mViewPager.setVisibility(View.VISIBLE);
-  mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
-    @Override public void onPageSelected(    int position){
-      mTabView.setSelectedTab(position);
-    }
-  }
-);
-  mAdapter=new CustomPagerAdapter(getChildFragmentManager());
-  mViewPager.setAdapter(mAdapter);
-  mTabView=(HorizontalTabView)view.findViewById(R.id.stats_pager_tabs);
-  mTabView.setVisibility(View.VISIBLE);
-  mTabView.setTabListener(this);
-  addTabs(new Stats.Timeframe[]{Stats.Timeframe.TODAY,Stats.Timeframe.YESTERDAY});
-  mTabView.setSelectedTab(0);
+  FragmentManager fm=getChildFragmentManager();
+  int entryLabelResId=R.string.stats_entry_tags_and_categories;
+  int totalsLabelResId=R.string.stats_totals_views;
+  StatsCursorFragment fragment=StatsCursorFragment.newInstance(StatsContentProvider.STATS_TAGS_AND_CATEGORIES_URI,entryLabelResId,totalsLabelResId);
+  fragment.setListAdapter(new CustomCursorAdapter(getActivity(),null));
+  FragmentTransaction ft=fm.beginTransaction();
+  ft.replace(R.id.stats_pager_container,fragment,StatsCursorFragment.TAG);
+  ft.commit();
   return view;
 }

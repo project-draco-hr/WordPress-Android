@@ -1,0 +1,16 @@
+{
+  String entry=cursor.getString(cursor.getColumnIndex(StatsTopPostsAndPagesTable.Columns.TITLE));
+  String url=cursor.getString(cursor.getColumnIndex(StatsTopPostsAndPagesTable.Columns.URL));
+  int total=cursor.getInt(cursor.getColumnIndex(StatsTopPostsAndPagesTable.Columns.VIEWS));
+  TextView entryTextView=(TextView)view.findViewById(R.id.stats_list_cell_entry);
+  if (url != null && url.length() > 0) {
+    Spanned link=Html.fromHtml("<a href=\"" + url + "\">"+ entry+ "</a>");
+    entryTextView.setText(link);
+    entryTextView.setMovementMethod(LinkMovementMethod.getInstance());
+  }
+ else {
+    entryTextView.setText(entry);
+  }
+  TextView totalsTextView=(TextView)view.findViewById(R.id.stats_list_cell_total);
+  totalsTextView.setText(total + "");
+}
