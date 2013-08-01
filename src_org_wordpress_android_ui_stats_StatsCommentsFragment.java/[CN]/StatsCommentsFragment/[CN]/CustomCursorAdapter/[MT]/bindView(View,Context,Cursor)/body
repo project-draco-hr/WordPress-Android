@@ -1,0 +1,19 @@
+{
+  String entry;
+  if (mType == TOP_COMMENTERS)   entry=cursor.getString(cursor.getColumnIndex(StatsTopCommentersTable.Columns.NAME));
+ else   entry=cursor.getString(cursor.getColumnIndex(StatsMostCommentedTable.Columns.POST));
+  TextView entryTextView=(TextView)view.findViewById(R.id.stats_list_cell_entry);
+  entryTextView.setText(entry);
+  int total;
+  if (mType == TOP_COMMENTERS)   total=cursor.getInt(cursor.getColumnIndex(StatsTopCommentersTable.Columns.COMMENTS));
+ else   total=cursor.getInt(cursor.getColumnIndex(StatsMostCommentedTable.Columns.COMMENTS));
+  TextView totalsTextView=(TextView)view.findViewById(R.id.stats_list_cell_total);
+  totalsTextView.setText(total + "");
+  String imageUrl;
+  if (mType == TOP_COMMENTERS) {
+    imageUrl=cursor.getString(cursor.getColumnIndex(StatsTopCommentersTable.Columns.IMAGE_URL));
+    NetworkImageView imageView=(NetworkImageView)view.findViewById(R.id.stats_list_cell_image);
+    imageView.setVisibility(View.VISIBLE);
+    imageView.setImageUrl(imageUrl,WordPress.imageLoader);
+  }
+}
