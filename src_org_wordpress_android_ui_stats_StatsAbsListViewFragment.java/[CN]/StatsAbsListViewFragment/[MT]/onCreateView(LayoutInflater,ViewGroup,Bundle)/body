@@ -1,21 +1,11 @@
 {
   View view=inflater.inflate(R.layout.stats_pager_fragment,container,false);
   setRetainInstance(true);
-  mFragmentMap=new SparseArray<Fragment>();
-  mViewPager=(ViewPager)view.findViewById(R.id.stats_pager_viewpager);
-  mViewPager.setVisibility(View.VISIBLE);
-  mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
-    @Override public void onPageSelected(    int position){
-      mTabView.setSelectedTab(position);
-    }
+  if (Utils.isTablet(getActivity())) {
+    initTabletLayout(view);
   }
-);
-  mTabView=(HorizontalTabView)view.findViewById(R.id.stats_pager_tabs);
-  mTabView.setVisibility(View.VISIBLE);
-  mTabView.setTabListener(this);
-  mAdapter=getAdapter();
-  mViewPager.setAdapter(mAdapter);
-  addTabs();
-  mTabView.setSelectedTab(0);
+ else {
+    initPhoneLayout(view);
+  }
   return view;
 }
