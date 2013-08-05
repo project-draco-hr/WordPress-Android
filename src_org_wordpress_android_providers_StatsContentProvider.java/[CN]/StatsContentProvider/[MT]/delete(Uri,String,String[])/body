@@ -1,7 +1,9 @@
 {
   SQLTable table=getSQLTable(uri);
   if (table != null) {
-    return table.delete(getDB(),uri,selection,selectionArgs);
+    int count=table.delete(getDB(),uri,selection,selectionArgs);
+    getContext().getContentResolver().notifyChange(uri,null);
+    return count;
   }
   return 0;
 }

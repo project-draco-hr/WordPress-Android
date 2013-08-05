@@ -2,7 +2,9 @@
   SQLTable table=getSQLTable(uri);
   if (table != null) {
     long rowId=table.insert(getDB(),uri,values);
-    return Uri.parse(uri + "/" + rowId);
+    Uri result=Uri.parse(uri + "/" + rowId);
+    getContext().getContentResolver().notifyChange(result,null);
+    return result;
   }
   return null;
 }
