@@ -14,7 +14,6 @@
   mAutoSaveHandler=new Handler();
   String action=getIntent().getAction();
   if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
-    mIsExternalInstance=true;
     if (!selectBlogForShareAction())     return;
   }
  else {
@@ -33,7 +32,6 @@
         mQuickMediaType=extras.getInt("quick-media",-1);
       }
       if (extras.getBoolean("isQuickPress")) {
-        mIsExternalInstance=true;
         mBlogID=extras.getInt("id");
       }
  else {
@@ -57,6 +55,7 @@
           }
  else {
             WordPress.currentPost=mPost;
+            mOriginalPost=new Post(mBlogID,mPostID,mIsPage);
           }
         }
  catch (        Exception e) {
