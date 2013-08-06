@@ -10,18 +10,16 @@
   mDay=c.get(Calendar.DAY_OF_MONTH);
   mHour=c.get(Calendar.HOUR_OF_DAY);
   mMinute=c.get(Calendar.MINUTE);
-  mCategories=new JSONArray();
+  mCategories=new ArrayList<String>();
   mAutoSaveHandler=new Handler();
-  mSelectedCategories=new Vector<String>();
   String action=getIntent().getAction();
   if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
-    mIsExternalInstance=true;
     if (!selectBlogForShareAction())     return;
   }
  else {
     initBlog();
     if (extras != null) {
-      mAccountName=EscapeUtils.unescapeHtml(extras.getString("accountName"));
+      mAccountName=StringUtils.unescapeHTML(extras.getString("accountName"));
       mPostID=extras.getLong("postID");
       mLocalDraft=extras.getBoolean("localDraft",false);
       mIsPage=extras.getBoolean("isPage",false);
@@ -34,7 +32,6 @@
         mQuickMediaType=extras.getInt("quick-media",-1);
       }
       if (extras.getBoolean("isQuickPress")) {
-        mIsExternalInstance=true;
         mBlogID=extras.getInt("id");
       }
  else {
@@ -58,6 +55,7 @@
           }
  else {
             WordPress.currentPost=mPost;
+            mOriginalPost=new Post(mBlogID,mPostID,mIsPage);
           }
         }
  catch (        Exception e) {
@@ -68,10 +66,10 @@
     }
     if (mIsNew) {
       mLocalDraft=true;
-      setTitle(EscapeUtils.unescapeHtml(WordPress.currentBlog.getBlogName()) + " - " + getString((mIsPage) ? R.string.new_page : R.string.new_post));
+      setTitle(StringUtils.unescapeHTML(WordPress.currentBlog.getBlogName()) + " - " + getString((mIsPage) ? R.string.new_page : R.string.new_post));
     }
  else {
-      setTitle(EscapeUtils.unescapeHtml(WordPress.currentBlog.getBlogName()) + " - " + getString((mIsPage) ? R.string.edit_page : R.string.edit_post));
+      setTitle(StringUtils.unescapeHTML(WordPress.currentBlog.getBlogName()) + " - " + getString((mIsPage) ? R.string.edit_page : R.string.edit_post));
     }
   }
   setContentView(R.layout.edit);
@@ -84,7 +82,6 @@
   mBquoteToggleButton=(ToggleButton)findViewById(R.id.bquote);
   mUnderlineToggleButton=(ToggleButton)findViewById(R.id.underline);
   mStrikeToggleButton=(ToggleButton)findViewById(R.id.strike);
-  mCategoriesText=(TextView)findViewById(R.id.selectedCategories);
   mAddPictureButton=(ImageButton)findViewById(R.id.addPictureButton);
   mPubDateButton=(Button)findViewById(R.id.pubDateButton);
   mPubDateText=(TextView)findViewById(R.id.pubDate);
@@ -93,14 +90,16 @@
   mStatusSpinner=(Spinner)findViewById(R.id.status);
   mTagsEditText=(EditText)findViewById(R.id.tags);
   mFormatBar=(RelativeLayout)findViewById(R.id.formatBar);
+  ((TextView)findViewById(R.id.categoryLabel)).setText(getResources().getString(R.string.categories).toUpperCase());
   ((TextView)findViewById(R.id.statusLabel)).setText(getResources().getString(R.string.status).toUpperCase());
   ((TextView)findViewById(R.id.postFormatLabel)).setText(getResources().getString(R.string.post_format).toUpperCase());
   ((TextView)findViewById(R.id.pubDateLabel)).setText(getResources().getString(R.string.publish_date).toUpperCase());
   if (mIsPage) {
-    ((LinearLayout)findViewById(R.id.section2)).setVisibility(View.GONE);
-    ((RelativeLayout)findViewById(R.id.section3)).setVisibility(View.GONE);
-    ((TextView)findViewById(R.id.postFormatLabel)).setVisibility(View.GONE);
-    ((Spinner)findViewById(R.id.postFormat)).setVisibility(View.GONE);
+    (findViewById(R.id.sectionTags)).setVisibility(View.GONE);
+    (findViewById(R.id.sectionCategories)).setVisibility(View.GONE);
+    (findViewById(R.id.sectionLocation)).setVisibility(View.GONE);
+    (findViewById(R.id.postFormatLabel)).setVisibility(View.GONE);
+    (findViewById(R.id.postFormat)).setVisibility(View.GONE);
   }
  else {
     if (mBlog.getPostFormats().equals("")) {
@@ -224,20 +223,8 @@
       }
     }
     if (!mIsPage) {
-      if (mPost.getCategories() != null) {
-        mCategories=mPost.getCategories();
-        if (!mCategories.equals("")) {
-          for (int i=0; i < mCategories.length(); i++) {
-            try {
-              mSelectedCategories.add(mCategories.getString(i));
-            }
- catch (            JSONException e) {
-              e.printStackTrace();
-            }
-          }
-          mCategoriesText.setVisibility(View.VISIBLE);
-          mCategoriesText.setText(getString(R.string.selected_categories) + " " + getCategoriesCSV());
-        }
+      if (mPost.getJSONCategories() != null) {
+        mCategories=JSONUtil.fromJSONArrayToStringList(mPost.getJSONCategories());
       }
       Double latitude=mPost.getLatitude();
       Double longitude=mPost.getLongitude();
@@ -250,10 +237,7 @@
       mTagsEditText.setText(tags);
     }
   }
-  if (!mIsPage) {
-    Button selectCategories=(Button)findViewById(R.id.selectCategories);
-    selectCategories.setOnClickListener(this);
-  }
+  populateSelectedCategories();
   registerForContextMenu(mAddPictureButton);
   mContentEditText.setOnSelectionChangedListener(this);
   mContentEditText.setOnEditTextImeBackListener(this);

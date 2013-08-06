@@ -45,12 +45,15 @@
  else   if (id == R.id.selectCategories) {
     Bundle bundle=new Bundle();
     bundle.putInt("id",mBlogID);
-    if (mCategories.length() > 0) {
-      bundle.putString("categoriesCSV",getCategoriesCSV());
+    if (mCategories.size() > 0) {
+      bundle.putSerializable("categories",new HashSet<String>(mCategories));
     }
-    Intent i1=new Intent(EditPostActivity.this,SelectCategoriesActivity.class);
-    i1.putExtras(bundle);
-    startActivityForResult(i1,ACTIVITY_REQUEST_CODE_SELECT_CATEGORIES);
+    Intent categoriesIntent=new Intent(EditPostActivity.this,SelectCategoriesActivity.class);
+    categoriesIntent.putExtras(bundle);
+    startActivityForResult(categoriesIntent,ACTIVITY_REQUEST_CODE_SELECT_CATEGORIES);
+  }
+ else   if (id == R.id.categoryButton) {
+    onCategoryButtonClick(v);
   }
  else   if (id == R.id.post) {
     if (mAutoSaveHandler != null)     mAutoSaveHandler.removeCallbacks(autoSaveRunnable);

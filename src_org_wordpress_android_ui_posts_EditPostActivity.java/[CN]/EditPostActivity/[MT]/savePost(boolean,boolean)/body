@@ -11,7 +11,7 @@
         if (style[i].getClass().getName().equals("android.text.style.SuggestionSpan"))         e.removeSpan(style[i]);
       }
     }
-    content=EscapeUtils.unescapeHtml(WPHtml.toHtml(e));
+    content=WPHtml.toHtml(e);
     content=content.replace("<p><p>","<p>");
     content=content.replace("</p></p>","</p>");
     content=content.replace("<br><br>","<br>");
@@ -70,7 +70,7 @@
           if (!isAutoSave) {
             s.removeSpan(wpIS);
             s.insert(tagStart,"<img android-uri=\"" + wpIS.getImageSource().toString() + "\" />");
-            if (mLocalDraft)             content=EscapeUtils.unescapeHtml(WPHtml.toHtml(s));
+            if (mLocalDraft)             content=WPHtml.toHtml(s);
  else             content=s.toString();
           }
         }
@@ -114,7 +114,6 @@ mPost.setMt_text_more(content.substring(content.indexOf(moreTag) + moreTag.lengt
 success=mPost.save();
 if (success) {
 mIsNew=false;
-mIsNewDraft=true;
 }
 mPost.deleteMediaFiles();
 Spannable s=mContentEditText.getText();
@@ -155,7 +154,7 @@ mPost.setMt_text_more("");
 }
 mPost.setMediaPaths(images);
 mPost.setDate_created_gmt(pubDateTimestamp);
-mPost.setCategories(mCategories);
+mPost.setJSONCategories(new JSONArray(mCategories));
 mPost.setMt_keywords(tags);
 mPost.setPost_status(status);
 mPost.setWP_password(password);

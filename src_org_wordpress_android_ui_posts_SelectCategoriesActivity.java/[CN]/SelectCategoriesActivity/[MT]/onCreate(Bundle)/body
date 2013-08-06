@@ -5,21 +5,21 @@
   ActionBar actionBar=getSupportActionBar();
   actionBar.setHomeButtonEnabled(true);
   actionBar.setDisplayHomeAsUpEnabled(true);
-  lv=getListView();
-  lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-  lv.setItemsCanFocus(false);
+  mListView=getListView();
+  mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+  mListView.setItemsCanFocus(false);
+  mSelectedCategories=new HashSet<String>();
   Bundle extras=getIntent().getExtras();
   if (extras != null) {
-    id=extras.getInt("id");
+    int blogId=extras.getInt("id");
     try {
-      blog=new Blog(id);
+      blog=new Blog(blogId);
     }
  catch (    Exception e) {
       Toast.makeText(this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
       finish();
     }
-    checkedCategories=extras.getLongArray("checkedCategories");
-    categoriesCSV=extras.getString("categoriesCSV");
+    if (extras.containsKey("categories"))     mSelectedCategories=(HashSet<String>)extras.getSerializable("categories");
   }
-  loadCategories();
+  populateOrFetchCategories();
 }

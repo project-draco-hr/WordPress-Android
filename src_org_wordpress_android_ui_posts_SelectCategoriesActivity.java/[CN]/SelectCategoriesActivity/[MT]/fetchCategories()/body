@@ -1,0 +1,31 @@
+{
+  String returnMessage;
+  Object result[]=null;
+  Object[] params={blog.getBlogId(),blog.getUsername(),blog.getPassword()};
+  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+  boolean success=false;
+  try {
+    result=(Object[])client.call("wp.getCategories",params);
+    success=true;
+  }
+ catch (  XMLRPCException e) {
+    e.printStackTrace();
+  }
+  if (success) {
+    WordPress.wpDB.clearCategories(blog.getId());
+    for (    Object aResult : result) {
+      Map<?,?> curHash=(Map<?,?>)aResult;
+      String categoryName=curHash.get("categoryName").toString();
+      String categoryID=curHash.get("categoryId").toString();
+      String categoryParentID=curHash.get("parentId").toString();
+      int convertedCategoryID=Integer.parseInt(categoryID);
+      int convertedCategoryParentID=Integer.parseInt(categoryParentID);
+      WordPress.wpDB.insertCategory(blog.getId(),convertedCategoryID,convertedCategoryParentID,categoryName);
+    }
+    returnMessage="gotCategories";
+  }
+ else {
+    returnMessage="FAIL";
+  }
+  return returnMessage;
+}

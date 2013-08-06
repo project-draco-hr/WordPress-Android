@@ -3,12 +3,14 @@
   mBadgeImageView=(NetworkImageView)view.findViewById(R.id.badge);
   TextView bodyTextView=(TextView)view.findViewById(R.id.body);
   bodyTextView.setMovementMethod(LinkMovementMethod.getInstance());
-  String noteHTML=JSONUtil.queryJSON(getNote().toJSONObject(),"body.html","");
-  if (noteHTML.equals(""))   noteHTML=getNote().getSubject();
-  bodyTextView.setText(Html.fromHtml(noteHTML));
-  String iconURL=getNote().getIconURL();
-  if (!iconURL.equals("")) {
-    mBadgeImageView.setImageUrl(iconURL,WordPress.imageLoader);
+  if (getNote() != null) {
+    String noteHTML=JSONUtil.queryJSON(getNote().toJSONObject(),"body.html","");
+    if (noteHTML.equals(""))     noteHTML=getNote().getSubject();
+    bodyTextView.setText(Html.fromHtml(noteHTML));
+    String iconURL=getNote().getIconURL();
+    if (!iconURL.equals("")) {
+      mBadgeImageView.setImageUrl(iconURL,WordPress.imageLoader);
+    }
   }
   return view;
 }
