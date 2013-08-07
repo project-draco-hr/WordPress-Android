@@ -1,0 +1,30 @@
+{
+  StatsTotalsFollowersAndShares stat=null;
+  try {
+    FileInputStream fis=WordPress.getContext().openFileInput(STAT_TOTALS_FOLLOWERS_SHARES + blogId);
+    StringBuffer fileContent=new StringBuffer("");
+    byte[] buffer=new byte[1024];
+    while (fis.read(buffer) != -1) {
+      fileContent.append(new String(buffer));
+    }
+    JSONObject object=new JSONObject(fileContent.toString());
+    int posts=object.getInt("posts");
+    int categories=object.getInt("categories");
+    int tags=object.getInt("tags");
+    int followers=object.getInt("followers");
+    int comments=object.getInt("comments");
+    int shares=object.getInt("shares");
+    String date=object.getString("date");
+    stat=new StatsTotalsFollowersAndShares(posts,categories,tags,followers,comments,shares,date);
+  }
+ catch (  FileNotFoundException e) {
+    e.printStackTrace();
+  }
+catch (  IOException e) {
+    e.printStackTrace();
+  }
+catch (  JSONException e) {
+    e.printStackTrace();
+  }
+  return stat;
+}

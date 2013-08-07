@@ -1,0 +1,18 @@
+{
+  WordPress.restClient.getStatsSummary(blogId,new Listener(){
+    @Override public void onResponse(    JSONObject response){
+      StatUtils.saveSummary(blogId,response);
+      runOnUiThread(new Runnable(){
+        @Override public void run(){
+          refreshStats();
+        }
+      }
+);
+    }
+  }
+,new ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+    }
+  }
+);
+}

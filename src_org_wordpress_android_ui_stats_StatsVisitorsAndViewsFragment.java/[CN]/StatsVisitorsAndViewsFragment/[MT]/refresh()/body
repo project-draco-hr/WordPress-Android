@@ -1,2 +1,18 @@
 {
+  if (WordPress.getCurrentBlog() == null)   return;
+  final String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+  new AsyncTask<String,Void,StatsVisitorsAndViewsSummary>(){
+    @Override protected StatsVisitorsAndViewsSummary doInBackground(    String... params){
+      final String blogId=params[0];
+      StatsVisitorsAndViewsSummary stats=StatUtils.getVisitorsAndViewsSummary(blogId);
+      if (stats == null || StatUtils.isDayOld(stats.getDate())) {
+        refreshStatsFromServer(blogId);
+      }
+      return stats;
+    }
+    protected void onPostExecute(    StatsVisitorsAndViewsSummary result){
+      refreshViews(result);
+    }
+  }
+.execute(blogId);
 }

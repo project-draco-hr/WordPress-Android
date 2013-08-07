@@ -1,0 +1,28 @@
+{
+  StatsSummary stat=null;
+  try {
+    FileInputStream fis=WordPress.getContext().openFileInput(STAT_SUMMARY + blogId);
+    StringBuffer fileContent=new StringBuffer("");
+    byte[] buffer=new byte[1024];
+    while (fis.read(buffer) != -1) {
+      fileContent.append(new String(buffer));
+    }
+    JSONObject object=new JSONObject(fileContent.toString());
+    int views=object.getInt("views");
+    int comments=object.getInt("comments");
+    int favorites=object.getInt("favorites");
+    int reblogs=object.getInt("reblogs");
+    String date=object.getString("date");
+    stat=new StatsSummary(views,comments,favorites,reblogs,date);
+  }
+ catch (  FileNotFoundException e) {
+    e.printStackTrace();
+  }
+catch (  IOException e) {
+    e.printStackTrace();
+  }
+catch (  JSONException e) {
+    e.printStackTrace();
+  }
+  return stat;
+}

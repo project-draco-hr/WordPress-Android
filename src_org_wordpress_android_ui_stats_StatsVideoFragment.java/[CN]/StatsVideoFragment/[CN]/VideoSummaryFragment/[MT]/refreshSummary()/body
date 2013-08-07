@@ -1,0 +1,18 @@
+{
+  if (WordPress.getCurrentBlog() == null)   return;
+  String blogId=String.valueOf(WordPress.getCurrentBlog());
+  new AsyncTask<String,Void,StatsVideoSummary>(){
+    @Override protected StatsVideoSummary doInBackground(    String... params){
+      final String blogId=params[0];
+      StatsVideoSummary stats=StatUtils.getVideoSummary(blogId);
+      if (stats == null || StatUtils.isDayOld(stats.getDate())) {
+        refreshStatsFromServer(blogId);
+      }
+      return stats;
+    }
+    protected void onPostExecute(    StatsVideoSummary result){
+      refreshSummaryViews(result);
+    }
+  }
+.execute(blogId);
+}
