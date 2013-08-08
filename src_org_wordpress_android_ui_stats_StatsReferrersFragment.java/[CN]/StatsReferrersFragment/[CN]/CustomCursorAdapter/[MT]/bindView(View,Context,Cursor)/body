@@ -14,7 +14,18 @@
   }
   TextView totalsTextView=(TextView)view.findViewById(R.id.stats_list_cell_total);
   totalsTextView.setText(total + "");
+  view.findViewById(R.id.stats_list_cell_image_frame).setVisibility(View.VISIBLE);
   NetworkImageView imageView=(NetworkImageView)view.findViewById(R.id.stats_list_cell_image);
-  imageView.setVisibility(View.VISIBLE);
-  imageView.setImageUrl(imageUrl,WordPress.imageLoader);
+  ImageView errorImageView=(ImageView)view.findViewById(R.id.stats_list_cell_blank_image);
+  if (imageUrl != null && imageUrl.length() > 0) {
+    imageView.setErrorImageResId(R.drawable.stats_blank_image);
+    imageView.setDefaultImageResId(R.drawable.stats_blank_image);
+    imageView.setImageUrl(imageUrl,WordPress.imageLoader);
+    imageView.setVisibility(View.VISIBLE);
+    errorImageView.setVisibility(View.GONE);
+  }
+ else {
+    imageView.setVisibility(View.GONE);
+    errorImageView.setVisibility(View.VISIBLE);
+  }
 }
