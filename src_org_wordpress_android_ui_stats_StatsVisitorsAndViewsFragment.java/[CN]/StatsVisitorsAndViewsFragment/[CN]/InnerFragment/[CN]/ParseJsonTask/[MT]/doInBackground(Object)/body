@@ -6,7 +6,9 @@
   if (response != null && response.has("result")) {
     try {
       JSONArray results=response.getJSONArray("result");
-      for (int i=0; i < results.length(); i++) {
+      int count=results.length();
+      if (count > 0)       context.getContentResolver().delete(uri,"blogId=?",new String[]{blogId});
+      for (int i=0; i < count; i++) {
         JSONObject result=results.getJSONObject(i);
         ContentValues values=null;
         int ordinal=getTimeframeOrdinal();
@@ -22,7 +24,9 @@
           StatsBarChartMonth stat=new StatsBarChartMonth(blogId,result);
           values=StatsBarChartMonthsTable.getContentValues(stat);
         }
-        if (values != null && uri != null)         context.getContentResolver().insert(uri,values);
+        if (values != null && uri != null) {
+          context.getContentResolver().insert(uri,values);
+        }
       }
     }
  catch (    JSONException e) {
