@@ -1,0 +1,26 @@
+{
+  if (!cursor.moveToFirst())   return;
+  int numPoints=Math.min(30,cursor.getCount());
+  GraphViewData[] views=new GraphViewData[numPoints];
+  GraphViewData[] visitors=new GraphViewData[numPoints];
+  String[] horLabels=new String[numPoints];
+  for (int i=numPoints - 1; i >= 0; i--) {
+    views[i]=new GraphViewData(i,getViews(cursor));
+    visitors[i]=new GraphViewData(i,getVisitors(cursor));
+    horLabels[i]=getDate(cursor);
+    cursor.moveToNext();
+  }
+  viewsSeries=new GraphViewSeries(views);
+  visitorsSeries=new GraphViewSeries(visitors);
+  viewsSeries.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views);
+  viewsSeries.getStyle().padding=Utils.dpToPx(1);
+  visitorsSeries.getStyle().color=getResources().getColor(R.color.stats_bar_graph_visitors);
+  visitorsSeries.getStyle().padding=Utils.dpToPx(3);
+  graphView=new StatsBarGraph(getActivity(),"");
+  graphView.addSeries(viewsSeries);
+  graphView.addSeries(visitorsSeries);
+  graphView.getGraphViewStyle().setNumHorizontalLabels(horLabels.length / 5);
+  graphView.setHorizontalLabels(horLabels);
+  mBarGraphLayout.removeAllViews();
+  mBarGraphLayout.addView(graphView);
+}

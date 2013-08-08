@@ -1,0 +1,33 @@
+{
+  String blogId=(String)params[0];
+  JSONObject response=(JSONObject)params[1];
+  Uri uri=(Uri)params[2];
+  Context context=WordPress.getContext();
+  if (response != null && response.has("result")) {
+    try {
+      JSONArray results=response.getJSONArray("result");
+      for (int i=0; i < results.length(); i++) {
+        JSONObject result=results.getJSONObject(i);
+        ContentValues values=null;
+        int ordinal=getTimeframeOrdinal();
+        if (ordinal == StatsTimeframe.DAYS.ordinal()) {
+          StatsBarChartDay stat=new StatsBarChartDay(blogId,result);
+          values=StatsBarChartDaysTable.getContentValues(stat);
+        }
+ else         if (ordinal == StatsTimeframe.WEEKS.ordinal()) {
+          StatsBarChartWeek stat=new StatsBarChartWeek(blogId,result);
+          values=StatsBarChartWeeksTable.getContentValues(stat);
+        }
+ else         if (ordinal == StatsTimeframe.MONTHS.ordinal()) {
+          StatsBarChartMonth stat=new StatsBarChartMonth(blogId,result);
+          values=StatsBarChartMonthsTable.getContentValues(stat);
+        }
+        if (values != null && uri != null)         context.getContentResolver().insert(uri,values);
+      }
+    }
+ catch (    JSONException e) {
+      e.printStackTrace();
+    }
+  }
+  return null;
+}
