@@ -1,15 +1,15 @@
 {
   CheckableFrameLayout frameLayout=((CheckableFrameLayout)view.findViewById(R.id.media_grid_frame_layout));
+  Cursor cursor=((CursorAdapter)parent.getAdapter()).getCursor();
+  String mediaId=cursor.getString(cursor.getColumnIndex("mediaId"));
   if (!isInMultiSelectMode()) {
     getSelectedItems().clear();
-    notifyMultiSelectCountChanged();
+    getSelectedItems().add(mediaId);
     frameLayout.setChecked(true);
     mOnItemClickListener.onItemClick(parent,view,position,id);
     mAdapter.notifyDataSetChanged();
     return;
   }
-  Cursor cursor=((CursorAdapter)parent.getAdapter()).getCursor();
-  String mediaId=cursor.getString(cursor.getColumnIndex("mediaId"));
   if (getSelectedItems().contains(mediaId)) {
     frameLayout.setChecked(false);
   }

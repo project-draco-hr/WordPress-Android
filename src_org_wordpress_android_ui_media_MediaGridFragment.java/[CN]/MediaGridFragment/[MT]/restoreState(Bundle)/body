@@ -1,9 +1,12 @@
 {
   if (savedInstanceState == null)   return;
+  boolean isInMultiSelectMode=savedInstanceState.getBoolean(BUNDLE_IN_MULTI_SELECT_MODE);
   if (savedInstanceState.containsKey(BUNDLE_CHECKED_STATES)) {
-    boolean isInMultiSelectMode=savedInstanceState.getBoolean(BUNDLE_IN_MULTI_SELECT_MODE);
     mCheckedItems=savedInstanceState.getStringArrayList(BUNDLE_CHECKED_STATES);
-    if (isInMultiSelectMode)     mListener.onMultiSelectChange(mCheckedItems.size());
+    if (isInMultiSelectMode) {
+      mListener.onMultiSelectChange(mCheckedItems.size());
+      onMultiSelectChange(mCheckedItems.size());
+    }
     mGridView.setMultiSelectModeEnabled(isInMultiSelectMode);
   }
   mSavedFirstVisiblePosition=savedInstanceState.getInt(BUNDLE_SCROLL_POSITION,0);
