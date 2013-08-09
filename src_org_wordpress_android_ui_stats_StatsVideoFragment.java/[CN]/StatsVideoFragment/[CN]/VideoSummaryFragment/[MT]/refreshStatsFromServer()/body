@@ -1,10 +1,12 @@
 {
-  WordPress.restClient.getStatsCommentsSummary(blogId,new Listener(){
+  if (WordPress.getCurrentBlog() == null)   return;
+  final String blogId=String.valueOf(WordPress.getCurrentBlog());
+  WordPress.restClient.getStatsVideoSummary(blogId,new Listener(){
     @Override public void onResponse(    JSONObject response){
-      StatUtils.saveCommentsSummary(blogId,response);
+      StatUtils.saveVideoSummary(blogId,response);
       if (getActivity() != null)       getActivity().runOnUiThread(new Runnable(){
         @Override public void run(){
-          refreshStats();
+          refreshSummary();
         }
       }
 );
