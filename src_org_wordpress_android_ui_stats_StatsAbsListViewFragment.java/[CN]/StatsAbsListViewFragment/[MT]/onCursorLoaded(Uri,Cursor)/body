@@ -1,0 +1,21 @@
+{
+  if (!cursor.moveToFirst())   return;
+  if (cursor.getColumnIndex("date") == -1)   return;
+  if (uri.getQueryParameter("timeframe") == null)   return;
+  String timeframe=uri.getQueryParameter("timeframe");
+  long date=cursor.getLong(cursor.getColumnIndex("date"));
+  long currentDate=StatUtils.getCurrentDateMs();
+  if (timeframe.equals(StatsTimeframe.TODAY.name())) {
+    String label;
+    if (date < currentDate)     label=StatUtils.msToString(date,"MMM d");
+ else     label=StatsTimeframe.TODAY.getLabel();
+    setLabel(0,label);
+  }
+ else   if (timeframe.equals(StatsTimeframe.YESTERDAY.name())) {
+    currentDate-=24 * 60 * 60* 1000;
+    String label;
+    if (date < currentDate)     label=StatUtils.msToString(date,"MMM d");
+ else     label=StatsTimeframe.YESTERDAY.getLabel();
+    setLabel(1,label);
+  }
+}
