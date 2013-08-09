@@ -1,15 +1,9 @@
 {
-  if (!cursor.moveToFirst()) {
-    for (int i=0; i < mScrollView.getChildCount(); i++) {
-      View view=mScrollView.getChildAt(i);
-      view.setVisibility(View.GONE);
-    }
+  if (cursor == null || !cursor.moveToFirst() || cursor.getCount() == 0) {
+    mScrollView.setVisibility(View.GONE);
     return;
   }
-  for (int i=0; i < mScrollView.getChildCount(); i++) {
-    View view=mScrollView.getChildAt(i);
-    view.setVisibility(View.VISIBLE);
-  }
+  mScrollView.setVisibility(View.VISIBLE);
   mScrollView.scrollTo(0,0);
   String state=cursor.getString(cursor.getColumnIndex("uploadState"));
   boolean isLocal=MediaUtils.isLocalFile(state);

@@ -1,9 +1,11 @@
 {
   if (savedInstanceState == null)   return;
   if (savedInstanceState.containsKey(BUNDLE_CHECKED_STATES)) {
+    boolean isInMultiSelectMode=savedInstanceState.getBoolean(BUNDLE_IN_MULTI_SELECT_MODE);
     mCheckedItems=savedInstanceState.getStringArrayList(BUNDLE_CHECKED_STATES);
-    mListener.onMultiSelectChange(mCheckedItems.size());
-    mGridView.setMultiSelectModeEnabled(mCheckedItems.size() > 0);
+    if (isInMultiSelectMode)     mListener.onMultiSelectChange(mCheckedItems.size());
+    mGridView.setMultiSelectModeEnabled(isInMultiSelectMode);
   }
   mSavedFirstVisiblePosition=savedInstanceState.getInt(BUNDLE_SCROLL_POSITION,0);
+  mHasRetrievedAllMedia=savedInstanceState.getBoolean(BUNDLE_HAS_RETREIEVED_ALL_MEDIA,false);
 }

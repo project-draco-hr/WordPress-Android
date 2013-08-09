@@ -3,14 +3,14 @@
   Blog blog=WordPress.getCurrentBlog();
   if (blog != null && getActivity() != null) {
     String blogId=String.valueOf(blog.getBlogId());
-    Cursor cursor;
-    if (mMediaId == null) {
-      cursor=WordPress.wpDB.getFirstMediaFileForBlog(blogId);
+    Cursor cursor=null;
+    if (mMediaId != null) {
+      cursor=WordPress.wpDB.getMediaFile(blogId,mMediaId);
+      refreshViews(cursor);
+      cursor.close();
     }
  else {
-      cursor=WordPress.wpDB.getMediaFile(blogId,mMediaId);
+      refreshViews(null);
     }
-    refreshViews(cursor);
-    cursor.close();
   }
 }

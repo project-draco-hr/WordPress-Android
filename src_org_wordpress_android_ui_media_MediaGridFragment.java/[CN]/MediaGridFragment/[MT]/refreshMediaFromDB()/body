@@ -1,12 +1,15 @@
 {
   setFilter(mFilter);
   if (mCursor != null) {
-    if (mCursor.getCount() == 0) {
+    if (mCursor.getCount() == 0 && !mHasRetrievedAllMedia) {
       refreshMediaFromServer(0,true);
     }
-    mGridAdapter=new MediaGridAdapter(getActivity(),mCursor,0,mCheckedItems);
-    mGridAdapter.setCallback(this);
-    mGridView.setAdapter(mGridAdapter);
-    mGridView.setSelection(mSavedFirstVisiblePosition);
+    if (mGridAdapter == null) {
+      mGridAdapter=new MediaGridAdapter(getActivity(),null,0,mCheckedItems);
+      mGridAdapter.setCallback(this);
+      mGridView.setAdapter(mGridAdapter);
+      mGridView.setSelection(mSavedFirstVisiblePosition);
+    }
   }
+  mGridAdapter.swapCursor(mCursor);
 }
