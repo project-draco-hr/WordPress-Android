@@ -1,2 +1,127 @@
 {
+  int itemViewType=getItemViewType(cursor.getPosition());
+  if (itemViewType == ViewTypes.PROGRESS.ordinal()) {
+    if (mIsRefreshing) {
+      mProgressBar=view;
+      int height=mContext.getResources().getDimensionPixelSize(R.dimen.media_grid_progress_height);
+      view.setLayoutParams(new GridView.LayoutParams(GridView.LayoutParams.MATCH_PARENT,height));
+      view.setVisibility(View.VISIBLE);
+    }
+ else {
+      view.setLayoutParams(new GridView.LayoutParams(0,0));
+      view.setVisibility(View.GONE);
+    }
+    return;
+  }
+ else   if (itemViewType == ViewTypes.SPACER.ordinal()) {
+    CheckableFrameLayout frameLayout=(CheckableFrameLayout)view.findViewById(R.id.media_grid_frame_layout);
+    updateGridWidth(context,frameLayout);
+    view.setVisibility(View.INVISIBLE);
+    return;
+  }
+  final String mediaId=cursor.getString(cursor.getColumnIndex("mediaId"));
+  String state=cursor.getString(cursor.getColumnIndex("uploadState"));
+  boolean isLocalFile=MediaUtils.isLocalFile(state);
+  TextView filenameView=(TextView)view.findViewById(R.id.media_grid_item_filename);
+  String fileName=cursor.getString(cursor.getColumnIndex("fileName"));
+  if (filenameView != null) {
+    filenameView.setText("File name: " + fileName);
+  }
+  TextView titleView=(TextView)view.findViewById(R.id.media_grid_item_name);
+  String title=cursor.getString(cursor.getColumnIndex("title"));
+  if (title == null || title.equals(""))   title=fileName;
+  titleView.setText(title);
+  TextView uploadDateView=(TextView)view.findViewById(R.id.media_grid_item_upload_date);
+  if (uploadDateView != null) {
+    String date=MediaUtils.getDate(cursor.getLong(cursor.getColumnIndex("date_created_gmt")));
+    uploadDateView.setText("Uploaded on: " + date);
+  }
+  final ImageView imageView=(ImageView)view.findViewById(R.id.media_grid_item_image);
+  if (isLocalFile) {
+    loadLocalImage(cursor,imageView);
+  }
+ else {
+    loadNetworkImage(cursor,(NetworkImageView)imageView);
+  }
+  String fileType=null;
+  String filePath=cursor.getString(cursor.getColumnIndex("filePath"));
+  if (filePath == null)   filePath=cursor.getString(cursor.getColumnIndex("fileURL"));
+  fileType=filePath.replaceAll(".*\\.(\\w+)$","$1").toUpperCase();
+  TextView fileTypeView=(TextView)view.findViewById(R.id.media_grid_item_filetype);
+  if (Utils.isXLarge(context)) {
+    fileTypeView.setText("File type: " + fileType);
+  }
+ else {
+    fileTypeView.setText(fileType);
+  }
+  TextView dimensionView=(TextView)view.findViewById(R.id.media_grid_item_dimension);
+  if (dimensionView != null) {
+    if (MediaUtils.isValidImage(filePath)) {
+      int width=cursor.getInt(cursor.getColumnIndex("width"));
+      int height=cursor.getInt(cursor.getColumnIndex("height"));
+      if (width > 0 && height > 0) {
+        String dimensions=width + "x" + height;
+        dimensionView.setText("Dimensions: " + dimensions);
+        dimensionView.setVisibility(View.VISIBLE);
+      }
+    }
+ else {
+      dimensionView.setVisibility(View.GONE);
+    }
+  }
+  CheckableFrameLayout frameLayout=(CheckableFrameLayout)view.findViewById(R.id.media_grid_frame_layout);
+  frameLayout.setTag(mediaId);
+  frameLayout.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+    @Override public void onCheckedChanged(    CheckableFrameLayout view,    boolean isChecked){
+      String mediaId=(String)view.getTag();
+      if (isChecked) {
+        if (!mCheckedItems.contains(mediaId)) {
+          mCheckedItems.add(mediaId);
+        }
+      }
+ else {
+        mCheckedItems.remove(mediaId);
+      }
+    }
+  }
+);
+  frameLayout.setChecked(mCheckedItems.contains(mediaId));
+  updateGridWidth(context,frameLayout);
+  final TextView stateTextView=(TextView)view.findViewById(R.id.media_grid_item_upload_state);
+  final ProgressBar progressUpload=(ProgressBar)view.findViewById(R.id.media_grid_item_upload_progress);
+  final RelativeLayout uploadStateView=(RelativeLayout)view.findViewById(R.id.media_grid_item_upload_state_container);
+  if (stateTextView != null) {
+    if (state != null && state.length() > 0) {
+      if (state.equals("uploading")) {
+        progressUpload.setVisibility(View.VISIBLE);
+      }
+ else {
+        progressUpload.setVisibility(View.GONE);
+      }
+      if (state.equals("failed")) {
+        state="retry";
+        stateTextView.setOnClickListener(new OnClickListener(){
+          @Override public void onClick(          View v){
+            if (!inMultiSelect()) {
+              stateTextView.setText("queued");
+              stateTextView.setOnClickListener(null);
+              mCallback.onRetryUpload(mediaId);
+            }
+          }
+        }
+);
+      }
+      stateTextView.setText(state);
+      uploadStateView.setVisibility(View.VISIBLE);
+    }
+ else {
+      uploadStateView.setVisibility(View.GONE);
+    }
+  }
+  int position=cursor.getPosition();
+  if (position == mCursorDataCount - 1 && !mHasRetrievedAll) {
+    if (mCallback != null) {
+      mCallback.fetchMoreData(cursor.getCount());
+    }
+  }
 }
