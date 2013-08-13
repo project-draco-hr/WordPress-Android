@@ -1,0 +1,16 @@
+{
+  mCursorDataCount=newCursor.getCount();
+  MatrixCursor matrixCursor=new MatrixCursor(new String[]{"_id"});
+  int columnCount=getColumnCount(mContext);
+  int remainder=newCursor.getCount() % columnCount;
+  if (remainder > 0) {
+    int spaceCount=columnCount - remainder;
+    for (int i=0; i < spaceCount; i++) {
+      int id=i - spaceCount;
+      matrixCursor.addRow(new Object[]{id + ""});
+    }
+  }
+  matrixCursor.addRow(new Object[]{Integer.MIN_VALUE});
+  MergeCursor mergeCursor=new MergeCursor(new Cursor[]{newCursor,matrixCursor});
+  return super.swapCursor(mergeCursor);
+}

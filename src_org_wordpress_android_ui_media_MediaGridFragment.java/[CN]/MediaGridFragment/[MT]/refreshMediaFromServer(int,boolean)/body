@@ -3,6 +3,7 @@
   if (offset == 0 || !mIsRefreshing) {
     mIsRefreshing=true;
     mListener.onMediaItemListDownloadStart();
+    mGridAdapter.setRefreshing(true);
     List<Object> apiArgs=new ArrayList<Object>();
     apiArgs.add(WordPress.getCurrentBlog());
     Callback callback=new Callback(){
@@ -22,10 +23,12 @@
 );
         }
         mListener.onMediaItemListDownloaded();
+        mGridAdapter.setRefreshing(false);
       }
       @Override public void onFailure(){
         mIsRefreshing=false;
         mListener.onMediaItemListDownloaded();
+        mGridAdapter.setRefreshing(false);
       }
     }
 ;
