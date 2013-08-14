@@ -8,6 +8,19 @@
   mListView=getListView();
   mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
   mListView.setItemsCanFocus(false);
+  mListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+    @Override public void onItemClick(    AdapterView<?> arg0,    View arg1,    int position,    long arg3){
+      if (mListView.getCheckedItemCount() > 1) {
+        boolean uncategorizedNeedToBeSelected=false;
+        for (int i=0; i < mCategoryLevels.size(); i++) {
+          if (mCategoryLevels.get(i).getName().equalsIgnoreCase("uncategorized")) {
+            mListView.setItemChecked(i,uncategorizedNeedToBeSelected);
+          }
+        }
+      }
+    }
+  }
+);
   mSelectedCategories=new HashSet<String>();
   Bundle extras=getIntent().getExtras();
   if (extras != null) {
