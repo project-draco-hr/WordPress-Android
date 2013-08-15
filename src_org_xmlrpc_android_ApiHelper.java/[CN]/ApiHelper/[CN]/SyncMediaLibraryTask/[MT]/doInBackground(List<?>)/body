@@ -11,7 +11,7 @@
   Map<String,Object> filter=new HashMap<String,Object>();
   filter.put("number",50);
   filter.put("offset",mOffset);
-  if (mFilter == Filter.IMAGES)   filter.put("mime_type","images/*");
+  if (mFilter == Filter.IMAGES)   filter.put("mime_type","image/*");
  else   if (mFilter == Filter.UNATTACHED)   filter.put("parent_id",0);
   Object[] apiParams={blog.getBlogId(),blog.getUsername(),blog.getPassword(),filter};
   Object[] results=null;
@@ -20,6 +20,9 @@
   }
  catch (  XMLRPCException e) {
     Log.e("WordPress",e.getMessage());
+    if (e.getMessage().contains("401")) {
+      return NO_UPLOAD_FILES_CAP;
+    }
   }
   if (results != null && blogId != null) {
     Map<?,?> resultMap;
@@ -34,5 +37,5 @@
     WordPress.wpDB.deleteFilesMarkedForDeleted(blogId);
     return results.length;
   }
-  return -1;
+  return UNKNOWN_ERROR;
 }

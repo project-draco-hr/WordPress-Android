@@ -1,6 +1,10 @@
 {
   if (WordPress.getCurrentBlog() == null)   return;
   if (offset == 0 || !mIsRefreshing) {
+    if (offset == mOldMediaSyncOffset) {
+      offset=0;
+    }
+    mOldMediaSyncOffset=offset;
     mIsRefreshing=true;
     mListener.onMediaItemListDownloadStart();
     mGridAdapter.setRefreshing(true);
@@ -12,23 +16,36 @@
         mHasRetrievedAllMedia=(count == 0);
         adapter.setHasRetrieviedAll(mHasRetrievedAllMedia);
         mIsRefreshing=false;
-        if (MediaGridFragment.this.isVisible()) {
-          refreshSpinnerAdapter();
-          setFilter(mFilter);
-          if (!auto)           mGridView.post(new Runnable(){
+        if (getActivity() != null && MediaGridFragment.this.isVisible()) {
+          getActivity().runOnUiThread(new Runnable(){
             @Override public void run(){
-              mGridView.setSelection(0);
+              refreshSpinnerAdapter();
+              setFilter(mFilter);
+              if (!auto)               mGridView.setSelection(0);
+              mListener.onMediaItemListDownloaded();
+              mGridAdapter.setRefreshing(false);
             }
           }
 );
         }
-        mListener.onMediaItemListDownloaded();
-        mGridAdapter.setRefreshing(false);
       }
-      @Override public void onFailure(){
-        mIsRefreshing=false;
-        mListener.onMediaItemListDownloaded();
-        mGridAdapter.setRefreshing(false);
+      @Override public void onFailure(      int errorCode){
+        if (errorCode == SyncMediaLibraryTask.NO_UPLOAD_FILES_CAP) {
+          Toast.makeText(getActivity(),"You do not have permission to view the media library",Toast.LENGTH_SHORT).show();
+          MediaGridAdapter adapter=(MediaGridAdapter)mGridView.getAdapter();
+          mHasRetrievedAllMedia=true;
+          adapter.setHasRetrieviedAll(mHasRetrievedAllMedia);
+        }
+        if (getActivity() != null && MediaGridFragment.this.isVisible()) {
+          getActivity().runOnUiThread(new Runnable(){
+            @Override public void run(){
+              mIsRefreshing=false;
+              mListener.onMediaItemListDownloaded();
+              mGridAdapter.setRefreshing(false);
+            }
+          }
+);
+        }
       }
     }
 ;
