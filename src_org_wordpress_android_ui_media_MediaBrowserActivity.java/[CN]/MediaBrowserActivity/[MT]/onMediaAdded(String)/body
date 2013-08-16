@@ -1,4 +1,22 @@
 {
-  mMediaGridFragment.checkSelection(mediaId);
-  mMediaGridFragment.refreshMediaFromDB();
+  if (WordPress.getCurrentBlog() == null || mediaId == null)   return;
+  String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+  Cursor cursor=WordPress.wpDB.getMediaFile(blogId,mediaId);
+  if (cursor == null || !cursor.moveToFirst()) {
+    mMediaGridFragment.removeFromMultiSelect(mediaId);
+    mMediaGridFragment.refreshMediaFromDB();
+    if (mMediaEditFragment != null && mMediaEditFragment.isVisible() && mediaId.equals(mMediaEditFragment.getMediaId())) {
+      if (mMediaEditFragment.isInLayout()) {
+        mMediaEditFragment.loadMedia(null);
+      }
+ else {
+        getSupportFragmentManager().popBackStack();
+      }
+    }
+    if (cursor != null)     cursor.close();
+  }
+ else {
+    mMediaGridFragment.refreshMediaFromDB();
+    cursor.close();
+  }
 }
