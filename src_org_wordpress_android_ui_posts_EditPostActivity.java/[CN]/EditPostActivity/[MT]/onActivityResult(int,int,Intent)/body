@@ -11,11 +11,11 @@
   if (data != null || ((requestCode == RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO || requestCode == RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO))) {
     Bundle extras;
 switch (requestCode) {
-case ACTIVITY_REQUEST_CODE_PICTURE_LIBRARY:
+case RequestCode.ACTIVITY_REQUEST_CODE_PICTURE_LIBRARY:
       Uri imageUri=data.getData();
     verifyImage(imageUri);
   break;
-case ACTIVITY_REQUEST_CODE_TAKE_PHOTO:
+case RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO:
 if (resultCode == Activity.RESULT_OK) {
   try {
     File f=new File(mMediaCapturePath);
@@ -32,13 +32,15 @@ catch (  OutOfMemoryError e) {
   }
 }
 break;
-case ACTIVITY_REQUEST_CODE_VIDEO_LIBRARY:
+case RequestCode.ACTIVITY_REQUEST_CODE_VIDEO_LIBRARY:
 Uri videoUri=data.getData();
 if (!addMedia(videoUri,null)) Toast.makeText(EditPostActivity.this,getResources().getText(R.string.gallery_error),Toast.LENGTH_SHORT).show();
 break;
-case ACTIVITY_REQUEST_CODE_TAKE_VIDEO:
+case RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO:
 if (resultCode == Activity.RESULT_OK) {
-Uri capturedVideoUri=data.getData();
+File f=new File(mMediaCapturePath);
+Uri capturedVideoUri=Uri.fromFile(f);
+f=null;
 if (!addMedia(capturedVideoUri,null)) Toast.makeText(EditPostActivity.this,getResources().getText(R.string.gallery_error),Toast.LENGTH_SHORT).show();
 }
 break;

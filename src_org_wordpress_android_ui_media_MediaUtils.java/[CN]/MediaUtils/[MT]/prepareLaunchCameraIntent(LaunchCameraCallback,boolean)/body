@@ -1,8 +1,14 @@
 {
+  String ext=".jpg";
+  String action=MediaStore.ACTION_IMAGE_CAPTURE;
+  if (isVideo) {
+    ext=".3gp";
+    action=MediaStore.ACTION_VIDEO_CAPTURE;
+  }
   String dcimFolderName=Environment.DIRECTORY_DCIM;
   if (dcimFolderName == null)   dcimFolderName="DCIM";
-  String mediaCapturePath=Environment.getExternalStorageDirectory() + File.separator + dcimFolderName+ File.separator+ "Camera"+ File.separator+ "wp-"+ System.currentTimeMillis()+ ".jpg";
-  Intent intent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+  String mediaCapturePath=Environment.getExternalStorageDirectory() + File.separator + dcimFolderName+ File.separator+ "Camera"+ File.separator+ "wp-"+ System.currentTimeMillis()+ ext;
+  Intent intent=new Intent(action);
   intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT,Uri.fromFile(new File(mediaCapturePath)));
   if (callback != null) {
     callback.onMediaCapturePathReady(mediaCapturePath);
