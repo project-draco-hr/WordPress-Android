@@ -1,12 +1,17 @@
 {
-  if (start) {
-    attemptToSelectPost();
-    shouldAnimateRefreshButton=true;
-    startAnimatingRefreshButton(refreshMenuItem);
-    isRefreshing=true;
-  }
+  runOnUiThread(new Runnable(){
+    @Override public void run(){
+      if (start) {
+        attemptToSelectPost();
+        shouldAnimateRefreshButton=true;
+        startAnimatingRefreshButton(refreshMenuItem);
+        isRefreshing=true;
+      }
  else {
-    stopAnimatingRefreshButton(refreshMenuItem);
-    isRefreshing=false;
+        stopAnimatingRefreshButton(refreshMenuItem);
+        isRefreshing=false;
+      }
+    }
   }
+);
 }
