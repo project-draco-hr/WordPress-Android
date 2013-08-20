@@ -60,6 +60,14 @@
     AlertUtil.showAlert(AccountSetupActivity.this,R.string.error,R.string.no_site_error);
   }
  else {
+    try {
+      URI.create(mXmlrpcURL);
+    }
+ catch (    Exception e1) {
+      mProgressDialog.dismiss();
+      AlertUtil.showAlert(AccountSetupActivity.this,R.string.error,R.string.no_site_error);
+      return;
+    }
     mClient=new XMLRPCClient(mXmlrpcURL,mHttpuser,mHttppassword);
     XMLRPCMethod method=new XMLRPCMethod("wp.getUsersBlogs",new XMLRPCMethodCallback(){
       public void callFinished(      Object[] result){
