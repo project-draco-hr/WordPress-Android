@@ -10,10 +10,15 @@ case RequestCode.ACTIVITY_REQUEST_CODE_PICTURE_VIDEO_LIBRARY:
   queueFileForUpload(path);
 break;
 case RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO:
-case RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO:
 if (resultCode == Activity.RESULT_OK) {
 path=mMediaCapturePath;
 mMediaCapturePath=null;
+queueFileForUpload(path);
+}
+break;
+case RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO:
+if (resultCode == Activity.RESULT_OK) {
+path=getRealPathFromURI(MediaUtils.getLastRecordedVideoUri(getActivity()));
 queueFileForUpload(path);
 }
 break;
