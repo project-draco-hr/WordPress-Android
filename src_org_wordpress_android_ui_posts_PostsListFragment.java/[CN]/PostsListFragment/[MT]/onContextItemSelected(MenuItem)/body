@@ -8,60 +8,40 @@
     }
     return false;
   }
-  if (item.getGroupId() == 0) {
+  int itemGroupID=item.getGroupId();
+  if (itemGroupID == 0 || itemGroupID == 1 || itemGroupID == 2) {
 switch (item.getItemId()) {
 case 0:
       Intent i2=new Intent(getActivity().getApplicationContext(),EditPostActivity.class);
     i2.putExtra("postID",mSelectedID);
   i2.putExtra("id",WordPress.currentBlog.getId());
+if (itemGroupID == 2) {
+  i2.putExtra("isPage",true);
+}
+ else if (itemGroupID == 1) {
+  if (isPage)   i2.putExtra("isPage",true);
+  i2.putExtra("localDraft",true);
+}
 startActivityForResult(i2,0);
 return true;
 case 1:
 mOnPostActionListener.onPostAction(PostsActivity.POST_DELETE,post);
 return true;
 case 2:
-mOnPostActionListener.onPostAction(PostsActivity.POST_SHARE,post);
+Intent i=new Intent(getActivity(),PreviewPostActivity.class);
+i.putExtra("isPage",itemGroupID == 2 ? true : false);
+i.putExtra("postID",mSelectedID);
+i.putExtra("blogID",WordPress.currentBlog.getId());
+startActivity(i);
 return true;
 case 3:
-mOnPostActionListener.onPostAction(PostsActivity.POST_COMMENT,post);
-return true;
-}
-}
- else if (item.getGroupId() == 2) {
-switch (item.getItemId()) {
-case 0:
-Intent i2=new Intent(getActivity().getApplicationContext(),EditPostActivity.class);
-i2.putExtra("postID",mSelectedID);
-i2.putExtra("id",WordPress.currentBlog.getId());
-i2.putExtra("isPage",true);
-startActivityForResult(i2,0);
-return true;
-case 1:
-mOnPostActionListener.onPostAction(PostsActivity.POST_DELETE,post);
-return true;
-case 2:
 mOnPostActionListener.onPostAction(PostsActivity.POST_SHARE,post);
 return true;
-case 3:
+case 4:
 mOnPostActionListener.onPostAction(PostsActivity.POST_COMMENT,post);
 return true;
-}
-}
- else {
-switch (item.getItemId()) {
-case 0:
-Intent i2=new Intent(getActivity().getApplicationContext(),EditPostActivity.class);
-i2.putExtra("postID",mSelectedID);
-i2.putExtra("id",WordPress.currentBlog.getId());
-if (isPage) {
-i2.putExtra("isPage",true);
-}
-i2.putExtra("localDraft",true);
-startActivityForResult(i2,0);
-return true;
-case 1:
-mOnPostActionListener.onPostAction(PostsActivity.POST_DELETE,post);
-return true;
+default :
+return false;
 }
 }
 return false;
