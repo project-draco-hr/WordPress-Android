@@ -152,6 +152,7 @@
       if (mPostFormats[i].equals(activePostFormat))       pfSpinner.setSelection(i);
     }
     if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action))     setContent();
+ else     if (NEW_MEDIA_GALLERY.equals(action))     prepareMediaGallery();
   }
   String[] items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private)};
   ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,items);
@@ -165,9 +166,6 @@
  else       if (mQuickMediaType == Constants.QUICK_POST_VIDEO_CAMERA)       launchVideoCamera();
  else       if (mQuickMediaType == Constants.QUICK_POST_VIDEO_LIBRARY)       launchVideoLibrary();
       mLocalDraft=extras.getBoolean("localDraft");
-    }
-    if (extras.containsKey("content")) {
-      mContentEditText.setText(extras.getString("content"));
     }
   }
  else {

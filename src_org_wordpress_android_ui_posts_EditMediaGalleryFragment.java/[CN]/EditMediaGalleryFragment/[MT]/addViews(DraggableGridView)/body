@@ -1,0 +1,11 @@
+{
+  if (WordPress.getCurrentBlog() == null)   return;
+  String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+  ArrayList<String> ids=getArguments().getStringArrayList(ARGS_MEDIA_IDS);
+  Cursor cursor=WordPress.wpDB.getMediaFiles(blogId,ids);
+  mGridAdapter.swapCursor(cursor);
+  for (int i=0; i < mGridAdapter.getDataCount(); i++) {
+    View view=mGridAdapter.getView(i,null,mGridView);
+    mGridView.addView(view);
+  }
+}
