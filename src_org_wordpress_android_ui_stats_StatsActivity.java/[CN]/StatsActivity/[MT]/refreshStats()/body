@@ -7,8 +7,13 @@
       StatsSummary stats=StatUtils.getSummary(blogId);
       return stats;
     }
-    protected void onPostExecute(    StatsSummary result){
-      refreshViews(result);
+    protected void onPostExecute(    final StatsSummary result){
+      runOnUiThread(new Runnable(){
+        @Override public void run(){
+          refreshViews(result);
+        }
+      }
+);
     }
   }
 .execute(blogId);
