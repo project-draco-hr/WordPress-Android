@@ -1,13 +1,13 @@
 {
   if (WordPress.getCurrentBlog() == null)   return;
-  String blogId=String.valueOf(WordPress.getCurrentBlog());
-  new AsyncTask<String,Void,StatsCommentsSummary>(){
-    @Override protected StatsCommentsSummary doInBackground(    String... params){
+  String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+  new AsyncTask<String,Void,StatsSummary>(){
+    @Override protected StatsSummary doInBackground(    String... params){
       final String blogId=params[0];
-      StatsCommentsSummary stats=StatUtils.getCommentsSummary(blogId);
+      StatsSummary stats=StatUtils.getSummary(blogId);
       return stats;
     }
-    protected void onPostExecute(    StatsCommentsSummary result){
+    protected void onPostExecute(    StatsSummary result){
       refreshSummaryViews(result);
     }
   }

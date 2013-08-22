@@ -4,24 +4,18 @@
     FileInputStream fis=WordPress.getContext().openFileInput(STAT_SUMMARY + blogId);
     StringBuffer fileContent=new StringBuffer("");
     byte[] buffer=new byte[1024];
-    while (fis.read(buffer) != -1) {
-      fileContent.append(new String(buffer));
+    int bytesRead=fis.read(buffer);
+    while (bytesRead != -1) {
+      fileContent.append(new String(buffer,0,bytesRead,"ISO-8859-1"));
+      bytesRead=fis.read(buffer);
     }
-    JSONObject object=new JSONObject(fileContent.toString());
-    int views=object.getInt("views");
-    int comments=object.getInt("comments");
-    int favorites=object.getInt("favorites");
-    int reblogs=object.getInt("reblogs");
-    String date=object.getString("date");
-    stat=new StatsSummary(views,comments,favorites,reblogs,date);
+    Gson gson=new Gson();
+    stat=gson.fromJson(fileContent.toString(),StatsSummary.class);
   }
  catch (  FileNotFoundException e) {
     e.printStackTrace();
   }
 catch (  IOException e) {
-    e.printStackTrace();
-  }
-catch (  JSONException e) {
     e.printStackTrace();
   }
   return stat;
