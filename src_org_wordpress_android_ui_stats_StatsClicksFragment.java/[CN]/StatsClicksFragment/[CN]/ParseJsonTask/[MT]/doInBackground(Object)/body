@@ -2,13 +2,14 @@
   String blogId=(String)params[0];
   JSONObject response=(JSONObject)params[1];
   Context context=WordPress.getContext();
-  if (response != null && response.has("result")) {
+  if (response != null) {
     try {
-      JSONArray results=response.getJSONArray("result");
+      String date=response.getString("date");
+      JSONArray results=response.getJSONArray("clicks");
       int count=results.length();
       for (int i=0; i < count; i++) {
         JSONObject result=results.getJSONObject(i);
-        StatsClick stat=new StatsClick(blogId,result);
+        StatsClick stat=new StatsClick(blogId,date,result);
         ContentValues values=StatsClicksTable.getContentValues(stat);
         context.getContentResolver().insert(STATS_CLICKS_URI,values);
       }

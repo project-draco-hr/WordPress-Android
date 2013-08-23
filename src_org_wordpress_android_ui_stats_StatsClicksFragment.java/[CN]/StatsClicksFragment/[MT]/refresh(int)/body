@@ -1,7 +1,9 @@
 {
   final String blogId=getCurrentBlogId();
   if (getCurrentBlogId() == null)   return;
-  WordPress.restClient.getStatsClicks(blogId,new Listener(){
+  String date=StatUtils.getCurrentDate();
+  if (position == 1)   date=StatUtils.getYesterdaysDate();
+  WordPress.restClient.getStatsClicks(blogId,date,new Listener(){
     @Override public void onResponse(    JSONObject response){
       new ParseJsonTask().execute(blogId,response,position);
     }
