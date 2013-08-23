@@ -1,26 +1,26 @@
 {
-  String entry=cursor.getString(cursor.getColumnIndex(StatsReferrersTable.Columns.TITLE));
+  String name=cursor.getString(cursor.getColumnIndex(StatsReferrersTable.Columns.NAME));
   String url=cursor.getString(cursor.getColumnIndex(StatsReferrersTable.Columns.URL));
-  int total=cursor.getInt(cursor.getColumnIndex(StatsReferrersTable.Columns.VIEWS));
-  String imageUrl=cursor.getString(cursor.getColumnIndex(StatsReferrersTable.Columns.IMAGE_URL));
+  int total=cursor.getInt(cursor.getColumnIndex(StatsReferrersTable.Columns.TOTAL));
+  String icon=cursor.getString(cursor.getColumnIndex(StatsReferrersTable.Columns.ICON));
   TextView entryTextView=(TextView)view.findViewById(R.id.stats_list_cell_entry);
   if (url != null && url.length() > 0) {
-    Spanned link=Html.fromHtml("<a href=\"" + url + "\">"+ entry+ "</a>");
+    Spanned link=Html.fromHtml("<a href=\"" + url + "\">"+ name+ "</a>");
     entryTextView.setText(link);
     entryTextView.setMovementMethod(LinkMovementMethod.getInstance());
   }
  else {
-    entryTextView.setText(entry);
+    entryTextView.setText(name);
   }
   TextView totalsTextView=(TextView)view.findViewById(R.id.stats_list_cell_total);
   totalsTextView.setText(total + "");
   view.findViewById(R.id.stats_list_cell_image_frame).setVisibility(View.VISIBLE);
   NetworkImageView imageView=(NetworkImageView)view.findViewById(R.id.stats_list_cell_image);
   ImageView errorImageView=(ImageView)view.findViewById(R.id.stats_list_cell_blank_image);
-  if (imageUrl != null && imageUrl.length() > 0) {
+  if (icon != null && icon.length() > 0) {
     imageView.setErrorImageResId(R.drawable.stats_blank_image);
     imageView.setDefaultImageResId(R.drawable.stats_blank_image);
-    imageView.setImageUrl(imageUrl,WordPress.imageLoader);
+    imageView.setImageUrl(icon,WordPress.imageLoader);
     imageView.setVisibility(View.VISIBLE);
     errorImageView.setVisibility(View.GONE);
   }
