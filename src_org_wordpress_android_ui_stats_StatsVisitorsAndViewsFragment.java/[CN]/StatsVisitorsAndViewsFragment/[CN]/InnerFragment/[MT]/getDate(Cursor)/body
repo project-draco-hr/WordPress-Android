@@ -1,16 +1,14 @@
 {
-  int timeframe=getTimeframeOrdinal();
+  StatsBarChartUnit unit=getBarChartUnit();
   String date="";
-  if (timeframe == StatsTimeframe.DAYS.ordinal()) {
-    String temp=cursor.getString(cursor.getColumnIndex(StatsBarChartDaysTable.Columns.DATE));
+  String temp=cursor.getString(cursor.getColumnIndex(StatsBarChartDataTable.Columns.DATE));
+  if (unit == StatsBarChartUnit.DAY) {
     date=StatUtils.parseDate(temp,"yyyy-MM-dd","MMM d");
   }
- else   if (timeframe == StatsTimeframe.WEEKS.ordinal()) {
-    String temp=cursor.getString(cursor.getColumnIndex(StatsBarChartWeeksTable.Columns.DATE));
-    date=StatUtils.parseDate(temp,"yyyy-'W'ww","'Week' w");
+ else   if (unit == StatsBarChartUnit.WEEK) {
+    date=StatUtils.parseDate(temp,"yyyy'W'ww","'Week' w");
   }
- else   if (timeframe == StatsTimeframe.MONTHS.ordinal()) {
-    String temp=cursor.getString(cursor.getColumnIndex(StatsBarChartMonthsTable.Columns.DATE));
+ else   if (unit == StatsBarChartUnit.MONTH) {
     date=StatUtils.parseDate(temp,"yyyy-MM","MMM yyyy");
   }
   return date;
