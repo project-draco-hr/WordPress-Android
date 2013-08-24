@@ -5,6 +5,9 @@
   if (response != null) {
     try {
       String date=response.getString("date");
+      long dateMs=StatUtils.toMs(date);
+      long twoDays=2 * 24 * 60* 60* 1000;
+      context.getContentResolver().delete(STATS_SEARCH_ENGINE_TERMS_URI,"blogId=? AND (date=? OR date<=?)",new String[]{blogId,dateMs + "",(dateMs - twoDays) + ""});
       JSONArray results=response.getJSONArray("search-terms");
       int count=results.length();
       for (int i=0; i < count; i++) {
