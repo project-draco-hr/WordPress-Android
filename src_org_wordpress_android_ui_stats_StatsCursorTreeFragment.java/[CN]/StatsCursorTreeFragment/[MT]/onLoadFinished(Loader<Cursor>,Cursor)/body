@@ -1,0 +1,24 @@
+{
+  Uri uri=getGroupUri();
+  if (loader.getId() == LOADER_URI_GROUP_INDEX) {
+    while (data.moveToNext()) {
+      String groupId=data.getString(data.getColumnIndex("groupId"));
+      long date=data.getLong(data.getColumnIndex("date"));
+      Bundle bundle=new Bundle();
+      bundle.putString(StatsCursorLoaderCallback.BUNDLE_GROUP_ID,groupId);
+      bundle.putLong(StatsCursorLoaderCallback.BUNDLE_DATE,date);
+      getLoaderManager().restartLoader(data.getPosition(),bundle,StatsCursorTreeFragment.this);
+    }
+    mCallback.onCursorLoaded(uri,data);
+    if (mAdapter != null)     mAdapter.changeCursor(data);
+  }
+ else {
+    if (mAdapter != null) {
+      mAdapter.setChildrenCursor(loader.getId(),data);
+    }
+  }
+  configureEmptyLabel();
+  if (isTablet()) {
+    reloadLinearLayout();
+  }
+}
