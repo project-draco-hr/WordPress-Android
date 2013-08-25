@@ -1,0 +1,18 @@
+{
+  setBlogId(blogId);
+  setDate(StatUtils.toMs(date));
+  setGroupId(result.getString("group"));
+  setName(result.getString("name"));
+  setTotal(result.getInt("total"));
+  if (result.has("icon") && !result.getString("icon").equals("null"))   setIcon(result.getString("icon"));
+  JSONArray array=result.getJSONArray("results");
+  if (array.length() == 1) {
+    setChildren(0);
+    JSONArray firstEntry=array.getJSONArray(0);
+    String url=firstEntry.getString(0);
+    if (url.startsWith("http"))     setUrl(url);
+  }
+ else {
+    setChildren(array.length());
+  }
+}

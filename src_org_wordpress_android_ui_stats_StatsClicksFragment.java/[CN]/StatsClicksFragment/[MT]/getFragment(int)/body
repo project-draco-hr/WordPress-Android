@@ -2,8 +2,11 @@
   int entryLabelResId=R.string.stats_entry_clicks_url;
   int totalsLabelResId=R.string.stats_totals_clicks;
   int emptyLabelResId=R.string.stats_empty_clicks;
-  Uri uri=Uri.parse(STATS_CLICKS_URI.toString() + "?timeframe=" + TIMEFRAMES[position].name());
-  StatsCursorFragment fragment=StatsCursorFragment.newInstance(uri,entryLabelResId,totalsLabelResId,emptyLabelResId);
-  fragment.setListAdapter(new CustomCursorAdapter(getActivity(),null));
+  Uri groupUri=Uri.parse(STATS_CLICK_GROUP_URI.toString() + "?timeframe=" + TIMEFRAMES[position].name());
+  Uri childrenUri=STATS_CLICKS_URI;
+  StatsCursorTreeFragment fragment=StatsCursorTreeFragment.newInstance(groupUri,childrenUri,entryLabelResId,totalsLabelResId,emptyLabelResId);
+  CustomAdapter adapter=new CustomAdapter(null,getActivity());
+  adapter.setCursorLoaderCallback(fragment);
+  fragment.setListAdapter(adapter);
   return fragment;
 }
