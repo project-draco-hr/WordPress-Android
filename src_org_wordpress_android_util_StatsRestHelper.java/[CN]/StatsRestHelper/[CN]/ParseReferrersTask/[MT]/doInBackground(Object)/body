@@ -1,0 +1,34 @@
+{
+  String blogId=(String)params[0];
+  JSONObject response=(JSONObject)params[1];
+  Context context=WordPress.getContext();
+  if (response != null) {
+    try {
+      String date=response.getString("date");
+      long dateMs=StatUtils.toMs(date);
+      context.getContentResolver().delete(StatsContentProvider.STATS_REFERRER_GROUP_URI,"blogId=? AND (date=? OR date<=?)",new String[]{blogId,dateMs + "",(dateMs - TWO_DAYS) + ""});
+      context.getContentResolver().delete(StatsContentProvider.STATS_REFERRERS_URI,"blogId=? AND (date=? OR date<=?)",new String[]{blogId,dateMs + "",(dateMs - TWO_DAYS) + ""});
+      JSONArray groups=response.getJSONArray("referrers");
+      int groupsCount=groups.length();
+      for (int i=0; i < groupsCount; i++) {
+        JSONObject group=groups.getJSONObject(i);
+        StatsReferrerGroup statGroup=new StatsReferrerGroup(blogId,date,group);
+        ContentValues values=StatsReferrerGroupsTable.getContentValues(statGroup);
+        context.getContentResolver().insert(StatsContentProvider.STATS_REFERRER_GROUP_URI,values);
+        JSONArray referrers=group.getJSONArray("results");
+        int count=referrers.length();
+        if (count > 1) {
+          for (int j=0; j < count; j++) {
+            StatsReferrer stat=new StatsReferrer(blogId,date,statGroup.getGroupId(),referrers.getJSONArray(j));
+            ContentValues v=StatsReferrersTable.getContentValues(stat);
+            context.getContentResolver().insert(StatsContentProvider.STATS_REFERRERS_URI,v);
+          }
+        }
+      }
+    }
+ catch (    JSONException e) {
+      e.printStackTrace();
+    }
+  }
+  return null;
+}
