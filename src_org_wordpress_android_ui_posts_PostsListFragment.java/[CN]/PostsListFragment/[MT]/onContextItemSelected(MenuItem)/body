@@ -8,60 +8,40 @@
     }
     return false;
   }
-  if (item.getGroupId() == 0) {
+  int itemGroupID=item.getGroupId();
+  if (itemGroupID == MENU_GROUP_POSTS || itemGroupID == MENU_GROUP_PAGES || itemGroupID == MENU_GROUP_DRAFTS) {
 switch (item.getItemId()) {
-case 0:
+case MENU_ITEM_EDIT:
       Intent i2=new Intent(getActivity().getApplicationContext(),EditPostActivity.class);
     i2.putExtra("postID",mSelectedID);
   i2.putExtra("id",WordPress.currentBlog.getId());
+if (itemGroupID == MENU_GROUP_PAGES) {
+  i2.putExtra("isPage",true);
+}
+ else if (itemGroupID == MENU_GROUP_DRAFTS) {
+  if (isPage)   i2.putExtra("isPage",true);
+  i2.putExtra("localDraft",true);
+}
 startActivityForResult(i2,0);
 return true;
-case 1:
+case MENU_ITEM_DELETE:
 mOnPostActionListener.onPostAction(PostsActivity.POST_DELETE,post);
 return true;
-case 2:
+case MENU_ITEM_PREVIEW:
+Intent i=new Intent(getActivity(),PreviewPostActivity.class);
+i.putExtra("isPage",itemGroupID == MENU_GROUP_PAGES ? true : false);
+i.putExtra("postID",mSelectedID);
+i.putExtra("blogID",WordPress.currentBlog.getId());
+startActivity(i);
+return true;
+case MENU_ITEM_SHARE:
 mOnPostActionListener.onPostAction(PostsActivity.POST_SHARE,post);
 return true;
-case 3:
+case MENU_ITEM_ADD_COMMENT:
 mOnPostActionListener.onPostAction(PostsActivity.POST_COMMENT,post);
 return true;
-}
-}
- else if (item.getGroupId() == 2) {
-switch (item.getItemId()) {
-case 0:
-Intent i2=new Intent(getActivity().getApplicationContext(),EditPostActivity.class);
-i2.putExtra("postID",mSelectedID);
-i2.putExtra("id",WordPress.currentBlog.getId());
-i2.putExtra("isPage",true);
-startActivityForResult(i2,0);
-return true;
-case 1:
-mOnPostActionListener.onPostAction(PostsActivity.POST_DELETE,post);
-return true;
-case 2:
-mOnPostActionListener.onPostAction(PostsActivity.POST_SHARE,post);
-return true;
-case 3:
-mOnPostActionListener.onPostAction(PostsActivity.POST_COMMENT,post);
-return true;
-}
-}
- else {
-switch (item.getItemId()) {
-case 0:
-Intent i2=new Intent(getActivity().getApplicationContext(),EditPostActivity.class);
-i2.putExtra("postID",mSelectedID);
-i2.putExtra("id",WordPress.currentBlog.getId());
-if (isPage) {
-i2.putExtra("isPage",true);
-}
-i2.putExtra("localDraft",true);
-startActivityForResult(i2,0);
-return true;
-case 1:
-mOnPostActionListener.onPostAction(PostsActivity.POST_DELETE,post);
-return true;
+default :
+return false;
 }
 }
 return false;

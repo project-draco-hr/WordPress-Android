@@ -1,0 +1,29 @@
+{
+  if (mLinearLayout == null || mAdapter == null)   return;
+  mLinearLayout.removeAllViews();
+  int groupCount=Math.min(mAdapter.getGroupCount(),MAX_ITEMS_ON_TABLET);
+  for (int i=0; i < groupCount; i++) {
+    boolean isExpanded=mGroupIdToExpandedMap.get(i);
+    View view=mAdapter.getGroupView(i,isExpanded,null,mLinearLayout);
+    view.setTag(i);
+    mLinearLayout.addView(view);
+    view.setOnClickListener(new OnClickListener(){
+      @Override public void onClick(      View v){
+        int position=(Integer)v.getTag();
+        mGroupIdToExpandedMap.put(position,!mGroupIdToExpandedMap.get(position));
+        reloadLinearLayout();
+      }
+    }
+);
+    getActivity().getLayoutInflater().inflate(R.layout.stats_list_divider,mLinearLayout,true);
+    if (isExpanded) {
+      int childrenCount=mAdapter.getChildrenCount(i);
+      for (int j=0; j < childrenCount; j++) {
+        boolean isLastChild=(j == childrenCount - 1);
+        View childView=mAdapter.getChildView(i,j,isLastChild,null,mLinearLayout);
+        mLinearLayout.addView(childView);
+        getActivity().getLayoutInflater().inflate(R.layout.stats_list_divider,mLinearLayout,true);
+      }
+    }
+  }
+}

@@ -1,15 +1,19 @@
 {
   if (WordPress.getCurrentBlog() == null)   return;
   final String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
-  new AsyncTask<String,Void,StatsVisitorsAndViewsSummary>(){
-    @Override protected StatsVisitorsAndViewsSummary doInBackground(    String... params){
-      final String blogId=params[0];
-      StatsVisitorsAndViewsSummary stats=StatUtils.getVisitorsAndViewsSummary(blogId);
-      return stats;
+  new AsyncTask<Void,Void,StatsSummary>(){
+    @Override protected StatsSummary doInBackground(    Void... params){
+      return StatUtils.getSummary(blogId);
     }
-    protected void onPostExecute(    StatsVisitorsAndViewsSummary result){
-      refreshViews(result);
+    protected void onPostExecute(    final StatsSummary result){
+      if (getActivity() == null)       return;
+      getActivity().runOnUiThread(new Runnable(){
+        @Override public void run(){
+          refreshViews(result);
+        }
+      }
+);
     }
   }
-.execute(blogId);
+.execute();
 }

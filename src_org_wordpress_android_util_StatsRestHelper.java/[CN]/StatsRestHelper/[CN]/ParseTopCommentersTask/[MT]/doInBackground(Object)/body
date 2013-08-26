@@ -1,0 +1,23 @@
+{
+  String blogId=(String)params[0];
+  JSONObject response=(JSONObject)params[1];
+  Context context=WordPress.getContext();
+  if (response != null && response.has("result")) {
+    try {
+      JSONArray results=response.getJSONArray("result");
+      int count=results.length();
+      if (count > 0)       context.getContentResolver().delete(StatsContentProvider.STATS_TOP_COMMENTERS_URI,"blogId=?",new String[]{blogId});
+      for (int i=0; i < count; i++) {
+        JSONObject result=results.getJSONObject(i);
+        StatsTopCommenter stat=new StatsTopCommenter(blogId,result);
+        ContentValues values=StatsTopCommentersTable.getContentValues(stat);
+        context.getContentResolver().insert(StatsContentProvider.STATS_TOP_COMMENTERS_URI,values);
+      }
+    }
+ catch (    JSONException e) {
+      e.printStackTrace();
+    }
+  }
+  updateRefreshMap(StatsViewType.COMMENTS,-1);
+  return null;
+}

@@ -1,0 +1,34 @@
+{
+  String name=cursor.getString(cursor.getColumnIndex(StatsReferrerGroupsTable.Columns.NAME));
+  int total=cursor.getInt(cursor.getColumnIndex(StatsReferrerGroupsTable.Columns.TOTAL));
+  String url=cursor.getString(cursor.getColumnIndex(StatsReferrerGroupsTable.Columns.URL));
+  String icon=cursor.getString(cursor.getColumnIndex(StatsReferrerGroupsTable.Columns.ICON));
+  int children=cursor.getInt(cursor.getColumnIndex(StatsReferrerGroupsTable.Columns.CHILDREN));
+  boolean urlValid=(url != null && url.length() > 0);
+  toggleChevrons(children > 0,isExpanded,view);
+  TextView entryTextView=(TextView)view.findViewById(R.id.stats_group_cell_entry);
+  if (urlValid) {
+    Spanned link=Html.fromHtml("<a href=\"" + url + "\">"+ name+ "</a>");
+    entryTextView.setText(link);
+    entryTextView.setMovementMethod(LinkMovementMethod.getInstance());
+  }
+ else {
+    entryTextView.setText(name);
+  }
+  TextView totalsTextView=(TextView)view.findViewById(R.id.stats_group_cell_total);
+  totalsTextView.setText(total + "");
+  view.findViewById(R.id.stats_group_cell_image_frame).setVisibility(View.VISIBLE);
+  NetworkImageView imageView=(NetworkImageView)view.findViewById(R.id.stats_group_cell_image);
+  ImageView errorImageView=(ImageView)view.findViewById(R.id.stats_group_cell_blank_image);
+  if (icon != null && icon.length() > 0) {
+    imageView.setErrorImageResId(R.drawable.stats_blank_image);
+    imageView.setDefaultImageResId(R.drawable.stats_blank_image);
+    imageView.setImageUrl(icon,WordPress.imageLoader);
+    imageView.setVisibility(View.VISIBLE);
+    errorImageView.setVisibility(View.GONE);
+  }
+ else {
+    imageView.setVisibility(View.GONE);
+    errorImageView.setVisibility(View.VISIBLE);
+  }
+}
