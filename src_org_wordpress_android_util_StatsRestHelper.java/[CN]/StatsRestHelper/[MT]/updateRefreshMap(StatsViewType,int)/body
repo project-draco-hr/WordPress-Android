@@ -1,0 +1,18 @@
+{
+  int count=sRefreshMap.get(type) + i;
+  sRefreshMap.put(type,count);
+  int total=0;
+  for (  StatsViewType viewtype : sRefreshMap.keySet()) {
+    total+=sRefreshMap.get(viewtype);
+  }
+  Intent intent=new Intent(REFRESH_VIEW_TYPE);
+  if (total == 0) {
+    intent.putExtra(REFRESH_VIEW_TYPE_STARTED,false);
+  }
+ else {
+    intent.putExtra(REFRESH_VIEW_TYPE_STARTED,count > 0);
+    intent.putExtra(REFRESH_VIEW_TYPE_ORDINAL,type.ordinal());
+  }
+  LocalBroadcastManager lbm=LocalBroadcastManager.getInstance(WordPress.getContext());
+  lbm.sendBroadcast(intent);
+}
