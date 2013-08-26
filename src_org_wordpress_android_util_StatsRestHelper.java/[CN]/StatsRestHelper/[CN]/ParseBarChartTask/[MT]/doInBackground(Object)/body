@@ -1,13 +1,13 @@
 {
   String blogId=(String)params[0];
   JSONObject response=(JSONObject)params[1];
-  Uri uri=(Uri)params[2];
+  StatsBarChartUnit unit=StatsBarChartUnit.values()[(Integer)params[2]];
   Context context=WordPress.getContext();
+  Uri uri=StatsContentProvider.STATS_BAR_CHART_DATA_URI;
   if (response != null && response.has("data")) {
     try {
       JSONArray results=response.getJSONArray("data");
       int count=results.length();
-      StatsBarChartUnit unit=getBarChartUnit();
       if (count > 0)       context.getContentResolver().delete(uri,"blogId=? AND unit=?",new String[]{blogId,unit.name()});
       for (int i=0; i < count; i++) {
         JSONArray result=results.getJSONArray(i);
