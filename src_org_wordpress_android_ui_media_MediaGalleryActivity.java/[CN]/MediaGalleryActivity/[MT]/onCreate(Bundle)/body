@@ -6,11 +6,28 @@
     return;
   }
   setTitle(R.string.media_gallery_edit);
-  createMenuDrawer(R.layout.media_gallery_activity);
+  setContentView(R.layout.media_gallery_activity);
   ActionBar actionBar=getSupportActionBar();
   actionBar.setDisplayShowTitleEnabled(true);
   FragmentManager fm=getSupportFragmentManager();
-  FragmentTransaction ft=fm.beginTransaction();
   mMediaGalleryEditFragment=(EditMediaGalleryFragment)fm.findFragmentById(R.id.mediaGalleryEditFragment);
   mMediaGallerySettingsFragment=(MediaGallerySettingsFragment)fm.findFragmentById(R.id.mediaGallerySettingsFragment);
+  mSlidingPanelLayout=(SlidingUpPanelLayout)findViewById(R.id.media_gallery_root);
+  if (mSlidingPanelLayout != null) {
+    mSlidingPanelLayout.setDragView(mMediaGallerySettingsFragment.getDragView());
+    mSlidingPanelLayout.setPanelHeight((int)Utils.dpToPx(48));
+    mSlidingPanelLayout.setPanelSlideListener(new PanelSlideListener(){
+      @Override public void onPanelSlide(      View panel,      float slideOffset){
+      }
+      @Override public void onPanelExpanded(      View panel){
+        mMediaGallerySettingsFragment.onPanelExpanded();
+        mIsPanelCollapsed=false;
+      }
+      @Override public void onPanelCollapsed(      View panel){
+        mMediaGallerySettingsFragment.onPanelCollapsed();
+        mIsPanelCollapsed=true;
+      }
+    }
+);
+  }
 }

@@ -5,10 +5,15 @@
   mIsRandomOrder=false;
   restoreState(savedInstanceState);
   View view=inflater.inflate(R.layout.media_gallery_settings_fragment,container,false);
+  mHeader=view.findViewById(R.id.media_gallery_settings_header);
+  mScrollView=(ScrollView)view.findViewById(R.id.media_gallery_settings_content_container);
+  mTitleView=(TextView)view.findViewById(R.id.media_gallery_settings_title);
+  if (!Utils.isTablet())   onPanelCollapsed();
   mNumColumnsContainer=view.findViewById(R.id.media_gallery_settings_num_columns_container);
   int visible=(mType == GalleryType.DEFAULT) ? View.VISIBLE : View.GONE;
   mNumColumnsContainer.setVisibility(visible);
-  mNumColumnsGrid=(GridView)view.findViewById(R.id.media_gallery_num_columns_grid);
+  mNumColumnsGrid=(ExpandableHeightGridView)view.findViewById(R.id.media_gallery_num_columns_grid);
+  mNumColumnsGrid.setExpanded(true);
   ArrayList<String> list=new ArrayList<String>(9);
   for (int i=1; i <= 9; i++) {
     list.add(i + "");
