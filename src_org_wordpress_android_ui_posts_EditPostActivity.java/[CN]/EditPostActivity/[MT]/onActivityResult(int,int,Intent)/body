@@ -11,25 +11,30 @@
   if (data != null || ((requestCode == RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO || requestCode == RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO))) {
     Bundle extras;
 switch (requestCode) {
+case MediaGalleryActivity.REQUEST_CODE:
+      if (resultCode == RESULT_OK) {
+        handleMediaGalleryResult(data);
+      }
+    break;
 case RequestCode.ACTIVITY_REQUEST_CODE_PICTURE_LIBRARY:
-      Uri imageUri=data.getData();
-    verifyImage(imageUri);
-  break;
+  Uri imageUri=data.getData();
+verifyImage(imageUri);
+break;
 case RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO:
 if (resultCode == Activity.RESULT_OK) {
-  try {
-    File f=new File(mMediaCapturePath);
-    Uri capturedImageUri=Uri.fromFile(f);
-    f=null;
-    if (!addMedia(capturedImageUri,null))     Toast.makeText(EditPostActivity.this,getResources().getText(R.string.gallery_error),Toast.LENGTH_SHORT).show();
-    sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,Uri.parse("file://" + Environment.getExternalStorageDirectory())));
-  }
- catch (  Exception e) {
-    e.printStackTrace();
-  }
-catch (  OutOfMemoryError e) {
-    e.printStackTrace();
-  }
+try {
+File f=new File(mMediaCapturePath);
+Uri capturedImageUri=Uri.fromFile(f);
+f=null;
+if (!addMedia(capturedImageUri,null)) Toast.makeText(EditPostActivity.this,getResources().getText(R.string.gallery_error),Toast.LENGTH_SHORT).show();
+sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+}
+ catch (Exception e) {
+e.printStackTrace();
+}
+catch (OutOfMemoryError e) {
+e.printStackTrace();
+}
 }
 break;
 case RequestCode.ACTIVITY_REQUEST_CODE_VIDEO_LIBRARY:

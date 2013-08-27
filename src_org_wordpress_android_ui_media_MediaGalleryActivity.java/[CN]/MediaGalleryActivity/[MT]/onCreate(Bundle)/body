@@ -10,8 +10,14 @@
   ActionBar actionBar=getSupportActionBar();
   actionBar.setDisplayShowTitleEnabled(true);
   FragmentManager fm=getSupportFragmentManager();
+  mMediaGallery=(MediaGallery)getIntent().getSerializableExtra(PARAMS_MEDIA_GALLERY);
+  if (mMediaGallery == null)   mMediaGallery=new MediaGallery();
   mMediaGalleryEditFragment=(EditMediaGalleryFragment)fm.findFragmentById(R.id.mediaGalleryEditFragment);
+  mMediaGalleryEditFragment.setMediaIds(mMediaGallery.getIds());
   mMediaGallerySettingsFragment=(MediaGallerySettingsFragment)fm.findFragmentById(R.id.mediaGallerySettingsFragment);
+  mMediaGallerySettingsFragment.setRandom(mMediaGallery.isRandom());
+  mMediaGallerySettingsFragment.setNumColumns(mMediaGallery.getNumColumns());
+  mMediaGallerySettingsFragment.setType(mMediaGallery.getType());
   mSlidingPanelLayout=(SlidingUpPanelLayout)findViewById(R.id.media_gallery_root);
   if (mSlidingPanelLayout != null) {
     mSlidingPanelLayout.setDragView(mMediaGallerySettingsFragment.getDragView());
