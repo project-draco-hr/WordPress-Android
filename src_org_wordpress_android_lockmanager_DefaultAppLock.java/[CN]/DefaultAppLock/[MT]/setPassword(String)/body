@@ -2,11 +2,14 @@
   SharedPreferences.Editor editor=settings.edit();
   if (password == null) {
     editor.remove(APP_LOCK_PASSWORD_PREF_KEY);
+    editor.commit();
+    this.disable();
   }
  else {
     password=PASSWORD_SALT + password + PASSWORD_SALT;
     editor.putString(APP_LOCK_PASSWORD_PREF_KEY,StringUtils.getMd5Hash(password));
+    editor.commit();
+    this.enable();
   }
-  editor.commit();
   return true;
 }
