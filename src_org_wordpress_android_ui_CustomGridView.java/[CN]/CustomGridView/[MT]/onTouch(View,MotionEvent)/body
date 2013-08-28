@@ -1,0 +1,30 @@
+{
+  int action=event.getAction();
+switch (action & MotionEvent.ACTION_MASK) {
+case MotionEvent.ACTION_DOWN:
+    lastX=(int)event.getX();
+  lastY=(int)event.getY();
+break;
+case MotionEvent.ACTION_MOVE:
+if (activeView == null) return super.onTouchEvent(event);
+int x=(int)event.getX();
+int y=(int)event.getY();
+int delta_x=x - lastX;
+int delta_y=y - lastY;
+int l=(int)(activeView.getLeft() + delta_x);
+int t=(int)(activeView.getTop() + delta_y);
+int r=l + activeView.getWidth();
+int b=t + activeView.getHeight();
+activeView.layout(l,t,r,b);
+int gap=getGap(x,y);
+animateGap(gap);
+lastX=(int)event.getX();
+lastY=(int)event.getY();
+break;
+case MotionEvent.ACTION_UP:
+activeView=null;
+activePos=-1;
+break;
+}
+return false;
+}
