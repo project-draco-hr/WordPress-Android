@@ -1,0 +1,17 @@
+{
+  super.onCreate(savedInstanceState);
+  ArrayList<String> checkedItems=new ArrayList<String>();
+  mFilteredItems=getIntent().getStringArrayListExtra(PARAM_FILTERED_IDS);
+  if (savedInstanceState != null) {
+    checkedItems.addAll(savedInstanceState.getStringArrayList(STATE_SELECTED_ITEMS));
+    mFilteredItems=savedInstanceState.getStringArrayList(STATE_FILTERED_ITEMS);
+  }
+  setContentView(R.layout.media_gallery_add_layout);
+  mGridView=(MultiSelectGridView)findViewById(R.id.media_gallery_add_gridview);
+  mGridView.setMultiSelectModeEnabled(true);
+  mGridView.setMultiSelectListener(this);
+  mAdapter=new MediaGridAdapter(this,null,0,checkedItems);
+  mGridView.setAdapter(mAdapter);
+  mActionMode=getSherlock().startActionMode(this);
+  mActionMode.setTitle(checkedItems.size() + " selected");
+}
