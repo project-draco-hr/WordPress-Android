@@ -1,6 +1,11 @@
 {
-  MediaGallery gallery=(MediaGallery)data.getSerializableExtra(MediaGalleryActivity.RESULT_MEDIA_GALLERY);
-  if (gallery == null || gallery.getIds().size() == 0)   return;
+  if (WordPress.getCurrentBlog() == null)   return;
+  String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+  ArrayList<String> ids=data.getStringArrayListExtra(MediaGalleryPickerActivity.RESULT_IDS);
+  if (ids == null || ids.size() == 0)   return;
+  String mediaId=ids.get(0);
+  WPImageSpan imageSpan=prepareWPImageSpan(blogId,mediaId);
+  if (imageSpan == null)   return;
   int selectionStart=mContentEditText.getSelectionStart();
   int selectionEnd=mContentEditText.getSelectionEnd();
   if (selectionStart > selectionEnd) {
@@ -16,17 +21,11 @@
  catch (  Exception ex) {
   }
   Editable s=mContentEditText.getText();
-  MediaGalleryImageSpan[] gallerySpans=s.getSpans(selectionStart,selectionEnd,MediaGalleryImageSpan.class);
+  WPImageSpan[] gallerySpans=s.getSpans(selectionStart,selectionEnd,WPImageSpan.class);
   if (gallerySpans.length != 0) {
-    for (int i=0; i < gallerySpans.length; i++) {
-      if (gallerySpans[i].getMediaGallery().getUniqueId() == gallery.getUniqueId()) {
-        gallerySpans[i].setMediaGallery(gallery);
-        int spanStart=s.getSpanStart(gallerySpans[i]);
-        int spanEnd=s.getSpanEnd(gallerySpans[i]);
-        s.setSpan(gallerySpans[i],spanStart,spanEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-      }
-    }
-    return;
+    s.insert(selectionEnd,"\n\n");
+    selectionStart=selectionStart + 2;
+    selectionEnd=selectionEnd + 2;
   }
  else   if (column != 0) {
     s.insert(selectionEnd,"\n");
@@ -34,8 +33,7 @@
     selectionEnd=selectionEnd + 1;
   }
   s.insert(selectionStart," ");
-  MediaGalleryImageSpan is=new MediaGalleryImageSpan(EditPostActivity.this,gallery);
-  s.setSpan(is,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+  s.setSpan(imageSpan,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
   AlignmentSpan.Standard as=new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER);
   s.setSpan(as,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
   s.insert(selectionEnd + 1,"\n\n");
