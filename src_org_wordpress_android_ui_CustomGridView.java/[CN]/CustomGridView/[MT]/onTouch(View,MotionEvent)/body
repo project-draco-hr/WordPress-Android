@@ -20,8 +20,14 @@ int gap=getGap(x,y);
 animateGap(gap);
 lastX=(int)event.getX();
 lastY=(int)event.getY();
+int[] pos=getLocationOnScreen();
+int bottom=pos[1] + getHeight();
+if (y >= 0.66 * bottom) startScrollDown();
+ else if (y <= 0.33 * bottom) startScrollUp();
+ else stopScroll();
 break;
 case MotionEvent.ACTION_UP:
+stopScroll();
 activeView=null;
 activePos=-1;
 break;
