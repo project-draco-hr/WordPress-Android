@@ -1,14 +1,14 @@
 {
+  int x=(int)event.getX();
+  int y=(int)event.getY();
   int action=event.getAction();
 switch (action & MotionEvent.ACTION_MASK) {
 case MotionEvent.ACTION_DOWN:
-    lastX=(int)event.getX();
-  lastY=(int)event.getY();
+    lastX=x;
+  lastY=y;
 break;
 case MotionEvent.ACTION_MOVE:
 if (activeView == null) return super.onTouchEvent(event);
-int x=(int)event.getX();
-int y=(int)event.getY();
 int delta_x=x - lastX;
 int delta_y=y - lastY;
 int l=(int)(activeView.getLeft() + delta_x);
@@ -18,16 +18,18 @@ int b=t + activeView.getHeight();
 activeView.layout(l,t,r,b);
 int gap=getGap(x,y);
 animateGap(gap);
-lastX=(int)event.getX();
-lastY=(int)event.getY();
 int[] pos=getLocationOnScreen();
 int bottom=pos[1] + getHeight();
-if (y >= 0.66 * bottom) startScrollDown();
- else if (y <= 0.33 * bottom) startScrollUp();
+if (y >= 0.66 * bottom && y > lastY) startScrollDown();
+ else if (y <= 0.33 * bottom && y < lastY) startScrollUp();
  else stopScroll();
+lastX=x;
+lastY=y;
 break;
 case MotionEvent.ACTION_UP:
 stopScroll();
+gap=getGap(x,y);
+animateActiveViewToGap(gap);
 activeView=null;
 activePos=-1;
 break;

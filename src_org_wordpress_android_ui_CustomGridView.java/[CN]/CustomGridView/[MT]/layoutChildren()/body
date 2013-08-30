@@ -1,11 +1,34 @@
 {
   super.layoutChildren();
   coords.clear();
-  mHeight=0;
-  for (int i=0; i < getChildCount(); i++) {
-    View v=getChildAt(i);
-    Rect rect=new Rect(v.getLeft(),v.getTop(),v.getRight(),v.getBottom());
-    coords.add(rect);
-    mHeight+=rect.bottom - rect.top;
+  int cols=getNumColumns();
+  ListAdapter adapter=getAdapter();
+  int count=adapter.getCount();
+  int left=0;
+  int top=0;
+  int width=0;
+  int height=0;
+  View firstChild=getChildAt(0);
+  int baseW=firstChild.getWidth();
+  int baseH=firstChild.getHeight();
+  for (int i=0; i < count; i++) {
+    for (int j=0; j < cols; j++) {
+      View view=adapter.getView(i,null,this);
+      if (view.getVisibility() != View.GONE) {
+        width=baseW;
+        height=baseH;
+        Rect rect=new Rect(left,top,left + width,top + height);
+        coords.add(rect);
+      }
+ else {
+        width=0;
+        height=0;
+      }
+      left+=width;
+    }
+    left=0;
+    top+=height;
   }
+  if (coords.size() > 0)   mHeight=coords.get(coords.size() - 1).bottom;
+ else   mHeight=0;
 }
