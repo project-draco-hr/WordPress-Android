@@ -10,28 +10,28 @@ case PasscodePreferencesActivity.DISABLE_PASSLOCK:
     if (AppLockManager.getInstance().getCurrentAppLock().verifyPassword(passLock)) {
       setResult(RESULT_OK);
       AppLockManager.getInstance().getCurrentAppLock().setPassword(null);
+      finish();
     }
  else {
-      setResult(RESULT_FIRST_USER);
+      showPasswordError();
     }
-  finish();
-break;
+  break;
 case PasscodePreferencesActivity.ENABLE_PASSLOCK:
 if (unverifiedPasscode == null) {
-((TextView)findViewById(R.id.top_message)).setText(R.string.passcode_re_enter_passcode);
-unverifiedPasscode=passLock;
+  ((TextView)findViewById(R.id.top_message)).setText(R.string.passcode_re_enter_passcode);
+  unverifiedPasscode=passLock;
 }
  else {
-if (passLock.equals(unverifiedPasscode)) {
-  setResult(RESULT_OK);
-  AppLockManager.getInstance().getCurrentAppLock().setPassword(passLock);
-  finish();
-}
+  if (passLock.equals(unverifiedPasscode)) {
+    setResult(RESULT_OK);
+    AppLockManager.getInstance().getCurrentAppLock().setPassword(passLock);
+    finish();
+  }
  else {
-  unverifiedPasscode=null;
-  topMessage.setText(R.string.passcode_enter_passcode);
-  Toast.makeText(PasscodeManagePasswordActivity.this,getString(R.string.passcode_wrong_passcode),Toast.LENGTH_SHORT).show();
-}
+    unverifiedPasscode=null;
+    topMessage.setText(R.string.passcode_enter_passcode);
+    showPasswordError();
+  }
 }
 break;
 case PasscodePreferencesActivity.CHANGE_PASSWORD:
@@ -40,7 +40,7 @@ topMessage.setText(R.string.passcode_enter_passcode);
 type=PasscodePreferencesActivity.ENABLE_PASSLOCK;
 }
  else {
-Toast.makeText(PasscodeManagePasswordActivity.this,getString(R.string.passcode_wrong_passcode),Toast.LENGTH_SHORT).show();
+showPasswordError();
 }
 break;
 default :
