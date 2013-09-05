@@ -8,17 +8,31 @@
     try {
       JSONArray results=response.getJSONArray("data");
       int count=results.length();
-      if (count > 0)       context.getContentResolver().delete(uri,"blogId=? AND unit=?",new String[]{blogId,unit.name()});
+      ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
+      if (count > 0) {
+        ContentProviderOperation op=ContentProviderOperation.newDelete(uri).withSelection("blogId=? AND unit=?",new String[]{blogId,unit.name()}).build();
+        operations.add(op);
+      }
       for (int i=0; i < count; i++) {
         JSONArray result=results.getJSONArray(i);
         StatsBarChartData stat=new StatsBarChartData(blogId,unit,result);
         ContentValues values=StatsBarChartDataTable.getContentValues(stat);
         if (values != null && uri != null) {
-          context.getContentResolver().insert(uri,values);
+          ContentProviderOperation op=ContentProviderOperation.newInsert(uri).withValues(values).build();
+          operations.add(op);
         }
       }
+      ContentResolver resolver=context.getContentResolver();
+      resolver.applyBatch(StatsContentProvider.AUTHORITY,operations);
+      resolver.notifyChange(uri,null);
     }
  catch (    JSONException e) {
+      e.printStackTrace();
+    }
+catch (    RemoteException e) {
+      e.printStackTrace();
+    }
+catch (    OperationApplicationException e) {
       e.printStackTrace();
     }
   }

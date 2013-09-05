@@ -6,7 +6,9 @@
     try {
       String date=response.getString("date");
       long dateMs=StatUtils.toMs(date);
-      context.getContentResolver().delete(StatsContentProvider.STATS_SEARCH_ENGINE_TERMS_URI,"blogId=? AND (date=? OR date<=?)",new String[]{blogId,dateMs + "",(dateMs - TWO_DAYS) + ""});
+      ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
+      ContentProviderOperation delete_op=ContentProviderOperation.newDelete(StatsContentProvider.STATS_SEARCH_ENGINE_TERMS_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{blogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
+      operations.add(delete_op);
       JSONArray results=response.getJSONArray("search-terms");
       int count=results.length();
       for (int i=0; i < count; i++) {
@@ -14,9 +16,20 @@
         StatsSearchEngineTerm stat=new StatsSearchEngineTerm(blogId,date,result);
         ContentValues values=StatsSearchEngineTermsTable.getContentValues(stat);
         context.getContentResolver().insert(StatsContentProvider.STATS_SEARCH_ENGINE_TERMS_URI,values);
+        ContentProviderOperation insert_op=ContentProviderOperation.newInsert(StatsContentProvider.STATS_SEARCH_ENGINE_TERMS_URI).withValues(values).build();
+        operations.add(insert_op);
       }
+      ContentResolver resolver=context.getContentResolver();
+      resolver.applyBatch(StatsContentProvider.AUTHORITY,operations);
+      resolver.notifyChange(StatsContentProvider.STATS_SEARCH_ENGINE_TERMS_URI,null);
     }
  catch (    JSONException e) {
+      e.printStackTrace();
+    }
+catch (    RemoteException e) {
+      e.printStackTrace();
+    }
+catch (    OperationApplicationException e) {
       e.printStackTrace();
     }
   }
