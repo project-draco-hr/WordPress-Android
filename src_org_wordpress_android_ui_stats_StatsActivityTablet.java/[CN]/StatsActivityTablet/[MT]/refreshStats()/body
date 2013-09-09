@@ -1,6 +1,8 @@
 {
   if (WordPress.getCurrentBlog() == null)   return;
-  final String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+  String blogId=null;
+  if (WordPress.getCurrentBlog().isDotcomFlag())   blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+ else   blogId=getBlogIdFromJetPack();
   StatsRestHelper.getStatsSummary(blogId);
   StatsRestHelper.getStats(StatsViewType.CLICKS,blogId);
   StatsRestHelper.getStats(StatsViewType.REFERRERS,blogId);

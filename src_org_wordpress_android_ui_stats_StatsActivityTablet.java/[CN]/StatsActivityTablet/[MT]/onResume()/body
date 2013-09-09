@@ -2,5 +2,8 @@
   super.onResume();
   LocalBroadcastManager lbm=LocalBroadcastManager.getInstance(this);
   lbm.registerReceiver(mReceiver,new IntentFilter(StatsRestHelper.REFRESH_VIEW_TYPE));
+  if (!WordPress.hasValidWPComCredentials(this) && mResultCode != RESULT_CANCELED) {
+    startWPComLoginActivity();
+  }
   refreshStats();
 }
