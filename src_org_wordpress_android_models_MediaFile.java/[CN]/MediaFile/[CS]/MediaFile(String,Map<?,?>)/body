@@ -10,9 +10,13 @@
   String fileType=new String(link).replaceAll(".*\\.(\\w+)$","$1").toLowerCase();
   String mimeType=MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileType);
   setMIMEType(mimeType);
-  setFileURL(resultMap.get("link").toString());
+  String fileUrl=resultMap.get("link").toString().replace("http:","https:");
+  setFileURL(fileUrl);
   String thumbnailURL=resultMap.get("thumbnail").toString();
-  if (thumbnailURL != null && thumbnailURL.startsWith("http"))   setThumbnailURL(thumbnailURL);
+  if (thumbnailURL != null && thumbnailURL.startsWith("http")) {
+    thumbnailURL=thumbnailURL.replace("http:","https:");
+    setThumbnailURL(thumbnailURL);
+  }
   Date date=(Date)resultMap.get("date_created_gmt");
   setDateCreatedGMT(date.getTime());
   Object meta=resultMap.get("metadata");
