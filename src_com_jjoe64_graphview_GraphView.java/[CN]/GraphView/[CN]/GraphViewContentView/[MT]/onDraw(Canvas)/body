@@ -30,20 +30,24 @@
   paint.setTextAlign(Align.LEFT);
   int vers=verlabels.length - 1;
   for (int i=0; i < verlabels.length; i++) {
-    paint.setColor(graphViewStyle.getGridColor());
+    paint.setColor(graphViewStyle.getGridYColor());
     float y=((graphheight / vers) * i) + border;
     canvas.drawLine(horstart,y,width,y,paint);
   }
-  int hors=horlabels.length - 1;
+  float colWidth=graphwidth / horlabels.length;
+  int hors=horlabels.length;
+  int horLabelsToShow=getGraphViewStyle().getNumHorizontalLabels();
   for (int i=0; i < horlabels.length; i++) {
-    paint.setColor(graphViewStyle.getGridColor());
-    float x=((graphwidth / hors) * i) + horstart;
+    paint.setColor(graphViewStyle.getGridXColor());
+    float x=((graphwidth / hors) * i) + horstart + (colWidth / 2);
     canvas.drawLine(x,height - border,x,border,paint);
     paint.setTextAlign(Align.CENTER);
     if (i == horlabels.length - 1)     paint.setTextAlign(Align.RIGHT);
     if (i == 0)     paint.setTextAlign(Align.LEFT);
     paint.setColor(graphViewStyle.getHorizontalLabelsColor());
-    canvas.drawText(horlabels[i],x,height - 4,paint);
+    if (horLabelsToShow > 0 && (hors / horLabelsToShow) > 0) {
+      if (i % (hors / horLabelsToShow) == 0)       canvas.drawText(horlabels[i],x,height - 4,paint);
+    }
   }
   paint.setTextAlign(Align.CENTER);
   canvas.drawText(title,(graphwidth / 2) + horstart,border - 4,paint);

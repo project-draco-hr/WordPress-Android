@@ -1,12 +1,13 @@
 {
   paint.setStrokeWidth(0);
+  int padding=(int)dpToPx(8);
   if (labelTextHeight == null || verLabelTextWidth == null) {
     paint.setTextSize(getGraphViewStyle().getTextSize());
     double testY=((getMaxY() - getMinY()) * 0.783) + getMinY();
     String testLabel=formatLabel(testY,false);
     paint.getTextBounds(testLabel,0,testLabel.length(),textBounds);
     labelTextHeight=(textBounds.height());
-    verLabelTextWidth=(textBounds.width());
+    verLabelTextWidth=(textBounds.width()) + padding;
   }
   if (getGraphViewStyle().getVerticalLabelsWidth() == 0 && getLayoutParams().width != verLabelTextWidth + GraphViewConfig.BORDER) {
     setLayoutParams(new LayoutParams((int)(verLabelTextWidth + GraphViewConfig.BORDER),LayoutParams.FILL_PARENT));
@@ -21,7 +22,7 @@
   if (verlabels == null) {
     verlabels=generateVerlabels(graphheight);
   }
-  paint.setTextAlign(Align.LEFT);
+  paint.setTextAlign(Align.RIGHT);
   int vers=verlabels.length - 1;
   for (int i=0; i < verlabels.length; i++) {
     float y=((graphheight / vers) * i) + border;
