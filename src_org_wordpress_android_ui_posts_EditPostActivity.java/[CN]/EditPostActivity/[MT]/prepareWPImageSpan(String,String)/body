@@ -2,6 +2,7 @@
   Cursor cursor=WordPress.wpDB.getMediaFile(blogId,mediaId);
   if (cursor == null || !cursor.moveToFirst())   return null;
   String url=cursor.getString(cursor.getColumnIndex("fileURL"));
+  if (url == null)   return null;
   Uri uri=Uri.parse(url);
   WPImageSpan imageSpan=new WPImageSpan(EditPostActivity.this,R.drawable.remote_image,uri);
   imageSpan.setMediaId(mediaId);
@@ -11,7 +12,9 @@
   imageSpan.setWidth(cursor.getInt(cursor.getColumnIndex("width")));
   imageSpan.setHeight(cursor.getInt(cursor.getColumnIndex("height")));
   imageSpan.setMimeType(cursor.getString(cursor.getColumnIndex("mimeType")));
+  imageSpan.setFileName(cursor.getString(cursor.getColumnIndex("fileName")));
   imageSpan.setThumbnailURL(cursor.getString(cursor.getColumnIndex("thumbnailURL")));
+  imageSpan.setDateCreatedGMT(cursor.getLong(cursor.getColumnIndex("date_created_gmt")));
   boolean isVideo=false;
   String mimeType=cursor.getString(cursor.getColumnIndex("mimeType"));
   if (mimeType != null && mimeType.contains("video"))   isVideo=true;
