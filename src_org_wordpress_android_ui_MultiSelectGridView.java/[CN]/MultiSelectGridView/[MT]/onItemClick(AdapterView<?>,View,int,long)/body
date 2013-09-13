@@ -1,7 +1,9 @@
 {
   CheckableFrameLayout frameLayout=((CheckableFrameLayout)view.findViewById(R.id.media_grid_frame_layout));
   Cursor cursor=((CursorAdapter)parent.getAdapter()).getCursor();
-  String mediaId=cursor.getString(cursor.getColumnIndex("mediaId"));
+  int mediaIdCol=cursor.getColumnIndex("mediaId");
+  if (mediaIdCol == -1)   return;
+  String mediaId=cursor.getString(mediaIdCol);
   if (!isInMultiSelectMode()) {
     getSelectedItems().clear();
     getSelectedItems().add(mediaId);
