@@ -1,4 +1,5 @@
 {
+  boolean isDotCom=(WordPress.getCurrentBlog() != null && WordPress.getCurrentBlog().isDotcomFlag());
   setBlogId(blogId);
   setMediaId(resultMap.get("attachment_id").toString());
   setPostID(Long.parseLong(resultMap.get("parent").toString()));
@@ -10,11 +11,12 @@
   String fileType=new String(link).replaceAll(".*\\.(\\w+)$","$1").toLowerCase();
   String mimeType=MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileType);
   setMIMEType(mimeType);
-  String fileUrl=resultMap.get("link").toString().replace("http:","https:");
+  String fileUrl=resultMap.get("link").toString();
+  if (isDotCom)   fileUrl.replace("http:","https:");
   setFileURL(fileUrl);
   String thumbnailURL=resultMap.get("thumbnail").toString();
   if (thumbnailURL != null && thumbnailURL.startsWith("http")) {
-    thumbnailURL=thumbnailURL.replace("http:","https:");
+    if (isDotCom)     thumbnailURL=thumbnailURL.replace("http:","https:");
     setThumbnailURL(thumbnailURL);
   }
   Date date=(Date)resultMap.get("date_created_gmt");
