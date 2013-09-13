@@ -1,0 +1,35 @@
+{
+  final String filePath=cursor.getString(cursor.getColumnIndex("filePath"));
+  if (MediaUtils.isValidImage(filePath)) {
+    imageView.setTag(filePath);
+    Bitmap bitmap=WordPress.localImageCache.get(filePath);
+    if (bitmap != null) {
+      imageView.setImageBitmap(bitmap);
+    }
+ else {
+      imageView.setImageBitmap(null);
+      boolean shouldFetch=false;
+      List<BitmapReadyCallback> list;
+      if (mFilePathToCallbackMap.containsKey(filePath)) {
+        list=mFilePathToCallbackMap.get(filePath);
+      }
+ else {
+        list=new ArrayList<MediaGridAdapter.BitmapReadyCallback>();
+        shouldFetch=true;
+        mFilePathToCallbackMap.put(filePath,list);
+      }
+      list.add(new BitmapReadyCallback(){
+        @Override public void onBitmapReady(        Bitmap bitmap){
+          if (imageView.getTag().equals(filePath))           imageView.setImageBitmap(bitmap);
+        }
+      }
+);
+      if (shouldFetch) {
+        fetchBitmap(filePath);
+      }
+    }
+  }
+ else {
+    imageView.setImageBitmap(null);
+  }
+}

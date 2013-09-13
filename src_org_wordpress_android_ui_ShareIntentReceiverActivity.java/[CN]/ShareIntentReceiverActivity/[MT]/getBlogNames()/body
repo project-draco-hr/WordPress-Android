@@ -1,0 +1,32 @@
+{
+  List<Map<String,Object>> accounts=WordPress.wpDB.getAccounts();
+  if (accounts.size() > 0) {
+    final String blogNames[]=new String[accounts.size()];
+    mAccountIDs=new int[accounts.size()];
+    Blog blog;
+    for (int i=0; i < accounts.size(); i++) {
+      Map<String,Object> curHash=accounts.get(i);
+      try {
+        blogNames[i]=StringUtils.unescapeHTML(curHash.get("blogName").toString());
+      }
+ catch (      Exception e) {
+        blogNames[i]=curHash.get("url").toString();
+      }
+      mAccountIDs[i]=(Integer)curHash.get("id");
+      try {
+        blog=new Blog(mAccountIDs[i]);
+      }
+ catch (      Exception e) {
+        showBlogErrorAndFinish();
+        return null;
+      }
+    }
+    return blogNames;
+  }
+ else {
+    Toast.makeText(this,getResources().getText(R.string.no_account),Toast.LENGTH_LONG).show();
+    startActivity(new Intent(this,NewAccountActivity.class));
+    finish();
+    return null;
+  }
+}

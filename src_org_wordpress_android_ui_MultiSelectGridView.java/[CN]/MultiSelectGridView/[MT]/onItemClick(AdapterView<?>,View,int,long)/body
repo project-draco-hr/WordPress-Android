@@ -1,0 +1,23 @@
+{
+  CheckableFrameLayout frameLayout=((CheckableFrameLayout)view.findViewById(R.id.media_grid_frame_layout));
+  Cursor cursor=((CursorAdapter)parent.getAdapter()).getCursor();
+  int mediaIdCol=cursor.getColumnIndex("mediaId");
+  if (mediaIdCol == -1)   return;
+  String mediaId=cursor.getString(mediaIdCol);
+  if (!isInMultiSelectMode()) {
+    getSelectedItems().clear();
+    getSelectedItems().add(mediaId);
+    frameLayout.setChecked(true);
+    if (mOnItemClickListener != null)     mOnItemClickListener.onItemClick(parent,view,position,id);
+    mAdapter.notifyDataSetChanged();
+    if (isHighlightSelectModeEnabled())     notifyMultiSelectCountChanged();
+    return;
+  }
+  if (getSelectedItems().contains(mediaId)) {
+    frameLayout.setChecked(false);
+  }
+ else {
+    frameLayout.setChecked(true);
+  }
+  notifyMultiSelectCountChanged();
+}

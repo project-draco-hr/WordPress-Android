@@ -1,0 +1,24 @@
+{
+  if (savedInstanceState == null)   return;
+  boolean isInMultiSelectMode=savedInstanceState.getBoolean(BUNDLE_IN_MULTI_SELECT_MODE);
+  if (savedInstanceState.containsKey(BUNDLE_CHECKED_STATES)) {
+    mCheckedItems.addAll(savedInstanceState.getStringArrayList(BUNDLE_CHECKED_STATES));
+    if (isInMultiSelectMode) {
+      mListener.onMultiSelectChange(mCheckedItems.size());
+      onMultiSelectChange(mCheckedItems.size());
+    }
+    mGridView.setMultiSelectModeActive(isInMultiSelectMode);
+  }
+  mGridView.setSelection(savedInstanceState.getInt(BUNDLE_SCROLL_POSITION,0));
+  mHasRetrievedAllMedia=savedInstanceState.getBoolean(BUNDLE_HAS_RETREIEVED_ALL_MEDIA,false);
+  mFilter=Filter.getFilter(savedInstanceState.getInt(BUNDLE_FILTER));
+  mIsDateFilterSet=savedInstanceState.getBoolean(BUNDLE_DATE_FILTER_SET,false);
+  mStartDay=savedInstanceState.getInt(BUNDLE_DATE_FILTER_START_DAY);
+  mStartMonth=savedInstanceState.getInt(BUNDLE_DATE_FILTER_START_MONTH);
+  mStartYear=savedInstanceState.getInt(BUNDLE_DATE_FILTER_START_YEAR);
+  mEndDay=savedInstanceState.getInt(BUNDLE_DATE_FILTER_END_DAY);
+  mEndMonth=savedInstanceState.getInt(BUNDLE_DATE_FILTER_END_MONTH);
+  mEndYear=savedInstanceState.getInt(BUNDLE_DATE_FILTER_END_YEAR);
+  boolean datePickerShowing=savedInstanceState.getBoolean(BUNDLE_DATE_FILTER_VISIBLE);
+  if (datePickerShowing)   showDatePicker();
+}

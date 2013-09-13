@@ -1,0 +1,25 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.share_intent_receiver_dialog);
+  Context themedContext=getSupportActionBar().getThemedContext();
+  mBlogSpinnerTitle=(TextView)findViewById(R.id.blog_spinner_title);
+  mBlogSpinner=(IcsSpinner)findViewById(R.id.blog_spinner);
+  String[] blogNames=getBlogNames();
+  if (blogNames != null) {
+    if (blogNames.length == 1) {
+      mBlogSpinner.setVisibility(View.GONE);
+      mBlogSpinnerTitle.setVisibility(View.GONE);
+    }
+ else {
+      ArrayAdapter<String> adapter=new ArrayAdapter<String>(themedContext,R.layout.sherlock_spinner_dropdown_item,blogNames);
+      mBlogSpinner.setAdapter(adapter);
+      mBlogSpinner.setOnItemSelectedListener(this);
+    }
+  }
+  String[] actions=new String[]{getString(R.string.share_action_post),getString(R.string.share_action_media)};
+  mActionSpinner=(IcsSpinner)findViewById(R.id.action_spinner);
+  ArrayAdapter<String> actionAdapter=new ArrayAdapter<String>(themedContext,R.layout.sherlock_spinner_dropdown_item,actions);
+  mActionSpinner.setAdapter(actionAdapter);
+  mActionSpinner.setOnItemSelectedListener(this);
+  getSupportActionBar().hide();
+}

@@ -1,0 +1,36 @@
+{
+  final String screenshotURL=cursor.getString(cursor.getColumnIndex("screenshotURL"));
+  final String name=cursor.getString(cursor.getColumnIndex("name"));
+  final NetworkImageView imageView=(NetworkImageView)view.findViewById(R.id.theme_grid_item_image);
+  final TextView nameView=(TextView)view.findViewById(R.id.theme_grid_item_name);
+  nameView.setText(name);
+  ImageView themeAttr=(ImageView)view.findViewById(R.id.theme_grid_attributes);
+  final int isPremiumTheme=cursor.getInt(cursor.getColumnIndex("isPremium"));
+  final int isCurrentTheme=cursor.getInt(cursor.getColumnIndex("isCurrent"));
+  if (isCurrentTheme != 0) {
+    themeAttr.setVisibility(View.VISIBLE);
+    themeAttr.setImageResource(R.drawable.theme_icon_tag_current);
+  }
+ else   if (isPremiumTheme != 0) {
+    themeAttr.setVisibility(View.VISIBLE);
+    themeAttr.setImageResource(R.drawable.theme_icon_tag_premium);
+  }
+ else {
+    themeAttr.setVisibility(View.GONE);
+  }
+  ViewHolder holder=(ViewHolder)imageView.getTag();
+  if (holder == null) {
+    holder=new ViewHolder();
+    holder.requestURL=screenshotURL;
+    imageView.setTag(holder);
+  }
+  if (!holder.requestURL.equals(screenshotURL)) {
+    imageView.setImageBitmap(null);
+    holder.requestURL=screenshotURL;
+  }
+  RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)imageView.getLayoutParams();
+  params.width=getGridWidth(context);
+  params.height=getGridHeight(context);
+  imageView.setImageUrl(screenshotURL + "?w=" + params.width,WordPress.imageLoader);
+  view.setLayoutParams(new GridView.LayoutParams(params.width,params.height + ((int)Utils.dpToPx(32))));
+}

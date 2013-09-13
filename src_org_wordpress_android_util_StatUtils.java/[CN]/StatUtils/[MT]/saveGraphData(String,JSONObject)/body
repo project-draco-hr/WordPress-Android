@@ -1,0 +1,33 @@
+{
+  try {
+    JSONArray data=stat.getJSONObject("visits").getJSONArray("data");
+    Uri uri=StatsContentProvider.STATS_BAR_CHART_DATA_URI;
+    Context context=WordPress.getContext();
+    int length=data.length();
+    ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
+    if (length > 0) {
+      ContentProviderOperation op=ContentProviderOperation.newDelete(uri).withSelection("blogId=? AND unit=?",new String[]{blogId,StatsBarChartUnit.DAY.name()}).build();
+      operations.add(op);
+    }
+    for (int i=0; i < length; i++) {
+      StatsBarChartData item=new StatsBarChartData(blogId,StatsBarChartUnit.DAY,data.getJSONArray(i));
+      ContentValues values=StatsBarChartDataTable.getContentValues(item);
+      if (values != null) {
+        ContentProviderOperation op=ContentProviderOperation.newInsert(uri).withValues(values).build();
+        operations.add(op);
+      }
+    }
+    ContentResolver resolver=context.getContentResolver();
+    resolver.applyBatch(StatsContentProvider.AUTHORITY,operations);
+    resolver.notifyChange(uri,null);
+  }
+ catch (  JSONException e) {
+    e.printStackTrace();
+  }
+catch (  RemoteException e) {
+    e.printStackTrace();
+  }
+catch (  OperationApplicationException e) {
+    e.printStackTrace();
+  }
+}

@@ -1,0 +1,12 @@
+{
+  Cursor cursor=getCursor();
+  cursor.moveToPosition(position);
+  int _id=cursor.getInt(cursor.getColumnIndex("_id"));
+  if (_id < 0) {
+    if (_id == Integer.MIN_VALUE)     return ViewTypes.PROGRESS.ordinal();
+ else     return ViewTypes.SPACER.ordinal();
+  }
+  String state=cursor.getString(cursor.getColumnIndex("uploadState"));
+  if (MediaUtils.isLocalFile(state))   return ViewTypes.LOCAL.ordinal();
+ else   return ViewTypes.NETWORK.ordinal();
+}

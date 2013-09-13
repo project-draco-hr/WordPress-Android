@@ -1,6 +1,9 @@
 {
-  if (!(WPActionBarActivity.this instanceof StatsActivity))   mShouldFinish=true;
-  Intent intent=new Intent(WPActionBarActivity.this,StatsActivity.class);
+  if (!isSelected())   mShouldFinish=true;
+  Intent intent;
+  if (!WordPress.currentBlog.isDotcomFlag())   intent=new Intent(WPActionBarActivity.this,OldStatsActivity.class);
+ else   if (Utils.isTablet())   intent=new Intent(WPActionBarActivity.this,StatsActivityTablet.class);
+ else   intent=new Intent(WPActionBarActivity.this,StatsActivity.class);
   intent.putExtra("id",WordPress.currentBlog.getId());
   intent.putExtra("isNew",true);
   intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

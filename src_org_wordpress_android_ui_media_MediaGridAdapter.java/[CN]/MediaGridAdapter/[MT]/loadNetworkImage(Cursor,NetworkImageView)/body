@@ -1,0 +1,21 @@
+{
+  String thumbnailURL=cursor.getString(cursor.getColumnIndex("thumbnailURL"));
+  if (thumbnailURL != null) {
+    Uri uri=Uri.parse(thumbnailURL);
+    String filepath=uri.getLastPathSegment();
+    int placeholderResId=MediaUtils.getPlaceholder(filepath);
+    imageView.setImageResource(0);
+    imageView.setErrorImageResId(placeholderResId);
+    imageView.setDefaultImageResId(placeholderResId);
+    if (MediaUtils.isValidImage(filepath)) {
+      imageView.setTag(thumbnailURL);
+      imageView.setImageUrl(thumbnailURL,WordPress.imageLoader);
+    }
+ else {
+      imageView.setImageResource(placeholderResId);
+    }
+  }
+ else {
+    imageView.setImageResource(0);
+  }
+}

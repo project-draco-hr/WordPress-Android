@@ -1,10 +1,13 @@
 {
   versionName=getVersionName();
   wpDB=new WordPressDB(this);
-  requestQueue=Volley.newRequestQueue(this);
+  wpStatsDB=new WordPressStatsDB(this);
+  mContext=this;
+  requestQueue=Volley.newRequestQueue(this,getHttpClientStack());
   int maxMemory=(int)(Runtime.getRuntime().maxMemory() / 1024);
   int cacheSize=maxMemory / 32;
   imageLoader=new ImageLoader(requestQueue,new BitmapLruCache(cacheSize));
+  localImageCache=new BitmapLruCache(cacheSize / 2);
   SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
   if (settings.getInt("wp_pref_last_activity",-1) >= 0)   shouldRestoreSelectedActivity=true;
   restClient=new WPRestClient(requestQueue,new OauthAuthenticator(),settings.getString(ACCESS_TOKEN_PREFERENCE,null));

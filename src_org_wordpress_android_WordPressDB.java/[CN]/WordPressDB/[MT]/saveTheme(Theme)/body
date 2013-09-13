@@ -1,0 +1,21 @@
+{
+  boolean returnValue=false;
+  ContentValues values=new ContentValues();
+  values.put("themeId",theme.getThemeId());
+  values.put("name",theme.getName());
+  values.put("description",theme.getDescription());
+  values.put("screenshotURL",theme.getScreenshotURL());
+  values.put("trendingRank",theme.getTrendingRank());
+  values.put("popularityRank",theme.getPopularityRank());
+  values.put("launchDate",theme.getLaunchDateMs());
+  values.put("previewURL",theme.getPreviewURL());
+  values.put("blogId",theme.getBlogId());
+  values.put("isCurrent",theme.isCurrent());
+  values.put("isPremium",theme.isPremium());
+  values.put("features",theme.getFeatures());
+synchronized (this) {
+    int result=db.update(THEMES_TABLE,values,"themeId=?",new String[]{theme.getThemeId()});
+    if (result == 0)     returnValue=db.insert(THEMES_TABLE,null,values) > 0;
+  }
+  return (returnValue);
+}

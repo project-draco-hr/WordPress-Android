@@ -1,0 +1,24 @@
+{
+  LayoutInflater inflater=(LayoutInflater)getActivity().getLayoutInflater();
+  View customView=inflater.inflate(R.layout.date_range_dialog,null);
+  final DatePicker dpStartDate=(DatePicker)customView.findViewById(R.id.dpStartDate);
+  final DatePicker dpEndDate=(DatePicker)customView.findViewById(R.id.dpEndDate);
+  AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+  builder.setView(customView);
+  builder.setTitle("Select start and end date");
+  builder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
+    @Override public void onClick(    DialogInterface dialog,    int which){
+      mStartYear=dpStartDate.getYear();
+      mStartMonth=dpStartDate.getMonth();
+      mStartDay=dpStartDate.getDayOfMonth();
+      mEndYear=dpEndDate.getYear();
+      mEndMonth=dpEndDate.getMonth();
+      mEndDay=dpEndDate.getDayOfMonth();
+      setDateFilter();
+      dialog.dismiss();
+    }
+  }
+);
+  mDatePickerDialog=builder.create();
+  mDatePickerDialog.show();
+}

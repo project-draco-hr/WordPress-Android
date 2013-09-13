@@ -1,0 +1,19 @@
+{
+  final String siteId=getBlogId();
+  WordPress.restClient.getCurrentTheme(siteId,new Listener(){
+    @Override public void onResponse(    JSONObject response){
+      try {
+        Theme theme=Theme.fromJSON(response);
+        WordPress.wpDB.setCurrentTheme(siteId,theme.getThemeId());
+        refreshViewPager();
+      }
+ catch (      JSONException e) {
+      }
+    }
+  }
+,new ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError response){
+    }
+  }
+);
+}

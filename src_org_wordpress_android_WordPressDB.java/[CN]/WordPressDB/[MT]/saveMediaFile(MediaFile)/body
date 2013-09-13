@@ -1,8 +1,7 @@
 {
-  boolean returnValue=false;
   ContentValues values=new ContentValues();
   values.put("postID",mf.getPostID());
-  values.put("filePath",mf.getFileName());
+  values.put("filePath",mf.getFilePath());
   values.put("fileName",mf.getFileName());
   values.put("title",mf.getTitle());
   values.put("description",mf.getDescription());
@@ -14,9 +13,24 @@
   values.put("featured",mf.isFeatured());
   values.put("isVideo",mf.isVideo());
   values.put("isFeaturedInPost",mf.isFeaturedInPost());
+  values.put("fileURL",mf.getFileURL());
+  values.put("thumbnailURL",mf.getThumbnailURL());
+  values.put("mediaId",mf.getMediaId());
+  values.put("blogId",mf.getBlogId());
+  values.put("date_created_gmt",mf.getDateCreatedGMT());
+  if (mf.getUploadState() != null)   values.put("uploadState",mf.getUploadState());
+ else   values.putNull("uploadState");
 synchronized (this) {
-    int result=db.update(MEDIA_TABLE,values,"postID=" + mf.getPostID() + " AND filePath='"+ mf.getFileName()+ "'",null);
-    if (result == 0)     returnValue=db.insert(MEDIA_TABLE,null,values) > 0;
+    int result=0;
+    boolean isMarkedForDelete=false;
+    if (mf.getMediaId() != null) {
+      Cursor cursor=db.rawQuery("SELECT uploadState FROM " + MEDIA_TABLE + " WHERE mediaId=?",new String[]{mf.getMediaId()});
+      if (cursor != null && cursor.moveToFirst()) {
+        isMarkedForDelete="delete".equals(cursor.getString(0));
+        cursor.close();
+      }
+      if (!isMarkedForDelete)       result=db.update(MEDIA_TABLE,values,"blogId=? AND mediaId=?",new String[]{mf.getBlogId(),mf.getMediaId()});
+    }
+    if (result == 0 && !isMarkedForDelete)     db.insert(MEDIA_TABLE,null,values);
   }
-  return (returnValue);
 }

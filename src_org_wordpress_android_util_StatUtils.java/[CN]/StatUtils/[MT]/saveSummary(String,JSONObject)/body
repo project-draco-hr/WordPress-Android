@@ -1,0 +1,19 @@
+{
+  try {
+    JSONObject statsObject=stat.getJSONObject("stats");
+    statsObject.put("date",getCurrentDate());
+    FileOutputStream fos=WordPress.getContext().openFileOutput(STAT_SUMMARY + blogId,Context.MODE_PRIVATE);
+    fos.write(statsObject.toString().getBytes());
+    fos.close();
+  }
+ catch (  FileNotFoundException e) {
+    e.printStackTrace();
+  }
+catch (  IOException e) {
+    e.printStackTrace();
+  }
+catch (  JSONException e) {
+    e.printStackTrace();
+  }
+  saveGraphData(blogId,stat);
+}

@@ -1,0 +1,14 @@
+{
+  if (WordPress.getCurrentBlog() == null)   return null;
+  String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+  Uri uri=getGroupUri();
+  if (id == LOADER_URI_GROUP_INDEX) {
+    return new CursorLoader(getActivity(),uri,null,"blogId=?",new String[]{blogId},null);
+  }
+ else {
+    uri=getChildrenUri();
+    String groupId=args.getString(StatsCursorLoaderCallback.BUNDLE_GROUP_ID);
+    long date=args.getLong(StatsCursorLoaderCallback.BUNDLE_DATE);
+    return new CursorLoader(getActivity(),uri,null,"blogId=? AND groupId=? AND date=?",new String[]{blogId,groupId,date + ""},null);
+  }
+}

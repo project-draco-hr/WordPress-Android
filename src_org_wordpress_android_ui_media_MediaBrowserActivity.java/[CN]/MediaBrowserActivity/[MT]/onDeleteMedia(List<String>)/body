@@ -1,0 +1,19 @@
+{
+  final String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+  if (mMediaItemFragment != null && mMediaItemFragment.isVisible()) {
+    getSupportFragmentManager().popBackStack();
+  }
+  WordPress.wpDB.setMediaFilesMarkedForDelete(blogId,ids);
+  if (mMediaEditFragment != null) {
+    String mediaId=mMediaEditFragment.getMediaId();
+    for (    String id : ids) {
+      if (id.equals(mediaId)) {
+        mMediaEditFragment.loadMedia(null);
+        break;
+      }
+    }
+  }
+  mMediaGridFragment.clearCheckedItems();
+  mMediaGridFragment.refreshMediaFromDB();
+  startMediaDeleteService();
+}

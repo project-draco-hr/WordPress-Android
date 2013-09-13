@@ -1,0 +1,21 @@
+{
+  int width=mContext.getResources().getDimensionPixelSize(R.dimen.media_grid_local_image_width);
+  BitmapWorkerTask task=new BitmapWorkerTask(null,width,width,new BitmapWorkerCallback(){
+    @Override public void onBitmapReady(    final String path,    ImageView imageView,    final Bitmap bitmap){
+      mHandler.post(new Runnable(){
+        @Override public void run(){
+          List<BitmapReadyCallback> callbacks=mFilePathToCallbackMap.get(path);
+          for (          BitmapReadyCallback callback : callbacks) {
+            callback.onBitmapReady(bitmap);
+          }
+          WordPress.localImageCache.put(path,bitmap);
+          callbacks.clear();
+          mFilePathToCallbackMap.remove(path);
+        }
+      }
+);
+    }
+  }
+);
+  task.execute(filePath);
+}

@@ -1,0 +1,43 @@
+{
+  mParentView=inflater.inflate(R.layout.theme_details_fragment,container,false);
+  mNameView=(TextView)mParentView.findViewById(R.id.theme_details_fragment_name);
+  mImageView=(NetworkImageView)mParentView.findViewById(R.id.theme_details_fragment_image);
+  mDescriptionView=(TextView)mParentView.findViewById(R.id.theme_details_fragment_details_description);
+  mCurrentThemeView=(View)mParentView.findViewById(R.id.theme_details_fragment_current_theme_text);
+  mPremiumThemeView=(View)mParentView.findViewById(R.id.theme_details_fragment_premium_theme_text);
+  mLivePreviewButton=(Button)mParentView.findViewById(R.id.theme_details_fragment_preview_button);
+  mActivateThemeButton=(Button)mParentView.findViewById(R.id.theme_details_fragment_activate_button);
+  mActivatingProgressView=(View)mParentView.findViewById(R.id.theme_details_fragment_activating_progress);
+  mActivateThemeContainer=(FrameLayout)mParentView.findViewById(R.id.theme_details_fragment_activate_button_container);
+  mFeaturesContainer=(LinearLayout)mParentView.findViewById(R.id.theme_details_fragment_features_container);
+  mLeftContainer=(View)mParentView.findViewById(R.id.theme_details_fragment_left_container);
+  mViewSiteButton=(Button)mParentView.findViewById(R.id.theme_details_fragment_view_site_button);
+  mViewSiteButton.setOnClickListener(new OnClickListener(){
+    @Override public void onClick(    View v){
+      Intent intent=new Intent(getActivity(),ViewSiteActivity.class);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+      startActivity(intent);
+    }
+  }
+);
+  mLivePreviewButton.setOnClickListener(new OnClickListener(){
+    @Override public void onClick(    View v){
+      if (mPreviewURL != null)       mCallback.onLivePreviewClicked(getThemeId(),mPreviewURL);
+    }
+  }
+);
+  mActivateThemeButton.setOnClickListener(new OnClickListener(){
+    @Override public void onClick(    View v){
+      String themeId=getThemeId();
+      if (themeId != null) {
+        mCallback.onActivateThemeClicked(themeId,ThemeDetailsFragment.this);
+        mActivateThemeButton.setEnabled(false);
+        mActivateThemeButton.setText("");
+        mActivatingProgressView.setVisibility(View.VISIBLE);
+      }
+    }
+  }
+);
+  loadTheme(getThemeId());
+  return mParentView;
+}

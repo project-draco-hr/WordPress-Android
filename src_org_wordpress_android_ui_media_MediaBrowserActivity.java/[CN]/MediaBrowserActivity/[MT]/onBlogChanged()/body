@@ -1,0 +1,17 @@
+{
+  super.onBlogChanged();
+  if (mMediaEditFragment != null) {
+    mMediaEditFragment.loadMedia(null);
+    if (!mMediaEditFragment.isInLayout() && mMediaEditFragment.isVisible())     getSupportFragmentManager().popBackStack();
+  }
+  getSupportFragmentManager().executePendingTransactions();
+  if (mMediaItemFragment != null && mMediaItemFragment.isVisible())   getSupportFragmentManager().popBackStack();
+  if (mMediaGridFragment != null) {
+    mMediaGridFragment.reset();
+    if (!mMediaGridFragment.hasRetrievedAllMediaFromServer()) {
+      mMediaGridFragment.refreshMediaFromServer(0,false);
+      startAnimatingRefreshButton();
+    }
+  }
+  getFeatureSet();
+}

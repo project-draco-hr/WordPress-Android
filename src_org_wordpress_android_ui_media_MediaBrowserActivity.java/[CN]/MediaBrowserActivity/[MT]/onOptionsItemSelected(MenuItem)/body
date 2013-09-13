@@ -1,0 +1,63 @@
+{
+  int itemId=item.getItemId();
+  if (itemId == android.R.id.home) {
+    FragmentManager fm=getSupportFragmentManager();
+    if (fm.getBackStackEntryCount() > 0) {
+      fm.popBackStack();
+      setupBaseLayout();
+      return true;
+    }
+  }
+ else   if (itemId == R.id.menu_new_media) {
+    View view=findViewById(R.id.menu_new_media);
+    int y_offset=getResources().getDimensionPixelSize(R.dimen.action_bar_spinner_y_offset);
+    int[] loc=new int[2];
+    view.getLocationOnScreen(loc);
+    mAddMediaPopup.showAtLocation(view,Gravity.TOP | Gravity.LEFT,loc[0],loc[1] + view.getHeight() + y_offset);
+    return true;
+  }
+ else   if (itemId == R.id.menu_search) {
+    stopAnimatingRefreshButton(mRefreshMenuItem);
+    mSearchMenuItem=item;
+    mSearchMenuItem.setOnActionExpandListener(this);
+    mSearchMenuItem.expandActionView();
+    mSearchView=(SearchView)item.getActionView();
+    mSearchView.setOnQueryTextListener(this);
+    if (!TextUtils.isEmpty(mQuery)) {
+      onQueryTextSubmit(mQuery);
+      mSearchView.setQuery(mQuery,true);
+    }
+    return true;
+  }
+ else   if (itemId == R.id.menu_refresh) {
+    if (mMediaGridFragment != null) {
+      mMediaGridFragment.refreshMediaFromServer(0,false);
+      startAnimatingRefreshButton();
+    }
+    return true;
+  }
+ else   if (itemId == R.id.menu_edit_media) {
+    String mediaId=mMediaItemFragment.getMediaId();
+    FragmentManager fm=getSupportFragmentManager();
+    if (mMediaEditFragment == null || !mMediaEditFragment.isInLayout()) {
+      FragmentTransaction ft=fm.beginTransaction();
+      if (mMediaItemFragment.isVisible())       ft.hide(mMediaItemFragment);
+      mMediaEditFragment=MediaEditFragment.newInstance(mediaId);
+      ft.add(R.id.media_browser_container,mMediaEditFragment,MediaEditFragment.TAG);
+      ft.addToBackStack(null);
+      ft.commit();
+      mMenuDrawer.setDrawerIndicatorEnabled(false);
+    }
+ else {
+      mMediaEditFragment.loadMedia(mediaId);
+    }
+    if (mSearchView != null)     mSearchView.clearFocus();
+  }
+ else   if (itemId == R.id.menu_delete) {
+    if (mMediaEditFragment != null && mMediaEditFragment.isInLayout()) {
+      String mediaId=mMediaEditFragment.getMediaId();
+      launchConfirmDeleteDialog(mediaId);
+    }
+  }
+  return super.onOptionsItemSelected(item);
+}

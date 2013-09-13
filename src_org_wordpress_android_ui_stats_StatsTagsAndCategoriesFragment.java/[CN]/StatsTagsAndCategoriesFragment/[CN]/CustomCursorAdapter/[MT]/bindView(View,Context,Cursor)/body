@@ -1,0 +1,19 @@
+{
+  String entry=cursor.getString(cursor.getColumnIndex(StatsTagsAndCategoriesTable.Columns.TOPIC));
+  int total=cursor.getInt(cursor.getColumnIndex(StatsTagsAndCategoriesTable.Columns.VIEWS));
+  String type=cursor.getString(cursor.getColumnIndex(StatsTagsAndCategoriesTable.Columns.TYPE));
+  TextView entryTextView=(TextView)view.findViewById(R.id.stats_list_cell_entry);
+  entryTextView.setText(entry);
+  if (type.equals(Type.CATEGORY.getLabel())) {
+    entryTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.stats_icon_categories,0,0,0);
+  }
+ else   if (type.equals(Type.TAG.getLabel())) {
+    entryTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.stats_icon_tags,0,0,0);
+  }
+ else {
+    entryTextView.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+  }
+  DecimalFormat formatter=(DecimalFormat)DecimalFormat.getInstance(Locale.getDefault());
+  TextView totalsTextView=(TextView)view.findViewById(R.id.stats_list_cell_total);
+  totalsTextView.setText(formatter.format(total));
+}

@@ -1,0 +1,29 @@
+{
+  StatsVideoSummary stat=null;
+  try {
+    FileInputStream fis=WordPress.getContext().openFileInput(STAT_VIDEO_SUMMARY + blogId);
+    StringBuffer fileContent=new StringBuffer("");
+    byte[] buffer=new byte[1024];
+    while (fis.read(buffer) != -1) {
+      fileContent.append(new String(buffer));
+    }
+    JSONObject object=new JSONObject(fileContent.toString());
+    String timeframe=object.getString("timeframe");
+    int plays=object.getInt("plays");
+    int impressions=object.getInt("impressions");
+    int minutes=object.getInt("minutes");
+    String bandwidth=object.getString("bandwidth");
+    String date=object.getString("date");
+    stat=new StatsVideoSummary(timeframe,plays,impressions,minutes,bandwidth,date);
+  }
+ catch (  FileNotFoundException e) {
+    e.printStackTrace();
+  }
+catch (  IOException e) {
+    e.printStackTrace();
+  }
+catch (  JSONException e) {
+    e.printStackTrace();
+  }
+  return stat;
+}

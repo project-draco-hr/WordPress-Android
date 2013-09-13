@@ -1,0 +1,21 @@
+{
+  List<Object> apiArgs=new ArrayList<Object>();
+  apiArgs.add(WordPress.getCurrentBlog());
+  GetMediaItemTask task=new GetMediaItemTask(Integer.valueOf(id),new GetMediaItemTask.Callback(){
+    @Override public void onSuccess(    MediaFile mediaFile){
+      String blogId=mediaFile.getBlogId();
+      String mediaId=mediaFile.getMediaId();
+      WordPress.wpDB.updateMediaUploadState(blogId,mediaId,"uploaded");
+      mUploadInProgress=false;
+      sendUpdateBroadcast(id);
+      mHandler.post(mFetchQueueTask);
+    }
+    @Override public void onFailure(){
+      mUploadInProgress=false;
+      sendUpdateBroadcast(id);
+      mHandler.post(mFetchQueueTask);
+    }
+  }
+);
+  task.execute(apiArgs);
+}
