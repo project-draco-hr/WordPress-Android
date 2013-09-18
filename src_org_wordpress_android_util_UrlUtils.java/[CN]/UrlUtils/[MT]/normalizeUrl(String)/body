@@ -1,0 +1,14 @@
+{
+  if (urlString == null)   return null;
+  if (urlString.startsWith("http") && !urlString.contains("..")) {
+    if (urlString.endsWith("/"))     return urlString.substring(0,urlString.length() - 1);
+    return urlString;
+  }
+  try {
+    URI uri=URI.create(urlString);
+    return uri.normalize().toString();
+  }
+ catch (  IllegalArgumentException e) {
+    return urlString;
+  }
+}
