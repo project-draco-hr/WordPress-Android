@@ -1,0 +1,16 @@
+{
+  if (volleyError == null || volleyError.networkResponse == null || volleyError.networkResponse.data == null || volleyError.networkResponse.headers == null)   return null;
+  String contentType=volleyError.networkResponse.headers.get("Content-Type");
+  if (contentType == null || !contentType.equals("application/json"))   return null;
+  try {
+    String response=new String(volleyError.networkResponse.data,"UTF-8");
+    JSONObject json=new JSONObject(response);
+    return json;
+  }
+ catch (  UnsupportedEncodingException e) {
+    return null;
+  }
+catch (  JSONException e) {
+    return null;
+  }
+}
