@@ -1,0 +1,79 @@
+{
+  if (json == null)   throw new IllegalArgumentException("null json post");
+  ReaderPost post=new ReaderPost();
+  post.postId=json.optLong("ID");
+  post.blogId=json.optLong("site_ID");
+  post.pseudoId=JSONUtil.getString(json,"pseudo_ID");
+  post.excerpt=HtmlUtils.fastStripHtml(JSONUtil.getString(json,"excerpt"));
+  post.text=JSONUtil.getString(json,"content");
+  post.title=JSONUtil.getStringDecoded(json,"title");
+  post.url=JSONUtil.getString(json,"URL");
+  post.blogUrl=JSONUtil.getString(json,"site_URL");
+  post.numReplies=json.optInt("comment_count");
+  post.numLikes=json.optInt("like_count");
+  post.isLikedByCurrentUser=JSONUtil.getBool(json,"i_like");
+  post.isFollowedByCurrentUser=JSONUtil.getBool(json,"is_following");
+  post.isRebloggedByCurrentUser=JSONUtil.getBool(json,"is_reblogged");
+  post.isCommentsOpen=JSONUtil.getBool(json,"comments_open");
+  post.isExternal=JSONUtil.getBool(json,"is_external");
+  post.isPrivate=JSONUtil.getBool(json,"site_is_private");
+  post.published=JSONUtil.getString(json,"date");
+  JSONObject jsonAuthor=json.optJSONObject("author");
+  if (jsonAuthor != null) {
+    post.authorName=JSONUtil.getString(jsonAuthor,"name");
+    post.postAvatar=JSONUtil.getString(jsonAuthor,"avatar_URL");
+  }
+  final String dateForTimestamp;
+  JSONObject jsonEditorial=json.optJSONObject("editorial");
+  if (jsonEditorial != null) {
+    post.blogId=jsonEditorial.optLong("blog_id");
+    post.blogName=JSONUtil.getStringDecoded(jsonEditorial,"blog_name");
+    post.featuredImage=getImageUrlFromFeaturedImageUrl(JSONUtil.getString(jsonEditorial,"image"));
+    dateForTimestamp=JSONUtil.getString(jsonEditorial,"displayed_on");
+  }
+ else {
+    post.featuredImage=JSONUtil.getString(json,"featured_image");
+    post.blogName=JSONUtil.getStringDecoded(json,"site_name");
+    String likeDate=JSONUtil.getString(json,"date_liked");
+    if (!TextUtils.isEmpty(likeDate)) {
+      dateForTimestamp=likeDate;
+    }
+ else {
+      dateForTimestamp=post.published;
+    }
+  }
+  post.timestamp=DateTimeUtils.iso8601ToTimestamp(dateForTimestamp);
+  JSONObject jsonAttachments=json.optJSONObject("attachments");
+  if (jsonAttachments != null) {
+    Iterator<String> it=jsonAttachments.keys();
+    if (it != null && it.hasNext()) {
+      JSONObject jsonFirstAttachment=jsonAttachments.optJSONObject(it.next());
+      if (jsonFirstAttachment != null) {
+        String thumbnail=JSONUtil.getString(jsonFirstAttachment,"videopress_thumbnail");
+        if (!TextUtils.isEmpty(thumbnail))         post.featuredImage=thumbnail;
+        JSONObject jsonVideoPress=jsonFirstAttachment.optJSONObject("videopress_files");
+        if (jsonVideoPress != null) {
+          JSONObject jsonStdVideo=jsonVideoPress.optJSONObject("std");
+          if (jsonStdVideo != null)           post.featuredVideo=JSONUtil.getString(jsonStdVideo,"url");
+        }
+      }
+    }
+  }
+  if (!post.hasFeaturedImage()) {
+    JSONObject jsonMedia=json.optJSONObject("featured_media");
+    if (jsonMedia != null) {
+      String mediaUrl=JSONUtil.getString(jsonMedia,"uri");
+      String type=JSONUtil.getString(jsonMedia,"type");
+      boolean isVideo=(type != null && type.equals("video"));
+      if (isVideo) {
+        post.featuredVideo=mediaUrl;
+      }
+ else {
+        post.featuredImage=mediaUrl;
+      }
+    }
+    if (!post.hasFeaturedImage() && post.isWP())     post.featuredImage=findFeaturedImage(post.text);
+  }
+  if (!post.hasTitle() && post.hasExcerpt())   post.title=extractTitle(post.excerpt,50);
+  return post;
+}
