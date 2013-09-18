@@ -1,0 +1,33 @@
+{
+  if (text == null || !text.contains("<img "))   return null;
+  final String className;
+  if (text.contains("size-full")) {
+    className="size-full";
+  }
+ else   if (text.contains("size-large")) {
+    className="size-large";
+  }
+ else   if (text.contains("size-medium")) {
+    className="size-medium";
+  }
+ else {
+    return null;
+  }
+  boolean usesSingleQuotes=text.contains("src='");
+  int imgStart=text.indexOf("<img ");
+  while (imgStart > -1) {
+    int imgEnd=text.indexOf(">",imgStart);
+    if (imgEnd == -1)     return null;
+    String img=text.substring(imgStart,imgEnd + 1);
+    if (img.contains(className)) {
+      int srcStart=img.indexOf(usesSingleQuotes ? "src='" : "src=\"");
+      if (srcStart == -1)       return null;
+      int srcEnd=img.indexOf(usesSingleQuotes ? "'" : "\"",srcStart + 5);
+      if (srcEnd == -1)       return null;
+      ReaderLog.d("found featured image");
+      return img.substring(srcStart + 5,srcEnd);
+    }
+    imgStart=text.indexOf("<img ",imgEnd);
+  }
+  return null;
+}

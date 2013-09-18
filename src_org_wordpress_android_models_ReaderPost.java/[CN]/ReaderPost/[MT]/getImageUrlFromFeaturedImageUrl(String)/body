@@ -1,0 +1,16 @@
+{
+  if (TextUtils.isEmpty(featuredImageUrl))   return null;
+  if (featuredImageUrl.contains("imgpress")) {
+    String actualImageUrl=Uri.parse(featuredImageUrl).getQueryParameter("url");
+    if (actualImageUrl == null)     return featuredImageUrl;
+    if (actualImageUrl.contains("url=")) {
+      return Uri.parse(actualImageUrl).getQueryParameter("url");
+    }
+ else {
+      return actualImageUrl;
+    }
+  }
+  int pos=featuredImageUrl.lastIndexOf("?");
+  if (pos == -1)   return featuredImageUrl;
+  return featuredImageUrl.substring(0,pos);
+}

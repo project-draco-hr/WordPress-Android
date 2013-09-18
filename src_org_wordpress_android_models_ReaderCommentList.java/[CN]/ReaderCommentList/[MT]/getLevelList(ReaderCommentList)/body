@@ -1,0 +1,43 @@
+{
+  if (thisList == null)   return new ReaderCommentList();
+  boolean hasChildComments=false;
+  for (  ReaderComment comment : thisList) {
+    if (comment.parentId != 0) {
+      hasChildComments=true;
+      break;
+    }
+  }
+  if (!hasChildComments)   return thisList;
+  ReaderCommentList result=new ReaderCommentList();
+  for (  ReaderComment comment : thisList) {
+    comment.level=0;
+    if (comment.parentId == 0)     result.add(comment);
+  }
+  boolean done;
+  do {
+    done=true;
+    for (    ReaderComment comment : thisList) {
+      if (comment.parentId != 0 && comment.level == 0) {
+        int parentIndex=result.indexOfCommentId(comment.parentId);
+        if (parentIndex > -1) {
+          comment.level=result.get(parentIndex).level + 1;
+          int commentIndex=parentIndex + 1;
+          while (commentIndex < result.size()) {
+            if (result.get(commentIndex).level != comment.level || result.get(commentIndex).parentId != comment.parentId)             break;
+            commentIndex++;
+          }
+          result.add(commentIndex,comment);
+          done=false;
+        }
+      }
+    }
+  }
+ while (!done);
+  for (  ReaderComment comment : thisList) {
+    if (comment.level == 0 && comment.parentId != 0) {
+      comment.level=1;
+      result.add(comment);
+    }
+  }
+  return result;
+}
