@@ -1,0 +1,18 @@
+{
+  final LayoutParams lp=(LayoutParams)v.getLayoutParams();
+  if (ViewCompat.hasTransientState(v)) {
+    if (mTransientStateViews == null) {
+      mTransientStateViews=new SparseArray<View>();
+    }
+    mTransientStateViews.put(lp.position,v);
+    return;
+  }
+  final int childCount=getChildCount();
+  if (childCount > mMaxScrap) {
+    mMaxScrap=childCount;
+  }
+  ArrayList<View> scrap=mScrapViews[lp.viewType];
+  if (scrap.size() < mMaxScrap) {
+    scrap.add(v);
+  }
+}

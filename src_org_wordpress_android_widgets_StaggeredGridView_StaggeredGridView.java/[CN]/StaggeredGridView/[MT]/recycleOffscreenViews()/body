@@ -1,0 +1,61 @@
+{
+  final int height=getHeight();
+  final int clearAbove=-mItemMargin;
+  final int clearBelow=height + mItemMargin;
+  for (int i=getChildCount() - 1; i >= 0; i--) {
+    final View child=getChildAt(i);
+    if (child.getTop() <= clearBelow) {
+      break;
+    }
+    if (mInLayout) {
+      removeViewsInLayout(i,1);
+    }
+ else {
+      removeViewAt(i);
+    }
+    mRecycler.addScrap(child);
+  }
+  while (getChildCount() > 0) {
+    final View child=getChildAt(0);
+    if (child.getBottom() >= clearAbove) {
+      break;
+    }
+    if (mInLayout) {
+      removeViewsInLayout(0,1);
+    }
+ else {
+      removeViewAt(0);
+    }
+    mRecycler.addScrap(child);
+    mFirstPosition++;
+  }
+  final int childCount=getChildCount();
+  if (childCount > 0) {
+    Arrays.fill(mItemTops,Integer.MAX_VALUE);
+    Arrays.fill(mItemBottoms,Integer.MIN_VALUE);
+    for (int i=0; i < childCount; i++) {
+      final View child=getChildAt(i);
+      final LayoutParams lp=(LayoutParams)child.getLayoutParams();
+      final int top=child.getTop() - mItemMargin;
+      final int bottom=child.getBottom();
+      final LayoutRecord rec=mLayoutRecords.get(mFirstPosition + i);
+      final int colEnd=Math.min(mColCount,lp.column + lp.span);
+      for (int col=lp.column; col < colEnd; col++) {
+        final int colTop=top;
+        final int colBottom=bottom;
+        if (colTop < mItemTops[col]) {
+          mItemTops[col]=colTop;
+        }
+        if (colBottom > mItemBottoms[col]) {
+          mItemBottoms[col]=colBottom;
+        }
+      }
+    }
+    for (int col=0; col < mColCount; col++) {
+      if (mItemTops[col] == Integer.MAX_VALUE) {
+        mItemTops[col]=0;
+        mItemBottoms[col]=0;
+      }
+    }
+  }
+}

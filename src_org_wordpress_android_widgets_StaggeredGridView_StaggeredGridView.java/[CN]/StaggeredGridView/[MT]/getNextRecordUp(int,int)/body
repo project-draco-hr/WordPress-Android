@@ -1,0 +1,32 @@
+{
+  LayoutRecord rec=mLayoutRecords.get(position);
+  if (rec == null) {
+    rec=new LayoutRecord();
+    rec.span=span;
+    mLayoutRecords.put(position,rec);
+  }
+ else   if (rec.span != span) {
+    throw new IllegalStateException("Invalid LayoutRecord! Record had span=" + rec.span + " but caller requested span="+ span+ " for position="+ position);
+  }
+  int targetCol=-1;
+  int bottomMost=Integer.MIN_VALUE;
+  final int colCount=mColCount;
+  for (int i=colCount - span; i >= 0; i--) {
+    int top=Integer.MAX_VALUE;
+    for (int j=i; j < i + span; j++) {
+      final int singleTop=mItemTops[j];
+      if (singleTop < top) {
+        top=singleTop;
+      }
+    }
+    if (top > bottomMost) {
+      bottomMost=top;
+      targetCol=i;
+    }
+  }
+  rec.column=targetCol;
+  for (int i=0; i < span; i++) {
+    rec.setMarginBelow(i,mItemTops[i + targetCol] - bottomMost);
+  }
+  return rec;
+}

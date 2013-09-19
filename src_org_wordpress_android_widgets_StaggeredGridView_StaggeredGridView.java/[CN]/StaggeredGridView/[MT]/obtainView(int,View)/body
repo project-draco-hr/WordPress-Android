@@ -1,0 +1,30 @@
+{
+  View view=mRecycler.getTransientStateView(position);
+  if (view != null) {
+    return view;
+  }
+  if (position >= mAdapter.getCount()) {
+    view=null;
+    return null;
+  }
+  final int optType=optScrap != null ? ((LayoutParams)optScrap.getLayoutParams()).viewType : -1;
+  final int positionViewType=mAdapter.getItemViewType(position);
+  final View scrap=optType == positionViewType ? optScrap : mRecycler.getScrapView(positionViewType);
+  view=mAdapter.getView(position,scrap,this);
+  if (view != scrap && scrap != null) {
+    mRecycler.addScrap(scrap);
+  }
+  ViewGroup.LayoutParams lp=view.getLayoutParams();
+  if (view.getParent() != this) {
+    if (lp == null) {
+      lp=generateDefaultLayoutParams();
+    }
+ else     if (!checkLayoutParams(lp)) {
+      lp=generateLayoutParams(lp);
+    }
+  }
+  final LayoutParams sglp=(LayoutParams)lp;
+  sglp.position=position;
+  sglp.viewType=positionViewType;
+  return view;
+}

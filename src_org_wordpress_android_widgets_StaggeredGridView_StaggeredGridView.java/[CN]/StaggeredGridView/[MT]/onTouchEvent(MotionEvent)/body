@@ -1,0 +1,152 @@
+{
+  mVelocityTracker.addMovement(ev);
+  final int action=ev.getAction() & MotionEventCompat.ACTION_MASK;
+  int motionPosition=pointToPosition((int)ev.getX(),(int)ev.getY());
+switch (action) {
+case MotionEvent.ACTION_DOWN:
+    mVelocityTracker.clear();
+  mScroller.abortAnimation();
+mLastTouchY=ev.getY();
+mLastTouchX=ev.getX();
+motionPosition=pointToPosition((int)mLastTouchX,(int)mLastTouchY);
+mActivePointerId=MotionEventCompat.getPointerId(ev,0);
+mTouchRemainderY=0;
+if (mTouchMode != TOUCH_MODE_FLINGING && !mDataChanged && motionPosition >= 0 && getAdapter().isEnabled(motionPosition)) {
+mTouchMode=TOUCH_MODE_DOWN;
+mBeginClick=true;
+if (mPendingCheckForTap == null) {
+mPendingCheckForTap=new CheckForTap();
+}
+postDelayed(mPendingCheckForTap,ViewConfiguration.getTapTimeout());
+}
+mMotionPosition=motionPosition;
+invalidate();
+break;
+case MotionEvent.ACTION_MOVE:
+final int index=MotionEventCompat.findPointerIndex(ev,mActivePointerId);
+if (index < 0) {
+Log.e(TAG,"onInterceptTouchEvent could not find pointer with id " + mActivePointerId + " - did StaggeredGridView receive an inconsistent "+ "event stream?");
+return false;
+}
+final float y=MotionEventCompat.getY(ev,index);
+final float dy=y - mLastTouchY + mTouchRemainderY;
+final int deltaY=(int)dy;
+mTouchRemainderY=dy - deltaY;
+if (Math.abs(dy) > mTouchSlop) {
+mTouchMode=TOUCH_MODE_DRAGGING;
+}
+if (mTouchMode == TOUCH_MODE_DRAGGING) {
+mLastTouchY=y;
+if (!trackMotionScroll(deltaY,true)) {
+mVelocityTracker.clear();
+}
+}
+updateSelectorState();
+break;
+case MotionEvent.ACTION_CANCEL:
+mTouchMode=TOUCH_MODE_IDLE;
+updateSelectorState();
+setPressed(false);
+View motionView=this.getChildAt(mMotionPosition - mFirstPosition);
+if (motionView != null) {
+motionView.setPressed(false);
+}
+final Handler handler=getHandler();
+if (handler != null) {
+handler.removeCallbacks(mPendingCheckForLongPress);
+}
+if (mTopEdge != null) {
+mTopEdge.onRelease();
+mBottomEdge.onRelease();
+}
+mTouchMode=TOUCH_MODE_IDLE;
+break;
+case MotionEvent.ACTION_UP:
+{
+mVelocityTracker.computeCurrentVelocity(1000,mMaximumVelocity);
+final float velocity=VelocityTrackerCompat.getYVelocity(mVelocityTracker,mActivePointerId);
+final int prevTouchMode=mTouchMode;
+if (Math.abs(velocity) > mFlingVelocity) {
+mTouchMode=TOUCH_MODE_FLINGING;
+mScroller.fling(0,0,0,(int)velocity,0,0,Integer.MIN_VALUE,Integer.MAX_VALUE);
+mLastTouchY=0;
+invalidate();
+}
+ else {
+mTouchMode=TOUCH_MODE_IDLE;
+}
+if (!mDataChanged && mAdapter.isEnabled(motionPosition)) {
+mTouchMode=TOUCH_MODE_TAP;
+}
+ else {
+mTouchMode=TOUCH_MODE_REST;
+}
+switch (prevTouchMode) {
+case TOUCH_MODE_DOWN:
+case TOUCH_MODE_TAP:
+case TOUCH_MODE_DONE_WAITING:
+final View child=getChildAt(motionPosition - mFirstPosition);
+final float x=ev.getX();
+final boolean inList=x > getPaddingLeft() && x < getWidth() - getPaddingRight();
+if (child != null && !child.hasFocusable() && inList) {
+if (mTouchMode != TOUCH_MODE_DOWN) {
+child.setPressed(false);
+}
+if (mPerformClick == null) {
+invalidate();
+mPerformClick=new PerformClick();
+}
+final PerformClick performClick=mPerformClick;
+performClick.mClickMotionPosition=motionPosition;
+performClick.rememberWindowAttachCount();
+if (mTouchMode == TOUCH_MODE_DOWN || mTouchMode == TOUCH_MODE_TAP) {
+final Handler handlerTouch=getHandler();
+if (handlerTouch != null) {
+handlerTouch.removeCallbacks(mTouchMode == TOUCH_MODE_DOWN ? mPendingCheckForTap : mPendingCheckForLongPress);
+}
+if (!mDataChanged && mAdapter.isEnabled(motionPosition)) {
+mTouchMode=TOUCH_MODE_TAP;
+layoutChildren(mDataChanged);
+child.setPressed(true);
+positionSelector(mMotionPosition,child);
+setPressed(true);
+if (mSelector != null) {
+Drawable d=mSelector.getCurrent();
+if (d != null && d instanceof TransitionDrawable) {
+((TransitionDrawable)d).resetTransition();
+}
+}
+if (mTouchModeReset != null) {
+removeCallbacks(mTouchModeReset);
+}
+mTouchModeReset=new Runnable(){
+@Override public void run(){
+mTouchMode=TOUCH_MODE_REST;
+child.setPressed(false);
+setPressed(false);
+if (!mDataChanged) {
+performClick.run();
+}
+}
+}
+;
+postDelayed(mTouchModeReset,ViewConfiguration.getPressedStateDuration());
+}
+ else {
+mTouchMode=TOUCH_MODE_REST;
+}
+return true;
+}
+ else if (!mDataChanged && mAdapter.isEnabled(motionPosition)) {
+performClick.run();
+}
+}
+mTouchMode=TOUCH_MODE_REST;
+}
+mBeginClick=false;
+updateSelectorState();
+}
+break;
+}
+return true;
+}

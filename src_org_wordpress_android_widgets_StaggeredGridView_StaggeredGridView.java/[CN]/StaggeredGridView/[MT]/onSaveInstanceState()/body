@@ -1,0 +1,31 @@
+{
+  final Parcelable superState=super.onSaveInstanceState();
+  final SavedState ss=new SavedState(superState);
+  final int position=mFirstPosition;
+  ss.position=mFirstPosition;
+  if (position >= 0 && mAdapter != null && position < mAdapter.getCount()) {
+    ss.firstId=mAdapter.getItemId(position);
+  }
+  if (getChildCount() > 0) {
+    int topOffsets[]=new int[this.mColCount];
+    if (this.mColWidth > 0)     for (int i=0; i < mColCount; i++) {
+      if (getChildAt(i) != null) {
+        final View child=getChildAt(i);
+        final int left=child.getLeft();
+        int col=0;
+        Log.w("mColWidth",mColWidth + " " + left);
+        while (left > col * (this.mColWidth + mItemMargin * 2) + getPaddingLeft()) {
+          col++;
+        }
+        topOffsets[col]=getChildAt(i).getTop() - mItemMargin - getPaddingTop();
+      }
+    }
+    ss.topOffsets=topOffsets;
+    ArrayList<ColMap> convert=new ArrayList<ColMap>();
+    for (    ArrayList<Integer> cols : mColMappings) {
+      convert.add(new ColMap(cols));
+    }
+    ss.mapping=convert;
+  }
+  return ss;
+}

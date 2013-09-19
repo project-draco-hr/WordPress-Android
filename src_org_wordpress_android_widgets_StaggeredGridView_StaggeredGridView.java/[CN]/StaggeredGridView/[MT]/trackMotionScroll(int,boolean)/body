@@ -1,0 +1,70 @@
+{
+  final boolean contentFits=contentFits();
+  final int allowOverhang=Math.abs(deltaY);
+  final int overScrolledBy;
+  int movedBy;
+  if (!contentFits) {
+    final int overhang;
+    final boolean up;
+    mPopulating=true;
+    if (deltaY > 0) {
+      overhang=fillUp(mFirstPosition - 1,allowOverhang) + mItemMargin;
+      up=true;
+    }
+ else {
+      overhang=fillDown(mFirstPosition + getChildCount(),allowOverhang) + mItemMargin;
+      up=false;
+    }
+    movedBy=Math.min(overhang,allowOverhang);
+    if (movedBy < 0) {
+      movedBy=0;
+    }
+    if (movedBy == 0) {
+      if (up) {
+        mGetToTop=true;
+        lazyload=false;
+      }
+ else {
+        mGetToTop=false;
+        lazyload=true;
+        if (!loadlock) {
+          loadlock=true;
+        }
+      }
+    }
+ else {
+      mGetToTop=false;
+      lazyload=true;
+    }
+    offsetChildren(up ? movedBy : -movedBy);
+    if (getChildCount() > MAX_CHILD_COUNT) {
+      recycleOffscreenViews();
+    }
+    mPopulating=false;
+    overScrolledBy=allowOverhang - overhang;
+  }
+ else {
+    overScrolledBy=allowOverhang;
+    movedBy=0;
+  }
+  if (allowOverScroll) {
+    final int overScrollMode=ViewCompat.getOverScrollMode(this);
+    if (overScrollMode == ViewCompat.OVER_SCROLL_ALWAYS || (overScrollMode == ViewCompat.OVER_SCROLL_IF_CONTENT_SCROLLS && !contentFits)) {
+      if (overScrolledBy > 0) {
+        EdgeEffectCompat edge=deltaY > 0 ? mTopEdge : mBottomEdge;
+        edge.onPull((float)Math.abs(deltaY) / getHeight());
+        invalidate();
+      }
+    }
+  }
+  if (mSelectorPosition != INVALID_POSITION) {
+    final int childIndex=mSelectorPosition - mFirstPosition;
+    if (childIndex >= 0 && childIndex < getChildCount()) {
+      positionSelector(INVALID_POSITION,getChildAt(childIndex));
+    }
+  }
+ else {
+    mSelectorRect.setEmpty();
+  }
+  return deltaY == 0 || movedBy != 0;
+}

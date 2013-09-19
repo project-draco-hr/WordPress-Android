@@ -1,0 +1,44 @@
+{
+  if (getWidth() == 0 || getHeight() == 0) {
+    return;
+  }
+  if (mColCount == COLUMN_COUNT_AUTO) {
+    final int colCount=getWidth() / mMinColWidth;
+    if (colCount != mColCount) {
+      mColCount=colCount;
+    }
+  }
+  final int colCount=mColCount;
+  if (mColMappings.size() != mColCount) {
+    mColMappings.clear();
+    for (int i=0; i < mColCount; i++) {
+      mColMappings.add(new ArrayList<Integer>());
+    }
+  }
+  if (mItemTops == null || mItemTops.length != colCount) {
+    mItemTops=new int[colCount];
+    mItemBottoms=new int[colCount];
+    mLayoutRecords.clear();
+    if (mInLayout) {
+      removeAllViewsInLayout();
+    }
+ else {
+      removeAllViews();
+    }
+  }
+  final int top=getPaddingTop();
+  for (int i=0; i < colCount; i++) {
+    final int offset=top + ((mRestoreOffsets != null) ? Math.min(mRestoreOffsets[i],0) : 0);
+    mItemTops[i]=(offset == 0) ? mItemTops[i] : offset;
+    mItemBottoms[i]=(offset == 0) ? mItemBottoms[i] : offset;
+  }
+  mPopulating=true;
+  layoutChildren(mDataChanged);
+  fillDown(mFirstPosition + getChildCount(),0);
+  fillUp(mFirstPosition - 1,0);
+  mPopulating=false;
+  mDataChanged=false;
+  if (clearData) {
+    if (mRestoreOffsets != null)     Arrays.fill(mRestoreOffsets,0);
+  }
+}

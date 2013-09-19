@@ -1,0 +1,114 @@
+{
+  final int paddingLeft=getPaddingLeft();
+  final int paddingRight=getPaddingRight();
+  final int itemMargin=mItemMargin;
+  final int colWidth=(getWidth() - paddingLeft - paddingRight- itemMargin * (mColCount - 1)) / mColCount;
+  mColWidth=colWidth;
+  int rebuildLayoutRecordsBefore=-1;
+  int rebuildLayoutRecordsAfter=-1;
+  Arrays.fill(mItemBottoms,Integer.MIN_VALUE);
+  final int childCount=getChildCount();
+  int amountRemoved=0;
+  for (int i=0; i < childCount; i++) {
+    View child=getChildAt(i);
+    LayoutParams lp=(LayoutParams)child.getLayoutParams();
+    final int col=lp.column;
+    final int position=mFirstPosition + i;
+    final boolean needsLayout=queryAdapter || child.isLayoutRequested();
+    if (queryAdapter) {
+      View newView=obtainView(position,child);
+      if (newView == null) {
+        removeViewAt(i);
+        if (i - 1 >= 0)         invalidateLayoutRecordsAfterPosition(i - 1);
+        amountRemoved++;
+        continue;
+      }
+ else       if (newView != child) {
+        removeViewAt(i);
+        addView(newView,i);
+        child=newView;
+      }
+      lp=(LayoutParams)child.getLayoutParams();
+    }
+    final int span=Math.min(mColCount,lp.span);
+    final int widthSize=colWidth * span + itemMargin * (span - 1);
+    if (needsLayout) {
+      final int widthSpec=MeasureSpec.makeMeasureSpec(widthSize,MeasureSpec.EXACTLY);
+      final int heightSpec;
+      if (lp.height == LayoutParams.WRAP_CONTENT) {
+        heightSpec=MeasureSpec.makeMeasureSpec(0,MeasureSpec.UNSPECIFIED);
+      }
+ else {
+        heightSpec=MeasureSpec.makeMeasureSpec(lp.height,MeasureSpec.EXACTLY);
+      }
+      child.measure(widthSpec,heightSpec);
+    }
+    int childTop=mItemBottoms[col] > Integer.MIN_VALUE ? mItemBottoms[col] + mItemMargin : child.getTop();
+    if (span > 1) {
+      int lowest=childTop;
+      for (int j=0; j < mColCount; j++) {
+        final int bottom=mItemBottoms[j] + mItemMargin;
+        if (bottom > lowest) {
+          lowest=bottom;
+        }
+      }
+      childTop=lowest;
+    }
+    final int childHeight=child.getMeasuredHeight();
+    final int childBottom=childTop + childHeight;
+    final int childLeft=paddingLeft + col * (colWidth + itemMargin);
+    final int childRight=childLeft + child.getMeasuredWidth();
+    child.layout(childLeft,childTop,childRight,childBottom);
+    final int colEnd=Math.min(mColCount,col + lp.span);
+    for (int j=col; j < colEnd; j++) {
+      mItemBottoms[j]=childBottom;
+    }
+    final LayoutRecord rec=mLayoutRecords.get(position);
+    if (rec != null && rec.height != childHeight) {
+      rec.height=childHeight;
+      rebuildLayoutRecordsBefore=position;
+    }
+    if (rec != null && rec.span != span) {
+      rec.span=span;
+      rebuildLayoutRecordsAfter=position;
+    }
+  }
+  for (int i=0; i < mColCount; i++) {
+    if (mItemBottoms[i] == Integer.MIN_VALUE) {
+      mItemBottoms[i]=mItemTops[i];
+    }
+  }
+  if (rebuildLayoutRecordsBefore >= 0 || rebuildLayoutRecordsAfter >= 0) {
+    if (rebuildLayoutRecordsBefore >= 0) {
+      invalidateLayoutRecordsBeforePosition(rebuildLayoutRecordsBefore);
+    }
+    if (rebuildLayoutRecordsAfter >= 0) {
+      invalidateLayoutRecordsAfterPosition(rebuildLayoutRecordsAfter);
+    }
+    for (int i=0; i < (childCount - amountRemoved); i++) {
+      final int position=mFirstPosition + i;
+      final View child=getChildAt(i);
+      final LayoutParams lp=(LayoutParams)child.getLayoutParams();
+      LayoutRecord rec=mLayoutRecords.get(position);
+      if (rec == null) {
+        rec=new LayoutRecord();
+        mLayoutRecords.put(position,rec);
+      }
+      rec.column=lp.column;
+      rec.height=child.getHeight();
+      rec.id=lp.id;
+      rec.span=Math.min(mColCount,lp.span);
+    }
+  }
+  if (this.mSelectorPosition != INVALID_POSITION) {
+    View child=getChildAt(mMotionPosition - mFirstPosition);
+    if (child != null)     positionSelector(mMotionPosition,child);
+  }
+ else   if (mTouchMode > TOUCH_MODE_DOWN) {
+    View child=getChildAt(mMotionPosition - mFirstPosition);
+    if (child != null)     positionSelector(mMotionPosition,child);
+  }
+ else {
+    mSelectorRect.setEmpty();
+  }
+}

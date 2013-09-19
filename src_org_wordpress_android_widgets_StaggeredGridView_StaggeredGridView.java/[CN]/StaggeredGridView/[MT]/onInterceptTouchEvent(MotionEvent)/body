@@ -1,0 +1,34 @@
+{
+  mVelocityTracker.addMovement(ev);
+  final int action=ev.getAction() & MotionEventCompat.ACTION_MASK;
+switch (action) {
+case MotionEvent.ACTION_DOWN:
+    mVelocityTracker.clear();
+  mScroller.abortAnimation();
+mLastTouchY=ev.getY();
+mActivePointerId=MotionEventCompat.getPointerId(ev,0);
+mTouchRemainderY=0;
+if (mTouchMode == TOUCH_MODE_FLINGING) {
+mTouchMode=TOUCH_MODE_DRAGGING;
+return true;
+}
+break;
+case MotionEvent.ACTION_MOVE:
+{
+final int index=MotionEventCompat.findPointerIndex(ev,mActivePointerId);
+if (index < 0) {
+Log.e(TAG,"onInterceptTouchEvent could not find pointer with id " + mActivePointerId + " - did StaggeredGridView receive an inconsistent "+ "event stream?");
+return false;
+}
+final float y=MotionEventCompat.getY(ev,index);
+final float dy=y - mLastTouchY + mTouchRemainderY;
+final int deltaY=(int)dy;
+mTouchRemainderY=dy - deltaY;
+if (Math.abs(dy) > mTouchSlop) {
+mTouchMode=TOUCH_MODE_DRAGGING;
+return true;
+}
+}
+}
+return false;
+}
