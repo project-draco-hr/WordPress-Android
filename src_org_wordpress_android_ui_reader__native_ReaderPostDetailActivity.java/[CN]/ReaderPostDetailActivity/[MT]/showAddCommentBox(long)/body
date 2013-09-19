@@ -1,0 +1,38 @@
+{
+  if (mIsAddCommentBoxShowing)   return;
+  if (mIsSubmittingComment)   return;
+  final EditText editComment=(EditText)findViewById(R.id.edit_comment);
+  final ViewGroup layoutCommentBox=(ViewGroup)findViewById(R.id.layout_comment_box);
+  final TextView btnComment=(TextView)findViewById(R.id.btn_comment);
+  editComment.setHint(replyToCommentId == 0 ? R.string.reader_hint_comment_on_post : R.string.reader_hint_comment_on_comment);
+  btnComment.setSelected(true);
+  ReaderAniUtils.flyIn(layoutCommentBox);
+  editComment.requestFocus();
+  editComment.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+    @Override public boolean onEditorAction(    TextView v,    int actionId,    KeyEvent event){
+      if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEND)       submitComment(replyToCommentId);
+      return false;
+    }
+  }
+);
+  final ImageView imgPostComment=(ImageView)findViewById(R.id.image_post_comment);
+  imgPostComment.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      submitComment(replyToCommentId);
+    }
+  }
+);
+  InputMethodManager imm=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+  imm.showSoftInput(editComment,InputMethodManager.SHOW_IMPLICIT);
+  if (replyToCommentId != 0) {
+    getCommentAdapter().setHighlightCommentId(replyToCommentId,false);
+    getListView().postDelayed(new Runnable(){
+      @Override public void run(){
+        scrollToCommentId(replyToCommentId);
+      }
+    }
+,300);
+  }
+  mReplyToCommentId=replyToCommentId;
+  mIsAddCommentBoxShowing=true;
+}

@@ -1,0 +1,46 @@
+{
+  final ReaderUser user=mUsers.get(position);
+  final UserViewHolder holder;
+  if (convertView == null) {
+    convertView=mInflater.inflate(R.layout.listitem_reader_user,parent,false);
+    holder=new UserViewHolder();
+    holder.txtName=(TextView)convertView.findViewById(R.id.text_name);
+    holder.txtUrl=(TextView)convertView.findViewById(R.id.text_url);
+    holder.txtFollow=(TextView)convertView.findViewById(R.id.text_follow);
+    holder.imgAvatar=(WPNetworkImageView)convertView.findViewById(R.id.image_avatar);
+    convertView.setTag(holder);
+  }
+ else {
+    holder=(UserViewHolder)convertView.getTag();
+  }
+  holder.txtName.setText(user.getDisplayName());
+  if (user.hasUrl()) {
+    holder.txtUrl.setVisibility(View.VISIBLE);
+    holder.txtUrl.setText(UrlUtils.getDomainFromUrl(user.getUrl()));
+    convertView.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ReaderActivityLauncher.openUrl(v.getContext(),user.getUrl());
+      }
+    }
+);
+    holder.txtFollow.setVisibility(View.VISIBLE);
+    if (holder.txtFollow.isSelected() != user.isFollowed) {
+      holder.txtFollow.setSelected(user.isFollowed);
+      holder.txtFollow.setText(user.isFollowed ? R.string.reader_btn_unfollow : R.string.reader_btn_follow);
+    }
+    holder.txtFollow.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ReaderAniUtils.zoomAction(holder.txtFollow);
+        toggleFollowUser(user,holder.txtFollow);
+      }
+    }
+);
+  }
+ else {
+    holder.txtUrl.setVisibility(View.GONE);
+    holder.txtFollow.setVisibility(View.GONE);
+    convertView.setOnClickListener(null);
+  }
+  holder.imgAvatar.setImageUrl(user.getAvatarUrl(),WPNetworkImageView.ImageType.AVATAR);
+  return convertView;
+}

@@ -1,0 +1,16 @@
+{
+switch (mListType) {
+case LIKE_POST:
+    tmpUsers=ReaderUserTable.getUsersWhoLikePost(mPost,Constants.READER_MAX_USERS_TO_DISPLAY);
+  break;
+default :
+break;
+}
+if (tmpUsers == null) return false;
+ReaderUrlList followedBlogUrls=ReaderBlogTable.getFollowedBlogUrls();
+for (ReaderUser user : tmpUsers) {
+user.isFollowed=user.hasUrl() && followedBlogUrls.contains(user.getUrl());
+user.setAvatarUrl(PhotonUtils.fixAvatar(user.getAvatarUrl(),mAvatarSz));
+}
+return true;
+}

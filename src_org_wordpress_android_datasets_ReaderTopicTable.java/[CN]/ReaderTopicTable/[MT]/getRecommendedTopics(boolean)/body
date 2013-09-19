@@ -1,0 +1,22 @@
+{
+  Cursor c;
+  if (excludeSubscribed) {
+    c=ReaderDatabase.getReadableDb().rawQuery("SELECT * FROM tbl_recommended_topics WHERE topic_name NOT IN (SELECT topic_name FROM tbl_topics) ORDER BY topic_name",null);
+  }
+ else {
+    c=ReaderDatabase.getReadableDb().rawQuery("SELECT * FROM tbl_recommended_topics ORDER BY topic_name",null);
+  }
+  try {
+    ReaderTopicList topics=new ReaderTopicList();
+    if (c.moveToFirst()) {
+      do {
+        topics.add(getTopicFromCursor(c));
+      }
+ while (c.moveToNext());
+    }
+    return topics;
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+}

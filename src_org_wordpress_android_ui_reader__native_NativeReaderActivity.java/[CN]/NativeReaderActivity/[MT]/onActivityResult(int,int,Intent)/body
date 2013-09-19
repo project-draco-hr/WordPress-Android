@@ -1,0 +1,21 @@
+{
+  super.onActivityResult(requestCode,resultCode,data);
+  boolean isResultOK=(resultCode == Activity.RESULT_OK);
+  ReaderPostListFragment readerFragment=getPostListFragment();
+switch (requestCode) {
+case Constants.INTENT_READER_TOPICS:
+    if (isResultOK && readerFragment != null && data != null) {
+      if (data.getBooleanExtra(ReaderTopicActivity.KEY_TOPICS_CHANGED,false))       readerFragment.refreshTopics();
+      String lastAddedTopic=data.getStringExtra(ReaderTopicActivity.KEY_LAST_ADDED_TOPIC);
+      if (!TextUtils.isEmpty(lastAddedTopic))       readerFragment.setCurrentTopic(lastAddedTopic);
+    }
+  break;
+case Constants.INTENT_READER_POST_DETAIL:
+if (isResultOK && readerFragment != null && data != null) {
+  long blogId=data.getLongExtra(ReaderPostDetailActivity.ARG_BLOG_ID,0);
+  long postId=data.getLongExtra(ReaderPostDetailActivity.ARG_POST_ID,0);
+  readerFragment.reloadPost(ReaderPostTable.getPost(blogId,postId));
+}
+break;
+}
+}

@@ -1,0 +1,88 @@
+{
+  final ReaderPost post=(ReaderPost)getItem(position);
+  final PostViewHolder holder;
+  if (convertView == null) {
+    convertView=mInflater.inflate(R.layout.listitem_reader_post_excerpt,parent,false);
+    holder=new PostViewHolder();
+    holder.txtTitle=(TextView)convertView.findViewById(R.id.text_title);
+    holder.txtText=(TextView)convertView.findViewById(R.id.text_excerpt);
+    holder.txtSource=(TextView)convertView.findViewById(R.id.text_source);
+    holder.txtLikeButton=(TextView)convertView.findViewById(R.id.text_like_button);
+    holder.txtReblogButton=(TextView)convertView.findViewById(R.id.text_reblog_button);
+    holder.txtCounts=(TextView)convertView.findViewById(R.id.text_counts);
+    holder.imgFeatured=(WPNetworkImageView)convertView.findViewById(R.id.image_featured);
+    holder.imgAvatar=(WPNetworkImageView)convertView.findViewById(R.id.image_avatar);
+    holder.layoutActions=(ViewGroup)convertView.findViewById(R.id.layout_actions);
+    convertView.setTag(holder);
+  }
+ else {
+    holder=(PostViewHolder)convertView.getTag();
+  }
+  if (post.hasTitle()) {
+    holder.txtTitle.setText(post.getTitle());
+  }
+ else {
+    holder.txtTitle.setText(R.string.reader_untitled_post);
+  }
+  if (post.hasExcerpt()) {
+    holder.txtText.setVisibility(View.VISIBLE);
+    holder.txtText.setText(post.getExcerpt());
+  }
+ else {
+    holder.txtText.setVisibility(View.GONE);
+  }
+  holder.txtSource.setText(post.getSource());
+  final boolean isFeaturedImageVisible;
+  if (post.hasFeaturedImage()) {
+    holder.imgFeatured.setImageUrl(post.getFeaturedImageForDisplay(mPhotonWidth,mPhotonHeight),WPNetworkImageView.ImageType.PHOTO);
+    holder.imgFeatured.setVisibility(View.VISIBLE);
+    isFeaturedImageVisible=true;
+  }
+ else   if (post.hasFeaturedVideo()) {
+    holder.imgFeatured.setVideoUrl(post.postId,post.getFeaturedVideo());
+    holder.imgFeatured.setVisibility(View.VISIBLE);
+    isFeaturedImageVisible=true;
+  }
+ else {
+    holder.imgFeatured.setVisibility(View.GONE);
+    isFeaturedImageVisible=false;
+  }
+  int topMargin=(isFeaturedImageVisible && post.hasPostAvatar() ? mNegativeOffset : mDefaultOffset);
+  RelativeLayout.LayoutParams layoutParams=(RelativeLayout.LayoutParams)holder.imgAvatar.getLayoutParams();
+  if (layoutParams.topMargin != topMargin)   layoutParams.topMargin=topMargin;
+  if (post.hasPostAvatar()) {
+    holder.imgAvatar.setImageUrl(post.getPostAvatarForDisplay(mAvatarSz),WPNetworkImageView.ImageType.AVATAR);
+    holder.imgAvatar.setVisibility(View.VISIBLE);
+  }
+ else {
+    holder.imgAvatar.setVisibility(View.GONE);
+  }
+  if (post.isWP()) {
+    final int pos=position;
+    showLikeStatus(holder.txtLikeButton,post.isLikedByCurrentUser);
+    holder.txtLikeButton.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        toggleLike(holder,pos,post);
+      }
+    }
+);
+    showReblogStatus(holder.txtReblogButton,post.isRebloggedByCurrentUser);
+    if (!post.isRebloggedByCurrentUser) {
+      holder.txtReblogButton.setOnClickListener(new View.OnClickListener(){
+        @Override public void onClick(        View v){
+          reblogPost(holder.txtReblogButton,pos,post);
+        }
+      }
+);
+    }
+    holder.layoutActions.setVisibility(View.VISIBLE);
+  }
+ else {
+    holder.layoutActions.setVisibility(View.GONE);
+  }
+  showCounts(holder.txtCounts,post);
+  if (mEnableRowAnimation && position > mPreviousGetViewPosition)   animateRow(convertView);
+  mPreviousGetViewPosition=position;
+  if (mCanRequestMorePosts && mDataRequestedListener != null && (position >= getCount() - 1))   mDataRequestedListener.onRequestData(ReaderActions.RequestDataAction.LOAD_OLDER);
+  return convertView;
+}

@@ -1,0 +1,24 @@
+{
+  if (post == null)   return;
+  SQLiteDatabase db=ReaderDatabase.getWritableDb();
+  db.beginTransaction();
+  SQLiteStatement stmt=db.compileStatement("INSERT INTO tbl_post_likes (blog_id, post_id, user_id) VALUES (?1,?2,?3)");
+  try {
+    String[] args={Long.toString(post.blogId),Long.toString(post.postId)};
+    db.delete("tbl_post_likes","blog_id=? AND post_id=?",args);
+    if (userIds != null) {
+      for (      Long userId : userIds) {
+        stmt.bindLong(1,post.blogId);
+        stmt.bindLong(2,post.postId);
+        stmt.bindLong(3,userId);
+        stmt.execute();
+        stmt.clearBindings();
+      }
+    }
+    db.setTransactionSuccessful();
+  }
+  finally {
+    db.endTransaction();
+    SqlUtils.closeStatement(stmt);
+  }
+}

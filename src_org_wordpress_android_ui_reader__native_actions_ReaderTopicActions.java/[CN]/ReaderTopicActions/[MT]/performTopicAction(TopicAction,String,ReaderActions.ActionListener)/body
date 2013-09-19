@@ -1,0 +1,58 @@
+{
+  if (TextUtils.isEmpty(topicName))   return false;
+  final ReaderTopic originalTopic;
+  final String path;
+  final String topicNameForApi=sanitizeTitle(topicName);
+switch (action) {
+case DELETE:
+    originalTopic=ReaderTopicTable.getTopic(topicName);
+  if (originalTopic == null)   return false;
+ReaderTopicTable.deleteTopic(topicName);
+ReaderPostTable.deletePostsInTopic(topicName);
+path="read/topics/" + topicNameForApi + "/mine/delete";
+break;
+case ADD:
+originalTopic=null;
+ReaderTopic newTopic=new ReaderTopic();
+newTopic.setTopicName(topicName);
+newTopic.topicType=ReaderTopicType.SUBSCRIBED;
+newTopic.setEndpoint("/read/topics/" + topicNameForApi + "/posts");
+ReaderTopicTable.addOrUpdateTopic(newTopic);
+path="read/topics/" + topicNameForApi + "/mine/new";
+break;
+default :
+return false;
+}
+com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+@Override public void onResponse(JSONObject jsonObject){
+ReaderLog.i("topic action " + action.name() + " succeeded");
+if (actionListener != null) actionListener.onActionResult(true);
+}
+}
+;
+RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+@Override public void onErrorResponse(VolleyError volleyError){
+String error=VolleyUtils.errStringFromVolleyError(volleyError);
+boolean isSuccess=(action == TopicAction.ADD && error.equals("already_subscribed")) || (action == TopicAction.DELETE && error.equals("not_subscribed"));
+if (isSuccess) {
+ReaderLog.w("topic action " + action.name() + " succeeded with error "+ error);
+if (actionListener != null) actionListener.onActionResult(true);
+return;
+}
+ReaderLog.w("topic action " + action.name() + " failed");
+ReaderLog.e(volleyError);
+switch (action) {
+case DELETE:
+ReaderTopicTable.addOrUpdateTopic(originalTopic);
+break;
+case ADD:
+ReaderTopicTable.deleteTopic(topicName);
+break;
+}
+if (actionListener != null) actionListener.onActionResult(false);
+}
+}
+;
+WordPress.restClient.post(path,listener,errorListener);
+return true;
+}

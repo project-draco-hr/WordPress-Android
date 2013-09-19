@@ -1,0 +1,22 @@
+{
+  SQLiteDatabase db=getWritableDatabase();
+  db.beginTransaction();
+  try {
+    int numPostsDeleted=ReaderPostTable.purge(db);
+    if (numPostsDeleted > 0) {
+      ReaderLog.i(numPostsDeleted + " posts purged");
+      int numCommentsDeleted=ReaderCommentTable.purge(db);
+      if (numCommentsDeleted > 0)       ReaderLog.i(numCommentsDeleted + " comments purged");
+      int numLikesDeleted=ReaderLikeTable.purge(db);
+      if (numLikesDeleted > 0)       ReaderLog.i(numLikesDeleted + " likes purged");
+      int numThumbsPurged=ReaderThumbnailTable.purge(db);
+      if (numThumbsPurged > 0)       ReaderLog.i(numThumbsPurged + " thumbnails purged");
+      int numTopicsPurged=ReaderTopicTable.purge(db);
+      if (numTopicsPurged > 0)       ReaderLog.i(numTopicsPurged + " topics purged");
+    }
+    db.setTransactionSuccessful();
+  }
+  finally {
+    db.endTransaction();
+  }
+}

@@ -1,0 +1,29 @@
+{
+  if (TextUtils.isEmpty(topicName))   return;
+  showMessageBar(action,topicName);
+switch (action) {
+case ADD:
+    if (ReaderTopicActions.performTopicAction(ReaderTopicActions.TopicAction.ADD,topicName,null)) {
+      ReaderActions.DataLoadedListener dataListener=new ReaderActions.DataLoadedListener(){
+        @Override public void onDataLoaded(        boolean isEmpty){
+          if (mIsShowingFollowedTopics) {
+            int index=getTopicAdapter().indexOfTopicName(topicName);
+            if (index > -1)             getListView().smoothScrollToPosition(index);
+          }
+        }
+      }
+;
+      getTopicAdapter().refreshTopics(dataListener);
+      mTopicsChanged=true;
+      mLastAddedTopicName=topicName;
+    }
+  break;
+case DELETE:
+if (ReaderTopicActions.performTopicAction(ReaderTopicActions.TopicAction.DELETE,topicName,null)) {
+  getTopicAdapter().refreshTopics();
+  if (mLastAddedTopicName != null && mLastAddedTopicName.equals(topicName))   mLastAddedTopicName=null;
+  mTopicsChanged=true;
+}
+break;
+}
+}

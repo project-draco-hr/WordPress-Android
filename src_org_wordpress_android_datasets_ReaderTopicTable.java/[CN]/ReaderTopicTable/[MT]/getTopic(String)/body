@@ -1,0 +1,11 @@
+{
+  if (TextUtils.isEmpty(topicName))   return null;
+  Cursor c=ReaderDatabase.getReadableDb().rawQuery("SELECT * FROM tbl_topics WHERE topic_name=? LIMIT 1",new String[]{topicName});
+  try {
+    if (!c.moveToFirst())     return null;
+    return getTopicFromCursor(c);
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+}

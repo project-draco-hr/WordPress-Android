@@ -1,0 +1,6 @@
+{
+  if (TextUtils.isEmpty(topicName))   return 0;
+  int numDeleted=ReaderDatabase.getWritableDb().delete("tbl_post_topics","topic_name=?",new String[]{topicName});
+  if (numDeleted > 0)   ReaderDatabase.getWritableDb().delete("tbl_posts","post_id NOT IN (SELECT DISTINCT post_id FROM tbl_post_topics)",null);
+  return numDeleted;
+}

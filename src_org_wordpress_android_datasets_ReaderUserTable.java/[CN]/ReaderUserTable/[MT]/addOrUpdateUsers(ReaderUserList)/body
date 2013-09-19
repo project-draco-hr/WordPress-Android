@@ -1,0 +1,23 @@
+{
+  if (users == null || users.size() == 0)   return;
+  SQLiteDatabase db=ReaderDatabase.getWritableDb();
+  db.beginTransaction();
+  SQLiteStatement stmt=db.compileStatement("INSERT OR REPLACE INTO tbl_users (" + COLUMN_NAMES + ") VALUES (?1,?2,?3,?4,?5,?6)");
+  try {
+    for (    ReaderUser user : users) {
+      stmt.bindLong(1,user.userId);
+      stmt.bindString(2,user.getUserName());
+      stmt.bindString(3,user.getDisplayName());
+      stmt.bindString(4,user.getUrl());
+      stmt.bindString(5,user.getProfileUrl());
+      stmt.bindString(6,user.getAvatarUrl());
+      stmt.execute();
+      stmt.clearBindings();
+    }
+    db.setTransactionSuccessful();
+  }
+  finally {
+    db.endTransaction();
+    SqlUtils.closeStatement(stmt);
+  }
+}

@@ -1,0 +1,41 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.activity_reader_topics);
+  if (savedInstanceState != null) {
+    mTopicsChanged=savedInstanceState.getBoolean(KEY_TOPICS_CHANGED);
+    mLastAddedTopicName=savedInstanceState.getString(KEY_LAST_ADDED_TOPIC);
+    mAlreadyUpdatedTopicList=savedInstanceState.getBoolean(KEY_TOPIC_LIST_UPDATED);
+    mIsShowingFollowedTopics=savedInstanceState.getBoolean(KEY_SHOWING_FOLLOWED,true);
+  }
+  mTxtTitle=(TextView)findViewById(R.id.text_title);
+  mTxtTitle.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      toggleTopics();
+    }
+  }
+);
+  mTxtMessageBar=(TextView)findViewById(R.id.text_message_bar);
+  mLayoutAddTopic=(ViewGroup)findViewById(R.id.layout_add_topic);
+  mEditAddTopic=(EditText)findViewById(R.id.edit_add);
+  mEditAddTopic.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+    @Override public boolean onEditorAction(    TextView v,    int actionId,    KeyEvent event){
+      if (actionId == EditorInfo.IME_ACTION_DONE)       addCurrentTopic();
+      return false;
+    }
+  }
+);
+  final ImageButton btnAddTopic=(ImageButton)findViewById(R.id.btn_add);
+  btnAddTopic.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      addCurrentTopic();
+    }
+  }
+);
+  updateTitle();
+  getListView().setAdapter(getTopicAdapter());
+  getTopicAdapter().setTopicType(mIsShowingFollowedTopics ? ReaderTopicType.SUBSCRIBED : ReaderTopicType.RECOMMENDED);
+  if (!mAlreadyUpdatedTopicList) {
+    updateTopicList();
+    mAlreadyUpdatedTopicList=true;
+  }
+}

@@ -1,0 +1,19 @@
+{
+  ReaderTopicList topics=new ReaderTopicList();
+  if (jsonObject == null)   return topics;
+  JSONObject jsonTopics=jsonObject.optJSONObject(name);
+  if (jsonTopics == null)   return topics;
+  Iterator<String> it=jsonTopics.keys();
+  while (it.hasNext()) {
+    String internalName=it.next();
+    JSONObject jsonTopic=jsonTopics.optJSONObject(internalName);
+    if (jsonTopic != null) {
+      ReaderTopic topic=new ReaderTopic();
+      topic.topicType=topicType;
+      topic.setTopicName(JSONUtil.getStringDecoded(jsonTopic,"title"));
+      topic.setEndpoint(JSONUtil.getString(jsonTopic,"URL"));
+      topics.add(topic);
+    }
+  }
+  return topics;
+}

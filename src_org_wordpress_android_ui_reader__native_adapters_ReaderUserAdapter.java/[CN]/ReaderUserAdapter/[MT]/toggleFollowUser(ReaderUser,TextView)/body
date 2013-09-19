@@ -1,0 +1,16 @@
+{
+  if (user == null || !user.hasUrl())   return;
+  boolean isAskingToFollow=!user.isFollowed;
+  ReaderBlogActions.BlogAction action=(isAskingToFollow ? ReaderBlogActions.BlogAction.FOLLOW : ReaderBlogActions.BlogAction.UNFOLLOW);
+  if (!ReaderBlogActions.performBlogAction(action,user.getUrl()))   return;
+  if (isAskingToFollow) {
+    user.isFollowed=true;
+  }
+ else {
+    user.isFollowed=false;
+  }
+  if (txtFollow != null) {
+    txtFollow.setText(isAskingToFollow ? R.string.reader_btn_unfollow : R.string.reader_btn_follow);
+    txtFollow.setSelected(isAskingToFollow);
+  }
+}

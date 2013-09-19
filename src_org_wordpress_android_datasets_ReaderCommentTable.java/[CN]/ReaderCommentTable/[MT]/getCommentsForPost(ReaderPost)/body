@@ -1,0 +1,19 @@
+{
+  if (post == null)   return new ReaderCommentList();
+  String[] args={Long.toString(post.blogId),Long.toString(post.postId)};
+  Cursor c=ReaderDatabase.getReadableDb().rawQuery("SELECT * FROM tbl_comments WHERE blog_id=? AND post_id=? ORDER BY timestamp",args);
+  try {
+    ReaderCommentList comments=new ReaderCommentList();
+    if (c.moveToFirst()) {
+      resetColumnIndexes(c);
+      do {
+        comments.add(getCommentFromCursor(c));
+      }
+ while (c.moveToNext());
+    }
+    return comments;
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+}

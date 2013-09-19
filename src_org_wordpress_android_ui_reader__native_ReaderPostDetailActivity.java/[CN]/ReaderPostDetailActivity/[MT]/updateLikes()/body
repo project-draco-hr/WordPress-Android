@@ -1,0 +1,13 @@
+{
+  if (mPost == null || !mPost.isWP())   return;
+  ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
+    @Override public void onUpdateResult(    ReaderActions.UpdateResult result){
+      if (result == ReaderActions.UpdateResult.CHANGED) {
+        mPost=ReaderPostTable.getPost(mBlogId,mPostId);
+        refreshLikes();
+      }
+    }
+  }
+;
+  ReaderPostActions.updateLikesForPost(mPost,resultListener);
+}

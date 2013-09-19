@@ -1,0 +1,106 @@
+{
+  mIsPostTaskRunning=false;
+  if (!result) {
+    txtTitle.setText(R.string.reader_title_err_unable_to_load_post);
+    txtSource.setVisibility(View.GONE);
+    imgAvatar.setImageResource(R.drawable.ic_error);
+    return;
+  }
+  if (mPost.numLikes > 0 && mLayoutLikes.getVisibility() == View.GONE)   mLayoutLikes.setVisibility(View.INVISIBLE);
+  if (mPost.hasTitle()) {
+    txtTitle.setText(mPost.getTitle());
+  }
+ else {
+    txtTitle.setText(R.string.reader_untitled_post);
+  }
+  layoutTitle.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      ReaderActivityLauncher.openUrl(ReaderPostDetailActivity.this,mPost.getUrl());
+    }
+  }
+);
+  txtSource.setText(mPost.getSource());
+  if (mPost.hasPostAvatar()) {
+    int avatarSz=getResources().getDimensionPixelSize(R.dimen.reader_avatar_sz_medium);
+    imgAvatar.setImageUrl(mPost.getPostAvatarForDisplay(avatarSz),WPNetworkImageView.ImageType.AVATAR);
+    imgAvatar.setVisibility(View.VISIBLE);
+  }
+ else {
+    imgAvatar.setVisibility(View.GONE);
+  }
+  btnReblog.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
+  btnReblog.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View view){
+      doPostAction(btnReblog,ReaderPostActions.PostAction.REBLOG,mPost);
+    }
+  }
+);
+  if (mPost.isWP() && mPost.isCommentsOpen) {
+    btnComment.setVisibility(View.VISIBLE);
+    btnComment.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        toggleShowAddCommentBox();
+      }
+    }
+);
+  }
+ else {
+    btnComment.setVisibility(View.GONE);
+  }
+  webView.getSettings().setJavaScriptEnabled(false);
+  webView.getSettings().setUserAgentString(Constants.USER_AGENT);
+  webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
+  webView.setWebViewClient(new WebViewClient(){
+    @Override public void onPageFinished(    WebView view,    String url){
+      if (webView.getVisibility() != View.VISIBLE)       webView.setVisibility(View.VISIBLE);
+    }
+    @Override public boolean shouldOverrideUrlLoading(    WebView view,    String url){
+      if (view.getVisibility() == View.VISIBLE) {
+        ReaderActivityLauncher.openUrl(ReaderPostDetailActivity.this,url);
+        return true;
+      }
+ else {
+        return false;
+      }
+    }
+  }
+);
+  new Handler().postDelayed(new Runnable(){
+    @Override public void run(){
+      if (webView.getVisibility() != View.VISIBLE) {
+        webView.setVisibility(View.VISIBLE);
+        ReaderLog.w("forced webView to appear before page finished");
+      }
+    }
+  }
+,2500);
+  webView.setOnTouchListener(new View.OnTouchListener(){
+    public boolean onTouch(    View v,    MotionEvent event){
+      if (event.getAction() == MotionEvent.ACTION_UP) {
+        HitTestResult hr=((WebView)v).getHitTestResult();
+        if (hr != null && (hr.getType() == HitTestResult.IMAGE_TYPE || hr.getType() == HitTestResult.SRC_IMAGE_ANCHOR_TYPE)) {
+          String imageUrl=hr.getExtra();
+          if (imageUrl == null)           return false;
+          if (imageUrl.startsWith("file:"))           return false;
+          if (mVideoThumbnailUrls.contains(imageUrl))           return false;
+          if (imageUrl.contains("videos.files."))           return false;
+          showPhotoViewer(imageUrl);
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+);
+  webView.loadDataWithBaseURL(null,postHtml,"text/html","UTF-8",null);
+  mLayoutActions.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
+  if (!hasCommentAdapter())   getListView().setAdapter(getCommentAdapter());
+  refreshFollowed();
+  refreshLikes();
+  refreshComments();
+  if (!mHasAlreadyUpdatedPost) {
+    updatePost();
+    mHasAlreadyUpdatedPost=true;
+  }
+  getListView().setVisibility(View.VISIBLE);
+}

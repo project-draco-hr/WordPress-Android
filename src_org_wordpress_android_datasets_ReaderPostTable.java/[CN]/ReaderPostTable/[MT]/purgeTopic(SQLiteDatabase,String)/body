@@ -1,0 +1,23 @@
+{
+  if (TextUtils.isEmpty(topicName))   return 0;
+  int numToPurge=getNumPostsInTopic(topicName) - Constants.READER_MAX_POSTS_PER_TOPIC;
+  if (numToPurge <= 0)   return 0;
+  ReaderLog.d(String.format("Purging %d posts in topic %s",numToPurge,topicName));
+  String[] args={topicName,Integer.toString(numToPurge)};
+  String sql="SELECT tbl_posts.post_id, tbl_posts.blog_id FROM tbl_posts, tbl_post_topics" + " WHERE tbl_posts.post_id = tbl_post_topics.post_id AND tbl_posts.blog_id = tbl_post_topics.blog_id" + " AND tbl_post_topics.topic_name=?1 ORDER BY timestamp LIMIT ?2";
+  int numDeleted=0;
+  Cursor c=db.rawQuery(sql,args);
+  try {
+    if (!c.moveToFirst())     return 0;
+    do {
+      long postId=c.getLong(0);
+      long blogId=c.getLong(1);
+      numDeleted+=db.delete("tbl_posts","post_id=?1 AND blog_id=?2",new String[]{Long.toString(postId),Long.toString(blogId)});
+    }
+ while (c.moveToNext());
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+  return numDeleted;
+}

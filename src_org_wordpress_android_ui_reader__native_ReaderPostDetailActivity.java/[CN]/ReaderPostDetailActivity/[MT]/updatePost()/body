@@ -1,0 +1,21 @@
+{
+  if (mPost == null || !mPost.isWP())   return;
+  ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
+    @Override public void onUpdateResult(    ReaderActions.UpdateResult result){
+switch (result) {
+case CHANGED:
+        mPost=ReaderPostTable.getPost(mBlogId,mPostId);
+      mIsPostChanged=true;
+    break;
+case FAILED:
+  return;
+default :
+break;
+}
+if (mPost.numLikes != ReaderLikeTable.getNumLikesForPost(mPost)) updateLikes();
+if (mPost.numReplies != ReaderCommentTable.getNumCommentsForPost(mPost)) updateComments();
+}
+}
+;
+ReaderPostActions.updatePost(mPost,resultListener);
+}

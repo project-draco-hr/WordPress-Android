@@ -1,0 +1,31 @@
+{
+  ReaderUrlList avatars=new ReaderUrlList();
+  if (userIds == null || userIds.size() == 0)   return avatars;
+  StringBuilder sb=new StringBuilder("SELECT avatar_url FROM tbl_users WHERE user_id IN (");
+  long currentUserId=ReaderPrefs.getCurrentUserId();
+  boolean containsCurrentUser=userIds.contains(currentUserId);
+  if (containsCurrentUser)   sb.append(currentUserId);
+  int numAdded=(containsCurrentUser ? 1 : 0);
+  for (  Long id : userIds) {
+    if (id != currentUserId) {
+      if (numAdded > 0)       sb.append(",");
+      sb.append(id);
+      numAdded++;
+      if (max > 0 && numAdded >= max)       break;
+    }
+  }
+  sb.append(")");
+  Cursor c=ReaderDatabase.getReadableDb().rawQuery(sb.toString(),null);
+  try {
+    if (c.moveToFirst()) {
+      do {
+        avatars.add(c.getString(0));
+      }
+ while (c.moveToNext());
+    }
+    return avatars;
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+}

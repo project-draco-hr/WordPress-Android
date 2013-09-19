@@ -1,0 +1,19 @@
+{
+  if (!SysUtils.isGteAndroid4())   return;
+  ActionBar actionBar=getActivity().getActionBar();
+  if (actionBar == null)   return;
+  actionBar.setDisplayShowTitleEnabled(false);
+  actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+  ActionBar.OnNavigationListener navigationListener=new ActionBar.OnNavigationListener(){
+    @Override public boolean onNavigationItemSelected(    int itemPosition,    long itemId){
+      ReaderTopic topic=(ReaderTopic)getActionBarAdapter().getItem(itemPosition);
+      if (topic != null) {
+        setCurrentTopic(topic.getTopicName());
+        ReaderLog.d("topic chosen from actionbar: " + topic.getTopicName());
+      }
+      return true;
+    }
+  }
+;
+  actionBar.setListNavigationCallbacks(getActionBarAdapter(),navigationListener);
+}

@@ -1,0 +1,19 @@
+{
+  if (post.blogId == 0)   ReaderLog.w("updating post with no blogId");
+  String path="sites/" + post.blogId + "/posts/"+ post.postId;
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      handleUpdatePostResponse(post,jsonObject,resultListener);
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      ReaderLog.e(volleyError);
+      if (resultListener != null)       resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED);
+    }
+  }
+;
+  ReaderLog.d("updating post");
+  WordPress.restClient.get(path,null,null,listener,errorListener);
+}

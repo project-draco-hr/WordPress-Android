@@ -1,0 +1,20 @@
+{
+  super.onCreate(savedInstanceState);
+  mInflater=getLayoutInflater();
+  requestWindowFeature(Window.FEATURE_NO_TITLE);
+  setContentView(R.layout.activity_reader_post_detail);
+  getWindow().setBackgroundDrawable(null);
+  mBlogId=getIntent().getLongExtra(ARG_BLOG_ID,0);
+  mPostId=getIntent().getLongExtra(ARG_POST_ID,0);
+  ViewGroup header=(ViewGroup)mInflater.inflate(R.layout.listitem_reader_post_detail,getListView(),false);
+  getListView().addHeaderView(header,null,false);
+  mCommentFooter=(ViewGroup)mInflater.inflate(R.layout.reader_footer_progress,getListView(),false);
+  mCommentFooter.setVisibility(View.GONE);
+  mCommentFooter.setBackgroundColor(getResources().getColor(R.color.grey_extra_light));
+  mProgressFooter=(ProgressBar)mCommentFooter.findViewById(R.id.progress_footer);
+  mProgressFooter.setVisibility(View.INVISIBLE);
+  getListView().addFooterView(mCommentFooter);
+  mLayoutLikes=(ViewGroup)findViewById(R.id.layout_likes);
+  mLayoutActions=(ViewGroup)findViewById(R.id.layout_actions);
+  getListView().setVisibility(View.INVISIBLE);
+}

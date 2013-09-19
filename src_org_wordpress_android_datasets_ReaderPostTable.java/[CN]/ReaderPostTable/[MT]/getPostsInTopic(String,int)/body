@@ -1,0 +1,19 @@
+{
+  if (TextUtils.isEmpty(topicName))   throw new IllegalArgumentException("empty topic not allowed");
+  String sql="SELECT tbl_posts.* FROM tbl_posts, tbl_post_topics" + " WHERE tbl_posts.post_id = tbl_post_topics.post_id" + " AND tbl_posts.blog_id = tbl_post_topics.blog_id"+ " AND tbl_post_topics.topic_name=?"+ " ORDER BY tbl_posts.timestamp DESC";
+  if (maxPosts > 0)   sql+=" LIMIT " + Integer.toString(maxPosts);
+  Cursor cursor=ReaderDatabase.getReadableDb().rawQuery(sql,new String[]{topicName});
+  try {
+    ReaderPostList posts=new ReaderPostList();
+    if (cursor == null || !cursor.moveToFirst())     return posts;
+    resetColumnIndexes(cursor);
+    do {
+      posts.add(getPostFromCursor(cursor));
+    }
+ while (cursor.moveToNext());
+    return posts;
+  }
+  finally {
+    SqlUtils.closeCursor(cursor);
+  }
+}

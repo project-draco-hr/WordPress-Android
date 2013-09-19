@@ -1,0 +1,15 @@
+{
+  String topicName=EditTextUtils.getText(mEditAddTopic);
+  if (TextUtils.isEmpty(topicName))   return;
+  if (ReaderTopicTable.topicExists(topicName)) {
+    ToastUtils.showToast(this,R.string.reader_toast_topic_exists,ToastUtils.Duration.LONG);
+    return;
+  }
+  if (!ReaderTopic.isValidTopicName(topicName)) {
+    ToastUtils.showToast(this,R.string.reader_toast_topic_invalid,ToastUtils.Duration.LONG);
+    return;
+  }
+  mEditAddTopic.setText(null);
+  EditTextUtils.hideSoftInput(mEditAddTopic);
+  onTopicAction(ReaderTopicActions.TopicAction.ADD,topicName);
+}

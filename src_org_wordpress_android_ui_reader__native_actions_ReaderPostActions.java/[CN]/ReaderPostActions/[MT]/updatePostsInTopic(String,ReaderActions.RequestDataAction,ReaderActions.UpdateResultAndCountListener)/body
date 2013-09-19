@@ -1,0 +1,47 @@
+{
+  final ReaderTopic topic=ReaderTopicTable.getTopic(topicName);
+  if (topic == null) {
+    if (resultListener != null)     resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED,-1);
+    return;
+  }
+  StringBuilder sb=new StringBuilder(topic.getEndpoint());
+  sb.append("?number=").append(Constants.READER_MAX_POSTS_TO_REQUEST);
+  sb.append("&order=DESC");
+  if (ReaderPostTable.hasPostsInTopic(topicName)) {
+switch (updateAction) {
+case LOAD_NEWER:
+      String dateNewest=ReaderTopicTable.getTopicNewestDate(topicName);
+    if (!TextUtils.isEmpty(dateNewest)) {
+      sb.append("&after=").append(UrlUtils.urlEncode(dateNewest));
+      ReaderLog.d(String.format("requesting newer posts in topic %s (%s)",topicName,dateNewest));
+    }
+  break;
+case LOAD_OLDER:
+String dateOldest=ReaderTopicTable.getTopicOldestDate(topicName);
+if (TextUtils.isEmpty(dateOldest)) dateOldest=ReaderPostTable.getOldestPubDateInTopic(topicName);
+if (!TextUtils.isEmpty(dateOldest)) {
+sb.append("&before=").append(UrlUtils.urlEncode(dateOldest));
+ReaderLog.d(String.format("requesting older posts in topic %s (%s)",topicName,dateOldest));
+}
+break;
+}
+}
+ else {
+ReaderLog.d(String.format("requesting posts in empty topic %s",topicName));
+}
+String endpoint=sb.toString();
+com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+@Override public void onResponse(JSONObject jsonObject){
+handleUpdatePostsInTopicResponse(topicName,updateAction,jsonObject,resultListener);
+}
+}
+;
+RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+@Override public void onErrorResponse(VolleyError volleyError){
+ReaderLog.e(volleyError);
+if (resultListener != null) resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED,-1);
+}
+}
+;
+WordPress.restClient.get(endpoint,null,null,listener,errorListener);
+}
