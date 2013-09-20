@@ -1,0 +1,39 @@
+{
+  JSONObject tmpNoteJSON=new JSONObject();
+  String type=extras.getString("type");
+  String finalType=UNKNOWN_TYPE;
+  if (pnType2type.containsKey(type)) {
+    finalType=pnType2type.get(type);
+  }
+  JSONObject subject=new JSONObject();
+  JSONObject body=new JSONObject();
+  JSONObject html=new JSONObject();
+  JSONArray items=new JSONArray();
+  try {
+    if (finalType.equals(COMMENT_TYPE)) {
+      subject.put("text",extras.get("title"));
+    }
+ else {
+      subject.put("text",extras.get("msg"));
+    }
+    subject.put("icon",extras.get("icon"));
+    subject.put("noticon",extras.get("noticon"));
+    html.put("html",extras.get("msg"));
+    items.put(html);
+    body.put("items",items);
+    String timestamp=extras.getString("note_timestamp","");
+    if (timestamp.equals("")) {
+      timestamp="" + (System.currentTimeMillis() / 1000);
+    }
+    tmpNoteJSON.put("timestamp",timestamp);
+    tmpNoteJSON.put("id",extras.get("note_id"));
+    tmpNoteJSON.put("subject",subject);
+    tmpNoteJSON.put("body",body);
+    tmpNoteJSON.put("type",finalType);
+    tmpNoteJSON.put("unread","1");
+  }
+ catch (  JSONException e) {
+    Log.e(TAG,"Failed to put key in noteJSON",e);
+  }
+  mNoteJSON=tmpNoteJSON;
+}
