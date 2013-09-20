@@ -1,0 +1,21 @@
+{
+  List<Map<String,Object>> accounts=WordPress.wpDB.getAccounts();
+  if (accounts == null || accounts.size() == 0)   return false;
+  Blog blog=WordPress.getCurrentBlog();
+  int currentBlogId=(blog != null ? blog.getBlogId() : 0);
+  Iterator<Map<String,Object>> it=accounts.iterator();
+  while (it.hasNext()) {
+    Map<String,Object> curHash=it.next();
+    int blogId=(Integer)curHash.get("blogId");
+    String blogName=StringUtils.unescapeHTML(curHash.get("blogName").toString());
+    if (TextUtils.isEmpty(blogName))     blogName=curHash.get("url").toString();
+    SimpleAccountItem item=new SimpleAccountItem(blogId,blogName);
+    if (tmpAccounts.size() > 0 && blogId == currentBlogId) {
+      tmpAccounts.add(0,item);
+    }
+ else {
+      tmpAccounts.add(item);
+    }
+  }
+  return true;
+}

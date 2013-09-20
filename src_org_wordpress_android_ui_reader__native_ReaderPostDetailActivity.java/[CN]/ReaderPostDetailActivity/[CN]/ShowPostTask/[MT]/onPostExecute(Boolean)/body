@@ -29,12 +29,15 @@
     imgAvatar.setVisibility(View.GONE);
   }
   btnReblog.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
-  btnReblog.setOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View view){
-      doPostAction(btnReblog,ReaderPostActions.PostAction.REBLOG,mPost);
+  btnReblog.setSelected(mPost.isRebloggedByCurrentUser);
+  if (mPost.isWP()) {
+    btnReblog.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        doPostReblog(btnReblog,mPost);
+      }
     }
-  }
 );
+  }
   if (mPost.isWP() && mPost.isCommentsOpen) {
     btnComment.setVisibility(View.VISIBLE);
     btnComment.setOnClickListener(new View.OnClickListener(){
