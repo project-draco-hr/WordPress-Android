@@ -1,6 +1,13 @@
 {
   final Intent intent=getIntent();
-  if (intent.hasExtra(NOTE_ID_EXTRA)) {
+  if (intent.hasExtra(MD5_NOTE_ID_EXTRA)) {
+    int hashid=Integer.valueOf(intent.getStringExtra(MD5_NOTE_ID_EXTRA));
+    Note note=WordPress.wpDB.getNoteById(hashid);
+    if (note != null) {
+      openNote(note);
+    }
+  }
+ else   if (intent.hasExtra(NOTE_ID_EXTRA)) {
     Map<String,String> params=new HashMap<String,String>();
     params.put("ids",intent.getStringExtra(NOTE_ID_EXTRA));
     NotesResponseHandler handler=new NotesResponseHandler(){
@@ -13,5 +20,8 @@
     }
 ;
     restClient.getNotifications(params,handler,handler);
+  }
+ else {
+    refreshNotes();
   }
 }

@@ -9,14 +9,6 @@
   mNotesList=(NotificationsListFragment)fm.findFragmentById(R.id.notes_list);
   mNotesList.setNoteProvider(new NoteProvider());
   mNotesList.setOnNoteClickListener(new NoteClickListener());
-  try {
-    if (WordPress.latestNotes != null) {
-      mNotesList.getNotesAdapter().addAll(parseNotes(WordPress.latestNotes));
-    }
-  }
- catch (  JSONException e) {
-    Log.e(TAG,"No cached notes");
-  }
   fragmentDetectors.add(new FragmentDetector(){
     @Override public Fragment getFragment(    Note note){
       if (note.isCommentType()) {
@@ -50,6 +42,8 @@
 );
   GCMIntentService.activeNotificationsMap.clear();
   if (savedInstanceState == null)   launchWithNoteId();
-  refreshNotes();
+  notes=WordPress.wpDB.loadNotes();
+  refreshNotificationsListFragment(notes);
   if (savedInstanceState != null)   popNoteDetail();
+  if (mBroadcastReceiver == null)   createBroadcastReceiver();
 }
