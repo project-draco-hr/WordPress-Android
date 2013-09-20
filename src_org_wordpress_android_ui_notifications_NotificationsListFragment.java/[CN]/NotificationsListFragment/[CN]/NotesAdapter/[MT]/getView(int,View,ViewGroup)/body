@@ -2,6 +2,7 @@
   View view=super.getView(position,convertView,parent);
   final Note note=getItem(position);
   TextView detailText=(TextView)view.findViewById(R.id.note_detail);
+  ProgressBar placeholderLoading=(ProgressBar)view.findViewById(R.id.placeholder_loading);
   if (note.isCommentType()) {
     detailText.setText(note.getCommentPreview());
     detailText.setVisibility(View.VISIBLE);
@@ -23,6 +24,12 @@
   }
  else {
     unreadIndicator.setVisibility(View.GONE);
+  }
+  if (note.isPlaceholder()) {
+    placeholderLoading.setVisibility(View.VISIBLE);
+  }
+ else {
+    placeholderLoading.setVisibility(View.GONE);
   }
   return view;
 }
