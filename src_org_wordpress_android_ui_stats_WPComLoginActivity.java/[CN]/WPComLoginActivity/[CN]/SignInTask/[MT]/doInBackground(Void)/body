@@ -1,0 +1,18 @@
+{
+  XMLRPCClient client=new XMLRPCClient(Constants.wpcomXMLRPCURL,"","");
+  Object[] signInParams={mUsername,mPassword};
+  try {
+    client.call("wp.getUsersBlogs",signInParams);
+    WordPress.currentBlog.setDotcom_username(mUsername);
+    WordPress.currentBlog.setDotcom_password(mPassword);
+    WordPress.currentBlog.save(WordPress.currentBlog.getUsername());
+    Editor settings=PreferenceManager.getDefaultSharedPreferences(WPComLoginActivity.this).edit();
+    settings.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mUsername);
+    settings.putString(WordPress.WPCOM_PASSWORD_PREFERENCE,mPassword);
+    settings.commit();
+    return true;
+  }
+ catch (  XMLRPCException e) {
+    return false;
+  }
+}

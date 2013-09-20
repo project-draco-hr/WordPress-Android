@@ -2,7 +2,12 @@
   if (WordPress.getCurrentBlog() == null)   return;
   String blogId=null;
   if (WordPress.getCurrentBlog().isDotcomFlag())   blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
- else   blogId=getBlogIdFromJetPack();
+ else {
+    blogId=getBlogIdFromJetpack();
+    if (blogId == null) {
+      verifyJetpackSettings();
+    }
+  }
   StatsRestHelper.getStatsSummary(blogId);
   if (mStatsViewFragment != null) {
     StatsViewType viewType=mStatsViewFragment.getViewType();

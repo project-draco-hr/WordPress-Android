@@ -8,18 +8,20 @@
     mFilteredItems=savedInstanceState.getStringArrayList(STATE_FILTERED_ITEMS);
     mIsSelectOneItem=savedInstanceState.getBoolean(STATE_IS_SELECT_ONE_ITEM,mIsSelectOneItem);
   }
+  mActionMode=getSherlock().startActionMode(this);
   setContentView(R.layout.media_gallery_picker_layout);
   mGridView=(MultiSelectGridView)findViewById(R.id.media_gallery_picker_gridview);
   mGridView.setMultiSelectListener(this);
   if (mIsSelectOneItem) {
+    mActionMode.setTitle("Select an image");
     mGridView.setHighlightSelectModeEnabled(true);
     mGridView.setMultiSelectModeEnabled(false);
   }
  else {
+    mActionMode.setTitle(checkedItems.size() + " selected");
     mGridView.setMultiSelectModeActive(true);
   }
-  mAdapter=new MediaGridAdapter(this,null,0,checkedItems);
-  mGridView.setAdapter(mAdapter);
-  mActionMode=getSherlock().startActionMode(this);
-  mActionMode.setTitle(checkedItems.size() + " selected");
+  mGridAdapter=new MediaGridAdapter(this,null,0,checkedItems);
+  mGridAdapter.setCallback(this);
+  mGridView.setAdapter(mGridAdapter);
 }
