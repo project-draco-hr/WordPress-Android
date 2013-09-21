@@ -5,10 +5,10 @@
   final boolean isTranslucentActionBarEnabled=NativeReaderActivity.isTranslucentActionBarEnabled();
   final View view;
   if (useGridView) {
-    view=inflater.inflate(R.layout.fragment_reader_post_grid,container,false);
+    view=inflater.inflate(R.layout.reader_fragment_post_grid,container,false);
   }
  else {
-    view=inflater.inflate(R.layout.fragment_reader_post_list,container,false);
+    view=inflater.inflate(R.layout.reader_fragment_post_list,container,false);
   }
   mNewPostsBar=(TextView)view.findViewById(R.id.text_new_posts);
   mNewPostsBar.setVisibility(View.GONE);
@@ -32,7 +32,7 @@
       header.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.WRAP_CONTENT));
       header.setMinimumHeight(actionbarHeight - (gridView.getItemMargin() * 2));
       gridView.setHeaderView(header);
-      if (hasActivity() && getActivity() instanceof NativeReaderActivity)       ((NativeReaderActivity)getActivity()).setActionBarAlpha(200);
+      if (hasActivity() && getActivity() instanceof NativeReaderActivity)       ((NativeReaderActivity)getActivity()).setActionBarAlpha(NativeReaderActivity.ALPHA_LEVEL_3);
     }
     mFooterProgress=inflater.inflate(R.layout.reader_footer_progress,gridView,false);
     gridView.setFooterView(mFooterProgress);
@@ -53,10 +53,11 @@
     mFooterProgress=inflater.inflate(R.layout.reader_footer_progress,listView,false);
     listView.addFooterView(mFooterProgress);
     if (isTranslucentActionBarEnabled) {
-      int headerHeight=actionbarHeight - getResources().getDimensionPixelSize(R.dimen.reader_margin_medium);
+      int headerHeight=actionbarHeight - getResources().getDimensionPixelSize(R.dimen.reader_margin_large);
       RelativeLayout header=new RelativeLayout(context);
       header.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,headerHeight));
       listView.addHeaderView(header,null,false);
+      initListViewOverscroll(listView);
     }
     listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
       @Override public void onItemClick(      AdapterView<?> adapterView,      View view,      int position,      long id){
