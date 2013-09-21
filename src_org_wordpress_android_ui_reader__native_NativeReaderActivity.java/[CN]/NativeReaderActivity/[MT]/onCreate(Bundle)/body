@@ -1,15 +1,32 @@
 {
   super.onCreate(savedInstanceState);
-  if (isTranslucentActionBarEnabled()) {
-    getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
-    setContentView(R.layout.activity_reader_main);
-    getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.reader_actionbar_translucent));
-  }
- else {
-    setContentView(R.layout.activity_reader_main);
-  }
+  if (isTranslucentActionBarEnabled())   getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+  setContentView(R.layout.activity_reader_main);
   getSupportActionBar().setDisplayShowTitleEnabled(false);
   setSupportProgressBarVisibility(false);
   createMenuDrawer(R.layout.activity_reader_main);
-  if (savedInstanceState == null)   showPostListFragment();
+  if (isTranslucentActionBarEnabled() && super.mMenuDrawer != null) {
+    super.mMenuDrawer.setOnDrawerStateChangeListener(new MenuDrawer.OnDrawerStateChangeListener(){
+      @Override public void onDrawerStateChange(      int oldState,      int newState){
+switch (newState) {
+case MenuDrawer.STATE_OPENING:
+          mPrevActionBarAlpha=mCurrentActionBarAlpha;
+        setActionBarAlpha(0);
+      break;
+case MenuDrawer.STATE_CLOSING:
+    setActionBarAlpha(mPrevActionBarAlpha);
+  break;
+}
+}
+@Override public void onDrawerSlide(float openRatio,int offsetPixels){
+}
+}
+);
+}
+if (savedInstanceState == null) {
+showPostListFragment();
+}
+ else {
+mPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);
+}
 }

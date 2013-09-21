@@ -1,7 +1,8 @@
 {
   final boolean useGridView=useGridView();
-  final int actionbarHeight=getResources().getDimensionPixelSize(R.dimen.reader_actionbar_height);
   final Context context=container.getContext();
+  final int actionbarHeight=DisplayUtils.getActionBarHeight(context);
+  final boolean isTranslucentActionBarEnabled=NativeReaderActivity.isTranslucentActionBarEnabled();
   final View view;
   if (useGridView) {
     view=inflater.inflate(R.layout.fragment_reader_post_grid,container,false);
@@ -18,7 +19,7 @@
     }
   }
 );
-  if (mIsTranslucentActionBarEnabled) {
+  if (isTranslucentActionBarEnabled) {
     RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)mNewPostsBar.getLayoutParams();
     params.setMargins(0,actionbarHeight,0,0);
   }
@@ -26,11 +27,12 @@
   if (useGridView) {
     final StaggeredGridView gridView=(StaggeredGridView)view.findViewById(R.id.grid);
     gridView.setOnTouchListener(this);
-    if (mIsTranslucentActionBarEnabled) {
+    if (isTranslucentActionBarEnabled) {
       RelativeLayout header=new RelativeLayout(context);
       header.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.WRAP_CONTENT));
       header.setMinimumHeight(actionbarHeight - (gridView.getItemMargin() * 2));
       gridView.setHeaderView(header);
+      if (hasActivity() && getActivity() instanceof NativeReaderActivity)       ((NativeReaderActivity)getActivity()).setActionBarAlpha(200);
     }
     mFooterProgress=inflater.inflate(R.layout.reader_footer_progress,gridView,false);
     gridView.setFooterView(mFooterProgress);
@@ -50,7 +52,7 @@
     listView.setOnScrollListener(this);
     mFooterProgress=inflater.inflate(R.layout.reader_footer_progress,listView,false);
     listView.addFooterView(mFooterProgress);
-    if (mIsTranslucentActionBarEnabled) {
+    if (isTranslucentActionBarEnabled) {
       int headerHeight=actionbarHeight - getResources().getDimensionPixelSize(R.dimen.reader_margin_medium);
       RelativeLayout header=new RelativeLayout(context);
       header.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,headerHeight));
