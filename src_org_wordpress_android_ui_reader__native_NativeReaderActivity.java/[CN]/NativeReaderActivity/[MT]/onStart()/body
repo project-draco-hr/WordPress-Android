@@ -1,13 +1,13 @@
 {
   super.onStart();
-  if (!mPerformedInitialUpdate) {
-    mPerformedInitialUpdate=true;
+  if (!mHasPerformedPurge) {
+    mHasPerformedPurge=true;
+    ReaderDatabase.purgeAsync();
+  }
+  if (!mHasPerformedInitialUpdate) {
+    mHasPerformedInitialUpdate=true;
     ReaderLog.i("updating current user");
-    ReaderUserActions.updateCurrentUser(new ReaderActions.UpdateResultListener(){
-      @Override public void onUpdateResult(      ReaderActions.UpdateResult result){
-      }
-    }
-);
+    ReaderUserActions.updateCurrentUser(null);
     ReaderLog.i("updating cookies");
     ReaderAuthActions.updateCookies(this);
     ReaderLog.i("updating followed blogs");

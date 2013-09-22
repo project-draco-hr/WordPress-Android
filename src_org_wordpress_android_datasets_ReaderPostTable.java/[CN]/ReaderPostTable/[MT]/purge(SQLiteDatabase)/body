@@ -1,20 +1,5 @@
 {
-  int numDeleted=0;
-  Cursor c=db.rawQuery("SELECT DISTINCT topic_name FROM tbl_post_topics",null);
-  try {
-    if (c.moveToFirst()) {
-      do {
-        numDeleted+=purgeTopic(db,c.getString(0));
-      }
- while (c.moveToNext());
-    }
-  }
-  finally {
-    SqlUtils.closeCursor(c);
-  }
-  if (numDeleted > 0) {
-    numDeleted+=db.delete("tbl_post_topics","topic_name NOT IN (SELECT DISTINCT topic_name FROM tbl_topics)",null);
-    numDeleted+=db.delete("tbl_posts","post_id NOT IN (SELECT DISTINCT post_id FROM tbl_post_topics)",null);
-  }
+  int numDeleted=db.delete("tbl_post_topics","topic_name NOT IN (SELECT DISTINCT topic_name FROM tbl_topics)",null);
+  numDeleted+=db.delete("tbl_posts","pseudo_id NOT IN (SELECT DISTINCT pseudo_id FROM tbl_post_topics)",null);
   return numDeleted;
 }

@@ -1,18 +1,18 @@
 {
-  SQLiteDatabase db=getWritableDatabase();
+  SQLiteDatabase db=getWritableDb();
   db.beginTransaction();
   try {
     int numPostsDeleted=ReaderPostTable.purge(db);
     if (numPostsDeleted > 0) {
-      ReaderLog.i(numPostsDeleted + " posts purged");
+      ReaderLog.i(String.format("%d total posts purged",numPostsDeleted));
       int numCommentsDeleted=ReaderCommentTable.purge(db);
-      if (numCommentsDeleted > 0)       ReaderLog.i(numCommentsDeleted + " comments purged");
+      if (numCommentsDeleted > 0)       ReaderLog.i(String.format("%d comments purged",numCommentsDeleted));
       int numLikesDeleted=ReaderLikeTable.purge(db);
-      if (numLikesDeleted > 0)       ReaderLog.i(numLikesDeleted + " likes purged");
+      if (numLikesDeleted > 0)       ReaderLog.i(String.format("%d likes purged",numLikesDeleted));
       int numThumbsPurged=ReaderThumbnailTable.purge(db);
-      if (numThumbsPurged > 0)       ReaderLog.i(numThumbsPurged + " thumbnails purged");
+      if (numThumbsPurged > 0)       ReaderLog.i(String.format("%d thumbnails purged",numThumbsPurged));
       int numTopicsPurged=ReaderTopicTable.purge(db);
-      if (numTopicsPurged > 0)       ReaderLog.i(numTopicsPurged + " topics purged");
+      if (numTopicsPurged > 0)       ReaderLog.i(String.format("%d topics purged",numTopicsPurged));
     }
     db.setTransactionSuccessful();
   }

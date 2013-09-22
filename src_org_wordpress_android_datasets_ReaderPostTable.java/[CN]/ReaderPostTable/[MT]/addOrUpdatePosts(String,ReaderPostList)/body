@@ -3,7 +3,7 @@
   SQLiteDatabase db=ReaderDatabase.getWritableDb();
   db.beginTransaction();
   SQLiteStatement stmtPosts=db.compileStatement("INSERT OR REPLACE INTO tbl_posts (" + COLUMN_NAMES + ") VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21,?22,?23)");
-  SQLiteStatement stmtTopics=db.compileStatement("INSERT OR REPLACE INTO tbl_post_topics (post_id, blog_id, topic_name) VALUES (?1,?2,?3)");
+  SQLiteStatement stmtTopics=db.compileStatement("INSERT OR REPLACE INTO tbl_post_topics (post_id, blog_id, pseudo_id, topic_name) VALUES (?1,?2,?3,?4)");
   try {
     for (    ReaderPost post : posts) {
       stmtPosts.bindLong(1,post.postId);
@@ -36,7 +36,8 @@
       for (      ReaderPost post : posts) {
         stmtTopics.bindLong(1,post.postId);
         stmtTopics.bindLong(2,post.blogId);
-        stmtTopics.bindString(3,topicName);
+        stmtTopics.bindString(3,post.getPseudoId());
+        stmtTopics.bindString(4,topicName);
         stmtTopics.execute();
         stmtTopics.clearBindings();
       }
