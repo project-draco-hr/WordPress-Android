@@ -1,5 +1,11 @@
 {
   String thumbnailURL=cursor.getString(cursor.getColumnIndex("thumbnailURL"));
+  if (WordPress.getCurrentBlog() != null && WordPress.getCurrentBlog().isPhotonCapable()) {
+    String imageURL=cursor.getString(cursor.getColumnIndex("fileURL"));
+    if (imageURL != null) {
+      thumbnailURL=StringUtils.getPhotonUrl(imageURL,mGridItemWidth);
+    }
+  }
   if (thumbnailURL != null) {
     Uri uri=Uri.parse(thumbnailURL);
     String filepath=uri.getLastPathSegment();

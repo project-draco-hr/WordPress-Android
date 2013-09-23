@@ -1,24 +1,8 @@
 {
   if (post != null) {
     String url=post.getPermaLink();
-    boolean isPrivate=false;
-    try {
-      Gson gson=new Gson();
-      Type type=new TypeToken<Map<String,Object>>(){
-      }
-.getType();
-      Map<String,Object> blogOptions=gson.fromJson(mBlog.getBlogOptions(),type);
-      StringMap<?> blogPublicOption=(StringMap<?>)blogOptions.get("blog_public");
-      String blogPublicOptionValue=blogPublicOption.get("value").toString();
-      if (blogPublicOptionValue.equals("-1")) {
-        isPrivate=true;
-      }
-    }
- catch (    Exception e) {
-      e.printStackTrace();
-    }
     Date d=new Date();
-    if (isPrivate || post.isLocalDraft() || post.isLocalChange()|| post.getDate_created_gmt() > d.getTime() || !post.getPost_status().equals("publish")) {
+    if (WordPress.getCurrentBlog().isPrivate() || post.isLocalDraft() || post.isLocalChange()|| post.getDate_created_gmt() > d.getTime() || !post.getPost_status().equals("publish")) {
       if (-1 == url.indexOf('?')) {
         url=url.concat("?preview=true");
       }
