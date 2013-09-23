@@ -28,20 +28,39 @@
  else {
           AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(AccountSetupActivity.this);
           dialogBuilder.setTitle(getString(R.string.connection_error));
+          boolean twostepError=false;
           if (message.contains("404")) {
             message=getString(R.string.xmlrpc_error);
           }
  else           if (message.contains("425") && mIsWpcom) {
+            twostepError=true;
             dialogBuilder.setTitle(getString(R.string.info));
             message=getString(R.string.account_two_step_auth_enabled);
           }
           dialogBuilder.setMessage(message);
-          dialogBuilder.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
-            public void onClick(            DialogInterface dialog,            int whichButton){
-              dialog.dismiss();
+          if (twostepError) {
+            dialogBuilder.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
+              public void onClick(              DialogInterface dialog,              int whichButton){
+                dialog.dismiss();
+              }
             }
-          }
 );
+            dialogBuilder.setPositiveButton(getString(R.string.visit_security_settings),new DialogInterface.OnClickListener(){
+              public void onClick(              DialogInterface dialog,              int whichButton){
+                Intent browserIntent=new Intent(Intent.ACTION_VIEW,Uri.parse("https://wordpress.com/settings/security/?ssl=forced"));
+                startActivity(browserIntent);
+              }
+            }
+);
+          }
+ else {
+            dialogBuilder.setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
+              public void onClick(              DialogInterface dialog,              int whichButton){
+                dialog.dismiss();
+              }
+            }
+);
+          }
           dialogBuilder.setCancelable(true);
           dialogBuilder.create().show();
         }
