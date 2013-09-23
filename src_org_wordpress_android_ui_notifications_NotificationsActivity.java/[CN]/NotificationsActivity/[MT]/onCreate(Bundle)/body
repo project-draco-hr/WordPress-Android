@@ -9,6 +9,7 @@
   mNotesList=(NotificationsListFragment)fm.findFragmentById(R.id.notes_list);
   mNotesList.setNoteProvider(new NoteProvider());
   mNotesList.setOnNoteClickListener(new NoteClickListener());
+  notes=WordPress.wpDB.loadNotes();
   fragmentDetectors.add(new FragmentDetector(){
     @Override public Fragment getFragment(    Note note){
       if (note.isCommentType()) {
@@ -42,7 +43,6 @@
 );
   GCMIntentService.activeNotificationsMap.clear();
   if (savedInstanceState == null)   launchWithNoteId();
-  notes=WordPress.wpDB.loadNotes();
   refreshNotificationsListFragment(notes);
   if (savedInstanceState != null)   popNoteDetail();
   if (mBroadcastReceiver == null)   createBroadcastReceiver();
