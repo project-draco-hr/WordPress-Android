@@ -4,6 +4,8 @@
   requestWindowFeature(Window.FEATURE_NO_TITLE);
   setContentView(R.layout.reader_activity_post_detail);
   getWindow().setBackgroundDrawable(null);
+  final ViewGroup layoutFakeActionBar=(ViewGroup)findViewById(R.id.layout_fake_actionbar);
+  layoutFakeActionBar.setMinimumHeight(DisplayUtils.getActionBarHeight(this));
   mBlogId=getIntent().getLongExtra(ARG_BLOG_ID,0);
   mPostId=getIntent().getLongExtra(ARG_POST_ID,0);
   ViewGroup header=(ViewGroup)mInflater.inflate(R.layout.reader_listitem_post_detail,getListView(),false);
@@ -14,7 +16,14 @@
   mProgressFooter=(ProgressBar)mCommentFooter.findViewById(R.id.progress_footer);
   mProgressFooter.setVisibility(View.INVISIBLE);
   getListView().addFooterView(mCommentFooter);
-  mLayoutLikes=(ViewGroup)findViewById(R.id.layout_likes);
+  mLayoutLikingAvatars=(ViewGroup)findViewById(R.id.layout_liking_avatars);
   mLayoutActions=(ViewGroup)findViewById(R.id.layout_actions);
+  ImageView imgBack=(ImageView)findViewById(R.id.image_back);
+  imgBack.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      onBackPressed();
+    }
+  }
+);
   getListView().setVisibility(View.INVISIBLE);
 }

@@ -2,27 +2,19 @@
   if (mPost == null || !mPost.isWP())   return;
   new Thread(){
     @Override public void run(){
-      final TextView txtLikes=(TextView)findViewById(R.id.text_likes);
+      final int marginSmall=getResources().getDimensionPixelSize(R.dimen.reader_margin_small);
+      final int marginMedium=getResources().getDimensionPixelSize(R.dimen.reader_margin_medium);
+      final int marginLarge=getResources().getDimensionPixelSize(R.dimen.reader_margin_large);
       final TextView btnLike=(TextView)findViewById(R.id.btn_like);
-      final ViewGroup layoutLikingUsers=(ViewGroup)findViewById(R.id.layout_liking_users);
-      final ReaderUserIdList likingIds=ReaderLikeTable.getLikesForPost(mPost);
       final int likeAvatarSize=getResources().getDimensionPixelSize(R.dimen.reader_avatar_sz_like);
+      final int likeAvatarSizeWithMargin=likeAvatarSize + marginSmall;
       final int displayWidth=DisplayUtils.getDisplayPixelWidth(ReaderPostDetailActivity.this);
-      final int maxAvatars=(displayWidth / 2) / likeAvatarSize;
+      final int spaceForAvatars=(displayWidth - likeAvatarSize - marginSmall- marginMedium- marginLarge);
+      final int maxAvatars=spaceForAvatars / likeAvatarSizeWithMargin;
+      final ReaderUserIdList likingIds=ReaderLikeTable.getLikesForPost(mPost);
       final ReaderUrlList avatars=ReaderUserTable.getAvatarsUrls(likingIds,maxAvatars);
       mHandler.post(new Runnable(){
         public void run(){
-          if (mPost.isLikedByCurrentUser) {
-            if (mPost.numLikes == 1) {
-              txtLikes.setText(R.string.reader_likes_only_you);
-            }
- else {
-              txtLikes.setText(mPost.numLikes == 2 ? getString(R.string.reader_likes_you_and_one_short) : getString(R.string.reader_likes_you_and_multi_short,mPost.numLikes - 1));
-            }
-          }
- else {
-            txtLikes.setText(mPost.numLikes == 1 ? getString(R.string.reader_likes_one) : getString(R.string.reader_likes_multi,mPost.numLikes));
-          }
           btnLike.setText(mPost.isLikedByCurrentUser ? R.string.reader_btn_unlike : R.string.reader_btn_like);
           btnLike.setSelected(mPost.isLikedByCurrentUser);
           btnLike.setOnClickListener(new View.OnClickListener(){
@@ -32,28 +24,27 @@
           }
 );
           if (avatars.size() == 0 && mPost.numLikes == 0) {
-            mLayoutLikes.setVisibility(View.GONE);
+            mLayoutLikingAvatars.setVisibility(View.GONE);
             return;
           }
           if (avatars.size() > 0) {
-            mLayoutLikes.setOnClickListener(new View.OnClickListener(){
+            mLayoutLikingAvatars.setOnClickListener(new View.OnClickListener(){
               @Override public void onClick(              View view){
                 ReaderActivityLauncher.showReaderLikingUsers(ReaderPostDetailActivity.this,mPost);
               }
             }
 );
-            if (layoutLikingUsers.getChildCount() < maxAvatars) {
-              layoutLikingUsers.removeAllViews();
+            if (forceReload || mLayoutLikingAvatars.getChildCount() < maxAvatars) {
+              mLayoutLikingAvatars.removeAllViews();
               for (              String url : avatars) {
-                WPNetworkImageView imgAvatar=(WPNetworkImageView)mInflater.inflate(R.layout.reader_like_avatar,layoutLikingUsers,false);
-                layoutLikingUsers.addView(imgAvatar);
+                WPNetworkImageView imgAvatar=(WPNetworkImageView)mInflater.inflate(R.layout.reader_like_avatar,mLayoutLikingAvatars,false);
+                mLayoutLikingAvatars.addView(imgAvatar);
                 imgAvatar.setImageUrl(PhotonUtils.fixAvatar(url,likeAvatarSize),WPNetworkImageView.ImageType.AVATAR);
               }
             }
           }
-          if (mLayoutLikes.getVisibility() != View.VISIBLE) {
-            ReaderAniUtils.startAnimation(mLayoutLikes,R.anim.reader_top_bar_in);
-            mLayoutLikes.setVisibility(View.VISIBLE);
+          if (mLayoutLikingAvatars.getVisibility() != View.VISIBLE) {
+            mLayoutLikingAvatars.setVisibility(View.VISIBLE);
           }
         }
       }
