@@ -1,7 +1,12 @@
 {
-  if (isSignedIn) {
-    WPComLoginActivity.this.setResult(RESULT_OK);
-    finish();
+  if (isSignedIn && !isFinishing()) {
+    WordPress.restClient.get("me",new RestRequest.Listener(){
+      @Override public void onResponse(      JSONObject jsonObject){
+        WPComLoginActivity.this.setResult(RESULT_OK);
+        finish();
+      }
+    }
+,null);
   }
  else {
     Toast.makeText(getBaseContext(),getString(R.string.invalid_login),Toast.LENGTH_SHORT).show();

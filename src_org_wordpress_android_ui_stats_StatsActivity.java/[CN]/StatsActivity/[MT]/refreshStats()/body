@@ -8,7 +8,31 @@
       verifyJetpackSettings();
     }
   }
-  StatsRestHelper.getStatsSummary(blogId);
+  StatsRestHelper.getStatsSummary(blogId,new StatsRestHelper.StatsSummaryInterface(){
+    @Override public void onSuccess(){
+    }
+    @Override public void onFailure(    VolleyError error){
+      if (mSignInDialog != null && mSignInDialog.isShowing())       return;
+      if (!isFinishing() && WordPress.getCurrentBlog().isJetpackPowered() && error.networkResponse != null && error.networkResponse.statusCode == 403) {
+        AlertDialog.Builder builder=new AlertDialog.Builder(StatsActivity.this);
+        builder.setTitle(getString(R.string.jetpack_stats_unauthorized)).setMessage(getString(R.string.jetpack_stats_switch_user));
+        builder.setPositiveButton(R.string.yes,new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int id){
+            startActivityForResult(new Intent(StatsActivity.this,WPComLoginActivity.class),WPComLoginActivity.REQUEST_CODE);
+          }
+        }
+);
+        builder.setNegativeButton(R.string.no,new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int id){
+          }
+        }
+);
+        mSignInDialog=builder.create();
+        mSignInDialog.show();
+      }
+    }
+  }
+);
   if (mStatsViewFragment != null) {
     StatsViewType viewType=mStatsViewFragment.getViewType();
     StatsRestHelper.getStats(viewType,blogId);
