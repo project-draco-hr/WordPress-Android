@@ -22,7 +22,7 @@
         if (!span.isVideo()) {
           LayoutInflater factory=LayoutInflater.from(EditPostActivity.this);
           final View alertView=factory.inflate(R.layout.alert_image_options,null);
-          final TextView imageWidthText=(TextView)alertView.findViewById(R.id.imageWidthText);
+          final EditText imageWidthText=(EditText)alertView.findViewById(R.id.imageWidthText);
           final EditText titleText=(EditText)alertView.findViewById(R.id.title);
           final EditText caption=(EditText)alertView.findViewById(R.id.caption);
           final CheckBox featuredCheckBox=(CheckBox)alertView.findViewById(R.id.featuredImage);
@@ -69,11 +69,30 @@
             }
           }
 );
+          imageWidthText.setOnFocusChangeListener(new OnFocusChangeListener(){
+            @Override public void onFocusChange(            View v,            boolean hasFocus){
+              if (hasFocus) {
+                imageWidthText.setText("");
+              }
+            }
+          }
+);
+          imageWidthText.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+            @Override public boolean onEditorAction(            TextView v,            int actionId,            KeyEvent event){
+              int width=getEditTextIntegerClamped(imageWidthText,10,span.getWidth());
+              seekBar.setProgress(width / 10);
+              imageWidthText.setSelection((String.valueOf(width).length()));
+              InputMethodManager imm=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+              imm.hideSoftInputFromWindow(imageWidthText.getWindowToken(),InputMethodManager.RESULT_UNCHANGED_SHOWN);
+              return true;
+            }
+          }
+);
           AlertDialog ad=new AlertDialog.Builder(EditPostActivity.this).setTitle(getString(R.string.image_settings)).setView(alertView).setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
             public void onClick(            DialogInterface dialog,            int whichButton){
               span.setTitle(titleText.getText().toString());
               span.setHorizontalAlignment(alignmentSpinner.getSelectedItemPosition());
-              span.setWidth(seekBar.getProgress() * 10);
+              span.setWidth(getEditTextIntegerClamped(imageWidthText,10,span.getWidth()));
               span.setCaption(caption.getText().toString());
               span.setFeatured(featuredCheckBox.isChecked());
               if (featuredCheckBox.isChecked()) {
