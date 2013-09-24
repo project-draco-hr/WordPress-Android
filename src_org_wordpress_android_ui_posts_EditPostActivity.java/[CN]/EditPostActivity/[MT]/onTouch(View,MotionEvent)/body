@@ -56,7 +56,8 @@
  else           featuredInPostCheckBox.setVisibility(View.GONE);
           featuredInPostCheckBox.setChecked(span.isFeaturedInPost());
           alignmentSpinner.setSelection(span.getHorizontalAlignment(),true);
-          seekBar.setMax(span.getWidth() / 10);
+          final int maxWidth=getMinimumImageWitdh(span.getImageSource());
+          seekBar.setMax(maxWidth / 10);
           if (span.getWidth() != 0)           seekBar.setProgress(span.getWidth() / 10);
           seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
             @Override public void onStopTrackingTouch(            SeekBar seekBar){
@@ -79,7 +80,7 @@
 );
           imageWidthText.setOnEditorActionListener(new TextView.OnEditorActionListener(){
             @Override public boolean onEditorAction(            TextView v,            int actionId,            KeyEvent event){
-              int width=getEditTextIntegerClamped(imageWidthText,10,span.getWidth());
+              int width=getEditTextIntegerClamped(imageWidthText,10,maxWidth);
               seekBar.setProgress(width / 10);
               imageWidthText.setSelection((String.valueOf(width).length()));
               InputMethodManager imm=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -92,7 +93,7 @@
             public void onClick(            DialogInterface dialog,            int whichButton){
               span.setTitle(titleText.getText().toString());
               span.setHorizontalAlignment(alignmentSpinner.getSelectedItemPosition());
-              span.setWidth(getEditTextIntegerClamped(imageWidthText,10,span.getWidth()));
+              span.setWidth(getEditTextIntegerClamped(imageWidthText,10,maxWidth));
               span.setCaption(caption.getText().toString());
               span.setFeatured(featuredCheckBox.isChecked());
               if (featuredCheckBox.isChecked()) {
