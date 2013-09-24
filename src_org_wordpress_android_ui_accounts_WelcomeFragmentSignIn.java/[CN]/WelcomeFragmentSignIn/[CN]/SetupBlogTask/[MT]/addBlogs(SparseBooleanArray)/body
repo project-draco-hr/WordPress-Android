@@ -1,0 +1,26 @@
+{
+  for (int i=0; i < selectedBlogs.size(); i++) {
+    if (selectedBlogs.get(selectedBlogs.keyAt(i)) == true) {
+      int rowID=selectedBlogs.keyAt(i);
+      Map blogMap=(HashMap)mUsersBlogsList.get(rowID);
+      String blogName=StringUtils.unescapeHTML(blogMap.get("blogName").toString());
+      String xmlrpcUrl=(mIsCustomUrl) ? mXmlrpcUrl : blogMap.get("xmlrpc").toString();
+      if (!WordPress.wpDB.checkForExistingBlog(blogName,xmlrpcUrl,mUsername,mPassword)) {
+        Blog blog=new Blog(xmlrpcUrl,mUsername,mPassword);
+        blog.setHomeURL(blogMap.get("url").toString());
+        blog.setBlogName(blogName);
+        blog.setImagePlacement("");
+        blog.setFullSizeImage(false);
+        blog.setMaxImageWidth(DEFAULT_IMAGE_SIZE);
+        blog.setMaxImageWidthId(5);
+        blog.setRunService(false);
+        blog.setBlogId(Integer.parseInt(blogMap.get("blogid").toString()));
+        blog.setDotcomFlag(xmlrpcUrl.contains("wordpress.com"));
+        blog.setWpVersion("");
+        if (blog.save(null) && i == 0)         WordPress.setCurrentBlog(blog.getId());
+      }
+    }
+  }
+  getActivity().setResult(Activity.RESULT_OK);
+  getActivity().finish();
+}
