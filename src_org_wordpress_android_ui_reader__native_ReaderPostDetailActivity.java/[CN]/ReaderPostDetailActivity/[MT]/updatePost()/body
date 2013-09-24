@@ -12,8 +12,22 @@ case FAILED:
 default :
 break;
 }
-if (mPost.numLikes != ReaderLikeTable.getNumLikesForPost(mPost)) updateLikes();
-if (mPost.numReplies != ReaderCommentTable.getNumCommentsForPost(mPost)) updateComments();
+new Thread(){
+@Override public void run(){
+final boolean isLikesChanged=mPost.numLikes != ReaderLikeTable.getNumLikesForPost(mPost);
+final boolean isCommentsChanged=mPost.numReplies != ReaderCommentTable.getNumCommentsForPost(mPost);
+if (isLikesChanged || isCommentsChanged) {
+  mHandler.post(new Runnable(){
+    public void run(){
+      if (isLikesChanged)       updateLikes();
+      if (isCommentsChanged)       updateComments();
+    }
+  }
+);
+}
+}
+}
+.start();
 }
 }
 ;
