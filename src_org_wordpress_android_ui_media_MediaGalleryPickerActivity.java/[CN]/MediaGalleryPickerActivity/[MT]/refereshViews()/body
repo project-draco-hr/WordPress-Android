@@ -1,6 +1,11 @@
 {
   if (WordPress.getCurrentBlog() == null)   return;
-  String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+  final String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
   Cursor cursor=WordPress.wpDB.getMediaImagesForBlog(blogId,mFilteredItems);
-  mAdapter.swapCursor(cursor);
+  if (cursor.getCount() == 0) {
+    refreshMediaFromServer(0);
+  }
+ else {
+    mGridAdapter.swapCursor(cursor);
+  }
 }
