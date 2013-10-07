@@ -3,27 +3,13 @@
   if (imageUri == null) {
     return false;
   }
-  Bitmap resizedBitmap=null;
   ImageHelper ih=new ImageHelper();
-  Display display=getWindowManager().getDefaultDisplay();
-  int width=display.getWidth();
-  int height=display.getHeight();
-  if (width > height)   width=height;
   Map<String,Object> mediaData=ih.getImageBytesForPath(imageUri.getEncodedPath(),EditPostActivity.this);
   if (mediaData == null) {
     return false;
   }
-  BitmapFactory.Options opts=new BitmapFactory.Options();
-  opts.inJustDecodeBounds=true;
-  byte[] bytes=(byte[])mediaData.get("bytes");
-  BitmapFactory.decodeByteArray(bytes,0,bytes.length,opts);
-  float conversionFactor=0.25f;
-  if (opts.outWidth > opts.outHeight)   conversionFactor=0.40f;
-  byte[] finalBytes=ih.createThumbnail(bytes,String.valueOf((int)(width * conversionFactor)),(String)mediaData.get("orientation"),true);
-  if (finalBytes == null) {
-    return false;
-  }
-  resizedBitmap=BitmapFactory.decodeByteArray(finalBytes,0,finalBytes.length);
+  Bitmap resizedBitmap=ih.getResizedImageThumbnail(this,(byte[])mediaData.get("bytes"),(String)mediaData.get("orientation"));
+  if (resizedBitmap == null)   return false;
   if (ssb != null) {
     WPImageSpan is=new WPImageSpan(EditPostActivity.this,resizedBitmap,imageUri);
     setWPImageSpanWidth(imageUri,is);

@@ -2,27 +2,19 @@
   super.onCreate(savedInstanceState);
   setContentView(R.layout.wp_dot_com_login_activity);
   getSupportActionBar().hide();
-  Button saveStatsLogin=(Button)findViewById(R.id.saveDotcom);
-  saveStatsLogin.setOnClickListener(new Button.OnClickListener(){
+  mSignInButon=(Button)findViewById(R.id.saveDotcom);
+  mSignInButon.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
       EditText dotcomUsername=(EditText)findViewById(R.id.dotcomUsername);
       EditText dotcomPassword=(EditText)findViewById(R.id.dotcomPassword);
-      String dcUsername=dotcomUsername.getText().toString();
-      String dcPassword=dotcomPassword.getText().toString();
-      if (dcUsername.equals("") || dcPassword.equals("")) {
+      mUsername=dotcomUsername.getText().toString();
+      mPassword=dotcomPassword.getText().toString();
+      if (mUsername.equals("") || mPassword.equals("")) {
         dotcomUsername.setError(getString(R.string.username_password_required));
         dotcomPassword.setError(getString(R.string.username_password_required));
       }
  else {
-        WordPress.currentBlog.setDotcom_username(dcUsername);
-        WordPress.currentBlog.setDotcom_password(dcPassword);
-        WordPress.currentBlog.save(WordPress.currentBlog.getUsername());
-        Editor settings=PreferenceManager.getDefaultSharedPreferences(WPComLoginActivity.this).edit();
-        settings.putString(WordPress.WPCOM_USERNAME_PREFERENCE,dcUsername);
-        settings.putString(WordPress.WPCOM_PASSWORD_PREFERENCE,dcPassword);
-        settings.commit();
-        WPComLoginActivity.this.setResult(RESULT_OK);
-        finish();
+        new SignInTask().execute();
       }
     }
   }
@@ -31,7 +23,7 @@
   wpcomHelp.setOnClickListener(new TextView.OnClickListener(){
     public void onClick(    View v){
       Intent intent=new Intent(Intent.ACTION_VIEW);
-      intent.setData(Uri.parse("http://jetpack.me/about"));
+      intent.setData(Uri.parse("http://android.wordpress.org/faq"));
       startActivity(intent);
     }
   }

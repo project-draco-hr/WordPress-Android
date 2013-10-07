@@ -1,0 +1,51 @@
+{
+  if (offset == 0 || !mIsRefreshing) {
+    if (offset == mOldMediaSyncOffset) {
+      offset=0;
+    }
+    mOldMediaSyncOffset=offset;
+    mIsRefreshing=true;
+    mGridAdapter.setRefreshing(true);
+    List<Object> apiArgs=new ArrayList<Object>();
+    apiArgs.add(WordPress.getCurrentBlog());
+    ApiHelper.SyncMediaLibraryTask.Callback callback=new ApiHelper.SyncMediaLibraryTask.Callback(){
+      @Override public void onSuccess(      int count){
+        MediaGridAdapter adapter=(MediaGridAdapter)mGridView.getAdapter();
+        mHasRetrievedAllMedia=(count == 0);
+        adapter.setHasRetrieviedAll(mHasRetrievedAllMedia);
+        mIsRefreshing=false;
+        if (!isFinishing()) {
+          runOnUiThread(new Runnable(){
+            @Override public void run(){
+              mGridAdapter.setRefreshing(false);
+              String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+              Cursor cursor=WordPress.wpDB.getMediaImagesForBlog(blogId,mFilteredItems);
+              mGridAdapter.swapCursor(cursor);
+            }
+          }
+);
+        }
+      }
+      @Override public void onFailure(      int errorCode){
+        if (errorCode == ApiHelper.SyncMediaLibraryTask.NO_UPLOAD_FILES_CAP) {
+          Toast.makeText(MediaGalleryPickerActivity.this,"You do not have permission to view the media library",Toast.LENGTH_SHORT).show();
+          MediaGridAdapter adapter=(MediaGridAdapter)mGridView.getAdapter();
+          mHasRetrievedAllMedia=true;
+          adapter.setHasRetrieviedAll(mHasRetrievedAllMedia);
+        }
+        if (!isFinishing()) {
+          runOnUiThread(new Runnable(){
+            @Override public void run(){
+              mIsRefreshing=false;
+              mGridAdapter.setRefreshing(false);
+            }
+          }
+);
+        }
+      }
+    }
+;
+    ApiHelper.SyncMediaLibraryTask getMediaTask=new ApiHelper.SyncMediaLibraryTask(offset,MediaGridFragment.Filter.ALL,callback);
+    getMediaTask.execute(apiArgs);
+  }
+}

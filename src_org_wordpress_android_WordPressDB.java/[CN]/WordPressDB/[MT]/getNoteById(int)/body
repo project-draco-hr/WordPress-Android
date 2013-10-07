@@ -1,5 +1,5 @@
 {
-  Cursor cursor=db.query(NOTES_TABLE,new String[]{"raw_note_data"},null,null,null,"id=" + id,null,null);
+  Cursor cursor=db.query(NOTES_TABLE,new String[]{"raw_note_data"},"id=" + id,null,null,null,null);
   cursor.moveToFirst();
   try {
     JSONObject jsonNote=new JSONObject(cursor.getString(0));
@@ -7,6 +7,10 @@
   }
  catch (  JSONException e) {
     Log.e(WordPress.TAG,"Can't parse JSON Note: " + e);
+    return null;
+  }
+catch (  CursorIndexOutOfBoundsException e) {
+    Log.v(WordPress.TAG,"No Note with this id: " + e);
     return null;
   }
 }
