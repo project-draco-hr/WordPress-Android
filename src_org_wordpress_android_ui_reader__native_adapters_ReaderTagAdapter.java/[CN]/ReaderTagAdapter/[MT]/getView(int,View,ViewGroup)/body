@@ -1,5 +1,5 @@
 {
-  final ReaderTopic topic=(ReaderTopic)getItem(position);
+  final ReaderTag topic=(ReaderTag)getItem(position);
   TopicViewHolder holder;
   if (convertView == null) {
     convertView=mInflater.inflate(R.layout.reader_listitem_tag,parent,false);
@@ -11,13 +11,13 @@
  else {
     holder=(TopicViewHolder)convertView.getTag();
   }
-  holder.txtTopic.setText(topic.getCapitalizedTopicName());
-switch (topic.topicType) {
+  holder.txtTopic.setText(topic.getCapitalizedTagName());
+switch (topic.tagType) {
 case SUBSCRIBED:
     holder.btnAddRemove.setImageDrawable(mDrawableRemove);
   holder.btnAddRemove.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
-      if (mTopicListener != null)       mTopicListener.onTopicAction(ReaderTagActions.TagAction.DELETE,topic.getTopicName());
+      if (mTopicListener != null)       mTopicListener.onTopicAction(ReaderTagActions.TagAction.DELETE,topic.getTagName());
     }
   }
 );
@@ -27,7 +27,7 @@ case RECOMMENDED:
 holder.btnAddRemove.setImageDrawable(mDrawableAdd);
 holder.btnAddRemove.setOnClickListener(new View.OnClickListener(){
 @Override public void onClick(View v){
-if (mTopicListener != null) mTopicListener.onTopicAction(ReaderTagActions.TagAction.ADD,topic.getTopicName());
+if (mTopicListener != null) mTopicListener.onTopicAction(ReaderTagActions.TagAction.ADD,topic.getTagName());
 }
 }
 );

@@ -1,0 +1,18 @@
+{
+  if (tags == null || tags.size() == 0)   return;
+  SQLiteDatabase db=ReaderDatabase.getWritableDb();
+  db.beginTransaction();
+  try {
+    try {
+      db.execSQL("DELETE FROM tbl_tags");
+      addOrUpdateTags(tags);
+      db.setTransactionSuccessful();
+    }
+ catch (    SQLException e) {
+      ReaderLog.e(e);
+    }
+  }
+  finally {
+    db.endTransaction();
+  }
+}

@@ -1,0 +1,20 @@
+{
+  if (posts == null || posts.size() == 0)   return 0;
+  if (TextUtils.isEmpty(tagName))   return 0;
+  if (getNumPostsWithTag(tagName) == 0)   return posts.size();
+  StringBuilder sb=new StringBuilder();
+  sb.append("SELECT COUNT(*) FROM tbl_post_tags").append(" WHERE tag_name=?").append(" AND (CAST(post_id AS TEXT) || '-' || CAST(blog_id AS TEXT))").append(" IN (");
+  boolean isFirst=true;
+  for (  ReaderPost post : posts) {
+    if (isFirst) {
+      isFirst=false;
+    }
+ else {
+      sb.append(",");
+    }
+    sb.append("'").append(post.postId).append("-").append(post.blogId).append("'");
+  }
+  sb.append(")");
+  int numExisting=SqlUtils.intForQuery(ReaderDatabase.getReadableDb(),sb.toString(),new String[]{tagName});
+  return posts.size() - numExisting;
+}

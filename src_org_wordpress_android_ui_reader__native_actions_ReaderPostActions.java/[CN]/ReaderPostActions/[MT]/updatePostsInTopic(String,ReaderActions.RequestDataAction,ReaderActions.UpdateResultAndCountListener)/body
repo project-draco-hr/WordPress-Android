@@ -1,5 +1,5 @@
 {
-  final ReaderTopic topic=ReaderTopicTable.getTopic(tagName);
+  final ReaderTag topic=ReaderTagTable.getTag(tagName);
   if (topic == null) {
     if (resultListener != null)     resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED,-1);
     return;
@@ -7,18 +7,18 @@
   StringBuilder sb=new StringBuilder(topic.getEndpoint());
   sb.append("?number=").append(Constants.READER_MAX_POSTS_TO_REQUEST);
   sb.append("&order=DESC");
-  if (ReaderPostTable.hasPostsInTopic(tagName)) {
+  if (ReaderPostTable.hasPostsWithTag(tagName)) {
 switch (updateAction) {
 case LOAD_NEWER:
-      String dateNewest=ReaderTopicTable.getTopicNewestDate(tagName);
+      String dateNewest=ReaderTagTable.getTagNewestDate(tagName);
     if (!TextUtils.isEmpty(dateNewest)) {
       sb.append("&after=").append(UrlUtils.urlEncode(dateNewest));
       ReaderLog.d(String.format("requesting newer posts in topic %s (%s)",tagName,dateNewest));
     }
   break;
 case LOAD_OLDER:
-String dateOldest=ReaderTopicTable.getTopicOldestDate(tagName);
-if (TextUtils.isEmpty(dateOldest)) dateOldest=ReaderPostTable.getOldestPubDateInTopic(tagName);
+String dateOldest=ReaderTagTable.getTagOldestDate(tagName);
+if (TextUtils.isEmpty(dateOldest)) dateOldest=ReaderPostTable.getOldestPubDateWithTag(tagName);
 if (!TextUtils.isEmpty(dateOldest)) {
 sb.append("&before=").append(UrlUtils.urlEncode(dateOldest));
 ReaderLog.d(String.format("requesting older posts in topic %s (%s)",tagName,dateOldest));

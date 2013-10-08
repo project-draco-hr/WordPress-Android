@@ -6,22 +6,22 @@
   final Handler handler=new Handler();
   new Thread(){
     @Override public void run(){
-      ReaderTopicList serverTopics=new ReaderTopicList();
-      serverTopics.addAll(parseTopics(jsonObject,"default",ReaderTopicType.DEFAULT));
-      serverTopics.addAll(parseTopics(jsonObject,"subscribed",ReaderTopicType.SUBSCRIBED));
-      ReaderTopicList localTopics=new ReaderTopicList();
-      localTopics.addAll(ReaderTopicTable.getDefaultTopics());
-      localTopics.addAll(ReaderTopicTable.getSubscribedTopics());
+      ReaderTagList serverTopics=new ReaderTagList();
+      serverTopics.addAll(parseTopics(jsonObject,"default",ReaderTag.ReaderTagType.DEFAULT));
+      serverTopics.addAll(parseTopics(jsonObject,"subscribed",ReaderTag.ReaderTagType.SUBSCRIBED));
+      ReaderTagList localTopics=new ReaderTagList();
+      localTopics.addAll(ReaderTagTable.getDefaultTags());
+      localTopics.addAll(ReaderTagTable.getSubscribedTags());
       final boolean hasChanges=!localTopics.isSameList(serverTopics);
       if (hasChanges) {
         deleteTopics(localTopics.getDeletions(serverTopics));
-        ReaderTopicTable.replaceTopics(serverTopics);
+        ReaderTagTable.replaceTags(serverTopics);
       }
-      ReaderTopicList serverRecommended=parseTopics(jsonObject,"recommended",ReaderTopicType.RECOMMENDED);
-      ReaderTopicList localRecommended=ReaderTopicTable.getRecommendedTopics(false);
+      ReaderTagList serverRecommended=parseTopics(jsonObject,"recommended",ReaderTag.ReaderTagType.RECOMMENDED);
+      ReaderTagList localRecommended=ReaderTagTable.getRecommendedTags(false);
       if (!serverRecommended.isSameList(localRecommended)) {
         ReaderLog.d("recommended topics changed");
-        ReaderTopicTable.setRecommendedTopics(serverRecommended);
+        ReaderTagTable.setRecommendedTags(serverRecommended);
       }
       if (resultListener != null) {
         handler.post(new Runnable(){

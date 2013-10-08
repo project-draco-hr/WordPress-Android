@@ -1,0 +1,22 @@
+{
+  Cursor c;
+  if (excludeSubscribed) {
+    c=ReaderDatabase.getReadableDb().rawQuery("SELECT * FROM tbl_recommended_tags WHERE tag_name NOT IN (SELECT tag_name FROM tbl_tags) ORDER BY tag_name",null);
+  }
+ else {
+    c=ReaderDatabase.getReadableDb().rawQuery("SELECT * FROM tbl_recommended_tags ORDER BY tag_name",null);
+  }
+  try {
+    ReaderTagList topics=new ReaderTagList();
+    if (c.moveToFirst()) {
+      do {
+        topics.add(getTagFromCursor(c));
+      }
+ while (c.moveToNext());
+    }
+    return topics;
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+}

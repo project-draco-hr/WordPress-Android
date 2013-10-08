@@ -1,23 +1,23 @@
 {
   if (TextUtils.isEmpty(tagName))   return false;
-  final ReaderTopic originalTopic;
+  final ReaderTag originalTopic;
   final String path;
   final String tagNameForApi=sanitizeTitle(tagName);
 switch (action) {
 case DELETE:
-    originalTopic=ReaderTopicTable.getTopic(tagName);
+    originalTopic=ReaderTagTable.getTag(tagName);
   if (originalTopic == null)   return false;
-ReaderTopicTable.deleteTopic(tagName);
-ReaderPostTable.deletePostsInTopic(tagName);
+ReaderTagTable.deleteTag(tagName);
+ReaderPostTable.deletePostsWithTag(tagName);
 path="read/tags/" + tagNameForApi + "/mine/delete";
 break;
 case ADD:
 originalTopic=null;
-ReaderTopic newTopic=new ReaderTopic();
-newTopic.setTopicName(tagName);
-newTopic.topicType=ReaderTopicType.SUBSCRIBED;
+ReaderTag newTopic=new ReaderTag();
+newTopic.setTagName(tagName);
+newTopic.tagType=ReaderTag.ReaderTagType.SUBSCRIBED;
 newTopic.setEndpoint("/read/tags/" + tagNameForApi + "/posts");
-ReaderTopicTable.addOrUpdateTopic(newTopic);
+ReaderTagTable.addOrUpdateTag(newTopic);
 path="read/tags/" + tagNameForApi + "/mine/new";
 break;
 default :
@@ -43,10 +43,10 @@ ReaderLog.w("tag action " + action.name() + " failed");
 ReaderLog.e(volleyError);
 switch (action) {
 case DELETE:
-ReaderTopicTable.addOrUpdateTopic(originalTopic);
+ReaderTagTable.addOrUpdateTag(originalTopic);
 break;
 case ADD:
-ReaderTopicTable.deleteTopic(tagName);
+ReaderTagTable.deleteTag(tagName);
 break;
 }
 if (actionListener != null) actionListener.onActionResult(false);
