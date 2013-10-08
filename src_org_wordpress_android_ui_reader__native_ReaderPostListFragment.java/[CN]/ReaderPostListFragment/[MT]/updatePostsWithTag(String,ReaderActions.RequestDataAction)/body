@@ -1,0 +1,24 @@
+{
+  if (TextUtils.isEmpty(tagName))   return;
+  unscheduleAutoUpdate();
+  setIsUpdating(true,updateAction);
+  ReaderPostActions.updatePostsWithTag(tagName,updateAction,new ReaderActions.UpdateResultAndCountListener(){
+    @Override public void onUpdateResult(    ReaderActions.UpdateResult result,    int numNewPosts){
+      if (!hasActivity()) {
+        ReaderLog.w("volley response when fragment has no activity");
+        return;
+      }
+      setIsUpdating(false,updateAction);
+      if (result == ReaderActions.UpdateResult.CHANGED && numNewPosts > 0 && isCurrentTagName(tagName)) {
+        if (!isPostAdapterEmpty() && updateAction == ReaderActions.RequestDataAction.LOAD_NEWER) {
+          showNewPostsBar(numNewPosts);
+        }
+ else {
+          refreshPosts();
+        }
+      }
+      if (result != ReaderActions.UpdateResult.FAILED)       scheduleAutoUpdate();
+    }
+  }
+);
+}
