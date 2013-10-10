@@ -1,8 +1,11 @@
 {
   View view=super.getView(position,convertView,parent);
   final Note note=getItem(position);
-  TextView detailText=(TextView)view.findViewById(R.id.note_detail);
-  ProgressBar placeholderLoading=(ProgressBar)view.findViewById(R.id.placeholder_loading);
+  final TextView detailText=(TextView)view.findViewById(R.id.note_detail);
+  final ProgressBar placeholderLoading=(ProgressBar)view.findViewById(R.id.placeholder_loading);
+  final NetworkImageView avatarView=(NetworkImageView)view.findViewById(R.id.note_avatar);
+  final ImageView iconView=(ImageView)view.findViewById(R.id.note_icon);
+  final TextView unreadIndicator=(TextView)view.findViewById(R.id.unread_indicator);
   if (note.isCommentType()) {
     detailText.setText(note.getCommentPreview());
     detailText.setVisibility(View.VISIBLE);
@@ -10,26 +13,12 @@
  else {
     detailText.setVisibility(View.GONE);
   }
-  final NetworkImageView avatarView=(NetworkImageView)view.findViewById(R.id.note_avatar);
+  String avatarUrl=note.getIconURL();
+  if (avatarUrl != null && avatarUrl.contains("s=256"))   avatarUrl=avatarUrl.replace("s=256","s=" + mAvatarSz);
+  avatarView.setImageUrl(avatarUrl,WordPress.imageLoader);
   avatarView.setDefaultImageResId(R.drawable.placeholder);
-  avatarView.setImageUrl(note.getIconURL(),WordPress.imageLoader);
-  int imageID=getResources().getIdentifier("note_icon_" + note.getType(),"drawable",getActivity().getPackageName());
-  if (imageID > 0) {
-    final ImageView iconView=(ImageView)view.findViewById(R.id.note_icon);
-    iconView.setImageResource(imageID);
-  }
-  final TextView unreadIndicator=(TextView)view.findViewById(R.id.unread_indicator);
-  if (note.isUnread()) {
-    unreadIndicator.setVisibility(View.VISIBLE);
-  }
- else {
-    unreadIndicator.setVisibility(View.GONE);
-  }
-  if (note.isPlaceholder()) {
-    placeholderLoading.setVisibility(View.VISIBLE);
-  }
- else {
-    placeholderLoading.setVisibility(View.GONE);
-  }
+  iconView.setImageDrawable(mNoteIcons.getDrawableForType(note.getType()));
+  unreadIndicator.setVisibility(note.isUnread() ? View.VISIBLE : View.GONE);
+  placeholderLoading.setVisibility(note.isPlaceholder() ? View.VISIBLE : View.GONE);
   return view;
 }
