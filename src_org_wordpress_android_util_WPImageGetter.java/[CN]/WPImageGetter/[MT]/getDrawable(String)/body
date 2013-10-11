@@ -1,0 +1,34 @@
+{
+  if (TextUtils.isEmpty(source))   return null;
+  if (source.startsWith("//"))   source="http:" + source;
+  Drawable loading=mContext.getResources().getDrawable(R.drawable.remote_image);
+  Drawable failed=mContext.getResources().getDrawable(R.drawable.remote_failed);
+  final RemoteDrawable remote=new RemoteDrawable(loading,failed);
+  WordPress.imageLoader.get(source,new ImageLoader.ImageListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+      remote.displayFailed();
+      mView.invalidate();
+    }
+    @Override public void onResponse(    ImageLoader.ImageContainer response,    boolean isImmediate){
+      if (response.getBitmap() != null) {
+        if (mView == null) {
+          return;
+        }
+        Drawable drawable=new BitmapDrawable(mContext.getResources(),response.getBitmap());
+        final int oldHeight=remote.getBounds().height();
+        int maxWidth=mView.getWidth() - mView.getPaddingLeft() - mView.getPaddingRight();
+        if (mMaxSize > 0 && maxWidth > mMaxSize)         maxWidth=mMaxSize;
+        remote.setRemoteDrawable(drawable,maxWidth);
+        if (isImmediate) {
+          return;
+        }
+        int newHeight=remote.getBounds().height();
+        mView.invalidate();
+        mView.setHeight(mView.getHeight() + newHeight - oldHeight);
+        mView.setEllipsize(null);
+      }
+    }
+  }
+);
+  return remote;
+}
