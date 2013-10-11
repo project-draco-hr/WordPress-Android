@@ -3,11 +3,6 @@
   int iFrameStart=text.indexOf("<iframe");
   if (iFrameStart == -1)   return text;
   boolean usesSingleQuotes=text.contains("src='");
-  final int overlaySz=getResources().getDimensionPixelSize(R.dimen.reader_video_overlay_size) / 2;
-  final int thumbWidth=getMaxImageWidth();
-  final int thumbHeight=(int)(thumbWidth * 0.65f);
-  final int overlayLeft=(thumbWidth / 2) - (overlaySz / 2);
-  final int overlayTop=(thumbHeight / 2) - (overlaySz / 2);
   while (iFrameStart > -1) {
     int iFrameEnd=text.indexOf(">",iFrameStart);
     if (iFrameEnd == -1)     return text;
@@ -17,22 +12,17 @@
     if (srcEnd == -1 || srcEnd > iFrameEnd)     return text;
     String src=text.substring(srcStart + 5,srcEnd);
     boolean isVideo=(src.contains("youtube") || src.contains("video") || src.contains("vimeo"));
-    final String link;
+    final String videoDiv;
     if (isVideo) {
       String thumbnailUrl=ReaderThumbnailTable.getThumbnailUrl(src);
-      if (TextUtils.isEmpty(thumbnailUrl)) {
-        link=String.format("<div class='wpreader-video' align='center'><a href='%s'><img style='width:%dpx; height:%dpx; display:block;' src='%s' /></a></div>",src,overlaySz,overlaySz,OVERLAY_IMG);
-      }
- else {
-        link="<div style='position:relative'>" + String.format("<a href='%s'><img src='%s' style='display:inline; width:%dpx; height:%dpx;' class='wpreader-video-thumb' /></a>",src,thumbnailUrl,thumbWidth,thumbHeight) + String.format("<a href='%s'><img src='%s' style='display:inline; width:%dpx; height:%dpx; left:%dpx; top:%dpx; position:absolute;' /></a>",src,OVERLAY_IMG,overlaySz,overlaySz,overlayLeft,overlayTop)+ "</div>";
-        mVideoThumbnailUrls.add(thumbnailUrl);
-      }
-      text=text.substring(0,iFrameStart) + link + text.substring(iFrameStart);
+      videoDiv=makeVideoDiv(src,thumbnailUrl);
+      if (!TextUtils.isEmpty(thumbnailUrl))       mVideoThumbnailUrls.add(thumbnailUrl);
+      text=text.substring(0,iFrameStart) + videoDiv + text.substring(iFrameStart);
     }
  else {
-      link="";
+      videoDiv="";
     }
-    iFrameStart=text.indexOf("<iframe",iFrameEnd + link.length());
+    iFrameStart=text.indexOf("<iframe",iFrameEnd + videoDiv.length());
   }
   return text;
 }
