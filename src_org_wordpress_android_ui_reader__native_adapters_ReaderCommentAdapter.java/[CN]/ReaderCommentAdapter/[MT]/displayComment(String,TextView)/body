@@ -1,0 +1,20 @@
+{
+  if (content == null || textView == null)   return;
+  if (content.contains("icon_")) {
+    SpannableStringBuilder html=(SpannableStringBuilder)Html.fromHtml(content);
+    content=Emoticons.replaceEmoticonsWithEmoji(html).toString().trim();
+  }
+  Context context=textView.getContext();
+  int maxImageSize=context.getResources().getDimensionPixelSize(R.dimen.reader_avatar_sz_medium);
+  SpannableStringBuilder html=(SpannableStringBuilder)Html.fromHtml(content,new WPImageGetter(context,textView,maxImageSize),null);
+  CharSequence source=html;
+  int start=0;
+  int end=source.length();
+  while (start < end && Character.isWhitespace(source.charAt(start))) {
+    start++;
+  }
+  while (end > start && Character.isWhitespace(source.charAt(end - 1))) {
+    end--;
+  }
+  textView.setText(source.subSequence(start,end));
+}
