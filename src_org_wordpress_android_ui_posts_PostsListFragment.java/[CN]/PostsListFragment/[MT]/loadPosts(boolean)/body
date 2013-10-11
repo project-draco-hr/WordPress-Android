@@ -94,19 +94,7 @@
           if (v == null)           return;
           if (!mParentActivity.isRefreshing) {
             mSelectedID=v.getId();
-            Post post=new Post(WordPress.currentBlog.getId(),mSelectedID,isPage);
-            if (post.getId() >= 0) {
-              WordPress.currentPost=post;
-              mOnPostSelectedListener.onPostSelected(post);
-              mPostListAdapter.notifyDataSetChanged();
-            }
- else {
-              if (!getActivity().isFinishing()) {
-                FragmentTransaction ft=getFragmentManager().beginTransaction();
-                WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(getString(R.string.post_not_found));
-                alert.show(ft,"alert");
-              }
-            }
+            showPost(mSelectedID);
           }
  else {
             Toast.makeText(mParentActivity,R.string.please_wait_refresh_done,Toast.LENGTH_SHORT).show();
@@ -176,24 +164,14 @@ catch (          InvocationTargetException e) {
       }
 );
     }
-    if (this.shouldSelectAfterLoad) {
-      if (mPostIDs != null) {
-        if (mPostIDs.length >= 1) {
-          Post post=new Post(WordPress.currentBlog.getId(),Integer.valueOf(mPostIDs[0]),isPage);
-          if (post.getId() >= 0) {
-            WordPress.currentPost=post;
-            mOnPostSelectedListener.onPostSelected(post);
-            FragmentManager fm=getActivity().getSupportFragmentManager();
-            ViewPostFragment f=(ViewPostFragment)fm.findFragmentById(R.id.postDetail);
-            if (f != null && f.isInLayout())             getListView().setItemChecked(0,true);
-          }
-        }
-      }
+    if (this.shouldSelectAfterLoad && mPostIDs != null && mPostIDs.length >= 1) {
+      selectAndShowFirstPost();
       shouldSelectAfterLoad=false;
     }
     if (loadedPosts == null) {
       refreshPosts(false);
     }
+    restoreScrollOffset();
     return true;
   }
  else {
@@ -201,6 +179,7 @@ catch (          InvocationTargetException e) {
       refreshPosts(false);
       if (!isPage)       new ApiHelper.RefreshBlogContentTask(getActivity(),WordPress.getCurrentBlog(),null).execute(false);
     }
+    restoreScrollOffset();
     return false;
   }
 }
