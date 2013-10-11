@@ -1,36 +1,36 @@
 {
-  for (int i=0; i < checkedComments.size(); i++) {
-    if (checkedComments.get(i).toString().equals("true")) {
-      client=new XMLRPCClient(WordPress.currentBlog.getUrl(),WordPress.currentBlog.getHttpuser(),WordPress.currentBlog.getHttppassword());
-      Comment listRow=(Comment)getListView().getItemAtPosition(i);
-      int curCommentID=listRow.commentID;
-      Map<String,String> contentHash, postHash=new HashMap<String,String>();
-      contentHash=(Map<String,String>)allComments.get(curCommentID);
-      if (contentHash.get("status").equals(newStatus)) {
-        checkedComments.set(i,"false");
-        continue;
+  Iterator iter=selectedCommentPositions.iterator();
+  while (iter.hasNext()) {
+    int i=(Integer)iter.next();
+    client=new XMLRPCClient(WordPress.currentBlog.getUrl(),WordPress.currentBlog.getHttpuser(),WordPress.currentBlog.getHttppassword());
+    Comment listRow=(Comment)getListView().getItemAtPosition(i);
+    int curCommentID=listRow.commentID;
+    Map<String,String> contentHash, postHash=new HashMap<String,String>();
+    contentHash=(Map<String,String>)allComments.get(curCommentID);
+    if (contentHash.get("status").equals(newStatus)) {
+      iter.remove();
+      continue;
+    }
+    postHash.put("status",newStatus);
+    postHash.put("content",contentHash.get("comment"));
+    postHash.put("author",contentHash.get("author"));
+    postHash.put("author_url",contentHash.get("url"));
+    postHash.put("author_email",contentHash.get("email"));
+    Object[] params={WordPress.currentBlog.getBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),curCommentID,postHash};
+    Object result;
+    try {
+      result=client.call("wp.editComment",params);
+      boolean bResult=Boolean.parseBoolean(result.toString());
+      if (bResult) {
+        iter.remove();
+        listRow.status=newStatus;
+        contentHash.put("status",newStatus);
+        model.set(i,listRow);
+        WordPress.wpDB.updateCommentStatus(WordPress.currentBlog.getId(),listRow.commentID,newStatus);
       }
-      postHash.put("status",newStatus);
-      postHash.put("content",contentHash.get("comment"));
-      postHash.put("author",contentHash.get("author"));
-      postHash.put("author_url",contentHash.get("url"));
-      postHash.put("author_email",contentHash.get("email"));
-      Object[] params={WordPress.currentBlog.getBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),curCommentID,postHash};
-      Object result=null;
-      try {
-        result=(Object)client.call("wp.editComment",params);
-        boolean bResult=Boolean.parseBoolean(result.toString());
-        if (bResult) {
-          checkedComments.set(i,"false");
-          listRow.status=newStatus;
-          contentHash.put("status",newStatus);
-          model.set(i,listRow);
-          WordPress.wpDB.updateCommentStatus(WordPress.currentBlog.getId(),listRow.commentID,newStatus);
-        }
-      }
- catch (      XMLRPCException e) {
-        moderateErrorMsg=getResources().getText(R.string.error_moderate_comment).toString();
-      }
+    }
+ catch (    XMLRPCException e) {
+      moderateErrorMsg=getResources().getText(R.string.error_moderate_comment).toString();
     }
   }
   getActivity().dismissDialog(ID_DIALOG_MODERATING);
