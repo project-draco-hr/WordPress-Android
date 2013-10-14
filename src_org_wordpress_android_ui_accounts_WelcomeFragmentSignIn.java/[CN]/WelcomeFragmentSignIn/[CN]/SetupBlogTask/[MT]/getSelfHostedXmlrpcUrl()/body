@@ -18,19 +18,23 @@
   }
  else {
     try {
-      XMLRPCClient client=new XMLRPCClient(url,"","");
+      XMLRPCClient client=new XMLRPCClient(url,mHttpUsername,mHttpPassword);
       try {
         client.call("system.listMethods");
         xmlrpcUrl=url;
         mIsCustomUrl=true;
       }
  catch (      XMLRPCException e) {
+        if (e.getMessage().contains("401")) {
+          mHttpAuthRequired=true;
+          return null;
+        }
         String guessURL=url;
         if (guessURL.substring(guessURL.length() - 1,guessURL.length()).equals("/")) {
           guessURL=guessURL.substring(0,guessURL.length() - 1);
         }
         guessURL+="/xmlrpc.php";
-        client=new XMLRPCClient(guessURL,"","");
+        client=new XMLRPCClient(guessURL,mHttpUsername,mHttpPassword);
         try {
           client.call("system.listMethods");
           xmlrpcUrl=guessURL;

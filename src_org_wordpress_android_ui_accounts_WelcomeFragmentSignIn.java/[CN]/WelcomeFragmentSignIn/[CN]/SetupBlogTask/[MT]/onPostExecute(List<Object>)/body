@@ -1,5 +1,29 @@
 {
   mProgressDialog.dismiss();
+  if (mHttpAuthRequired) {
+    mHttpAuthRequired=false;
+    AlertDialog.Builder alert=new AlertDialog.Builder(getActivity());
+    alert.setTitle(R.string.http_authorization_required);
+    View httpAuth=getActivity().getLayoutInflater().inflate(R.layout.alert_http_auth,null);
+    final EditText usernameEditText=(EditText)httpAuth.findViewById(R.id.http_username);
+    final EditText passwordEditText=(EditText)httpAuth.findViewById(R.id.http_password);
+    alert.setView(httpAuth);
+    alert.setPositiveButton(R.string.sign_in,new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int whichButton){
+        mHttpUsername=usernameEditText.getText().toString();
+        mHttpPassword=passwordEditText.getText().toString();
+        new SetupBlogTask().execute();
+      }
+    }
+);
+    alert.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int whichButton){
+      }
+    }
+);
+    alert.show();
+    return;
+  }
   if (usersBlogsList == null && mErrorMsg != null) {
     FragmentTransaction ft=getFragmentManager().beginTransaction();
     NUXDialogFragment nuxAlert=NUXDialogFragment.newInstance(getString(R.string.nux_cannot_log_in),mErrorMsg,getString(R.string.nux_tap_continue),R.drawable.nux_icon_alert);
@@ -17,6 +41,12 @@
   }
   if (usersBlogsList != null) {
     mUsersBlogsList=usersBlogsList;
+    if (mUsersBlogsList.size() == 1) {
+      SparseBooleanArray oneBlogArray=new SparseBooleanArray();
+      oneBlogArray.put(0,true);
+      addBlogs(oneBlogArray);
+      return;
+    }
     LayoutInflater inflater=(LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     final ListView lv=(ListView)inflater.inflate(R.layout.select_blogs_list,null);
     lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
