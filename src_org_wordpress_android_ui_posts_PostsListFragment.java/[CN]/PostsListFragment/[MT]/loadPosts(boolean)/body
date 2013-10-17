@@ -95,6 +95,10 @@
           if (!mParentActivity.isRefreshing) {
             mSelectedID=v.getId();
             Post post=new Post(WordPress.currentBlog.getId(),mSelectedID,isPage);
+            if (PostUploadService.isUploading(post)) {
+              Toast.makeText(mParentActivity,R.string.please_wait_uploading_done,Toast.LENGTH_SHORT).show();
+              return;
+            }
             if (post.getId() >= 0) {
               WordPress.currentPost=post;
               mOnPostSelectedListener.onPostSelected(post);
@@ -145,6 +149,9 @@ catch (          InvocationTargetException e) {
           Post post=new Post(WordPress.currentBlog.getId(),mSelectedID,isPage);
           if (post.getId() >= 0) {
             allowComments=post.isMt_allow_comments();
+          }
+          if (PostUploadService.isUploading(post)) {
+            return;
           }
           mRowID=info.position;
           if (totalDrafts > 0 && mRowID < totalDrafts) {
