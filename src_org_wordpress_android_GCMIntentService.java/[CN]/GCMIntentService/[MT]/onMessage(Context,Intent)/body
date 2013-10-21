@@ -10,6 +10,16 @@
   String message=StringUtils.unescapeHTML(extras.getString("msg"));
   String note_id=extras.getString("note_id");
   if (note_id == null)   note_id=StringUtils.getMd5Hash(message);
+  long thisTime=System.currentTimeMillis();
+  if (mPreviousNoteId != null && mPreviousNoteId.equals(note_id)) {
+    long seconds=TimeUnit.MILLISECONDS.toSeconds(thisTime - mPreviousNoteTime);
+    if (seconds <= 1) {
+      Log.w("WORDPRESS","skipped potential duplicate notification");
+      return;
+    }
+  }
+  mPreviousNoteId=note_id;
+  mPreviousNoteTime=thisTime;
   if (note_id != null) {
     if (!activeNotificationsMap.containsKey(note_id))     activeNotificationsMap.put(note_id,extras);
   }
