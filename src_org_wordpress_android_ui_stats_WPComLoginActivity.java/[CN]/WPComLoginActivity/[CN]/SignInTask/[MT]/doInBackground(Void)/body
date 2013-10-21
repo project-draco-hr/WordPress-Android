@@ -3,24 +3,26 @@
   Object[] signInParams={mUsername,mPassword};
   try {
     client.call("wp.getUsersBlogs",signInParams);
-    if (WordPress.hasValidWPComCredentials(WPComLoginActivity.this)) {
-      new WPComXMLRPCApi().unregisterWPComToken(WPComLoginActivity.this,GCMRegistrar.getRegistrationId(WPComLoginActivity.this));
-      try {
-        GCMRegistrar.checkDevice(WPComLoginActivity.this);
-        GCMRegistrar.unregister(WPComLoginActivity.this);
-      }
- catch (      Exception e) {
-        Log.v("WORDPRESS","Could not unregister for GCM: " + e.getMessage());
-      }
-    }
-    WordPress.restClient.clearAccessToken();
     WordPress.currentBlog.setDotcom_username(mUsername);
     WordPress.currentBlog.setDotcom_password(mPassword);
     WordPress.currentBlog.save(WordPress.currentBlog.getUsername());
-    Editor settings=PreferenceManager.getDefaultSharedPreferences(WPComLoginActivity.this).edit();
-    settings.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mUsername);
-    settings.putString(WordPress.WPCOM_PASSWORD_PREFERENCE,mPassword);
-    settings.commit();
+    if (!mIsJetpackAuthRequest) {
+      if (WordPress.hasValidWPComCredentials(WPComLoginActivity.this)) {
+        new WPComXMLRPCApi().unregisterWPComToken(WPComLoginActivity.this,GCMRegistrar.getRegistrationId(WPComLoginActivity.this));
+        try {
+          GCMRegistrar.checkDevice(WPComLoginActivity.this);
+          GCMRegistrar.unregister(WPComLoginActivity.this);
+        }
+ catch (        Exception e) {
+          Log.v("WORDPRESS","Could not unregister for GCM: " + e.getMessage());
+        }
+      }
+      Editor settings=PreferenceManager.getDefaultSharedPreferences(WPComLoginActivity.this).edit();
+      settings.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mUsername);
+      settings.putString(WordPress.WPCOM_PASSWORD_PREFERENCE,mPassword);
+      settings.commit();
+      WordPress.restClient.clearAccessToken();
+    }
     return true;
   }
  catch (  XMLRPCException e) {
