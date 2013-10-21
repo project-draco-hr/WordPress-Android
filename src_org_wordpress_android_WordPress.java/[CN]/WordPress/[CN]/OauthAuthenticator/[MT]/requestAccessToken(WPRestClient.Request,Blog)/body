@@ -1,6 +1,5 @@
 {
   Oauth oauth=new Oauth(Config.OAUTH_APP_ID,Config.OAUTH_APP_SECRET,Config.OAUTH_REDIRECT_URI);
-  android.util.Log.d(TAG,String.format("Requesting an access token for blog %s",blog));
   String username=null, password=null;
   final SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WordPress.this);
   if (blog == null) {
@@ -19,7 +18,6 @@
   }
   Request oauthRequest=oauth.makeRequest(username,password,new Oauth.Listener(){
     @Override public void onResponse(    Oauth.Token token){
-      android.util.Log.d(TAG,String.format("Got a token? %s",token));
       if (blog == null) {
         settings.edit().putString(ACCESS_TOKEN_PREFERENCE,token.toString()).commit();
       }

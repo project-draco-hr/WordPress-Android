@@ -1,5 +1,4 @@
 {
-  android.util.Log.d(TAG,"Add an access token to this request if you want, nbd");
   String siteId=request.getSiteId();
   String token=null;
   Blog blog=null;
@@ -8,16 +7,19 @@
     token=settings.getString(ACCESS_TOKEN_PREFERENCE,null);
   }
  else {
-    android.util.Log.d(TAG,String.format("Site id! %s",siteId));
     blog=wpDB.getBlogForDotComBlogId(siteId);
-    if (blog != null)     token=blog.getApi_key();
+    if (blog != null) {
+      token=blog.getApi_key();
+      if (token == null && blog.isDotcomFlag()) {
+        SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WordPress.this);
+        token=settings.getString(ACCESS_TOKEN_PREFERENCE,null);
+      }
+    }
   }
   if (token != null) {
-    android.util.Log.d(TAG,String.format("Sending with existing token %s",token));
     request.sendWithAccessToken(token);
   }
  else {
-    android.util.Log.d(TAG,String.format("We need a token"));
     requestAccessToken(request,blog);
   }
 }
