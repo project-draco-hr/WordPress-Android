@@ -1,0 +1,15 @@
+{
+  if (isFinishing())   return;
+  NoteCommentFragment f=(NoteCommentFragment)getSupportFragmentManager().findFragmentById(R.id.note_fragment_container);
+  int position=mNotesList.getNotesAdapter().getPosition(originalNote);
+  if (position >= 0) {
+    mNotesList.getNotesAdapter().remove(originalNote);
+    mNotesList.getNotesAdapter().insert(updatedNote,position);
+    mNotesList.getNotesAdapter().notifyDataSetChanged();
+    if (f != null && position == mNotesList.getListView().getCheckedItemPosition()) {
+      f.setNote(updatedNote);
+      f.onStart();
+    }
+  }
+  if (f != null)   f.animateModeration(false);
+}
