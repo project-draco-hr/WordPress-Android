@@ -1,12 +1,20 @@
 {
   final String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+  List<String> sanitizedIds=new ArrayList<String>(ids.size());
   if (mMediaItemFragment != null && mMediaItemFragment.isVisible()) {
     getSupportFragmentManager().popBackStack();
   }
-  WordPress.wpDB.setMediaFilesMarkedForDelete(blogId,ids);
+  for (  String currentID : ids) {
+    if (MediaUtils.canDeleteMedia(blogId,currentID))     sanitizedIds.add(currentID);
+  }
+  if (sanitizedIds.size() != ids.size()) {
+    if (ids.size() == 1)     Toast.makeText(this,R.string.wait_until_upload_completes,Toast.LENGTH_LONG).show();
+ else     Toast.makeText(this,R.string.cannot_delete_multi_media_items,Toast.LENGTH_LONG).show();
+  }
+  WordPress.wpDB.setMediaFilesMarkedForDelete(blogId,sanitizedIds);
   if (mMediaEditFragment != null) {
     String mediaId=mMediaEditFragment.getMediaId();
-    for (    String id : ids) {
+    for (    String id : sanitizedIds) {
       if (id.equals(mediaId)) {
         mMediaEditFragment.loadMedia(null);
         break;
