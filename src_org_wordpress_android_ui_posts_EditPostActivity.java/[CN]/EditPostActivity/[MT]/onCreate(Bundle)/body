@@ -159,7 +159,7 @@
   ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,items);
   adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
   mStatusSpinner.setAdapter(adapter);
-  getLocationProvider();
+  initLocation();
   if (mIsNew) {
     if (mQuickMediaType >= 0) {
       if (mQuickMediaType == Constants.QUICK_POST_PHOTO_CAMERA)       launchCamera();
@@ -231,6 +231,7 @@
       Double latitude=mPost.getLatitude();
       Double longitude=mPost.getLongitude();
       if (latitude != 0.0) {
+        setLocationStatus(LocationStatus.SEARCHING);
         new GetAddressTask().execute(latitude,longitude);
       }
     }
