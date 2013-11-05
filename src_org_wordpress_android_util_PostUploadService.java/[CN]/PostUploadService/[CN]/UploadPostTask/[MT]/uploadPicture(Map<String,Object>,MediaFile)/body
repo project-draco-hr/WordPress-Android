@@ -11,12 +11,8 @@
   }
   File tempFile=context.getFileStreamPath(tempFileName);
   Object[] params={1,post.getBlog().getUsername(),post.getBlog().getPassword(),pictureParams};
-  Object result=null;
-  try {
-    result=(Object)client.call("wp.uploadFile",params,tempFile);
-  }
- catch (  XMLRPCException e) {
-    error=context.getResources().getString(R.string.error_media_upload) + ": " + cleanXMLRPCErrorMessage(e.getMessage());
+  Object result=uploadFileHelper(client,params,tempFile);
+  if (result == null) {
     mediaError=true;
     return null;
   }
