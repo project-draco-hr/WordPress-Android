@@ -10,6 +10,7 @@
     startNotificationsActivity(extras);
     return;
   }
+  showErrorDialogIfNeeded(extras);
   if (WordPress.shouldRestoreSelectedActivity && WordPress.getCurrentBlog() != null && !(this instanceof PagesActivity)) {
     new ApiHelper.RefreshBlogContentTask(this,WordPress.getCurrentBlog(),new ApiHelper.RefreshBlogContentTask.Callback(){
       @Override public void onSuccess(){
@@ -44,8 +45,7 @@
   postList.setListShown(true);
   if (extras != null) {
     isPage=extras.getBoolean("viewPages");
-    String errorMessage=extras.getString("errorMessage");
-    if (errorMessage != null)     showPostUploadErrorAlert(errorMessage);
+    showErrorDialogIfNeeded(extras);
   }
   if (isPage)   setTitle(getString(R.string.pages));
  else   setTitle(getString(R.string.posts));

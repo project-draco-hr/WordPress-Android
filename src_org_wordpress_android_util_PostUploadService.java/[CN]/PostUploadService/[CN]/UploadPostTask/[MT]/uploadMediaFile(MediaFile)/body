@@ -16,8 +16,8 @@
         context.openFileOutput(tempFileName,Context.MODE_PRIVATE);
       }
  catch (      FileNotFoundException e) {
-        error=getResources().getString(R.string.file_error_create);
-        mediaError=true;
+        mErrorMessage=getResources().getString(R.string.file_error_create);
+        mIsMediaError=true;
         return null;
       }
       File tempFile=context.getFileStreamPath(tempFileName);
@@ -66,7 +66,7 @@
         fVideo=new File(videoUri.toString().replace("file://",""));
       }
       if (fVideo == null) {
-        error=context.getResources().getString(R.string.error_media_upload) + ".";
+        mErrorMessage=context.getResources().getString(R.string.error_media_upload) + ".";
         return null;
       }
       String imageTitle=fVideo.getName();
@@ -92,7 +92,8 @@
         content=content + resultURL;
       }
  else {
-        error=getString(R.string.media_no_video_message);
+        mErrorMessage=getString(R.string.media_no_video_message);
+        mErrorUnavailableVideoPress=true;
         return null;
       }
     }
@@ -133,8 +134,8 @@
         mf.setFilePath(path);
       }
       if (jpeg == null) {
-        error=context.getString(R.string.file_not_found);
-        mediaError=true;
+        mErrorMessage=context.getString(R.string.file_not_found);
+        mIsMediaError=true;
         return null;
       }
       ImageHelper ih=new ImageHelper();
@@ -161,8 +162,8 @@
           bytes=new byte[(int)jpeg.length()];
         }
  catch (        OutOfMemoryError er) {
-          error=context.getString(R.string.out_of_memory);
-          mediaError=true;
+          mErrorMessage=context.getString(R.string.out_of_memory);
+          mIsMediaError=true;
           return null;
         }
         DataInputStream in=null;
@@ -188,8 +189,8 @@
         ImageHelper ih2=new ImageHelper();
         finalBytes=ih2.createThumbnail(bytes,width,orientation,false);
         if (finalBytes == null) {
-          error=context.getString(R.string.out_of_memory);
-          mediaError=true;
+          mErrorMessage=context.getString(R.string.out_of_memory);
+          mIsMediaError=true;
           return null;
         }
         Map<String,Object> m=new HashMap<String,Object>();
