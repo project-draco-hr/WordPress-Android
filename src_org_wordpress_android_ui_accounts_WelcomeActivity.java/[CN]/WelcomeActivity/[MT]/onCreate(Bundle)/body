@@ -5,17 +5,14 @@
   mSignInButton=(WPTextView)findViewById(R.id.nux_sign_in_button);
   mSignInButton.setOnClickListener(new OnClickListener(){
     @Override public void onClick(    View v){
-      mPager.setCurrentItem(2);
+      mPager.setCurrentItem(1);
     }
   }
 );
   mCreateAccountButton=(WPTextView)findViewById(R.id.nux_create_account_button);
   mCreateAccountButton.setOnClickListener(mCreateAccountListener);
-  mSignInTextView=(WPTextView)findViewById(R.id.nux_sign_in);
-  mSignInTextView.setText(Html.fromHtml(String.format(getString(R.string.dont_have_account,"<u>","</u>"))));
-  mSignInTextView.setOnClickListener(mCreateAccountListener);
   mPager=(WPViewPager)findViewById(R.id.pager);
-  mPager.setPagingEnabled(true);
+  mPager.setPagingEnabled(false);
   mPagerAdapter=new NewAccountPagerAdapter(super.getSupportFragmentManager());
   mPager.setAdapter(mPagerAdapter);
   mFooterView=(RelativeLayout)findViewById(R.id.footer_view);
@@ -23,7 +20,7 @@
   mLinePageIndicator.setViewPager(mPager);
   mLinePageIndicator.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
     @Override public void onPageSelected(    int position){
-      if (position == 2) {
+      if (position == 1) {
         mShowFooter=false;
         mFooterView.setVisibility(View.GONE);
       }
@@ -52,5 +49,5 @@
     }
   }
 );
-  if (getIntent().getBooleanExtra(SKIP_WELCOME,false))   mPager.setCurrentItem(2);
+  if (getIntent().getBooleanExtra(SKIP_WELCOME,false))   mPager.setCurrentItem(1);
 }
