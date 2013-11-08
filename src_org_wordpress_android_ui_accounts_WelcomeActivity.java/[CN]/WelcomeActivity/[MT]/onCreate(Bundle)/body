@@ -24,20 +24,19 @@
   mLinePageIndicator.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
     @Override public void onPageSelected(    int position){
       if (position == 2) {
-        mLinePageIndicator.setVisibility(View.GONE);
-        mSignInButton.setVisibility(View.GONE);
-        mCreateAccountButton.setVisibility(View.GONE);
-        mSignInTextView.setVisibility(View.VISIBLE);
+        mShowFooter=false;
+        mFooterView.setVisibility(View.GONE);
       }
  else {
-        mLinePageIndicator.setVisibility(View.VISIBLE);
+        mShowFooter=true;
+        mFooterView.setVisibility(View.VISIBLE);
         mSignInButton.setVisibility(View.VISIBLE);
         mCreateAccountButton.setVisibility(View.VISIBLE);
-        mSignInTextView.setVisibility(View.GONE);
       }
     }
   }
 );
+  mLinePageIndicator.setVisibility(View.GONE);
   final View mainView=findViewById(R.id.main_view);
   mainView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener(){
     @Override public void onGlobalLayout(){
@@ -46,7 +45,9 @@
         mFooterView.setVisibility(View.GONE);
       }
  else {
-        mFooterView.setVisibility(View.VISIBLE);
+        if (mShowFooter) {
+          mFooterView.setVisibility(View.VISIBLE);
+        }
       }
     }
   }
