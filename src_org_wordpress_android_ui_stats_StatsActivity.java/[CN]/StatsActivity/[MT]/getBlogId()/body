@@ -1,0 +1,24 @@
+{
+  if (WordPress.getCurrentBlog().isDotcomFlag() && !dotComCredentialsMatch())   return String.valueOf(WordPress.getCurrentBlog().getBlogId());
+  try {
+    Blog currentBlog=WordPress.getCurrentBlog();
+    String jetpackBlogId=currentBlog.getApi_blogid();
+    if (jetpackBlogId == null) {
+      JSONObject options=new JSONObject(WordPress.getCurrentBlog().getBlogOptions());
+      jetpackBlogId=options.getJSONObject("jetpack_client_id").getString("value");
+      if (jetpackBlogId == null)       return null;
+      if (currentBlog.getApi_blogid() == null || !currentBlog.getApi_blogid().equals(jetpackBlogId)) {
+        currentBlog.setApi_blogid(jetpackBlogId);
+        currentBlog.save("");
+      }
+      return jetpackBlogId;
+    }
+ else {
+      return jetpackBlogId;
+    }
+  }
+ catch (  JSONException e) {
+    e.printStackTrace();
+  }
+  return null;
+}

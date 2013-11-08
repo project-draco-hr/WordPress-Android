@@ -1,44 +1,27 @@
 {
   boolean success=false;
   List<?> arguments=args[0];
-  WordPress.currentBlog=(Blog)arguments.get(0);
-  isPage=(Boolean)arguments.get(1);
+  mBlog=(Blog)arguments.get(0);
+  if (mBlog == null)   return false;
+  mIsPage=(Boolean)arguments.get(1);
   int recordCount=(Integer)arguments.get(2);
-  loadMore=(Boolean)arguments.get(3);
-  XMLRPCClient client=new XMLRPCClient(WordPress.currentBlog.getUrl(),WordPress.currentBlog.getHttpuser(),WordPress.currentBlog.getHttppassword());
-  Object[] result=null;
-  Object[] params={WordPress.currentBlog.getBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),recordCount};
+  mLoadMore=(Boolean)arguments.get(3);
+  XMLRPCClient client=new XMLRPCClient(mBlog.getUrl(),mBlog.getHttpuser(),mBlog.getHttppassword());
+  Object[] params={mBlog.getBlogId(),mBlog.getUsername(),mBlog.getPassword(),recordCount};
   try {
-    result=(Object[])client.call((isPage) ? "wp.getPages" : "metaWeblog.getRecentPosts",params);
+    Object[] result=(Object[])client.call((mIsPage) ? "wp.getPages" : "metaWeblog.getRecentPosts",params);
     if (result != null) {
       if (result.length > 0) {
         success=true;
-        Map<?,?> contentHash=new HashMap<Object,Object>();
-        List<Map<?,?>> dbVector=new Vector<Map<?,?>>();
-        if (!loadMore) {
-          WordPress.wpDB.deleteUploadedPosts(WordPress.currentBlog.getId(),isPage);
+        List<Map<?,?>> postsList=new ArrayList<Map<?,?>>();
+        if (!mLoadMore) {
+          WordPress.wpDB.deleteUploadedPosts(mBlog.getId(),mIsPage);
         }
         for (int ctr=0; ctr < result.length; ctr++) {
-          Map<String,Object> dbValues=new HashMap<String,Object>();
-          contentHash=(Map<?,?>)result[ctr];
-          dbValues.put("blogID",WordPress.currentBlog.getBlogId());
-          dbVector.add(ctr,contentHash);
+          Map<?,?> postMap=(Map<?,?>)result[ctr];
+          postsList.add(ctr,postMap);
         }
-        WordPress.wpDB.savePosts(dbVector,WordPress.currentBlog.getId(),isPage);
-      }
- else {
-        if (mPostListAdapter != null) {
-          if (mPostIDs.length == 2) {
-            try {
-              WordPress.wpDB.deleteUploadedPosts(WordPress.currentBlog.getId(),WordPress.currentPost.isPage());
-              mOnPostActionListener.onPostAction(PostsActivity.POST_CLEAR,WordPress.currentPost);
-            }
- catch (            Exception e) {
-              e.printStackTrace();
-            }
-            WordPress.currentPost=null;
-          }
-        }
+        WordPress.wpDB.savePosts(postsList,mBlog.getId(),mIsPage);
       }
     }
   }

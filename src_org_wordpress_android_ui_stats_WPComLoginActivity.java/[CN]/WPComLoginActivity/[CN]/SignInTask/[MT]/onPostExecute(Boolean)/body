@@ -1,19 +1,18 @@
 {
   if (isSignedIn && !isFinishing()) {
-    WordPress.restClient.get("me",new RestRequest.Listener(){
-      @Override public void onResponse(      JSONObject jsonObject){
-        WPComLoginActivity.this.setResult(RESULT_OK);
-        finish();
+    if (!mIsJetpackAuthRequest) {
+      WordPress.restClient.get("me",new RestRequest.Listener(){
+        @Override public void onResponse(        JSONObject jsonObject){
+          WPComLoginActivity.this.setResult(RESULT_OK);
+          finish();
+        }
       }
+,null);
     }
-,new RestRequest.ErrorListener(){
-      @Override public void onErrorResponse(      VolleyError volleyError){
-        Toast.makeText(getBaseContext(),getString(R.string.error_generic),Toast.LENGTH_SHORT).show();
-        mSignInButon.setEnabled(true);
-        mSignInButon.setText(R.string.sign_in);
-      }
+ else {
+      WPComLoginActivity.this.setResult(RESULT_OK);
+      finish();
     }
-);
   }
  else {
     Toast.makeText(getBaseContext(),getString(R.string.invalid_login),Toast.LENGTH_SHORT).show();
