@@ -6,26 +6,37 @@
     return;
   }
   setTitle("");
-  createMenuDrawer(R.layout.stats_activity);
-  final ActionBar actionBar=getSupportActionBar();
-  actionBar.setDisplayShowCustomEnabled(true);
-  actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-  restoreState(savedInstanceState);
-  mActionbarNav=getLayoutInflater().inflate(R.layout.stats_ab_navigation,null,false);
-  actionBar.setCustomView(mActionbarNav);
-  mActionbarNavText=(TextView)mActionbarNav.findViewById(R.id.stats_ab_nav_text);
-  mActionbarNavText.setText(StatsViewType.getImplemented()[mNavPosition].getLabel());
-  mActionbarNavText.setOnClickListener(new OnClickListener(){
-    @Override public void onClick(    View v){
-      if (!isFinishing())       showViews();
+  if (Utils.isTablet())   mIsTablet=true;
+  if (mIsTablet) {
+    createMenuDrawer(R.layout.stats_activity_tablet);
+    mFragmentContainer=(LinearLayout)findViewById(R.id.stats_fragment_container);
+    mColumnLeft=(LinearLayout)findViewById(R.id.stats_tablet_col_left);
+    mColumnRight=(LinearLayout)findViewById(R.id.stats_tablet_col_right);
+    loadStatsFragments();
+    setTitle(R.string.stats);
+  }
+ else {
+    createMenuDrawer(R.layout.stats_activity);
+    ActionBar actionBar=getSupportActionBar();
+    actionBar.setDisplayShowCustomEnabled(true);
+    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+    restoreState(savedInstanceState);
+    mActionbarNav=getLayoutInflater().inflate(R.layout.stats_ab_navigation,null,false);
+    actionBar.setCustomView(mActionbarNav);
+    mActionbarNavText=(TextView)mActionbarNav.findViewById(R.id.stats_ab_nav_text);
+    mActionbarNavText.setText(StatsViewType.getImplemented()[mNavPosition].getLabel());
+    mActionbarNavText.setOnClickListener(new OnClickListener(){
+      @Override public void onClick(      View v){
+        if (!isFinishing())         showViews();
+      }
     }
-  }
 );
-  FragmentManager fm=getSupportFragmentManager();
-  mStatsViewFragment=(StatsAbsViewFragment)fm.findFragmentByTag(StatsAbsViewFragment.TAG);
-  if (mStatsViewFragment == null) {
-    mStatsViewFragment=StatsAbsViewFragment.newInstance(StatsViewType.getImplemented()[0]);
-    fm.beginTransaction().add(R.id.stats_container,mStatsViewFragment,StatsAbsViewFragment.TAG).commit();
+    FragmentManager fm=getSupportFragmentManager();
+    mStatsViewFragment=(StatsAbsViewFragment)fm.findFragmentByTag(StatsAbsViewFragment.TAG);
+    if (mStatsViewFragment == null) {
+      mStatsViewFragment=StatsAbsViewFragment.newInstance(StatsViewType.getImplemented()[0]);
+      fm.beginTransaction().add(R.id.stats_container,mStatsViewFragment,StatsAbsViewFragment.TAG).commit();
+    }
+    mNavFragment=(DialogFragment)fm.findFragmentByTag(StatsNavDialogFragment.TAG);
   }
-  mNavFragment=(DialogFragment)fm.findFragmentByTag(StatsNavDialogFragment.TAG);
 }

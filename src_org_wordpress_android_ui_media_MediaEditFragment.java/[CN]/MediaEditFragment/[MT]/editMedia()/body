@@ -11,12 +11,13 @@
       WordPress.wpDB.updateMediaFile(blogId,mediaId,title,description,caption);
       if (getActivity() != null)       Toast.makeText(getActivity(),R.string.media_edit_success,Toast.LENGTH_LONG).show();
       setMediaUpdating(false);
-      mCallback.onSavedEdit(mediaId,true);
+      if (hasCallback())       mCallback.onSavedEdit(mediaId,true);
     }
     @Override public void onFailure(){
       if (getActivity() != null)       Toast.makeText(getActivity(),R.string.media_edit_failure,Toast.LENGTH_LONG).show();
       setMediaUpdating(false);
-      mCallback.onSavedEdit(mediaId,false);
+      getSherlockActivity().invalidateOptionsMenu();
+      if (hasCallback())       mCallback.onSavedEdit(mediaId,false);
     }
   }
 );

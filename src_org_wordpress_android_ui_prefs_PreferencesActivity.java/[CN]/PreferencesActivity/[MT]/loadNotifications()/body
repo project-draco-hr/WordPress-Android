@@ -21,7 +21,7 @@
           StringMap<?> typeMap=(StringMap<?>)mNotificationSettings.get(mTypeList[i].toString());
           CheckBoxPreference typePreference=new CheckBoxPreference(this);
           typePreference.setKey(mTypeList[i].toString());
-          typePreference.setChecked(typeMap.get("value").toString().equals("1"));
+          typePreference.setChecked(MapUtils.getMapBool(typeMap,"value"));
           typePreference.setTitle(typeMap.get("desc").toString());
           typePreference.setOnPreferenceChangeListener(mTypeChangeListener);
           notificationTypesCategory.addPreference(typePreference);
@@ -33,7 +33,7 @@
         String blogName=(String)blogMap.get("blog_name");
         if (blogName == null || blogName.trim().equals(""))         blogName=(String)blogMap.get("url");
         CheckBoxPreference blogPreference=new CheckBoxPreference(this);
-        blogPreference.setChecked(!blogMap.get("value").toString().equals("1"));
+        blogPreference.setChecked(!MapUtils.getMapBool(blogMap,"value"));
         blogPreference.setTitle(StringUtils.unescapeHTML(blogName));
         blogPreference.setOnPreferenceChangeListener(mMuteBlogChangeListener);
         selectBlogsCategory.addPreference(blogPreference);

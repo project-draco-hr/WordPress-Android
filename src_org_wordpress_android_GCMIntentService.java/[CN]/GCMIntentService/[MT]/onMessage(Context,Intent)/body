@@ -34,6 +34,16 @@
     note_id=String.valueOf(WordPressDB.generateIdFor(note));
     md5GeneratedNoteId=true;
   }
+  long thisTime=System.currentTimeMillis();
+  if (mPreviousNoteId != null && mPreviousNoteId.equals(note_id)) {
+    long seconds=TimeUnit.MILLISECONDS.toSeconds(thisTime - mPreviousNoteTime);
+    if (seconds <= 1) {
+      Log.w("WORDPRESS","skipped potential duplicate notification");
+      return;
+    }
+  }
+  mPreviousNoteId=note_id;
+  mPreviousNoteTime=thisTime;
   if (note_id != null) {
     if (!activeNotificationsMap.containsKey(note_id))     activeNotificationsMap.put(note_id,extras);
   }

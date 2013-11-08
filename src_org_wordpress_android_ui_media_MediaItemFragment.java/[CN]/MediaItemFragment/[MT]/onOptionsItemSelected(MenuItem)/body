@@ -1,6 +1,12 @@
 {
   int itemId=item.getItemId();
   if (itemId == R.id.menu_delete) {
+    String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+    boolean canDeleteMedia=MediaUtils.canDeleteMedia(blogId,getMediaId());
+    if (!canDeleteMedia) {
+      Toast.makeText(getActivity(),R.string.wait_until_upload_completes,Toast.LENGTH_LONG).show();
+      return true;
+    }
     Builder builder=new AlertDialog.Builder(getActivity()).setMessage(R.string.confirm_delete_media).setCancelable(true).setPositiveButton(R.string.delete,new OnClickListener(){
       @Override public void onClick(      DialogInterface dialog,      int which){
         ArrayList<String> ids=new ArrayList<String>(1);

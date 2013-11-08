@@ -1,9 +1,9 @@
 {
   if (WordPress.getCurrentBlog() == null)   return;
-  String blogId=null;
-  if (WordPress.getCurrentBlog().isDotcomFlag())   blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+  String blogId;
+  if (WordPress.getCurrentBlog().isDotcomFlag() && dotComCredentialsMatch())   blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
  else {
-    blogId=getBlogIdFromJetpack();
+    blogId=getBlogId();
     if (blogId == null) {
       verifyJetpackSettings();
     }
@@ -13,12 +13,12 @@
     }
     @Override public void onFailure(    VolleyError error){
       if (mSignInDialog != null && mSignInDialog.isShowing())       return;
-      if (!isFinishing() && WordPress.getCurrentBlog().isJetpackPowered() && error.networkResponse != null && error.networkResponse.statusCode == 403) {
+      if (!isFinishing() && error.networkResponse != null && error.networkResponse.statusCode == 403) {
         AlertDialog.Builder builder=new AlertDialog.Builder(StatsActivity.this);
         builder.setTitle(getString(R.string.jetpack_stats_unauthorized)).setMessage(getString(R.string.jetpack_stats_switch_user));
         builder.setPositiveButton(R.string.yes,new DialogInterface.OnClickListener(){
           public void onClick(          DialogInterface dialog,          int id){
-            startActivityForResult(new Intent(StatsActivity.this,WPComLoginActivity.class),WPComLoginActivity.REQUEST_CODE);
+            startWPComLoginActivity();
           }
         }
 );
@@ -33,8 +33,17 @@
     }
   }
 );
-  if (mStatsViewFragment != null) {
-    StatsViewType viewType=mStatsViewFragment.getViewType();
-    StatsRestHelper.getStats(viewType,blogId);
+  if (mIsTablet) {
+    StatsRestHelper.getStats(StatsViewType.CLICKS,blogId);
+    StatsRestHelper.getStats(StatsViewType.REFERRERS,blogId);
+    StatsRestHelper.getStats(StatsViewType.SEARCH_ENGINE_TERMS,blogId);
+    StatsRestHelper.getStats(StatsViewType.TOP_POSTS_AND_PAGES,blogId);
+    StatsRestHelper.getStats(StatsViewType.VISITORS_AND_VIEWS,blogId);
+  }
+ else {
+    if (mStatsViewFragment != null) {
+      StatsViewType viewType=mStatsViewFragment.getViewType();
+      StatsRestHelper.getStats(viewType,blogId);
+    }
   }
 }

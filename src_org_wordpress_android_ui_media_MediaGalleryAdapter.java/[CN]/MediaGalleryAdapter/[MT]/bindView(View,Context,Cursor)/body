@@ -22,8 +22,8 @@
     loadNetworkImage(cursor,(NetworkImageView)imageView);
   }
   String fileType=null;
-  String filePath=cursor.getString(cursor.getColumnIndex("filePath"));
-  if (filePath == null)   filePath=cursor.getString(cursor.getColumnIndex("fileURL"));
+  String filePath=StringUtils.notNullStr(cursor.getString(cursor.getColumnIndex("filePath")));
+  if (filePath.isEmpty())   filePath=StringUtils.notNullStr(cursor.getString(cursor.getColumnIndex("fileURL")));
   fileType=filePath.replaceAll(".*\\.(\\w+)$","$1").toUpperCase();
   TextView fileTypeView=(TextView)view.findViewById(R.id.media_grid_item_filetype);
   if (Utils.isXLarge(context)) {

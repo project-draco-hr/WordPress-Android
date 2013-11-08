@@ -3,28 +3,25 @@
   Object[] signInParams={mUsername,mPassword};
   try {
     client.call("wp.getUsersBlogs",signInParams);
-    if (WordPress.hasValidWPComCredentials(WPComLoginActivity.this)) {
-      new WPComXMLRPCApi().unregisterWPComToken(WPComLoginActivity.this,GCMRegistrar.getRegistrationId(WPComLoginActivity.this));
-      try {
-        GCMRegistrar.checkDevice(WPComLoginActivity.this);
-        GCMRegistrar.unregister(WPComLoginActivity.this);
+    WordPress.currentBlog.setDotcom_username(mUsername);
+    WordPress.currentBlog.setDotcom_password(mPassword);
+    WordPress.currentBlog.save(WordPress.currentBlog.getUsername());
+    if (!mIsJetpackAuthRequest) {
+      if (WordPress.hasValidWPComCredentials(WPComLoginActivity.this)) {
+        new WPComXMLRPCApi().unregisterWPComToken(WPComLoginActivity.this,GCMRegistrar.getRegistrationId(WPComLoginActivity.this));
+        try {
+          GCMRegistrar.checkDevice(WPComLoginActivity.this);
+          GCMRegistrar.unregister(WPComLoginActivity.this);
+        }
+ catch (        Exception e) {
+          Log.v("WORDPRESS","Could not unregister for GCM: " + e.getMessage());
+        }
       }
- catch (      Exception e) {
-        Log.v("WORDPRESS","Could not unregister for GCM: " + e.getMessage());
-      }
+      Editor settings=PreferenceManager.getDefaultSharedPreferences(WPComLoginActivity.this).edit();
+      settings.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mUsername);
+      settings.putString(WordPress.WPCOM_PASSWORD_PREFERENCE,WordPressDB.encryptPassword(mPassword));
+      settings.commit();
     }
-    WordPress.restClient.clearAccessToken();
-    WordPress.wpDB.updateWPComCredentials(mUsername,mPassword);
-    if (!WordPress.getCurrentBlog().isDotcomFlag()) {
-      WordPress.getCurrentBlog().setDotcom_username(mUsername);
-      WordPress.getCurrentBlog().setDotcom_password(mPassword);
-      WordPress.getCurrentBlog().save(WordPress.currentBlog.getUsername());
-    }
-    WordPress.setCurrentBlog(WordPress.getCurrentBlog().getId());
-    Editor settings=PreferenceManager.getDefaultSharedPreferences(WPComLoginActivity.this).edit();
-    settings.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mUsername);
-    settings.putString(WordPress.WPCOM_PASSWORD_PREFERENCE,mPassword);
-    settings.commit();
     return true;
   }
  catch (  XMLRPCException e) {
