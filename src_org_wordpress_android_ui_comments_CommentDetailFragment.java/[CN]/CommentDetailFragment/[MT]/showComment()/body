@@ -1,0 +1,38 @@
+{
+  if (mComment == null || !hasActivity())   return;
+  final NetworkImageView imgAvatar=(NetworkImageView)getActivity().findViewById(R.id.image_avatar);
+  final TextView txtName=(TextView)getActivity().findViewById(R.id.text_name);
+  final TextView txtDate=(TextView)getActivity().findViewById(R.id.text_date);
+  final TextView txtContent=(TextView)getActivity().findViewById(R.id.text_content);
+  final TextView txtBtnApprove=(TextView)getActivity().findViewById(R.id.text_approve);
+  txtName.setText(TextUtils.isEmpty(mComment.name) ? getString(R.string.anonymous) : mComment.name);
+  txtDate.setText(mComment.dateCreatedFormatted);
+  txtContent.setText(mComment.comment);
+  imgAvatar.setDefaultImageResId(R.drawable.placeholder);
+  if (!TextUtils.isEmpty(mComment.authorEmail)) {
+    String profileImageUrl=GravatarUtils.gravatarUrlFromEmail(mComment.authorEmail);
+    imgAvatar.setImageUrl(profileImageUrl,WordPress.imageLoader);
+  }
+  if (mComment.getStatusEnum() == Comment.CommentStatus.APPROVED) {
+    txtBtnApprove.setVisibility(View.GONE);
+    showCommentBox();
+  }
+ else {
+    txtBtnApprove.setVisibility(View.VISIBLE);
+    txtBtnApprove.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ReaderAniUtils.fadeOut(txtBtnApprove,new Animation.AnimationListener(){
+          @Override public void onAnimationStart(          Animation animation){
+          }
+          @Override public void onAnimationRepeat(          Animation animation){
+          }
+          @Override public void onAnimationEnd(          Animation animation){
+            showCommentBox();
+          }
+        }
+);
+      }
+    }
+);
+  }
+}
