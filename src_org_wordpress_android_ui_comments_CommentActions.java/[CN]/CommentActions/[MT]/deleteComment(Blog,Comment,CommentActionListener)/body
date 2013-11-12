@@ -1,0 +1,30 @@
+{
+  if (blog == null || comment == null) {
+    if (listener != null)     listener.onActionResult(false);
+    return;
+  }
+  final Handler handler=new Handler();
+  new Thread(){
+    @Override public void run(){
+      XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+      Object[] params={blog.getBlogId(),blog.getUsername(),blog.getPassword(),comment.commentID};
+      Object result;
+      try {
+        result=client.call("wp.deleteComment",params);
+      }
+ catch (      final XMLRPCException e) {
+        result=null;
+      }
+      final boolean success=(result != null && Boolean.parseBoolean(result.toString()));
+      if (listener != null) {
+        handler.post(new Runnable(){
+          @Override public void run(){
+            listener.onActionResult(success);
+          }
+        }
+);
+      }
+    }
+  }
+.start();
+}
