@@ -11,13 +11,17 @@
     notificationIntent.setAction("android.intent.action.MAIN");
     notificationIntent.addCategory("android.intent.category.LAUNCHER");
     notificationIntent.setData((Uri.parse("custom://wordpressNotificationIntent" + post.getBlogID())));
-    notificationIntent.putExtra("errorMessage",error);
+    notificationIntent.putExtra("errorMessage",mErrorMessage);
+    if (mErrorUnavailableVideoPress) {
+      notificationIntent.putExtra("errorInfoTitle",getString(R.string.learn_more));
+      notificationIntent.putExtra("errorInfoLink",Constants.videoPressURL);
+    }
     notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     PendingIntent pendingIntent=PendingIntent.getActivity(context,0,notificationIntent,PendingIntent.FLAG_UPDATE_CURRENT);
     n.flags|=Notification.FLAG_AUTO_CANCEL;
     String errorText=context.getResources().getText(R.string.upload_failed).toString();
-    if (mediaError)     errorText=context.getResources().getText(R.string.media) + " " + context.getResources().getText(R.string.error);
-    n.setLatestEventInfo(context,(mediaError) ? errorText : context.getResources().getText(R.string.upload_failed),(mediaError) ? error : postOrPage + " " + errorText+ ": "+ error,pendingIntent);
+    if (mIsMediaError)     errorText=context.getResources().getText(R.string.media) + " " + context.getResources().getText(R.string.error);
+    n.setLatestEventInfo(context,(mIsMediaError) ? errorText : context.getResources().getText(R.string.upload_failed),(mIsMediaError) ? mErrorMessage : postOrPage + " " + errorText+ ": "+ mErrorMessage,pendingIntent);
     nm.notify(notificationID,n);
   }
   postUploaded();
