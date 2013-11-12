@@ -1,7 +1,12 @@
 {
-  if (!hasActivity())   return;
-  final TextView txtMessageBar=(TextView)getActivity().findViewById(R.id.text_message_bar);
+  if (activity == null)   return;
+  final TextView txtMessageBar=(TextView)activity.findViewById(R.id.text_message_bar);
   if (txtMessageBar == null || txtMessageBar.getVisibility() != View.VISIBLE)   return;
+  if (hideImmediate) {
+    txtMessageBar.setVisibility(View.GONE);
+    if (runnable != null)     runnable.run();
+    return;
+  }
   Animation.AnimationListener listener=new Animation.AnimationListener(){
     @Override public void onAnimationStart(    Animation animation){
     }

@@ -8,7 +8,7 @@
     }
   }
 ;
-  showMessageBar(getString(R.string.comment_approved),runnable);
+  MessageBarUtils.showMessageBar(getActivity(),getString(R.string.comment_approved),MessageBarUtils.MessageBarType.INFO,runnable);
   mIsApprovingComment=true;
   CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
     @Override public void onActionResult(    boolean succeeded){
@@ -18,10 +18,9 @@
         mChangeListener.onCommentModified(mComment);
       }
  else {
-        hideReplyBox();
+        hideReplyBox(false);
         txtBtnApprove.setVisibility(View.VISIBLE);
         ToastUtils.showToast(getActivity(),R.string.error_moderate_comment,ToastUtils.Duration.LONG);
-        hideReplyBox();
       }
     }
   }
