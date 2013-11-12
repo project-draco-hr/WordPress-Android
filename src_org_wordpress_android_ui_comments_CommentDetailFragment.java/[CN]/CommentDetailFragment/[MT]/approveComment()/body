@@ -1,0 +1,22 @@
+{
+  if (!hasActivity() || !hasComment())   return;
+  final ProgressBar progress=(ProgressBar)getActivity().findViewById(R.id.progress);
+  final TextView txtBtnApprove=(TextView)getActivity().findViewById(R.id.text_approve);
+  progress.setVisibility(View.VISIBLE);
+  txtBtnApprove.setText(R.string.moderating_comment);
+  CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      progress.setVisibility(View.GONE);
+      txtBtnApprove.setText(R.string.approve);
+      if (succeeded) {
+        txtBtnApprove.setVisibility(View.GONE);
+        showReplyBox();
+      }
+ else {
+        ToastUtils.showToast(getActivity(),R.string.error_moderate_comment,ToastUtils.Duration.LONG);
+      }
+    }
+  }
+;
+  CommentActions.setCommentStatus(WordPress.currentBlog,mComment,Comment.CommentStatus.APPROVED,actionListener);
+}

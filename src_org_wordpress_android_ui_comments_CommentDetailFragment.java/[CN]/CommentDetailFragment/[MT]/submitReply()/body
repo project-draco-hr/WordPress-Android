@@ -1,0 +1,33 @@
+{
+  if (!hasActivity() || mIsSubmittingReply)   return;
+  final EditText editComment=(EditText)getActivity().findViewById(R.id.edit_comment);
+  final ProgressBar progress=(ProgressBar)getActivity().findViewById(R.id.progress);
+  final ImageView imgSubmit=(ImageView)getActivity().findViewById(R.id.image_post_comment);
+  final String replyText=EditTextUtils.getText(editComment);
+  if (TextUtils.isEmpty(replyText))   return;
+  editComment.setEnabled(false);
+  EditTextUtils.hideSoftInput(editComment);
+  imgSubmit.setVisibility(View.GONE);
+  progress.setVisibility(View.VISIBLE);
+  CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      editComment.setEnabled(true);
+      imgSubmit.setVisibility(View.VISIBLE);
+      progress.setVisibility(View.GONE);
+      mIsSubmittingReply=false;
+      if (succeeded) {
+        ToastUtils.showToast(getActivity(),R.string.note_reply_successful);
+        editComment.setText(null);
+      }
+ else {
+        ToastUtils.showToast(getActivity(),R.string.reply_failed,ToastUtils.Duration.LONG);
+        editComment.requestFocus();
+        InputMethodManager imm=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(editComment,InputMethodManager.SHOW_IMPLICIT);
+      }
+    }
+  }
+;
+  mIsSubmittingReply=true;
+  CommentActions.submitReply(WordPress.currentBlog,mComment,replyText,actionListener);
+}

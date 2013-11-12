@@ -13,24 +13,16 @@
     String profileImageUrl=GravatarUtils.gravatarUrlFromEmail(mComment.authorEmail);
     imgAvatar.setImageUrl(profileImageUrl,WordPress.imageLoader);
   }
-  if (mComment.getStatusEnum() == Comment.CommentStatus.APPROVED) {
+  Comment.CommentStatus status=Comment.CommentStatus.fromString(mComment.status);
+  if (status == Comment.CommentStatus.APPROVED) {
     txtBtnApprove.setVisibility(View.GONE);
-    showCommentBox();
+    showReplyBox();
   }
  else {
     txtBtnApprove.setVisibility(View.VISIBLE);
     txtBtnApprove.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
-        ReaderAniUtils.fadeOut(txtBtnApprove,new Animation.AnimationListener(){
-          @Override public void onAnimationStart(          Animation animation){
-          }
-          @Override public void onAnimationRepeat(          Animation animation){
-          }
-          @Override public void onAnimationEnd(          Animation animation){
-            showCommentBox();
-          }
-        }
-);
+        approveComment();
       }
     }
 );

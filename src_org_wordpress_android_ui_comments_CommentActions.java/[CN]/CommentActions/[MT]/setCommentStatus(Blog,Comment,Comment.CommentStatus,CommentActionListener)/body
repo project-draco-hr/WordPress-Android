@@ -1,0 +1,37 @@
+{
+  if (blog == null || comment == null || status == null || status == Comment.CommentStatus.UNKNOWN) {
+    if (listener != null)     listener.onActionResult(false);
+    return;
+  }
+  final Handler handler=new Handler();
+  new Thread(){
+    @Override public void run(){
+      XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+      Map<String,String> postHash=new HashMap<String,String>();
+      postHash.put("status",status.toString());
+      postHash.put("content",comment.comment);
+      postHash.put("author",comment.name);
+      postHash.put("author_url",comment.authorURL);
+      postHash.put("author_email",comment.authorEmail);
+      Object[] params={blog.getBlogId(),blog.getUsername(),blog.getPassword(),comment.commentID,postHash};
+      Object result;
+      try {
+        result=client.call("wp.editComment",params);
+      }
+ catch (      final XMLRPCException e) {
+        result=null;
+      }
+      final boolean success=(result != null && Boolean.parseBoolean(result.toString()));
+      if (success)       WordPress.wpDB.updateCommentStatus(blog.getId(),comment.commentID,status.toString());
+      if (listener != null) {
+        handler.post(new Runnable(){
+          @Override public void run(){
+            listener.onActionResult(success);
+          }
+        }
+);
+      }
+    }
+  }
+.start();
+}
