@@ -1,18 +1,26 @@
 {
-  if (!hasActivity() || !hasComment())   return;
+  if (!hasActivity() || !hasComment() || mIsApprovingComment)   return;
   final TextView txtBtnApprove=(TextView)getActivity().findViewById(R.id.text_approve);
-  txtBtnApprove.setVisibility(View.GONE);
-  showMessageBar(getString(R.string.comment_approved),true);
+  ReaderAniUtils.flyOut(txtBtnApprove);
+  Runnable runnable=new Runnable(){
+    @Override public void run(){
+      showReplyBox();
+    }
+  }
+;
+  showMessageBar(getString(R.string.comment_approved),runnable);
+  mIsApprovingComment=true;
   CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
     @Override public void onActionResult(    boolean succeeded){
-      txtBtnApprove.setEnabled(true);
+      mIsApprovingComment=false;
       if (succeeded) {
         mComment.status=Comment.CommentStatus.APPROVED.toString();
         mChangeListener.onCommentModified(mComment);
       }
  else {
-        ToastUtils.showToast(getActivity(),R.string.error_moderate_comment,ToastUtils.Duration.LONG);
+        hideReplyBox();
         txtBtnApprove.setVisibility(View.VISIBLE);
+        ToastUtils.showToast(getActivity(),R.string.error_moderate_comment,ToastUtils.Duration.LONG);
         hideReplyBox();
       }
     }
