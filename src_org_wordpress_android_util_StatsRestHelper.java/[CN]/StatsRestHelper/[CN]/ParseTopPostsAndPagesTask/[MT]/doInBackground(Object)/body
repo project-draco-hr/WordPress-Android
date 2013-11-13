@@ -6,11 +6,11 @@
     try {
       JSONArray results=response.getJSONArray("result");
       int count=results.length();
+      String date=response.getString("date");
+      long dateMs=StatUtils.toMs(date);
       ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
-      if (count > 0) {
-        ContentProviderOperation op=ContentProviderOperation.newDelete(StatsContentProvider.STATS_TOP_POSTS_AND_PAGES_URI).withSelection("blogId=?",new String[]{blogId}).build();
-        operations.add(op);
-      }
+      ContentProviderOperation delete_op=ContentProviderOperation.newDelete(StatsContentProvider.STATS_TOP_POSTS_AND_PAGES_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{blogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
+      operations.add(delete_op);
       for (int i=0; i < count; i++) {
         JSONObject result=results.getJSONObject(i);
         StatsTopPostsAndPages stat=new StatsTopPostsAndPages(blogId,result);
