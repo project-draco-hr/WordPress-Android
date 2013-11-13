@@ -1,0 +1,15 @@
+{
+  if (TextUtils.isEmpty(postId))   return null;
+  String[] cols={"author","comment","commentDateFormatted","status","url","email","postTitle"};
+  String[] args={Integer.toString(accountId),postId,Integer.toString(commentId)};
+  Cursor c=db.query(COMMENTS_TABLE,cols,"blogID=? AND postID=? AND iCommentID=?",args,null,null,null);
+  if (!c.moveToFirst())   return null;
+  String authorName=c.getString(0);
+  String content=c.getString(1);
+  String dateCreatedFormatted=c.getString(2);
+  String status=c.getString(3);
+  String authorUrl=c.getString(4);
+  String authorEmail=c.getString(5);
+  String postTitle=c.getString(6);
+  return new Comment(postId,commentId,0,authorName,dateCreatedFormatted,content,status,postTitle,authorUrl,authorEmail,null);
+}
