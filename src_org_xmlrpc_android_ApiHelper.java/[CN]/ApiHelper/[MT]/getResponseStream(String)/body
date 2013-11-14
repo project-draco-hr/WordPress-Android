@@ -1,9 +1,12 @@
 {
   HttpRequest request=getHttpRequest(urlString);
   if (request != null) {
-    return request.buffer();
+    try {
+      return request.buffer();
+    }
+ catch (    HttpRequestException e) {
+      Log.e("ApiHelper","Cannot setup an InputStream on " + urlString,e);
+    }
   }
- else {
-    return null;
-  }
+  return null;
 }
