@@ -1,6 +1,6 @@
 {
   if (blog == null || comment == null) {
-    if (listener != null)     listener.onActionResult(false);
+    if (actionListener != null)     actionListener.onActionResult(false);
     return;
   }
   final Handler handler=new Handler();
@@ -17,10 +17,10 @@
       }
       final boolean success=(result != null && Boolean.parseBoolean(result.toString()));
       if (success)       WordPress.wpDB.deleteComment(blog.getId(),comment.postID,comment.commentID);
-      if (listener != null) {
+      if (actionListener != null) {
         handler.post(new Runnable(){
           @Override public void run(){
-            listener.onActionResult(success);
+            actionListener.onActionResult(success);
           }
         }
 );
