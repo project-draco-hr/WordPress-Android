@@ -4,20 +4,35 @@
   mImageView=(ImageView)v.findViewById(R.id.nux_dialog_image);
   mTitleTextView=(WPTextView)v.findViewById(R.id.nux_dialog_title);
   mDescriptionTextView=(WPTextView)v.findViewById(R.id.nux_dialog_description);
-  mFooterTextView=(WPTextView)v.findViewById(R.id.nux_dialog_footer);
+  mFooterOneButton=(WPTextView)v.findViewById(R.id.nux_dialog_footer_1_button);
+  mFooterTwoButtons=(RelativeLayout)v.findViewById(R.id.nux_dialog_footer_2_buttons);
+  mFooterRightButton=(WPTextView)v.findViewById(R.id.nux_dialog_get_started_button);
+  mFooterLeftButton=(WPTextView)v.findViewById(R.id.nux_dialog_learn_more_button);
   Bundle args=this.getArguments();
   mTitleTextView.setText(args.getString(ARG_TITLE));
   mDescriptionTextView.setText(args.getString(ARG_DESCRIPTION));
-  mFooterTextView.setText(args.getString(ARG_FOOTER));
+  mFooterOneButton.setText(args.getString(ARG_FOOTER));
   mImageView.setImageResource(args.getInt(ARG_IMAGE));
-  View.OnClickListener clickListener=new View.OnClickListener(){
+  if (args.getBoolean(ARG_TWO_BUTTONS)) {
+    mFooterOneButton.setVisibility(View.GONE);
+    mFooterTwoButtons.setVisibility(View.VISIBLE);
+  }
+  View.OnClickListener clickListenerDismiss=new View.OnClickListener(){
     @Override public void onClick(    View v){
       dismissAllowingStateLoss();
     }
   }
 ;
+  View.OnClickListener clickListenerFinish=new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      getActivity().finish();
+    }
+  }
+;
   v.setClickable(true);
-  v.setOnClickListener(clickListener);
-  mFooterTextView.setOnClickListener(clickListener);
+  v.setOnClickListener(clickListenerDismiss);
+  mFooterOneButton.setOnClickListener(clickListenerDismiss);
+  mFooterLeftButton.setOnClickListener(clickListenerDismiss);
+  mFooterRightButton.setOnClickListener(clickListenerFinish);
   return v;
 }
