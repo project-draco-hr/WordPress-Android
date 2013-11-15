@@ -1,0 +1,16 @@
+{
+  Simperium simperium=Simperium.newClient(Config.SIMPERIUM_APP_NAME,Config.SIMPERIUM_APP_SECRET,context);
+  if (token != null) {
+    authorizeUser(simperium,token);
+  }
+  try {
+    Bucket<BucketObject> notesBucket=simperium.bucket("notes");
+    Bucket<BucketObject> metaBucket=simperium.bucket("meta");
+    notesBucket.start();
+    metaBucket.start();
+  }
+ catch (  BucketNameInvalid e) {
+    throw new RuntimeException("Failed to configure simperium",e);
+  }
+  return simperium;
+}
