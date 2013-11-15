@@ -1,0 +1,23 @@
+{
+  final ProgressBar progress=(hasActivity() ? (ProgressBar)getActivity().findViewById(R.id.progress_loading) : null);
+  if (progress != null)   progress.setVisibility(View.VISIBLE);
+  RestRequest.Listener restListener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      mIsRequestingComment=false;
+      if (progress != null)       progress.setVisibility(View.GONE);
+      Comment comment=Comment.fromJSON(jsonObject);
+      if (comment != null)       setComment(comment);
+    }
+  }
+;
+  RestRequest.ErrorListener restErrListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      mIsRequestingComment=false;
+      if (progress != null)       progress.setVisibility(View.GONE);
+    }
+  }
+;
+  final String path=String.format("/sites/%s/comments/%s",siteId,commentId);
+  mIsRequestingComment=true;
+  WordPress.restClient.get(path,restListener,restErrListener);
+}

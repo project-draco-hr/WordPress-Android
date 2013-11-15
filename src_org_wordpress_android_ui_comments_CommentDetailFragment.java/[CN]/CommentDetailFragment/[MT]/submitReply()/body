@@ -1,7 +1,7 @@
 {
   if (!hasActivity() || mIsSubmittingReply)   return;
   final EditText editComment=(EditText)getActivity().findViewById(R.id.edit_comment);
-  final ProgressBar progress=(ProgressBar)getActivity().findViewById(R.id.progress);
+  final ProgressBar progress=(ProgressBar)getActivity().findViewById(R.id.progress_submit_comment);
   final ImageView imgSubmit=(ImageView)getActivity().findViewById(R.id.image_post_comment);
   final String replyText=EditTextUtils.getText(editComment);
   if (TextUtils.isEmpty(replyText))   return;
@@ -16,7 +16,7 @@
       progress.setVisibility(View.GONE);
       mIsSubmittingReply=false;
       if (succeeded) {
-        mChangeListener.onCommentAdded();
+        if (mChangeListener != null)         mChangeListener.onCommentAdded();
         MessageBarUtils.showMessageBar(getActivity(),getString(R.string.note_reply_successful));
         editComment.setText(null);
       }

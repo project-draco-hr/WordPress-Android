@@ -11,6 +11,7 @@
     txtDate.setText(null);
     txtContent.setText(null);
     txtBtnApprove.setVisibility(View.GONE);
+    if (mNote != null && !mIsRequestingComment)     showCommentForNote(mNote);
     return;
   }
   txtName.setText(TextUtils.isEmpty(mComment.name) ? getString(R.string.anonymous) : StringUtils.unescapeHTML(mComment.name));
@@ -18,13 +19,18 @@
   txtContent.setText(Html.fromHtml(mComment.comment));
   int avatarSz=getResources().getDimensionPixelSize(R.dimen.reader_avatar_sz_large);
   imgAvatar.setDefaultImageResId(R.drawable.placeholder);
-  String profileImageUrl=GravatarUtils.gravatarUrlFromEmail(mComment.authorEmail,avatarSz);
-  imgAvatar.setImageUrl(profileImageUrl,WordPress.imageLoader);
+  if (mComment.profileImageUrl == null) {
+    String avatarUrl=GravatarUtils.gravatarUrlFromEmail(mComment.authorEmail,avatarSz);
+    imgAvatar.setImageUrl(avatarUrl,WordPress.imageLoader);
+  }
+ else {
+    imgAvatar.setImageUrl(mComment.profileImageUrl.toString(),WordPress.imageLoader);
+  }
   if (mComment.getStatusEnum() == CommentStatus.APPROVED) {
     txtBtnApprove.setVisibility(View.GONE);
     showReplyBox();
     mComment.setStatus(CommentStatus.toString(CommentStatus.APPROVED,CommentStatus.ApiFormat.XMLRPC));
-    mChangeListener.onCommentModified(mComment);
+    if (mChangeListener != null)     mChangeListener.onCommentModified(mComment);
   }
  else {
     txtBtnApprove.setVisibility(View.VISIBLE);
