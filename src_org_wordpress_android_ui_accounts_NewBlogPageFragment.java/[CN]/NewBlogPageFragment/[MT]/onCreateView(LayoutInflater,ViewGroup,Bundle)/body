@@ -2,26 +2,26 @@
   ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.new_account_blog_fragment_screen,container,false);
   mNextButton=(WPTextView)rootView.findViewById(R.id.next_button);
   mNextButton.setOnClickListener(nextClickListener);
-  siteURL=(EditText)rootView.findViewById(R.id.site_url);
-  siteURL.addTextChangedListener(this);
-  siteTitle=(EditText)rootView.findViewById(R.id.site_title);
-  siteTitle.addTextChangedListener(this);
-  langSpinner=(Spinner)rootView.findViewById(R.id.langs_spinner);
+  mSiteURL=(EditText)rootView.findViewById(R.id.site_url);
+  mSiteURL.addTextChangedListener(this);
+  mSiteTitle=(EditText)rootView.findViewById(R.id.site_title);
+  mSiteTitle.addTextChangedListener(this);
+  mLangSpinner=(Spinner)rootView.findViewById(R.id.langs_spinner);
   loadWordPressComLanguages();
-  List<String> list=new ArrayList<String>(wordpressComSupportedLanguages.keySet());
+  List<String> list=new ArrayList<String>(mWordpressComSupportedLanguages.keySet());
   ArrayAdapter<String> dataAdapter=new ArrayAdapter<String>(getActivity(),R.layout.spinner_textview,list);
   dataAdapter.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
-  langSpinner.setAdapter(dataAdapter);
+  mLangSpinner.setAdapter(dataAdapter);
   for (int i=0; i < list.size(); i++) {
-    if (list.get(i).equalsIgnoreCase(matchedDeviceLanguage)) {
-      langSpinner.setSelection(i);
+    if (list.get(i).equalsIgnoreCase(mMatchedDeviceLanguage)) {
+      mLangSpinner.setSelection(i);
       break;
     }
   }
-  privacySpinner=(Spinner)rootView.findViewById(R.id.privacy_spinner);
+  mPrivacySpinner=(Spinner)rootView.findViewById(R.id.privacy_spinner);
   ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(getActivity(),R.array.privacy_array,android.R.layout.simple_spinner_item);
   adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-  privacySpinner.setAdapter(adapter);
+  mPrivacySpinner.setAdapter(adapter);
   WPTextView termsOfServiceTextView=(WPTextView)rootView.findViewById(R.id.l_agree_terms_of_service);
   termsOfServiceTextView.setText(Html.fromHtml(String.format(getString(R.string.agree_terms_of_service,"<u>","</u>"))));
   termsOfServiceTextView.setOnClickListener(new OnClickListener(){
