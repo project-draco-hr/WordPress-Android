@@ -11,20 +11,22 @@
   progress.setVisibility(View.VISIBLE);
   CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
     @Override public void onActionResult(    boolean succeeded){
-      editComment.setEnabled(true);
-      imgSubmit.setVisibility(View.VISIBLE);
-      progress.setVisibility(View.GONE);
       mIsSubmittingReply=false;
-      if (succeeded) {
-        if (mChangeListener != null)         mChangeListener.onCommentAdded();
-        MessageBarUtils.showMessageBar(getActivity(),getString(R.string.note_reply_successful));
-        editComment.setText(null);
-      }
+      if (hasActivity()) {
+        editComment.setEnabled(true);
+        imgSubmit.setVisibility(View.VISIBLE);
+        progress.setVisibility(View.GONE);
+        if (succeeded) {
+          if (mChangeListener != null)           mChangeListener.onCommentAdded();
+          MessageBarUtils.showMessageBar(getActivity(),getString(R.string.note_reply_successful));
+          editComment.setText(null);
+        }
  else {
-        ToastUtils.showToast(getActivity(),R.string.reply_failed,ToastUtils.Duration.LONG);
-        editComment.requestFocus();
-        InputMethodManager imm=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(editComment,InputMethodManager.SHOW_IMPLICIT);
+          ToastUtils.showToast(getActivity(),R.string.reply_failed,ToastUtils.Duration.LONG);
+          editComment.requestFocus();
+          InputMethodManager imm=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+          imm.showSoftInput(editComment,InputMethodManager.SHOW_IMPLICIT);
+        }
       }
     }
   }

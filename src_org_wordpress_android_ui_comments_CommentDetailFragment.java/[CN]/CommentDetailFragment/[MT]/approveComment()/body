@@ -13,17 +13,19 @@
   CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
     @Override public void onActionResult(    boolean succeeded){
       mIsApprovingComment=false;
-      if (succeeded) {
-        mComment.setStatus(CommentStatus.toString(CommentStatus.APPROVED,CommentStatus.ApiFormat.XMLRPC));
-        if (mChangeListener != null)         mChangeListener.onCommentModified(mComment);
-      }
+      if (hasActivity()) {
+        if (succeeded) {
+          mComment.setStatus(CommentStatus.toString(CommentStatus.APPROVED,CommentStatus.ApiFormat.XMLRPC));
+          if (mChangeListener != null)           mChangeListener.onCommentModerated(mComment);
+        }
  else {
-        hideReplyBox(false);
-        txtBtnApprove.setVisibility(View.VISIBLE);
-        ToastUtils.showToast(getActivity(),R.string.error_moderate_comment,ToastUtils.Duration.LONG);
+          hideReplyBox(false);
+          txtBtnApprove.setVisibility(View.VISIBLE);
+          ToastUtils.showToast(getActivity(),R.string.error_moderate_comment,ToastUtils.Duration.LONG);
+        }
       }
     }
   }
 ;
-  CommentActions.setCommentStatus(WordPress.currentBlog,mComment,CommentStatus.APPROVED,actionListener);
+  CommentActions.moderateComment(WordPress.currentBlog,mComment,CommentStatus.APPROVED,actionListener);
 }

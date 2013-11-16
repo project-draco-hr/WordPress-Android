@@ -4,20 +4,28 @@
   RestRequest.Listener restListener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       mIsRequestingComment=false;
-      if (progress != null)       progress.setVisibility(View.GONE);
-      Comment comment=Comment.fromJSON(jsonObject);
-      if (comment != null)       setComment(comment);
+      if (hasActivity()) {
+        if (progress != null)         progress.setVisibility(View.GONE);
+        Comment comment=new Comment(jsonObject);
+        if (comment != null) {
+          WordPress.wpDB.addComment(mAccountId,comment);
+          setComment(comment);
+        }
+      }
     }
   }
 ;
   RestRequest.ErrorListener restErrListener=new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
       mIsRequestingComment=false;
-      if (progress != null)       progress.setVisibility(View.GONE);
+      if (hasActivity()) {
+        if (progress != null)         progress.setVisibility(View.GONE);
+        ToastUtils.showToast(getActivity(),R.string.connection_error,ToastUtils.Duration.LONG);
+      }
     }
   }
 ;
-  final String path=String.format("/sites/%s/comments/%s",siteId,commentId);
+  final String path=String.format("/sites/%s/comments/%s",blogId,commentId);
   mIsRequestingComment=true;
   WordPress.restClient.get(path,restListener,restErrListener);
 }
