@@ -7,9 +7,7 @@
   FragmentManager fm=getSupportFragmentManager();
   fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
   mNotesList=(NotificationsListFragment)fm.findFragmentById(R.id.notes_list);
-  mNotesList.setNoteProvider(new NoteProvider());
   mNotesList.setOnNoteClickListener(new NoteClickListener());
-  notes=WordPress.wpDB.getLatestNotes();
   fragmentDetectors.add(new FragmentDetector(){
     @Override public Fragment getFragment(    Note note){
       if (note.isCommentType()) {
@@ -32,7 +30,6 @@
 );
   fragmentDetectors.add(new FragmentDetector(){
     @Override public Fragment getFragment(    Note note){
-      Log.d(TAG,String.format("Is it a big badge template? %b",note.isBigBadgeTemplate()));
       if (note.isBigBadgeTemplate()) {
         Fragment fragment=new BigBadgeFragment();
         return fragment;
@@ -43,7 +40,6 @@
 );
   GCMIntentService.activeNotificationsMap.clear();
   if (savedInstanceState == null)   launchWithNoteId();
-  refreshNotificationsListFragment(notes);
   if (savedInstanceState != null)   popNoteDetail();
   if (mBroadcastReceiver == null)   createBroadcastReceiver();
   getWindow().setBackgroundDrawable(null);
