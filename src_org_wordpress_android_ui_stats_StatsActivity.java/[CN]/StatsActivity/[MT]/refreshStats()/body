@@ -6,6 +6,7 @@
     blogId=getBlogId();
     if (blogId == null) {
       new ApiHelper.RefreshBlogContentTask(this,WordPress.getCurrentBlog(),new VerifyJetpackSettingsCallback(StatsActivity.this)).execute(false);
+      return;
     }
   }
   StatsRestHelper.getStatsSummary(blogId,new StatsRestHelper.StatsSummaryInterface(){
@@ -33,18 +34,10 @@
     }
   }
 );
-  if (mIsTablet) {
-    StatsRestHelper.getStats(StatsViewType.CLICKS,blogId);
-    StatsRestHelper.getStats(StatsViewType.REFERRERS,blogId);
-    StatsRestHelper.getStats(StatsViewType.SEARCH_ENGINE_TERMS,blogId);
-    StatsRestHelper.getStats(StatsViewType.TOP_POSTS_AND_PAGES,blogId);
-    StatsRestHelper.getStats(StatsViewType.VIEWS_BY_COUNTRY,blogId);
-    StatsRestHelper.getStats(StatsViewType.VISITORS_AND_VIEWS,blogId);
-  }
- else {
-    if (mStatsViewFragment != null) {
-      StatsViewType viewType=mStatsViewFragment.getViewType();
-      StatsRestHelper.getStats(viewType,blogId);
-    }
-  }
+  StatsRestHelper.getStats(StatsViewType.CLICKS,blogId);
+  StatsRestHelper.getStats(StatsViewType.REFERRERS,blogId);
+  StatsRestHelper.getStats(StatsViewType.SEARCH_ENGINE_TERMS,blogId);
+  StatsRestHelper.getStats(StatsViewType.TOP_POSTS_AND_PAGES,blogId);
+  StatsRestHelper.getStats(StatsViewType.VIEWS_BY_COUNTRY,blogId);
+  StatsRestHelper.getStats(StatsViewType.VISITORS_AND_VIEWS,blogId);
 }
