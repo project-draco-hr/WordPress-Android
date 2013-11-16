@@ -1,6 +1,7 @@
 {
-  View view=super.getView(position,convertView,parent);
-  final Note note=getItem(position);
+  Bucket.ObjectCursor<Note> bucketCursor=(Bucket.ObjectCursor<Note>)cursor;
+  final Note note=bucketCursor.getObject();
+  final TextView noteLabelText=(TextView)view.findViewById(R.id.note_label);
   final TextView detailText=(TextView)view.findViewById(R.id.note_detail);
   final ProgressBar placeholderLoading=(ProgressBar)view.findViewById(R.id.placeholder_loading);
   final NetworkImageView avatarView=(NetworkImageView)view.findViewById(R.id.note_avatar);
@@ -13,6 +14,7 @@
  else {
     detailText.setVisibility(View.GONE);
   }
+  noteLabelText.setText(note.getSubject());
   String iconUrl=note.getIconURL();
   if (iconUrl != null && iconUrl.contains("s=256"))   iconUrl=iconUrl.replace("s=256","s=" + mAvatarSz);
   avatarView.setImageUrl(iconUrl,WordPress.imageLoader);
@@ -20,5 +22,4 @@
   iconView.setImageDrawable(getDrawableForType(note.getType()));
   unreadIndicator.setVisibility(note.isUnread() ? View.VISIBLE : View.GONE);
   placeholderLoading.setVisibility(note.isPlaceholder() ? View.VISIBLE : View.GONE);
-  return view;
 }
