@@ -1,4 +1,5 @@
 {
+  mErrorUnavailableVideoPress=false;
   post=posts[0];
   nm=(NotificationManager)context.getSystemService("notification");
   String postOrPage=(String)(post.isPage() ? context.getResources().getText(R.string.page_id) : context.getResources().getText(R.string.post_id));
@@ -58,14 +59,14 @@
  else {
               if (x == 0)               descriptionContent=descriptionContent.replace(tag,"");
  else               moreContent=moreContent.replace(tag,"");
-              mediaError=true;
+              mIsMediaError=true;
             }
           }
         }
       }
     }
   }
-  if (mediaError)   return false;
+  if (mIsMediaError)   return false;
   JSONArray categoriesJsonArray=post.getJSONCategories();
   String[] theCategories=null;
   if (categoriesJsonArray != null) {
@@ -161,9 +162,9 @@
     return true;
   }
  catch (  final XMLRPCException e) {
-    error=String.format(context.getResources().getText(R.string.error_upload).toString(),post.isPage() ? context.getResources().getText(R.string.page).toString() : context.getResources().getText(R.string.post).toString()) + " " + cleanXMLRPCErrorMessage(e.getMessage());
-    mediaError=false;
-    Log.i("WP",error);
+    mErrorMessage=String.format(context.getResources().getText(R.string.error_upload).toString(),post.isPage() ? context.getResources().getText(R.string.page).toString() : context.getResources().getText(R.string.post).toString()) + " " + cleanXMLRPCErrorMessage(e.getMessage());
+    mIsMediaError=false;
+    Log.i("WP",mErrorMessage);
   }
   return false;
 }
