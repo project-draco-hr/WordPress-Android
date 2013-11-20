@@ -27,10 +27,10 @@
     html=(SpannableStringBuilder)Html.fromHtml(content);
   }
   txtContent.setText(html);
-  int avatarSz=getResources().getDimensionPixelSize(R.dimen.reader_avatar_sz_large);
   imgAvatar.setDefaultImageResId(R.drawable.placeholder);
   if (mComment.profileImageUrl == null) {
     if (!TextUtils.isEmpty(mComment.authorEmail)) {
+      int avatarSz=getResources().getDimensionPixelSize(R.dimen.reader_avatar_sz_large);
       String avatarUrl=GravatarUtils.gravatarUrlFromEmail(mComment.authorEmail,avatarSz);
       imgAvatar.setImageUrl(avatarUrl,WordPress.imageLoader);
     }
@@ -54,5 +54,15 @@
     }
 );
     hideReplyBox(true);
+  }
+  if (!TextUtils.isEmpty(mComment.authorURL)) {
+    View.OnClickListener authorListener=new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ReaderActivityLauncher.openUrl(getActivity(),mComment.authorURL);
+      }
+    }
+;
+    imgAvatar.setOnClickListener(authorListener);
+    txtName.setOnClickListener(authorListener);
   }
 }
