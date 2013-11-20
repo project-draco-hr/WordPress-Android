@@ -10,8 +10,8 @@
     alert.setView(httpAuth);
     alert.setPositiveButton(R.string.sign_in,new DialogInterface.OnClickListener(){
       public void onClick(      DialogInterface dialog,      int whichButton){
-        mHttpUsername=usernameEditText.getText().toString();
-        mHttpPassword=passwordEditText.getText().toString();
+        mSetupBlog.setHttpUsername(usernameEditText.getText().toString());
+        mSetupBlog.setHttpPassword(passwordEditText.getText().toString());
         new SetupBlogTask().execute();
       }
     }
@@ -31,11 +31,11 @@
     mErrorMsg=null;
     return;
   }
-  if (mXmlrpcUrl.contains("wordpress.com")) {
+  if (mSetupBlog.getXmlrpcUrl().contains("wordpress.com")) {
     SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(getActivity());
     SharedPreferences.Editor editor=settings.edit();
-    editor.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mUsername);
-    editor.putString(WordPress.WPCOM_PASSWORD_PREFERENCE,WordPressDB.encryptPassword(mPassword));
+    editor.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mSetupBlog.getUsername());
+    editor.putString(WordPress.WPCOM_PASSWORD_PREFERENCE,WordPressDB.encryptPassword(mSetupBlog.getPassword()));
     editor.commit();
     WordPress.restClient.get("me",null,null);
   }
@@ -46,7 +46,9 @@
       for (int i=0; i < mUsersBlogsList.size(); i++) {
         allBlogs.put(i,true);
       }
-      addBlogs(allBlogs);
+      mSetupBlog.addBlogs(usersBlogsList,allBlogs);
+      getActivity().setResult(Activity.RESULT_OK);
+      getActivity().finish();
     }
   }
 }
