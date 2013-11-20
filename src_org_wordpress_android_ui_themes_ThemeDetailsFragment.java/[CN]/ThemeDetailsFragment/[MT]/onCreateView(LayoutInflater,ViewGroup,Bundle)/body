@@ -22,7 +22,7 @@
 );
   mLivePreviewButton.setOnClickListener(new OnClickListener(){
     @Override public void onClick(    View v){
-      if (mPreviewURL != null)       mCallback.onLivePreviewClicked(getThemeId(),mPreviewURL);
+      if (mPreviewURL != null && hasCallback())       mCallback.onLivePreviewClicked(getThemeId(),mPreviewURL);
     }
   }
 );
@@ -30,10 +30,8 @@
     @Override public void onClick(    View v){
       String themeId=getThemeId();
       if (themeId != null) {
-        mCallback.onActivateThemeClicked(themeId,ThemeDetailsFragment.this);
-        mActivateThemeButton.setEnabled(false);
-        mActivateThemeButton.setText("");
-        mActivatingProgressView.setVisibility(View.VISIBLE);
+        if (hasCallback())         mCallback.onActivateThemeClicked(themeId,ThemeDetailsFragment.this);
+        setIsActivatingTheme(true);
       }
     }
   }

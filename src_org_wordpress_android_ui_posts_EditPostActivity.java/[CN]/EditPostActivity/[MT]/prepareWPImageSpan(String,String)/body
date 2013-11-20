@@ -1,8 +1,14 @@
 {
   Cursor cursor=WordPress.wpDB.getMediaFile(blogId,mediaId);
-  if (cursor == null || !cursor.moveToFirst())   return null;
+  if (cursor == null || !cursor.moveToFirst()) {
+    if (cursor != null)     cursor.close();
+    return null;
+  }
   String url=cursor.getString(cursor.getColumnIndex("fileURL"));
-  if (url == null)   return null;
+  if (url == null) {
+    cursor.close();
+    return null;
+  }
   Uri uri=Uri.parse(url);
   WPImageSpan imageSpan=new WPImageSpan(EditPostActivity.this,R.drawable.remote_image,uri);
   imageSpan.setMediaId(mediaId);

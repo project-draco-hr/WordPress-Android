@@ -51,13 +51,34 @@
     if (!mIsNew) {
       mPost.deleteMediaFiles();
       Editable s=mContentEditText.getText();
-      WPImageSpan[] click_spans=s.getSpans(0,s.length(),WPImageSpan.class);
-      if (click_spans.length != 0) {
-        for (int i=0; i < click_spans.length; i++) {
-          WPImageSpan wpIS=click_spans[i];
+      MediaGalleryImageSpan[] gallerySpans=s.getSpans(0,s.length(),MediaGalleryImageSpan.class);
+      for (      MediaGalleryImageSpan gallerySpan : gallerySpans) {
+        int start=s.getSpanStart(gallerySpan);
+        s.removeSpan(gallerySpan);
+        s.insert(start,WPHtml.getGalleryShortcode(gallerySpan));
+      }
+      WPImageSpan[] imageSpans=s.getSpans(0,s.length(),WPImageSpan.class);
+      if (imageSpans.length != 0) {
+        for (int i=0; i < imageSpans.length; i++) {
+          WPImageSpan wpIS=imageSpans[i];
           images+=wpIS.getImageSource().toString() + ",";
           if (wpIS.getMediaId() != null) {
             updateMediaFileOnServer(wpIS);
+          }
+ else {
+            MediaFile mf=new MediaFile();
+            mf.setBlogId(WordPress.getCurrentBlog().getBlogId() + "");
+            mf.setPostID(mPost.getId());
+            mf.setTitle(wpIS.getTitle());
+            mf.setCaption(wpIS.getCaption());
+            mf.setFeatured(wpIS.isFeatured());
+            mf.setFeaturedInPost(wpIS.isFeaturedInPost());
+            mf.setFileName(wpIS.getImageSource().toString());
+            mf.setFilePath(wpIS.getImageSource().toString());
+            mf.setHorizontalAlignment(wpIS.getHorizontalAlignment());
+            mf.setWidth(wpIS.getWidth());
+            mf.setVideo(wpIS.isVideo());
+            mf.save();
           }
           int tagStart=s.getSpanStart(wpIS);
           if (!isAutoSave) {
@@ -68,11 +89,11 @@
  else {
               s.insert(tagStart,"<img android-uri=\"" + wpIS.getImageSource().toString() + "\" />");
             }
-            if (mLocalDraft)             content=WPHtml.toHtml(s);
- else             content=s.toString();
           }
         }
       }
+      if (mLocalDraft)       content=WPHtml.toHtml(s);
+ else       content=s.toString();
     }
  else {
       Editable s=mContentEditText.getText();

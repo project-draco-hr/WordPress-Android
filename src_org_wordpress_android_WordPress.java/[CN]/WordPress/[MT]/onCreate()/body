@@ -10,8 +10,9 @@
   localImageCache=new BitmapLruCache(cacheSize / 2);
   SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
   if (settings.getInt("wp_pref_last_activity",-1) >= 0)   shouldRestoreSelectedActivity=true;
-  restClient=new WPRestClient(requestQueue,new OauthAuthenticator(),settings.getString(ACCESS_TOKEN_PREFERENCE,null));
+  restClient=new WPRestClient(requestQueue,new OauthAuthenticator());
   registerForCloudMessaging(this);
   AppLockManager.getInstance().enableDefaultAppLockIfAvailable(this);
+  if (AppLockManager.getInstance().isAppLockFeatureEnabled())   AppLockManager.getInstance().getCurrentAppLock().setDisabledActivities(new String[]{"org.wordpress.android.ui.ShareIntentReceiverActivity"});
   super.onCreate();
 }

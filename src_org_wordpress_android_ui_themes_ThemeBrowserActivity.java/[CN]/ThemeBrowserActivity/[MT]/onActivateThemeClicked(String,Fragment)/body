@@ -3,12 +3,14 @@
   if (themeId == null) {
     themeId=mPreviewFragment.getThemeId();
   }
-  final String currentThemeId=themeId;
+  final String newThemeId=themeId;
   final WeakReference<ThemeBrowserActivity> ref=new WeakReference<ThemeBrowserActivity>(this);
+  mIsActivatingTheme=true;
   WordPress.restClient.setTheme(siteId,themeId,new Listener(){
     @Override public void onResponse(    JSONObject arg0){
+      mIsActivatingTheme=false;
       Toast.makeText(ThemeBrowserActivity.this,R.string.theme_set_success,Toast.LENGTH_LONG).show();
-      WordPress.wpDB.setCurrentTheme(siteId,currentThemeId);
+      WordPress.wpDB.setCurrentTheme(siteId,newThemeId);
       if (mDetailsFragment != null) {
         mDetailsFragment.onThemeActivated(true);
       }
@@ -25,8 +27,9 @@
   }
 ,new ErrorListener(){
     @Override public void onErrorResponse(    VolleyError arg0){
-      if (mDetailsFragment.isVisible())       mDetailsFragment.onThemeActivated(false);
-      Toast.makeText(ref.get(),R.string.theme_set_failed,Toast.LENGTH_LONG).show();
+      mIsActivatingTheme=false;
+      if (mDetailsFragment != null && mDetailsFragment.isVisible())       mDetailsFragment.onThemeActivated(false);
+      if (ref.get() != null)       Toast.makeText(ref.get(),R.string.theme_set_failed,Toast.LENGTH_LONG).show();
     }
   }
 );

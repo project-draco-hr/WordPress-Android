@@ -4,7 +4,7 @@
     if (getActivity() == null)     return;
     if (errorMsg != "" && !getActivity().isFinishing()) {
       FragmentTransaction ft=getFragmentManager().beginTransaction();
-      WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(String.format(getResources().getString(R.string.error_refresh),(isPage) ? getResources().getText(R.string.pages) : getResources().getText(R.string.posts)),errorMsg);
+      WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(String.format(getResources().getString(R.string.error_refresh),(mIsPage) ? getResources().getText(R.string.pages) : getResources().getText(R.string.posts)),errorMsg);
       try {
         alert.show(ft,"alert");
       }
@@ -15,13 +15,13 @@
     }
     return;
   }
-  if (loadMore)   switcher.showPrevious();
+  if (mLoadMore)   switcher.showPrevious();
   mOnRefreshListener.onRefresh(false);
   if (isAdded()) {
     if (getActivity() != null) {
       getActivity().runOnUiThread(new Runnable(){
         @Override public void run(){
-          loadPosts(loadMore);
+          loadPosts(mLoadMore);
         }
       }
 );
