@@ -76,10 +76,20 @@
     return b.create();
   }
  else {
+    String infoTitle=this.getArguments().getString("info-title");
+    final String infoURL=this.getArguments().getString("info-url");
     String error=this.getArguments().getString("alert-error");
     if (error != null)     b.setTitle(error);
  else     b.setTitle(R.string.error);
     b.setPositiveButton("OK",this);
+    if (infoTitle != null && infoURL != null) {
+      b.setNeutralButton(infoTitle,new DialogInterface.OnClickListener(){
+        @Override public void onClick(        DialogInterface dialog,        int which){
+          startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(infoURL)));
+        }
+      }
+);
+    }
     b.setMessage(this.getArguments().getString("alert-message"));
     return b.create();
   }
