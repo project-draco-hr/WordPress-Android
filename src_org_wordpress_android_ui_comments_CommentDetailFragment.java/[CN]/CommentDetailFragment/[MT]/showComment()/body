@@ -28,18 +28,13 @@
   }
   txtContent.setText(html);
   imgAvatar.setDefaultImageResId(R.drawable.placeholder);
-  if (mComment.profileImageUrl == null) {
-    if (!TextUtils.isEmpty(mComment.authorEmail)) {
-      int avatarSz=getResources().getDimensionPixelSize(R.dimen.reader_avatar_sz_large);
-      String avatarUrl=GravatarUtils.gravatarUrlFromEmail(mComment.authorEmail,avatarSz);
-      imgAvatar.setImageUrl(avatarUrl,WordPress.imageLoader);
-    }
- else {
-      imgAvatar.setImageResource(R.drawable.placeholder);
-    }
+  if (mComment.hasProfileImageUrl()) {
+    imgAvatar.setImageUrl(mComment.getProfileImageUrl(),WordPress.imageLoader);
   }
  else {
-    imgAvatar.setImageUrl(mComment.profileImageUrl.toString(),WordPress.imageLoader);
+    int avatarSz=getResources().getDimensionPixelSize(R.dimen.reader_avatar_sz_large);
+    String avatarUrl=GravatarUtils.gravatarUrlFromEmail(mComment.authorEmail,avatarSz);
+    imgAvatar.setImageUrl(avatarUrl,WordPress.imageLoader);
   }
   if (mComment.getStatusEnum() == CommentStatus.APPROVED) {
     txtBtnApprove.setVisibility(View.GONE);

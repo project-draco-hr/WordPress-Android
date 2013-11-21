@@ -1,16 +1,14 @@
 {
-  String authorName=s.name;
-  if (authorName.length() > 0)   getName().setText(authorName);
- else   getName().setText(getResources().getText(R.string.anonymous));
-  String fEmailURL=s.authorURL;
-  if (fEmailURL == "")   fEmailURL=s.emailURL;
-  getEmailURL().setText(fEmailURL);
-  getComment().setText(s.comment);
-  getPostTitle().setText(getResources().getText(R.string.on) + " " + s.postTitle);
-  row.setId(Integer.valueOf(s.commentID));
+  txtName.setText(!TextUtils.isEmpty(comment.name) ? comment.name : getString(R.string.anonymous));
+  txtComment.setText(comment.comment);
+  txtPostTitle.setText(getResources().getText(R.string.on) + " " + comment.postTitle);
+  String fEmailURL=(TextUtils.isEmpty(comment.authorURL) ? comment.emailURL : comment.authorURL);
+  txtEmailURL.setVisibility(TextUtils.isEmpty(fEmailURL) ? View.GONE : View.VISIBLE);
+  txtEmailURL.setText(fEmailURL);
+  row.setId(Integer.valueOf(comment.commentID));
   final String prettyComment;
   final String textColor;
-switch (s.getStatusEnum()) {
+switch (comment.getStatusEnum()) {
 case SPAM:
     prettyComment=getResources().getText(R.string.spam).toString();
   textColor="#FF0000";
@@ -24,17 +22,22 @@ prettyComment=getResources().getText(R.string.approved).toString();
 textColor="#006505";
 break;
 }
-getBulkEditGroup().setVisibility(View.VISIBLE);
-getStatus().setText(prettyComment);
-getStatus().setTextColor(Color.parseColor(textColor));
-getBulkCheck().setChecked(selectedCommentPositions.contains(position));
-getBulkCheck().setTag(position);
-getBulkCheck().setOnClickListener(new OnClickListener(){
+txtStatus.setText(prettyComment);
+txtStatus.setTextColor(Color.parseColor(textColor));
+bulkCheck.setChecked(selectedCommentPositions.contains(position));
+bulkCheck.setTag(position);
+bulkCheck.setOnClickListener(new OnClickListener(){
 public void onClick(View arg0){
 selectedCommentPositions.add(position);
 showOrHideModerationBar();
 }
 }
 );
-getAvatar().setImageUrl(s.profileImageUrl.toString(),WordPress.imageLoader);
+imgAvatar.setDefaultImageResId(R.drawable.placeholder);
+if (comment.hasProfileImageUrl()) {
+imgAvatar.setImageUrl(comment.getProfileImageUrl(),WordPress.imageLoader);
+}
+ else {
+imgAvatar.setImageResource(R.drawable.placeholder);
+}
 }
