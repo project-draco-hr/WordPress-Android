@@ -1,0 +1,23 @@
+{
+  if (statsActivityWeakRef.get() == null || statsActivityWeakRef.get().isFinishing() || statsActivityWeakRef.get().mIsInFront == false) {
+    return;
+  }
+  if (getBlogId() == null) {
+    AlertDialog.Builder builder=new AlertDialog.Builder(this.statsActivityWeakRef.get());
+    builder.setMessage(getString(R.string.jetpack_message)).setTitle(getString(R.string.jetpack_not_found));
+    builder.setPositiveButton(R.string.yes,new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int id){
+        Intent jetpackIntent=new Intent(VerifyJetpackSettingsCallback.this.statsActivityWeakRef.get(),AuthenticatedWebViewActivity.class);
+        jetpackIntent.putExtra(AuthenticatedWebViewActivity.LOAD_AUTHENTICATED_URL,WordPress.getCurrentBlog().getAdminUrl() + "plugin-install.php?tab=search&s=jetpack+by+wordpress.com&plugin-search-input=Search+Plugins");
+        startActivityForResult(jetpackIntent,REQUEST_JETPACK);
+      }
+    }
+);
+    builder.setNegativeButton(R.string.no,new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int id){
+      }
+    }
+);
+    builder.create().show();
+  }
+}

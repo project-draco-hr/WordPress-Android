@@ -2,14 +2,16 @@
   String blogId=(String)params[0];
   JSONObject response=(JSONObject)params[1];
   Context context=WordPress.getContext();
-  if (response != null && response.has("result")) {
+  if (response != null && response.has("country-views")) {
     try {
-      JSONArray results=response.getJSONArray("result");
+      JSONArray results=response.getJSONArray("country-views");
       int count=results.length();
+      String date=response.getString("date");
+      long dateMs=StatUtils.toMs(date);
       ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
       if (count > 0) {
-        ContentProviderOperation op=ContentProviderOperation.newDelete(StatsContentProvider.STATS_GEOVIEWS_URI).withSelection("blogId=?",new String[]{blogId}).build();
-        operations.add(op);
+        ContentProviderOperation delete_op=ContentProviderOperation.newDelete(StatsContentProvider.STATS_GEOVIEWS_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{blogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
+        operations.add(delete_op);
       }
       for (int i=0; i < count; i++) {
         JSONObject result=results.getJSONObject(i);
