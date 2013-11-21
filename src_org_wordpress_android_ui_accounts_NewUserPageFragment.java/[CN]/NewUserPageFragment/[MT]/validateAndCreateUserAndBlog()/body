@@ -4,24 +4,24 @@
     return;
   }
   if (!checkUserData())   return;
+  startProgress(getString(R.string.validating_user_data));
   final String siteUrl=mSiteUrlTextField.getText().toString().trim();
   final String email=mEmailTextField.getText().toString().trim();
   final String password=mPasswordTextField.getText().toString().trim();
   final String username=mUsernameTextField.getText().toString().trim();
   final String siteName=siteUrlToSiteName(siteUrl);
   final String language=getDeviceLanguage();
-  mProgressDialog=ProgressDialog.show(getActivity(),getString(R.string.account_setup),getString(R.string.validating_user_data),true,false);
   CreateUserAndBlog createUserAndBlog=new CreateUserAndBlog(email,username,password,siteUrl,siteName,language,restClient,getActivity(),new ErrorListener(),new CreateUserAndBlog.Callback(){
     @Override public void onStepFinished(    CreateUserAndBlog.Step step){
 switch (step) {
 case VALIDATE_USER:
-        mProgressDialog.setMessage(getString(R.string.validating_site_data));
+        updateProgress(getString(R.string.validating_site_data));
       break;
 case VALIDATE_SITE:
-    mProgressDialog.setMessage(getString(R.string.create_account_wpcom));
+    updateProgress(getString(R.string.create_account_wpcom));
   break;
 case CREATE_USER:
-mProgressDialog.setMessage(getString(R.string.create_blog_wpcom));
+updateProgress(getString(R.string.create_blog_wpcom));
 break;
 case CREATE_SITE:
 case AUTHENTICATE_USER:
@@ -30,11 +30,11 @@ break;
 }
 }
 @Override public void onSuccess(){
-mProgressDialog.dismiss();
+endProgress();
 finishThisStuff(username);
 }
 @Override public void onError(int messageId){
-mProgressDialog.dismiss();
+endProgress();
 showError(getString(messageId));
 }
 }
