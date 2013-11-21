@@ -1,0 +1,13 @@
+{
+  Response.ErrorListener errorListener=new Response.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      String errMsg=String.format("Error pinging WPCom Stats: %s",volleyError.getMessage());
+      Log.w("WORDPRESS",errMsg);
+    }
+  }
+;
+  int rnd=(int)(Math.random() * 100000);
+  String statsURL=String.format("%s%s%s%s%d",Constants.readerURL_v3,"&template=stats&stats_name=",statName,"&rnd=",rnd);
+  StringRequest req=new StringRequest(Request.Method.GET,statsURL,null,errorListener);
+  WordPress.requestQueue.add(req);
+}
