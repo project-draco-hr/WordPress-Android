@@ -1,0 +1,28 @@
+{
+  int tagIndex=mActionBarAdapter.getIndexOfTagName(mCurrentTag);
+  boolean hasTagEverUpdated=ReaderTagTable.hasEverUpdatedTag(mCurrentTag);
+  int title, description=-1;
+switch (tagIndex) {
+case 0:
+    title=R.string.reader_empty_followed_blogs_title;
+  description=R.string.reader_empty_followed_blogs_description;
+break;
+case 2:
+title=R.string.reader_empty_posts_liked;
+break;
+default :
+if (hasTagEverUpdated) {
+title=R.string.reader_empty_posts_in_tag;
+}
+ else {
+title=R.string.reader_empty_posts_in_tag_never_updated;
+}
+break;
+}
+if (description == -1) {
+return new String[]{getString(title),null};
+}
+ else {
+return new String[]{getString(title),getString(description)};
+}
+}
