@@ -1,0 +1,29 @@
+{
+  if (blog == null || comment == null || newStatus == null || newStatus == CommentStatus.UNKNOWN) {
+    if (actionListener != null)     actionListener.onActionResult(false);
+    return;
+  }
+  new Thread(){
+    @Override public void run(){
+      RestRequest.Listener restListener=new RestRequest.Listener(){
+        @Override public void onResponse(        JSONObject jsonObject){
+          String newStatus=(jsonObject != null ? JSONUtil.getString(jsonObject,"status") : null);
+          boolean successful=!TextUtils.isEmpty(newStatus);
+          if (successful)           WordPress.wpDB.updateCommentStatus(blog.getId(),comment.commentID,newStatus);
+          if (actionListener != null)           actionListener.onActionResult(successful);
+        }
+      }
+;
+      RestRequest.ErrorListener restErrListener=new RestRequest.ErrorListener(){
+        @Override public void onErrorResponse(        VolleyError volleyError){
+          if (actionListener != null)           actionListener.onActionResult(false);
+        }
+      }
+;
+      String siteId=Integer.toString(blog.getBlogId());
+      String commentId=Integer.toString(comment.commentID);
+      WordPress.restClient.moderateComment(siteId,commentId,CommentStatus.toString(newStatus,CommentStatus.ApiFormat.REST),restListener,restErrListener);
+    }
+  }
+.start();
+}

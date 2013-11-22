@@ -1,0 +1,31 @@
+{
+  if (!hasActivity() || !hasComment() || mIsApprovingComment)   return;
+  final TextView txtBtnApprove=(TextView)getActivity().findViewById(R.id.text_approve);
+  ReaderAniUtils.flyOut(txtBtnApprove);
+  Runnable runnable=new Runnable(){
+    @Override public void run(){
+      showReplyBox();
+    }
+  }
+;
+  MessageBarUtils.showMessageBar(getActivity(),getString(R.string.comment_approved),MessageBarUtils.MessageBarType.INFO,runnable);
+  mIsApprovingComment=true;
+  CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      mIsApprovingComment=false;
+      if (hasActivity()) {
+        if (succeeded) {
+          mComment.setStatus(CommentStatus.toString(CommentStatus.APPROVED,CommentStatus.ApiFormat.XMLRPC));
+          if (mChangeListener != null)           mChangeListener.onCommentModerated(mComment);
+        }
+ else {
+          hideReplyBox(false);
+          txtBtnApprove.setVisibility(View.VISIBLE);
+          ToastUtils.showToast(getActivity(),R.string.error_moderate_comment,ToastUtils.Duration.LONG);
+        }
+      }
+    }
+  }
+;
+  CommentActions.moderateComment(WordPress.currentBlog,mComment,CommentStatus.APPROVED,actionListener);
+}
