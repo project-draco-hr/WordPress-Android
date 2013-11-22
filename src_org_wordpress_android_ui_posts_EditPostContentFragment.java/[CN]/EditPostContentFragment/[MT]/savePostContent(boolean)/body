@@ -1,13 +1,13 @@
 {
   if (mPost == null)   return;
-  String title=mTitleEditText.getText().toString();
+  String title=(mTitleEditText.getText() != null) ? mTitleEditText.getText().toString() : "";
   String content;
   if (mPost.isLocalDraft() || !isAutoSave) {
     Editable e=mContentEditText.getText();
-    if (android.os.Build.VERSION.SDK_INT >= 14) {
-      CharacterStyle[] style=e.getSpans(0,e.length(),CharacterStyle.class);
-      for (int i=0; i < style.length; i++) {
-        if (style[i].getClass().getName().equals("android.text.style.SuggestionSpan"))         e.removeSpan(style[i]);
+    if (android.os.Build.VERSION.SDK_INT >= 14 && e != null) {
+      CharacterStyle[] characterStyles=e.getSpans(0,e.length(),CharacterStyle.class);
+      for (      CharacterStyle characterStyle : characterStyles) {
+        if (characterStyle.getClass().getName().equals("android.text.style.SuggestionSpan"))         e.removeSpan(characterStyle);
       }
     }
     content=WPHtml.toHtml(e);
@@ -17,7 +17,7 @@
     content=content.replace("</strong><strong>","").replace("</em><em>","").replace("</u><u>","").replace("</strike><strike>","").replace("</blockquote><blockquote>","");
   }
  else {
-    content=mContentEditText.getText().toString();
+    content=(mContentEditText.getText() != null) ? mContentEditText.getText().toString() : "";
   }
   String images="";
   mPost.deleteMediaFiles();
@@ -30,8 +30,7 @@
   }
   WPImageSpan[] imageSpans=s.getSpans(0,s.length(),WPImageSpan.class);
   if (imageSpans.length != 0) {
-    for (int i=0; i < imageSpans.length; i++) {
-      WPImageSpan wpIS=imageSpans[i];
+    for (    WPImageSpan wpIS : imageSpans) {
       images+=wpIS.getImageSource().toString() + ",";
       if (wpIS.getMediaId() != null) {
         updateMediaFileOnServer(wpIS);
@@ -65,7 +64,7 @@
   }
   String moreTag="<!--more-->";
   mPost.setTitle(title);
-  if (mPost.isLocalDraft() && content.indexOf(moreTag) >= 0) {
+  if (mPost.isLocalDraft() && content.contains(moreTag)) {
     mPost.setDescription(content.substring(0,content.indexOf(moreTag)));
     mPost.setMt_text_more(content.substring(content.indexOf(moreTag) + moreTag.length(),content.length()));
   }

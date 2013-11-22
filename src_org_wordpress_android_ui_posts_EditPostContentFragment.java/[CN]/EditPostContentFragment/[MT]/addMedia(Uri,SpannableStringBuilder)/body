@@ -15,7 +15,7 @@
     MediaUtils.setWPImageSpanWidth(getActivity(),imageUri,is);
     is.setTitle((String)mediaData.get("title"));
     is.setImageSource(imageUri);
-    is.setVideo(imageUri.getEncodedPath().contains("video"));
+    if (imageUri.getEncodedPath() != null)     is.setVideo(imageUri.getEncodedPath().contains("video"));
     ssb.append(" ");
     ssb.setSpan(is,ssb.length() - 1,ssb.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     AlignmentSpan.Standard as=new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER);
@@ -32,19 +32,16 @@
       selectionStart=temp;
     }
     Editable s=mContentEditText.getText();
+    if (s == null)     return false;
     WPImageSpan is=new WPImageSpan(getActivity(),resizedBitmap,imageUri);
     MediaUtils.setWPImageSpanWidth(getActivity(),imageUri,is);
     is.setTitle((String)mediaData.get("title"));
     is.setImageSource(imageUri);
-    if (imageUri.getEncodedPath().contains("video")) {
-      is.setVideo(true);
-    }
-    int line=0, column=0;
-    try {
+    if (imageUri.getEncodedPath() != null)     is.setVideo(imageUri.getEncodedPath().contains("video"));
+    int line, column=0;
+    if (mContentEditText.getLayout() != null) {
       line=mContentEditText.getLayout().getLineForOffset(selectionStart);
       column=mContentEditText.getSelectionStart() - mContentEditText.getLayout().getLineStart(line);
-    }
- catch (    Exception ex) {
     }
     WPImageSpan[] image_spans=s.getSpans(selectionStart,selectionEnd,WPImageSpan.class);
     if (image_spans.length != 0) {

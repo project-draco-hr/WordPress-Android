@@ -22,7 +22,6 @@ if (resultCode == Activity.RESULT_OK) {
 try {
 File f=new File(mMediaCapturePath);
 Uri capturedImageUri=Uri.fromFile(f);
-f=null;
 if (!addMedia(capturedImageUri,null)) Toast.makeText(getActivity(),getResources().getText(R.string.gallery_error),Toast.LENGTH_SHORT).show();
 getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,Uri.parse("file://" + Environment.getExternalStorageDirectory())));
 }
@@ -47,14 +46,16 @@ break;
 case ACTIVITY_REQUEST_CODE_CREATE_LINK:
 try {
 extras=data.getExtras();
+if (extras == null) return;
 String linkURL=extras.getString("linkURL");
-if (!linkURL.equals("http://") && !linkURL.equals("")) {
+if (linkURL != null && !linkURL.equals("http://") && !linkURL.equals("")) {
 if (mSelectionStart > mSelectionEnd) {
 int temp=mSelectionEnd;
 mSelectionEnd=mSelectionStart;
 mSelectionStart=temp;
 }
 Editable str=mContentEditText.getText();
+if (str == null) return;
 if (mPost.isLocalDraft()) {
 if (extras.getString("linkText") == null) {
 if (mSelectionStart < mSelectionEnd) str.delete(mSelectionStart,mSelectionEnd);
@@ -64,6 +65,7 @@ mContentEditText.setSelection(mSelectionStart + linkURL.length());
 }
  else {
 String linkText=extras.getString("linkText");
+if (linkText == null) return;
 if (mSelectionStart < mSelectionEnd) str.delete(mSelectionStart,mSelectionEnd);
 str.insert(mSelectionStart,linkText);
 str.setSpan(new URLSpan(linkURL),mSelectionStart,mSelectionStart + linkText.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);

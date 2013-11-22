@@ -19,10 +19,11 @@
         Bitmap resizedBitmap=ih.getResizedImageThumbnail(getActivity(),bitmapByteArray,null);
         if (resizedBitmap == null)         return;
         Editable s=mContentEditText.getText();
+        if (s == null)         return;
         WPImageSpan[] spans=s.getSpans(0,s.length(),WPImageSpan.class);
         if (spans.length != 0) {
           for (          WPImageSpan is : spans) {
-            if (mediaId != null && mediaId.equals(is.getMediaId()) && !is.isNetworkImageLoaded()) {
+            if (mediaId.equals(is.getMediaId()) && !is.isNetworkImageLoaded()) {
               int spanStart=s.getSpanStart(is);
               int spanEnd=s.getSpanEnd(is);
               WPImageSpan imageSpan=new WPImageSpan(getActivity(),resizedBitmap,is.getImageSource());

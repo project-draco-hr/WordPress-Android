@@ -10,20 +10,20 @@
   mUnderlineToggleButton=(ToggleButton)rootView.findViewById(R.id.underline);
   mStrikeToggleButton=(ToggleButton)rootView.findViewById(R.id.strike);
   mAddPictureButton=(ImageButton)rootView.findViewById(R.id.addPictureButton);
-  mLinkButton=(Button)rootView.findViewById(R.id.link);
-  mMoreButton=(Button)rootView.findViewById(R.id.more);
+  Button linkButton=(Button)rootView.findViewById(R.id.link);
+  Button moreButton=(Button)rootView.findViewById(R.id.more);
   registerForContextMenu(mAddPictureButton);
   mContentEditText.setOnSelectionChangedListener(this);
   mContentEditText.setOnTouchListener(this);
   mContentEditText.addTextChangedListener(this);
   mAddPictureButton.setOnClickListener(mFormatBarButtonClickListener);
   mBoldToggleButton.setOnClickListener(mFormatBarButtonClickListener);
-  mLinkButton.setOnClickListener(mFormatBarButtonClickListener);
+  linkButton.setOnClickListener(mFormatBarButtonClickListener);
   mEmToggleButton.setOnClickListener(mFormatBarButtonClickListener);
   mUnderlineToggleButton.setOnClickListener(mFormatBarButtonClickListener);
   mStrikeToggleButton.setOnClickListener(mFormatBarButtonClickListener);
   mBquoteToggleButton.setOnClickListener(mFormatBarButtonClickListener);
-  mMoreButton.setOnClickListener(mFormatBarButtonClickListener);
+  moreButton.setOnClickListener(mFormatBarButtonClickListener);
   mPost=mActivity.getPost();
   if (mPost != null) {
     if (!TextUtils.isEmpty(mPost.getContent())) {
@@ -43,5 +43,15 @@
   }
 );
   setContentEditTextFocusable(true);
+  String action=mActivity.getIntent().getAction();
+  if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action))   setPostContentFromShareAction();
+ else   if (NEW_MEDIA_GALLERY.equals(action))   prepareMediaGallery();
+ else   if (NEW_MEDIA_POST.equals(action))   prepareMediaPost();
+ else   if (mQuickMediaType >= 0) {
+    if (mQuickMediaType == Constants.QUICK_POST_PHOTO_CAMERA)     launchCamera();
+ else     if (mQuickMediaType == Constants.QUICK_POST_PHOTO_LIBRARY)     launchPictureLibrary();
+ else     if (mQuickMediaType == Constants.QUICK_POST_VIDEO_CAMERA)     launchVideoCamera();
+ else     if (mQuickMediaType == Constants.QUICK_POST_VIDEO_LIBRARY)     launchVideoLibrary();
+  }
   return rootView;
 }

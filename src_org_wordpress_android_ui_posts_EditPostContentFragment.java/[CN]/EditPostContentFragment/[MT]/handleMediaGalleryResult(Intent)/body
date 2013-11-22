@@ -8,22 +8,21 @@
     selectionEnd=selectionStart;
     selectionStart=temp;
   }
-  int line=0, column=0;
-  try {
+  int line, column=0;
+  if (mContentEditText.getLayout() != null) {
     line=mContentEditText.getLayout().getLineForOffset(selectionStart);
     column=mContentEditText.getSelectionStart() - mContentEditText.getLayout().getLineStart(line);
   }
- catch (  Exception ex) {
-  }
   Editable s=mContentEditText.getText();
+  if (s == null)   return;
   MediaGalleryImageSpan[] gallerySpans=s.getSpans(selectionStart,selectionEnd,MediaGalleryImageSpan.class);
   if (gallerySpans.length != 0) {
-    for (int i=0; i < gallerySpans.length; i++) {
-      if (gallerySpans[i].getMediaGallery().getUniqueId() == gallery.getUniqueId()) {
-        gallerySpans[i].setMediaGallery(gallery);
-        int spanStart=s.getSpanStart(gallerySpans[i]);
-        int spanEnd=s.getSpanEnd(gallerySpans[i]);
-        s.setSpan(gallerySpans[i],spanStart,spanEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    for (    MediaGalleryImageSpan gallerySpan : gallerySpans) {
+      if (gallerySpan.getMediaGallery().getUniqueId() == gallery.getUniqueId()) {
+        gallerySpan.setMediaGallery(gallery);
+        int spanStart=s.getSpanStart(gallerySpan);
+        int spanEnd=s.getSpanEnd(gallerySpan);
+        s.setSpan(gallerySpan,spanStart,spanEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
       }
     }
     return;

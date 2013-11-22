@@ -15,12 +15,14 @@
       int line=layout.getLineForVertical(y);
       int charPosition=layout.getOffsetForHorizontal(line,x);
       final Spannable s=mContentEditText.getText();
+      if (s == null)       return false;
       WPImageSpan[] image_spans=s.getSpans(charPosition,charPosition,WPImageSpan.class);
       if (image_spans.length != 0) {
         final WPImageSpan span=image_spans[0];
         if (!span.isVideo()) {
           LayoutInflater factory=LayoutInflater.from(getActivity());
           final View alertView=factory.inflate(R.layout.alert_image_options,null);
+          if (alertView == null)           return false;
           final EditText imageWidthText=(EditText)alertView.findViewById(R.id.imageWidthText);
           final EditText titleText=(EditText)alertView.findViewById(R.id.title);
           final EditText caption=(EditText)alertView.findViewById(R.id.caption);
@@ -90,16 +92,17 @@
 );
           AlertDialog ad=new AlertDialog.Builder(getActivity()).setTitle(getString(R.string.image_settings)).setView(alertView).setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
             public void onClick(            DialogInterface dialog,            int whichButton){
-              span.setTitle(titleText.getText().toString());
+              String title=(titleText.getText() != null) ? titleText.getText().toString() : "";
+              span.setTitle(title);
               span.setHorizontalAlignment(alignmentSpinner.getSelectedItemPosition());
               span.setWidth(getEditTextIntegerClamped(imageWidthText,10,maxWidth));
-              span.setCaption(caption.getText().toString());
+              String captionText=(caption.getText() != null) ? caption.getText().toString() : "";
+              span.setCaption(captionText);
               span.setFeatured(featuredCheckBox.isChecked());
               if (featuredCheckBox.isChecked()) {
                 WPImageSpan[] click_spans=s.getSpans(0,s.length(),WPImageSpan.class);
                 if (click_spans.length > 1) {
-                  for (int i=0; i < click_spans.length; i++) {
-                    WPImageSpan verifySpan=click_spans[i];
+                  for (                  WPImageSpan verifySpan : click_spans) {
                     if (verifySpan != span) {
                       verifySpan.setFeatured(false);
                       verifySpan.setFeaturedInPost(false);
@@ -125,8 +128,7 @@
  else {
         mContentEditText.setMovementMethod(ArrowKeyMovementMethod.getInstance());
         int selectionStart=mContentEditText.getSelectionStart();
-        if (selectionStart >= 0 && mContentEditText.getSelectionEnd() >= selectionStart)         ;
-        mContentEditText.setSelection(selectionStart,mContentEditText.getSelectionEnd());
+        if (selectionStart >= 0 && mContentEditText.getSelectionEnd() >= selectionStart)         mContentEditText.setSelection(selectionStart,mContentEditText.getSelectionEnd());
       }
       MediaGalleryImageSpan[] gallerySpans=s.getSpans(charPosition,charPosition,MediaGalleryImageSpan.class);
       if (gallerySpans.length > 0) {
