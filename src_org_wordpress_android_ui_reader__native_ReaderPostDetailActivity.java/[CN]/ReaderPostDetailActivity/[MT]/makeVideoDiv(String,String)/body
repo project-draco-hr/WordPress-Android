@@ -1,14 +1,11 @@
 {
   if (TextUtils.isEmpty(videoUrl))   return "";
-  final int overlaySz=getResources().getDimensionPixelSize(R.dimen.reader_video_overlay_size) / 2;
-  final int thumbWidth=getMaxImageWidth();
-  final int thumbHeight=(int)(thumbWidth * 0.65f);
-  final int overlayLeft=(thumbWidth / 2) - (overlaySz / 2);
-  final int overlayTop=(thumbHeight / 2) - (overlaySz / 2);
+  if (videoUrl.startsWith("//"))   videoUrl="http:" + videoUrl;
+  int overlaySz=getResources().getDimensionPixelSize(R.dimen.reader_video_overlay_size) / 2;
   if (TextUtils.isEmpty(thumbnailUrl)) {
     return String.format("<div class='wpreader-video' align='center'><a href='%s'><img style='width:%dpx; height:%dpx; display:block;' src='%s' /></a></div>",videoUrl,overlaySz,overlaySz,OVERLAY_IMG);
   }
  else {
-    return "<div style='position:relative'>" + String.format("<a href='%s'><img src='%s' style='display:inline; width:%dpx; height:%dpx;' class='wpreader-video-thumb' /></a>",videoUrl,thumbnailUrl,thumbWidth,thumbHeight) + String.format("<a href='%s'><img src='%s' style='display:inline; width:%dpx; height:%dpx; left:%dpx; top:%dpx; position:absolute;' /></a>",videoUrl,OVERLAY_IMG,overlaySz,overlaySz,overlayLeft,overlayTop)+ "</div>";
+    return "<div style='position:relative'>" + String.format("<a href='%s'><img src='%s' style='width:100%%; height:auto;' /></a>",videoUrl,thumbnailUrl) + String.format("<a href='%s'><img src='%s' style='width:%dpx; height:%dpx; position:absolute; left:0px; right:0px; top:0px; bottom:0px; margin:auto;'' /></a>",videoUrl,OVERLAY_IMG,overlaySz,overlaySz)+ "</div>";
   }
 }

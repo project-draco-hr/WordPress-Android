@@ -1,0 +1,63 @@
+{
+  if (!hasActivity())   return;
+  final NetworkImageView imgAvatar=(NetworkImageView)getActivity().findViewById(R.id.image_avatar);
+  final TextView txtName=(TextView)getActivity().findViewById(R.id.text_name);
+  final TextView txtDate=(TextView)getActivity().findViewById(R.id.text_date);
+  final TextView txtContent=(TextView)getActivity().findViewById(R.id.text_content);
+  final TextView txtBtnApprove=(TextView)getActivity().findViewById(R.id.text_approve);
+  if (mComment == null) {
+    imgAvatar.setImageDrawable(null);
+    txtName.setText(null);
+    txtDate.setText(null);
+    txtContent.setText(null);
+    txtBtnApprove.setVisibility(View.GONE);
+    if (mNote != null && !mIsRequestingComment)     showCommentForNote(mNote);
+    return;
+  }
+  txtName.setText(TextUtils.isEmpty(mComment.name) ? getString(R.string.anonymous) : StringUtils.unescapeHTML(mComment.name));
+  txtDate.setText(mComment.dateCreatedFormatted);
+  String content=StringUtils.notNullStr(mComment.comment);
+  if (content.contains("icon_"))   content=Emoticons.replaceEmoticonsWithEmoji((SpannableStringBuilder)Html.fromHtml(content)).toString().trim();
+  final SpannableStringBuilder html;
+  if (content.contains("<img")) {
+    int maxImageSz=getResources().getDimensionPixelSize(R.dimen.reader_comment_max_image_size);
+    html=(SpannableStringBuilder)Html.fromHtml(content,new WPImageGetter(getActivity(),txtContent,maxImageSz),null);
+  }
+ else {
+    html=(SpannableStringBuilder)Html.fromHtml(content);
+  }
+  txtContent.setText(html);
+  imgAvatar.setDefaultImageResId(R.drawable.placeholder);
+  if (mComment.hasProfileImageUrl()) {
+    imgAvatar.setImageUrl(mComment.getProfileImageUrl(),WordPress.imageLoader);
+  }
+ else {
+    int avatarSz=getResources().getDimensionPixelSize(R.dimen.reader_avatar_sz_large);
+    String avatarUrl=GravatarUtils.gravatarUrlFromEmail(mComment.authorEmail,avatarSz);
+    imgAvatar.setImageUrl(avatarUrl,WordPress.imageLoader);
+  }
+  if (mComment.getStatusEnum() == CommentStatus.APPROVED) {
+    txtBtnApprove.setVisibility(View.GONE);
+    showReplyBox();
+  }
+ else {
+    txtBtnApprove.setVisibility(View.VISIBLE);
+    txtBtnApprove.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        approveComment();
+      }
+    }
+);
+    hideReplyBox(true);
+  }
+  if (!TextUtils.isEmpty(mComment.authorURL)) {
+    View.OnClickListener authorListener=new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ReaderActivityLauncher.openUrl(getActivity(),mComment.authorURL);
+      }
+    }
+;
+    imgAvatar.setOnClickListener(authorListener);
+    txtName.setOnClickListener(authorListener);
+  }
+}
