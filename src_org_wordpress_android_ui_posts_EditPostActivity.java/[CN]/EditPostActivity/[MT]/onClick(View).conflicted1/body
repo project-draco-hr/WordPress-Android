@@ -2,23 +2,29 @@
   int id=v.getId();
   if (id == R.id.bold) {
     formatBtnClick(mBoldToggleButton,"strong");
+    trackFormatButtonClick(WPMobileStatsUtil.StatsPropertyPostDetailClickedKeyboardToolbarBoldButton);
   }
  else   if (id == R.id.em) {
     formatBtnClick(mEmToggleButton,"em");
+    trackFormatButtonClick(WPMobileStatsUtil.StatsPropertyPostDetailClickedKeyboardToolbarItalicButton);
   }
  else   if (id == R.id.underline) {
     formatBtnClick(mUnderlineToggleButton,"u");
+    trackFormatButtonClick(WPMobileStatsUtil.StatsPropertyPostDetailClickedKeyboardToolbarUnderlineButton);
   }
  else   if (id == R.id.strike) {
     formatBtnClick(mStrikeToggleButton,"strike");
+    trackFormatButtonClick(WPMobileStatsUtil.StatsPropertyPostDetailClickedKeyboardToolbarDelButton);
   }
  else   if (id == R.id.bquote) {
     formatBtnClick(mBquoteToggleButton,"blockquote");
+    trackFormatButtonClick(WPMobileStatsUtil.StatsPropertyPostDetailClickedKeyboardToolbarBlockquoteButton);
   }
  else   if (id == R.id.more) {
     mSelectionEnd=mContentEditText.getSelectionEnd();
     Editable str=mContentEditText.getText();
     str.insert(mSelectionEnd,"\n<!--more-->\n");
+    trackFormatButtonClick(WPMobileStatsUtil.StatsPropertyPostDetailClickedKeyboardToolbarMoreButton);
   }
  else   if (id == R.id.link) {
     mSelectionStart=mContentEditText.getSelectionStart();
@@ -34,12 +40,15 @@
       String selectedText=mContentEditText.getText().subSequence(mSelectionStart,mSelectionEnd).toString();
       i.putExtra("selectedText",selectedText);
     }
+    trackFormatButtonClick(WPMobileStatsUtil.StatsPropertyPostDetailClickedKeyboardToolbarLinkButton);
     startActivityForResult(i,ACTIVITY_REQUEST_CODE_CREATE_LINK);
   }
  else   if (id == R.id.addPictureButton) {
     mAddPictureButton.performLongClick();
+    trackFormatButtonClick(WPMobileStatsUtil.StatsPropertyPostDetailClickedKeyboardToolbarPictureButton);
   }
  else   if (id == R.id.pubDateButton) {
+    WPMobileStatsUtil.flagProperty(mStatEventEditorClosed,WPMobileStatsUtil.StatsPropertyPostDetailSettingsClickedScheduleFor);
     showDialog(ID_DIALOG_DATE);
   }
  else   if (id == R.id.selectCategories) {
@@ -53,9 +62,16 @@
     startActivityForResult(categoriesIntent,ACTIVITY_REQUEST_CODE_SELECT_CATEGORIES);
   }
  else   if (id == R.id.categoryButton) {
+    trackFormatButtonClick(WPMobileStatsUtil.StatsPropertyPostDetailClickedShowCategories);
     onCategoryButtonClick(v);
   }
  else   if (id == R.id.post) {
+    if (mPost.isUploaded()) {
+      WPMobileStatsUtil.flagProperty(mStatEventEditorClosed,WPMobileStatsUtil.StatsPropertyPostDetailClickedUpdate);
+    }
+ else {
+      WPMobileStatsUtil.flagProperty(mStatEventEditorClosed,WPMobileStatsUtil.StatsPropertyPostDetailClickedPublish);
+    }
     if (mAutoSaveHandler != null)     mAutoSaveHandler.removeCallbacks(autoSaveRunnable);
     if (savePost(false,false)) {
       if (mPost.isUploaded() || !mPost.getPost_status().equals("localdraft")) {
@@ -79,6 +95,7 @@
       e.printStackTrace();
     }
     if (latitude != 0.0) {
+      WPMobileStatsUtil.flagProperty(mStatEventEditorClosed,WPMobileStatsUtil.StatsPropertyPostDetailSettingsClickedAddLocation);
       String uri="geo:" + latitude + ","+ mCurrentLocation.getLongitude();
       startActivity(new Intent(android.content.Intent.ACTION_VIEW,Uri.parse(uri)));
     }
@@ -88,8 +105,10 @@
   }
  else   if (id == R.id.updateLocation) {
     getLocation();
+    WPMobileStatsUtil.flagProperty(mStatEventEditorClosed,WPMobileStatsUtil.StatsPropertyPostDetailSettingsClickedUpdateLocation);
   }
  else   if (id == R.id.removeLocation) {
     removeLocation();
+    WPMobileStatsUtil.flagProperty(mStatEventEditorClosed,WPMobileStatsUtil.StatsPropertyPostDetailSettingsClickedRemoveLocation);
   }
 }
