@@ -1,0 +1,79 @@
+{
+  if (mUsersBlogsList.size() == 1) {
+    SparseBooleanArray oneBlogArray=new SparseBooleanArray();
+    oneBlogArray.put(0,true);
+    mSetupBlog.addBlogs(mUsersBlogsList,oneBlogArray);
+    getActivity().setResult(Activity.RESULT_OK);
+    getActivity().finish();
+    return;
+  }
+  if (mUsersBlogsList != null && mUsersBlogsList.size() != 0) {
+    SparseBooleanArray allBlogs=new SparseBooleanArray();
+    for (int i=0; i < mUsersBlogsList.size(); i++) {
+      allBlogs.put(i,true);
+    }
+    LayoutInflater inflater=(LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    final ListView listView=(ListView)inflater.inflate(R.layout.select_blogs_list,null);
+    listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+    listView.setItemsCanFocus(false);
+    final UsersBlogsArrayAdapter adapter=new UsersBlogsArrayAdapter(getActivity(),R.layout.blogs_row,mUsersBlogsList);
+    listView.setAdapter(adapter);
+    AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(getActivity());
+    dialogBuilder.setTitle(R.string.select_blogs);
+    dialogBuilder.setView(listView);
+    dialogBuilder.setNegativeButton(R.string.add_selected,new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int whichButton){
+        SparseBooleanArray selectedBlogs=listView.getCheckedItemPositions();
+        mSetupBlog.addBlogs(mUsersBlogsList,selectedBlogs);
+        getActivity().setResult(Activity.RESULT_OK);
+        getActivity().finish();
+      }
+    }
+);
+    dialogBuilder.setPositiveButton(R.string.add_all,new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int whichButton){
+        SparseBooleanArray allBlogs=new SparseBooleanArray();
+        for (int i=0; i < adapter.getCount(); i++) {
+          allBlogs.put(i,true);
+        }
+        if (allBlogs.size() > 0) {
+          mSetupBlog.addBlogs(mUsersBlogsList,allBlogs);
+        }
+        getActivity().setResult(Activity.RESULT_OK);
+        getActivity().finish();
+      }
+    }
+);
+    dialogBuilder.setOnKeyListener(new ProgressDialog.OnKeyListener(){
+      @Override public boolean onKey(      DialogInterface dialog,      int keyCode,      KeyEvent event){
+        endProgress();
+        return false;
+      }
+    }
+);
+    dialogBuilder.setCancelable(true);
+    AlertDialog ad=dialogBuilder.create();
+    ad.setInverseBackgroundForced(true);
+    ad.show();
+    final Button addSelected=ad.getButton(AlertDialog.BUTTON_NEGATIVE);
+    addSelected.setEnabled(false);
+    listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+      public void onItemClick(      AdapterView<?> arg0,      View arg1,      int arg2,      long arg3){
+        SparseBooleanArray selectedItems=listView.getCheckedItemPositions();
+        boolean isChecked=false;
+        for (int i=0; i < selectedItems.size(); i++) {
+          if (selectedItems.get(selectedItems.keyAt(i)) == true) {
+            isChecked=true;
+          }
+        }
+        if (!isChecked) {
+          addSelected.setEnabled(false);
+        }
+ else {
+          addSelected.setEnabled(true);
+        }
+      }
+    }
+);
+  }
+}
