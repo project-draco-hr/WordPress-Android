@@ -1,0 +1,18 @@
+{
+  final ViewTreeObserver viewTreeObserver=getWindow().getDecorView().getViewTreeObserver();
+  if (viewTreeObserver != null) {
+    viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
+      @Override public void onGlobalLayout(){
+        View menuButton=findViewById(R.id.menu_tags);
+        if (menuButton != null) {
+          mTagMenuItemLocation=new int[2];
+          menuButton.getLocationInWindow(mTagMenuItemLocation);
+          mTagMenuItemLocation[0]+=menuButton.getWidth() / 2;
+          mTagMenuItemLocation[1]+=menuButton.getHeight() / 2;
+        }
+        viewTreeObserver.removeOnGlobalLayoutListener(this);
+      }
+    }
+);
+  }
+}
