@@ -1,0 +1,43 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.activity_new_edit_post);
+  final ActionBar actionBar=getSupportActionBar();
+  actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+  actionBar.setDisplayHomeAsUpEnabled(true);
+  mSectionsPagerAdapter=new SectionsPagerAdapter(getSupportFragmentManager());
+  mViewPager=(ViewPager)findViewById(R.id.pager);
+  mViewPager.setAdapter(mSectionsPagerAdapter);
+  mViewPager.setOffscreenPageLimit(2);
+  mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+    @Override public void onPageSelected(    int position){
+      actionBar.setSelectedNavigationItem(position);
+      mEditPostContentFragment.setContentEditTextFocusable(position == 0);
+    }
+  }
+);
+  actionBar.addTab(actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(0)).setTabListener(this).setIcon(R.drawable.tab_icon_write));
+  actionBar.addTab(actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(1)).setTabListener(this).setIcon(R.drawable.tab_icon_settings));
+  actionBar.addTab(actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(2)).setTabListener(this).setIcon(R.drawable.tab_icon_preview));
+  setTitle(WordPress.getCurrentBlog().getBlogName());
+  Bundle extras=getIntent().getExtras();
+  if (extras != null) {
+    long postId=extras.getLong(EXTRA_POSTID,-1);
+    boolean isPage=extras.getBoolean(EXTRA_IS_PAGE);
+    mIsNewPost=extras.getBoolean(EXTRA_IS_NEW_POST);
+    try {
+      mPost=new Post(WordPress.getCurrentBlog().getId(),postId,isPage);
+      if (mPost == null) {
+        Toast.makeText(this,getResources().getText(R.string.post_not_found),Toast.LENGTH_LONG).show();
+        finish();
+        return;
+      }
+ else {
+        mOriginalPost=new Post(WordPress.getCurrentBlog().getId(),postId,isPage);
+      }
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+      finish();
+    }
+  }
+}

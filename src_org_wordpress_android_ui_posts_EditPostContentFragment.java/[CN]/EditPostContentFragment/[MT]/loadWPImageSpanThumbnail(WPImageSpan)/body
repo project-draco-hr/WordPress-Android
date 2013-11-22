@@ -1,0 +1,54 @@
+{
+  final String mediaId=imageSpan.getMediaId();
+  String imageUrl=imageSpan.getThumbnailURL();
+  if (imageUrl == null || mediaId == null)   return;
+  if (WordPress.getCurrentBlog() != null && WordPress.getCurrentBlog().isPhotonCapable()) {
+    String photonUrl=imageSpan.getImageSource().toString();
+    imageUrl=StringUtils.getPhotonUrl(photonUrl,400);
+  }
+  WordPress.imageLoader.get(imageUrl,new ImageLoader.ImageListener(){
+    @Override public void onErrorResponse(    VolleyError arg0){
+    }
+    @Override public void onResponse(    ImageLoader.ImageContainer container,    boolean arg1){
+      if (container.getBitmap() != null) {
+        Bitmap bitmap=container.getBitmap();
+        ImageHelper ih=new ImageHelper();
+        ByteArrayOutputStream stream=new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG,100,stream);
+        byte[] bitmapByteArray=stream.toByteArray();
+        Bitmap resizedBitmap=ih.getResizedImageThumbnail(getActivity(),bitmapByteArray,null);
+        if (resizedBitmap == null)         return;
+        Editable s=mContentEditText.getText();
+        WPImageSpan[] spans=s.getSpans(0,s.length(),WPImageSpan.class);
+        if (spans.length != 0) {
+          for (          WPImageSpan is : spans) {
+            if (mediaId != null && mediaId.equals(is.getMediaId()) && !is.isNetworkImageLoaded()) {
+              int spanStart=s.getSpanStart(is);
+              int spanEnd=s.getSpanEnd(is);
+              WPImageSpan imageSpan=new WPImageSpan(getActivity(),resizedBitmap,is.getImageSource());
+              imageSpan.setCaption(is.getCaption());
+              imageSpan.setDescription(is.getDescription());
+              imageSpan.setFeatured(is.isFeatured());
+              imageSpan.setFeaturedInPost(is.isFeaturedInPost());
+              imageSpan.setHeight(is.getHeight());
+              imageSpan.setHorizontalAlignment(is.getHorizontalAlignment());
+              imageSpan.setMediaId(is.getMediaId());
+              imageSpan.setMimeType(is.getMimeType());
+              imageSpan.setTitle(is.getTitle());
+              imageSpan.setVideo(is.isVideo());
+              imageSpan.setWidth(is.getWidth());
+              imageSpan.setFileName(is.getFileName());
+              imageSpan.setThumbnailURL(is.getThumbnailURL());
+              imageSpan.setDateCreatedGMT(is.getDateCreatedGMT());
+              imageSpan.setNetworkImageLoaded(true);
+              s.removeSpan(is);
+              s.setSpan(imageSpan,spanStart,spanEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+,0,0);
+}

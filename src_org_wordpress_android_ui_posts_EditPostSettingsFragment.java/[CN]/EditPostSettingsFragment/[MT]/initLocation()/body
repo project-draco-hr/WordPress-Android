@@ -1,0 +1,24 @@
+{
+  boolean hasLocationProvider=false;
+  LocationManager locationManager=(LocationManager)getActivity().getSystemService(Activity.LOCATION_SERVICE);
+  List<String> providers=locationManager.getProviders(true);
+  if (providers != null) {
+    for (    String providerName : providers) {
+      if (providerName.equals(LocationManager.GPS_PROVIDER) || providerName.equals(LocationManager.NETWORK_PROVIDER)) {
+        hasLocationProvider=true;
+      }
+    }
+  }
+  if (hasLocationProvider && mPost.getBlog().isLocation() && !mPost.isPage()) {
+    getActivity().findViewById(R.id.sectionLocation).setVisibility(View.VISIBLE);
+    Button viewMap=(Button)getActivity().findViewById(R.id.viewMap);
+    Button updateLocation=(Button)getActivity().findViewById(R.id.updateLocation);
+    Button removeLocation=(Button)getActivity().findViewById(R.id.removeLocation);
+    updateLocation.setOnClickListener(this);
+    removeLocation.setOnClickListener(this);
+    viewMap.setOnClickListener(this);
+    if (mPost.isNew()) {
+      getLocation();
+    }
+  }
+}

@@ -1,0 +1,79 @@
+{
+  if (mPost == null)   return;
+  String title=mTitleEditText.getText().toString();
+  String content;
+  if (mPost.isLocalDraft() || !isAutoSave) {
+    Editable e=mContentEditText.getText();
+    if (android.os.Build.VERSION.SDK_INT >= 14) {
+      CharacterStyle[] style=e.getSpans(0,e.length(),CharacterStyle.class);
+      for (int i=0; i < style.length; i++) {
+        if (style[i].getClass().getName().equals("android.text.style.SuggestionSpan"))         e.removeSpan(style[i]);
+      }
+    }
+    content=WPHtml.toHtml(e);
+    content=content.replace("<p><p>","<p>");
+    content=content.replace("</p></p>","</p>");
+    content=content.replace("<br><br>","<br>");
+    content=content.replace("</strong><strong>","").replace("</em><em>","").replace("</u><u>","").replace("</strike><strike>","").replace("</blockquote><blockquote>","");
+  }
+ else {
+    content=mContentEditText.getText().toString();
+  }
+  String images="";
+  mPost.deleteMediaFiles();
+  Editable s=mContentEditText.getText();
+  MediaGalleryImageSpan[] gallerySpans=s.getSpans(0,s.length(),MediaGalleryImageSpan.class);
+  for (  MediaGalleryImageSpan gallerySpan : gallerySpans) {
+    int start=s.getSpanStart(gallerySpan);
+    s.removeSpan(gallerySpan);
+    s.insert(start,WPHtml.getGalleryShortcode(gallerySpan));
+  }
+  WPImageSpan[] imageSpans=s.getSpans(0,s.length(),WPImageSpan.class);
+  if (imageSpans.length != 0) {
+    for (int i=0; i < imageSpans.length; i++) {
+      WPImageSpan wpIS=imageSpans[i];
+      images+=wpIS.getImageSource().toString() + ",";
+      if (wpIS.getMediaId() != null) {
+        updateMediaFileOnServer(wpIS);
+      }
+ else {
+        MediaFile mf=new MediaFile();
+        mf.setBlogId(WordPress.getCurrentBlog().getBlogId() + "");
+        mf.setPostID(mPost.getId());
+        mf.setTitle(wpIS.getTitle());
+        mf.setCaption(wpIS.getCaption());
+        mf.setFeatured(wpIS.isFeatured());
+        mf.setFeaturedInPost(wpIS.isFeaturedInPost());
+        mf.setFileName(wpIS.getImageSource().toString());
+        mf.setFilePath(wpIS.getImageSource().toString());
+        mf.setHorizontalAlignment(wpIS.getHorizontalAlignment());
+        mf.setWidth(wpIS.getWidth());
+        mf.setVideo(wpIS.isVideo());
+        mf.save();
+      }
+      int tagStart=s.getSpanStart(wpIS);
+      if (!isAutoSave) {
+        s.removeSpan(wpIS);
+        if (wpIS.getMediaId() != null && wpIS.getMediaId().length() > 0) {
+          s.insert(tagStart,WPHtml.getContent(wpIS));
+        }
+ else {
+          s.insert(tagStart,"<img android-uri=\"" + wpIS.getImageSource().toString() + "\" />");
+        }
+      }
+    }
+  }
+  String moreTag="<!--more-->";
+  mPost.setTitle(title);
+  if (mPost.isLocalDraft() && content.indexOf(moreTag) >= 0) {
+    mPost.setDescription(content.substring(0,content.indexOf(moreTag)));
+    mPost.setMt_text_more(content.substring(content.indexOf(moreTag) + moreTag.length(),content.length()));
+  }
+ else {
+    mPost.setDescription(content);
+    mPost.setMt_text_more("");
+  }
+  mPost.setMediaPaths(images);
+  if (!mPost.isLocalDraft())   mPost.setLocalChange(true);
+  mPost.update();
+}

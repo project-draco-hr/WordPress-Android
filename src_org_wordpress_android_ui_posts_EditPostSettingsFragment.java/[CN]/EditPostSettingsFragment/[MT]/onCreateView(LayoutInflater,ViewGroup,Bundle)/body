@@ -1,0 +1,138 @@
+{
+  Calendar c=Calendar.getInstance();
+  mYear=c.get(Calendar.YEAR);
+  mMonth=c.get(Calendar.MONTH);
+  mDay=c.get(Calendar.DAY_OF_MONTH);
+  mHour=c.get(Calendar.HOUR_OF_DAY);
+  mMinute=c.get(Calendar.MINUTE);
+  mCategories=new ArrayList<String>();
+  ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.fragment_edit_post_settings,container,false);
+  mActivity=(NewEditPostActivity)getActivity();
+  mExcerptEditText=(EditText)rootView.findViewById(R.id.postExcerpt);
+  mPasswordEditText=(EditText)rootView.findViewById(R.id.post_password);
+  mLocationText=(TextView)rootView.findViewById(R.id.locationText);
+  mPubDateButton=(Button)rootView.findViewById(R.id.pubDateButton);
+  mPubDateText=(TextView)rootView.findViewById(R.id.pubDate);
+  mStatusSpinner=(Spinner)rootView.findViewById(R.id.status);
+  mTagsEditText=(EditText)rootView.findViewById(R.id.tags);
+  mSectionCategories=((ViewGroup)rootView.findViewById(R.id.sectionCategories));
+  mPubDateButton.setOnClickListener(this);
+  ((TextView)rootView.findViewById(R.id.categoryLabel)).setText(getResources().getString(R.string.categories).toUpperCase());
+  ((TextView)rootView.findViewById(R.id.statusLabel)).setText(getResources().getString(R.string.status).toUpperCase());
+  ((TextView)rootView.findViewById(R.id.postFormatLabel)).setText(getResources().getString(R.string.post_format).toUpperCase());
+  ((TextView)rootView.findViewById(R.id.pubDateLabel)).setText(getResources().getString(R.string.publish_date).toUpperCase());
+  if (mActivity.getPost().isPage()) {
+    mExcerptEditText.setVisibility(View.GONE);
+    (rootView.findViewById(R.id.sectionTags)).setVisibility(View.GONE);
+    (rootView.findViewById(R.id.sectionCategories)).setVisibility(View.GONE);
+    (rootView.findViewById(R.id.sectionLocation)).setVisibility(View.GONE);
+    (rootView.findViewById(R.id.postFormatLabel)).setVisibility(View.GONE);
+    (rootView.findViewById(R.id.postFormat)).setVisibility(View.GONE);
+  }
+ else {
+    if (mActivity.getPost().getBlog().getPostFormats().equals("")) {
+      List<Object> args=new Vector<Object>();
+      args.add(mActivity.getPost().getBlog());
+      args.add(this);
+      new ApiHelper.getPostFormatsTask().execute(args);
+      mPostFormatTitles=getResources().getStringArray(R.array.post_formats_array);
+      String defaultPostFormatTitles[]={"aside","audio","chat","gallery","image","link","quote","standard","status","video"};
+      mPostFormats=defaultPostFormatTitles;
+    }
+ else {
+      try {
+        Gson gson=new Gson();
+        Type type=new TypeToken<Map<String,String>>(){
+        }
+.getType();
+        Map<String,String> jsonPostFormats=gson.fromJson(mActivity.getPost().getBlog().getPostFormats(),type);
+        mPostFormats=new String[jsonPostFormats.size()];
+        mPostFormatTitles=new String[jsonPostFormats.size()];
+        int i=0;
+        for (        Map.Entry<String,String> entry : jsonPostFormats.entrySet()) {
+          String key=entry.getKey();
+          String val=entry.getValue();
+          mPostFormats[i]=key;
+          mPostFormatTitles[i]=StringEscapeUtils.unescapeHtml(val);
+          i++;
+        }
+      }
+ catch (      Exception e) {
+        e.printStackTrace();
+      }
+    }
+    Spinner pfSpinner=(Spinner)rootView.findViewById(R.id.postFormat);
+    ArrayAdapter<String> pfAdapter=new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item,mPostFormatTitles);
+    pfAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    pfSpinner.setAdapter(pfAdapter);
+    String activePostFormat="standard";
+    if (!mActivity.getPost().getWP_post_format().equals(""))     activePostFormat=mActivity.getPost().getWP_post_format();
+    for (int i=0; i < mPostFormats.length; i++) {
+      if (mPostFormats[i].equals(activePostFormat))       pfSpinner.setSelection(i);
+    }
+  }
+  mPost=mActivity.getPost();
+  if (mPost != null) {
+    mExcerptEditText.setText(mPost.getMt_excerpt());
+    String[] items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private)};
+    ArrayAdapter<String> adapter=new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item,items);
+    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    mStatusSpinner.setAdapter(adapter);
+    if (mPost.isUploaded()) {
+      items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private)};
+      adapter=new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item,items);
+      mStatusSpinner.setAdapter(adapter);
+    }
+    long pubDate=mPost.getDate_created_gmt();
+    if (pubDate != 0) {
+      try {
+        int flags=0;
+        flags|=android.text.format.DateUtils.FORMAT_SHOW_DATE;
+        flags|=android.text.format.DateUtils.FORMAT_ABBREV_MONTH;
+        flags|=android.text.format.DateUtils.FORMAT_SHOW_YEAR;
+        flags|=android.text.format.DateUtils.FORMAT_SHOW_TIME;
+        String formattedDate=DateUtils.formatDateTime(getActivity(),pubDate,flags);
+        mPubDateText.setText(formattedDate);
+      }
+ catch (      Exception e) {
+        e.printStackTrace();
+      }
+    }
+    if (mPost.getWP_password() != null)     mPasswordEditText.setText(mPost.getWP_password());
+    if (mPost.getPost_status() != null) {
+      String status=mPost.getPost_status();
+      if (status.equals("publish")) {
+        mStatusSpinner.setSelection(0,true);
+      }
+ else       if (status.equals("draft")) {
+        mStatusSpinner.setSelection(1,true);
+      }
+ else       if (status.equals("pending")) {
+        mStatusSpinner.setSelection(2,true);
+      }
+ else       if (status.equals("private")) {
+        mStatusSpinner.setSelection(3,true);
+      }
+ else       if (status.equals("localdraft")) {
+        mStatusSpinner.setSelection(0,true);
+      }
+    }
+    if (!mPost.isPage()) {
+      if (mPost.getJSONCategories() != null) {
+        mCategories=JSONUtil.fromJSONArrayToStringList(mPost.getJSONCategories());
+      }
+      Double latitude=mPost.getLatitude();
+      Double longitude=mPost.getLongitude();
+      if (latitude != 0.0) {
+        setLocationStatus(LocationStatus.SEARCHING);
+        new GetAddressTask().execute(latitude,longitude);
+      }
+    }
+    String tags=mPost.getMt_keywords();
+    if (!tags.equals("")) {
+      mTagsEditText.setText(tags);
+    }
+    populateSelectedCategories();
+  }
+  return rootView;
+}
