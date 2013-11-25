@@ -2,35 +2,16 @@
   if (mActivity == null)   return;
   ActionBar actionBar=mActivity.getSupportActionBar();
   if (isVisible) {
-    actionBar.setDisplayShowHomeEnabled(false);
-    actionBar.setDisplayShowTitleEnabled(false);
-    actionBar.setDisplayShowCustomEnabled(true);
-    ViewGroup actionBarLayout=(ViewGroup)mActivity.getLayoutInflater().inflate(R.layout.edit_post_content_action_bar,null);
-    actionBar.setCustomView(actionBarLayout);
-    Button doneButton=(Button)mActivity.findViewById(R.id.action_bar_done);
-    doneButton.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View v){
-        setContentEditingModeVisible(false);
-      }
-    }
-);
-    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+    actionBar.hide();
     mTitleEditText.setVisibility(View.GONE);
-    mActivity.supportInvalidateOptionsMenu();
-    Animation fadeIn=new AlphaAnimation(0,1);
-    fadeIn.setInterpolator(new DecelerateInterpolator());
-    fadeIn.setDuration(300);
-    fadeIn.setStartOffset(300);
+    mActivity.setViewPagerEnabled(false);
     mFormatBar.setVisibility(View.VISIBLE);
-    mFormatBar.startAnimation(fadeIn);
   }
  else {
-    actionBar.setDisplayShowHomeEnabled(true);
-    actionBar.setDisplayShowTitleEnabled(true);
-    actionBar.setDisplayShowCustomEnabled(false);
-    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+    mActivity.setViewPagerEnabled(true);
     mTitleEditText.setVisibility(View.VISIBLE);
     mFormatBar.setVisibility(View.GONE);
     mActivity.supportInvalidateOptionsMenu();
+    actionBar.show();
   }
 }

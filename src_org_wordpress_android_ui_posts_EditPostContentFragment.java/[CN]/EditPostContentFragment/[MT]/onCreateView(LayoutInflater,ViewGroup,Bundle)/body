@@ -1,6 +1,17 @@
 {
   mActivity=(NewEditPostActivity)getActivity();
-  ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.fragment_edit_post_content,container,false);
+  final ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.fragment_edit_post_content,container,false);
+  if (rootView != null && rootView.getViewTreeObserver() != null) {
+    rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
+      @Override public void onGlobalLayout(){
+        int heightDiff=rootView.getRootView().getHeight() - rootView.getHeight();
+        if (heightDiff < Utils.dpToPx(100)) {
+          if (!mActivity.getSupportActionBar().isShowing())           setContentEditingModeVisible(false);
+        }
+      }
+    }
+);
+  }
   mFormatBar=(RelativeLayout)rootView.findViewById(R.id.format_bar);
   mTitleEditText=(EditText)rootView.findViewById(R.id.post_title);
   mContentEditText=(WPEditText)rootView.findViewById(R.id.post_content);
@@ -37,6 +48,14 @@
   mContentEditText.setOnFocusChangeListener(new View.OnFocusChangeListener(){
     @Override public void onFocusChange(    View v,    boolean hasFocus){
       if (mPost != null && hasFocus) {
+        setContentEditingModeVisible(true);
+      }
+    }
+  }
+);
+  mContentEditText.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      if (mActivity != null && mActivity.getSupportActionBar().isShowing()) {
         setContentEditingModeVisible(true);
       }
     }
