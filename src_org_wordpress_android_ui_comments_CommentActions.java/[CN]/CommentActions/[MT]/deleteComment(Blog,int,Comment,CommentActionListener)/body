@@ -1,13 +1,13 @@
 {
-  if (blog == null || comment == null) {
+  if (account == null || comment == null) {
     if (actionListener != null)     actionListener.onActionResult(false);
     return;
   }
   final Handler handler=new Handler();
   new Thread(){
     @Override public void run(){
-      XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
-      Object[] params={blog.getBlogId(),blog.getUsername(),blog.getPassword(),comment.commentID};
+      XMLRPCClient client=new XMLRPCClient(account.getUrl(),account.getHttpuser(),account.getHttppassword());
+      Object[] params={blogId,account.getUsername(),account.getPassword(),comment.commentID};
       Object result;
       try {
         result=client.call("wp.deleteComment",params);
@@ -16,7 +16,9 @@
         result=null;
       }
       final boolean success=(result != null && Boolean.parseBoolean(result.toString()));
-      if (success)       WordPress.wpDB.deleteComment(blog.getId(),comment.commentID);
+      if (success) {
+        WordPress.wpDB.deleteComment(account.getId(),comment.commentID);
+      }
       if (actionListener != null) {
         handler.post(new Runnable(){
           @Override public void run(){

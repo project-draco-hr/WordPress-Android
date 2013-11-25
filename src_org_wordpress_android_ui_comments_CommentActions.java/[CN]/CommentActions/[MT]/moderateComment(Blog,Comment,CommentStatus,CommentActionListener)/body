@@ -3,26 +3,34 @@
     if (actionListener != null)     actionListener.onActionResult(false);
     return;
   }
+  final Handler handler=new Handler();
   new Thread(){
     @Override public void run(){
-      RestRequest.Listener restListener=new RestRequest.Listener(){
-        @Override public void onResponse(        JSONObject jsonObject){
-          String newStatus=(jsonObject != null ? JSONUtil.getString(jsonObject,"status") : null);
-          boolean successful=!TextUtils.isEmpty(newStatus);
-          if (successful)           WordPress.wpDB.updateCommentStatus(blog.getId(),comment.commentID,newStatus);
-          if (actionListener != null)           actionListener.onActionResult(successful);
-        }
+      XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+      Map<String,String> postHash=new HashMap<String,String>();
+      postHash.put("status",CommentStatus.toString(newStatus));
+      postHash.put("content",comment.comment);
+      postHash.put("author",comment.name);
+      postHash.put("author_url",comment.authorURL);
+      postHash.put("author_email",comment.authorEmail);
+      Object[] params={blog.getBlogId(),blog.getUsername(),blog.getPassword(),comment.commentID,postHash};
+      Object result;
+      try {
+        result=client.call("wp.editComment",params);
       }
-;
-      RestRequest.ErrorListener restErrListener=new RestRequest.ErrorListener(){
-        @Override public void onErrorResponse(        VolleyError volleyError){
-          if (actionListener != null)           actionListener.onActionResult(false);
-        }
+ catch (      final XMLRPCException e) {
+        result=null;
       }
-;
-      String siteId=Integer.toString(blog.getBlogId());
-      String commentId=Integer.toString(comment.commentID);
-      WordPress.restClient.moderateComment(siteId,commentId,CommentStatus.toString(newStatus,CommentStatus.ApiFormat.REST),restListener,restErrListener);
+      final boolean success=(result != null && Boolean.parseBoolean(result.toString()));
+      if (success)       WordPress.wpDB.updateCommentStatus(blog.getId(),comment.commentID,CommentStatus.toString(newStatus));
+      if (actionListener != null) {
+        handler.post(new Runnable(){
+          @Override public void run(){
+            actionListener.onActionResult(success);
+          }
+        }
+);
+      }
     }
   }
 .start();
