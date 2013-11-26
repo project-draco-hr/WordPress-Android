@@ -7,12 +7,13 @@
     holder.txtTitle=(TextView)convertView.findViewById(R.id.text_title);
     holder.txtText=(TextView)convertView.findViewById(R.id.text_excerpt);
     holder.txtSource=(TextView)convertView.findViewById(R.id.text_source);
-    holder.txtLikeButton=(TextView)convertView.findViewById(R.id.text_like_button);
-    holder.txtReblogButton=(TextView)convertView.findViewById(R.id.text_reblog_button);
     holder.txtCounts=(TextView)convertView.findViewById(R.id.text_counts);
     holder.imgFeatured=(WPNetworkImageView)convertView.findViewById(R.id.image_featured);
     holder.imgAvatar=(WPNetworkImageView)convertView.findViewById(R.id.image_avatar);
     holder.layoutActions=(ViewGroup)convertView.findViewById(R.id.layout_actions);
+    holder.imgBtnLike=(ImageView)convertView.findViewById(R.id.image_like_btn);
+    holder.imgBtnComment=(ImageView)convertView.findViewById(R.id.image_comment_btn);
+    holder.imgBtnReblog=(ImageView)convertView.findViewById(R.id.image_reblog_btn);
     convertView.setTag(holder);
   }
  else {
@@ -59,16 +60,16 @@
   }
   if (post.isWP()) {
     final int pos=position;
-    showLikeStatus(holder.txtLikeButton,post.isLikedByCurrentUser);
-    holder.txtLikeButton.setOnClickListener(new View.OnClickListener(){
+    showLikeStatus(holder.imgBtnLike,post.isLikedByCurrentUser);
+    holder.imgBtnLike.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
         toggleLike(holder,pos,post);
       }
     }
 );
-    showReblogStatus(holder.txtReblogButton,post.isRebloggedByCurrentUser);
+    showReblogStatus(holder.imgBtnReblog,post.isRebloggedByCurrentUser);
     if (!post.isRebloggedByCurrentUser && post.isWP()) {
-      holder.txtReblogButton.setOnClickListener(new View.OnClickListener(){
+      holder.imgBtnReblog.setOnClickListener(new View.OnClickListener(){
         @Override public void onClick(        View v){
           if (mReblogListener != null)           mReblogListener.onRequestReblog(post);
         }
