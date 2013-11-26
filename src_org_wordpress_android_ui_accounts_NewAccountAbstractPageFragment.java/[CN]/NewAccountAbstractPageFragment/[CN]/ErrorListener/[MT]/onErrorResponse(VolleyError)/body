@@ -1,29 +1,40 @@
 {
-  Log.d("ErrorListener",String.format("Error type: %s",error));
   String message=null;
+  int messageId;
+  Log.d("ErrorListener",String.format("Error type: %s",error));
   if (error.networkResponse != null && error.networkResponse.data != null) {
     Log.d("ErrorListener",String.format("Error message: %s",new String(error.networkResponse.data)));
     String jsonString=new String(error.networkResponse.data);
     try {
       JSONObject errorObj=new JSONObject(jsonString);
-      message=getErrorMessageForErrorCode((String)errorObj.get("error"));
-      if (message == null) {
+      messageId=getErrorMessageForErrorCode((String)errorObj.get("error"));
+      if (messageId == 0) {
         message=(String)errorObj.get("message");
       }
     }
  catch (    JSONException e) {
       Log.d("ErrorListener",String.format("Error parsing the error message :( : %s",e));
-      message=getString(R.string.error_generic);
+      messageId=R.string.error_generic;
     }
   }
  else {
     if (error.getMessage() != null) {
-      if (error.getMessage().contains("Limit reached"))       message=getString(R.string.limit_reached);
- else       message=error.getMessage();
+      if (error.getMessage().contains("Limit reached")) {
+        messageId=R.string.limit_reached;
+      }
+ else {
+        messageId=R.string.error_generic;
+      }
     }
  else {
-      message=getString(R.string.error_generic);
+      messageId=R.string.error_generic;
     }
   }
-  showError(message);
+  endProgress();
+  if (messageId == 0) {
+    showError(message);
+  }
+ else {
+    showError(messageId);
+  }
 }

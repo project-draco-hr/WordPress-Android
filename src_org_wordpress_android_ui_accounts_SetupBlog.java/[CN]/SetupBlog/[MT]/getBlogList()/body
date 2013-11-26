@@ -1,0 +1,34 @@
+{
+  if (mSelfHostedURL != null && mSelfHostedURL.length() != 0) {
+    mXmlrpcUrl=getSelfHostedXmlrpcUrl(mSelfHostedURL);
+  }
+ else {
+    mXmlrpcUrl=Constants.wpcomXMLRPCURL;
+  }
+  if (mXmlrpcUrl == null) {
+    if (!mHttpAuthRequired)     mErrorMsgId=R.string.no_site_error;
+    return null;
+  }
+  try {
+    URI.create(mXmlrpcUrl);
+  }
+ catch (  Exception e1) {
+    mErrorMsgId=R.string.no_site_error;
+    return null;
+  }
+  XMLRPCClient client=new XMLRPCClient(mXmlrpcUrl,mHttpUsername,mHttpPassword);
+  Object[] params={mUsername,mPassword};
+  try {
+    Object[] userBlogs=(Object[])client.call("wp.getUsersBlogs",params);
+    Arrays.sort(userBlogs,Utils.BlogNameComparator);
+    List<Object> userBlogsList=Arrays.asList(userBlogs);
+    return userBlogsList;
+  }
+ catch (  XMLRPCException e) {
+    String message=e.getMessage();
+    if (message.contains("code 403"))     mErrorMsgId=R.string.update_credentials;
+ else     if (message.contains("404"))     mErrorMsgId=R.string.xmlrpc_error;
+ else     if (message.contains("425"))     mErrorMsgId=R.string.account_two_step_auth_enabled;
+    return null;
+  }
+}
