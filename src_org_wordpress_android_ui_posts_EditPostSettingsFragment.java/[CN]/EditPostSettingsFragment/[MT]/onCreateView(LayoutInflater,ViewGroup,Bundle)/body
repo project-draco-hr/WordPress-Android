@@ -7,16 +7,18 @@
   mMinute=c.get(Calendar.MINUTE);
   mCategories=new ArrayList<String>();
   ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.fragment_edit_post_settings,container,false);
+  if (rootView == null)   return null;
   mActivity=(NewEditPostActivity)getActivity();
   mExcerptEditText=(EditText)rootView.findViewById(R.id.postExcerpt);
   mPasswordEditText=(EditText)rootView.findViewById(R.id.post_password);
   mLocationText=(TextView)rootView.findViewById(R.id.locationText);
-  mPubDateButton=(Button)rootView.findViewById(R.id.pubDateButton);
+  Button mPubDateButton=(Button)rootView.findViewById(R.id.pubDateButton);
   mPubDateText=(TextView)rootView.findViewById(R.id.pubDate);
   mStatusSpinner=(Spinner)rootView.findViewById(R.id.status);
   mTagsEditText=(EditText)rootView.findViewById(R.id.tags);
   mSectionCategories=((ViewGroup)rootView.findViewById(R.id.sectionCategories));
   mPubDateButton.setOnClickListener(this);
+  initLocation();
   ((TextView)rootView.findViewById(R.id.categoryLabel)).setText(getResources().getString(R.string.categories).toUpperCase());
   ((TextView)rootView.findViewById(R.id.statusLabel)).setText(getResources().getString(R.string.status).toUpperCase());
   ((TextView)rootView.findViewById(R.id.postFormatLabel)).setText(getResources().getString(R.string.post_format).toUpperCase());
@@ -36,8 +38,7 @@
       args.add(mActivity);
       new ApiHelper.getPostFormatsTask().execute(args);
       mPostFormatTitles=getResources().getStringArray(R.array.post_formats_array);
-      String defaultPostFormatTitles[]={"aside","audio","chat","gallery","image","link","quote","standard","status","video"};
-      mPostFormats=defaultPostFormatTitles;
+      mPostFormats=new String[]{"aside","audio","chat","gallery","image","link","quote","standard","status","video"};
     }
  else {
       try {
