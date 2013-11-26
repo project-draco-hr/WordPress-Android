@@ -1,0 +1,21 @@
+{
+  Map<String,JSONObject> actions=note.getActions();
+  if (actions.size() > 0) {
+    String firstKey=actions.keySet().iterator().next();
+    JSONObject jsonAction=actions.get(firstKey);
+    JSONObject jsonParams=jsonAction.optJSONObject("params");
+    if (jsonParams != null) {
+      int blogId=jsonParams.optInt("blog_id");
+      int commentId=jsonParams.optInt("comment_id");
+      int accountId=WordPress.wpDB.getAccountIdForBlogId(blogId);
+      Comment comment=WordPress.wpDB.getComment(accountId,commentId);
+      if (comment != null) {
+        comment.setProfileImageUrl(note.getIconURL());
+        setComment(blogId,comment);
+      }
+ else {
+        requestComment(blogId,commentId,note.getIconURL());
+      }
+    }
+  }
+}
