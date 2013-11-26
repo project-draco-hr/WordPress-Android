@@ -1,38 +1,35 @@
 {
-  final String email=emailTextField.getText().toString().trim();
-  final String password=passwordTextField.getText().toString().trim();
-  final String username=usernameTextField.getText().toString().trim();
+  final String email=mEmailTextField.getText().toString().trim();
+  final String password=mPasswordTextField.getText().toString().trim();
+  final String username=mUsernameTextField.getText().toString().trim();
   if (email.equals("")) {
-    emailTextField.setError(getString(R.string.required_field));
-    emailTextField.requestFocus();
+    showEmailError(R.string.required_field);
     return false;
   }
-  final String emailRegEx="[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}";
-  final Pattern emailRegExPattern=Pattern.compile(emailRegEx,Pattern.DOTALL);
+  final Pattern emailRegExPattern=Patterns.EMAIL_ADDRESS;
   Matcher matcher=emailRegExPattern.matcher(email);
   if (!matcher.find() || email.length() > 100) {
-    emailTextField.setError(getString(R.string.invalid_email_message));
-    emailTextField.requestFocus();
+    showEmailError(R.string.invalid_email_message);
     return false;
   }
   if (username.equals("")) {
-    usernameTextField.setError(getString(R.string.required_field));
-    usernameTextField.requestFocus();
+    showUsernameError(R.string.required_field);
+    return false;
+  }
+  if (username.length() < 4) {
+    showUsernameError(R.string.invalid_username_too_short);
     return false;
   }
   if (username.length() > 60) {
-    usernameTextField.setError(getString(R.string.invalid_username_length));
-    usernameTextField.requestFocus();
+    showUsernameError(R.string.invalid_username_too_long);
     return false;
   }
   if (password.equals("")) {
-    passwordTextField.setError(getString(R.string.required_field));
-    passwordTextField.requestFocus();
+    showPasswordError(R.string.required_field);
     return false;
   }
   if (password.length() < 4) {
-    passwordTextField.setError(getString(R.string.invalid_password_message));
-    passwordTextField.requestFocus();
+    showPasswordError(R.string.invalid_password_message);
     return false;
   }
   return true;
