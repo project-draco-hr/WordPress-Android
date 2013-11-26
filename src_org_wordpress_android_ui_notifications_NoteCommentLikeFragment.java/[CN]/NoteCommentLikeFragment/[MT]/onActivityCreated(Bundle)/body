@@ -1,0 +1,27 @@
+{
+  super.onActivityCreated(bundle);
+  ListView list=getListView();
+  list.setDivider(getResources().getDrawable(R.drawable.list_divider));
+  list.setDividerHeight(1);
+  list.setHeaderDividersEnabled(false);
+  if (getNote() == null)   return;
+  LayoutInflater inflater=getActivity().getLayoutInflater();
+  DetailHeader noteHeader=(DetailHeader)inflater.inflate(R.layout.notifications_detail_header,null);
+  noteHeader.setText(getHeaderText());
+  noteHeader.setBackgroundColor(getResources().getColor(R.color.light_gray));
+  noteHeader.getTextView().setGravity(Gravity.CENTER_HORIZONTAL);
+  noteHeader.setClickable(false);
+  list.addHeaderView(noteHeader);
+  DetailHeader noteFooter=(DetailHeader)inflater.inflate(R.layout.notifications_detail_header,null);
+  JSONObject bodyObject=getNote().queryJSON("body",new JSONObject());
+  String footerText=getFooterText();
+  if (!footerText.equals("")) {
+    noteFooter.setText(footerText);
+    String footerUrl=JSONUtil.getString(bodyObject,"header_link");
+    if (!footerUrl.equals("")) {
+      noteFooter.setUrl(footerUrl);
+    }
+    list.addFooterView(noteFooter);
+  }
+  setListAdapter(new NoteAdapter());
+}
