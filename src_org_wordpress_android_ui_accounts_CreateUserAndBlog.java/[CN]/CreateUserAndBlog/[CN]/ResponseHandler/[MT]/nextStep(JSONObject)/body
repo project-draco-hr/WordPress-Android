@@ -1,19 +1,24 @@
 {
   try {
-    if (mCurrentStep == Step.AUTHENTICATE_USER) {
+    if (mStep == Step.AUTHENTICATE_USER) {
       mCallback.onStepFinished(Step.AUTHENTICATE_USER);
       createBlog();
     }
  else {
       if (response.getBoolean("success")) {
-switch (mCurrentStep) {
+switch (mStep) {
 case VALIDATE_USER:
           mCallback.onStepFinished(Step.VALIDATE_USER);
         validateSite();
       break;
 case VALIDATE_SITE:
     mCallback.onStepFinished(Step.VALIDATE_SITE);
-  createUser();
+  if (mMode == Mode.CREATE_BLOG_ONLY) {
+    createBlog();
+  }
+ else {
+    createUser();
+  }
 break;
 case CREATE_USER:
 mCallback.onStepFinished(Step.CREATE_USER);
@@ -21,7 +26,7 @@ authenticateUser();
 break;
 case CREATE_SITE:
 mCallback.onStepFinished(Step.CREATE_SITE);
-mCallback.onSuccess();
+mCallback.onSuccess(response);
 break;
 case AUTHENTICATE_USER:
 default :
