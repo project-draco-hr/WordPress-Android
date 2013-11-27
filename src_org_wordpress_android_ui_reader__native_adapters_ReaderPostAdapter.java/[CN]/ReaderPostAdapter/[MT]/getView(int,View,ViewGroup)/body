@@ -6,11 +6,13 @@
     holder=new PostViewHolder();
     holder.txtTitle=(TextView)convertView.findViewById(R.id.text_title);
     holder.txtText=(TextView)convertView.findViewById(R.id.text_excerpt);
-    holder.txtSource=(TextView)convertView.findViewById(R.id.text_source);
-    holder.txtCounts=(TextView)convertView.findViewById(R.id.text_counts);
+    holder.txtBlogName=(TextView)convertView.findViewById(R.id.text_blog_name);
+    holder.txtDate=(TextView)convertView.findViewById(R.id.text_date);
+    holder.txtFollow=(TextView)convertView.findViewById(R.id.text_follow);
+    holder.txtLikeCount=(TextView)convertView.findViewById(R.id.text_like_count);
+    holder.txtCommentCount=(TextView)convertView.findViewById(R.id.text_comment_count);
     holder.imgFeatured=(WPNetworkImageView)convertView.findViewById(R.id.image_featured);
     holder.imgAvatar=(WPNetworkImageView)convertView.findViewById(R.id.image_avatar);
-    holder.layoutActions=(ViewGroup)convertView.findViewById(R.id.layout_actions);
     holder.imgBtnLike=(ImageView)convertView.findViewById(R.id.image_like_btn);
     holder.imgBtnComment=(ImageView)convertView.findViewById(R.id.image_comment_btn);
     holder.imgBtnReblog=(ImageView)convertView.findViewById(R.id.image_reblog_btn);
@@ -32,34 +34,34 @@
  else {
     holder.txtText.setVisibility(View.GONE);
   }
-  holder.txtSource.setText(post.getSource());
-  final boolean isFeaturedImageVisible;
+  holder.txtBlogName.setText(post.getBlogName());
+  holder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(post.getDatePublished()));
   if (post.hasFeaturedImage()) {
     holder.imgFeatured.setImageUrl(post.getFeaturedImageForDisplay(mPhotonWidth,mPhotonHeight),WPNetworkImageView.ImageType.PHOTO);
     holder.imgFeatured.setVisibility(View.VISIBLE);
-    isFeaturedImageVisible=true;
   }
  else   if (post.hasFeaturedVideo()) {
     holder.imgFeatured.setVideoUrl(post.postId,post.getFeaturedVideo());
     holder.imgFeatured.setVisibility(View.VISIBLE);
-    isFeaturedImageVisible=true;
   }
  else {
     holder.imgFeatured.setVisibility(View.GONE);
-    isFeaturedImageVisible=false;
   }
-  int topMargin=(isFeaturedImageVisible && post.hasPostAvatar() ? mNegativeOffset : mDefaultOffset);
-  RelativeLayout.LayoutParams layoutParams=(RelativeLayout.LayoutParams)holder.imgAvatar.getLayoutParams();
-  if (layoutParams.topMargin != topMargin)   layoutParams.topMargin=topMargin;
   if (post.hasPostAvatar()) {
     holder.imgAvatar.setImageUrl(post.getPostAvatarForDisplay(mAvatarSz),WPNetworkImageView.ImageType.AVATAR);
-    holder.imgAvatar.setVisibility(View.VISIBLE);
   }
  else {
-    holder.imgAvatar.setVisibility(View.GONE);
+    holder.imgAvatar.showDefaultImage(WPNetworkImageView.ImageType.AVATAR);
   }
   if (post.isWP()) {
     final int pos=position;
+    showFollowStatus(holder.txtFollow,post.isFollowedByCurrentUser);
+    holder.txtFollow.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        toggleFollow(holder,pos,post);
+      }
+    }
+);
     showLikeStatus(holder.imgBtnLike,post.isLikedByCurrentUser);
     holder.imgBtnLike.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
@@ -76,12 +78,18 @@
       }
 );
     }
-    holder.layoutActions.setVisibility(View.VISIBLE);
+    holder.txtFollow.setVisibility(View.VISIBLE);
+    holder.imgBtnLike.setVisibility(View.VISIBLE);
+    holder.imgBtnComment.setVisibility(View.VISIBLE);
+    holder.imgBtnReblog.setVisibility(View.VISIBLE);
   }
  else {
-    holder.layoutActions.setVisibility(View.GONE);
+    holder.txtFollow.setVisibility(View.GONE);
+    holder.imgBtnLike.setVisibility(View.GONE);
+    holder.imgBtnComment.setVisibility(View.GONE);
+    holder.imgBtnReblog.setVisibility(View.GONE);
   }
-  showCounts(holder.txtCounts,post);
+  showCounts(holder,post);
   if (mAnimateRows)   animateRow(convertView);
   if (mCanRequestMorePosts && mDataRequestedListener != null && (position >= getCount() - 1))   mDataRequestedListener.onRequestData(ReaderActions.RequestDataAction.LOAD_OLDER);
   return convertView;
