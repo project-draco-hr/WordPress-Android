@@ -2,7 +2,7 @@
   ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.nux_fragment_welcome,container,false);
   ImageView statsIcon=(ImageView)rootView.findViewById(R.id.nux_fragment_icon);
   statsIcon.setImageResource(R.drawable.nux_icon_wp);
-  final RelativeLayout urlButtonLayout=(RelativeLayout)rootView.findViewById(R.id.url_button_layout);
+  mUrlButtonLayout=(RelativeLayout)rootView.findViewById(R.id.url_button_layout);
   mUsernameEditText=(EditText)rootView.findViewById(R.id.nux_username);
   mUsernameEditText.addTextChangedListener(this);
   mPasswordEditText=(EditText)rootView.findViewById(R.id.nux_password);
@@ -17,13 +17,13 @@
   mAddSelfHostedButton=(WPTextView)rootView.findViewById(R.id.nux_add_selfhosted_button);
   mAddSelfHostedButton.setOnClickListener(new OnClickListener(){
     @Override public void onClick(    View v){
-      if (urlButtonLayout.getVisibility() == View.VISIBLE) {
-        urlButtonLayout.setVisibility(View.GONE);
+      if (mUrlButtonLayout.getVisibility() == View.VISIBLE) {
+        mUrlButtonLayout.setVisibility(View.GONE);
         mAddSelfHostedButton.setText(getString(R.string.nux_add_selfhosted_blog));
         mSelfHosted=false;
       }
  else {
-        urlButtonLayout.setVisibility(View.VISIBLE);
+        mUrlButtonLayout.setVisibility(View.VISIBLE);
         mAddSelfHostedButton.setText(getString(R.string.nux_oops_not_selfhosted_blog));
         mSelfHosted=true;
       }
@@ -38,5 +38,8 @@
     }
   }
 );
+  if (mForceSelfHosted) {
+    forceSelfHostedMode();
+  }
   return rootView;
 }
