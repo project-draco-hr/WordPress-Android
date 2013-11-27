@@ -1,0 +1,39 @@
+{
+  try {
+    if (mCurrentStep == Step.AUTHENTICATE_USER) {
+      mCallback.onStepFinished(Step.AUTHENTICATE_USER);
+      createBlog();
+    }
+ else {
+      if (response.getBoolean("success")) {
+switch (mCurrentStep) {
+case VALIDATE_USER:
+          mCallback.onStepFinished(Step.VALIDATE_USER);
+        validateSite();
+      break;
+case VALIDATE_SITE:
+    mCallback.onStepFinished(Step.VALIDATE_SITE);
+  createUser();
+break;
+case CREATE_USER:
+mCallback.onStepFinished(Step.CREATE_USER);
+authenticateUser();
+break;
+case CREATE_SITE:
+mCallback.onStepFinished(Step.CREATE_SITE);
+mCallback.onSuccess();
+break;
+case AUTHENTICATE_USER:
+default :
+break;
+}
+}
+ else {
+mCallback.onError(R.string.error_generic);
+}
+}
+}
+ catch (JSONException e) {
+mCallback.onError(R.string.error_generic);
+}
+}
