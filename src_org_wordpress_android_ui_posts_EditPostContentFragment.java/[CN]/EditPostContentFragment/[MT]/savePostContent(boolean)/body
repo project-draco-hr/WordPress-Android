@@ -1,8 +1,9 @@
 {
-  if (mPost == null)   return;
+  Post post=mActivity.getPost();
+  if (post == null)   return;
   String title=(mTitleEditText.getText() != null) ? mTitleEditText.getText().toString() : "";
   String content;
-  if (mPost.isLocalDraft() || !isAutoSave) {
+  if (post.isLocalDraft() || !isAutoSave) {
     Editable e=mContentEditText.getText();
     if (android.os.Build.VERSION.SDK_INT >= 14 && e != null) {
       CharacterStyle[] characterStyles=e.getSpans(0,e.length(),CharacterStyle.class);
@@ -20,7 +21,7 @@
     content=(mContentEditText.getText() != null) ? mContentEditText.getText().toString() : "";
   }
   String images="";
-  mPost.deleteMediaFiles();
+  post.deleteMediaFiles();
   Editable s=mContentEditText.getText();
   MediaGalleryImageSpan[] gallerySpans=s.getSpans(0,s.length(),MediaGalleryImageSpan.class);
   for (  MediaGalleryImageSpan gallerySpan : gallerySpans) {
@@ -38,7 +39,7 @@
  else {
         MediaFile mf=new MediaFile();
         mf.setBlogId(WordPress.getCurrentBlog().getBlogId() + "");
-        mf.setPostID(mPost.getId());
+        mf.setPostID(post.getId());
         mf.setTitle(wpIS.getTitle());
         mf.setCaption(wpIS.getCaption());
         mf.setFeatured(wpIS.isFeatured());
@@ -63,16 +64,16 @@
     }
   }
   String moreTag="<!--more-->";
-  mPost.setTitle(title);
-  if (mPost.isLocalDraft() && content.contains(moreTag)) {
-    mPost.setDescription(content.substring(0,content.indexOf(moreTag)));
-    mPost.setMt_text_more(content.substring(content.indexOf(moreTag) + moreTag.length(),content.length()));
+  post.setTitle(title);
+  if (post.isLocalDraft() && content.contains(moreTag)) {
+    post.setDescription(content.substring(0,content.indexOf(moreTag)));
+    post.setMt_text_more(content.substring(content.indexOf(moreTag) + moreTag.length(),content.length()));
   }
  else {
-    mPost.setDescription(content);
-    mPost.setMt_text_more("");
+    post.setDescription(content);
+    post.setMt_text_more("");
   }
-  mPost.setMediaPaths(images);
-  if (!mPost.isLocalDraft())   mPost.setLocalChange(true);
-  mPost.update();
+  post.setMediaPaths(images);
+  if (!post.isLocalDraft())   post.setLocalChange(true);
+  post.update();
 }

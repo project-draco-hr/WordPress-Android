@@ -72,19 +72,19 @@
       if (mPostFormats[i].equals(activePostFormat))       pfSpinner.setSelection(i);
     }
   }
-  mPost=mActivity.getPost();
-  if (mPost != null) {
-    mExcerptEditText.setText(mPost.getMt_excerpt());
+  Post post=mActivity.getPost();
+  if (post != null) {
+    mExcerptEditText.setText(post.getMt_excerpt());
     String[] items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private)};
     ArrayAdapter<String> adapter=new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item,items);
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     mStatusSpinner.setAdapter(adapter);
-    if (mPost.isUploaded()) {
+    if (post.isUploaded()) {
       items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private)};
       adapter=new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item,items);
       mStatusSpinner.setAdapter(adapter);
     }
-    long pubDate=mPost.getDate_created_gmt();
+    long pubDate=post.getDate_created_gmt();
     if (pubDate != 0) {
       try {
         int flags=0;
@@ -99,9 +99,9 @@
         e.printStackTrace();
       }
     }
-    if (mPost.getWP_password() != null)     mPasswordEditText.setText(mPost.getWP_password());
-    if (mPost.getPost_status() != null) {
-      String status=mPost.getPost_status();
+    if (post.getWP_password() != null)     mPasswordEditText.setText(post.getWP_password());
+    if (post.getPost_status() != null) {
+      String status=post.getPost_status();
       if (status.equals("publish")) {
         mStatusSpinner.setSelection(0,true);
       }
@@ -118,18 +118,18 @@
         mStatusSpinner.setSelection(0,true);
       }
     }
-    if (!mPost.isPage()) {
-      if (mPost.getJSONCategories() != null) {
-        mCategories=JSONUtil.fromJSONArrayToStringList(mPost.getJSONCategories());
+    if (!post.isPage()) {
+      if (post.getJSONCategories() != null) {
+        mCategories=JSONUtil.fromJSONArrayToStringList(post.getJSONCategories());
       }
-      Double latitude=mPost.getLatitude();
-      Double longitude=mPost.getLongitude();
+      Double latitude=post.getLatitude();
+      Double longitude=post.getLongitude();
       if (latitude != 0.0) {
         setLocationStatus(LocationStatus.SEARCHING);
         new GetAddressTask().execute(latitude,longitude);
       }
     }
-    String tags=mPost.getMt_keywords();
+    String tags=post.getMt_keywords();
     if (!tags.equals("")) {
       mTagsEditText.setText(tags);
     }

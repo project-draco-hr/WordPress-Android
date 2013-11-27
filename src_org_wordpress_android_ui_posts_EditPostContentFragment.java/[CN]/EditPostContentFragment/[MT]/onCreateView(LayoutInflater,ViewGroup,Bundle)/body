@@ -30,33 +30,25 @@
   mStrikeToggleButton.setOnClickListener(mFormatBarButtonClickListener);
   mBquoteToggleButton.setOnClickListener(mFormatBarButtonClickListener);
   moreButton.setOnClickListener(mFormatBarButtonClickListener);
-  mPost=mActivity.getPost();
-  if (mPost != null) {
-    if (!TextUtils.isEmpty(mPost.getContent())) {
-      if (mPost.isLocalDraft())       mContentEditText.setText(WPHtml.fromHtml(mPost.getContent().replaceAll("\uFFFC",""),mActivity,mPost));
- else       mContentEditText.setText(mPost.getContent().replaceAll("\uFFFC",""));
+  Post post=mActivity.getPost();
+  if (post != null) {
+    if (!TextUtils.isEmpty(post.getContent())) {
+      if (post.isLocalDraft())       mContentEditText.setText(WPHtml.fromHtml(post.getContent().replaceAll("\uFFFC",""),mActivity,post));
+ else       mContentEditText.setText(post.getContent().replaceAll("\uFFFC",""));
     }
-    if (!TextUtils.isEmpty(mPost.getTitle())) {
-      mTitleEditText.setText(mPost.getTitle());
+    if (!TextUtils.isEmpty(post.getTitle())) {
+      mTitleEditText.setText(post.getTitle());
     }
   }
-  mContentEditText.setOnFocusChangeListener(new View.OnFocusChangeListener(){
-    @Override public void onFocusChange(    View v,    boolean hasFocus){
-      if (mPost != null && hasFocus) {
+  mContentEditText.setOnTouchListener(new View.OnTouchListener(){
+    @Override public boolean onTouch(    View v,    MotionEvent event){
+      if (event.getAction() == MotionEvent.ACTION_UP && mActivity != null && mActivity.getSupportActionBar().isShowing()) {
         setContentEditingModeVisible(true);
       }
+      return false;
     }
   }
 );
-  mContentEditText.setOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View v){
-      if (mActivity != null && mActivity.getSupportActionBar().isShowing()) {
-        setContentEditingModeVisible(true);
-      }
-    }
-  }
-);
-  setContentEditTextFocusable(true);
   String action=mActivity.getIntent().getAction();
   if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action))   setPostContentFromShareAction();
  else   if (NEW_MEDIA_GALLERY.equals(action))   prepareMediaGallery();

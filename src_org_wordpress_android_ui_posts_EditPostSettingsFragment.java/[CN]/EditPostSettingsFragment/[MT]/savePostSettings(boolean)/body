@@ -1,15 +1,16 @@
 {
-  if (mPost == null)   return;
+  Post post=mActivity.getPost();
+  if (post == null)   return;
   String password=(mPasswordEditText.getText() != null) ? mPasswordEditText.getText().toString() : "";
   String pubDate=(mPubDateText.getText() != null) ? mPubDateText.getText().toString() : "";
   String excerpt=(mExcerptEditText.getText() != null) ? mExcerptEditText.getText().toString() : "";
   long pubDateTimestamp=0;
   if (!pubDate.equals(getResources().getText(R.string.immediately))) {
     if (mIsCustomPubDate)     pubDateTimestamp=mCustomPubDate;
- else     if (mPost.getDate_created_gmt() > 0)     pubDateTimestamp=mPost.getDate_created_gmt();
+ else     if (post.getDate_created_gmt() > 0)     pubDateTimestamp=post.getDate_created_gmt();
   }
   String tags="", postFormat="";
-  if (!mPost.isPage()) {
+  if (!post.isPage()) {
     tags=(mTagsEditText.getText() != null) ? mTagsEditText.getText().toString() : "";
     Spinner postFormatSpinner=(Spinner)getActivity().findViewById(R.id.postFormat);
     postFormat=mPostFormats[postFormatSpinner.getSelectedItemPosition()];
@@ -32,7 +33,7 @@ break;
 }
 Double latitude=0.0;
 Double longitude=0.0;
-if (mPost.getBlog().isLocation()) {
+if (post.getBlog().isLocation()) {
 try {
 latitude=mCurrentLocation.getLatitude();
 longitude=mCurrentLocation.getLongitude();
@@ -42,17 +43,17 @@ e.printStackTrace();
 }
 }
 if (mCurrentLocation == null) {
-latitude=mPost.getLatitude();
-longitude=mPost.getLongitude();
+latitude=post.getLatitude();
+longitude=post.getLongitude();
 }
-mPost.setMt_excerpt(excerpt);
-mPost.setDate_created_gmt(pubDateTimestamp);
-mPost.setJSONCategories(new JSONArray(mCategories));
-mPost.setMt_keywords(tags);
-mPost.setPost_status(status);
-mPost.setWP_password(password);
-mPost.setLatitude(latitude);
-mPost.setLongitude(longitude);
-mPost.setWP_post_form(postFormat);
-mPost.update();
+post.setMt_excerpt(excerpt);
+post.setDate_created_gmt(pubDateTimestamp);
+post.setJSONCategories(new JSONArray(mCategories));
+post.setMt_keywords(tags);
+post.setPost_status(status);
+post.setWP_password(password);
+post.setLatitude(latitude);
+post.setLongitude(longitude);
+post.setWP_post_form(postFormat);
+post.update();
 }
