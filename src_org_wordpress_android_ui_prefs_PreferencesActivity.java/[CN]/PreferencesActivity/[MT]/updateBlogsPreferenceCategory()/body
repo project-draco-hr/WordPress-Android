@@ -1,7 +1,7 @@
 {
   PreferenceCategory blogsCategory=(PreferenceCategory)findPreference("wp_pref_category_blogs");
   blogsCategory.removeAll();
-  List<Map<String,Object>> accounts=WordPress.wpDB.getAccounts();
+  List<Map<String,Object>> accounts=WordPress.wpDB.getShownAccounts();
   int order=0;
   for (  Map<String,Object> account : accounts) {
     String blogName=StringUtils.unescapeHTML(account.get("blogName").toString());
@@ -28,4 +28,13 @@
   addBlogPreference.setIntent(intent);
   addBlogPreference.setOrder(order++);
   blogsCategory.addPreference(addBlogPreference);
+  List<Map<String,Object>> allAccounts=WordPress.wpDB.getAllAccounts();
+  if (allAccounts.size() > 1) {
+    Preference manageBlogPreference=new Preference(this);
+    manageBlogPreference.setTitle(R.string.show_and_hide_blogs);
+    intent=new Intent(this,ManageBlogsActivity.class);
+    manageBlogPreference.setIntent(intent);
+    manageBlogPreference.setOrder(order++);
+    blogsCategory.addPreference(manageBlogPreference);
+  }
 }
