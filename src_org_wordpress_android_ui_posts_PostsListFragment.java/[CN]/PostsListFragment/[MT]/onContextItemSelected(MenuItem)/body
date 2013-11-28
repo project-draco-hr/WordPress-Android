@@ -12,20 +12,23 @@
   if (itemGroupID == MENU_GROUP_POSTS || itemGroupID == MENU_GROUP_PAGES || itemGroupID == MENU_GROUP_DRAFTS) {
 switch (item.getItemId()) {
 case MENU_ITEM_EDIT:
-      Intent i2=new Intent(getActivity().getApplicationContext(),NewEditPostActivity.class);
-    i2.putExtra(NewEditPostActivity.EXTRA_POSTID,mSelectedID);
-  if (itemGroupID == MENU_GROUP_PAGES) {
-    i2.putExtra(NewEditPostActivity.EXTRA_IS_PAGE,true);
-  }
- else   if (itemGroupID == MENU_GROUP_DRAFTS) {
-    if (isPage)     i2.putExtra(NewEditPostActivity.EXTRA_IS_PAGE,true);
-  }
+      WPMobileStatsUtil.flagProperty(statEventForViewClosing(),WPMobileStatsUtil.StatsPropertyPostMenuClickedEdit);
+    Intent i2=new Intent(getActivity().getApplicationContext(),NewEditPostActivity.class);
+  i2.putExtra(NewEditPostActivity.EXTRA_POSTID,mSelectedID);
+if (itemGroupID == MENU_GROUP_PAGES) {
+  i2.putExtra(NewEditPostActivity.EXTRA_IS_PAGE,true);
+}
+ else if (itemGroupID == MENU_GROUP_DRAFTS) {
+  if (isPage)   i2.putExtra(NewEditPostActivity.EXTRA_IS_PAGE,true);
+}
 startActivityForResult(i2,0);
 return true;
 case MENU_ITEM_DELETE:
+WPMobileStatsUtil.flagProperty(statEventForViewClosing(),WPMobileStatsUtil.StatsPropertyPostMenuClickedDelete);
 mOnPostActionListener.onPostAction(PostsActivity.POST_DELETE,post);
 return true;
 case MENU_ITEM_PREVIEW:
+WPMobileStatsUtil.flagProperty(statEventForViewClosing(),WPMobileStatsUtil.StatsPropertyPostMenuClickedPreview);
 Intent i=new Intent(getActivity(),PreviewPostActivity.class);
 i.putExtra("isPage",itemGroupID == MENU_GROUP_PAGES ? true : false);
 i.putExtra("postID",mSelectedID);
@@ -33,9 +36,11 @@ i.putExtra("blogID",WordPress.currentBlog.getId());
 startActivity(i);
 return true;
 case MENU_ITEM_SHARE:
+WPMobileStatsUtil.flagProperty(statEventForViewClosing(),WPMobileStatsUtil.StatsPropertyPostMenuClickedShare);
 mOnPostActionListener.onPostAction(PostsActivity.POST_SHARE,post);
 return true;
 case MENU_ITEM_ADD_COMMENT:
+WPMobileStatsUtil.flagProperty(statEventForViewClosing(),WPMobileStatsUtil.StatsPropertyPostMenuClickedComment);
 mOnPostActionListener.onPostAction(PostsActivity.POST_COMMENT,post);
 return true;
 default :
