@@ -18,7 +18,7 @@
   mContentEditText.addTextChangedListener(this);
   mContentEditText.setOnEditTextImeBackListener(new WPEditText.EditTextImeBackListener(){
     @Override public void onImeBack(    WPEditText ctrl,    String text){
-      if (!mActivity.getSupportActionBar().isShowing())       setContentEditingModeVisible(false);
+      if (mRootView.getBottom() < mOriginalViewBottom && !mActivity.getSupportActionBar().isShowing())       setContentEditingModeVisible(false);
     }
   }
 );
@@ -40,15 +40,6 @@
       mTitleEditText.setText(post.getTitle());
     }
   }
-  mContentEditText.setOnTouchListener(new View.OnTouchListener(){
-    @Override public boolean onTouch(    View v,    MotionEvent event){
-      if (event.getAction() == MotionEvent.ACTION_UP && mActivity != null && mActivity.getSupportActionBar().isShowing()) {
-        setContentEditingModeVisible(true);
-      }
-      return false;
-    }
-  }
-);
   String action=mActivity.getIntent().getAction();
   int quickMediaType=-1;
   if (mActivity.getIntent().getExtras() != null)   quickMediaType=mActivity.getIntent().getExtras().getInt("quick-media",-1);
