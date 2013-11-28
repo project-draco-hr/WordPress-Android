@@ -9,8 +9,6 @@
     holder.txtBlogName=(TextView)convertView.findViewById(R.id.text_blog_name);
     holder.txtDate=(TextView)convertView.findViewById(R.id.text_date);
     holder.txtFollow=(TextView)convertView.findViewById(R.id.text_follow);
-    holder.txtLikeCount=(TextView)convertView.findViewById(R.id.text_like_count);
-    holder.txtCommentCount=(TextView)convertView.findViewById(R.id.text_comment_count);
     holder.imgFeatured=(WPNetworkImageView)convertView.findViewById(R.id.image_featured);
     holder.imgAvatar=(WPNetworkImageView)convertView.findViewById(R.id.image_avatar);
     holder.imgBtnLike=(ImageView)convertView.findViewById(R.id.image_like_btn);
@@ -37,7 +35,8 @@
   holder.txtBlogName.setText(post.getBlogName());
   holder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(post.getDatePublished()));
   if (post.hasFeaturedImage()) {
-    holder.imgFeatured.setImageUrl(post.getFeaturedImageForDisplay(mPhotonWidth,mPhotonHeight),WPNetworkImageView.ImageType.PHOTO);
+    final String imageUrl=post.getFeaturedImageForDisplay(mPhotonWidth,mPhotonHeight);
+    holder.imgFeatured.setImageUrl(imageUrl,WPNetworkImageView.ImageType.PHOTO);
     holder.imgFeatured.setVisibility(View.VISIBLE);
   }
  else   if (post.hasFeaturedVideo()) {
@@ -73,6 +72,7 @@
     if (!post.isRebloggedByCurrentUser && post.isWP()) {
       holder.imgBtnReblog.setOnClickListener(new View.OnClickListener(){
         @Override public void onClick(        View v){
+          ReaderAniUtils.zoomAction(holder.imgBtnReblog);
           if (mReblogListener != null)           mReblogListener.onRequestReblog(post);
         }
       }
@@ -85,14 +85,12 @@
   }
  else {
     holder.txtFollow.setVisibility(View.GONE);
-    holder.imgBtnLike.setVisibility(View.GONE);
-    holder.imgBtnComment.setVisibility(View.GONE);
-    holder.imgBtnReblog.setVisibility(View.GONE);
+    holder.imgBtnLike.setVisibility(View.INVISIBLE);
+    holder.imgBtnComment.setVisibility(View.INVISIBLE);
+    holder.imgBtnReblog.setVisibility(View.INVISIBLE);
   }
   showCounts(holder,post);
   if (mAnimateRows)   animateRow(convertView);
   if (mCanRequestMorePosts && mDataRequestedListener != null && (position >= getCount() - 1))   mDataRequestedListener.onRequestData(ReaderActions.RequestDataAction.LOAD_OLDER);
-  if (position > mLastGetViewPos && position < getCount())   preloadFeaturedImage(mPosts.get(position + 1));
-  mLastGetViewPos=position;
   return convertView;
 }
