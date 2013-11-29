@@ -31,7 +31,16 @@
       nuxAlert=NUXDialogFragment.newInstance(getString(R.string.nux_cannot_log_in),getString(mErrorMsgId),getString(R.string.nux_tap_continue),R.drawable.nux_icon_alert,true,getString(R.string.visit_security_settings),NUXDialogFragment.ACTION_OPEN_URL,"https://wordpress.com/settings/security/?ssl=forced");
     }
  else {
-      nuxAlert=NUXDialogFragment.newInstance(getString(R.string.nux_cannot_log_in),getString(mErrorMsgId),getString(R.string.nux_tap_continue),R.drawable.nux_icon_alert);
+      if (mErrorMsgId == R.string.username_or_password_incorrect) {
+        showUsernameError(mErrorMsgId);
+        showPasswordError(mErrorMsgId);
+        mErrorMsgId=0;
+        endProgress();
+        return;
+      }
+ else {
+        nuxAlert=NUXDialogFragment.newInstance(getString(R.string.nux_cannot_log_in),getString(mErrorMsgId),getString(R.string.nux_tap_continue),R.drawable.nux_icon_alert);
+      }
     }
     nuxAlert.show(ft,"alert");
     mErrorMsgId=0;
