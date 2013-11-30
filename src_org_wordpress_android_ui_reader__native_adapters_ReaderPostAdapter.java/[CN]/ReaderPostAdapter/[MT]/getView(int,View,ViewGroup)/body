@@ -80,6 +80,11 @@
       }
 );
     }
+    holder.imgBtnComment.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+      }
+    }
+);
     holder.imgBtnLike.setVisibility(View.VISIBLE);
     holder.imgBtnComment.setVisibility(View.VISIBLE);
     holder.imgBtnReblog.setVisibility(View.VISIBLE);
@@ -101,5 +106,8 @@
   showCounts(holder,post);
   if (mAnimateRows)   animateRow(convertView);
   if (mCanRequestMorePosts && mDataRequestedListener != null && (position >= getCount() - 1))   mDataRequestedListener.onRequestData(ReaderActions.RequestDataAction.LOAD_OLDER);
+  if ((mLastPreloadPos - position) <= PRELOAD_OFFSET) {
+    preloadFeaturedImage(position + PRELOAD_OFFSET);
+  }
   return convertView;
 }
