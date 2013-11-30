@@ -1,6 +1,10 @@
 {
   if (result) {
+    boolean hasExistingPosts=(getCount() > 0);
     mPosts=(ReaderPostList)(tmpPosts.clone());
+    if (!hasExistingPosts) {
+      for (int i=1; i <= PRELOAD_OFFSET; i++)       preloadFeaturedImage(i);
+    }
     notifyDataSetChanged();
   }
   if (mDataLoadedListener != null)   mDataLoadedListener.onDataLoaded(isEmpty());

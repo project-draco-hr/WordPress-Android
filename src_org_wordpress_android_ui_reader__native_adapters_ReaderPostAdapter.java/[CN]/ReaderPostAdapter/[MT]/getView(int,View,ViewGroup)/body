@@ -21,12 +21,9 @@
  else {
     holder=(PostViewHolder)convertView.getTag();
   }
-  if (post.hasTitle()) {
-    holder.txtTitle.setText(post.getTitle());
-  }
- else {
-    holder.txtTitle.setText(R.string.reader_untitled_post);
-  }
+  holder.txtTitle.setText(post.getTitle());
+  holder.txtBlogName.setText(post.getBlogName());
+  holder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(post.getDatePublished()));
   if (post.hasExcerpt()) {
     holder.txtText.setVisibility(View.VISIBLE);
     holder.txtText.setText(post.getExcerpt());
@@ -34,8 +31,6 @@
  else {
     holder.txtText.setVisibility(View.GONE);
   }
-  holder.txtBlogName.setText(post.getBlogName());
-  holder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(post.getDatePublished()));
   if (post.hasFeaturedImage()) {
     final String imageUrl=post.getFeaturedImageForDisplay(mPhotonWidth,mPhotonHeight);
     holder.imgFeatured.setImageUrl(imageUrl,WPNetworkImageView.ImageType.PHOTO);
@@ -106,7 +101,7 @@
   showCounts(holder,post);
   if (mAnimateRows)   animateRow(convertView);
   if (mCanRequestMorePosts && mDataRequestedListener != null && (position >= getCount() - 1))   mDataRequestedListener.onRequestData(ReaderActions.RequestDataAction.LOAD_OLDER);
-  if ((mLastPreloadPos - position) <= PRELOAD_OFFSET) {
+  if (position > (mLastPreloadPos - PRELOAD_OFFSET)) {
     preloadFeaturedImage(position + PRELOAD_OFFSET);
   }
   return convertView;

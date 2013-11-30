@@ -1,11 +1,12 @@
 {
-  if (position >= mPosts.size())   return;
+  if (position >= mPosts.size() || position < 0) {
+    ReaderLog.w("invalid preload position > " + Integer.toString(position));
+    return;
+  }
   mLastPreloadPos=position;
-  ReaderLog.i("preloading > " + position);
   ReaderPost post=mPosts.get(position);
   if (!post.hasFeaturedImage())   return;
   final String imageUrl=post.getFeaturedImageForDisplay(mPhotonWidth,mPhotonHeight);
-  if (UrlUtils.isHttps(imageUrl))   return;
   Request<?> newRequest=new ImageRequest(imageUrl,new Response.Listener<Bitmap>(){
     @Override public void onResponse(    Bitmap response){
       if (response != null)       WordPress.getBitmapCache().putBitmap(getCacheKey(imageUrl),response);
