@@ -10,7 +10,7 @@
   final String password=mPasswordTextField.getText().toString().trim();
   final String username=mUsernameTextField.getText().toString().trim();
   final String siteName=siteUrlToSiteName(siteUrl);
-  final String language=getDeviceLanguage();
+  final String language=CreateUserAndBlog.getDeviceLanguage(getActivity().getResources());
   CreateUserAndBlog createUserAndBlog=new CreateUserAndBlog(email,username,password,siteUrl,siteName,language,restClient,getActivity(),new ErrorListener(),new CreateUserAndBlog.Callback(){
     @Override public void onStepFinished(    CreateUserAndBlog.Step step){
 switch (step) {
@@ -21,7 +21,7 @@ case VALIDATE_SITE:
     updateProgress(getString(R.string.create_account_wpcom));
   break;
 case CREATE_USER:
-updateProgress(getString(R.string.create_blog_wpcom));
+updateProgress(getString(R.string.create_first_blog_wpcom));
 break;
 case CREATE_SITE:
 case AUTHENTICATE_USER:
@@ -29,7 +29,7 @@ default :
 break;
 }
 }
-@Override public void onSuccess(){
+@Override public void onSuccess(JSONObject createSiteResponse){
 endProgress();
 finishThisStuff(username);
 }
