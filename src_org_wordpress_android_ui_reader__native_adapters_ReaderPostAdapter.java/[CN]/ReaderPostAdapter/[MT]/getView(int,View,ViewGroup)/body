@@ -16,19 +16,19 @@
     holder.imgBtnLike=(ImageView)convertView.findViewById(R.id.image_like_btn);
     holder.imgBtnComment=(ImageView)convertView.findViewById(R.id.image_comment_btn);
     holder.imgBtnReblog=(ImageView)convertView.findViewById(R.id.image_reblog_btn);
-    if (mIsGridView) {
-      convertView.setBackgroundColor(Color.WHITE);
-      View borderTop=convertView.findViewById(R.id.view_border_top);
-      borderTop.setVisibility(View.GONE);
-    }
     convertView.setTag(holder);
   }
  else {
     holder=(PostViewHolder)convertView.getTag();
   }
   holder.txtTitle.setText(post.getTitle());
-  holder.txtBlogName.setText(post.getBlogName());
   holder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(post.getDatePublished()));
+  if (post.isWP()) {
+    holder.txtBlogName.setText(post.getBlogName());
+  }
+ else {
+    holder.txtBlogName.setText("\n" + post.getBlogName());
+  }
   if (post.hasExcerpt()) {
     holder.txtText.setVisibility(View.VISIBLE);
     holder.txtText.setText(post.getExcerpt());
@@ -80,11 +80,6 @@
       }
 );
     }
-    holder.imgBtnComment.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View v){
-      }
-    }
-);
     holder.imgBtnLike.setVisibility(View.VISIBLE);
     holder.imgBtnComment.setVisibility(View.VISIBLE);
     holder.imgBtnReblog.setVisibility(View.VISIBLE);
@@ -96,18 +91,9 @@
     holder.imgBtnReblog.setVisibility(View.INVISIBLE);
     holder.txtFollow.setVisibility(View.GONE);
   }
-  RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)holder.txtBlogName.getLayoutParams();
-  if (post.isWP()) {
-    params.addRule(RelativeLayout.CENTER_VERTICAL,0);
-  }
- else {
-    params.addRule(RelativeLayout.CENTER_VERTICAL);
-  }
   showCounts(holder,post);
   if (mAnimateRows)   animateRow(convertView);
   if (mCanRequestMorePosts && mDataRequestedListener != null && (position >= getCount() - 1))   mDataRequestedListener.onRequestData(ReaderActions.RequestDataAction.LOAD_OLDER);
-  if (mIsImagePreloadingEnabled && !mIsFlinging) {
-    if (position > (mLastPreloadPos - PRELOAD_OFFSET))     preloadPostImages(position + PRELOAD_OFFSET);
-  }
+  if (mEnableImagePreload && position > (mLastPreloadPos - PRELOAD_OFFSET))   preloadPostImages(position + PRELOAD_OFFSET);
   return convertView;
 }
