@@ -29,11 +29,13 @@
   String images="";
   post.deleteMediaFiles();
   Editable s=mContentEditText.getText();
-  MediaGalleryImageSpan[] gallerySpans=s.getSpans(0,s.length(),MediaGalleryImageSpan.class);
-  for (  MediaGalleryImageSpan gallerySpan : gallerySpans) {
-    int start=s.getSpanStart(gallerySpan);
-    s.removeSpan(gallerySpan);
-    s.insert(start,WPHtml.getGalleryShortcode(gallerySpan));
+  if (!isAutoSave) {
+    MediaGalleryImageSpan[] gallerySpans=s.getSpans(0,s.length(),MediaGalleryImageSpan.class);
+    for (    MediaGalleryImageSpan gallerySpan : gallerySpans) {
+      int start=s.getSpanStart(gallerySpan);
+      s.removeSpan(gallerySpan);
+      s.insert(start,WPHtml.getGalleryShortcode(gallerySpan));
+    }
   }
   WPImageSpan[] imageSpans=s.getSpans(0,s.length(),WPImageSpan.class);
   if (imageSpans.length != 0) {
