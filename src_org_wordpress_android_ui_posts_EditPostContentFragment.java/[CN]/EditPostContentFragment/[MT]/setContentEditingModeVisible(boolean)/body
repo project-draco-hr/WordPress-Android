@@ -2,15 +2,39 @@
   if (mActivity == null)   return;
   ActionBar actionBar=mActivity.getSupportActionBar();
   if (isVisible) {
+    Animation fadeAnimation=new AlphaAnimation(1,0);
+    fadeAnimation.setDuration(CONTENT_ANIMATION_DURATION);
+    fadeAnimation.setAnimationListener(new Animation.AnimationListener(){
+      @Override public void onAnimationStart(      Animation animation){
+      }
+      @Override public void onAnimationEnd(      Animation animation){
+        mTitleEditText.setVisibility(View.GONE);
+        mPostSettingsLinearLayout.setVisibility(View.GONE);
+        mFormatBar.setVisibility(View.VISIBLE);
+      }
+      @Override public void onAnimationRepeat(      Animation animation){
+      }
+    }
+);
+    mPostContentLinearLayout.startAnimation(fadeAnimation);
     actionBar.hide();
-    mTitleEditText.setVisibility(View.GONE);
-    mActivity.setViewPagerEnabled(false);
-    mFormatBar.setVisibility(View.VISIBLE);
   }
  else {
-    mActivity.setViewPagerEnabled(true);
     mTitleEditText.setVisibility(View.VISIBLE);
     mFormatBar.setVisibility(View.GONE);
+    Animation fadeAnimation=new AlphaAnimation(0,1);
+    fadeAnimation.setDuration(CONTENT_ANIMATION_DURATION);
+    fadeAnimation.setAnimationListener(new Animation.AnimationListener(){
+      @Override public void onAnimationStart(      Animation animation){
+      }
+      @Override public void onAnimationEnd(      Animation animation){
+        mPostSettingsLinearLayout.setVisibility(View.VISIBLE);
+      }
+      @Override public void onAnimationRepeat(      Animation animation){
+      }
+    }
+);
+    mPostContentLinearLayout.startAnimation(fadeAnimation);
     mActivity.supportInvalidateOptionsMenu();
     actionBar.show();
   }

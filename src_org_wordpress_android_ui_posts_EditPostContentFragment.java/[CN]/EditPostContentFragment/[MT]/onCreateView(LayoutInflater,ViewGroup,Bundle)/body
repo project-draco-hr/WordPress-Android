@@ -4,6 +4,15 @@
   mFormatBar=(RelativeLayout)rootView.findViewById(R.id.format_bar);
   mTitleEditText=(EditText)rootView.findViewById(R.id.post_title);
   mContentEditText=(WPEditText)rootView.findViewById(R.id.post_content);
+  mPostContentLinearLayout=(LinearLayout)rootView.findViewById(R.id.post_content_wrapper);
+  mPostSettingsLinearLayout=(LinearLayout)rootView.findViewById(R.id.post_settings_wrapper);
+  mPostSettingsButton=(Button)rootView.findViewById(R.id.post_settings_button);
+  mPostSettingsButton.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      mActivity.showPostSettings();
+    }
+  }
+);
   mBoldToggleButton=(ToggleButton)rootView.findViewById(R.id.bold);
   mEmToggleButton=(ToggleButton)rootView.findViewById(R.id.em);
   mBquoteToggleButton=(ToggleButton)rootView.findViewById(R.id.bquote);
@@ -41,6 +50,7 @@
     if (!TextUtils.isEmpty(post.getTitle())) {
       mTitleEditText.setText(post.getTitle());
     }
+    mPostSettingsButton.setText(post.isPage() ? R.string.page_settings : R.string.post_settings);
   }
   String action=mActivity.getIntent().getAction();
   int quickMediaType=-1;
