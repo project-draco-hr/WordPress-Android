@@ -16,6 +16,7 @@
   if (args.getBoolean(ARG_TWO_BUTTONS)) {
     mFooterOneButton.setVisibility(View.GONE);
     mFooterTwoButtons.setVisibility(View.VISIBLE);
+    mFooterRightButton.setText(args.getString(ARG_SECOND_BUTTON_LABEL));
   }
   View.OnClickListener clickListenerDismiss=new View.OnClickListener(){
     @Override public void onClick(    View v){
@@ -23,9 +24,18 @@
     }
   }
 ;
+  final int action=args.getInt(ARG_SECOND_BUTTON_ACTION,0);
+  final String param=args.getString(ARG_SECOND_BUTTON_PARAM);
   View.OnClickListener clickListenerFinish=new View.OnClickListener(){
     @Override public void onClick(    View v){
-      getActivity().finish();
+      if (action == ACTION_FINISH) {
+        getActivity().finish();
+      }
+      if (action == ACTION_OPEN_URL) {
+        Intent intent=new Intent(Intent.ACTION_VIEW,Uri.parse(param));
+        startActivity(intent);
+        dismissAllowingStateLoss();
+      }
     }
   }
 ;
