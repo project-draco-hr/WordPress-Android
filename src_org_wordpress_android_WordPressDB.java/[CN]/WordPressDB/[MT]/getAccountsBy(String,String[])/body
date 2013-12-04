@@ -1,6 +1,13 @@
 {
-  if (db == null)   return new Vector<Map<String,Object>>();
-  Cursor c=db.query(SETTINGS_TABLE,new String[]{"id","blogName","username","blogId","url","password"},null,null,null,null,null);
+  if (db == null) {
+    return new Vector<Map<String,Object>>();
+  }
+  String[] baseFields=new String[]{"id","blogName","username","blogId","url","password"};
+  String[] allFields=baseFields;
+  if (extraFields != null) {
+    allFields=(String[])ArrayUtils.addAll(baseFields,extraFields);
+  }
+  Cursor c=db.query(SETTINGS_TABLE,allFields,byString,null,null,null,null);
   int numRows=c.getCount();
   c.moveToFirst();
   List<Map<String,Object>> accounts=new Vector<Map<String,Object>>();
@@ -18,6 +25,11 @@
       thisHash.put("username",username);
       thisHash.put("blogId",blogId);
       thisHash.put("url",url);
+      if (extraFields != null) {
+        for (int j=0; j < extraFields.length; ++j) {
+          thisHash.put(extraFields[j],c.getString(6 + j));
+        }
+      }
       accounts.add(thisHash);
     }
     c.moveToNext();
