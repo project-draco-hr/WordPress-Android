@@ -5,34 +5,31 @@
   actionBar.setDisplayHomeAsUpEnabled(true);
   setTitle(WordPress.getCurrentBlog().getBlogName());
   Bundle extras=getIntent().getExtras();
-  if (extras != null) {
+  String action=getIntent().getAction();
+  if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action) || EditPostContentFragment.NEW_MEDIA_GALLERY.equals(action)|| EditPostContentFragment.NEW_MEDIA_POST.equals(action)|| (extras != null && extras.getInt("quick-media",-1) > -1)) {
+    mPost=new Post(WordPress.getCurrentBlog().getId(),false);
+    mIsNewPost=true;
+  }
+ else   if (extras != null) {
     long postId=extras.getLong(EXTRA_POSTID,-1);
     boolean isPage=extras.getBoolean(EXTRA_IS_PAGE);
     mIsNewPost=extras.getBoolean(EXTRA_IS_NEW_POST);
-    try {
-      mPost=new Post(WordPress.getCurrentBlog().getId(),postId,isPage);
-      if (mPost.getId() == -1) {
-        showPostErrorAndFinish();
-        return;
-      }
- else {
-        mOriginalPost=new Post(WordPress.getCurrentBlog().getId(),postId,isPage);
-      }
-      if (isPage) {
-        WPMobileStatsUtil.trackEventForWPCom(WPMobileStatsUtil.StatsEventPageDetailOpenedEditor);
-        mStatEventEditorClosed=WPMobileStatsUtil.StatsEventPageDetailClosedEditor;
-      }
- else {
-        WPMobileStatsUtil.trackEventForWPCom(WPMobileStatsUtil.StatsEventPostDetailOpenedEditor);
-        mStatEventEditorClosed=WPMobileStatsUtil.StatsEventPostDetailClosedEditor;
-      }
+    mPost=new Post(WordPress.getCurrentBlog().getId(),postId,isPage);
+    mOriginalPost=new Post(WordPress.getCurrentBlog().getId(),postId,isPage);
+    if (isPage) {
+      WPMobileStatsUtil.trackEventForWPCom(WPMobileStatsUtil.StatsEventPageDetailOpenedEditor);
+      mStatEventEditorClosed=WPMobileStatsUtil.StatsEventPageDetailClosedEditor;
     }
- catch (    Exception e) {
-      showPostErrorAndFinish();
-      return;
+ else {
+      WPMobileStatsUtil.trackEventForWPCom(WPMobileStatsUtil.StatsEventPostDetailOpenedEditor);
+      mStatEventEditorClosed=WPMobileStatsUtil.StatsEventPostDetailClosedEditor;
     }
   }
  else {
+    showPostErrorAndFinish();
+    return;
+  }
+  if (mPost.getId() < 0) {
     showPostErrorAndFinish();
     return;
   }
@@ -59,11 +56,4 @@
     }
   }
 );
-  String action=getIntent().getAction();
-  if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action) || EditPostContentFragment.NEW_MEDIA_GALLERY.equals(action)|| EditPostContentFragment.NEW_MEDIA_POST.equals(action)|| (extras != null && extras.getInt("quick-media",-1) > -1)) {
-    mPost=new Post(WordPress.getCurrentBlog().getId(),false);
-    if (mPost.getId() < 0) {
-      showPostErrorAndFinish();
-    }
-  }
 }
