@@ -1,7 +1,7 @@
 {
   if (!mIsAddCommentBoxShowing)   return;
-  final EditText editComment=(EditText)findViewById(R.id.edit_comment);
   final ViewGroup layoutCommentBox=(ViewGroup)findViewById(R.id.layout_comment_box);
+  final EditText editComment=(EditText)layoutCommentBox.findViewById(R.id.edit_comment);
   final TextView btnComment=(TextView)findViewById(R.id.btn_comment);
   btnComment.setSelected(false);
   ReaderAniUtils.flyOut(layoutCommentBox);
@@ -9,4 +9,12 @@
   getCommentAdapter().setHighlightCommentId(0,false);
   mIsAddCommentBoxShowing=false;
   mReplyToCommentId=0;
+  if (canEnableImmersiveMode()) {
+    new Handler().postDelayed(new Runnable(){
+      @Override public void run(){
+        enableImmersiveMode();
+      }
+    }
+,500);
+  }
 }

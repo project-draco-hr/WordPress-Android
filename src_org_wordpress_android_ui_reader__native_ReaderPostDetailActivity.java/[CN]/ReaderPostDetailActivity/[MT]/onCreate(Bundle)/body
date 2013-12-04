@@ -1,12 +1,17 @@
 {
   super.onCreate(savedInstanceState);
+  boolean isTranslucentActionBarEnabled=NativeReaderActivity.isTranslucentActionBarEnabled();
+  if (isTranslucentActionBarEnabled)   getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
   mInflater=getLayoutInflater();
   setContentView(R.layout.reader_activity_post_detail);
+  getSupportActionBar().setDisplayShowTitleEnabled(true);
+  getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+  if (isTranslucentActionBarEnabled)   getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(NativeReaderActivity.ALPHA_LEVEL_3,46,162,204)));
   getWindow().setBackgroundDrawable(null);
-  mDecorView=getWindow().getDecorView();
   final int actionbarHeight=DisplayUtils.getActionBarHeight(this);
   final ViewGroup layoutFakeActionBar=(ViewGroup)findViewById(R.id.layout_fake_actionbar);
   layoutFakeActionBar.setMinimumHeight(actionbarHeight);
+  layoutFakeActionBar.setVisibility(View.GONE);
   RelativeLayout headerFake=new RelativeLayout(this);
   headerFake.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,actionbarHeight));
   getListView().addHeaderView(headerFake,null,false);
