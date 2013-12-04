@@ -10,9 +10,14 @@
   final String language=CreateUserAndBlog.getDeviceLanguage(getActivity().getResources());
   CreateUserAndBlog createUserAndBlog=new CreateUserAndBlog("","","",siteUrl,siteName,language,restClient,getActivity(),new ErrorListener(),new CreateUserAndBlog.Callback(){
     @Override public void onStepFinished(    CreateUserAndBlog.Step step){
-      updateProgress(getString(R.string.create_new_blog_wpcom));
+      if (getActivity() != null) {
+        updateProgress(getString(R.string.create_new_blog_wpcom));
+      }
     }
     @Override public void onSuccess(    JSONObject createSiteResponse){
+      if (getActivity() == null) {
+        return;
+      }
       endProgress();
       SetupBlog setupBlog=new SetupBlog();
       try {
@@ -33,6 +38,9 @@
       getActivity().finish();
     }
     @Override public void onError(    int messageId){
+      if (getActivity() == null) {
+        return;
+      }
       endProgress();
       showError(getString(messageId));
     }
