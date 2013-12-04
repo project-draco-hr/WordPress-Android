@@ -3,6 +3,7 @@
   new Thread(){
     @Override public void run(){
       final TextView btnLike=(TextView)findViewById(R.id.btn_like);
+      final ViewGroup layoutLikingAvatars=(ViewGroup)findViewById(R.id.layout_liking_avatars);
       final int marginExtraSmall=getResources().getDimensionPixelSize(R.dimen.reader_margin_extra_small);
       final int marginLarge=getResources().getDimensionPixelSize(R.dimen.reader_margin_large);
       final int actionBarIconSz=DisplayUtils.getActionBarHeight(ReaderPostDetailActivity.this);
@@ -23,27 +24,27 @@
           }
 );
           if (avatars.size() == 0 && mPost.numLikes == 0) {
-            mLayoutLikingAvatars.setVisibility(View.GONE);
+            layoutLikingAvatars.setVisibility(View.GONE);
             return;
           }
           if (avatars.size() > 0) {
-            mLayoutLikingAvatars.setOnClickListener(new View.OnClickListener(){
+            layoutLikingAvatars.setOnClickListener(new View.OnClickListener(){
               @Override public void onClick(              View view){
                 ReaderActivityLauncher.showReaderLikingUsers(ReaderPostDetailActivity.this,mPost);
               }
             }
 );
-            if (forceReload || mLayoutLikingAvatars.getChildCount() < maxAvatars) {
-              mLayoutLikingAvatars.removeAllViews();
+            if (forceReload || layoutLikingAvatars.getChildCount() < maxAvatars) {
+              layoutLikingAvatars.removeAllViews();
               for (              String url : avatars) {
-                WPNetworkImageView imgAvatar=(WPNetworkImageView)mInflater.inflate(R.layout.reader_like_avatar,mLayoutLikingAvatars,false);
-                mLayoutLikingAvatars.addView(imgAvatar);
+                WPNetworkImageView imgAvatar=(WPNetworkImageView)mInflater.inflate(R.layout.reader_like_avatar,layoutLikingAvatars,false);
+                layoutLikingAvatars.addView(imgAvatar);
                 imgAvatar.setImageUrl(PhotonUtils.fixAvatar(url,likeAvatarSize),WPNetworkImageView.ImageType.AVATAR);
               }
             }
           }
-          if (mLayoutLikingAvatars.getVisibility() != View.VISIBLE) {
-            mLayoutLikingAvatars.setVisibility(View.VISIBLE);
+          if (layoutLikingAvatars.getVisibility() != View.VISIBLE) {
+            layoutLikingAvatars.setVisibility(View.VISIBLE);
           }
         }
       }

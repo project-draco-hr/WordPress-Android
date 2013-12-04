@@ -4,17 +4,16 @@
   if (isTranslucentActionBarEnabled)   getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
   mInflater=getLayoutInflater();
   setContentView(R.layout.reader_activity_post_detail);
+  getWindow().setBackgroundDrawable(null);
   getSupportActionBar().setDisplayShowTitleEnabled(true);
   getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-  if (isTranslucentActionBarEnabled)   getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(NativeReaderActivity.ALPHA_LEVEL_3,46,162,204)));
-  getWindow().setBackgroundDrawable(null);
-  final int actionbarHeight=DisplayUtils.getActionBarHeight(this);
-  final ViewGroup layoutFakeActionBar=(ViewGroup)findViewById(R.id.layout_fake_actionbar);
-  layoutFakeActionBar.setMinimumHeight(actionbarHeight);
-  layoutFakeActionBar.setVisibility(View.GONE);
-  RelativeLayout headerFake=new RelativeLayout(this);
-  headerFake.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,actionbarHeight));
-  getListView().addHeaderView(headerFake,null,false);
+  if (isTranslucentActionBarEnabled) {
+    getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(NativeReaderActivity.ALPHA_LEVEL_3,46,162,204)));
+    final int actionbarHeight=DisplayUtils.getActionBarHeight(this);
+    RelativeLayout headerFake=new RelativeLayout(this);
+    headerFake.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,actionbarHeight));
+    getListView().addHeaderView(headerFake,null,false);
+  }
   mBlogId=getIntent().getLongExtra(ARG_BLOG_ID,0);
   mPostId=getIntent().getLongExtra(ARG_POST_ID,0);
   ViewGroup headerDetail=(ViewGroup)mInflater.inflate(R.layout.reader_listitem_post_detail,getListView(),false);
@@ -25,21 +24,6 @@
   mProgressFooter=(ProgressBar)mCommentFooter.findViewById(R.id.progress_footer);
   mProgressFooter.setVisibility(View.INVISIBLE);
   getListView().addFooterView(mCommentFooter);
-  mLayoutLikingAvatars=(ViewGroup)findViewById(R.id.layout_liking_avatars);
   mLayoutActions=(ViewGroup)findViewById(R.id.layout_actions);
-  ImageView imgBack=(ImageView)findViewById(R.id.image_back);
-  imgBack.setOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View v){
-      onBackPressed();
-    }
-  }
-);
-  ImageView imgShare=(ImageView)findViewById(R.id.image_share);
-  imgShare.setOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View v){
-      sharePage();
-    }
-  }
-);
   getListView().setVisibility(View.INVISIBLE);
 }

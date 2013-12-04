@@ -2,7 +2,8 @@
   mIsPostTaskRunning=false;
   if (!result) {
     txtTitle.setText(R.string.reader_title_err_unable_to_load_post);
-    txtSource.setVisibility(View.GONE);
+    txtBlogName.setVisibility(View.GONE);
+    txtDate.setVisibility(View.GONE);
     imgAvatar.setImageResource(R.drawable.ic_error);
     return;
   }
@@ -18,7 +19,8 @@
     }
   }
 );
-  txtSource.setText(mPost.getSource());
+  txtBlogName.setText(mPost.getBlogName());
+  txtDate.setText(DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished()));
   if (mPost.hasPostAvatar()) {
     int avatarSz=getResources().getDimensionPixelSize(R.dimen.reader_avatar_sz_medium);
     imgAvatar.setImageUrl(mPost.getPostAvatarForDisplay(avatarSz),WPNetworkImageView.ImageType.AVATAR);
@@ -95,6 +97,7 @@
 );
   webView.loadDataWithBaseURL(null,postHtml,"text/html","UTF-8",null);
   mLayoutActions.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
+  txtFollow.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
   if (!hasCommentAdapter())   getListView().setAdapter(getCommentAdapter());
   refreshFollowed();
   refreshLikes(false);
