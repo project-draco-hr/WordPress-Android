@@ -1,5 +1,8 @@
 {
   if (mHttpAuthRequired) {
+    if (getActivity() == null) {
+      return;
+    }
     mHttpAuthRequired=false;
     AlertDialog.Builder alert=new AlertDialog.Builder(getActivity());
     alert.setTitle(R.string.http_authorization_required);
@@ -56,8 +59,10 @@
     WordPress.restClient.get("me",null,null);
   }
   if (userBlogList != null) {
-    getActivity().setResult(Activity.RESULT_OK);
-    getActivity().finish();
+    if (getActivity() != null) {
+      getActivity().setResult(Activity.RESULT_OK);
+      getActivity().finish();
+    }
   }
  else {
     endProgress();
