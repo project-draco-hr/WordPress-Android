@@ -16,10 +16,16 @@
       mBlogSpinner.setOnItemSelectedListener(this);
     }
   }
-  String[] actions=new String[]{getString(R.string.share_action_post),getString(R.string.share_action_media)};
   mActionSpinner=(IcsSpinner)findViewById(R.id.action_spinner);
-  ArrayAdapter<String> actionAdapter=new ArrayAdapter<String>(themedContext,R.layout.sherlock_spinner_dropdown_item,actions);
-  mActionSpinner.setAdapter(actionAdapter);
-  mActionSpinner.setOnItemSelectedListener(this);
+  if ("text/plain".equals(getIntent().getType())) {
+    mActionSpinner.setVisibility(View.GONE);
+    findViewById(R.id.action_spinner_title).setVisibility(View.GONE);
+  }
+ else {
+    String[] actions=new String[]{getString(R.string.share_action_post),getString(R.string.share_action_media)};
+    ArrayAdapter<String> actionAdapter=new ArrayAdapter<String>(themedContext,R.layout.sherlock_spinner_dropdown_item,actions);
+    mActionSpinner.setAdapter(actionAdapter);
+    mActionSpinner.setOnItemSelectedListener(this);
+  }
   getSupportActionBar().hide();
 }
