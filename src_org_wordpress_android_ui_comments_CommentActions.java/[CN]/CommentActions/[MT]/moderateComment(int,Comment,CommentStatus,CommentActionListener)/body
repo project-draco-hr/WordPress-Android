@@ -1,4 +1,5 @@
 {
+  final Blog blog=WordPress.getBlog(accountId);
   if (blog == null || comment == null || newStatus == null || newStatus == CommentStatus.UNKNOWN) {
     if (actionListener != null)     actionListener.onActionResult(false);
     return;
@@ -19,6 +20,7 @@
         result=client.call("wp.editComment",params);
       }
  catch (      final XMLRPCException e) {
+        Log.e(WordPress.TAG,e.getMessage(),e);
         result=null;
       }
       final boolean success=(result != null && Boolean.parseBoolean(result.toString()));
