@@ -1,5 +1,8 @@
 {
   if (mHttpAuthRequired) {
+    if (getActivity() == null) {
+      return;
+    }
     mHttpAuthRequired=false;
     AlertDialog.Builder alert=new AlertDialog.Builder(getActivity());
     alert.setTitle(R.string.http_authorization_required);
@@ -24,7 +27,7 @@
     endProgress();
     return;
   }
-  if (usersBlogsList == null && mErrorMsgId != 0) {
+  if (userBlogList == null && mErrorMsgId != 0) {
     FragmentTransaction ft=getFragmentManager().beginTransaction();
     NUXDialogFragment nuxAlert;
     if (mErrorMsgId == R.string.account_two_step_auth_enabled) {
@@ -55,21 +58,11 @@
     editor.commit();
     WordPress.restClient.get("me",null,null);
   }
-  if (usersBlogsList != null) {
-    SelectBlogsDialog selectBlogsDialog=new SelectBlogsDialog(new SelectBlogsDialog.Listener(){
-      @Override public void onSuccess(      SparseBooleanArray selectedBlogs){
-        if (selectedBlogs != null && selectedBlogs.size() > 0) {
-          mSetupBlog.addBlogs(usersBlogsList,selectedBlogs);
-        }
-        getActivity().setResult(Activity.RESULT_OK);
-        getActivity().finish();
-      }
-      @Override public void onCancel(){
-        endProgress();
-      }
+  if (userBlogList != null) {
+    if (getActivity() != null) {
+      getActivity().setResult(Activity.RESULT_OK);
+      getActivity().finish();
     }
-,getActivity());
-    selectBlogsDialog.showBlogSelectionDialog(usersBlogsList);
   }
  else {
     endProgress();
