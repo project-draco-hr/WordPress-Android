@@ -1,0 +1,82 @@
+{
+  Spannable s=mContentEditText.getText();
+  if (s == null)   return;
+  int selectionStart=mContentEditText.getSelectionStart();
+  mStyleStart=selectionStart;
+  int selectionEnd=mContentEditText.getSelectionEnd();
+  if (selectionStart > selectionEnd) {
+    int temp=selectionEnd;
+    selectionEnd=selectionStart;
+    selectionStart=temp;
+  }
+  Class styleClass=null;
+  if (tag.equals(TAG_FORMAT_BAR_BUTTON_STRONG) || tag.equals(TAG_FORMAT_BAR_BUTTON_EM))   styleClass=StyleSpan.class;
+ else   if (tag.equals(TAG_FORMAT_BAR_BUTTON_UNDERLINE))   styleClass=WPUnderlineSpan.class;
+ else   if (tag.equals(TAG_FORMAT_BAR_BUTTON_STRIKE))   styleClass=StrikethroughSpan.class;
+ else   if (tag.equals(TAG_FORMAT_BAR_BUTTON_QUOTE))   styleClass=QuoteSpan.class;
+  if (styleClass == null)   return;
+  Object[] allSpans=s.getSpans(selectionStart,selectionEnd,styleClass);
+  boolean textIsSelected=selectionEnd > selectionStart;
+  if (mActivity.getPost().isLocalDraft()) {
+    boolean shouldAddSpan=true;
+    for (    Object span : allSpans) {
+      if (span instanceof StyleSpan) {
+        StyleSpan styleSpan=(StyleSpan)span;
+        if ((styleSpan.getStyle() == Typeface.BOLD && !tag.equals(TAG_FORMAT_BAR_BUTTON_STRONG)) || (styleSpan.getStyle() == Typeface.ITALIC && !tag.equals(TAG_FORMAT_BAR_BUTTON_EM))) {
+          continue;
+        }
+      }
+      if (!toggleButton.isChecked() && textIsSelected) {
+        s.removeSpan(span);
+        shouldAddSpan=false;
+        break;
+      }
+ else       if (!toggleButton.isChecked()) {
+        Object[] spans=s.getSpans(mStyleStart - 1,mStyleStart,styleClass);
+        for (        Object removeSpan : spans) {
+          selectionStart=s.getSpanStart(removeSpan);
+          selectionEnd=s.getSpanEnd(removeSpan);
+          s.removeSpan(removeSpan);
+        }
+      }
+    }
+    if (shouldAddSpan) {
+      if (tag.equals(TAG_FORMAT_BAR_BUTTON_STRONG)) {
+        s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),selectionStart,selectionEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+      }
+ else       if (tag.equals(TAG_FORMAT_BAR_BUTTON_EM)) {
+        s.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),selectionStart,selectionEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+      }
+ else {
+        try {
+          s.setSpan(styleClass.newInstance(),selectionStart,selectionEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+ catch (        java.lang.InstantiationException e) {
+          e.printStackTrace();
+        }
+catch (        IllegalAccessException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+ else {
+    String startTag="<" + tag + ">";
+    String endTag="</" + tag + ">";
+    Editable content=mContentEditText.getText();
+    if (textIsSelected) {
+      content.insert(selectionStart,startTag);
+      content.insert(selectionEnd + startTag.length(),endTag);
+      toggleButton.setChecked(false);
+      mContentEditText.setSelection(selectionEnd + startTag.length() + endTag.length());
+    }
+ else     if (toggleButton.isChecked()) {
+      content.insert(selectionStart,startTag);
+      mContentEditText.setSelection(selectionEnd + startTag.length());
+    }
+ else     if (!toggleButton.isChecked()) {
+      content.insert(selectionEnd,endTag);
+      mContentEditText.setSelection(selectionEnd + endTag.length());
+    }
+  }
+}
