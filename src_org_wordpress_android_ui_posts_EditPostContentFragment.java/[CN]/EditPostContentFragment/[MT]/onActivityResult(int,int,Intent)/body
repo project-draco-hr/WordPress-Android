@@ -32,6 +32,10 @@ catch (OutOfMemoryError e) {
 e.printStackTrace();
 }
 }
+ else if (mActivity != null && mQuickMediaType > -1 && TextUtils.isEmpty(mContentEditText.getText())) {
+mActivity.getPost().delete();
+mActivity.finish();
+}
 break;
 case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_VIDEO_LIBRARY:
 Uri videoUri=data.getData();
@@ -41,6 +45,10 @@ case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO:
 if (resultCode == Activity.RESULT_OK) {
 Uri capturedVideoUri=MediaUtils.getLastRecordedVideoUri(getActivity());
 if (!addMedia(capturedVideoUri,null)) Toast.makeText(getActivity(),getResources().getText(R.string.gallery_error),Toast.LENGTH_SHORT).show();
+}
+ else if (mActivity != null && mQuickMediaType > -1 && TextUtils.isEmpty(mContentEditText.getText())) {
+mActivity.getPost().delete();
+mActivity.finish();
 }
 break;
 case ACTIVITY_REQUEST_CODE_CREATE_LINK:
