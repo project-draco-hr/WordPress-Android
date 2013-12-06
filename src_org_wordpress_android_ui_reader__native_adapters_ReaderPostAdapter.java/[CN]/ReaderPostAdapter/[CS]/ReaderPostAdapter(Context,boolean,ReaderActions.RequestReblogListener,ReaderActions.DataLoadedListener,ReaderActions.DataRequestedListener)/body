@@ -1,17 +1,23 @@
 {
   super();
-  mContext=context.getApplicationContext();
   mInflater=LayoutInflater.from(context);
   mReblogListener=reblogListener;
   mDataLoadedListener=dataLoadedListener;
   mDataRequestedListener=dataRequestedListener;
   mAvatarSz=context.getResources().getDimensionPixelSize(R.dimen.reader_avatar_sz_medium);
-  mNegativeOffset=-(mAvatarSz / 2);
-  mDefaultOffset=context.getResources().getDimensionPixelOffset(R.dimen.reader_margin_medium);
   int displayWidth=DisplayUtils.getDisplayPixelWidth(context);
   int displayHeight=DisplayUtils.getDisplayPixelHeight(context);
-  mPhotonWidth=(isGridView ? displayWidth / 2 : displayWidth);
+  int dividerSize=context.getResources().getDimensionPixelSize(R.dimen.reader_divider_size);
+  if (isGridView) {
+    mPhotonWidth=(displayWidth / 2) - dividerSize;
+  }
+ else {
+    mPhotonWidth=displayWidth - (dividerSize * 2);
+  }
   mPhotonHeight=context.getResources().getDimensionPixelSize(R.dimen.reader_featured_image_height);
   mRowAnimationFromYDelta=displayHeight - (displayHeight / 6);
   mRowAnimationDuration=context.getResources().getInteger(android.R.integer.config_mediumAnimTime);
+  mLinkColor=context.getResources().getColor(R.color.reader_hyperlink);
+  mLinkColorActive=context.getResources().getColor(R.color.orange_medium);
+  mEnableImagePreload=SysUtils.isGteAndroid4();
 }
