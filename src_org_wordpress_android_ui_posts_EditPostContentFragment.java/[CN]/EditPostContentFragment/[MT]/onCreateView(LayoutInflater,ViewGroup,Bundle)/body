@@ -3,6 +3,13 @@
   final ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.fragment_edit_post_content,container,false);
   mFormatBar=(RelativeLayout)rootView.findViewById(R.id.format_bar);
   mTitleEditText=(EditText)rootView.findViewById(R.id.post_title);
+  mTitleEditText.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+    @Override public boolean onEditorAction(    TextView v,    int actionId,    KeyEvent event){
+      if (actionId == EditorInfo.IME_ACTION_NEXT && mActivity.getSupportActionBar().isShowing())       setContentEditingModeVisible(true);
+      return false;
+    }
+  }
+);
   mContentEditText=(WPEditText)rootView.findViewById(R.id.post_content);
   mPostContentLinearLayout=(LinearLayout)rootView.findViewById(R.id.post_content_wrapper);
   mPostSettingsLinearLayout=(LinearLayout)rootView.findViewById(R.id.post_settings_wrapper);
