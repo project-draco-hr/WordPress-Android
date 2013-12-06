@@ -3,9 +3,11 @@
     @Override public void run(){
       final TextView txtFollow=(TextView)findViewById(R.id.text_follow);
       final boolean isFollowed=ReaderPostTable.isPostFollowed(mPost);
+      final String followText=(isFollowed ? getString(R.string.reader_btn_unfollow) : getString(R.string.reader_btn_follow)).toUpperCase();
       mHandler.post(new Runnable(){
         public void run(){
-          txtFollow.setText(isFollowed ? R.string.reader_btn_unfollow : R.string.reader_btn_follow);
+          txtFollow.setText(followText);
+          txtFollow.setTextColor(isFollowed ? mLinkColorActive : mLinkColor);
           txtFollow.setSelected(isFollowed);
           txtFollow.setOnClickListener(new View.OnClickListener(){
             @Override public void onClick(            View view){

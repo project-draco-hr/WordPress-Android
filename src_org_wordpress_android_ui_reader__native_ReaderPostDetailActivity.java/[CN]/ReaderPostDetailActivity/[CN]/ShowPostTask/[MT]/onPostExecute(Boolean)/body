@@ -14,14 +14,15 @@
  else {
     txtTitle.setText(R.string.reader_untitled_post);
   }
-  layoutTitle.setOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View v){
-      ReaderActivityLauncher.openUrl(ReaderPostDetailActivity.this,mPost.getUrl());
-    }
-  }
-);
   txtBlogName.setText(mPost.getBlogName());
   txtDate.setText(DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished()));
+  if (mPost.hasAuthorName()) {
+    txtAuthorName.setText(mPost.getAuthorName());
+    txtAuthorName.setVisibility(View.VISIBLE);
+  }
+ else {
+    txtAuthorName.setVisibility(View.GONE);
+  }
   if (mPost.hasPostAvatar()) {
     int avatarSz=getResources().getDimensionPixelSize(R.dimen.reader_avatar_sz_medium);
     imgAvatar.setImageUrl(mPost.getPostAvatarForDisplay(avatarSz),WPNetworkImageView.ImageType.AVATAR);
@@ -52,6 +53,16 @@
  else {
     imgBtnComment.setVisibility(View.GONE);
   }
+  View.OnClickListener clickListener=new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      ReaderActivityLauncher.openUrl(ReaderPostDetailActivity.this,mPost.getUrl());
+    }
+  }
+;
+  txtTitle.setOnClickListener(clickListener);
+  txtBlogName.setOnClickListener(clickListener);
+  txtAuthorName.setOnClickListener(clickListener);
+  imgAvatar.setOnClickListener(clickListener);
   webView.getSettings().setJavaScriptEnabled(false);
   webView.getSettings().setUserAgentString(Constants.USER_AGENT);
   webView.setWebViewClient(new WebViewClient(){
@@ -77,7 +88,7 @@
       }
     }
   }
-,2500);
+,2000);
   webView.setOnTouchListener(new View.OnTouchListener(){
     public boolean onTouch(    View v,    MotionEvent event){
       if (event.getAction() == MotionEvent.ACTION_UP) {
