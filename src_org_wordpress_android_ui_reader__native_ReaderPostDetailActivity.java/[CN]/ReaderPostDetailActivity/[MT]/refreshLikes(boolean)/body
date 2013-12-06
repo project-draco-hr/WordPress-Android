@@ -2,38 +2,37 @@
   if (mPost == null || !mPost.isWP())   return;
   new Thread(){
     @Override public void run(){
-      final TextView btnLike=(TextView)findViewById(R.id.btn_like);
+      final ImageView imgBtnLike=(ImageView)findViewById(R.id.image_like_btn);
       final ViewGroup layoutLikingAvatars=(ViewGroup)findViewById(R.id.layout_liking_avatars);
       final int marginExtraSmall=getResources().getDimensionPixelSize(R.dimen.reader_margin_extra_small);
       final int marginLarge=getResources().getDimensionPixelSize(R.dimen.reader_margin_large);
-      final int actionBarIconSz=DisplayUtils.getActionBarHeight(ReaderPostDetailActivity.this);
       final int likeAvatarSize=getResources().getDimensionPixelSize(R.dimen.reader_avatar_sz_like);
       final int likeAvatarSizeWithMargin=likeAvatarSize + (marginExtraSmall * 2);
       final int displayWidth=DisplayUtils.getDisplayPixelWidth(ReaderPostDetailActivity.this);
-      final int spaceForAvatars=displayWidth - (actionBarIconSz * NUM_ACTIONBAR_ICONS) - (marginLarge * NUM_ACTIONBAR_ICONS);
+      final int spaceForAvatars=displayWidth - (marginLarge * 2);
       final int maxAvatars=spaceForAvatars / likeAvatarSizeWithMargin;
       final ArrayList<String> avatars=ReaderUserTable.getAvatarUrls(ReaderLikeTable.getLikesForPost(mPost),maxAvatars);
       mHandler.post(new Runnable(){
         public void run(){
-          btnLike.setText(mPost.isLikedByCurrentUser ? R.string.reader_btn_unlike : R.string.reader_btn_like);
-          btnLike.setSelected(mPost.isLikedByCurrentUser);
-          btnLike.setOnClickListener(new View.OnClickListener(){
+          imgBtnLike.setSelected(mPost.isLikedByCurrentUser);
+          imgBtnLike.setOnClickListener(new View.OnClickListener(){
             @Override public void onClick(            View view){
-              doPostAction(btnLike,ReaderPostActions.PostAction.TOGGLE_LIKE,mPost);
+              doPostAction(imgBtnLike,ReaderPostActions.PostAction.TOGGLE_LIKE,mPost);
             }
           }
 );
           if (avatars.size() == 0 && mPost.numLikes == 0) {
-            layoutLikingAvatars.setVisibility(View.GONE);
+            mLayoutLikes.setVisibility(View.GONE);
             return;
           }
           if (avatars.size() > 0) {
-            layoutLikingAvatars.setOnClickListener(new View.OnClickListener(){
+            View.OnClickListener clickListener=new View.OnClickListener(){
               @Override public void onClick(              View view){
                 ReaderActivityLauncher.showReaderLikingUsers(ReaderPostDetailActivity.this,mPost);
               }
             }
-);
+;
+            layoutLikingAvatars.setOnClickListener(clickListener);
             if (forceReload || layoutLikingAvatars.getChildCount() < maxAvatars) {
               layoutLikingAvatars.removeAllViews();
               for (              String url : avatars) {
@@ -43,8 +42,9 @@
               }
             }
           }
-          if (layoutLikingAvatars.getVisibility() != View.VISIBLE) {
-            layoutLikingAvatars.setVisibility(View.VISIBLE);
+          if (mLayoutLikes.getVisibility() != View.VISIBLE) {
+            ReaderAniUtils.startAnimation(mLayoutLikes,R.anim.reader_top_bar_in);
+            mLayoutLikes.setVisibility(View.VISIBLE);
           }
         }
       }

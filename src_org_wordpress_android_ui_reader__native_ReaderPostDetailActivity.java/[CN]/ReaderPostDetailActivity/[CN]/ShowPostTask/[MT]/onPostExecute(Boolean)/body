@@ -7,6 +7,7 @@
     imgAvatar.setImageResource(R.drawable.ic_error);
     return;
   }
+  if (mPost.numLikes > 0 && mLayoutLikes.getVisibility() == View.GONE)   mLayoutLikes.setVisibility(View.INVISIBLE);
   if (mPost.hasTitle()) {
     txtTitle.setText(mPost.getTitle());
   }
@@ -29,19 +30,19 @@
  else {
     imgAvatar.setVisibility(View.GONE);
   }
-  btnReblog.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
-  btnReblog.setSelected(mPost.isRebloggedByCurrentUser);
+  imgBtnReblog.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
+  imgBtnReblog.setSelected(mPost.isRebloggedByCurrentUser);
   if (mPost.isWP()) {
-    btnReblog.setOnClickListener(new View.OnClickListener(){
+    imgBtnReblog.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View view){
-        doPostReblog(btnReblog,mPost);
+        doPostReblog(imgBtnReblog,mPost);
       }
     }
 );
   }
   if (mPost.isWP() && mPost.isCommentsOpen) {
-    btnComment.setVisibility(View.VISIBLE);
-    btnComment.setOnClickListener(new View.OnClickListener(){
+    imgBtnComment.setVisibility(View.VISIBLE);
+    imgBtnComment.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
         toggleShowAddCommentBox();
       }
@@ -49,7 +50,7 @@
 );
   }
  else {
-    btnComment.setVisibility(View.GONE);
+    imgBtnComment.setVisibility(View.GONE);
   }
   webView.getSettings().setJavaScriptEnabled(false);
   webView.getSettings().setUserAgentString(Constants.USER_AGENT);
