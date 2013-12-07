@@ -1,0 +1,40 @@
+{
+  int position=Selection.getSelectionStart(mContentEditText.getText());
+  if ((mIsBackspace && position != 1) || mLastPosition == position || !mActivity.getPost().isLocalDraft())   return;
+  if (position < 0) {
+    position=0;
+  }
+  mLastPosition=position;
+  if (position > 0) {
+    if (mStyleStart > position) {
+      mStyleStart=position - 1;
+    }
+    boolean shouldBold=mBoldToggleButton.isChecked();
+    boolean shouldEm=mEmToggleButton.isChecked();
+    boolean shouldUnderline=mUnderlineToggleButton.isChecked();
+    boolean shouldStrike=mStrikeToggleButton.isChecked();
+    boolean shouldQuote=mBquoteToggleButton.isChecked();
+    Object[] allSpans=s.getSpans(mStyleStart,position,Object.class);
+    for (    Object span : allSpans) {
+      if (span instanceof StyleSpan) {
+        StyleSpan styleSpan=(StyleSpan)span;
+        if (styleSpan.getStyle() == Typeface.BOLD)         shouldBold=false;
+ else         if (styleSpan.getStyle() == Typeface.ITALIC)         shouldEm=false;
+      }
+ else       if (span instanceof WPUnderlineSpan) {
+        shouldUnderline=false;
+      }
+ else       if (span instanceof StrikethroughSpan) {
+        shouldStrike=false;
+      }
+ else       if (span instanceof QuoteSpan) {
+        shouldQuote=false;
+      }
+    }
+    if (shouldBold)     s.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),mStyleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+    if (shouldEm)     s.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),mStyleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+    if (shouldUnderline)     s.setSpan(new WPUnderlineSpan(),mStyleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+    if (shouldStrike)     s.setSpan(new StrikethroughSpan(),mStyleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+    if (shouldQuote)     s.setSpan(new QuoteSpan(),mStyleStart,position,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+  }
+}
