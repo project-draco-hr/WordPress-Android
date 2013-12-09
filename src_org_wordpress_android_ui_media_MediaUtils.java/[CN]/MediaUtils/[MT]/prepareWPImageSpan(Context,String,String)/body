@@ -1,0 +1,30 @@
+{
+  Cursor cursor=WordPress.wpDB.getMediaFile(blogId,mediaId);
+  if (cursor == null || !cursor.moveToFirst()) {
+    if (cursor != null)     cursor.close();
+    return null;
+  }
+  String url=cursor.getString(cursor.getColumnIndex("fileURL"));
+  if (url == null) {
+    cursor.close();
+    return null;
+  }
+  Uri uri=Uri.parse(url);
+  WPImageSpan imageSpan=new WPImageSpan(context,R.drawable.remote_image,uri);
+  imageSpan.setMediaId(mediaId);
+  imageSpan.setCaption(cursor.getString(cursor.getColumnIndex("caption")));
+  imageSpan.setDescription(cursor.getString(cursor.getColumnIndex("description")));
+  imageSpan.setTitle(cursor.getString(cursor.getColumnIndex("title")));
+  imageSpan.setWidth(cursor.getInt(cursor.getColumnIndex("width")));
+  imageSpan.setHeight(cursor.getInt(cursor.getColumnIndex("height")));
+  imageSpan.setMimeType(cursor.getString(cursor.getColumnIndex("mimeType")));
+  imageSpan.setFileName(cursor.getString(cursor.getColumnIndex("fileName")));
+  imageSpan.setThumbnailURL(cursor.getString(cursor.getColumnIndex("thumbnailURL")));
+  imageSpan.setDateCreatedGMT(cursor.getLong(cursor.getColumnIndex("date_created_gmt")));
+  boolean isVideo=false;
+  String mimeType=cursor.getString(cursor.getColumnIndex("mimeType"));
+  if (mimeType != null && mimeType.contains("video"))   isVideo=true;
+  imageSpan.setVideo(isVideo);
+  cursor.close();
+  return imageSpan;
+}

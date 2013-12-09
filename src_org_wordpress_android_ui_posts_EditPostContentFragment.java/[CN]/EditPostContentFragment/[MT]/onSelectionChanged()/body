@@ -1,0 +1,32 @@
+{
+  if (!mActivity.getPost().isLocalDraft())   return;
+  final Spannable s=mContentEditText.getText();
+  if (s == null)   return;
+  mStyleStart=mContentEditText.getSelectionStart();
+  Object[] spans=s.getSpans(mContentEditText.getSelectionStart(),mContentEditText.getSelectionStart(),Object.class);
+  mBoldToggleButton.setChecked(false);
+  mEmToggleButton.setChecked(false);
+  mBquoteToggleButton.setChecked(false);
+  mUnderlineToggleButton.setChecked(false);
+  mStrikeToggleButton.setChecked(false);
+  for (  Object span : spans) {
+    if (span instanceof StyleSpan) {
+      StyleSpan ss=(StyleSpan)span;
+      if (ss.getStyle() == android.graphics.Typeface.BOLD) {
+        mBoldToggleButton.setChecked(true);
+      }
+      if (ss.getStyle() == android.graphics.Typeface.ITALIC) {
+        mEmToggleButton.setChecked(true);
+      }
+    }
+    if (span instanceof QuoteSpan) {
+      mBquoteToggleButton.setChecked(true);
+    }
+    if (span instanceof WPUnderlineSpan) {
+      mUnderlineToggleButton.setChecked(true);
+    }
+    if (span instanceof StrikethroughSpan) {
+      mStrikeToggleButton.setChecked(true);
+    }
+  }
+}

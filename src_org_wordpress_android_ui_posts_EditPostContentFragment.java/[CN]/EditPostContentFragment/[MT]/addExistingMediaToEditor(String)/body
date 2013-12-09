@@ -1,0 +1,44 @@
+{
+  if (WordPress.getCurrentBlog() == null)   return;
+  String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+  WPImageSpan imageSpan=MediaUtils.prepareWPImageSpan(getActivity(),blogId,mediaId);
+  if (imageSpan == null)   return;
+  int selectionStart=mContentEditText.getSelectionStart();
+  int selectionEnd=mContentEditText.getSelectionEnd();
+  if (selectionStart > selectionEnd) {
+    int temp=selectionEnd;
+    selectionEnd=selectionStart;
+    selectionStart=temp;
+  }
+  int line, column=0;
+  if (mContentEditText.getLayout() != null) {
+    line=mContentEditText.getLayout().getLineForOffset(selectionStart);
+    column=mContentEditText.getSelectionStart() - mContentEditText.getLayout().getLineStart(line);
+  }
+  Editable s=mContentEditText.getText();
+  if (s != null) {
+    WPImageSpan[] gallerySpans=s.getSpans(selectionStart,selectionEnd,WPImageSpan.class);
+    if (gallerySpans.length != 0) {
+      s.insert(selectionEnd,"\n\n");
+      selectionStart=selectionStart + 2;
+      selectionEnd=selectionEnd + 2;
+    }
+ else     if (column != 0) {
+      s.insert(selectionEnd,"\n");
+      selectionStart=selectionStart + 1;
+      selectionEnd=selectionEnd + 1;
+    }
+    s.insert(selectionStart," ");
+    s.setSpan(imageSpan,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    AlignmentSpan.Standard as=new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER);
+    s.setSpan(as,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    s.insert(selectionEnd + 1,"\n\n");
+    try {
+      mContentEditText.setSelection(s.length());
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+    }
+  }
+  loadWPImageSpanThumbnail(imageSpan);
+}
