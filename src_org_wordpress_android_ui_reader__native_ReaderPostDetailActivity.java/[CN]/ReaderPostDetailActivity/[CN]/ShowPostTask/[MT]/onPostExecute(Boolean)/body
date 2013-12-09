@@ -9,6 +9,7 @@
     return;
   }
   ReaderPostDetailActivity.this.setTitle(mPost.getTitle());
+  showFollowedStatus(txtFollow,mPost.isFollowedByCurrentUser);
   if (mPost.numLikes > 0 && mLayoutLikes.getVisibility() == View.GONE)   mLayoutLikes.setVisibility(View.INVISIBLE);
   if (mPost.hasTitle()) {
     txtTitle.setText(mPost.getTitle());
@@ -124,9 +125,7 @@
 );
   webView.loadDataWithBaseURL(null,postHtml,"text/html","UTF-8",null);
   mLayoutActions.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
-  txtFollow.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
   if (!hasCommentAdapter())   getListView().setAdapter(getCommentAdapter());
-  refreshFollowed();
   refreshLikes(false);
   refreshComments();
   if (!mHasAlreadyUpdatedPost) {

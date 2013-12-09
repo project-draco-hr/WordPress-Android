@@ -1,25 +1,5 @@
 {
-  new Thread(){
-    @Override public void run(){
-      final TextView txtFollow=(TextView)findViewById(R.id.text_follow);
-      final boolean isFollowed=ReaderPostTable.isPostFollowed(mPost);
-      final String followText=(isFollowed ? getString(R.string.reader_btn_unfollow) : getString(R.string.reader_btn_follow)).toUpperCase();
-      mHandler.post(new Runnable(){
-        public void run(){
-          txtFollow.setText(followText);
-          int drawableId=(isFollowed ? R.drawable.note_icon_following : R.drawable.note_icon_follow);
-          txtFollow.setCompoundDrawablesWithIntrinsicBounds(drawableId,0,0,0);
-          txtFollow.setSelected(isFollowed);
-          txtFollow.setOnClickListener(new View.OnClickListener(){
-            @Override public void onClick(            View view){
-              doPostAction(txtFollow,ReaderPostActions.PostAction.TOGGLE_FOLLOW,mPost);
-            }
-          }
-);
-        }
-      }
-);
-    }
-  }
-.start();
+  final TextView txtFollow=(TextView)findViewById(R.id.text_follow);
+  final boolean isFollowed=ReaderPostTable.isPostFollowed(mPost);
+  showFollowedStatus(txtFollow,isFollowed);
 }
