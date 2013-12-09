@@ -1,7 +1,7 @@
 {
   if (MediaUtils.isValidImage(filePath)) {
     imageView.setTag(filePath);
-    Bitmap bitmap=WordPress.localImageCache.get(filePath);
+    Bitmap bitmap=WordPress.getBitmapCache().get(filePath);
     if (bitmap != null) {
       imageView.setImageBitmap(bitmap);
     }
@@ -9,7 +9,7 @@
       BitmapWorkerTask task=new BitmapWorkerTask(imageView,width,height,new BitmapWorkerCallback(){
         @Override public void onBitmapReady(        String path,        ImageView imageView,        Bitmap bitmap){
           imageView.setImageBitmap(bitmap);
-          WordPress.localImageCache.put(path,bitmap);
+          WordPress.getBitmapCache().put(path,bitmap);
         }
       }
 );

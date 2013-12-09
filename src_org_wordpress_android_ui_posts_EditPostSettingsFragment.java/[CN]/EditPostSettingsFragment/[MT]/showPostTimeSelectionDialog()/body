@@ -1,0 +1,33 @@
+{
+  final TimePicker timePicker=new TimePicker(getActivity());
+  timePicker.setIs24HourView(DateFormat.is24HourFormat(getActivity()));
+  timePicker.setCurrentHour(mHour);
+  timePicker.setCurrentMinute(mMinute);
+  new AlertDialog.Builder(getActivity()).setTitle(R.string.select_time).setPositiveButton(android.R.string.ok,new DialogInterface.OnClickListener(){
+    @Override public void onClick(    DialogInterface dialog,    int which){
+      mHour=timePicker.getCurrentHour();
+      mMinute=timePicker.getCurrentMinute();
+      Date d=new Date(mYear - 1900,mMonth,mDay,mHour,mMinute);
+      long timestamp=d.getTime();
+      try {
+        int flags=0;
+        flags|=DateUtils.FORMAT_SHOW_DATE;
+        flags|=DateUtils.FORMAT_ABBREV_MONTH;
+        flags|=DateUtils.FORMAT_SHOW_YEAR;
+        flags|=DateUtils.FORMAT_SHOW_TIME;
+        String formattedDate=DateUtils.formatDateTime(getActivity(),timestamp,flags);
+        mCustomPubDate=timestamp;
+        mPubDateText.setText(formattedDate);
+        mIsCustomPubDate=true;
+      }
+ catch (      Exception e) {
+        e.printStackTrace();
+      }
+    }
+  }
+).setNegativeButton(android.R.string.cancel,new DialogInterface.OnClickListener(){
+    @Override public void onClick(    DialogInterface dialog,    int which){
+    }
+  }
+).setView(timePicker).show();
+}
