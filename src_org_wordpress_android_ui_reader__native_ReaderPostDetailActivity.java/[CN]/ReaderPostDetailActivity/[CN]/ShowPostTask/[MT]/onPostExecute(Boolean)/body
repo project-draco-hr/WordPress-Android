@@ -17,7 +17,7 @@
   }
   txtBlogName.setText(mPost.getBlogName());
   txtDate.setText(DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished()));
-  if (mPost.hasAuthorName()) {
+  if (mPost.hasAuthorName() && !mPost.getAuthorName().equals(mPost.getBlogName())) {
     txtAuthorName.setText(mPost.getAuthorName());
     txtAuthorName.setVisibility(View.VISIBLE);
   }
@@ -35,6 +35,12 @@
   if (showFeaturedImage) {
     imgFeatured.setVisibility(View.VISIBLE);
     imgFeatured.setImageUrl(featuredImageUrl,WPNetworkImageView.ImageType.PHOTO);
+    imgFeatured.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        showPhotoViewer(mPost.getFeaturedImage());
+      }
+    }
+);
   }
  else {
     imgFeatured.setVisibility(View.GONE);

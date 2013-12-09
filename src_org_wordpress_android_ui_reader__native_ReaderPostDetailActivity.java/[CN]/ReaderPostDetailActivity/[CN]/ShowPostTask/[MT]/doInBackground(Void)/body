@@ -13,13 +13,13 @@
   mPost=ReaderPostTable.getPost(mBlogId,mPostId);
   if (mPost == null)   return false;
   postHtml=getPostHtml(mPost);
-  if (mPost.hasFeaturedImage() && !mPost.getText().contains(mPost.getFeaturedImage()) && !mPost.getFeaturedImage().contains("/mshots/")) {
-    showFeaturedImage=true;
-    int imgHeight=getResources().getDimensionPixelSize(R.dimen.reader_featured_image_height);
-    featuredImageUrl=mPost.getFeaturedImageForDisplay(0,imgHeight);
-  }
- else {
-    showFeaturedImage=false;
+  if (mPost.hasFeaturedImage() && !mPost.getFeaturedImage().contains("/mshots/")) {
+    Uri uri=Uri.parse(mPost.getFeaturedImage());
+    if (!mPost.getText().contains(StringUtils.notNullStr(uri.getLastPathSegment()))) {
+      showFeaturedImage=true;
+      int imgHeight=getResources().getDimensionPixelSize(R.dimen.reader_featured_image_height);
+      featuredImageUrl=mPost.getFeaturedImageForDisplay(0,imgHeight);
+    }
   }
   return true;
 }
