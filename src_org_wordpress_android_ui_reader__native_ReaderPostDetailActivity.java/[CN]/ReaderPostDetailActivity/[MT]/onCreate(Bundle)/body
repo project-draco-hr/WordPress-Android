@@ -26,4 +26,25 @@
   getListView().addFooterView(mCommentFooter);
   mLayoutActions=(ViewGroup)findViewById(R.id.layout_actions);
   mLayoutLikes=(ViewGroup)findViewById(R.id.layout_likes);
+  mWebView=(WebView)findViewById(R.id.webView);
+  mWebView.getSettings().setJavaScriptEnabled(false);
+  mWebView.getSettings().setUserAgentString(Constants.USER_AGENT);
+  mWebView.setOnTouchListener(new View.OnTouchListener(){
+    public boolean onTouch(    View v,    MotionEvent event){
+      if (event.getAction() == MotionEvent.ACTION_UP) {
+        HitTestResult hr=((WebView)v).getHitTestResult();
+        if (hr != null && (hr.getType() == HitTestResult.IMAGE_TYPE || hr.getType() == HitTestResult.SRC_IMAGE_ANCHOR_TYPE)) {
+          String imageUrl=hr.getExtra();
+          if (imageUrl == null)           return false;
+          if (imageUrl.startsWith("file:"))           return false;
+          if (mVideoThumbnailUrls.contains(imageUrl))           return false;
+          if (imageUrl.contains("videos.files."))           return false;
+          showPhotoViewer(imageUrl);
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+);
 }

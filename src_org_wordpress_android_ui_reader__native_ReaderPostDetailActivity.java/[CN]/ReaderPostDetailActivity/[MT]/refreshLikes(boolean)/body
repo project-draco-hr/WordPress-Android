@@ -15,17 +15,6 @@
       final ArrayList<String> avatars=ReaderUserTable.getAvatarUrls(ReaderLikeTable.getLikesForPost(mPost),maxAvatars);
       mHandler.post(new Runnable(){
         public void run(){
-          if (mPost.isLikedByCurrentUser) {
-            if (mPost.numLikes == 1) {
-              txtLikeCount.setText(R.string.reader_likes_only_you);
-            }
- else {
-              txtLikeCount.setText(mPost.numLikes == 2 ? getString(R.string.reader_likes_you_and_one) : getString(R.string.reader_likes_you_and_multi,mPost.numLikes - 1));
-            }
-          }
- else {
-            txtLikeCount.setText(mPost.numLikes == 1 ? getString(R.string.reader_likes_one) : getString(R.string.reader_likes_multi,mPost.numLikes));
-          }
           imgBtnLike.setSelected(mPost.isLikedByCurrentUser);
           imgBtnLike.setOnClickListener(new View.OnClickListener(){
             @Override public void onClick(            View view){
@@ -36,6 +25,17 @@
           if (avatars.size() == 0 && mPost.numLikes == 0) {
             mLayoutLikes.setVisibility(View.GONE);
             return;
+          }
+          if (mPost.isLikedByCurrentUser) {
+            if (mPost.numLikes == 1) {
+              txtLikeCount.setText(R.string.reader_likes_only_you);
+            }
+ else {
+              txtLikeCount.setText(mPost.numLikes == 2 ? getString(R.string.reader_likes_you_and_one) : getString(R.string.reader_likes_you_and_multi,mPost.numLikes - 1));
+            }
+          }
+ else {
+            txtLikeCount.setText(mPost.numLikes == 1 ? getString(R.string.reader_likes_one) : getString(R.string.reader_likes_multi,mPost.numLikes));
           }
           if (avatars.size() > 0) {
             View.OnClickListener clickListener=new View.OnClickListener(){
@@ -54,7 +54,19 @@
               }
             }
           }
-          if (mLayoutLikes.getVisibility() != View.VISIBLE)           mLayoutLikes.setVisibility(View.VISIBLE);
+          if (mLayoutLikes.getVisibility() != View.VISIBLE) {
+            if (mWebView.getVisibility() == View.VISIBLE) {
+              mLayoutLikes.setVisibility(View.VISIBLE);
+            }
+ else {
+              new Handler().postDelayed(new Runnable(){
+                @Override public void run(){
+                  mLayoutLikes.setVisibility(View.VISIBLE);
+                }
+              }
+,WEBVIEW_DELAY_MS);
+            }
+          }
         }
       }
 );

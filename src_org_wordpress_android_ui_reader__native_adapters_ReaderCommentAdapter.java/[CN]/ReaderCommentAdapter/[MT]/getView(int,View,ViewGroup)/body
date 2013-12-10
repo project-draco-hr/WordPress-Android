@@ -21,21 +21,23 @@
   holder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(dtPublished));
   if (comment.hasAvatar()) {
     holder.imgAvatar.setImageUrl(PhotonUtils.fixAvatar(comment.getAuthorAvatar(),mAvatarSz),WPNetworkImageView.ImageType.AVATAR);
-    holder.imgAvatar.setVisibility(View.VISIBLE);
-    if (comment.hasAuthorUrl()) {
-      holder.imgAvatar.setOnClickListener(new View.OnClickListener(){
-        @Override public void onClick(        View v){
-          ReaderActivityLauncher.openUrl(v.getContext(),comment.getAuthorUrl());
-        }
-      }
-);
-    }
- else {
-      holder.imgAvatar.setOnClickListener(null);
-    }
   }
  else {
-    holder.imgAvatar.setVisibility(View.GONE);
+    holder.imgAvatar.setImageResource(R.drawable.placeholder);
+  }
+  if (comment.hasAuthorUrl()) {
+    View.OnClickListener listener=new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        ReaderActivityLauncher.openUrl(view.getContext(),comment.getAuthorUrl());
+      }
+    }
+;
+    holder.imgAvatar.setOnClickListener(listener);
+    holder.txtAuthor.setOnClickListener(listener);
+    holder.txtAuthor.setTextColor(mLinkColor);
+  }
+ else {
+    holder.txtAuthor.setTextColor(mNoLinkColor);
   }
   holder.spacer.setVisibility(comment.parentId == 0 ? View.GONE : View.VISIBLE);
   if (comment.level > 0) {
