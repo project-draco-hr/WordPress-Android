@@ -2,14 +2,17 @@
   String path="sites/" + blogId + "/posts/"+ postId;
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
-      handleRequestPostResponse(jsonObject,resultListener);
+      ReaderPost post=ReaderPost.fromJson(jsonObject);
+      post.blogId=blogId;
+      ReaderPostTable.addOrUpdatePost(post);
+      if (actionListener != null)       actionListener.onActionResult(true);
     }
   }
 ;
   RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
       ReaderLog.e(volleyError);
-      if (resultListener != null)       resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED);
+      if (actionListener != null)       actionListener.onActionResult(false);
     }
   }
 ;
