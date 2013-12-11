@@ -1,9 +1,8 @@
 {
-  String path="sites/" + blogId + "/posts/"+ postId;
+  String path="sites/" + blogId + "/posts/"+ postId+ "/?meta=site";
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       ReaderPost post=ReaderPost.fromJson(jsonObject);
-      post.blogId=blogId;
       ReaderPostTable.addOrUpdatePost(post);
       if (actionListener != null)       actionListener.onActionResult(true);
     }
