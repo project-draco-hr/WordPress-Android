@@ -3,8 +3,18 @@
   if (currentBlog == null || getBlogNames().length == 0) {
     Log.d(TAG,"No accounts configured.  Sending user to set up an account");
     mShouldFinish=false;
-    Intent intent=new Intent(this,WelcomeActivity.class);
-    intent.putExtra("request",WelcomeActivity.SIGN_IN_REQUEST);
-    startActivityForResult(intent,ADD_ACCOUNT_REQUEST);
+    if (WordPress.hasValidWPComCredentials(WPActionBarActivity.this)) {
+      if (!mNewBlogActivityRunning) {
+        mNewBlogActivityRunning=true;
+        Intent intent=new Intent(this,NewBlogActivity.class);
+        intent.putExtra(NewBlogActivity.KEY_START_MODE,NewBlogActivity.CREATE_BLOG_LOGOUT_ON_CANCEL);
+        startActivityForResult(intent,ADD_ACCOUNT_REQUEST);
+      }
+    }
+ else {
+      Intent intent=new Intent(this,WelcomeActivity.class);
+      intent.putExtra(WelcomeActivity.START_FRAGMENT_KEY,WelcomeActivity.SIGN_IN_REQUEST);
+      startActivityForResult(intent,ADD_ACCOUNT_REQUEST);
+    }
   }
 }
