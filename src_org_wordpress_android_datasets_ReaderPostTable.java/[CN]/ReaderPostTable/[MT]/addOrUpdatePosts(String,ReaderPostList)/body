@@ -2,7 +2,7 @@
   if (posts == null || posts.size() == 0)   return;
   SQLiteDatabase db=ReaderDatabase.getWritableDb();
   db.beginTransaction();
-  SQLiteStatement stmtPosts=db.compileStatement("INSERT OR REPLACE INTO tbl_posts (" + COLUMN_NAMES + ") VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21,?22,?23,?24)");
+  SQLiteStatement stmtPosts=db.compileStatement("INSERT OR REPLACE INTO tbl_posts (" + COLUMN_NAMES + ") VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21,?22,?23,?24,?25)");
   SQLiteStatement stmtTags=db.compileStatement("INSERT OR REPLACE INTO tbl_post_tags (post_id, blog_id, pseudo_id, tag_name) VALUES (?1,?2,?3,?4)");
   try {
     for (    ReaderPost post : posts) {
@@ -30,6 +30,7 @@
       stmtPosts.bindLong(22,SqlUtils.boolToSql(post.isExternal));
       stmtPosts.bindLong(23,SqlUtils.boolToSql(post.isPrivate));
       stmtPosts.bindLong(24,SqlUtils.boolToSql(post.isVideoPress));
+      stmtPosts.bindString(25,post.getTags());
       stmtPosts.execute();
       stmtPosts.clearBindings();
     }

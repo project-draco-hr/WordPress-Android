@@ -1,10 +1,12 @@
 {
   super.onStart();
-  if (mIsPostTaskRunning)   ReaderLog.w("post task already running");
-  if (SysUtils.canUseExecuteOnExecutor()) {
-    new ShowPostTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-  }
+  if (!hasPost()) {
+    if (mIsPostTaskRunning)     ReaderLog.w("post task already running");
+    if (SysUtils.canUseExecuteOnExecutor()) {
+      new ShowPostTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
  else {
-    new ShowPostTask().execute();
+      new ShowPostTask().execute();
+    }
   }
 }
