@@ -2,54 +2,13 @@
   super.onCreate(savedInstanceState);
   requestWindowFeature(Window.FEATURE_NO_TITLE);
   setContentView(R.layout.activity_welcome);
-  mSignInButton=(WPTextView)findViewById(R.id.nux_sign_in_button);
-  mSignInButton.setOnClickListener(new OnClickListener(){
-    @Override public void onClick(    View v){
-      mPager.setCurrentItem(2);
-    }
-  }
-);
-  mCreateAccountButton=(WPTextView)findViewById(R.id.nux_create_account_button);
-  mCreateAccountButton.setOnClickListener(mCreateAccountListener);
-  mSignInTextView=(WPTextView)findViewById(R.id.nux_sign_in);
-  mSignInTextView.setText(Html.fromHtml(String.format(getString(R.string.dont_have_account,"<u>","</u>"))));
-  mSignInTextView.setOnClickListener(mCreateAccountListener);
   mPager=(WPViewPager)findViewById(R.id.pager);
-  mPager.setPagingEnabled(true);
+  mPager.setPagingEnabled(false);
   mPagerAdapter=new NewAccountPagerAdapter(super.getSupportFragmentManager());
   mPager.setAdapter(mPagerAdapter);
-  mFooterView=(RelativeLayout)findViewById(R.id.footer_view);
-  mLinePageIndicator=(LinePageIndicator)findViewById(R.id.pageIndicator);
-  mLinePageIndicator.setViewPager(mPager);
-  mLinePageIndicator.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
-    @Override public void onPageSelected(    int position){
-      if (position == 2) {
-        mLinePageIndicator.setVisibility(View.GONE);
-        mSignInButton.setVisibility(View.GONE);
-        mCreateAccountButton.setVisibility(View.GONE);
-        mSignInTextView.setVisibility(View.VISIBLE);
-      }
- else {
-        mLinePageIndicator.setVisibility(View.VISIBLE);
-        mSignInButton.setVisibility(View.VISIBLE);
-        mCreateAccountButton.setVisibility(View.VISIBLE);
-        mSignInTextView.setVisibility(View.GONE);
-      }
-    }
+  Bundle extras=getIntent().getExtras();
+  mActionMode=SIGN_IN_REQUEST;
+  if (extras != null) {
+    mActionMode=extras.getInt(START_FRAGMENT_KEY,-1);
   }
-);
-  final View mainView=findViewById(R.id.main_view);
-  mainView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener(){
-    @Override public void onGlobalLayout(){
-      int heightDiff=mainView.getRootView().getHeight() - mainView.getHeight();
-      if (heightDiff > 100) {
-        mFooterView.setVisibility(View.GONE);
-      }
- else {
-        mFooterView.setVisibility(View.VISIBLE);
-      }
-    }
-  }
-);
-  if (getIntent().getBooleanExtra(SKIP_WELCOME,false))   mPager.setCurrentItem(2);
 }

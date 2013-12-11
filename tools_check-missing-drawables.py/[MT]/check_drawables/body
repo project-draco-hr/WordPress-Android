@@ -1,0 +1,20 @@
+def check_drawables(rootdir):
+    filenames = defaultdict(set)
+    results = defaultdict(set)
+    for (subdir, dirs, files) in os.walk(rootdir):
+        for filename in files:
+            for dpi in TO_CHECK:
+                if (subdir.endswith(('drawable' + dpi)) and filename.endswith('png')):
+                    if (dpi == ''):
+                        filenames[(subdir + '-mdpi')].add(filename)
+                    else:
+                        filenames[subdir].add(filename)
+    for subdir in filenames:
+        for filename in filenames[subdir]:
+            for sub in filenames:
+                if (sub == subdir):
+                    continue
+                if (filename not in filenames[sub]):
+                    results[filename].add(sub)
+    for i in results:
+        print ((i + ' missing in: ') + ' '.join(results[i]))

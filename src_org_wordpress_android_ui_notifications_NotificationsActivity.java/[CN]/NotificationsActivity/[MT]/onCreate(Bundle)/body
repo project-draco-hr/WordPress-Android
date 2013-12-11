@@ -22,6 +22,18 @@
 );
   fragmentDetectors.add(new FragmentDetector(){
     @Override public Fragment getFragment(    Note note){
+      if (note.isMultiLineListTemplate()) {
+        Fragment fragment=null;
+        if (note.isCommentLikeType())         fragment=new NoteCommentLikeFragment();
+ else         if (note.isAutomattcherType())         fragment=new NoteMatcherFragment();
+        return fragment;
+      }
+      return null;
+    }
+  }
+);
+  fragmentDetectors.add(new FragmentDetector(){
+    @Override public Fragment getFragment(    Note note){
       if (note.isSingleLineListTemplate()) {
         Fragment fragment=new SingleLineListFragment();
         return fragment;
@@ -42,7 +54,12 @@
   }
 );
   GCMIntentService.activeNotificationsMap.clear();
-  if (savedInstanceState == null)   launchWithNoteId();
+  if (savedInstanceState == null) {
+    launchWithNoteId();
+  }
+ else {
+    mHasPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);
+  }
   refreshNotificationsListFragment(notes);
   if (savedInstanceState != null)   popNoteDetail();
   if (mBroadcastReceiver == null)   createBroadcastReceiver();

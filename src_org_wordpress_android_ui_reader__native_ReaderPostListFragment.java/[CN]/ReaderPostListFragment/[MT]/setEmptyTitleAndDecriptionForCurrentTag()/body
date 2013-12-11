@@ -1,0 +1,40 @@
+{
+  boolean hasTagEverUpdated=ReaderTagTable.hasEverUpdatedTag(mCurrentTag);
+  int title, description=-1;
+  int tagIndex=mActionBarAdapter.getIndexOfTagName(mCurrentTag);
+  final String tagId;
+  if (tagIndex > -1) {
+    ReaderTag tag=(ReaderTag)getActionBarAdapter().getItem(tagIndex);
+    tagId=tag.getStringIdFromEndpoint();
+  }
+ else {
+    tagId="";
+  }
+  if (tagId.equals("following")) {
+    title=R.string.reader_empty_followed_blogs_title;
+    description=R.string.reader_empty_followed_blogs_description;
+  }
+ else {
+    if (tagId.equals("liked")) {
+      title=R.string.reader_empty_posts_liked;
+    }
+ else {
+      if (hasTagEverUpdated) {
+        title=R.string.reader_empty_posts_in_tag;
+      }
+ else {
+        title=R.string.reader_empty_posts_in_tag_never_updated;
+      }
+    }
+  }
+  TextView titleView=(TextView)getActivity().findViewById(R.id.title_empty);
+  TextView descriptionView=(TextView)getActivity().findViewById(R.id.description_empty);
+  titleView.setText(getString(title));
+  if (description == -1) {
+    descriptionView.setVisibility(View.INVISIBLE);
+  }
+ else {
+    descriptionView.setText(getString(description));
+    descriptionView.setVisibility(View.VISIBLE);
+  }
+}

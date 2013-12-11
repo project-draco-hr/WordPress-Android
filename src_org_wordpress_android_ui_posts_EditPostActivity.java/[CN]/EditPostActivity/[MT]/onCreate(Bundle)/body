@@ -1,260 +1,89 @@
 {
   super.onCreate(savedInstanceState);
-  Bundle extras=getIntent().getExtras();
-  ActionBar actionBar=getSupportActionBar();
-  actionBar.setHomeButtonEnabled(true);
+  setContentView(R.layout.activity_new_edit_post);
+  final ActionBar actionBar=getSupportActionBar();
   actionBar.setDisplayHomeAsUpEnabled(true);
-  Calendar c=Calendar.getInstance();
-  mYear=c.get(Calendar.YEAR);
-  mMonth=c.get(Calendar.MONTH);
-  mDay=c.get(Calendar.DAY_OF_MONTH);
-  mHour=c.get(Calendar.HOUR_OF_DAY);
-  mMinute=c.get(Calendar.MINUTE);
-  mCategories=new ArrayList<String>();
-  mAutoSaveHandler=new Handler();
+  Bundle extras=getIntent().getExtras();
   String action=getIntent().getAction();
-  if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
-    setupTitleForShareAction();
-  }
- else {
-    initBlog();
-    if (extras != null) {
-      mAccountName=StringUtils.unescapeHTML(extras.getString("accountName"));
-      mPostID=extras.getLong("postID");
-      mLocalDraft=extras.getBoolean("localDraft",false);
-      mIsPage=extras.getBoolean("isPage",false);
-      mIsNew=extras.getBoolean("isNew",false);
-      if (savedInstanceState != null) {
-        mCurrentActivityRequest=savedInstanceState.getInt("currentActivityRequest");
-        if (savedInstanceState.getString("mediaCapturePath") != null)         mMediaCapturePath=savedInstanceState.getString("mediaCapturePath");
-      }
- else {
-        mQuickMediaType=extras.getInt("quick-media",-1);
-      }
-      if (extras.getBoolean("isQuickPress")) {
-        mBlogID=extras.getInt("id");
-      }
- else {
-        mBlogID=WordPress.currentBlog.getId();
-      }
-      try {
-        mBlog=new Blog(mBlogID);
-        WordPress.currentBlog=mBlog;
-      }
- catch (      Exception e) {
-        showBlogErrorAndFinish();
-        return;
-      }
-      if (!mIsNew) {
+  if (savedInstanceState == null) {
+    if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action) || EditPostContentFragment.NEW_MEDIA_GALLERY.equals(action)|| EditPostContentFragment.NEW_MEDIA_POST.equals(action)|| getIntent().hasExtra(EXTRA_IS_QUICKPRESS)|| (extras != null && extras.getInt("quick-media",-1) > -1)) {
+      if (getIntent().hasExtra(EXTRA_QUICKPRESS_BLOG_ID)) {
+        int blogId=getIntent().getIntExtra(EXTRA_QUICKPRESS_BLOG_ID,-1);
         try {
-          mPost=new Post(mBlogID,mPostID,mIsPage);
-          if (mPost == null) {
-            Toast.makeText(this,getResources().getText(R.string.post_not_found),Toast.LENGTH_LONG).show();
-            finish();
+          Blog quickPressBlog=new Blog(blogId);
+          if (quickPressBlog.isHidden()) {
+            showErrorAndFinish(R.string.error_blog_hidden);
             return;
           }
- else {
-            WordPress.currentPost=mPost;
-            mOriginalPost=new Post(mBlogID,mPostID,mIsPage);
-          }
+          WordPress.currentBlog=quickPressBlog;
         }
  catch (        Exception e) {
-          e.printStackTrace();
-          finish();
+          showErrorAndFinish(R.string.blog_not_found);
+          return;
         }
       }
+      mPost=new Post(WordPress.getCurrentBlogAccountId(),false);
+      mIsNewPost=true;
     }
-    if (mIsNew) {
-      mLocalDraft=true;
-      setTitle(StringUtils.unescapeHTML(WordPress.getCurrentBlog().getBlogName()) + " - " + getString((mIsPage) ? R.string.new_page : R.string.new_post));
-    }
- else {
-      setTitle(StringUtils.unescapeHTML(WordPress.getCurrentBlog().getBlogName()) + " - " + getString((mIsPage) ? R.string.edit_page : R.string.edit_post));
-    }
-  }
-  setContentView(R.layout.edit);
-  mContentEditText=(WPEditText)findViewById(R.id.postContent);
-  mTitleEditText=(EditText)findViewById(R.id.title);
-  mExcerptEditText=(EditText)findViewById(R.id.postExcerpt);
-  mPasswordEditText=(EditText)findViewById(R.id.post_password);
-  mLocationText=(TextView)findViewById(R.id.locationText);
-  mBoldToggleButton=(ToggleButton)findViewById(R.id.bold);
-  mEmToggleButton=(ToggleButton)findViewById(R.id.em);
-  mBquoteToggleButton=(ToggleButton)findViewById(R.id.bquote);
-  mUnderlineToggleButton=(ToggleButton)findViewById(R.id.underline);
-  mStrikeToggleButton=(ToggleButton)findViewById(R.id.strike);
-  mAddPictureButton=(ImageButton)findViewById(R.id.addPictureButton);
-  mPubDateButton=(Button)findViewById(R.id.pubDateButton);
-  mPubDateText=(TextView)findViewById(R.id.pubDate);
-  mLinkButton=(Button)findViewById(R.id.link);
-  mMoreButton=(Button)findViewById(R.id.more);
-  mStatusSpinner=(Spinner)findViewById(R.id.status);
-  mTagsEditText=(EditText)findViewById(R.id.tags);
-  mFormatBar=(RelativeLayout)findViewById(R.id.formatBar);
-  ((TextView)findViewById(R.id.categoryLabel)).setText(getResources().getString(R.string.categories).toUpperCase());
-  ((TextView)findViewById(R.id.statusLabel)).setText(getResources().getString(R.string.status).toUpperCase());
-  ((TextView)findViewById(R.id.postFormatLabel)).setText(getResources().getString(R.string.post_format).toUpperCase());
-  ((TextView)findViewById(R.id.pubDateLabel)).setText(getResources().getString(R.string.publish_date).toUpperCase());
-  if (mIsPage) {
-    mExcerptEditText.setVisibility(View.GONE);
-    (findViewById(R.id.sectionTags)).setVisibility(View.GONE);
-    (findViewById(R.id.sectionCategories)).setVisibility(View.GONE);
-    (findViewById(R.id.sectionLocation)).setVisibility(View.GONE);
-    (findViewById(R.id.postFormatLabel)).setVisibility(View.GONE);
-    (findViewById(R.id.postFormat)).setVisibility(View.GONE);
-  }
- else {
-    if (mBlog.getPostFormats().equals("")) {
-      List<Object> args=new Vector<Object>();
-      args.add(mBlog);
-      args.add(this);
-      new ApiHelper.getPostFormatsTask().execute(args);
-      mPostFormatTitles=getResources().getStringArray(R.array.post_formats_array);
-      String defaultPostFormatTitles[]={"aside","audio","chat","gallery","image","link","quote","standard","status","video"};
-      mPostFormats=defaultPostFormatTitles;
-    }
- else {
-      try {
-        Gson gson=new Gson();
-        Type type=new TypeToken<Map<String,String>>(){
-        }
-.getType();
-        Map<String,String> jsonPostFormats=gson.fromJson(mBlog.getPostFormats(),type);
-        mPostFormats=new String[jsonPostFormats.size()];
-        mPostFormatTitles=new String[jsonPostFormats.size()];
-        int i=0;
-        for (        Map.Entry<String,String> entry : jsonPostFormats.entrySet()) {
-          String key=entry.getKey();
-          String val=entry.getValue();
-          mPostFormats[i]=key;
-          mPostFormatTitles[i]=StringEscapeUtils.unescapeHtml(val);
-          i++;
-        }
+ else     if (extras != null) {
+      long postId=extras.getLong(EXTRA_POSTID,-1);
+      boolean isPage=extras.getBoolean(EXTRA_IS_PAGE);
+      mIsNewPost=extras.getBoolean(EXTRA_IS_NEW_POST);
+      mPost=new Post(WordPress.getCurrentBlogAccountId(),postId,isPage);
+      mOriginalPost=new Post(WordPress.getCurrentBlogAccountId(),postId,isPage);
+      if (isPage) {
+        WPMobileStatsUtil.trackEventForWPCom(WPMobileStatsUtil.StatsEventPageDetailOpenedEditor);
+        mStatEventEditorClosed=WPMobileStatsUtil.StatsEventPageDetailClosedEditor;
       }
- catch (      Exception e) {
-        e.printStackTrace();
+ else {
+        WPMobileStatsUtil.trackEventForWPCom(WPMobileStatsUtil.StatsEventPostDetailOpenedEditor);
+        mStatEventEditorClosed=WPMobileStatsUtil.StatsEventPostDetailClosedEditor;
       }
     }
-    Spinner pfSpinner=(Spinner)findViewById(R.id.postFormat);
-    ArrayAdapter<String> pfAdapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,mPostFormatTitles);
-    pfAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    pfSpinner.setAdapter(pfAdapter);
-    String activePostFormat="standard";
-    if (!mIsNew) {
-      try {
-        if (!mPost.getWP_post_format().equals(""))         activePostFormat=mPost.getWP_post_format();
-      }
- catch (      Exception e) {
-        e.printStackTrace();
-      }
-    }
-    for (int i=0; i < mPostFormats.length; i++) {
-      if (mPostFormats[i].equals(activePostFormat))       pfSpinner.setSelection(i);
-    }
-    if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action))     setContent();
- else     if (NEW_MEDIA_GALLERY.equals(action))     prepareMediaGallery();
- else     if (NEW_MEDIA_POST.equals(action))     prepareMediaPost();
-  }
-  String[] items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private)};
-  ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,items);
-  adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-  mStatusSpinner.setAdapter(adapter);
-  initLocation();
-  if (mIsNew) {
-    if (mQuickMediaType >= 0) {
-      if (mQuickMediaType == Constants.QUICK_POST_PHOTO_CAMERA)       launchCamera();
- else       if (mQuickMediaType == Constants.QUICK_POST_PHOTO_LIBRARY)       launchPictureLibrary();
- else       if (mQuickMediaType == Constants.QUICK_POST_VIDEO_CAMERA)       launchVideoCamera();
- else       if (mQuickMediaType == Constants.QUICK_POST_VIDEO_LIBRARY)       launchVideoLibrary();
-      mLocalDraft=extras.getBoolean("localDraft");
-    }
-  }
  else {
-    mTitleEditText.setText(mPost.getTitle());
-    mExcerptEditText.setText(mPost.getMt_excerpt());
-    if (mPost.isUploaded()) {
-      items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private)};
-      adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,items);
-      mStatusSpinner.setAdapter(adapter);
+      showErrorAndFinish(R.string.post_not_found);
+      return;
     }
-    String contentHTML;
-    if (!mPost.getMt_text_more().equals("")) {
-      if (mPost.isLocalDraft())       contentHTML=mPost.getDescription() + "\n&lt;!--more--&gt;\n" + mPost.getMt_text_more();
- else       contentHTML=mPost.getDescription() + "\n<!--more-->\n" + mPost.getMt_text_more();
-    }
- else     contentHTML=mPost.getDescription();
+  }
+ else   if (savedInstanceState.containsKey(STATE_KEY_ORIGINAL_POST)) {
     try {
-      if (mPost.isLocalDraft())       mContentEditText.setText(WPHtml.fromHtml(contentHTML.replaceAll("\uFFFC",""),EditPostActivity.this,mPost));
- else       mContentEditText.setText(contentHTML.replaceAll("\uFFFC",""));
+      mPost=(Post)savedInstanceState.getSerializable(STATE_KEY_CURRENT_POST);
+      mOriginalPost=(Post)savedInstanceState.getSerializable(STATE_KEY_ORIGINAL_POST);
     }
- catch (    Exception e) {
-      e.printStackTrace();
-    }
-    long pubDate=mPost.getDate_created_gmt();
-    if (pubDate != 0) {
-      try {
-        int flags=0;
-        flags|=android.text.format.DateUtils.FORMAT_SHOW_DATE;
-        flags|=android.text.format.DateUtils.FORMAT_ABBREV_MONTH;
-        flags|=android.text.format.DateUtils.FORMAT_SHOW_YEAR;
-        flags|=android.text.format.DateUtils.FORMAT_SHOW_TIME;
-        String formattedDate=DateUtils.formatDateTime(EditPostActivity.this,pubDate,flags);
-        mPubDateText.setText(formattedDate);
-      }
- catch (      Exception e) {
-        e.printStackTrace();
-      }
-    }
-    if (mPost.getWP_password() != null)     mPasswordEditText.setText(mPost.getWP_password());
-    if (mPost.getPost_status() != null) {
-      String status=mPost.getPost_status();
-      if (status.equals("publish")) {
-        mStatusSpinner.setSelection(0,true);
-      }
- else       if (status.equals("draft")) {
-        mStatusSpinner.setSelection(1,true);
-      }
- else       if (status.equals("pending")) {
-        mStatusSpinner.setSelection(2,true);
-      }
- else       if (status.equals("private")) {
-        mStatusSpinner.setSelection(3,true);
-      }
- else       if (status.equals("localdraft")) {
-        mStatusSpinner.setSelection(0,true);
-      }
-    }
-    if (!mIsPage) {
-      if (mPost.getJSONCategories() != null) {
-        mCategories=JSONUtil.fromJSONArrayToStringList(mPost.getJSONCategories());
-      }
-      Double latitude=mPost.getLatitude();
-      Double longitude=mPost.getLongitude();
-      if (latitude != 0.0) {
-        setLocationStatus(LocationStatus.SEARCHING);
-        new GetAddressTask().execute(latitude,longitude);
-      }
-    }
-    String tags=mPost.getMt_keywords();
-    if (!tags.equals("")) {
-      mTagsEditText.setText(tags);
+ catch (    ClassCastException e) {
+      mPost=null;
     }
   }
-  populateSelectedCategories();
-  registerForContextMenu(mAddPictureButton);
-  mContentEditText.setOnSelectionChangedListener(this);
-  mContentEditText.setOnEditTextImeBackListener(this);
-  mContentEditText.setOnTouchListener(this);
-  mContentEditText.addTextChangedListener(this);
-  mContentEditText.setOnFocusChangeListener(this);
-  mAddPictureButton.setOnClickListener(this);
-  mPubDateButton.setOnClickListener(this);
-  mBoldToggleButton.setOnClickListener(this);
-  mLinkButton.setOnClickListener(this);
-  mEmToggleButton.setOnClickListener(this);
-  mUnderlineToggleButton.setOnClickListener(this);
-  mStrikeToggleButton.setOnClickListener(this);
-  mBquoteToggleButton.setOnClickListener(this);
-  mMoreButton.setOnClickListener(this);
-  softKeyboardHook();
+  if (WordPress.getCurrentBlog() == null) {
+    showErrorAndFinish(R.string.blog_not_found);
+    return;
+  }
+  if (mPost == null || mPost.getId() < 0) {
+    showErrorAndFinish(R.string.post_not_found);
+    return;
+  }
+  setTitle(WordPress.getCurrentBlog().getBlogName());
+  mSectionsPagerAdapter=new SectionsPagerAdapter(getSupportFragmentManager());
+  mViewPager=(WPViewPager)findViewById(R.id.pager);
+  mViewPager.setAdapter(mSectionsPagerAdapter);
+  mViewPager.setOffscreenPageLimit(2);
+  mViewPager.setPagingEnabled(false);
+  mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+    @Override public void onPageSelected(    int position){
+      supportInvalidateOptionsMenu();
+      if (position == PAGE_CONTENT) {
+        setTitle(WordPress.getCurrentBlog().getBlogName());
+      }
+ else       if (position == PAGE_SETTINGS) {
+        setTitle(mPost.isPage() ? R.string.page_settings : R.string.post_settings);
+      }
+ else       if (position == PAGE_PREVIEW) {
+        setTitle(mPost.isPage() ? R.string.preview_page : R.string.preview_post);
+        savePost(true);
+        if (mEditPostPreviewFragment != null)         mEditPostPreviewFragment.loadPost(mPost);
+      }
+    }
+  }
+);
+  mAutoSaveHandler=new Handler();
 }

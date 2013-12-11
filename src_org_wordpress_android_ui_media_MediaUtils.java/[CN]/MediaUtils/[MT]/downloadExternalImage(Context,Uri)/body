@@ -1,0 +1,35 @@
+{
+  File cacheDir;
+  if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))   cacheDir=new File(android.os.Environment.getExternalStorageDirectory() + "/WordPress/images");
+ else {
+    cacheDir=context.getApplicationContext().getCacheDir();
+  }
+  if (!cacheDir.exists())   cacheDir.mkdirs();
+  Random r=new Random();
+  final String path="wp-" + r.nextInt(400) + r.nextInt(400)+ ".jpg";
+  File f=new File(cacheDir,path);
+  try {
+    InputStream input;
+    if (imageUri.toString().startsWith("content://")) {
+      input=context.getContentResolver().openInputStream(imageUri);
+    }
+ else {
+      input=new URL(imageUri.toString()).openStream();
+    }
+    OutputStream output=new FileOutputStream(f);
+    byte data[]=new byte[1024];
+    int count;
+    while ((count=input.read(data)) != -1) {
+      output.write(data,0,count);
+    }
+    output.flush();
+    output.close();
+    input.close();
+    Uri newUri=Uri.fromFile(f);
+    return newUri;
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+  }
+  return null;
+}
