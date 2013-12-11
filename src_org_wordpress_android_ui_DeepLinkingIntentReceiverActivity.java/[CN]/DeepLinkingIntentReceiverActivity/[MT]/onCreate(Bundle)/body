@@ -1,23 +1,19 @@
 {
   super.onCreate(savedInstanceState);
-  Intent intent=getIntent();
   String action=getIntent().getAction();
-  Uri uri=intent.getData();
+  Uri uri=getIntent().getData();
   if (Intent.ACTION_VIEW.equals(action) && uri != null) {
-    String strBlogId=uri.getQueryParameter("blogId");
-    String strPostId=uri.getQueryParameter("postId");
-    if (!TextUtils.isEmpty(strBlogId) && !TextUtils.isEmpty(strPostId)) {
-      ReaderLog.i(String.format("opening blogId %s, postId %s",strBlogId,strPostId));
-      try {
-        ReaderActivityLauncher.showReaderPostDetail(this,Long.parseLong(strBlogId),Long.parseLong(strPostId));
-      }
- catch (      NumberFormatException e) {
-        ReaderLog.e(e);
-      }
+    mBlogId=uri.getQueryParameter("blogId");
+    mPostId=uri.getQueryParameter("postId");
+    if (WordPress.hasValidWPComCredentials(this)) {
+      showPost();
     }
  else {
-      ToastUtils.showToast(this,R.string.error_generic);
+      Intent intent=new Intent(this,WelcomeActivity.class);
+      startActivityForResult(intent,INTENT_WELCOME);
     }
   }
-  finish();
+ else {
+    finish();
+  }
 }
