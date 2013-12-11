@@ -3,37 +3,66 @@
   setContentView(R.layout.activity_new_edit_post);
   final ActionBar actionBar=getSupportActionBar();
   actionBar.setDisplayHomeAsUpEnabled(true);
-  setTitle(WordPress.getCurrentBlog().getBlogName());
   Bundle extras=getIntent().getExtras();
   String action=getIntent().getAction();
-  if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action) || EditPostContentFragment.NEW_MEDIA_GALLERY.equals(action)|| EditPostContentFragment.NEW_MEDIA_POST.equals(action)|| (extras != null && extras.getInt("quick-media",-1) > -1)) {
-    mPost=new Post(WordPress.getCurrentBlog().getId(),false);
-    mIsNewPost=true;
-  }
- else   if (extras != null) {
-    long postId=extras.getLong(EXTRA_POSTID,-1);
-    boolean isPage=extras.getBoolean(EXTRA_IS_PAGE);
-    mIsNewPost=extras.getBoolean(EXTRA_IS_NEW_POST);
-    mPost=new Post(WordPress.getCurrentBlog().getId(),postId,isPage);
-    mOriginalPost=new Post(WordPress.getCurrentBlog().getId(),postId,isPage);
-    if (isPage) {
-      WPMobileStatsUtil.trackEventForWPCom(WPMobileStatsUtil.StatsEventPageDetailOpenedEditor);
-      mStatEventEditorClosed=WPMobileStatsUtil.StatsEventPageDetailClosedEditor;
+  if (savedInstanceState == null) {
+    if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action) || EditPostContentFragment.NEW_MEDIA_GALLERY.equals(action)|| EditPostContentFragment.NEW_MEDIA_POST.equals(action)|| getIntent().hasExtra(EXTRA_IS_QUICKPRESS)|| (extras != null && extras.getInt("quick-media",-1) > -1)) {
+      if (getIntent().hasExtra(EXTRA_QUICKPRESS_BLOG_ID)) {
+        int blogId=getIntent().getIntExtra(EXTRA_QUICKPRESS_BLOG_ID,-1);
+        try {
+          Blog quickPressBlog=new Blog(blogId);
+          if (quickPressBlog.isHidden()) {
+            showErrorAndFinish(R.string.error_blog_hidden);
+            return;
+          }
+          WordPress.currentBlog=quickPressBlog;
+        }
+ catch (        Exception e) {
+          showErrorAndFinish(R.string.blog_not_found);
+          return;
+        }
+      }
+      mPost=new Post(WordPress.getCurrentBlogAccountId(),false);
+      mIsNewPost=true;
+    }
+ else     if (extras != null) {
+      long postId=extras.getLong(EXTRA_POSTID,-1);
+      boolean isPage=extras.getBoolean(EXTRA_IS_PAGE);
+      mIsNewPost=extras.getBoolean(EXTRA_IS_NEW_POST);
+      mPost=new Post(WordPress.getCurrentBlogAccountId(),postId,isPage);
+      mOriginalPost=new Post(WordPress.getCurrentBlogAccountId(),postId,isPage);
+      if (isPage) {
+        WPMobileStatsUtil.trackEventForWPCom(WPMobileStatsUtil.StatsEventPageDetailOpenedEditor);
+        mStatEventEditorClosed=WPMobileStatsUtil.StatsEventPageDetailClosedEditor;
+      }
+ else {
+        WPMobileStatsUtil.trackEventForWPCom(WPMobileStatsUtil.StatsEventPostDetailOpenedEditor);
+        mStatEventEditorClosed=WPMobileStatsUtil.StatsEventPostDetailClosedEditor;
+      }
     }
  else {
-      WPMobileStatsUtil.trackEventForWPCom(WPMobileStatsUtil.StatsEventPostDetailOpenedEditor);
-      mStatEventEditorClosed=WPMobileStatsUtil.StatsEventPostDetailClosedEditor;
+      showErrorAndFinish(R.string.post_not_found);
+      return;
     }
   }
- else {
-    showPostErrorAndFinish();
+ else   if (savedInstanceState.containsKey(STATE_KEY_ORIGINAL_POST)) {
+    try {
+      mPost=(Post)savedInstanceState.getSerializable(STATE_KEY_CURRENT_POST);
+      mOriginalPost=(Post)savedInstanceState.getSerializable(STATE_KEY_ORIGINAL_POST);
+    }
+ catch (    ClassCastException e) {
+      mPost=null;
+    }
+  }
+  if (WordPress.getCurrentBlog() == null) {
+    showErrorAndFinish(R.string.blog_not_found);
     return;
   }
-  if (mPost.getId() < 0) {
-    showPostErrorAndFinish();
+  if (mPost == null || mPost.getId() < 0) {
+    showErrorAndFinish(R.string.post_not_found);
     return;
   }
-  mAutoSaveHandler=new Handler();
+  setTitle(WordPress.getCurrentBlog().getBlogName());
   mSectionsPagerAdapter=new SectionsPagerAdapter(getSupportFragmentManager());
   mViewPager=(WPViewPager)findViewById(R.id.pager);
   mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -56,4 +85,5 @@
     }
   }
 );
+  mAutoSaveHandler=new Handler();
 }
