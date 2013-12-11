@@ -1,0 +1,22 @@
+{
+  if (jsonObject == null) {
+    if (resultListener != null)     resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED);
+    return;
+  }
+  final Handler handler=new Handler();
+  new Thread(){
+    @Override public void run(){
+      ReaderPost post=ReaderPost.fromJson(jsonObject);
+      ReaderPostTable.addOrUpdatePost(post);
+      if (resultListener != null) {
+        handler.post(new Runnable(){
+          @Override public void run(){
+            resultListener.onUpdateResult(ReaderActions.UpdateResult.CHANGED);
+          }
+        }
+);
+      }
+    }
+  }
+.start();
+}

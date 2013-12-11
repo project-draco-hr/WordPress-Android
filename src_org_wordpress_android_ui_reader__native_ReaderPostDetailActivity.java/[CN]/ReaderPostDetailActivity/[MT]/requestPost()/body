@@ -1,0 +1,18 @@
+{
+  final TextView txtTitle=(TextView)findViewById(R.id.text_title);
+  txtTitle.setText(R.string.loading);
+  txtTitle.setVisibility(View.VISIBLE);
+  ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
+    @Override public void onUpdateResult(    ReaderActions.UpdateResult result){
+      if (result != ReaderActions.UpdateResult.FAILED) {
+        showPost();
+      }
+ else {
+        ToastUtils.showToast(ReaderPostDetailActivity.this,R.string.reader_toast_err_get_post,ToastUtils.Duration.LONG);
+        ReaderPostDetailActivity.this.finish();
+      }
+    }
+  }
+;
+  ReaderPostActions.requestPost(mBlogId,mPostId,resultListener);
+}

@@ -2,26 +2,21 @@
   super.onCreate(savedInstanceState);
   Intent intent=getIntent();
   String action=getIntent().getAction();
-  if (Intent.ACTION_VIEW.equals(action)) {
-    Uri uri=intent.getData();
-    String blogId=uri.getQueryParameter("blogId");
-    String postId=uri.getQueryParameter("postId");
-    if (blogId != null && blogId.isEmpty() == false && postId != null && postId.isEmpty() == false) {
-      Bundle bundle=new Bundle();
-      bundle.putString("blogID",blogId);
-      bundle.putString("postID",postId);
-      Intent newIntent;
-      if (Constants.ENABLE_NATIVE_READER) {
-        newIntent=new Intent(this,NativeReaderActivity.class);
+  Uri uri=intent.getData();
+  if (Intent.ACTION_VIEW.equals(action) && uri != null) {
+    String strBlogId=uri.getQueryParameter("blogId");
+    String strPostId=uri.getQueryParameter("postId");
+    if (!TextUtils.isEmpty(strBlogId) && !TextUtils.isEmpty(strPostId)) {
+      ReaderLog.i(String.format("opening blogId %s, postId %s",strBlogId,strPostId));
+      try {
+        ReaderActivityLauncher.showReaderPostDetail(this,Long.parseLong(strBlogId),Long.parseLong(strPostId));
       }
- else {
-        newIntent=new Intent(this,ReaderActivity.class);
+ catch (      NumberFormatException e) {
+        ReaderLog.e(e);
       }
-      newIntent.putExtras(bundle);
-      startActivity(newIntent);
     }
  else {
-      Toast.makeText(this,getResources().getText(R.string.error_generic),Toast.LENGTH_SHORT).show();
+      ToastUtils.showToast(this,R.string.error_generic);
     }
   }
   finish();
