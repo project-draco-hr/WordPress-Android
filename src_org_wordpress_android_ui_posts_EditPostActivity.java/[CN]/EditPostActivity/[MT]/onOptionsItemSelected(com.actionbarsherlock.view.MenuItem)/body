@@ -1,6 +1,12 @@
 {
   int itemId=item.getItemId();
   if (itemId == R.id.menu_save_post) {
+    if (mPost.isUploaded()) {
+      WPMobileStatsUtil.flagProperty(getStatEventEditorClosed(),WPMobileStatsUtil.StatsPropertyPostDetailClickedUpdate);
+    }
+ else {
+      WPMobileStatsUtil.flagProperty(getStatEventEditorClosed(),WPMobileStatsUtil.StatsPropertyPostDetailClickedPublish);
+    }
     savePost(false);
     PostUploadService.addPostToUpload(mPost);
     startService(new Intent(this,PostUploadService.class));
