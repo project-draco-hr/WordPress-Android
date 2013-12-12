@@ -1,20 +1,21 @@
 {
-  if (mHttpAuthRequired) {
+  if (mSetupBlog.isHttpAuthRequired()) {
     if (getActivity() == null) {
       return;
     }
-    mHttpAuthRequired=false;
+    mSetupBlog.setHttpAuthRequired(false);
     AlertDialog.Builder alert=new AlertDialog.Builder(getActivity());
     alert.setTitle(R.string.http_authorization_required);
     View httpAuth=getActivity().getLayoutInflater().inflate(R.layout.alert_http_auth,null);
     final EditText usernameEditText=(EditText)httpAuth.findViewById(R.id.http_username);
     final EditText passwordEditText=(EditText)httpAuth.findViewById(R.id.http_password);
     alert.setView(httpAuth);
+    final SetupBlogTask self=this;
     alert.setPositiveButton(R.string.sign_in,new DialogInterface.OnClickListener(){
       public void onClick(      DialogInterface dialog,      int whichButton){
-        mSetupBlog.setHttpUsername(usernameEditText.getText().toString());
-        mSetupBlog.setHttpPassword(passwordEditText.getText().toString());
-        new SetupBlogTask().execute();
+        SetupBlogTask setupBlogTask=new SetupBlogTask();
+        setupBlogTask.setHttpCredentials(usernameEditText.getText().toString(),passwordEditText.getText().toString());
+        setupBlogTask.execute();
       }
     }
 );
