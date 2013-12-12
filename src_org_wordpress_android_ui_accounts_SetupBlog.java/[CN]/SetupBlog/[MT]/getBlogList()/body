@@ -21,8 +21,16 @@
   try {
     Object[] userBlogs=(Object[])client.call("wp.getUsersBlogs",params);
     Arrays.sort(userBlogs,Utils.BlogNameComparator);
-    List<Object> userBlogsList=Arrays.asList(userBlogs);
-    return userBlogsList;
+    List<Map<String,Object>> userBlogList=new ArrayList<Map<String,Object>>();
+    for (    Object blog : userBlogs) {
+      try {
+        userBlogList.add((Map<String,Object>)blog);
+      }
+ catch (      ClassCastException e) {
+        Log.e(WordPress.TAG,"invalid date received from XMLRPC call wp.getUsersBlogs");
+      }
+    }
+    return userBlogList;
   }
  catch (  XMLRPCException e) {
     String message=e.getMessage();

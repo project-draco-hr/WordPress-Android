@@ -2,8 +2,14 @@
   boolean hasTagEverUpdated=ReaderTagTable.hasEverUpdatedTag(mCurrentTag);
   int title, description=-1;
   int tagIndex=mActionBarAdapter.getIndexOfTagName(mCurrentTag);
-  ReaderTag tag=(ReaderTag)getActionBarAdapter().getItem(tagIndex);
-  String tagId=tag.getStringIdFromEndpoint();
+  final String tagId;
+  if (tagIndex > -1) {
+    ReaderTag tag=(ReaderTag)getActionBarAdapter().getItem(tagIndex);
+    tagId=tag.getStringIdFromEndpoint();
+  }
+ else {
+    tagId="";
+  }
   if (tagId.equals("following")) {
     title=R.string.reader_empty_followed_blogs_title;
     description=R.string.reader_empty_followed_blogs_description;
