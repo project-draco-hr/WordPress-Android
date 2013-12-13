@@ -1,0 +1,12 @@
+{
+  String gcmToken=GCMRegistrar.getRegistrationId(context);
+  if (gcmToken == null)   return;
+  if (!WordPress.hasValidWPComCredentials(context))   return;
+  Map<String,String> contentStruct=new HashMap<String,String>();
+  contentStruct.put("device_token",gcmToken);
+  contentStruct.put("device_family","android");
+  contentStruct.put("app_secret_key",NotificationUtils.getAppPushNotificationsName());
+  contentStruct.put("testing","io non dovrei essere qua");
+  WordPress.restClient.post("/push/settings",contentStruct,null,listener,errorListener);
+  return;
+}

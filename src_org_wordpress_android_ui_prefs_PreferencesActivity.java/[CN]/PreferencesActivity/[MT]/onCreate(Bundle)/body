@@ -30,14 +30,30 @@
   if (WordPress.hasValidWPComCredentials(PreferencesActivity.this)) {
     String settingsJson=mSettings.getString("wp_pref_notification_settings",null);
     if (settingsJson == null) {
-      new WPComXMLRPCApi().getNotificationSettings(new XMLRPCCallback(){
-        public void onSuccess(        long id,        Object result){
+      com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+        @Override public void onResponse(        JSONObject jsonObject){
+          ReaderLog.d("token action succeeded");
+          Editor editor=mSettings.edit();
+          try {
+            JSONObject settingsJSON=jsonObject.getJSONObject("settings");
+            editor.putString("wp_pref_notification_settings",settingsJSON.toString());
+            editor.commit();
+          }
+ catch (          JSONException e) {
+            e.printStackTrace();
+          }
           refreshWPComAuthCategory();
         }
-        public void onFailure(        long id,        XMLRPCException error){
+      }
+;
+      RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+        @Override public void onErrorResponse(        VolleyError volleyError){
+          ReaderLog.w("blog action failed");
+          ReaderLog.e(volleyError);
         }
       }
-,this);
+;
+      NotificationUtils.getPushNotificationSettings(PreferencesActivity.this,listener,errorListener);
     }
   }
   if (AppLockManager.getInstance().isAppLockFeatureEnabled() == false) {
