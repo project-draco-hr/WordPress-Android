@@ -35,28 +35,19 @@
   if (imageSpans.length != 0) {
     for (    WPImageSpan wpIS : imageSpans) {
       images+=wpIS.getImageSource().toString() + ",";
-      if (wpIS.getMediaId() != null) {
+      MediaFile mediaFile=wpIS.getMediaFile();
+      if (mediaFile == null)       continue;
+      if (mediaFile.getMediaId() != null) {
         updateMediaFileOnServer(wpIS);
       }
  else {
-        MediaFile mf=new MediaFile();
-        mf.setBlogId(WordPress.getCurrentBlog().getBlogId() + "");
-        mf.setPostID(post.getId());
-        mf.setTitle(wpIS.getTitle());
-        mf.setCaption(wpIS.getCaption());
-        mf.setFeatured(wpIS.isFeatured());
-        mf.setFeaturedInPost(wpIS.isFeaturedInPost());
-        mf.setFileName(wpIS.getImageSource().toString());
-        mf.setFilePath(wpIS.getImageSource().toString());
-        mf.setHorizontalAlignment(wpIS.getHorizontalAlignment());
-        mf.setWidth(wpIS.getWidth());
-        mf.setVideo(wpIS.isVideo());
-        mf.save();
+        mediaFile.setFilePath(wpIS.getImageSource().toString());
+        mediaFile.save();
       }
       int tagStart=s.getSpanStart(wpIS);
       if (!isAutoSave) {
         s.removeSpan(wpIS);
-        if (wpIS.getMediaId() != null && wpIS.getMediaId().length() > 0) {
+        if (mediaFile.getMediaId() != null && mediaFile.getMediaId().length() > 0) {
           s.insert(tagStart,WPHtml.getContent(wpIS));
         }
  else {

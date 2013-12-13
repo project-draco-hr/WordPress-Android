@@ -8,14 +8,16 @@
   if (mediaData == null) {
     return false;
   }
-  Bitmap resizedBitmap=ih.getResizedImageThumbnail(getActivity(),(byte[])mediaData.get("bytes"),(String)mediaData.get("orientation"));
+  Bitmap resizedBitmap=ih.getThumbnailForWPImageSpan(getActivity(),(byte[])mediaData.get("bytes"),(String)mediaData.get("orientation"));
   if (resizedBitmap == null)   return false;
   if (ssb != null) {
     WPImageSpan is=new WPImageSpan(getActivity(),resizedBitmap,imageUri);
+    MediaFile mediaFile=is.getMediaFile();
+    mediaFile.setPostID(mActivity.getPost().getId());
+    mediaFile.setTitle((String)mediaData.get("title"));
     MediaUtils.setWPImageSpanWidth(getActivity(),imageUri,is);
-    is.setTitle((String)mediaData.get("title"));
     is.setImageSource(imageUri);
-    if (imageUri.getEncodedPath() != null)     is.setVideo(imageUri.getEncodedPath().contains("video"));
+    if (imageUri.getEncodedPath() != null)     mediaFile.setVideo(imageUri.getEncodedPath().contains("video"));
     ssb.append(" ");
     ssb.setSpan(is,ssb.length() - 1,ssb.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     AlignmentSpan.Standard as=new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER);
@@ -34,10 +36,12 @@
     Editable s=mContentEditText.getText();
     if (s == null)     return false;
     WPImageSpan is=new WPImageSpan(getActivity(),resizedBitmap,imageUri);
+    MediaFile mediaFile=is.getMediaFile();
+    mediaFile.setPostID(mActivity.getPost().getId());
+    mediaFile.setTitle((String)mediaData.get("title"));
     MediaUtils.setWPImageSpanWidth(getActivity(),imageUri,is);
-    is.setTitle((String)mediaData.get("title"));
     is.setImageSource(imageUri);
-    if (imageUri.getEncodedPath() != null)     is.setVideo(imageUri.getEncodedPath().contains("video"));
+    if (imageUri.getEncodedPath() != null)     mediaFile.setVideo(imageUri.getEncodedPath().contains("video"));
     int line, column=0;
     if (mContentEditText.getLayout() != null) {
       line=mContentEditText.getLayout().getLineForOffset(selectionStart);
