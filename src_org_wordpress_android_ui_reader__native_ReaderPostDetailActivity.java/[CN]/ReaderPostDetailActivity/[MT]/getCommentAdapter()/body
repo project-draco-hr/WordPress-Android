@@ -7,6 +7,17 @@
       }
     }
 ;
+    ReaderCommentAdapter.RequestReplyListener replyListener=new ReaderCommentAdapter.RequestReplyListener(){
+      @Override public void onRequestReply(      long commentId){
+        if (!mIsAddCommentBoxShowing) {
+          showAddCommentBox(commentId);
+        }
+ else {
+          hideAddCommentBox();
+        }
+      }
+    }
+;
     ReaderActions.DataRequestedListener dataRequestedListener=new ReaderActions.DataRequestedListener(){
       @Override public void onRequestData(      ReaderActions.RequestDataAction action){
         if (mIsUpdatingComments)         return;
@@ -15,7 +26,7 @@
       }
     }
 ;
-    mAdapter=new ReaderCommentAdapter(this,mPost,dataLoadedListener,dataRequestedListener);
+    mAdapter=new ReaderCommentAdapter(this,mPost,replyListener,dataLoadedListener,dataRequestedListener);
   }
   return mAdapter;
 }
