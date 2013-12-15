@@ -1,14 +1,13 @@
 {
   super.onCreate(savedInstanceState);
-  boolean isTranslucentActionBarEnabled=NativeReaderActivity.isTranslucentActionBarEnabled();
-  if (isTranslucentActionBarEnabled)   NativeReaderActivity.enableTranslucentActionBar(this);
+  boolean isFullScreenSupported=isFullScreenSupported();
+  if (isFullScreenSupported)   enableActionBarOverlay();
   mInflater=getLayoutInflater();
   setContentView(R.layout.reader_activity_post_detail);
   getListView().setVisibility(View.INVISIBLE);
   getSupportActionBar().setDisplayShowTitleEnabled(true);
   getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-  if (isTranslucentActionBarEnabled) {
-    getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(NativeReaderActivity.ALPHA_LEVEL_3,46,162,204)));
+  if (isFullScreenSupported) {
     final int actionbarHeight=DisplayUtils.getActionBarHeight(this);
     RelativeLayout headerFake=new RelativeLayout(this);
     headerFake.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,actionbarHeight));
@@ -24,7 +23,7 @@
   mProgressFooter=(ProgressBar)mCommentFooter.findViewById(R.id.progress_footer);
   mProgressFooter.setVisibility(View.INVISIBLE);
   getListView().addFooterView(mCommentFooter);
-  mLayoutActions=(ViewGroup)findViewById(R.id.layout_actions);
+  mLayoutIcons=(ViewGroup)findViewById(R.id.layout_actions);
   mLayoutLikes=(ViewGroup)findViewById(R.id.layout_likes);
   mWebView=(WebView)findViewById(R.id.webView);
   mWebView.getSettings().setJavaScriptEnabled(false);
