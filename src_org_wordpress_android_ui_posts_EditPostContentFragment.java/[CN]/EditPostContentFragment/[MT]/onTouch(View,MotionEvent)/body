@@ -21,7 +21,7 @@
     if (layout != null) {
       int line=layout.getLineForVertical(y);
       int charPosition=layout.getOffsetForHorizontal(line,x);
-      final Spannable s=mContentEditText.getText();
+      Spannable s=mContentEditText.getText();
       if (s == null)       return false;
       WPImageSpan[] image_spans=s.getSpans(charPosition,charPosition,WPImageSpan.class);
       if (image_spans.length != 0) {
@@ -111,18 +111,21 @@
               mediaFile.setCaption(captionText);
               mediaFile.setFeatured(featuredCheckBox.isChecked());
               if (featuredCheckBox.isChecked()) {
-                WPImageSpan[] click_spans=s.getSpans(0,s.length(),WPImageSpan.class);
-                if (click_spans.length > 1) {
-                  for (                  WPImageSpan verifySpan : click_spans) {
-                    if (verifySpan != span) {
-                      MediaFile verifySpanMediaFile=verifySpan.getMediaFile();
-                      verifySpanMediaFile.setFeatured(false);
-                      verifySpanMediaFile.setFeaturedInPost(false);
+                Spannable contentSpannable=mContentEditText.getText();
+                WPImageSpan[] postImageSpans=contentSpannable.getSpans(0,contentSpannable.length(),WPImageSpan.class);
+                if (postImageSpans.length > 1) {
+                  for (                  WPImageSpan postImageSpan : postImageSpans) {
+                    if (postImageSpan != span) {
+                      MediaFile postMediaFile=postImageSpan.getMediaFile();
+                      postMediaFile.setFeatured(false);
+                      postMediaFile.setFeaturedInPost(false);
+                      postMediaFile.save();
                     }
                   }
                 }
               }
               mediaFile.setFeaturedInPost(featuredInPostCheckBox.isChecked());
+              mediaFile.save();
             }
           }
 ).setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
