@@ -22,10 +22,8 @@
   mediaFile.setFileName(cursor.getString(cursor.getColumnIndex("fileName")));
   mediaFile.setThumbnailURL(cursor.getString(cursor.getColumnIndex("thumbnailURL")));
   mediaFile.setDateCreatedGMT(cursor.getLong(cursor.getColumnIndex("date_created_gmt")));
-  boolean isVideo=false;
-  String mimeType=cursor.getString(cursor.getColumnIndex("mimeType"));
-  if (mimeType != null && mimeType.contains("video"))   isVideo=true;
-  mediaFile.setVideo(isVideo);
+  mediaFile.setVideo(mediaFile.getMimeType().contains("video"));
+  mediaFile.save();
   cursor.close();
   return imageSpan;
 }
