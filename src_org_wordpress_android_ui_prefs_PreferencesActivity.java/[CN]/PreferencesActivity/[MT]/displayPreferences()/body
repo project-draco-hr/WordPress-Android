@@ -1,17 +1,23 @@
 {
   refreshWPComAuthCategory();
-  if (taglineTextPreference.getText() == null || taglineTextPreference.getText().equals("")) {
-    if (DeviceUtils.getInstance().isBlackBerry()) {
-      taglineTextPreference.setSummary(R.string.posted_from_blackberry);
-      taglineTextPreference.setText(getString(R.string.posted_from_blackberry));
-    }
- else {
-      taglineTextPreference.setSummary(R.string.posted_from);
-      taglineTextPreference.setText(getString(R.string.posted_from));
-    }
+  if (WordPress.wpDB.getNumVisibleAccounts() == 0) {
+    hidePostSignatureCategory();
+    hideNotificationBlogsCategory();
   }
  else {
-    taglineTextPreference.setSummary(taglineTextPreference.getText());
+    if (taglineTextPreference.getText() == null || taglineTextPreference.getText().equals("")) {
+      if (DeviceUtils.getInstance().isBlackBerry()) {
+        taglineTextPreference.setSummary(R.string.posted_from_blackberry);
+        taglineTextPreference.setText(getString(R.string.posted_from_blackberry));
+      }
+ else {
+        taglineTextPreference.setSummary(R.string.posted_from);
+        taglineTextPreference.setText(getString(R.string.posted_from));
+      }
+    }
+ else {
+      taglineTextPreference.setSummary(taglineTextPreference.getText());
+    }
   }
   if (DeviceUtils.getInstance().isBlackBerry()) {
     PreferenceCategory appAboutSectionName=(PreferenceCategory)findPreference("wp_pref_app_about_section");
