@@ -2,7 +2,8 @@
   float pos=event.getY();
   if (event.getAction() == 0)   mLastYPos=pos;
   if (event.getAction() > 1) {
-    if (((mLastYPos - pos) > 2.0f) || ((pos - mLastYPos) > 2.0f))     mScrollDetected=true;
+    int scrollThreshold=DisplayUtils.dpToPx(getActivity(),2);
+    if (((mLastYPos - pos) > scrollThreshold) || ((pos - mLastYPos) > scrollThreshold))     mScrollDetected=true;
   }
   mLastYPos=pos;
   if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -20,12 +21,14 @@
     if (layout != null) {
       int line=layout.getLineForVertical(y);
       int charPosition=layout.getOffsetForHorizontal(line,x);
-      final Spannable s=mContentEditText.getText();
+      Spannable s=mContentEditText.getText();
       if (s == null)       return false;
       WPImageSpan[] image_spans=s.getSpans(charPosition,charPosition,WPImageSpan.class);
       if (image_spans.length != 0) {
         final WPImageSpan span=image_spans[0];
-        if (!span.isVideo()) {
+        MediaFile mediaFile=span.getMediaFile();
+        if (mediaFile == null)         return false;
+        if (!mediaFile.isVideo()) {
           LayoutInflater factory=LayoutInflater.from(getActivity());
           final View alertView=factory.inflate(R.layout.alert_image_options,null);
           if (alertView == null)           return false;
@@ -54,18 +57,18 @@
           ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(getActivity(),R.array.alignment_array,android.R.layout.simple_spinner_item);
           adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
           alignmentSpinner.setAdapter(adapter);
-          imageWidthText.setText(String.valueOf(span.getWidth()) + "px");
-          seekBar.setProgress(span.getWidth());
-          titleText.setText(span.getTitle());
-          caption.setText(span.getCaption());
-          featuredCheckBox.setChecked(span.isFeatured());
-          if (span.isFeatured())           featuredInPostCheckBox.setVisibility(View.VISIBLE);
+          imageWidthText.setText(String.valueOf(mediaFile.getWidth()) + "px");
+          seekBar.setProgress(mediaFile.getWidth());
+          titleText.setText(mediaFile.getTitle());
+          caption.setText(mediaFile.getCaption());
+          featuredCheckBox.setChecked(mediaFile.isFeatured());
+          if (mediaFile.isFeatured())           featuredInPostCheckBox.setVisibility(View.VISIBLE);
  else           featuredInPostCheckBox.setVisibility(View.GONE);
-          featuredInPostCheckBox.setChecked(span.isFeaturedInPost());
-          alignmentSpinner.setSelection(span.getHorizontalAlignment(),true);
-          final int maxWidth=MediaUtils.getMinimumImageWitdh(getActivity(),span.getImageSource());
+          featuredInPostCheckBox.setChecked(mediaFile.isFeaturedInPost());
+          alignmentSpinner.setSelection(mediaFile.getHorizontalAlignment(),true);
+          final int maxWidth=MediaUtils.getMinimumImageWidth(getActivity(),span.getImageSource());
           seekBar.setMax(maxWidth / 10);
-          if (span.getWidth() != 0)           seekBar.setProgress(span.getWidth() / 10);
+          if (mediaFile.getWidth() != 0)           seekBar.setProgress(mediaFile.getWidth() / 10);
           seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
             @Override public void onStopTrackingTouch(            SeekBar seekBar){
             }
@@ -99,24 +102,30 @@
           AlertDialog ad=new AlertDialog.Builder(getActivity()).setTitle(getString(R.string.image_settings)).setView(alertView).setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
             public void onClick(            DialogInterface dialog,            int whichButton){
               String title=(titleText.getText() != null) ? titleText.getText().toString() : "";
-              span.setTitle(title);
-              span.setHorizontalAlignment(alignmentSpinner.getSelectedItemPosition());
-              span.setWidth(getEditTextIntegerClamped(imageWidthText,10,maxWidth));
+              MediaFile mediaFile=span.getMediaFile();
+              if (mediaFile == null)               return;
+              mediaFile.setTitle(title);
+              mediaFile.setHorizontalAlignment(alignmentSpinner.getSelectedItemPosition());
+              mediaFile.setWidth(getEditTextIntegerClamped(imageWidthText,10,maxWidth));
               String captionText=(caption.getText() != null) ? caption.getText().toString() : "";
-              span.setCaption(captionText);
-              span.setFeatured(featuredCheckBox.isChecked());
+              mediaFile.setCaption(captionText);
+              mediaFile.setFeatured(featuredCheckBox.isChecked());
               if (featuredCheckBox.isChecked()) {
-                WPImageSpan[] click_spans=s.getSpans(0,s.length(),WPImageSpan.class);
-                if (click_spans.length > 1) {
-                  for (                  WPImageSpan verifySpan : click_spans) {
-                    if (verifySpan != span) {
-                      verifySpan.setFeatured(false);
-                      verifySpan.setFeaturedInPost(false);
+                Spannable contentSpannable=mContentEditText.getText();
+                WPImageSpan[] postImageSpans=contentSpannable.getSpans(0,contentSpannable.length(),WPImageSpan.class);
+                if (postImageSpans.length > 1) {
+                  for (                  WPImageSpan postImageSpan : postImageSpans) {
+                    if (postImageSpan != span) {
+                      MediaFile postMediaFile=postImageSpan.getMediaFile();
+                      postMediaFile.setFeatured(false);
+                      postMediaFile.setFeaturedInPost(false);
+                      postMediaFile.save();
                     }
                   }
                 }
               }
-              span.setFeaturedInPost(featuredInPostCheckBox.isChecked());
+              mediaFile.setFeaturedInPost(featuredInPostCheckBox.isChecked());
+              mediaFile.save();
             }
           }
 ).setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){

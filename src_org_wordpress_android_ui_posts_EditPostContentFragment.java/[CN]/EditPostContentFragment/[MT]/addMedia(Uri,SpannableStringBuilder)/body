@@ -8,14 +8,17 @@
   if (mediaData == null) {
     return false;
   }
-  Bitmap resizedBitmap=ih.getResizedImageThumbnail(getActivity(),(byte[])mediaData.get("bytes"),(String)mediaData.get("orientation"));
+  Bitmap resizedBitmap=ih.getThumbnailForWPImageSpan(getActivity(),(byte[])mediaData.get("bytes"),(String)mediaData.get("orientation"));
   if (resizedBitmap == null)   return false;
+  WPImageSpan is=new WPImageSpan(getActivity(),resizedBitmap,imageUri);
+  MediaFile mediaFile=is.getMediaFile();
+  mediaFile.setPostID(mActivity.getPost().getId());
+  mediaFile.setTitle((String)mediaData.get("title"));
+  mediaFile.setFilePath(is.getImageSource().toString());
+  MediaUtils.setWPImageSpanWidth(getActivity(),imageUri,is);
+  if (imageUri.getEncodedPath() != null)   mediaFile.setVideo(imageUri.getEncodedPath().contains("video"));
+  mediaFile.save();
   if (ssb != null) {
-    WPImageSpan is=new WPImageSpan(getActivity(),resizedBitmap,imageUri);
-    MediaUtils.setWPImageSpanWidth(getActivity(),imageUri,is);
-    is.setTitle((String)mediaData.get("title"));
-    is.setImageSource(imageUri);
-    if (imageUri.getEncodedPath() != null)     is.setVideo(imageUri.getEncodedPath().contains("video"));
     ssb.append(" ");
     ssb.setSpan(is,ssb.length() - 1,ssb.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     AlignmentSpan.Standard as=new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER);
@@ -33,11 +36,6 @@
     }
     Editable s=mContentEditText.getText();
     if (s == null)     return false;
-    WPImageSpan is=new WPImageSpan(getActivity(),resizedBitmap,imageUri);
-    MediaUtils.setWPImageSpanWidth(getActivity(),imageUri,is);
-    is.setTitle((String)mediaData.get("title"));
-    is.setImageSource(imageUri);
-    if (imageUri.getEncodedPath() != null)     is.setVideo(imageUri.getEncodedPath().contains("video"));
     int line, column=0;
     if (mContentEditText.getLayout() != null) {
       line=mContentEditText.getLayout().getLineForOffset(selectionStart);
@@ -65,7 +63,7 @@
  catch (    Exception e) {
       e.printStackTrace();
     }
-    if (mActivity != null)     ((InputMethodManager)mActivity.getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
   }
+  if (mActivity != null && !mActivity.getSupportActionBar().isShowing())   ((InputMethodManager)mActivity.getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
   return true;
 }
