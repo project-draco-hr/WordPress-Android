@@ -10,7 +10,10 @@
     holder.imgAvatar=(WPNetworkImageView)convertView.findViewById(R.id.image_avatar);
     holder.spacer=convertView.findViewById(R.id.spacer);
     holder.progress=(ProgressBar)convertView.findViewById(R.id.progress);
+    holder.imgReply=(ImageView)convertView.findViewById(R.id.image_reply);
     convertView.setTag(holder);
+    holder.txtText.setLinksClickable(true);
+    holder.txtText.setMovementMethod(LinkMovementMethod.getInstance());
   }
  else {
     holder=(CommentViewHolder)convertView.getTag();
@@ -53,6 +56,14 @@
  else {
     convertView.setBackgroundColor(mBgColorNormal);
     holder.progress.setVisibility(View.GONE);
+  }
+  if (mReplyListener != null) {
+    holder.imgReply.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        mReplyListener.onRequestReply(comment.commentId);
+      }
+    }
+);
   }
   if (mMoreCommentsExist && mDataRequestedListener != null && (position >= getCount() - 1))   mDataRequestedListener.onRequestData(ReaderActions.RequestDataAction.LOAD_NEWER);
   return convertView;
