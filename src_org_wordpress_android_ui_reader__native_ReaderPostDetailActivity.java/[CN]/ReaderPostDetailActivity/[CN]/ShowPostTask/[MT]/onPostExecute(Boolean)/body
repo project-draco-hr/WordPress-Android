@@ -65,16 +65,23 @@
  else {
     imgBtnComment.setVisibility(View.GONE);
   }
-  View.OnClickListener clickListener=new View.OnClickListener(){
+  txtTitle.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
       ReaderActivityLauncher.openUrl(ReaderPostDetailActivity.this,mPost.getUrl());
     }
   }
+);
+  if (mPost.hasBlogUrl()) {
+    View.OnClickListener clickListener=new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ReaderActivityLauncher.openUrl(ReaderPostDetailActivity.this,mPost.getBlogUrl());
+      }
+    }
 ;
-  txtTitle.setOnClickListener(clickListener);
-  txtBlogName.setOnClickListener(clickListener);
-  txtAuthorName.setOnClickListener(clickListener);
-  imgAvatar.setOnClickListener(clickListener);
+    txtBlogName.setOnClickListener(clickListener);
+    txtAuthorName.setOnClickListener(clickListener);
+    imgAvatar.setOnClickListener(clickListener);
+  }
   mWebView.setWebViewClient(new WebViewClient(){
     @Override public void onPageFinished(    WebView view,    String url){
       if (mWebView.getVisibility() != View.VISIBLE)       mWebView.setVisibility(View.VISIBLE);
