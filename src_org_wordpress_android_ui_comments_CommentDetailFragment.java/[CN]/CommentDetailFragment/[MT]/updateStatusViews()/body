@@ -1,0 +1,57 @@
+{
+  if (!hasActivity() || !hasComment())   return;
+  final int btnTextResId;
+  final int btnDrawResId;
+  final CommentStatus newStatus;
+  final int statusTextResId;
+  final int statusColor;
+  final boolean showSpamButton;
+switch (mComment.getStatusEnum()) {
+case APPROVED:
+    btnTextResId=R.string.unapprove;
+  btnDrawResId=R.drawable.moderate_unapprove;
+newStatus=CommentStatus.UNAPPROVED;
+showSpamButton=true;
+statusTextResId=R.string.approved;
+statusColor=getActivity().getResources().getColor(R.color.blue_dark);
+break;
+case UNAPPROVED:
+btnTextResId=R.string.approve;
+btnDrawResId=R.drawable.moderate_approve;
+newStatus=CommentStatus.APPROVED;
+showSpamButton=true;
+statusTextResId=R.string.unapproved;
+statusColor=getActivity().getResources().getColor(R.color.orange_medium);
+break;
+case SPAM:
+btnTextResId=R.string.approve;
+btnDrawResId=R.drawable.moderate_approve;
+newStatus=CommentStatus.APPROVED;
+showSpamButton=false;
+statusTextResId=R.string.spam;
+statusColor=Color.RED;
+break;
+default :
+return;
+}
+mTxtStatus.setText(getString(statusTextResId).toUpperCase());
+mTxtStatus.setTextColor(statusColor);
+mTxtBtnModerate.setText(btnTextResId);
+mTxtBtnModerate.setCompoundDrawablesWithIntrinsicBounds(btnDrawResId,0,0,0);
+mTxtBtnModerate.setOnClickListener(new View.OnClickListener(){
+@Override public void onClick(View v){
+moderateComment(newStatus);
+}
+}
+);
+if (mTxtBtnModerate.getVisibility() != View.VISIBLE) ReaderAniUtils.flyIn(mTxtBtnModerate);
+boolean isSpamButtonShowing=(mTxtBtnSpam.getVisibility() == View.VISIBLE);
+if (showSpamButton && !isSpamButtonShowing) {
+mTxtBtnSpam.clearAnimation();
+ReaderAniUtils.flyIn(mTxtBtnSpam);
+}
+ else if (!showSpamButton && isSpamButtonShowing) {
+mTxtBtnSpam.clearAnimation();
+ReaderAniUtils.flyOut(mTxtBtnSpam);
+}
+}
