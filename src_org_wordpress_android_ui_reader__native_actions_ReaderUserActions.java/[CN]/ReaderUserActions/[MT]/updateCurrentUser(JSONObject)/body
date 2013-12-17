@@ -1,0 +1,19 @@
+{
+  final ReaderUser localUser=ReaderUserTable.getCurrentUser();
+  final ReaderActions.UpdateResult result;
+  ReaderUser serverUser=ReaderUser.fromJson(jsonObject);
+  if (serverUser != null) {
+    if (serverUser.isSameUser(localUser)) {
+      result=ReaderActions.UpdateResult.UNCHANGED;
+    }
+ else {
+      ReaderUserTable.addOrUpdateUser(serverUser);
+      ReaderPrefs.setCurrentUserId(serverUser.userId);
+      result=ReaderActions.UpdateResult.CHANGED;
+    }
+  }
+ else {
+    result=ReaderActions.UpdateResult.FAILED;
+  }
+  return result;
+}
