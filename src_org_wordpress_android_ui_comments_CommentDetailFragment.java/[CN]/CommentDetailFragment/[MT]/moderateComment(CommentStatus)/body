@@ -1,14 +1,9 @@
 {
   if (!hasActivity() || !hasComment() || mIsModeratingComment)   return;
   if (!checkConnection(getActivity()))   return;
-  if (newStatus == CommentStatus.SPAM && mTxtBtnSpam.getVisibility() == View.VISIBLE) {
-    ReaderAniUtils.flyOut(mTxtBtnSpam);
-  }
- else   if (newStatus != CommentStatus.SPAM && mTxtBtnModerate.getVisibility() == View.VISIBLE) {
-    ReaderAniUtils.flyOut(mTxtBtnModerate);
-  }
-  mTxtBtnModerate.setEnabled(false);
-  mTxtBtnSpam.setEnabled(false);
+  mLayoutButtons.clearAnimation();
+  ReaderAniUtils.flyOut(mLayoutButtons);
+  ReaderAniUtils.fadeOut(mTxtStatus);
   final int msgResId;
   final MessageBarType msgType;
 switch (newStatus) {
@@ -18,7 +13,7 @@ case APPROVED:
 break;
 case UNAPPROVED:
 msgResId=R.string.comment_unapproved;
-msgType=MessageBarType.INFO;
+msgType=MessageBarType.ALERT;
 break;
 case SPAM:
 msgResId=R.string.comment_spammed;
@@ -34,8 +29,6 @@ CommentActions.CommentActionListener actionListener=new CommentActions.CommentAc
 @Override public void onActionResult(boolean succeeded){
 mIsModeratingComment=false;
 if (!hasActivity()) return;
-mTxtBtnModerate.setEnabled(true);
-mTxtBtnSpam.setEnabled(true);
 if (succeeded) {
 mComment.setStatus(CommentStatus.toString(newStatus));
 if (mChangeListener != null) mChangeListener.onCommentModerated();

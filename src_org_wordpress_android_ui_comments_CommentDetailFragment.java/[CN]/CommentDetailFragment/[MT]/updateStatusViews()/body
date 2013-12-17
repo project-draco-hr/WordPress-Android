@@ -13,7 +13,7 @@ case APPROVED:
 newStatus=CommentStatus.UNAPPROVED;
 showSpamButton=true;
 statusTextResId=R.string.approved;
-statusColor=getActivity().getResources().getColor(R.color.blue_dark);
+statusColor=getActivity().getResources().getColor(R.color.blue_extra_dark);
 break;
 case UNAPPROVED:
 btnTextResId=R.string.approve;
@@ -36,22 +36,22 @@ return;
 }
 mTxtStatus.setText(getString(statusTextResId).toUpperCase());
 mTxtStatus.setTextColor(statusColor);
-mTxtBtnModerate.setText(btnTextResId);
-mTxtBtnModerate.setCompoundDrawablesWithIntrinsicBounds(btnDrawResId,0,0,0);
-mTxtBtnModerate.setOnClickListener(new View.OnClickListener(){
+if (mTxtStatus.getVisibility() != View.VISIBLE) {
+mTxtStatus.clearAnimation();
+ReaderAniUtils.fadeIn(mTxtStatus);
+}
+mBtnModerate.setText(btnTextResId);
+mBtnModerate.setCompoundDrawablesWithIntrinsicBounds(btnDrawResId,0,0,0);
+mBtnModerate.setOnClickListener(new View.OnClickListener(){
 @Override public void onClick(View v){
 moderateComment(newStatus);
 }
 }
 );
-if (mTxtBtnModerate.getVisibility() != View.VISIBLE) ReaderAniUtils.flyIn(mTxtBtnModerate);
-boolean isSpamButtonShowing=(mTxtBtnSpam.getVisibility() == View.VISIBLE);
-if (showSpamButton && !isSpamButtonShowing) {
-mTxtBtnSpam.clearAnimation();
-ReaderAniUtils.flyIn(mTxtBtnSpam);
-}
- else if (!showSpamButton && isSpamButtonShowing) {
-mTxtBtnSpam.clearAnimation();
-ReaderAniUtils.flyOut(mTxtBtnSpam);
+mBtnModerate.setVisibility(View.VISIBLE);
+mBtnSpam.setVisibility(showSpamButton ? View.VISIBLE : View.GONE);
+if (mLayoutButtons.getVisibility() != View.VISIBLE) {
+mLayoutButtons.clearAnimation();
+ReaderAniUtils.flyIn(mLayoutButtons);
 }
 }
