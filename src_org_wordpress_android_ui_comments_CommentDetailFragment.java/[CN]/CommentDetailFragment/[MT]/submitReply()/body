@@ -1,35 +1,39 @@
 {
   if (!hasActivity() || mIsSubmittingReply)   return;
   if (!NetworkUtils.checkConnection(getActivity()))   return;
-  final ProgressBar progress=(ProgressBar)getActivity().findViewById(R.id.progress_submit_comment);
   final String replyText=EditTextUtils.getText(mEditReply);
   if (TextUtils.isEmpty(replyText))   return;
   mEditReply.setEnabled(false);
   EditTextUtils.hideSoftInput(mEditReply);
   mImgSubmitReply.setVisibility(View.GONE);
+  final ProgressBar progress=(ProgressBar)getActivity().findViewById(R.id.progress_submit_comment);
   progress.setVisibility(View.VISIBLE);
   CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
     @Override public void onActionResult(    boolean succeeded){
       mIsSubmittingReply=false;
-      if (hasActivity()) {
-        mEditReply.setEnabled(true);
-        mImgSubmitReply.setVisibility(View.VISIBLE);
-        progress.setVisibility(View.GONE);
-        if (succeeded) {
-          if (mChangeListener != null)           mChangeListener.onCommentAdded();
-          MessageBarUtils.showMessageBar(getActivity(),getString(R.string.note_reply_successful));
-          mEditReply.setText(null);
-        }
+      if (!hasActivity())       return;
+      mEditReply.setEnabled(true);
+      mImgSubmitReply.setVisibility(View.VISIBLE);
+      progress.setVisibility(View.GONE);
+      if (succeeded) {
+        if (mChangeListener != null)         mChangeListener.onCommentAdded();
+        MessageBarUtils.showMessageBar(getActivity(),getString(R.string.note_reply_successful));
+        mEditReply.setText(null);
+      }
  else {
-          ToastUtils.showToast(getActivity(),R.string.reply_failed,ToastUtils.Duration.LONG);
-          mEditReply.requestFocus();
-          InputMethodManager imm=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-          imm.showSoftInput(mEditReply,InputMethodManager.SHOW_IMPLICIT);
-        }
+        ToastUtils.showToast(getActivity(),R.string.reply_failed,ToastUtils.Duration.LONG);
+        mEditReply.requestFocus();
+        InputMethodManager imm=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(mEditReply,InputMethodManager.SHOW_IMPLICIT);
       }
     }
   }
 ;
   mIsSubmittingReply=true;
-  CommentActions.submitReplyToComment(mAccountId,mComment,replyText,actionListener);
+  if (mNote != null) {
+    CommentActions.submitReplyToCommentNote(mNote,replyText,actionListener);
+  }
+ else {
+    CommentActions.submitReplyToComment(mAccountId,mComment,replyText,actionListener);
+  }
 }

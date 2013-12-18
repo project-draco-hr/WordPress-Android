@@ -40,6 +40,7 @@ if (mTxtStatus.getVisibility() != View.VISIBLE) {
 mTxtStatus.clearAnimation();
 ReaderAniUtils.fadeIn(mTxtStatus);
 }
+if (isModerationEnabled()) {
 mBtnModerate.setText(btnTextResId);
 mBtnModerate.setCompoundDrawablesWithIntrinsicBounds(btnDrawResId,0,0,0);
 mBtnModerate.setOnClickListener(new View.OnClickListener(){
@@ -48,8 +49,13 @@ moderateComment(newStatus);
 }
 }
 );
-mBtnSpam.setVisibility(showSpamButton ? View.VISIBLE : View.GONE);
-if (mLayoutButtons.getVisibility() != View.VISIBLE) {
+mBtnModerate.setVisibility(View.VISIBLE);
+}
+ else {
+mBtnModerate.setVisibility(View.GONE);
+}
+mBtnSpam.setVisibility(isMarkSpamEnabled() && showSpamButton ? View.VISIBLE : View.GONE);
+if (mLayoutButtons.getVisibility() != View.VISIBLE && (isMarkSpamEnabled() || isModerationEnabled())) {
 mLayoutButtons.clearAnimation();
 ReaderAniUtils.flyIn(mLayoutButtons);
 }
