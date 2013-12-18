@@ -2,6 +2,7 @@
   final String newStatusStr=CommentStatus.toString(newStatus);
   final Blog blog=WordPress.currentBlog;
   Iterator it=selectedCommentPositions.iterator();
+  final List<Comment> commentsUpdatedList=new LinkedList<Comment>();
   while (it.hasNext()) {
     int i=(Integer)it.next();
     client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
@@ -29,6 +30,7 @@
         contentHash.put("status",newStatusStr);
         model.set(i,listRow);
         WordPress.wpDB.updateCommentStatus(WordPress.currentBlog.getId(),listRow.commentID,newStatusStr);
+        commentsUpdatedList.add(WordPress.wpDB.getComment(WordPress.currentBlog.getId(),listRow.commentID));
       }
     }
  catch (    XMLRPCException e) {
@@ -44,7 +46,7 @@
         Toast.makeText(getActivity().getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
         checkedCommentTotal=0;
         hideModerationBar();
-        mOnCommentChangeListener.onCommentModerated();
+        mOnCommentChangeListener.onCommentsModerated(commentsUpdatedList);
         ((WPActionBarActivity)getActivity()).updateMenuDrawer();
       }
  else {
