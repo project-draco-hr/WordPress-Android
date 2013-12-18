@@ -16,21 +16,21 @@ case ADD_ACCOUNT_REQUEST:
   }
 break;
 case SETTINGS_REQUEST:
-if (resultCode == RESULT_OK) {
 if (mMenuDrawer != null) {
-  updateMenuDrawer();
-  String[] blogNames=getBlogNames();
-  if ((blogNames.length > 1 && mListView.getHeaderViewsCount() == 0) || blogNames.length == 1 && mListView.getHeaderViewsCount() > 0)   this.initMenuDrawer();
- else   if (blogNames.length > 1 && mBlogSpinner != null) {
-    SpinnerAdapter mSpinnerAdapter=new ArrayAdapter<String>(getSupportActionBar().getThemedContext(),R.layout.sherlock_spinner_dropdown_item,blogNames);
-    mBlogSpinner.setAdapter(mSpinnerAdapter);
-  }
-  if (blogNames.length >= 1) {
-    setupCurrentBlog();
-    onBlogChanged();
-  }
-  WordPress.registerForCloudMessaging(this);
+updateMenuDrawer();
+String[] blogNames=getBlogNames();
+if ((blogNames.length > 1 && mListView.getHeaderViewsCount() == 0) || (blogNames.length == 1 && mListView.getHeaderViewsCount() > 0) || blogNames.length == 0) {
+  this.initMenuDrawer();
 }
+ else if (blogNames.length > 1 && mBlogSpinner != null) {
+  SpinnerAdapter mSpinnerAdapter=new ArrayAdapter<String>(getSupportActionBar().getThemedContext(),R.layout.sherlock_spinner_dropdown_item,blogNames);
+  mBlogSpinner.setAdapter(mSpinnerAdapter);
+}
+if (blogNames.length >= 1) {
+  setupCurrentBlog();
+  onBlogChanged();
+}
+WordPress.registerForCloudMessaging(this);
 }
 break;
 case AUTHENTICATE_REQUEST:
