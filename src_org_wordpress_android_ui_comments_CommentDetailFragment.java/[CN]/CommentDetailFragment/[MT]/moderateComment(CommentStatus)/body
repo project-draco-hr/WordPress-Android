@@ -1,6 +1,8 @@
 {
   if (!hasActivity() || !hasComment() || mIsModeratingComment)   return;
   if (!checkConnection(getActivity()))   return;
+  mBtnModerate.setEnabled(false);
+  mBtnSpam.setEnabled(false);
   mLayoutButtons.clearAnimation();
   ReaderAniUtils.flyOut(mLayoutButtons);
   ReaderAniUtils.fadeOut(mTxtStatus);
@@ -29,6 +31,8 @@ CommentActions.CommentActionListener actionListener=new CommentActions.CommentAc
 @Override public void onActionResult(boolean succeeded){
 mIsModeratingComment=false;
 if (!hasActivity()) return;
+mBtnModerate.setEnabled(true);
+mBtnSpam.setEnabled(true);
 if (succeeded) {
 mComment.setStatus(CommentStatus.toString(newStatus));
 if (mChangeListener != null) mChangeListener.onCommentModerated();
