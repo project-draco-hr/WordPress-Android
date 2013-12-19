@@ -2,7 +2,7 @@
   if (json == null)   return;
   this.commentID=json.optInt("ID");
   this.status=JSONUtil.getString(json,"status");
-  this.comment=JSONUtil.getString(json,"content");
+  this.comment=HtmlUtils.stripScript(JSONUtil.getString(json,"content"));
   java.util.Date date=DateTimeUtils.iso8601ToJavaDate(JSONUtil.getString(json,"date"));
   if (date != null)   this.dateCreatedFormatted=ApiHelper.getFormattedCommentDate(WordPress.getContext(),date);
   JSONObject jsonPost=json.optJSONObject("post");
