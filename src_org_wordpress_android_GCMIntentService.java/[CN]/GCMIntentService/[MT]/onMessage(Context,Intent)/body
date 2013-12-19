@@ -18,9 +18,9 @@
       }
     }
   }
-  String title=extras.getString("title");
+  String title=StringEscapeUtils.unescapeHtml(extras.getString("title"));
   if (title == null)   title="WordPress";
-  String message=StringUtils.unescapeHTML(extras.getString("msg"));
+  String message=StringEscapeUtils.unescapeHtml(extras.getString("msg"));
   String note_id=extras.getString("note_id");
   Note note=null;
   if (extras.getString("note_full_data") != null) {
@@ -109,13 +109,19 @@
  else {
     NotificationCompat.InboxStyle inboxStyle=new NotificationCompat.InboxStyle();
     int noteCtr=1;
-    for (    Bundle wpNotification : activeNotificationsMap.values()) {
+    for (    Bundle wpPN : activeNotificationsMap.values()) {
       if (noteCtr > 5)       break;
-      if (wpNotification.getString("msg") != null) {
-        if (wpNotification.getString("type").equals("c"))         inboxStyle.addLine(wpNotification.getString("title") + ": " + wpNotification.getString("msg"));
- else         inboxStyle.addLine(wpNotification.getString("msg"));
-        noteCtr++;
+      if (wpPN.getString("msg") == null)       continue;
+      if (wpPN.getString("type") != null && wpPN.getString("type").equals("c")) {
+        String pnTitle=StringEscapeUtils.unescapeHtml((wpPN.getString("title")));
+        String pnMessage=StringEscapeUtils.unescapeHtml((wpPN.getString("msg")));
+        inboxStyle.addLine(pnTitle + ": " + pnMessage);
       }
+ else {
+        String pnMessage=StringEscapeUtils.unescapeHtml((wpPN.getString("msg")));
+        inboxStyle.addLine(pnMessage);
+      }
+      noteCtr++;
     }
     if (activeNotificationsMap.size() > 5)     inboxStyle.setSummaryText(String.format(getString(R.string.more_notifications),activeNotificationsMap.size() - 5));
     String subject=String.format(getString(R.string.new_notifications),activeNotificationsMap.size());
