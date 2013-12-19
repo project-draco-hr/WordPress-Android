@@ -3,7 +3,7 @@
   String curImagePath=mf.getFilePath();
   if (curImagePath == null)   return null;
   if (curImagePath.contains("video")) {
-    XMLRPCClient client=new XMLRPCClient(post.getBlog().getUrl(),post.getBlog().getHttpuser(),post.getBlog().getHttppassword());
+    XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
     String tempFileName="wp-" + System.currentTimeMillis();
     try {
       context.openFileOutput(tempFileName,Context.MODE_PRIVATE);
@@ -43,9 +43,9 @@
           yRes=resx[1];
         }
  else {
-          if (!post.getBlog().getMaxImageWidth().equals("Original Size")) {
-            xRes=post.getBlog().getMaxImageWidth();
-            yRes=String.valueOf(Math.round(Integer.valueOf(post.getBlog().getMaxImageWidth()) * 0.75));
+          if (!blog.getMaxImageWidth().equals("Original Size")) {
+            xRes=blog.getMaxImageWidth();
+            yRes=String.valueOf(Math.round(Integer.valueOf(blog.getMaxImageWidth()) * 0.75));
           }
  else {
             xRes="640";
@@ -67,7 +67,7 @@
     m.put("type",mimeType);
     m.put("bits",mf);
     m.put("overwrite",true);
-    Object[] params={1,post.getBlog().getUsername(),post.getBlog().getPassword(),m};
+    Object[] params={1,blog.getUsername(),blog.getPassword(),m};
     FeatureSet featureSet=synchronousGetFeatureSet();
     boolean selfHosted=WordPress.currentBlog != null && !WordPress.currentBlog.isDotcomFlag();
     boolean isVideoEnabled=selfHosted || (featureSet != null && mFeatureSet.isVideopressEnabled());
@@ -133,7 +133,7 @@
     orientation=ih.getExifOrientation(path,orientation);
     String imageTitle=jpeg.getName();
     String resizedPictureURL=null;
-    boolean shouldUploadResizedVersion=!post.getBlog().getMaxImageWidth().equals("Original Size");
+    boolean shouldUploadResizedVersion=!blog.getMaxImageWidth().equals("Original Size");
     if (shouldUploadResizedVersion == false) {
       int pictureSettingWidth=mf.getWidth();
       BitmapFactory.Options options=new BitmapFactory.Options();
@@ -189,17 +189,17 @@
       m.put("type",mimeType);
       m.put("bits",finalBytes);
       m.put("overwrite",true);
-      resizedPictureURL=uploadPicture(m,mf);
+      resizedPictureURL=uploadPicture(m,mf,blog);
       if (resizedPictureURL == null)       return null;
     }
     String fullSizeUrl=null;
-    if (!shouldUploadResizedVersion || post.getBlog().isFullSizeImage()) {
+    if (!shouldUploadResizedVersion || blog.isFullSizeImage()) {
       Map<String,Object> m=new HashMap<String,Object>();
       m.put("name",imageTitle);
       m.put("type",mimeType);
       m.put("bits",mf);
       m.put("overwrite",true);
-      fullSizeUrl=uploadPicture(m,mf);
+      fullSizeUrl=uploadPicture(m,mf,blog);
       if (fullSizeUrl == null)       return null;
     }
     String alignment="";
