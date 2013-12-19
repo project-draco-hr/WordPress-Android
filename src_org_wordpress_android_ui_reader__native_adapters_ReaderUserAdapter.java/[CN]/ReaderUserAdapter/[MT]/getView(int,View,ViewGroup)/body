@@ -7,7 +7,8 @@
     holder.txtName=(TextView)convertView.findViewById(R.id.text_name);
     holder.txtUrl=(TextView)convertView.findViewById(R.id.text_url);
     holder.txtFollow=(TextView)convertView.findViewById(R.id.text_follow);
-    holder.imgAvatar=(WPNetworkImageView)convertView.findViewById(R.id.image_avatar);
+    holder.imgAvatar=(NetworkImageView)convertView.findViewById(R.id.image_avatar);
+    holder.imgAvatar.setDefaultImageResId(R.drawable.reader_photo_default);
     convertView.setTag(holder);
   }
  else {
@@ -16,18 +17,14 @@
   holder.txtName.setText(user.getDisplayName());
   if (user.hasUrl()) {
     holder.txtUrl.setVisibility(View.VISIBLE);
-    holder.txtUrl.setText(UrlUtils.getDomainFromUrl(user.getUrl()));
+    holder.txtUrl.setText(user.getUrlDomain());
     convertView.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
         ReaderActivityLauncher.openUrl(v.getContext(),user.getUrl());
       }
     }
 );
-    holder.txtFollow.setVisibility(View.VISIBLE);
-    if (holder.txtFollow.isSelected() != user.isFollowed) {
-      holder.txtFollow.setSelected(user.isFollowed);
-      holder.txtFollow.setText(user.isFollowed ? R.string.reader_btn_unfollow : R.string.reader_btn_follow);
-    }
+    if (holder.txtFollow.isSelected() != user.isFollowed)     showFollowStatus(holder.txtFollow,user.isFollowed);
     holder.txtFollow.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
         ReaderAniUtils.zoomAction(holder.txtFollow);
@@ -35,12 +32,13 @@
       }
     }
 );
+    holder.txtFollow.setVisibility(View.VISIBLE);
   }
  else {
     holder.txtUrl.setVisibility(View.GONE);
     holder.txtFollow.setVisibility(View.GONE);
     convertView.setOnClickListener(null);
   }
-  holder.imgAvatar.setImageUrl(user.getAvatarUrl(),WPNetworkImageView.ImageType.AVATAR);
+  holder.imgAvatar.setImageUrl(user.getAvatarUrl(),WordPress.imageLoader);
   return convertView;
 }

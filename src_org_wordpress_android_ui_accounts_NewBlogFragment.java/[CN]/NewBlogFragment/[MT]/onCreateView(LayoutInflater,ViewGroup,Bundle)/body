@@ -1,0 +1,25 @@
+{
+  ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.create_blog_fragment,container,false);
+  mSignupButton=(WPTextView)rootView.findViewById(R.id.signup_button);
+  mSignupButton.setOnClickListener(signupClickListener);
+  mSignupButton.setEnabled(false);
+  mCancelButton=(WPTextView)rootView.findViewById(R.id.cancel_button);
+  mCancelButton.setOnClickListener(cancelClickListener);
+  mProgressTextSignIn=(WPTextView)rootView.findViewById(R.id.nux_sign_in_progress_text);
+  mProgressBarSignIn=(ProgressBar)rootView.findViewById(R.id.nux_sign_in_progress_bar);
+  mSiteTitleTextField=(EditText)rootView.findViewById(R.id.site_title);
+  mSiteUrlTextField=(EditText)rootView.findViewById(R.id.site_url);
+  mSiteUrlTextField.addTextChangedListener(this);
+  mSiteTitleTextField.addTextChangedListener(this);
+  mSiteTitleTextField.addTextChangedListener(new TextWatcher(){
+    @Override public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
+    }
+    @Override public void onTextChanged(    CharSequence s,    int start,    int before,    int count){
+      mSiteUrlTextField.setText(titleToUrl(mSiteTitleTextField.getText().toString()));
+    }
+    @Override public void afterTextChanged(    Editable s){
+    }
+  }
+);
+  return rootView;
+}

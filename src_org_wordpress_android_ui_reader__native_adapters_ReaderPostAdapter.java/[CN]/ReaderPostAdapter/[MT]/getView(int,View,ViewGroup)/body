@@ -6,24 +6,24 @@
     holder=new PostViewHolder();
     holder.txtTitle=(TextView)convertView.findViewById(R.id.text_title);
     holder.txtText=(TextView)convertView.findViewById(R.id.text_excerpt);
-    holder.txtSource=(TextView)convertView.findViewById(R.id.text_source);
-    holder.txtLikeButton=(TextView)convertView.findViewById(R.id.text_like_button);
-    holder.txtReblogButton=(TextView)convertView.findViewById(R.id.text_reblog_button);
-    holder.txtCounts=(TextView)convertView.findViewById(R.id.text_counts);
+    holder.txtBlogName=(TextView)convertView.findViewById(R.id.text_blog_name);
+    holder.txtDate=(TextView)convertView.findViewById(R.id.text_date);
+    holder.txtFollow=(TextView)convertView.findViewById(R.id.text_follow);
+    holder.txtCommentCount=(TextView)convertView.findViewById(R.id.text_comment_count);
+    holder.txtLikeCount=(TextView)convertView.findViewById(R.id.text_like_count);
     holder.imgFeatured=(WPNetworkImageView)convertView.findViewById(R.id.image_featured);
     holder.imgAvatar=(WPNetworkImageView)convertView.findViewById(R.id.image_avatar);
-    holder.layoutActions=(ViewGroup)convertView.findViewById(R.id.layout_actions);
+    holder.imgBtnLike=(ImageView)convertView.findViewById(R.id.image_like_btn);
+    holder.imgBtnComment=(ImageView)convertView.findViewById(R.id.image_comment_btn);
+    holder.imgBtnReblog=(ImageView)convertView.findViewById(R.id.image_reblog_btn);
     convertView.setTag(holder);
   }
  else {
     holder=(PostViewHolder)convertView.getTag();
   }
-  if (post.hasTitle()) {
-    holder.txtTitle.setText(post.getTitle());
-  }
- else {
-    holder.txtTitle.setText(R.string.reader_untitled_post);
-  }
+  holder.txtTitle.setText(post.getTitle());
+  holder.txtBlogName.setText(post.getBlogName());
+  holder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(post.getDatePublished()));
   if (post.hasExcerpt()) {
     holder.txtText.setVisibility(View.VISIBLE);
     holder.txtText.setText(post.getExcerpt());
@@ -31,58 +31,61 @@
  else {
     holder.txtText.setVisibility(View.GONE);
   }
-  holder.txtSource.setText(post.getSource());
-  final boolean isFeaturedImageVisible;
   if (post.hasFeaturedImage()) {
-    holder.imgFeatured.setImageUrl(post.getFeaturedImageForDisplay(mPhotonWidth,mPhotonHeight),WPNetworkImageView.ImageType.PHOTO);
+    final String imageUrl=post.getFeaturedImageForDisplay(mPhotonWidth,mPhotonHeight);
+    holder.imgFeatured.setImageUrl(imageUrl,WPNetworkImageView.ImageType.PHOTO);
     holder.imgFeatured.setVisibility(View.VISIBLE);
-    isFeaturedImageVisible=true;
   }
  else   if (post.hasFeaturedVideo()) {
     holder.imgFeatured.setVideoUrl(post.postId,post.getFeaturedVideo());
     holder.imgFeatured.setVisibility(View.VISIBLE);
-    isFeaturedImageVisible=true;
   }
  else {
     holder.imgFeatured.setVisibility(View.GONE);
-    isFeaturedImageVisible=false;
   }
-  int topMargin=(isFeaturedImageVisible && post.hasPostAvatar() ? mNegativeOffset : mDefaultOffset);
-  RelativeLayout.LayoutParams layoutParams=(RelativeLayout.LayoutParams)holder.imgAvatar.getLayoutParams();
-  if (layoutParams.topMargin != topMargin)   layoutParams.topMargin=topMargin;
   if (post.hasPostAvatar()) {
     holder.imgAvatar.setImageUrl(post.getPostAvatarForDisplay(mAvatarSz),WPNetworkImageView.ImageType.AVATAR);
-    holder.imgAvatar.setVisibility(View.VISIBLE);
   }
  else {
-    holder.imgAvatar.setVisibility(View.GONE);
+    holder.imgAvatar.showDefaultImage(WPNetworkImageView.ImageType.AVATAR);
   }
+  showFollowStatus(holder.txtFollow,post.isFollowedByCurrentUser);
+  holder.txtFollow.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      toggleFollow(holder,position,post);
+    }
+  }
+);
   if (post.isWP()) {
-    final int pos=position;
-    showLikeStatus(holder.txtLikeButton,post.isLikedByCurrentUser);
-    holder.txtLikeButton.setOnClickListener(new View.OnClickListener(){
+    showLikeStatus(holder.imgBtnLike,post.isLikedByCurrentUser);
+    holder.imgBtnLike.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
-        toggleLike(holder,pos,post);
+        toggleLike(holder,position,post);
       }
     }
 );
-    showReblogStatus(holder.txtReblogButton,post.isRebloggedByCurrentUser);
+    showReblogStatus(holder.imgBtnReblog,post.isRebloggedByCurrentUser);
     if (!post.isRebloggedByCurrentUser && post.isWP()) {
-      holder.txtReblogButton.setOnClickListener(new View.OnClickListener(){
+      holder.imgBtnReblog.setOnClickListener(new View.OnClickListener(){
         @Override public void onClick(        View v){
+          ReaderAniUtils.zoomAction(holder.imgBtnReblog);
           if (mReblogListener != null)           mReblogListener.onRequestReblog(post);
         }
       }
 );
     }
-    holder.layoutActions.setVisibility(View.VISIBLE);
+    holder.imgBtnLike.setVisibility(View.VISIBLE);
+    holder.imgBtnComment.setVisibility(View.VISIBLE);
+    holder.imgBtnReblog.setVisibility(View.VISIBLE);
   }
  else {
-    holder.layoutActions.setVisibility(View.GONE);
+    holder.imgBtnLike.setVisibility(View.INVISIBLE);
+    holder.imgBtnComment.setVisibility(View.INVISIBLE);
+    holder.imgBtnReblog.setVisibility(View.INVISIBLE);
   }
-  showCounts(holder.txtCounts,post);
-  if (mEnableRowAnimation && position > mPreviousGetViewPosition)   animateRow(convertView);
-  mPreviousGetViewPosition=position;
+  showCounts(holder,post);
+  if (mAnimateRows)   animateRow(convertView);
   if (mCanRequestMorePosts && mDataRequestedListener != null && (position >= getCount() - 1))   mDataRequestedListener.onRequestData(ReaderActions.RequestDataAction.LOAD_OLDER);
+  if (mEnableImagePreload && position > (mLastPreloadPos - PRELOAD_OFFSET))   preloadPostImages(position + PRELOAD_OFFSET);
   return convertView;
 }

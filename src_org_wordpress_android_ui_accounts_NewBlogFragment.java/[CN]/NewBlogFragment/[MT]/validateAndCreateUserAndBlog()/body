@@ -1,0 +1,50 @@
+{
+  if (mSystemService.getActiveNetworkInfo() == null) {
+    AlertUtil.showAlert(getActivity(),R.string.no_network_title,R.string.no_network_message);
+    return;
+  }
+  if (!checkUserData())   return;
+  startProgress(getString(R.string.validating_site_data));
+  final String siteUrl=mSiteUrlTextField.getText().toString().trim();
+  final String siteName=mSiteTitleTextField.getText().toString().trim();
+  final String language=CreateUserAndBlog.getDeviceLanguage(getActivity().getResources());
+  CreateUserAndBlog createUserAndBlog=new CreateUserAndBlog("","","",siteUrl,siteName,language,restClient,getActivity(),new ErrorListener(),new CreateUserAndBlog.Callback(){
+    @Override public void onStepFinished(    CreateUserAndBlog.Step step){
+      if (getActivity() != null) {
+        updateProgress(getString(R.string.create_new_blog_wpcom));
+      }
+    }
+    @Override public void onSuccess(    JSONObject createSiteResponse){
+      if (getActivity() == null) {
+        return;
+      }
+      endProgress();
+      SetupBlog setupBlog=new SetupBlog();
+      try {
+        JSONObject details=createSiteResponse.getJSONObject("blog_details");
+        String blogName=details.getString("blogname");
+        String xmlRpcUrl=details.getString("xmlrpc");
+        String homeUrl=details.getString("url");
+        String blogId=details.getString("blogid");
+        final SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String username=settings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,"");
+        String password=WordPressDB.decryptPassword(settings.getString(WordPress.WPCOM_PASSWORD_PREFERENCE,null));
+        setupBlog.addBlog(blogName,xmlRpcUrl,homeUrl,blogId,username,password,true);
+      }
+ catch (      JSONException e) {
+        Log.e(WordPress.TAG,"Invalid JSON response from site/new: " + e);
+      }
+      getActivity().setResult(Activity.RESULT_OK);
+      getActivity().finish();
+    }
+    @Override public void onError(    int messageId){
+      if (getActivity() == null) {
+        return;
+      }
+      endProgress();
+      showError(getString(messageId));
+    }
+  }
+);
+  createUserAndBlog.startCreateBlogProcess();
+}

@@ -28,7 +28,7 @@
       if (model == null) {
         model=new ArrayList<Comment>();
       }
-      model.add(new Comment(postID,commentID,i,author,dateCreatedFormatted,comment,status,postTitle,authorURL,authorEmail,URI.create("http://gravatar.com/avatar/" + StringUtils.getMd5Hash(authorEmail.trim()) + "?s=140&d=404")));
+      model.add(new Comment(postID,commentID,i,author,dateCreatedFormatted,comment,status,postTitle,authorURL,authorEmail,GravatarUtils.gravatarUrlFromEmail(authorEmail,140)));
     }
     if (!refreshOnly) {
       boolean showSwitcher=loadedComments.size() % COMMENTS_PER_PAGE == 0;
@@ -42,7 +42,7 @@
         if (model.size() > 0) {
           selectedPosition=0;
           Comment aComment=model.get((int)0);
-          onCommentSelectedListener.onCommentSelected(aComment);
+          mOnCommentSelectedListener.onCommentSelected(aComment);
           getListView().setItemChecked(0,true);
         }
       }

@@ -1,28 +1,42 @@
 {
   if (TextUtils.isEmpty(topicName))   return;
-  showMessageBar(action,topicName);
+  final String messageBarText;
+  final MessageBarUtils.MessageBarType messageBarType;
 switch (action) {
 case ADD:
-    if (ReaderTagActions.performTagAction(ReaderTagActions.TagAction.ADD,topicName,null)) {
-      ReaderActions.DataLoadedListener dataListener=new ReaderActions.DataLoadedListener(){
-        @Override public void onDataLoaded(        boolean isEmpty){
-          if (mIsShowingFollowedTags) {
-            int index=getTagAdapter().indexOfTopicName(topicName);
-            if (index > -1)             getListView().smoothScrollToPosition(index);
-          }
-        }
-      }
+    messageBarText=getString(R.string.reader_label_added_tag,topicName);
+  messageBarType=MessageBarUtils.MessageBarType.INFO;
+break;
+case DELETE:
+messageBarText=getString(R.string.reader_label_removed_tag,topicName);
+messageBarType=MessageBarUtils.MessageBarType.ALERT;
+break;
+default :
+return;
+}
+MessageBarUtils.showMessageBar(this,messageBarText,messageBarType,null);
+switch (action) {
+case ADD:
+if (ReaderTagActions.performTagAction(ReaderTagActions.TagAction.ADD,topicName,null)) {
+ReaderActions.DataLoadedListener dataListener=new ReaderActions.DataLoadedListener(){
+@Override public void onDataLoaded(boolean isEmpty){
+if (mIsShowingFollowedTags) {
+int index=getTagAdapter().indexOfTopicName(topicName);
+if (index > -1) getListView().smoothScrollToPosition(index);
+}
+}
+}
 ;
-      getTagAdapter().refreshTopics(dataListener);
-      mTagsChanged=true;
-      mLastAddedTag=topicName;
-    }
-  break;
+getTagAdapter().refreshTopics(dataListener);
+mTagsChanged=true;
+mLastAddedTag=topicName;
+}
+break;
 case DELETE:
 if (ReaderTagActions.performTagAction(ReaderTagActions.TagAction.DELETE,topicName,null)) {
-  getTagAdapter().refreshTopics();
-  if (mLastAddedTag != null && mLastAddedTag.equals(topicName))   mLastAddedTag=null;
-  mTagsChanged=true;
+getTagAdapter().refreshTopics();
+if (mLastAddedTag != null && mLastAddedTag.equals(topicName)) mLastAddedTag=null;
+mTagsChanged=true;
 }
 break;
 }

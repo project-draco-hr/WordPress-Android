@@ -1,24 +1,32 @@
 {
   int itemId=item.getItemId();
-  if (itemId == R.id.menu_edit_post) {
-    if (mAutoSaveHandler != null)     mAutoSaveHandler.removeCallbacks(autoSaveRunnable);
-    if (savePost(false,false)) {
-      if (mQuickMediaType >= 0) {
-        if (mQuickMediaType == Constants.QUICK_POST_PHOTO_CAMERA || mQuickMediaType == Constants.QUICK_POST_PHOTO_LIBRARY)         mPost.setQuickPostType("QuickPhoto");
- else         if (mQuickMediaType == Constants.QUICK_POST_VIDEO_CAMERA || mQuickMediaType == Constants.QUICK_POST_VIDEO_LIBRARY)         mPost.setQuickPostType("QuickVideo");
-      }
-      WordPress.currentPost=mPost;
-      PostUploadService.addPostToUpload(mPost);
-      startService(new Intent(this,PostUploadService.class));
-      Intent i=new Intent();
-      i.putExtra("shouldRefresh",true);
-      setResult(RESULT_OK,i);
-      finish();
+  if (itemId == R.id.menu_save_post) {
+    if (mPost.isUploaded()) {
+      WPMobileStatsUtil.flagProperty(getStatEventEditorClosed(),WPMobileStatsUtil.StatsPropertyPostDetailClickedUpdate);
     }
+ else {
+      WPMobileStatsUtil.flagProperty(getStatEventEditorClosed(),WPMobileStatsUtil.StatsPropertyPostDetailClickedPublish);
+    }
+    savePost(false);
+    PostUploadService.addPostToUpload(mPost);
+    startService(new Intent(this,PostUploadService.class));
+    Intent i=new Intent();
+    i.putExtra("shouldRefresh",true);
+    setResult(RESULT_OK,i);
+    finish();
     return true;
   }
+ else   if (itemId == R.id.menu_preview_post) {
+    mViewPager.setCurrentItem(PAGE_PREVIEW);
+  }
  else   if (itemId == android.R.id.home) {
-    showCancelAlert(true);
+    if (mViewPager.getCurrentItem() > PAGE_CONTENT) {
+      mViewPager.setCurrentItem(PAGE_CONTENT);
+      supportInvalidateOptionsMenu();
+    }
+ else {
+      showCancelAlert();
+    }
     return true;
   }
   return false;

@@ -1,8 +1,24 @@
 {
   PreferenceCategory blogsCategory=(PreferenceCategory)findPreference("wp_pref_category_blogs");
   blogsCategory.removeAll();
-  List<Map<String,Object>> accounts=WordPress.wpDB.getAccounts();
   int order=0;
+  Preference addBlogPreference=new Preference(this);
+  addBlogPreference.setTitle(R.string.add_self_hosted_blog);
+  Intent intentWelcome=new Intent(this,WelcomeActivity.class);
+  intentWelcome.putExtra(WelcomeActivity.START_FRAGMENT_KEY,WelcomeActivity.ADD_SELF_HOSTED_BLOG);
+  addBlogPreference.setIntent(intentWelcome);
+  addBlogPreference.setOrder(order++);
+  blogsCategory.addPreference(addBlogPreference);
+  List<Map<String,Object>> allAccounts=WordPress.wpDB.getAccountsBy("dotcomFlag=1",null);
+  if (allAccounts.size() > 1) {
+    Preference manageBlogPreference=new Preference(this);
+    manageBlogPreference.setTitle(R.string.show_and_hide_blogs);
+    Intent intentManage=new Intent(this,ManageBlogsActivity.class);
+    manageBlogPreference.setIntent(intentManage);
+    manageBlogPreference.setOrder(order++);
+    blogsCategory.addPreference(manageBlogPreference);
+  }
+  List<Map<String,Object>> accounts=WordPress.wpDB.getVisibleAccounts();
   for (  Map<String,Object> account : accounts) {
     String blogName=StringUtils.unescapeHTML(account.get("blogName").toString());
     int accountId=(Integer)account.get("id");
@@ -22,11 +38,4 @@
     blogSettingsPreference.setOrder(order++);
     blogsCategory.addPreference(blogSettingsPreference);
   }
-  Preference addBlogPreference=new Preference(this);
-  addBlogPreference.setTitle(R.string.add_account);
-  Intent intent=new Intent(this,WelcomeActivity.class);
-  intent.putExtra(WelcomeActivity.SKIP_WELCOME,true);
-  addBlogPreference.setIntent(intent);
-  addBlogPreference.setOrder(order++);
-  blogsCategory.addPreference(addBlogPreference);
 }

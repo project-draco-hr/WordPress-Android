@@ -1,0 +1,67 @@
+{
+  if (!hasActivity() || !hasComment())   return;
+  final int btnTextResId;
+  final int btnDrawResId;
+  final CommentStatus newStatus;
+  final int statusTextResId;
+  final int statusColor;
+  final boolean showSpamButton;
+switch (mComment.getStatusEnum()) {
+case APPROVED:
+    btnTextResId=R.string.unapprove;
+  btnDrawResId=R.drawable.moderate_unapprove;
+newStatus=CommentStatus.UNAPPROVED;
+showSpamButton=true;
+statusTextResId=R.string.approved;
+statusColor=getActivity().getResources().getColor(R.color.blue_extra_dark);
+break;
+case UNAPPROVED:
+btnTextResId=R.string.approve;
+btnDrawResId=R.drawable.moderate_approve;
+newStatus=CommentStatus.APPROVED;
+showSpamButton=true;
+statusTextResId=R.string.unapproved;
+statusColor=getActivity().getResources().getColor(R.color.orange_medium);
+break;
+case SPAM:
+btnTextResId=R.string.approve;
+btnDrawResId=R.drawable.moderate_approve;
+newStatus=CommentStatus.APPROVED;
+showSpamButton=false;
+statusTextResId=R.string.spam;
+statusColor=Color.RED;
+break;
+default :
+return;
+}
+if (mIsUsersBlog) {
+mTxtStatus.setText(getString(statusTextResId).toUpperCase());
+mTxtStatus.setTextColor(statusColor);
+if (mTxtStatus.getVisibility() != View.VISIBLE) {
+mTxtStatus.clearAnimation();
+ReaderAniUtils.fadeIn(mTxtStatus);
+}
+}
+ else {
+mTxtStatus.setVisibility(View.GONE);
+}
+if (isModerationEnabled()) {
+mBtnModerate.setText(btnTextResId);
+mBtnModerate.setCompoundDrawablesWithIntrinsicBounds(btnDrawResId,0,0,0);
+mBtnModerate.setOnClickListener(new View.OnClickListener(){
+@Override public void onClick(View v){
+moderateComment(newStatus);
+}
+}
+);
+mBtnModerate.setVisibility(View.VISIBLE);
+}
+ else {
+mBtnModerate.setVisibility(View.GONE);
+}
+mBtnSpam.setVisibility(isMarkSpamEnabled() && showSpamButton ? View.VISIBLE : View.GONE);
+if (mLayoutButtons.getVisibility() != View.VISIBLE && (isMarkSpamEnabled() || isModerationEnabled())) {
+mLayoutButtons.clearAnimation();
+ReaderAniUtils.flyIn(mLayoutButtons);
+}
+}

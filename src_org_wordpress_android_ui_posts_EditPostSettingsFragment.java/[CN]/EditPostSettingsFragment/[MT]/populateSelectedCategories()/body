@@ -1,0 +1,30 @@
+{
+  List<View> viewsToRemove=new ArrayList<View>();
+  for (int i=0; i < mSectionCategories.getChildCount(); i++) {
+    View v=mSectionCategories.getChildAt(i);
+    if (v == null)     return;
+    Object tag=v.getTag();
+    if (tag != null && tag.getClass() == String.class && (((String)tag).startsWith(CATEGORY_PREFIX_TAG) || tag.equals("select-category"))) {
+      viewsToRemove.add(v);
+    }
+  }
+  for (  View viewToRemove : viewsToRemove) {
+    mSectionCategories.removeView(viewToRemove);
+  }
+  viewsToRemove.clear();
+  LayoutInflater layoutInflater=getActivity().getLayoutInflater();
+  for (  String categoryName : mCategories) {
+    Button buttonCategory=(Button)layoutInflater.inflate(R.layout.category_button,null);
+    if (categoryName != null && buttonCategory != null) {
+      buttonCategory.setText(Html.fromHtml(categoryName));
+      buttonCategory.setTag(CATEGORY_PREFIX_TAG + categoryName);
+      buttonCategory.setOnClickListener(this);
+      mSectionCategories.addView(buttonCategory);
+    }
+  }
+  Button selectCategory=(Button)layoutInflater.inflate(R.layout.category_select_button,null);
+  if (selectCategory != null) {
+    selectCategory.setOnClickListener(this);
+    mSectionCategories.addView(selectCategory);
+  }
+}

@@ -1,0 +1,59 @@
+{
+  Post post=mActivity.getPost();
+  if (post == null)   return;
+  String password=(mPasswordEditText.getText() != null) ? mPasswordEditText.getText().toString() : "";
+  String pubDate=(mPubDateText.getText() != null) ? mPubDateText.getText().toString() : "";
+  String excerpt=(mExcerptEditText.getText() != null) ? mExcerptEditText.getText().toString() : "";
+  long pubDateTimestamp=0;
+  if (!pubDate.equals(getResources().getText(R.string.immediately))) {
+    if (mIsCustomPubDate)     pubDateTimestamp=mCustomPubDate;
+ else     if (post.getDate_created_gmt() > 0)     pubDateTimestamp=post.getDate_created_gmt();
+  }
+  String tags="", postFormat="";
+  if (!post.isPage()) {
+    tags=(mTagsEditText.getText() != null) ? mTagsEditText.getText().toString() : "";
+    Spinner postFormatSpinner=(Spinner)getActivity().findViewById(R.id.postFormat);
+    postFormat=mPostFormats[postFormatSpinner.getSelectedItemPosition()];
+  }
+  int selectedStatus=mStatusSpinner.getSelectedItemPosition();
+  String status="";
+switch (selectedStatus) {
+case 0:
+    status="publish";
+  break;
+case 1:
+status="draft";
+break;
+case 2:
+status="pending";
+break;
+case 3:
+status="private";
+break;
+}
+Double latitude=0.0;
+Double longitude=0.0;
+if (WordPress.getCurrentBlog().isLocation()) {
+try {
+latitude=mCurrentLocation.getLatitude();
+longitude=mCurrentLocation.getLongitude();
+}
+ catch (Exception e) {
+e.printStackTrace();
+}
+}
+if (mCurrentLocation == null) {
+latitude=post.getLatitude();
+longitude=post.getLongitude();
+}
+post.setMt_excerpt(excerpt);
+post.setDate_created_gmt(pubDateTimestamp);
+post.setJSONCategories(new JSONArray(mCategories));
+post.setMt_keywords(tags);
+post.setPost_status(status);
+post.setWP_password(password);
+post.setLatitude(latitude);
+post.setLongitude(longitude);
+post.setWP_post_form(postFormat);
+post.update();
+}

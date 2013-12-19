@@ -1,34 +1,11 @@
 {
   super.onCreate(savedInstanceState);
-  boolean isTranslucentActionBarEnabled=isTranslucentActionBarEnabled();
-  if (isTranslucentActionBarEnabled)   getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
   setContentView(R.layout.reader_activity_main);
   getSupportActionBar().setDisplayShowTitleEnabled(false);
   setSupportProgressBarVisibility(false);
   createMenuDrawer(R.layout.reader_activity_main);
-  if (isTranslucentActionBarEnabled && super.mMenuDrawer != null) {
-    super.mMenuDrawer.setOnDrawerStateChangeListener(new MenuDrawer.OnDrawerStateChangeListener(){
-      @Override public void onDrawerStateChange(      int oldState,      int newState){
-switch (newState) {
-case MenuDrawer.STATE_OPENING:
-          mPrevActionBarAlpha=mCurrentActionBarAlpha;
-        setActionBarAlpha(ALPHA_NONE);
-      break;
-case MenuDrawer.STATE_CLOSING:
-    setActionBarAlpha(mPrevActionBarAlpha);
-  break;
-}
-}
-@Override public void onDrawerSlide(float openRatio,int offsetPixels){
-}
-}
-);
-}
-if (savedInstanceState == null) {
-showPostListFragment();
-}
- else {
-mHasPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);
-mHasPerformedPurge=savedInstanceState.getBoolean(KEY_HAS_PURGED);
-}
+  if (savedInstanceState != null) {
+    mHasPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);
+    mHasPerformedPurge=savedInstanceState.getBoolean(KEY_HAS_PURGED);
+  }
 }

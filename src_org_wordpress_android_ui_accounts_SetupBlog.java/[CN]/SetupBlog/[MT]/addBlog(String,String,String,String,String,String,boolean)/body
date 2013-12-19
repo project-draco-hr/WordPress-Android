@@ -1,0 +1,34 @@
+{
+  Blog blog=null;
+  if (!WordPress.wpDB.isBlogInDatabase(Integer.parseInt(blogId),xmlRpcUrl)) {
+    blog=new Blog(xmlRpcUrl,username,password);
+    blog.setHomeURL(homeUrl);
+    blog.setHttpuser(mHttpUsername);
+    blog.setHttppassword(mHttpPassword);
+    blog.setBlogName(blogName);
+    blog.setImagePlacement("");
+    blog.setFullSizeImage(false);
+    blog.setMaxImageWidth(DEFAULT_IMAGE_SIZE);
+    blog.setMaxImageWidthId(5);
+    blog.setRunService(false);
+    blog.setBlogId(Integer.parseInt(blogId));
+    blog.setDotcomFlag(xmlRpcUrl.contains("wordpress.com"));
+    blog.setWpVersion("");
+    blog.setAdmin(isAdmin);
+    blog.save(null);
+  }
+ else {
+    int accountId=WordPress.wpDB.getAccountIdForBlogIdAndXmlRpcUrl(Integer.parseInt(blogId),xmlRpcUrl);
+    try {
+      blog=new Blog(accountId);
+      if (!blogName.equals(blog.getBlogName())) {
+        blog.setBlogName(blogName);
+        blog.save();
+      }
+    }
+ catch (    Exception e) {
+      Log.e(WordPress.TAG,"accountId: " + accountId + " not found");
+    }
+  }
+  return blog;
+}

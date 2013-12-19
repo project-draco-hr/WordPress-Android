@@ -4,18 +4,45 @@
   mImageView=(ImageView)v.findViewById(R.id.nux_dialog_image);
   mTitleTextView=(WPTextView)v.findViewById(R.id.nux_dialog_title);
   mDescriptionTextView=(WPTextView)v.findViewById(R.id.nux_dialog_description);
-  mFooterTextView=(WPTextView)v.findViewById(R.id.nux_dialog_footer);
+  mFooterOneButton=(WPTextView)v.findViewById(R.id.nux_dialog_footer_1_button);
+  mFooterTwoButtons=(RelativeLayout)v.findViewById(R.id.nux_dialog_footer_2_buttons);
+  mFooterRightButton=(WPTextView)v.findViewById(R.id.nux_dialog_get_started_button);
+  mFooterLeftButton=(WPTextView)v.findViewById(R.id.nux_dialog_learn_more_button);
   Bundle args=this.getArguments();
   mTitleTextView.setText(args.getString(ARG_TITLE));
   mDescriptionTextView.setText(args.getString(ARG_DESCRIPTION));
-  mFooterTextView.setText(args.getString(ARG_FOOTER));
+  mFooterOneButton.setText(args.getString(ARG_FOOTER));
   mImageView.setImageResource(args.getInt(ARG_IMAGE));
-  v.setClickable(true);
-  v.setOnClickListener(new View.OnClickListener(){
+  if (args.getBoolean(ARG_TWO_BUTTONS)) {
+    mFooterOneButton.setVisibility(View.GONE);
+    mFooterTwoButtons.setVisibility(View.VISIBLE);
+    mFooterRightButton.setText(args.getString(ARG_SECOND_BUTTON_LABEL));
+  }
+  View.OnClickListener clickListenerDismiss=new View.OnClickListener(){
     @Override public void onClick(    View v){
       dismissAllowingStateLoss();
     }
   }
-);
+;
+  final int action=args.getInt(ARG_SECOND_BUTTON_ACTION,0);
+  final String param=args.getString(ARG_SECOND_BUTTON_PARAM);
+  View.OnClickListener clickListenerFinish=new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      if (action == ACTION_FINISH) {
+        getActivity().finish();
+      }
+      if (action == ACTION_OPEN_URL) {
+        Intent intent=new Intent(Intent.ACTION_VIEW,Uri.parse(param));
+        startActivity(intent);
+        dismissAllowingStateLoss();
+      }
+    }
+  }
+;
+  v.setClickable(true);
+  v.setOnClickListener(clickListenerDismiss);
+  mFooterOneButton.setOnClickListener(clickListenerDismiss);
+  mFooterLeftButton.setOnClickListener(clickListenerDismiss);
+  mFooterRightButton.setOnClickListener(clickListenerFinish);
   return v;
 }

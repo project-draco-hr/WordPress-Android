@@ -1,0 +1,25 @@
+{
+  if (activity == null)   return;
+  final TextView txtMessageBar=(TextView)activity.findViewById(R.id.text_message_bar);
+  if (txtMessageBar == null)   return;
+  if (txtMessageBar.getVisibility() == View.VISIBLE)   return;
+switch (messageBarType) {
+case INFO:
+    txtMessageBar.setBackgroundResource(R.color.reader_message_bar_blue);
+  break;
+case ALERT:
+txtMessageBar.setBackgroundResource(R.color.reader_message_bar_orange);
+break;
+default :
+return;
+}
+txtMessageBar.setText(message);
+ReaderAniUtils.startAnimation(txtMessageBar,R.anim.reader_message_bar_in);
+txtMessageBar.setVisibility(View.VISIBLE);
+new Handler().postDelayed(new Runnable(){
+@Override public void run(){
+hideMessageBar(activity,runnable,false);
+}
+}
+,DELAY_MILLIS);
+}

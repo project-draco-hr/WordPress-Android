@@ -1,0 +1,41 @@
+{
+  MediaGallery gallery=(MediaGallery)data.getSerializableExtra(MediaGalleryActivity.RESULT_MEDIA_GALLERY);
+  if (gallery == null || gallery.getIds().size() == 0)   return;
+  int selectionStart=mContentEditText.getSelectionStart();
+  int selectionEnd=mContentEditText.getSelectionEnd();
+  if (selectionStart > selectionEnd) {
+    int temp=selectionEnd;
+    selectionEnd=selectionStart;
+    selectionStart=temp;
+  }
+  int line, column=0;
+  if (mContentEditText.getLayout() != null) {
+    line=mContentEditText.getLayout().getLineForOffset(selectionStart);
+    column=mContentEditText.getSelectionStart() - mContentEditText.getLayout().getLineStart(line);
+  }
+  Editable s=mContentEditText.getText();
+  if (s == null)   return;
+  MediaGalleryImageSpan[] gallerySpans=s.getSpans(selectionStart,selectionEnd,MediaGalleryImageSpan.class);
+  if (gallerySpans.length != 0) {
+    for (    MediaGalleryImageSpan gallerySpan : gallerySpans) {
+      if (gallerySpan.getMediaGallery().getUniqueId() == gallery.getUniqueId()) {
+        gallerySpan.setMediaGallery(gallery);
+        int spanStart=s.getSpanStart(gallerySpan);
+        int spanEnd=s.getSpanEnd(gallerySpan);
+        s.setSpan(gallerySpan,spanStart,spanEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+      }
+    }
+    return;
+  }
+ else   if (column != 0) {
+    s.insert(selectionEnd,"\n");
+    selectionStart=selectionStart + 1;
+    selectionEnd=selectionEnd + 1;
+  }
+  s.insert(selectionStart," ");
+  MediaGalleryImageSpan is=new MediaGalleryImageSpan(getActivity(),gallery);
+  s.setSpan(is,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+  AlignmentSpan.Standard as=new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER);
+  s.setSpan(as,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+  s.insert(selectionEnd + 1,"\n\n");
+}

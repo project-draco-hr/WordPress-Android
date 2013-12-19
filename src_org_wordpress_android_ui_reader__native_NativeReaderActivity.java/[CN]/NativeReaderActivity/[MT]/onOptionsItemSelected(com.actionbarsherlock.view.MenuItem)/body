@@ -1,12 +1,17 @@
 {
 switch (item.getItemId()) {
 case R.id.menu_tags:
-    ReaderActivityLauncher.showReaderTagsForResult(this);
+    ReaderActivityLauncher.showReaderTagsForResult(this,null);
   return true;
 case R.id.menu_refresh:
 ReaderPostListFragment fragment=getPostListFragment();
 if (fragment != null) {
-fragment.updatePostsWithCurrentTag(ReaderActions.RequestDataAction.LOAD_NEWER);
+if (!NetworkUtils.isNetworkAvailable(this)) {
+  ToastUtils.showToast(this,R.string.reader_toast_err_no_connection,ToastUtils.Duration.LONG);
+}
+ else {
+  fragment.updatePostsWithCurrentTag(ReaderActions.RequestDataAction.LOAD_NEWER);
+}
 return true;
 }
 break;

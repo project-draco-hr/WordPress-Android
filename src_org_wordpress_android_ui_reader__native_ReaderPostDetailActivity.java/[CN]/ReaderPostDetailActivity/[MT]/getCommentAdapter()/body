@@ -3,9 +3,18 @@
     if (mPost == null)     ReaderLog.w("comment adapter created before post loaded");
     ReaderActions.DataLoadedListener dataLoadedListener=new ReaderActions.DataLoadedListener(){
       @Override public void onDataLoaded(      boolean isEmpty){
-        final View commentDivider=findViewById(R.id.divider_comments);
-        commentDivider.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
         mCommentFooter.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+      }
+    }
+;
+    ReaderCommentAdapter.RequestReplyListener replyListener=new ReaderCommentAdapter.RequestReplyListener(){
+      @Override public void onRequestReply(      long commentId){
+        if (!mIsAddCommentBoxShowing) {
+          showAddCommentBox(commentId);
+        }
+ else {
+          hideAddCommentBox();
+        }
       }
     }
 ;
@@ -17,7 +26,7 @@
       }
     }
 ;
-    mAdapter=new ReaderCommentAdapter(this,mPost,dataLoadedListener,dataRequestedListener);
+    mAdapter=new ReaderCommentAdapter(this,mPost,replyListener,dataLoadedListener,dataRequestedListener);
   }
   return mAdapter;
 }

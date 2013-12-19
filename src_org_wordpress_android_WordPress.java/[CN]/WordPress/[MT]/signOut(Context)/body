@@ -1,5 +1,5 @@
 {
-  new WPComXMLRPCApi().unregisterWPComToken(context,GCMRegistrar.getRegistrationId(context));
+  NotificationUtils.unregisterPushNotificationsToken(context,GCMRegistrar.getRegistrationId(context));
   try {
     GCMRegistrar.checkDevice(context);
     GCMRegistrar.unregister(context);
@@ -15,4 +15,11 @@
   wpDB.deactivateAccounts();
   wpDB.updateLastBlogId(-1);
   currentBlog=null;
+  UserPrefs.reset();
+  ReaderDatabase.reset();
+  notesBucket.reset();
+  metaBucket.reset();
+  Intent broadcastIntent=new Intent();
+  broadcastIntent.setAction(BROADCAST_ACTION_SIGNOUT);
+  context.sendBroadcast(broadcastIntent);
 }

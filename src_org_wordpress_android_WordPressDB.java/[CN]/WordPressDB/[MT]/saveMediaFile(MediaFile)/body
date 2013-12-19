@@ -9,7 +9,7 @@
   values.put("horizontalAlignment",mf.getHorizontalAlignment());
   values.put("width",mf.getWidth());
   values.put("height",mf.getHeight());
-  values.put("mimeType",mf.getMIMEType());
+  values.put("mimeType",mf.getMimeType());
   values.put("featured",mf.isFeatured());
   values.put("isVideo",mf.isVideo());
   values.put("isFeaturedInPost",mf.isFeaturedInPost());
@@ -31,6 +31,9 @@ synchronized (this) {
       }
       if (!isMarkedForDelete)       result=db.update(MEDIA_TABLE,values,"blogId=? AND mediaId=?",new String[]{mf.getBlogId(),mf.getMediaId()});
     }
-    if (result == 0 && !isMarkedForDelete)     db.insert(MEDIA_TABLE,null,values);
+    if (result == 0 && !isMarkedForDelete) {
+      result=db.update(MEDIA_TABLE,values,"postID=? AND filePath=?",new String[]{String.valueOf(mf.getPostID()),mf.getFilePath()});
+      if (result == 0)       db.insert(MEDIA_TABLE,null,values);
+    }
   }
 }

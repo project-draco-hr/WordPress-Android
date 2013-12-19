@@ -1,0 +1,23 @@
+{
+  if (target == null)   return;
+  Animation animation=AnimationUtils.loadAnimation(target.getContext(),aniResId);
+  if (animation == null)   return;
+  if (listener != null)   animation.setAnimationListener(listener);
+  if (duration != Duration.DEFAULT) {
+    Context context=target.getContext();
+    final long durationMillis;
+switch (duration) {
+case LONG:
+      durationMillis=context.getResources().getInteger(android.R.integer.config_mediumAnimTime);
+    break;
+case MEDIUM:
+  durationMillis=context.getResources().getInteger(android.R.integer.config_mediumAnimTime);
+break;
+default :
+durationMillis=context.getResources().getInteger(android.R.integer.config_shortAnimTime);
+break;
+}
+animation.setDuration(durationMillis);
+}
+target.startAnimation(animation);
+}

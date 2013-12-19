@@ -1,11 +1,42 @@
 {
-  ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.nux_fragment_welcome_sign_in,container,false);
+  ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.nux_fragment_welcome,container,false);
+  ImageView statsIcon=(ImageView)rootView.findViewById(R.id.nux_fragment_icon);
+  statsIcon.setImageResource(R.drawable.nux_icon_wp);
+  mUrlButtonLayout=(RelativeLayout)rootView.findViewById(R.id.url_button_layout);
   mUsernameEditText=(EditText)rootView.findViewById(R.id.nux_username);
   mUsernameEditText.addTextChangedListener(this);
   mPasswordEditText=(EditText)rootView.findViewById(R.id.nux_password);
   mPasswordEditText.addTextChangedListener(this);
   mUrlEditText=(EditText)rootView.findViewById(R.id.nux_url);
-  mSignInButton=(WPTextView)rootView.findViewById(R.id.nux_sign_in);
+  mSignInButton=(WPTextView)rootView.findViewById(R.id.nux_sign_in_button);
   mSignInButton.setOnClickListener(mSignInClickListener);
+  mProgressBarSignIn=(RelativeLayout)rootView.findViewById(R.id.nux_sign_in_progress_bar);
+  mProgressTextSignIn=(WPTextView)rootView.findViewById(R.id.nux_sign_in_progress_text);
+  mCreateAccountButton=(WPTextView)rootView.findViewById(R.id.nux_create_account_button);
+  mCreateAccountButton.setOnClickListener(mCreateAccountListener);
+  mAddSelfHostedButton=(WPTextView)rootView.findViewById(R.id.nux_add_selfhosted_button);
+  mAddSelfHostedButton.setOnClickListener(new OnClickListener(){
+    @Override public void onClick(    View v){
+      if (mUrlButtonLayout.getVisibility() == View.VISIBLE) {
+        mUrlButtonLayout.setVisibility(View.GONE);
+        mAddSelfHostedButton.setText(getString(R.string.nux_add_selfhosted_blog));
+        mSelfHosted=false;
+      }
+ else {
+        mUrlButtonLayout.setVisibility(View.VISIBLE);
+        mAddSelfHostedButton.setText(getString(R.string.nux_oops_not_selfhosted_blog));
+        mSelfHosted=true;
+      }
+    }
+  }
+);
+  mUsernameEditText.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+    public void onFocusChange(    View v,    boolean hasFocus){
+      if (!hasFocus) {
+        autocorrectUsername();
+      }
+    }
+  }
+);
   return rootView;
 }

@@ -1,0 +1,33 @@
+{
+  final ProgressBar progress=(hasActivity() ? (ProgressBar)getActivity().findViewById(R.id.progress_loading) : null);
+  if (progress != null)   progress.setVisibility(View.VISIBLE);
+  RestRequest.Listener restListener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      mIsRequestingComment=false;
+      if (hasActivity()) {
+        if (progress != null)         progress.setVisibility(View.GONE);
+        Comment comment=new Comment(jsonObject);
+        if (comment != null) {
+          if (profileImageUrl != null)           comment.setProfileImageUrl(profileImageUrl);
+          WordPress.wpDB.addComment(mAccountId,comment);
+          setComment(blogId,comment);
+        }
+      }
+    }
+  }
+;
+  RestRequest.ErrorListener restErrListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      mIsRequestingComment=false;
+      Log.e(WordPress.TAG,VolleyUtils.errStringFromVolleyError(volleyError),volleyError);
+      if (hasActivity()) {
+        if (progress != null)         progress.setVisibility(View.GONE);
+        ToastUtils.showToast(getActivity(),R.string.reader_toast_err_get_comment,ToastUtils.Duration.LONG);
+      }
+    }
+  }
+;
+  final String path=String.format("/sites/%s/comments/%s",blogId,commentId);
+  mIsRequestingComment=true;
+  WordPress.restClient.get(path,restListener,restErrListener);
+}

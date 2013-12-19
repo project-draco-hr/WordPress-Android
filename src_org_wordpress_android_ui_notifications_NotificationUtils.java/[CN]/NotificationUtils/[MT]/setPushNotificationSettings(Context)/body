@@ -1,0 +1,39 @@
+{
+  String gcmToken=GCMRegistrar.getRegistrationId(context);
+  if (gcmToken == null)   return;
+  if (!WordPress.hasValidWPComCredentials(context))   return;
+  SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(context);
+  String settingsJson=settings.getString("wp_pref_notification_settings",null);
+  if (settingsJson == null)   return;
+  Gson gson=new Gson();
+  Map<String,StringMap<String>> notificationSettings=gson.fromJson(settingsJson,HashMap.class);
+  Map<String,Object> updatedSettings=new HashMap<String,Object>();
+  if (notificationSettings == null)   return;
+  StringMap<?> mutedBlogsMap=(StringMap<?>)notificationSettings.get("muted_blogs");
+  StringMap<?> muteUntilMap=(StringMap<?>)notificationSettings.get("mute_until");
+  ArrayList<StringMap<Double>> blogsList=(ArrayList<StringMap<Double>>)mutedBlogsMap.get("value");
+  notificationSettings.remove("muted_blogs");
+  notificationSettings.remove("mute_until");
+  for (  Map.Entry<String,StringMap<String>> entry : notificationSettings.entrySet()) {
+    StringMap<String> setting=entry.getValue();
+    updatedSettings.put(entry.getKey(),setting.get("value"));
+  }
+  if (muteUntilMap != null && muteUntilMap.get("value") != null) {
+    updatedSettings.put("mute_until",muteUntilMap.get("value"));
+  }
+  ArrayList<StringMap<Double>> mutedBlogsList=new ArrayList<StringMap<Double>>();
+  for (int i=0; i < blogsList.size(); i++) {
+    StringMap<Double> userBlog=blogsList.get(i);
+    if (MapUtils.getMapBool(userBlog,"value")) {
+      mutedBlogsList.add(userBlog);
+    }
+  }
+  if (updatedSettings.size() == 0 && mutedBlogsList.size() == 0)   return;
+  updatedSettings.put("muted_blogs",mutedBlogsList);
+  Map<String,String> contentStruct=new HashMap<String,String>();
+  contentStruct.put("device_token",gcmToken);
+  contentStruct.put("device_family","android");
+  contentStruct.put("app_secret_key",NotificationUtils.getAppPushNotificationsName());
+  contentStruct.put("settings",gson.toJson(updatedSettings));
+  WordPress.restClient.post("/push/settings/new",contentStruct,null,null,null);
+}
