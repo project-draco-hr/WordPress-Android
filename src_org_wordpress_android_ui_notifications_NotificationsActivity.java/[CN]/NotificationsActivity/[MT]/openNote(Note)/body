@@ -1,18 +1,7 @@
 {
   if (note == null || isFinishing())   return;
   if (note.isUnread()) {
-    restClient.markNoteAsRead(note,new RestRequest.Listener(){
-      @Override public void onResponse(      JSONObject response){
-        note.setUnreadCount("0");
-        mNotesList.getNotesAdapter().notifyDataSetChanged();
-      }
-    }
-,new RestRequest.ErrorListener(){
-      @Override public void onErrorResponse(      VolleyError error){
-        Log.d(TAG,String.format("Failed to mark as read %s",error));
-      }
-    }
-);
+    note.markAsRead();
   }
   FragmentManager fm=getSupportFragmentManager();
   if (fm.getBackStackEntryCount() > 0) {
