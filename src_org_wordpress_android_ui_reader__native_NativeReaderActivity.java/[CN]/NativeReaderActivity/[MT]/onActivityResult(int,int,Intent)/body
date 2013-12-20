@@ -1,13 +1,15 @@
 {
   super.onActivityResult(requestCode,resultCode,data);
   boolean isResultOK=(resultCode == Activity.RESULT_OK);
-  ReaderPostListFragment readerFragment=getPostListFragment();
+  final ReaderPostListFragment readerFragment=getPostListFragment();
 switch (requestCode) {
 case Constants.INTENT_READER_TAGS:
     if (isResultOK && readerFragment != null && data != null) {
-      if (data.getBooleanExtra(ReaderTagActivity.KEY_TAGS_CHANGED,false))       readerFragment.refreshTags();
-      String lastAddedTopic=data.getStringExtra(ReaderTagActivity.KEY_LAST_ADDED_TAG);
-      if (!TextUtils.isEmpty(lastAddedTopic))       readerFragment.setCurrentTag(lastAddedTopic);
+      if (data.getBooleanExtra(ReaderTagActivity.KEY_TAGS_CHANGED,false)) {
+        readerFragment.reloadTags();
+        String lastAddedTag=data.getStringExtra(ReaderTagActivity.KEY_LAST_ADDED_TAG);
+        if (!TextUtils.isEmpty(lastAddedTag))         readerFragment.setCurrentTag(lastAddedTag);
+      }
     }
   break;
 case Constants.INTENT_READER_POST_DETAIL:
