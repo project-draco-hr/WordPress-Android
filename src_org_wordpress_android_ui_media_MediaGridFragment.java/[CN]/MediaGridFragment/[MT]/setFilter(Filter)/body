@@ -1,14 +1,17 @@
 {
   mFilter=filter;
   Cursor cursor=filterItems(mFilter);
-  if (cursor != null) {
+  mResultView.setVisibility(View.GONE);
+  if (cursor != null && cursor.getCount() != 0) {
     mGridAdapter.swapCursor(cursor);
-    mResultView.setVisibility(View.GONE);
+    setEmptyViewVisible(false);
   }
  else {
-    if (filter != Filter.CUSTOM_DATE) {
-      mResultView.setVisibility(View.VISIBLE);
-      mResultView.setText(getResources().getString(R.string.empty_fields));
+    if (filter == Filter.CUSTOM_DATE) {
+      setEmptyViewVisible(false);
+    }
+ else {
+      setEmptyViewVisible(true,R.string.media_empty_list);
     }
   }
 }
