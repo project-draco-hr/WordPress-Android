@@ -5,9 +5,6 @@
     cacheDir=context.getApplicationContext().getCacheDir();
   }
   if (!cacheDir.exists())   cacheDir.mkdirs();
-  Random r=new Random();
-  final String path="wp-" + r.nextInt(400) + r.nextInt(400)+ ".jpg";
-  File f=new File(cacheDir,path);
   try {
     InputStream input;
     if (imageUri.toString().startsWith("content://")) {
@@ -16,6 +13,8 @@
  else {
       input=new URL(imageUri.toString()).openStream();
     }
+    String fileName="wp-" + System.currentTimeMillis();
+    File f=new File(cacheDir,fileName);
     OutputStream output=new FileOutputStream(f);
     byte data[]=new byte[1024];
     int count;

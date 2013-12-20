@@ -1,6 +1,8 @@
 {
   if (TextUtils.isEmpty(tagName))   return new ReaderPostList();
-  String sql="SELECT tbl_posts.* FROM tbl_posts, tbl_post_tags" + " WHERE tbl_posts.post_id = tbl_post_tags.post_id" + " AND tbl_posts.blog_id = tbl_post_tags.blog_id"+ " AND tbl_post_tags.tag_name=?"+ " ORDER BY tbl_posts.timestamp DESC";
+  String sql="SELECT tbl_posts.* FROM tbl_posts, tbl_post_tags" + " WHERE tbl_posts.post_id = tbl_post_tags.post_id" + " AND tbl_posts.blog_id = tbl_post_tags.blog_id"+ " AND tbl_post_tags.tag_name=?";
+  if (tagName.equals(ReaderTag.TAG_NAME_LIKED))   sql+=" AND tbl_posts.is_liked != 0";
+  sql+=" ORDER BY tbl_posts.timestamp DESC";
   if (maxPosts > 0)   sql+=" LIMIT " + Integer.toString(maxPosts);
   Cursor cursor=ReaderDatabase.getReadableDb().rawQuery(sql,new String[]{tagName});
   try {
