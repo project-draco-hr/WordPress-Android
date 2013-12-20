@@ -92,7 +92,7 @@
  else {
     curImagePath=mf.getFilePath();
     Uri imageUri=Uri.parse(curImagePath);
-    File jpeg=null;
+    File imageFile=null;
     String mimeType="", orientation="", path="";
     if (imageUri.toString().contains("content:")) {
       String[] projection;
@@ -108,33 +108,52 @@
         orientation=cur.getString(orientationColumn);
         String thumbData=cur.getString(dataColumn);
         mimeType=cur.getString(mimeTypeColumn);
-        jpeg=new File(thumbData);
+        imageFile=new File(thumbData);
         path=thumbData;
-        mf.setFilePath(jpeg.getPath());
+        mf.setFilePath(imageFile.getPath());
       }
     }
  else {
       path=imageUri.toString().replace("file://","");
-      jpeg=new File(path);
-      String extension=MimeTypeMap.getFileExtensionFromUrl(path);
-      if (extension != null) {
-        MimeTypeMap mime=MimeTypeMap.getSingleton();
-        mimeType=mime.getMimeTypeFromExtension(extension);
-        if (mimeType == null)         mimeType="image/jpeg";
-      }
+      imageFile=new File(path);
       mf.setFilePath(path);
     }
-    if (jpeg == null) {
+    if (imageFile == null) {
       mErrorMessage=context.getString(R.string.file_not_found);
       mIsMediaError=true;
       return null;
     }
+    String fileName=imageFile.getName();
+    MimeTypeMap mimeTypeMap=MimeTypeMap.getSingleton();
+    String fileExtension=MimeTypeMap.getFileExtensionFromUrl(fileName);
+    if (!TextUtils.isEmpty(fileExtension)) {
+      mimeType=mimeTypeMap.getMimeTypeFromExtension(fileExtension);
+    }
+ else {
+      try {
+        DataInputStream inputStream=new DataInputStream(new FileInputStream(imageFile));
+        String imageMimeType=MediaUtils.getMimeTypeOfInputStream(inputStream);
+        if (!TextUtils.isEmpty(imageMimeType)) {
+          mimeType=imageMimeType;
+          if (mimeTypeMap.hasMimeType(mimeType)) {
+            fileExtension=mimeTypeMap.getExtensionFromMimeType(mimeType);
+            fileName+="." + fileExtension;
+          }
+        }
+        inputStream.close();
+      }
+ catch (      FileNotFoundException e) {
+        e.printStackTrace();
+      }
+catch (      IOException e) {
+        e.printStackTrace();
+      }
+    }
     ImageHelper ih=new ImageHelper();
     orientation=ih.getExifOrientation(path,orientation);
-    String imageTitle=jpeg.getName();
     String resizedPictureURL=null;
     boolean shouldUploadResizedVersion=!blog.getMaxImageWidth().equals("Original Size");
-    if (shouldUploadResizedVersion == false) {
+    if (!shouldUploadResizedVersion && !fileExtension.equals("gif")) {
       int pictureSettingWidth=mf.getWidth();
       BitmapFactory.Options options=new BitmapFactory.Options();
       options.inJustDecodeBounds=true;
@@ -150,7 +169,7 @@
       byte[] bytes;
       byte[] finalBytes;
       try {
-        bytes=new byte[(int)jpeg.length()];
+        bytes=new byte[(int)imageFile.length()];
       }
  catch (      OutOfMemoryError er) {
         mErrorMessage=context.getString(R.string.out_of_memory);
@@ -159,7 +178,7 @@
       }
       DataInputStream in=null;
       try {
-        in=new DataInputStream(new FileInputStream(jpeg));
+        in=new DataInputStream(new FileInputStream(imageFile));
       }
  catch (      FileNotFoundException e) {
         e.printStackTrace();
@@ -177,15 +196,14 @@
         e.printStackTrace();
       }
       String width=String.valueOf(mf.getWidth());
-      ImageHelper ih2=new ImageHelper();
-      finalBytes=ih2.createThumbnail(bytes,width,orientation,false);
+      finalBytes=ih.createThumbnail(bytes,width,orientation,false,fileExtension);
       if (finalBytes == null) {
         mErrorMessage=context.getString(R.string.out_of_memory);
         mIsMediaError=true;
         return null;
       }
       Map<String,Object> m=new HashMap<String,Object>();
-      m.put("name",imageTitle);
+      m.put("name",fileName);
       m.put("type",mimeType);
       m.put("bits",finalBytes);
       m.put("overwrite",true);
@@ -195,7 +213,7 @@
     String fullSizeUrl=null;
     if (!shouldUploadResizedVersion || blog.isFullSizeImage()) {
       Map<String,Object> m=new HashMap<String,Object>();
-      m.put("name",imageTitle);
+      m.put("name",fileName);
       m.put("type",mimeType);
       m.put("bits",mf);
       m.put("overwrite",true);
