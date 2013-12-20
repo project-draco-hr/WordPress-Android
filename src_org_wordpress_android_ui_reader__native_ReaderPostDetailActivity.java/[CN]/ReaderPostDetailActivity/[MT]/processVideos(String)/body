@@ -2,15 +2,11 @@
   if (text == null)   return "";
   int iFrameStart=text.indexOf("<iframe");
   if (iFrameStart == -1)   return text;
-  boolean usesSingleQuotes=text.contains("src='");
   while (iFrameStart > -1) {
     int iFrameEnd=text.indexOf(">",iFrameStart);
     if (iFrameEnd == -1)     return text;
-    int srcStart=text.indexOf(usesSingleQuotes ? "src='" : "src=\"",iFrameStart);
-    if (srcStart == -1 || srcStart > iFrameEnd)     return text;
-    int srcEnd=text.indexOf(usesSingleQuotes ? "'" : "\"",srcStart + 5);
-    if (srcEnd == -1 || srcEnd > iFrameEnd)     return text;
-    String src=text.substring(srcStart + 5,srcEnd);
+    String src=getAttribute(text,"src",iFrameStart,iFrameEnd);
+    if (src == null)     return text;
     boolean isVideo=(src.contains("youtube") || src.contains("video") || src.contains("vimeo"));
     final String videoDiv;
     if (isVideo) {
