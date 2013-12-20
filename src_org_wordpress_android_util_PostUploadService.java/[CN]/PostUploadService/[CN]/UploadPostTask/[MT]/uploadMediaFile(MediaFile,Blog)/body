@@ -126,7 +126,10 @@
     String fileName=imageFile.getName();
     MimeTypeMap mimeTypeMap=MimeTypeMap.getSingleton();
     String fileExtension=MimeTypeMap.getFileExtensionFromUrl(fileName);
-    if (TextUtils.isEmpty(fileExtension)) {
+    if (!TextUtils.isEmpty(fileExtension)) {
+      mimeType=mimeTypeMap.getMimeTypeFromExtension(fileExtension);
+    }
+ else {
       try {
         DataInputStream inputStream=new DataInputStream(new FileInputStream(imageFile));
         String imageMimeType=MediaUtils.getMimeTypeOfInputStream(inputStream);
@@ -145,9 +148,6 @@
 catch (      IOException e) {
         e.printStackTrace();
       }
-    }
- else {
-      mimeType=mimeTypeMap.getMimeTypeFromExtension(fileExtension);
     }
     ImageHelper ih=new ImageHelper();
     orientation=ih.getExifOrientation(path,orientation);
