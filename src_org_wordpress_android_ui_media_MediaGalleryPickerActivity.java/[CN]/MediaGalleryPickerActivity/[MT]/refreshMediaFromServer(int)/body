@@ -13,6 +13,10 @@
         MediaGridAdapter adapter=(MediaGridAdapter)mGridView.getAdapter();
         mHasRetrievedAllMedia=(count == 0);
         adapter.setHasRetrieviedAll(mHasRetrievedAllMedia);
+        String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+        if (WordPress.wpDB.getMediaCountAll(blogId) == 0 && count == 0) {
+          noMediaFinish();
+        }
         mIsRefreshing=false;
         if (!isFinishing()) {
           runOnUiThread(new Runnable(){
