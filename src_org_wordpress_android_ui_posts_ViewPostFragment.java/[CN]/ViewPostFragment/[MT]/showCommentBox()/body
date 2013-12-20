@@ -1,0 +1,24 @@
+{
+  if (mIsCommentBoxShowing || mIsSubmittingComment)   return;
+  if (!hasActivity())   return;
+  WPMobileStatsUtil.flagProperty(WPMobileStatsUtil.StatsEventPostsClosed,WPMobileStatsUtil.StatsPropertyPostDetailClickedComment);
+  ReaderAniUtils.flyIn(mLayoutCommentBox);
+  mEditComment.requestFocus();
+  mEditComment.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+    @Override public boolean onEditorAction(    TextView v,    int actionId,    KeyEvent event){
+      if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEND)       submitComment();
+      return false;
+    }
+  }
+);
+  final ImageView imgPostComment=(ImageView)mLayoutCommentBox.findViewById(R.id.image_post_comment);
+  imgPostComment.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      submitComment();
+    }
+  }
+);
+  InputMethodManager imm=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+  imm.showSoftInput(mEditComment,InputMethodManager.SHOW_IMPLICIT);
+  mIsCommentBoxShowing=true;
+}
