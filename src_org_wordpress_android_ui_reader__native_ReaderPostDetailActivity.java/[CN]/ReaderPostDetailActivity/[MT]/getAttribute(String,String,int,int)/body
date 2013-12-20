@@ -1,0 +1,9 @@
+{
+  boolean usesSingleQuotes=html.contains(attribute + "='");
+  final String searchFor=attribute + (usesSingleQuotes ? "='" : "=\"");
+  int attrStart=html.indexOf(searchFor);
+  if (attrStart == -1 || attrStart > tagEnd)   return null;
+  int attrEnd=html.indexOf(usesSingleQuotes ? "'" : "\"",attrStart + searchFor.length());
+  if (attrEnd == -1 || attrEnd > tagEnd)   return null;
+  return html.substring(attrStart + searchFor.length(),attrEnd);
+}
