@@ -1,12 +1,9 @@
 {
   if (parent.getId() == R.id.blog_spinner) {
-    try {
-      WordPress.currentBlog=new Blog(mAccountIDs[position]);
+    if (!selectBlog(mAccountIDs[position])) {
+      ToastUtils.showToast(this,R.string.blog_not_found,ToastUtils.Duration.SHORT);
+      finish();
     }
- catch (    Exception e) {
-      showBlogErrorAndFinish();
-    }
-    WordPress.wpDB.updateLastBlogId(WordPress.currentBlog.getId());
   }
  else   if (parent.getId() == R.id.action_spinner) {
     mActionIndex=position;
