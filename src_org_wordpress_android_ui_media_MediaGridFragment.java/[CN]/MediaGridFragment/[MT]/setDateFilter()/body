@@ -1,6 +1,6 @@
 {
   Blog blog=WordPress.getCurrentBlog();
-  if (blog == null)   return;
+  if (blog == null)   return null;
   String blogId=String.valueOf(blog.getBlogId());
   GregorianCalendar startDate=new GregorianCalendar(mStartYear,mStartMonth,mStartDay);
   GregorianCalendar endDate=new GregorianCalendar(mEndYear,mEndMonth,mEndDay);
@@ -13,9 +13,12 @@
     fmt.setCalendar(startDate);
     String formattedStart=fmt.format(startDate.getTime());
     String formattedEnd=fmt.format(endDate.getTime());
+    mResultView.setVisibility(View.VISIBLE);
     mResultView.setText("Displaying media from " + formattedStart + " to "+ formattedEnd);
+    return cursor;
   }
  else {
     setEmptyViewVisible(true,R.string.media_empty_list_custom_date);
   }
+  return null;
 }
