@@ -5,21 +5,26 @@
   mBlogSpinnerTitle=(TextView)findViewById(R.id.blog_spinner_title);
   mBlogSpinner=(IcsSpinner)findViewById(R.id.blog_spinner);
   String[] blogNames=getBlogNames();
-  if (blogNames != null) {
-    if (blogNames.length == 1) {
-      mBlogSpinner.setVisibility(View.GONE);
-      mBlogSpinnerTitle.setVisibility(View.GONE);
-    }
+  if (blogNames == null) {
+    finishIfNoVisibleBlogs();
+    return;
+  }
+  if (blogNames.length == 1) {
+    mBlogSpinner.setVisibility(View.GONE);
+    mBlogSpinnerTitle.setVisibility(View.GONE);
+  }
  else {
-      ArrayAdapter<String> adapter=new ArrayAdapter<String>(themedContext,R.layout.sherlock_spinner_dropdown_item,blogNames);
-      mBlogSpinner.setAdapter(adapter);
-      mBlogSpinner.setOnItemSelectedListener(this);
-    }
+    ArrayAdapter<String> adapter=new ArrayAdapter<String>(themedContext,R.layout.sherlock_spinner_dropdown_item,blogNames);
+    mBlogSpinner.setAdapter(adapter);
+    mBlogSpinner.setOnItemSelectedListener(this);
   }
   mActionSpinner=(IcsSpinner)findViewById(R.id.action_spinner);
   if ("text/plain".equals(getIntent().getType())) {
     mActionSpinner.setVisibility(View.GONE);
     findViewById(R.id.action_spinner_title).setVisibility(View.GONE);
+    if (blogNames.length == 1) {
+      startActivityAndFinish(new Intent(this,EditPostActivity.class));
+    }
   }
  else {
     String[] actions=new String[]{getString(R.string.share_action_post),getString(R.string.share_action_media)};
