@@ -4,9 +4,19 @@
   Context themedContext=getSupportActionBar().getThemedContext();
   mBlogSpinnerTitle=(TextView)findViewById(R.id.blog_spinner_title);
   mBlogSpinner=(IcsSpinner)findViewById(R.id.blog_spinner);
+  mAlwaysUseCheckBox=(CheckedTextView)findViewById(R.id.always_use_checkbox);
+  mAlwaysUseCheckBox.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      mAlwaysUseCheckBox.setChecked(!mAlwaysUseCheckBox.isChecked());
+    }
+  }
+);
   String[] blogNames=getBlogNames();
   if (blogNames == null) {
     finishIfNoVisibleBlogs();
+    return;
+  }
+  if (autoShareIfEnabled()) {
     return;
   }
   if (blogNames.length == 1) {
@@ -19,7 +29,7 @@
     mBlogSpinner.setOnItemSelectedListener(this);
   }
   mActionSpinner=(IcsSpinner)findViewById(R.id.action_spinner);
-  if ("text/plain".equals(getIntent().getType())) {
+  if (isSharingText()) {
     mActionSpinner.setVisibility(View.GONE);
     findViewById(R.id.action_spinner_title).setVisibility(View.GONE);
     if (blogNames.length == 1) {

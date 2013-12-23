@@ -1,0 +1,18 @@
+{
+  SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
+  int blogId=settings.getInt(SHARE_TEXT_BLOG_ID_KEY,-1);
+  if (blogId != -1) {
+    mActionIndex=ADD_TO_NEW_POST;
+    if (selectBlog(blogId)) {
+      shareIt();
+      return true;
+    }
+ else {
+      SharedPreferences.Editor editor=PreferenceManager.getDefaultSharedPreferences(this).edit();
+      editor.remove(SHARE_TEXT_BLOG_ID_KEY);
+      editor.commit();
+      ToastUtils.showToast(this,R.string.auto_sharing_preference_reset_caused_by_error,ToastUtils.Duration.LONG);
+    }
+  }
+  return false;
+}
