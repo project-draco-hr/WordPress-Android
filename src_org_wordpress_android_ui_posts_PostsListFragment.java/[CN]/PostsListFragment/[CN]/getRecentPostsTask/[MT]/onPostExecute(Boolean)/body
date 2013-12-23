@@ -3,14 +3,7 @@
     mOnRefreshListener.onRefresh(false);
     if (getActivity() == null)     return;
     if (errorMsg != "" && !getActivity().isFinishing()) {
-      FragmentTransaction ft=getFragmentManager().beginTransaction();
-      WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(String.format(getResources().getString(R.string.error_refresh),(mIsPage) ? getResources().getText(R.string.pages) : getResources().getText(R.string.posts)),errorMsg);
-      try {
-        alert.show(ft,"alert");
-      }
- catch (      Exception e) {
-        e.printStackTrace();
-      }
+      ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_pages : R.string.error_refresh_posts,ToastUtils.Duration.LONG);
       errorMsg="";
     }
     return;
