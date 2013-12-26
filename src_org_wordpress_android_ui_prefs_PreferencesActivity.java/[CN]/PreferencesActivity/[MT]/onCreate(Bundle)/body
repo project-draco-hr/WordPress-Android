@@ -19,7 +19,7 @@
   signOutPreference.setOnPreferenceClickListener(signOutPreferenceClickListener);
   mSettings=PreferenceManager.getDefaultSharedPreferences(this);
   if (WordPress.hasValidWPComCredentials(PreferencesActivity.this)) {
-    String settingsJson=mSettings.getString("wp_pref_notification_settings",null);
+    String settingsJson=mSettings.getString(NotificationUtils.WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,null);
     if (settingsJson == null) {
       com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
         @Override public void onResponse(        JSONObject jsonObject){
@@ -27,7 +27,7 @@
           Editor editor=mSettings.edit();
           try {
             JSONObject settingsJSON=jsonObject.getJSONObject("settings");
-            editor.putString("wp_pref_notification_settings",settingsJSON.toString());
+            editor.putString(NotificationUtils.WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,settingsJSON.toString());
             editor.commit();
           }
  catch (          JSONException e) {
