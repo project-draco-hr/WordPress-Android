@@ -14,14 +14,14 @@
   mediaFile.setDateCreatedGMT(System.currentTimeMillis());
   mediaFile.setMediaId(String.valueOf(System.currentTimeMillis()));
   String mimeType=MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileType);
-  if (mimeType.startsWith("image")) {
+  if (mimeType != null && mimeType.startsWith("image")) {
     BitmapFactory.Options bfo=new BitmapFactory.Options();
     bfo.inJustDecodeBounds=true;
     BitmapFactory.decodeFile(path,bfo);
     mediaFile.setWidth(bfo.outWidth);
     mediaFile.setHeight(bfo.outHeight);
   }
-  mediaFile.setMimeType(mimeType);
+  if (mimeType != null)   mediaFile.setMimeType(mimeType);
   mediaFile.save();
   mCallback.onMediaAdded(mediaFile.getMediaId());
   startMediaUploadService();
