@@ -1,5 +1,8 @@
 {
   View v=inflater.inflate(R.layout.viewpost,container,false);
+  mLayoutCommentBox=(ViewGroup)v.findViewById(R.id.layout_comment_box);
+  mEditComment=(EditText)mLayoutCommentBox.findViewById(R.id.edit_comment);
+  mEditComment.setHint(R.string.reader_hint_comment_on_post);
   ImageButton editPostButton=(ImageButton)v.findViewById(R.id.editPost);
   editPostButton.setOnClickListener(new ImageButton.OnClickListener(){
     public void onClick(    View v){
@@ -35,10 +38,12 @@
     }
   }
 );
-  ImageButton addCommentButton=(ImageButton)v.findViewById(R.id.addComment);
-  addCommentButton.setOnClickListener(new ImageButton.OnClickListener(){
+  mAddCommentButton=(ImageButton)v.findViewById(R.id.addComment);
+  mAddCommentButton.setOnClickListener(new ImageButton.OnClickListener(){
     public void onClick(    View v){
-      if (!parentActivity.mIsRefreshing)       onDetailPostActionListener.onDetailPostAction(PostsActivity.POST_COMMENT,WordPress.currentPost);
+      if (!parentActivity.mIsRefreshing) {
+        toggleCommentBox();
+      }
     }
   }
 );
