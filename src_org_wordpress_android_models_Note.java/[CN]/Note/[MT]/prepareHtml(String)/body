@@ -5,6 +5,14 @@
   }
  catch (  RuntimeException runtimeException) {
     html=(SpannableStringBuilder)Html.fromHtml(text,null,null);
+    try {
+      JSONObject additionalData=new JSONObject();
+      additionalData.put("input_text",text);
+      WPMobileStatsUtil.trackExceptionForWPCom(runtimeException,"note-html-parsing",additionalData);
+    }
+ catch (    JSONException jsonException) {
+      jsonException.printStackTrace();
+    }
   }
   Emoticons.replaceEmoticonsWithEmoji(html);
   QuoteSpan spans[]=html.getSpans(0,html.length(),QuoteSpan.class);
