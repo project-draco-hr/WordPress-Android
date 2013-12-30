@@ -1,0 +1,36 @@
+{
+  if (!hasActivity() || mIsSubmittingComment)   return;
+  if (!NetworkUtils.checkConnection(getActivity()))   return;
+  final String commentText=EditTextUtils.getText(mEditComment);
+  if (TextUtils.isEmpty(commentText))   return;
+  final ImageView imgPostComment=(ImageView)mLayoutCommentBox.findViewById(R.id.image_post_comment);
+  final ProgressBar progress=(ProgressBar)mLayoutCommentBox.findViewById(R.id.progress_submit_comment);
+  mEditComment.setEnabled(false);
+  mAddCommentButton.setEnabled(false);
+  EditTextUtils.hideSoftInput(mEditComment);
+  imgPostComment.setVisibility(View.GONE);
+  progress.setVisibility(View.VISIBLE);
+  CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      mIsSubmittingComment=false;
+      if (!hasActivity())       return;
+      parentActivity.attemptToSelectPost();
+      mEditComment.setEnabled(true);
+      mAddCommentButton.setEnabled(true);
+      imgPostComment.setVisibility(View.VISIBLE);
+      progress.setVisibility(View.GONE);
+      if (succeeded) {
+        ToastUtils.showToast(getActivity(),R.string.comment_added);
+        hideCommentBox();
+        mEditComment.setText(null);
+        parentActivity.refreshComments();
+      }
+ else {
+        ToastUtils.showToast(getActivity(),R.string.reader_toast_err_comment_failed,ToastUtils.Duration.LONG);
+      }
+    }
+  }
+;
+  int accountId=WordPress.getCurrentBlogAccountId();
+  CommentActions.addComment(accountId,WordPress.currentPost.getPostid(),commentText,actionListener);
+}
