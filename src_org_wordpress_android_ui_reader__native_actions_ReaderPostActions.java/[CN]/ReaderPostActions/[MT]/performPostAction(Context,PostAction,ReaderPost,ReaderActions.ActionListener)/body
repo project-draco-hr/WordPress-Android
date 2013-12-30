@@ -25,6 +25,7 @@ case TOGGLE_FOLLOW:
 boolean isAskingToFollow=!post.isFollowedByCurrentUser;
 post.isFollowedByCurrentUser=isAskingToFollow;
 ReaderPostTable.addOrUpdatePost(post);
+ReaderPostTable.setBlogPostsFollowStatus(post.blogId,isAskingToFollow);
 path="sites/" + post.blogId + "/follows/";
 if (isAskingToFollow) {
 path+="new";
@@ -57,6 +58,7 @@ ReaderLog.w(String.format("post action %s failed (%s)",action.name(),error));
 ReaderLog.e(volleyError);
 if (originalPost != null) {
 ReaderPostTable.addOrUpdatePost(originalPost);
+ReaderPostTable.setBlogPostsFollowStatus(originalPost.blogId,originalPost.isFollowedByCurrentUser);
 switch (action) {
 case TOGGLE_LIKE:
 ReaderLikeTable.setCurrentUserLikesPost(post,originalPost.isLikedByCurrentUser);
