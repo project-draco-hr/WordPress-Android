@@ -6,12 +6,12 @@
   final String title=mf.getTitle();
   final String description=mf.getDescription();
   final String caption=mf.getCaption();
-  ApiHelper.EditMediaItemTask task=new ApiHelper.EditMediaItemTask(mf.getMediaId(),mf.getTitle(),mf.getDescription(),mf.getCaption(),new ApiHelper.GenericCallback(){
+  ApiHelper.EditMediaItemTask task=new ApiHelper.EditMediaItemTask(mf.getMediaId(),mf.getTitle(),mf.getDescription(),mf.getCaption(),new ApiHelper.EditMediaItemTask.Callback(){
     @Override public void onSuccess(){
-      String localBlogTableIndex=String.valueOf(WordPress.getCurrentBlog().getLocalTableBlogId());
-      WordPress.wpDB.updateMediaFile(localBlogTableIndex,mediaId,title,description,caption);
+      String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+      WordPress.wpDB.updateMediaFile(blogId,mediaId,title,description,caption);
     }
-    @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
+    @Override public void onFailure(){
       Toast.makeText(getActivity(),R.string.media_edit_failure,Toast.LENGTH_LONG).show();
     }
   }
