@@ -11,18 +11,20 @@
 switch (action) {
 case MotionEvent.ACTION_MOVE:
             if (mIsMoving) {
-              if (yDiff < -MOVE_MIN_DIFF && !mIsFullScreen) {
+              if (yDiff < -MOVE_MIN_DIFF && !mIsFullScreen && canScrollDown(mListView)) {
                 setIsFullScreen(true);
                 return true;
+              }
+ else               if (mIsFullScreen && !canScrollUp(mListView)) {
+                setIsFullScreen(false);
               }
  else               if (yDiff > MOVE_MIN_DIFF && mIsFullScreen) {
                 setIsFullScreen(false);
                 return true;
               }
             }
- else             if (canScrollList(mListView)) {
+ else {
               mIsMoving=true;
-              return true;
             }
           break;
 default :
