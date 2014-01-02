@@ -7,10 +7,11 @@
     holder.txtAuthor=(TextView)convertView.findViewById(R.id.text_comment_author);
     holder.txtText=(TextView)convertView.findViewById(R.id.text_comment_text);
     holder.txtDate=(TextView)convertView.findViewById(R.id.text_comment_date);
+    holder.txtReply=(TextView)convertView.findViewById(R.id.text_reply);
     holder.imgAvatar=(WPNetworkImageView)convertView.findViewById(R.id.image_avatar);
-    holder.spacer=convertView.findViewById(R.id.spacer);
+    holder.spacerIndent=convertView.findViewById(R.id.spacer_indent);
+    holder.spacerTop=convertView.findViewById(R.id.spacer_top);
     holder.progress=(ProgressBar)convertView.findViewById(R.id.progress);
-    holder.imgReply=(ImageView)convertView.findViewById(R.id.image_reply);
     convertView.setTag(holder);
     holder.txtText.setLinksClickable(true);
     holder.txtText.setMovementMethod(LinkMovementMethod.getInstance());
@@ -42,12 +43,13 @@
  else {
     holder.txtAuthor.setTextColor(mNoLinkColor);
   }
-  holder.spacer.setVisibility(comment.parentId == 0 ? View.GONE : View.VISIBLE);
+  holder.spacerTop.setVisibility(position == 0 ? View.VISIBLE : View.GONE);
+  holder.spacerIndent.setVisibility(comment.parentId == 0 ? View.GONE : View.VISIBLE);
   if (comment.level > 0) {
     int indent=Math.min(MAX_INDENT_LEVEL,comment.level) * mIndentPerLevel;
-    RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)holder.spacer.getLayoutParams();
+    RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)holder.spacerIndent.getLayoutParams();
     if (params.width != indent)     params.width=indent;
-    holder.spacer.setVisibility(View.VISIBLE);
+    holder.spacerIndent.setVisibility(View.VISIBLE);
   }
   if (mHighlightCommentId == comment.commentId) {
     convertView.setBackgroundColor(mBgColorHighlight);
@@ -58,7 +60,7 @@
     holder.progress.setVisibility(View.GONE);
   }
   if (mReplyListener != null) {
-    holder.imgReply.setOnClickListener(new View.OnClickListener(){
+    holder.txtReply.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
         mReplyListener.onRequestReply(comment.commentId);
       }
