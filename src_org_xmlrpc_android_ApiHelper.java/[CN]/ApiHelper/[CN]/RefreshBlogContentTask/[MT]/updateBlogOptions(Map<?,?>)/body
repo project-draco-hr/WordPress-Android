@@ -1,0 +1,26 @@
+{
+  boolean isModified=false;
+  Gson gson=new Gson();
+  String blogOptionsJson=gson.toJson(blogOptions);
+  if (blogOptionsJson != null) {
+    isModified|=mBlog.bsetBlogOptions(blogOptionsJson);
+  }
+  if (!mBlog.isDotcomFlag()) {
+    Map<?,?> sv=(HashMap<?,?>)blogOptions.get("software_version");
+    String wpVersion=sv.get("value").toString();
+    if (wpVersion.length() > 0) {
+      isModified|=mBlog.bsetWpVersion(wpVersion);
+    }
+  }
+  Map<?,?> featuredImageHash=(HashMap<?,?>)blogOptions.get("post_thumbnail");
+  if (featuredImageHash != null) {
+    boolean featuredImageCapable=Boolean.parseBoolean(featuredImageHash.get("value").toString());
+    isModified|=mBlog.bsetFeaturedImageCapable(featuredImageCapable);
+  }
+ else {
+    isModified|=mBlog.bsetFeaturedImageCapable(false);
+  }
+  if (isModified && WordPress.getCurrentBlog() != null && WordPress.getCurrentBlog().isActive()) {
+    mBlog.save();
+  }
+}

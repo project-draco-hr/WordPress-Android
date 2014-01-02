@@ -6,15 +6,21 @@
   ab.setDisplayHomeAsUpEnabled(true);
   addPreferencesFromResource(R.xml.preferences);
   mNotificationsGroup=(PreferenceGroup)findPreference("wp_pref_notifications_category");
-  preferenceChangeListener=new OnPreferenceChangeListener(){
+  OnPreferenceChangeListener preferenceChangeListener=new OnPreferenceChangeListener(){
     @Override public boolean onPreferenceChange(    Preference preference,    Object newValue){
-      preference.setSummary(newValue.toString());
+      if (newValue != null) {
+        preference.setSummary(newValue.toString());
+      }
+      InputMethodManager imm=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+      imm.hideSoftInputFromWindow(getListView().getWindowToken(),0);
       return true;
     }
   }
 ;
-  taglineTextPreference=(EditTextPreference)findPreference("wp_pref_post_signature");
-  taglineTextPreference.setOnPreferenceChangeListener(preferenceChangeListener);
+  mTaglineTextPreference=(WPEditTextPreference)findPreference("wp_pref_post_signature");
+  if (mTaglineTextPreference != null) {
+    mTaglineTextPreference.setOnPreferenceChangeListener(preferenceChangeListener);
+  }
   Preference signOutPreference=findPreference("wp_pref_sign_out");
   signOutPreference.setOnPreferenceClickListener(signOutPreferenceClickListener);
   Preference resetAutoShare=findPreference("wp_reset_share_pref");
