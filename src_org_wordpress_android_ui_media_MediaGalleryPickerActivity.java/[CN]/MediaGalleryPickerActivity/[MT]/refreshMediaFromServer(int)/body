@@ -13,7 +13,7 @@
         MediaGridAdapter adapter=(MediaGridAdapter)mGridView.getAdapter();
         mHasRetrievedAllMedia=(count == 0);
         adapter.setHasRetrieviedAll(mHasRetrievedAllMedia);
-        String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+        String blogId=String.valueOf(WordPress.getCurrentBlog().getRemoteBlogId());
         if (WordPress.wpDB.getMediaCountAll(blogId) == 0 && count == 0) {
           noMediaFinish();
         }
@@ -22,7 +22,7 @@
           runOnUiThread(new Runnable(){
             @Override public void run(){
               mGridAdapter.setRefreshing(false);
-              String blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+              String blogId=String.valueOf(WordPress.getCurrentBlog().getRemoteBlogId());
               Cursor cursor=WordPress.wpDB.getMediaImagesForBlog(blogId,mFilteredItems);
               mGridAdapter.swapCursor(cursor);
             }

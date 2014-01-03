@@ -10,7 +10,7 @@
     hPost.put("home_url","home_url");
     hPost.put("admin_url","admin_url");
     hPost.put("login_url","login_url");
-    Object[] vParams={mBlog.getBlogId(),mBlog.getUsername(),mBlog.getPassword(),hPost};
+    Object[] vParams={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword(),hPost};
     Object versionResult;
     try {
       versionResult=client.call("wp.getOptions",vParams);
@@ -27,7 +27,7 @@
     args.add(mContext);
     new getPostFormatsTask().execute(args);
   }
-  Object[] userParams={mBlog.getBlogId(),mBlog.getUsername(),mBlog.getPassword()};
+  Object[] userParams={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword()};
   try {
     Map<String,Object> userInfos=(HashMap<String,Object>)client.call("wp.getProfile",userParams);
     updateBlogAdmin(userInfos);
@@ -37,7 +37,7 @@
   }
   Map<String,Object> hPost=new HashMap<String,Object>();
   hPost.put("number",30);
-  Object[] commentParams={mBlog.getBlogId(),mBlog.getUsername(),mBlog.getPassword(),hPost};
+  Object[] commentParams={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword(),hPost};
   try {
     ApiHelper.refreshComments(mContext,commentParams);
   }
