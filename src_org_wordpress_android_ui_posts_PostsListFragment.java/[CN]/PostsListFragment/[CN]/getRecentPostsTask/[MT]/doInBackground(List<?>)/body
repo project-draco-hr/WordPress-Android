@@ -7,7 +7,7 @@
   int recordCount=(Integer)arguments.get(2);
   mLoadMore=(Boolean)arguments.get(3);
   XMLRPCClient client=new XMLRPCClient(mBlog.getUrl(),mBlog.getHttpuser(),mBlog.getHttppassword());
-  Object[] params={mBlog.getBlogId(),mBlog.getUsername(),mBlog.getPassword(),recordCount};
+  Object[] params={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword(),recordCount};
   try {
     Object[] result=(Object[])client.call((mIsPage) ? "wp.getPages" : "metaWeblog.getRecentPosts",params);
     if (result != null) {
@@ -15,13 +15,13 @@
         success=true;
         List<Map<?,?>> postsList=new ArrayList<Map<?,?>>();
         if (!mLoadMore) {
-          WordPress.wpDB.deleteUploadedPosts(mBlog.getId(),mIsPage);
+          WordPress.wpDB.deleteUploadedPosts(mBlog.getLocalTableBlogId(),mIsPage);
         }
         for (int ctr=0; ctr < result.length; ctr++) {
           Map<?,?> postMap=(Map<?,?>)result[ctr];
           postsList.add(ctr,postMap);
         }
-        WordPress.wpDB.savePosts(postsList,mBlog.getId(),mIsPage);
+        WordPress.wpDB.savePosts(postsList,mBlog.getLocalTableBlogId(),mIsPage);
       }
     }
   }
