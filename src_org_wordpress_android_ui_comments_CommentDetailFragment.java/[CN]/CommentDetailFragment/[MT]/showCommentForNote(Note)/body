@@ -8,11 +8,11 @@
     if (jsonParams != null) {
       int blogId=jsonParams.optInt("blog_id");
       int commentId=jsonParams.optInt("comment_id");
-      int accountId=WordPress.wpDB.getAccountIdForBlogId(blogId);
+      int accountId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(blogId);
       Comment comment=WordPress.wpDB.getComment(accountId,commentId);
       if (comment != null) {
         comment.setProfileImageUrl(note.getIconURL());
-        setComment(blogId,comment);
+        setComment(accountId,comment);
       }
  else {
         requestComment(blogId,commentId,note.getIconURL());
