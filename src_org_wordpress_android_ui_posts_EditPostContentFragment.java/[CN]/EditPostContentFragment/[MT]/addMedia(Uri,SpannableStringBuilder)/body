@@ -1,19 +1,28 @@
 {
-  if (ssb != null && !MediaUtils.isLocalImage(imageUri))   imageUri=MediaUtils.downloadExternalImage(getActivity(),imageUri);
+  if (ssb != null && !MediaUtils.isInMediaStore(imageUri))   imageUri=MediaUtils.downloadExternalMedia(getActivity(),imageUri);
   if (imageUri == null) {
     return false;
   }
-  ImageHelper ih=new ImageHelper();
-  Map<String,Object> mediaData=ih.getImageBytesForPath(imageUri.getEncodedPath(),getActivity());
-  if (mediaData == null) {
-    return false;
+  Bitmap thumbnailBitmap;
+  String mediaTitle="";
+  if (imageUri.toString().contains("video") && !MediaUtils.isInMediaStore(imageUri)) {
+    thumbnailBitmap=BitmapFactory.decodeResource(getActivity().getResources(),R.drawable.media_movieclip);
+    mediaTitle=getResources().getString(R.string.video);
   }
-  Bitmap resizedBitmap=ih.getThumbnailForWPImageSpan(getActivity(),(byte[])mediaData.get("bytes"),(String)mediaData.get("orientation"));
-  if (resizedBitmap == null)   return false;
-  WPImageSpan is=new WPImageSpan(getActivity(),resizedBitmap,imageUri);
+ else {
+    ImageHelper ih=new ImageHelper();
+    Map<String,Object> mediaData=ih.getImageBytesForPath(imageUri.getEncodedPath(),getActivity());
+    if (mediaData == null) {
+      return false;
+    }
+    thumbnailBitmap=ih.getThumbnailForWPImageSpan(getActivity(),(byte[])mediaData.get("bytes"),(String)mediaData.get("orientation"));
+    if (thumbnailBitmap == null)     return false;
+    mediaTitle=(String)mediaData.get("title");
+  }
+  WPImageSpan is=new WPImageSpan(getActivity(),thumbnailBitmap,imageUri);
   MediaFile mediaFile=is.getMediaFile();
   mediaFile.setPostID(mActivity.getPost().getId());
-  mediaFile.setTitle((String)mediaData.get("title"));
+  mediaFile.setTitle(mediaTitle);
   mediaFile.setFilePath(is.getImageSource().toString());
   MediaUtils.setWPImageSpanWidth(getActivity(),imageUri,is);
   if (imageUri.getEncodedPath() != null)   mediaFile.setVideo(imageUri.getEncodedPath().contains("video"));
