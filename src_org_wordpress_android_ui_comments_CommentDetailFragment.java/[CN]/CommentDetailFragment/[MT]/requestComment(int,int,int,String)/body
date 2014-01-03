@@ -9,8 +9,8 @@
         Comment comment=new Comment(jsonObject);
         if (comment != null) {
           if (profileImageUrl != null)           comment.setProfileImageUrl(profileImageUrl);
-          WordPress.wpDB.addComment(mAccountId,comment);
-          setComment(blogId,comment);
+          WordPress.wpDB.addComment(localBlogId,comment);
+          setComment(localBlogId,comment);
         }
       }
     }
@@ -27,7 +27,7 @@
     }
   }
 ;
-  final String path=String.format("/sites/%s/comments/%s",blogId,commentId);
+  final String path=String.format("/sites/%s/comments/%s",remoteBlogId,commentId);
   mIsRequestingComment=true;
   WordPress.restClient.get(path,restListener,restErrListener);
 }

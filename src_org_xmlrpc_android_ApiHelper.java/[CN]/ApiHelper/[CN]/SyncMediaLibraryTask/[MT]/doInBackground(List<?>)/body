@@ -6,14 +6,14 @@
     Log.e("WordPress","ApiHelper - current blog is null");
     return -1;
   }
-  String blogId=String.valueOf(blog.getBlogId());
+  String blogId=String.valueOf(blog.getLocalTableBlogId());
   client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
   Map<String,Object> filter=new HashMap<String,Object>();
   filter.put("number",50);
   filter.put("offset",mOffset);
   if (mFilter == Filter.IMAGES)   filter.put("mime_type","image/*");
  else   if (mFilter == Filter.UNATTACHED)   filter.put("parent_id",0);
-  Object[] apiParams={blog.getBlogId(),blog.getUsername(),blog.getPassword(),filter};
+  Object[] apiParams={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),filter};
   Object[] results=null;
   try {
     results=(Object[])client.call("wp.getMediaLibrary",apiParams);

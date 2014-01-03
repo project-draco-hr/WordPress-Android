@@ -1,10 +1,10 @@
 {
   List<Map<String,Object>> loadedPosts;
   if (WordPress.currentBlog != null) {
-    mLoadedBlogId=WordPress.currentBlog.getBlogId();
+    mLoadedBlogId=WordPress.currentBlog.getRemoteBlogId();
   }
   try {
-    loadedPosts=WordPress.wpDB.loadUploadedPosts(WordPress.currentBlog.getId(),isPage);
+    loadedPosts=WordPress.wpDB.loadUploadedPosts(WordPress.currentBlog.getLocalTableBlogId(),isPage);
   }
  catch (  Exception e1) {
     return false;
@@ -131,7 +131,7 @@ catch (          InvocationTargetException e) {
             mSelectedID=info.targetView.getId();
           }
           boolean allowComments=false;
-          Post post=new Post(WordPress.currentBlog.getId(),mSelectedID,isPage);
+          Post post=new Post(WordPress.currentBlog.getLocalTableBlogId(),mSelectedID,isPage);
           if (post.getId() >= 0) {
             allowComments=post.isMt_allow_comments();
           }

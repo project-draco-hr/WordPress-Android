@@ -8,7 +8,7 @@
   struct.put("description",category_desc);
   struct.put("parent_id",parent_id);
   client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
-  Object[] params={blog.getBlogId(),blog.getUsername(),blog.getPassword(),struct};
+  Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),struct};
   Object result=null;
   try {
     result=client.call("wp.newCategory",params);
@@ -31,7 +31,7 @@
       }
 );
     }
-    WordPress.wpDB.insertCategory(blog.getId(),category_id,parent_id,new_category_name);
+    WordPress.wpDB.insertCategory(blog.getLocalTableBlogId(),category_id,parent_id,new_category_name);
     returnString="addCategory_success";
     mSelectedCategories.add(new_category_name);
   }
