@@ -1,0 +1,17 @@
+{
+  super.onStart();
+  if (!mHasPerformedPurge) {
+    mHasPerformedPurge=true;
+    ReaderDatabase.purgeAsync();
+  }
+  if (!mHasPerformedInitialUpdate) {
+    mHasPerformedInitialUpdate=true;
+    AppLog.i("updating current user");
+    ReaderUserActions.updateCurrentUser(null);
+    AppLog.i("updating cookies");
+    ReaderAuthActions.updateCookies(this);
+    AppLog.i("updating followed blogs");
+    ReaderBlogActions.updateFollowedBlogs();
+    updateTagList();
+  }
+}

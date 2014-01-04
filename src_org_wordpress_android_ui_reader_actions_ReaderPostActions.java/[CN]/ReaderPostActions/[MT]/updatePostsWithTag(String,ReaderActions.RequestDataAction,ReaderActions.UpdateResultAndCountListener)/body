@@ -13,7 +13,7 @@ case LOAD_NEWER:
       String dateNewest=ReaderTagTable.getTagNewestDate(tagName);
     if (!TextUtils.isEmpty(dateNewest)) {
       sb.append("&after=").append(UrlUtils.urlEncode(dateNewest));
-      AppLog.d(T.READER,String.format("requesting newer posts in topic %s (%s)",tagName,dateNewest));
+      AppLog.d(String.format("requesting newer posts in topic %s (%s)",tagName,dateNewest));
     }
   break;
 case LOAD_OLDER:
@@ -21,13 +21,13 @@ String dateOldest=ReaderTagTable.getTagOldestDate(tagName);
 if (TextUtils.isEmpty(dateOldest)) dateOldest=ReaderPostTable.getOldestPubDateWithTag(tagName);
 if (!TextUtils.isEmpty(dateOldest)) {
 sb.append("&before=").append(UrlUtils.urlEncode(dateOldest));
-AppLog.d(T.READER,String.format("requesting older posts in topic %s (%s)",tagName,dateOldest));
+AppLog.d(String.format("requesting older posts in topic %s (%s)",tagName,dateOldest));
 }
 break;
 }
 }
  else {
-AppLog.d(T.READER,String.format("requesting posts in empty topic %s",tagName));
+AppLog.d(String.format("requesting posts in empty topic %s",tagName));
 }
 String endpoint=sb.toString();
 com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
@@ -38,7 +38,7 @@ handleUpdatePostsWithTagResponse(tagName,updateAction,jsonObject,resultListener)
 ;
 RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
 @Override public void onErrorResponse(VolleyError volleyError){
-AppLog.e(T.READER,volleyError);
+AppLog.e(volleyError);
 if (resultListener != null) resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED,-1);
 }
 }

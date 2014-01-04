@@ -9,11 +9,7 @@
       ReaderPost updatedPost=ReaderPost.fromJson(jsonObject);
       final boolean hasChanges=(updatedPost.numReplies != post.numReplies || updatedPost.numLikes != post.numLikes || updatedPost.isCommentsOpen != post.isCommentsOpen || updatedPost.isLikedByCurrentUser != post.isLikedByCurrentUser || updatedPost.isFollowedByCurrentUser != post.isFollowedByCurrentUser);
       if (hasChanges) {
-        AppLog.d(T.READER,"post updated");
-        if (post.hasFeaturedImage() && !updatedPost.hasFeaturedImage()) {
-          AppLog.i(T.READER,"restored featured image after updating post");
-          updatedPost.setFeaturedImage(post.getFeaturedImage());
-        }
+        AppLog.d("post updated");
         ReaderPostTable.addOrUpdatePost(updatedPost);
       }
       if (resultListener != null) {
