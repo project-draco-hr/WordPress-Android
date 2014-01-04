@@ -14,37 +14,20 @@
   contentStruct.put("device_uuid",uuid);
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
-      ReaderLog.d("Register token action succeeded");
-      try {
-        String deviceID=jsonObject.getString("device_id");
-        if (deviceID == null) {
-          Log.e(NotificationUtils.TAG,"Server response is missing of the device_id. Registration skipped!!");
-          return;
-        }
-        SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(ctx);
-        SharedPreferences.Editor editor=settings.edit();
-        editor.putString(WPCOM_PUSH_DEVICE_SERVER_ID,deviceID);
-        editor.commit();
-        Log.d(NotificationUtils.TAG,"Server response OK. The device_id : " + deviceID);
-      }
- catch (      JSONException e1) {
-        Log.e(NotificationUtils.TAG,"Server response is NOT ok. Registration skipped!!",e1);
-        return;
-      }
+      AppLog.d("Register token action succeeded");
       if (loadSettings) {
         com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
           @Override public void onResponse(          JSONObject jsonObject){
-            ReaderLog.d("Settings loaded with success");
+            AppLog.d("token action succeeded");
             SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(ctx);
             Editor editor=settings.edit();
             try {
               JSONObject settingsJSON=jsonObject.getJSONObject("settings");
-              editor.putString(WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,settingsJSON.toString());
+              editor.putString("wp_pref_notification_settings",settingsJSON.toString());
               editor.commit();
             }
  catch (            JSONException e) {
-              Log.e(NotificationUtils.TAG,"Can't parse the JSON object returned from the server that contains PN settings.",e);
-              return;
+              e.printStackTrace();
             }
           }
         }
@@ -56,9 +39,10 @@
 ;
   RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
-      Log.e(NotificationUtils.TAG,"Register token action failed",volleyError);
+      AppLog.w("Register token action failed");
+      AppLog.e(volleyError);
     }
   }
 ;
-  WordPress.restClient.post("/devices/new",contentStruct,null,listener,errorListener);
+  WordPress.restClient.post("/push/register",contentStruct,null,listener,errorListener);
 }

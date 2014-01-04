@@ -1,12 +1,11 @@
 {
-  if (!WordPress.hasValidWPComCredentials(context))   return;
   String gcmToken=GCMRegistrar.getRegistrationId(context);
   if (gcmToken == null)   return;
-  SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(context);
-  String deviceID=settings.getString(WPCOM_PUSH_DEVICE_SERVER_ID,null);
-  if (deviceID == null) {
-    Log.e(NotificationUtils.TAG,"Wait, device_ID is null in preferences. Get device settings skipped. WTF has appenend here?!?!");
-    return;
-  }
-  WordPress.restClient.get("/device/" + deviceID,listener,errorListener);
+  if (!WordPress.hasValidWPComCredentials(context))   return;
+  Map<String,String> contentStruct=new HashMap<String,String>();
+  contentStruct.put("device_token",gcmToken);
+  contentStruct.put("device_family","android");
+  contentStruct.put("app_secret_key",NotificationUtils.getAppPushNotificationsName());
+  WordPress.restClient.post("/push/settings",contentStruct,null,listener,errorListener);
+  return;
 }

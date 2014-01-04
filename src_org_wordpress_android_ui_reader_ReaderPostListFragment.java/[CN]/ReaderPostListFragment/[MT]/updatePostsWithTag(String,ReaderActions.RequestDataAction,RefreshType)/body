@@ -2,7 +2,7 @@
   if (TextUtils.isEmpty(tagName))   return;
   unscheduleAutoUpdate();
   if (!NetworkUtils.isNetworkAvailable(getActivity())) {
-    ReaderLog.i("network unavailable, rescheduling reader update");
+    AppLog.i("network unavailable, rescheduling reader update");
     scheduleAutoUpdate();
     return;
   }
@@ -14,7 +14,7 @@
   ReaderPostActions.updatePostsWithTag(tagName,updateAction,new ReaderActions.UpdateResultAndCountListener(){
     @Override public void onUpdateResult(    ReaderActions.UpdateResult result,    int numNewPosts){
       if (!hasActivity()) {
-        ReaderLog.w("volley response when fragment has no activity");
+        AppLog.w("volley response when fragment has no activity");
         if (numNewPosts > 0)         LocalBroadcastManager.getInstance(WordPress.getContext()).sendBroadcast(new Intent(NativeReaderActivity.ACTION_REFRESH_POSTS));
         return;
       }
