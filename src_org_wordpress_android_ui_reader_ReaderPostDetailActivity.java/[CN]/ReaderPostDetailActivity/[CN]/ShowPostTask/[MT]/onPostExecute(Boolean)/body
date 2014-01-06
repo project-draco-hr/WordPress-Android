@@ -1,0 +1,119 @@
+{
+  mIsPostTaskRunning=false;
+  if (!result) {
+    requestPost();
+    return;
+  }
+  ReaderPostDetailActivity.this.setTitle(mPost.getTitle());
+  showFollowedStatus(txtFollow,mPost.isFollowedByCurrentUser);
+  if (mPost.numLikes > 0 && mLayoutLikes.getVisibility() == View.GONE)   mLayoutLikes.setVisibility(View.INVISIBLE);
+  if (mPost.hasTitle()) {
+    txtTitle.setText(mPost.getTitle());
+  }
+ else {
+    txtTitle.setText(R.string.reader_untitled_post);
+  }
+  txtBlogName.setText(mPost.getBlogName());
+  txtDate.setText(DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished()));
+  if (mPost.hasAuthorName() && !mPost.getAuthorName().equals(mPost.getBlogName())) {
+    txtAuthorName.setText(mPost.getAuthorName());
+    txtAuthorName.setVisibility(View.VISIBLE);
+  }
+ else {
+    txtAuthorName.setVisibility(View.GONE);
+  }
+  if (mPost.hasPostAvatar()) {
+    int avatarSz=getResources().getDimensionPixelSize(R.dimen.avatar_sz_medium);
+    imgAvatar.setImageUrl(mPost.getPostAvatarForDisplay(avatarSz),WPNetworkImageView.ImageType.AVATAR);
+    imgAvatar.setVisibility(View.VISIBLE);
+  }
+ else {
+    imgAvatar.setVisibility(View.GONE);
+  }
+  if (showFeaturedImage) {
+    imgFeatured.setVisibility(View.VISIBLE);
+    imgFeatured.setImageUrl(featuredImageUrl,WPNetworkImageView.ImageType.PHOTO);
+    imgFeatured.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        showPhotoViewer(mPost.getFeaturedImage());
+      }
+    }
+);
+  }
+ else {
+    imgFeatured.setVisibility(View.GONE);
+  }
+  imgBtnReblog.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
+  imgBtnReblog.setSelected(mPost.isRebloggedByCurrentUser);
+  if (mPost.isWP()) {
+    imgBtnReblog.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        doPostReblog(imgBtnReblog,mPost);
+      }
+    }
+);
+  }
+  if (mPost.isWP() && mPost.isCommentsOpen) {
+    imgBtnComment.setVisibility(View.VISIBLE);
+    imgBtnComment.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        toggleShowAddCommentBox();
+      }
+    }
+);
+  }
+ else {
+    imgBtnComment.setVisibility(View.GONE);
+  }
+  txtTitle.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      ReaderActivityLauncher.openUrl(ReaderPostDetailActivity.this,mPost.getUrl());
+    }
+  }
+);
+  if (mPost.hasBlogUrl()) {
+    View.OnClickListener clickListener=new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ReaderActivityLauncher.openUrl(ReaderPostDetailActivity.this,mPost.getBlogUrl());
+      }
+    }
+;
+    txtBlogName.setOnClickListener(clickListener);
+    txtAuthorName.setOnClickListener(clickListener);
+    imgAvatar.setOnClickListener(clickListener);
+  }
+  mWebView.setWebViewClient(new WebViewClient(){
+    @Override public void onPageFinished(    WebView view,    String url){
+      if (mWebView.getVisibility() != View.VISIBLE)       mWebView.setVisibility(View.VISIBLE);
+    }
+    @Override public boolean shouldOverrideUrlLoading(    WebView view,    String url){
+      if (view.getVisibility() == View.VISIBLE) {
+        ReaderActivityLauncher.openUrl(ReaderPostDetailActivity.this,url);
+        return true;
+      }
+ else {
+        return false;
+      }
+    }
+  }
+);
+  new Handler().postDelayed(new Runnable(){
+    @Override public void run(){
+      if (mWebView.getVisibility() != View.VISIBLE) {
+        mWebView.setVisibility(View.VISIBLE);
+        AppLog.w("forced webView to appear before page finished");
+      }
+    }
+  }
+,WEBVIEW_DELAY_MS);
+  mWebView.loadDataWithBaseURL(null,postHtml,"text/html","UTF-8",null);
+  mLayoutIcons.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
+  if (!hasCommentAdapter())   getListView().setAdapter(getCommentAdapter());
+  refreshLikes(false);
+  refreshComments();
+  if (!mHasAlreadyUpdatedPost) {
+    updatePost();
+    mHasAlreadyUpdatedPost=true;
+  }
+  getListView().setVisibility(View.VISIBLE);
+}
