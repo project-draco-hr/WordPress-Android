@@ -31,19 +31,13 @@
       if (isImmediate && isInLayoutPass) {
         post(new Runnable(){
           @Override public void run(){
-            onResponse(response,false);
+            handleResponse(response,true,false);
           }
         }
 );
-        return;
-      }
-      if (response.getBitmap() != null) {
-        setImageBitmap(response.getBitmap());
-        if (!isImmediate)         fadeIn();
-        if (mImageListener != null)         mImageListener.onImageLoaded(true);
       }
  else {
-        setImageDrawable(getDefaultDrawable(getContext(),mImageType));
+        handleResponse(response,isImmediate,true);
       }
     }
   }
