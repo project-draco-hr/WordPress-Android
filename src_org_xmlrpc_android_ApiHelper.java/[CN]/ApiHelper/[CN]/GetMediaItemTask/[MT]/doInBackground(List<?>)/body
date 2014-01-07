@@ -3,7 +3,7 @@
   WordPress.currentBlog=(Blog)arguments.get(0);
   Blog blog=WordPress.currentBlog;
   if (blog == null) {
-    Log.e("WordPress","ApiHelper - current blog is null");
+    setError(ErrorType.INVALID_CURRENT_BLOG,"ApiHelper - current blog is null");
     return null;
   }
   String blogId=String.valueOf(blog.getLocalTableBlogId());
@@ -14,7 +14,7 @@
     results=(Map<?,?>)client.call("wp.getMediaItem",apiParams);
   }
  catch (  XMLRPCException e) {
-    Log.e("WordPress",e.getMessage());
+    setError(ErrorType.NETWORK_XMLRPC,e.getMessage());
   }
   if (results != null && blogId != null) {
     MediaFile mediaFile=new MediaFile(blogId,results);

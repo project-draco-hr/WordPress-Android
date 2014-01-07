@@ -3,16 +3,20 @@
   WordPress.currentBlog=(Blog)arguments.get(0);
   Blog blog=WordPress.currentBlog;
   if (blog == null) {
-    Log.e("WordPress","ApiHelper - current blog is null");
-    return -1;
+    setError(ErrorType.INVALID_CURRENT_BLOG,"ApiHelper - current blog is null");
+    return 0;
   }
   String blogId=String.valueOf(blog.getLocalTableBlogId());
   client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
   Map<String,Object> filter=new HashMap<String,Object>();
   filter.put("number",50);
   filter.put("offset",mOffset);
-  if (mFilter == Filter.IMAGES)   filter.put("mime_type","image/*");
- else   if (mFilter == Filter.UNATTACHED)   filter.put("parent_id",0);
+  if (mFilter == Filter.IMAGES) {
+    filter.put("mime_type","image/*");
+  }
+ else   if (mFilter == Filter.UNATTACHED) {
+    filter.put("parent_id",0);
+  }
   Object[] apiParams={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),filter};
   Object[] results=null;
   try {
@@ -21,21 +25,27 @@
  catch (  XMLRPCException e) {
     Log.e("WordPress",e.getMessage());
     if (e.getMessage().contains("401")) {
-      return NO_UPLOAD_FILES_CAP;
+      setError(ErrorType.NO_UPLOAD_FILES_CAP,e.getMessage());
+      return 0;
     }
   }
-  if (results != null && blogId != null) {
-    Map<?,?> resultMap;
-    if (mOffset == 0) {
-      WordPress.wpDB.setMediaFilesMarkedForDeleted(blogId);
-    }
-    for (    Object result : results) {
-      resultMap=(Map<?,?>)result;
-      MediaFile mediaFile=new MediaFile(blogId,resultMap);
-      WordPress.wpDB.saveMediaFile(mediaFile);
-    }
-    WordPress.wpDB.deleteFilesMarkedForDeleted(blogId);
-    return results.length;
+  if (blogId == null) {
+    setError(ErrorType.INVALID_CURRENT_BLOG,"Invalid blogId");
+    return 0;
   }
-  return UNKNOWN_ERROR;
+  if (results == null) {
+    setError(ErrorType.INVALID_RESULT,"Invalid blogId");
+    return 0;
+  }
+  Map<?,?> resultMap;
+  if (mOffset == 0) {
+    WordPress.wpDB.setMediaFilesMarkedForDeleted(blogId);
+  }
+  for (  Object result : results) {
+    resultMap=(Map<?,?>)result;
+    MediaFile mediaFile=new MediaFile(blogId,resultMap);
+    WordPress.wpDB.saveMediaFile(mediaFile);
+  }
+  WordPress.wpDB.deleteFilesMarkedForDeleted(blogId);
+  return results.length;
 }

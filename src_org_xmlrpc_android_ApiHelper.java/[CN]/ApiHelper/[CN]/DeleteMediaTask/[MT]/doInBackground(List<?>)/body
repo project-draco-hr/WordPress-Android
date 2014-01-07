@@ -1,15 +1,22 @@
 {
   List<?> arguments=params[0];
   Blog blog=(Blog)arguments.get(0);
-  if (blog == null)   return false;
+  if (blog == null) {
+    setError(ErrorType.INVALID_CONTEXT,"ApiHelper - invalid blog");
+    return null;
+  }
   client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
   Object[] apiParams=new Object[]{blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),mMediaId};
-  Boolean result=null;
   try {
-    if (client != null)     result=(Boolean)client.call("wp.deletePost",apiParams);
+    if (client != null) {
+      Boolean result=(Boolean)client.call("wp.deletePost",apiParams);
+      if (!result) {
+        setError(ErrorType.INVALID_RESULT,"wp.deletePost returned false");
+      }
+    }
   }
  catch (  XMLRPCException e) {
-    Log.e("WordPress","XMLRPCException: " + e.getMessage());
+    setError(ErrorType.NETWORK_XMLRPC,e.getMessage());
   }
-  return result;
+  return null;
 }
