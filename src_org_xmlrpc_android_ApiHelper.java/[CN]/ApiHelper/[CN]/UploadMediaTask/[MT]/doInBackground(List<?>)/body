@@ -3,7 +3,7 @@
   WordPress.currentBlog=(Blog)arguments.get(0);
   Blog blog=WordPress.currentBlog;
   if (blog == null) {
-    setError(ErrorType.INVALID_CURRENT_BLOG,"ApiHelper - current blog is null");
+    AppLog.e(T.API,"UploadMediaTask: ApiHelper - current blog is null");
     return null;
   }
   client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
@@ -13,22 +13,14 @@
   data.put("bits",mMediaFile);
   data.put("overwrite",true);
   Object[] apiParams={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),data};
-  if (mContext == null) {
-    return null;
-  }
-  Map<?,?> resultMap;
+  if (mContext == null)   return null;
+  Map<?,?> resultMap=null;
   try {
     resultMap=(HashMap<?,?>)client.call("wp.uploadFile",apiParams,getTempFile(mContext));
   }
  catch (  XMLRPCException e) {
-    setError(ErrorType.NETWORK_XMLRPC,e.getMessage());
-    return null;
+    AppLog.e(T.API,"XMLRPCException: " + e.getMessage());
   }
-  if (resultMap != null && resultMap.containsKey("id")) {
-    return (String)resultMap.get("id");
-  }
- else {
-    setError(ErrorType.INVALID_RESULT,"Invalid result");
-  }
+  if (resultMap != null && resultMap.containsKey("id"))   return (String)resultMap.get("id");
   return null;
 }
