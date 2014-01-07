@@ -3,7 +3,7 @@
   mDeleteInProgress=true;
   final String blogId=cursor.getString((cursor.getColumnIndex("blogId")));
   final String mediaId=cursor.getString(cursor.getColumnIndex("mediaId"));
-  ApiHelper.DeleteMediaTask task=new ApiHelper.DeleteMediaTask(mediaId,new Callback(){
+  ApiHelper.DeleteMediaTask task=new ApiHelper.DeleteMediaTask(mediaId,new ApiHelper.GenericCallback(){
     @Override public void onSuccess(){
       if (WordPress.getCurrentBlog() != null && mediaId != null) {
         WordPress.wpDB.deleteMediaFile(blogId,mediaId);
@@ -11,7 +11,7 @@
       mDeleteInProgress=false;
       mHandler.post(mFetchQueueTask);
     }
-    @Override public void onFailure(){
+    @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage){
       WordPress.wpDB.updateMediaUploadState(blogId,mediaId,"deleted");
       mDeleteInProgress=false;
       mHandler.post(mFetchQueueTask);
