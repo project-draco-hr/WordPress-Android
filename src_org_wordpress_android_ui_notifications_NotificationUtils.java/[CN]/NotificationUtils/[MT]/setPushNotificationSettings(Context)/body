@@ -1,9 +1,14 @@
 {
+  if (!WordPress.hasValidWPComCredentials(context))   return;
   String gcmToken=GCMRegistrar.getRegistrationId(context);
   if (gcmToken == null)   return;
-  if (!WordPress.hasValidWPComCredentials(context))   return;
   SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(context);
-  String settingsJson=settings.getString("wp_pref_notification_settings",null);
+  String deviceID=settings.getString(WPCOM_PUSH_DEVICE_SERVER_ID,null);
+  if (deviceID == null) {
+    Log.e(NotificationUtils.TAG,"Wait, device_ID is null in preferences. Set device settings skipped. WTF has appenend here?!?!");
+    return;
+  }
+  String settingsJson=settings.getString(WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,null);
   if (settingsJson == null)   return;
   Gson gson=new Gson();
   Map<String,StringMap<String>> notificationSettings=gson.fromJson(settingsJson,HashMap.class);
@@ -35,5 +40,5 @@
   contentStruct.put("device_family","android");
   contentStruct.put("app_secret_key",NotificationUtils.getAppPushNotificationsName());
   contentStruct.put("settings",gson.toJson(updatedSettings));
-  WordPress.restClient.post("/push/settings/new",contentStruct,null,null,null);
+  WordPress.restClient.post("/device/" + deviceID,contentStruct,null,null,null);
 }
