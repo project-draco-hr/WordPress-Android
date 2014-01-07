@@ -1,15 +1,29 @@
 {
   View view=inflater.inflate(R.layout.notifications_big_badge,parent,false);
-  mBadgeImageView=(NetworkImageView)view.findViewById(R.id.badge);
+  NetworkImageView badgeImageView=(NetworkImageView)view.findViewById(R.id.badge);
   TextView bodyTextView=(TextView)view.findViewById(R.id.body);
   bodyTextView.setMovementMethod(LinkMovementMethod.getInstance());
   if (getNote() != null) {
     String noteHTML=JSONUtil.queryJSON(getNote().toJSONObject(),"body.html","");
     if (noteHTML.equals(""))     noteHTML=getNote().getSubject();
-    bodyTextView.setText(Html.fromHtml(noteHTML));
+    Spanned html=Html.fromHtml(noteHTML);
+    bodyTextView.setText(html);
     String iconURL=getNote().getIconURL();
-    if (!iconURL.equals("")) {
-      mBadgeImageView.setImageUrl(iconURL,WordPress.imageLoader);
+    if (!iconURL.equals(""))     badgeImageView.setImageUrl(iconURL,WordPress.imageLoader);
+    if (isStatsNote()) {
+      final int remoteBlogId=getNote().getMetaValueAsInt("blog_id",-1);
+      if (WordPress.wpDB.isDotComAccountVisible(remoteBlogId)) {
+        TextView txtStats=(TextView)view.findViewById(R.id.text_stats_link);
+        txtStats.setVisibility(View.VISIBLE);
+        View.OnClickListener statsListener=new View.OnClickListener(){
+          @Override public void onClick(          View v){
+            showStatsActivity(remoteBlogId);
+          }
+        }
+;
+        txtStats.setOnClickListener(statsListener);
+        badgeImageView.setOnClickListener(statsListener);
+      }
     }
   }
   return view;

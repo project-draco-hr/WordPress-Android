@@ -1,0 +1,37 @@
+{
+  if (jsonObject == null) {
+    if (resultListener != null)     resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED);
+    return;
+  }
+  final Handler handler=new Handler();
+  new Thread(){
+    @Override public void run(){
+      ReaderTagList serverTopics=new ReaderTagList();
+      serverTopics.addAll(parseTags(jsonObject,"default",ReaderTag.ReaderTagType.DEFAULT));
+      serverTopics.addAll(parseTags(jsonObject,"subscribed",ReaderTag.ReaderTagType.SUBSCRIBED));
+      ReaderTagList localTopics=new ReaderTagList();
+      localTopics.addAll(ReaderTagTable.getDefaultTags());
+      localTopics.addAll(ReaderTagTable.getSubscribedTags());
+      final boolean hasChanges=!localTopics.isSameList(serverTopics);
+      if (hasChanges) {
+        deleteTags(localTopics.getDeletions(serverTopics));
+        ReaderTagTable.replaceTags(serverTopics);
+      }
+      ReaderTagList serverRecommended=parseTags(jsonObject,"recommended",ReaderTag.ReaderTagType.RECOMMENDED);
+      ReaderTagList localRecommended=ReaderTagTable.getRecommendedTags(false);
+      if (!serverRecommended.isSameList(localRecommended)) {
+        AppLog.d("recommended topics changed");
+        ReaderTagTable.setRecommendedTags(serverRecommended);
+      }
+      if (resultListener != null) {
+        handler.post(new Runnable(){
+          public void run(){
+            resultListener.onUpdateResult(hasChanges ? ReaderActions.UpdateResult.CHANGED : ReaderActions.UpdateResult.UNCHANGED);
+          }
+        }
+);
+      }
+    }
+  }
+.start();
+}

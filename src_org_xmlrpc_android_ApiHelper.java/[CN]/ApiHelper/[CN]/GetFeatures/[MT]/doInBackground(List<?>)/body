@@ -3,7 +3,7 @@
   Blog blog=(Blog)arguments.get(0);
   if (blog == null)   return null;
   client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
-  Object[] apiParams=new Object[]{blog.getBlogId(),blog.getUsername(),blog.getPassword()};
+  Object[] apiParams=new Object[]{blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword()};
   Map<?,?> resultMap=null;
   try {
     resultMap=(HashMap<?,?>)client.call("wpcom.getFeatures",apiParams);
@@ -12,7 +12,7 @@
     Log.e("WordPress","XMLRPCException: " + e.getMessage());
   }
   if (resultMap != null) {
-    return new FeatureSet(blog.getBlogId(),resultMap);
+    return new FeatureSet(blog.getRemoteBlogId(),resultMap);
   }
   return null;
 }
