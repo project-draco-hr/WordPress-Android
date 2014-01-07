@@ -1,7 +1,7 @@
 {
   List<Object> apiArgs=new ArrayList<Object>();
   apiArgs.add(WordPress.getCurrentBlog());
-  GetMediaItemTask task=new GetMediaItemTask(Integer.valueOf(id),new GetMediaItemTask.Callback(){
+  GetMediaItemTask task=new GetMediaItemTask(Integer.valueOf(id),new ApiHelper.GetMediaItemTask.Callback(){
     @Override public void onSuccess(    MediaFile mediaFile){
       String blogId=mediaFile.getBlogId();
       String mediaId=mediaFile.getMediaId();
@@ -10,7 +10,7 @@
       sendUpdateBroadcast(id);
       mHandler.post(mFetchQueueTask);
     }
-    @Override public void onFailure(){
+    @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage){
       mUploadInProgress=false;
       sendUpdateBroadcast(id);
       mHandler.post(mFetchQueueTask);

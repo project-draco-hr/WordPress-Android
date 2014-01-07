@@ -11,11 +11,11 @@
     return;
   }
   if (WordPress.shouldRestoreSelectedActivity && WordPress.getCurrentBlog() != null && !(this instanceof PagesActivity)) {
-    new ApiHelper.RefreshBlogContentTask(this,WordPress.getCurrentBlog(),new ApiHelper.RefreshBlogContentTask.Callback(){
+    new ApiHelper.RefreshBlogContentTask(this,WordPress.getCurrentBlog(),new ApiHelper.GenericCallback(){
       @Override public void onSuccess(){
         if (!isFinishing())         updateMenuDrawer();
       }
-      @Override public void onFailure(){
+      @Override public void onFailure(      ApiHelper.ErrorType errorType,      String errorMessage){
       }
     }
 ).execute(false);
