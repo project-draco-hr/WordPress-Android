@@ -7,12 +7,17 @@
       String mediaId=mediaFile.getMediaId();
       WordPress.wpDB.updateMediaUploadState(blogId,mediaId,"uploaded");
       mUploadInProgress=false;
-      sendUpdateBroadcast(id);
+      sendUpdateBroadcast(id,null);
       mHandler.post(mFetchQueueTask);
     }
     @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage){
       mUploadInProgress=false;
-      sendUpdateBroadcast(id);
+      if (errorType == ApiHelper.ErrorType.NETWORK_XMLRPC) {
+        sendUpdateBroadcast(id,getString(R.string.error_refresh_media));
+      }
+ else {
+        sendUpdateBroadcast(id,null);
+      }
       mHandler.post(mFetchQueueTask);
     }
   }

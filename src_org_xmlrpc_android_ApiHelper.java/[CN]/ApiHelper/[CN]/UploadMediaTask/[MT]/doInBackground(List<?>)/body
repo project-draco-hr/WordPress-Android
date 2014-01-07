@@ -16,12 +16,13 @@
   if (mContext == null) {
     return null;
   }
-  Map<?,?> resultMap=null;
+  Map<?,?> resultMap;
   try {
     resultMap=(HashMap<?,?>)client.call("wp.uploadFile",apiParams,getTempFile(mContext));
   }
  catch (  XMLRPCException e) {
     setError(ErrorType.NETWORK_XMLRPC,e.getMessage());
+    return null;
   }
   if (resultMap != null && resultMap.containsKey("id")) {
     return (String)resultMap.get("id");
