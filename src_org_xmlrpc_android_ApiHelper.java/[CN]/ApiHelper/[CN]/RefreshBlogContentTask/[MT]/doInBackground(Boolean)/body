@@ -11,12 +11,11 @@
     hPost.put("admin_url","admin_url");
     hPost.put("login_url","login_url");
     Object[] vParams={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword(),hPost};
-    Object versionResult=null;
+    Object versionResult;
     try {
       versionResult=client.call("wp.getOptions",vParams);
     }
  catch (    XMLRPCException e) {
-      setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
       return false;
     }
     if (versionResult != null) {
@@ -26,7 +25,7 @@
     List<Object> args=new Vector<Object>();
     args.add(mBlog);
     args.add(mContext);
-    new GetPostFormatsTask().execute(args);
+    new getPostFormatsTask().execute(args);
   }
   Object[] userParams={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword()};
   try {
@@ -34,7 +33,6 @@
     updateBlogAdmin(userInfos);
   }
  catch (  XMLRPCException e) {
-    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
     return false;
   }
   Map<String,Object> hPost=new HashMap<String,Object>();
@@ -44,7 +42,6 @@
     ApiHelper.refreshComments(mContext,commentParams);
   }
  catch (  XMLRPCException e) {
-    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
     return false;
   }
   return true;
