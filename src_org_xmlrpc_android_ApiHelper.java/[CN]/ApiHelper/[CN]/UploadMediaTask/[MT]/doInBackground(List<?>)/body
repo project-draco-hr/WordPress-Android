@@ -3,7 +3,7 @@
   WordPress.currentBlog=(Blog)arguments.get(0);
   Blog blog=WordPress.currentBlog;
   if (blog == null) {
-    Log.e("WordPress","UploadMediaTask: ApiHelper - current blog is null");
+    AppLog.e(T.API,"UploadMediaTask: ApiHelper - current blog is null");
     return null;
   }
   client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
@@ -19,7 +19,7 @@
     resultMap=(HashMap<?,?>)client.call("wp.uploadFile",apiParams,getTempFile(mContext));
   }
  catch (  XMLRPCException e) {
-    Log.e("WordPress","XMLRPCException: " + e.getMessage());
+    AppLog.e(T.API,"XMLRPCException: " + e.getMessage());
   }
   if (resultMap != null && resultMap.containsKey("id"))   return (String)resultMap.get("id");
   return null;
