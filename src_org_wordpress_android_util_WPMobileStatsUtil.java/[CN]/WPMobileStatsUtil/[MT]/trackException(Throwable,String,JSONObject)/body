@@ -1,10 +1,12 @@
 {
   JSONObject properties=new JSONObject();
-  StringWriter errors=new StringWriter();
-  exception.printStackTrace(new PrintWriter(errors));
   try {
     properties.put("exception_id",exceptionId);
-    properties.put("stacktrace",errors.toString());
+    if (throwable != null) {
+      StringWriter errors=new StringWriter();
+      throwable.printStackTrace(new PrintWriter(errors));
+      properties.put("stacktrace",errors.toString());
+    }
     if (additionalData != null) {
       properties.put("additional_data",additionalData);
     }
