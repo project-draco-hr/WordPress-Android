@@ -17,16 +17,16 @@
       sendUpdateBroadcast(mediaId,null);
       fetchMediaFile(id);
     }
-    @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage){
+    @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
       WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,"failed");
       mUploadInProgress=false;
-      if (errorType == ApiHelper.ErrorType.NETWORK_XMLRPC) {
-        sendUpdateBroadcast(mediaId,getString(R.string.upload_failed));
-      }
- else {
-        sendUpdateBroadcast(mediaId,null);
-      }
+      sendUpdateBroadcast(mediaId,getString(R.string.upload_failed));
       mHandler.post(mFetchQueueTask);
+      if (errorType != ErrorType.NETWORK_XMLRPC) {
+        JSONObject properties=new JSONObject();
+        properties.put("error_message",errorMessage);
+        WPMobileStatsUtil.trackException(throwable,WPMobileStatsUtil.StatsPropertyExceptionUploadMedia,properties);
+      }
     }
   }
 );
