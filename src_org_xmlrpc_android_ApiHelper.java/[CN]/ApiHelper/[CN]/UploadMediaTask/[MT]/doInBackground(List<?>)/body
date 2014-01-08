@@ -3,7 +3,7 @@
   WordPress.currentBlog=(Blog)arguments.get(0);
   Blog blog=WordPress.currentBlog;
   if (blog == null) {
-    setError(ErrorType.INVALID_CURRENT_BLOG,"ApiHelper - current blog is null");
+    setError(ErrorType.INVALID_CURRENT_BLOG,"current blog is null");
     return null;
   }
   client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
@@ -21,7 +21,7 @@
     resultMap=(HashMap<?,?>)client.call("wp.uploadFile",apiParams,getTempFile(mContext));
   }
  catch (  XMLRPCException e) {
-    setError(ErrorType.NETWORK_XMLRPC,e.getMessage());
+    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
     return null;
   }
   if (resultMap != null && resultMap.containsKey("id")) {
