@@ -1,9 +1,9 @@
 {
-  Log.v("WORDPRESS","Received Message");
+  AppLog.v(T.NOTIFS,"Received Message");
   if (!WordPress.hasValidWPComCredentials(context))   return;
   Bundle extras=intent.getExtras();
   if (extras == null) {
-    Log.v("WORDPRESS","Hrm. No notification message content received. Aborting.");
+    AppLog.v(T.NOTIFS,"Hrm. No notification message content received. Aborting.");
     return;
   }
   long wpcomUserID=UserPrefs.getCurrentUserId();
@@ -13,7 +13,7 @@
     }
  else {
       if (!String.valueOf(wpcomUserID).equals(userIDFromPN)) {
-        Log.e("WORDPRESS","Hrm. wpcom userId found in the app doesn't match with the ID in the PN. Aborting.");
+        AppLog.e(T.NOTIFS,"Hrm. wpcom userId found in the app doesn't match with the ID in the PN. Aborting.");
         return;
       }
     }
@@ -34,7 +34,7 @@
       WordPress.wpDB.addNote(note,false);
     }
  catch (    JSONException e) {
-      Log.e(WordPress.TAG,"Can't parse restRequest JSON response, notifications: " + e);
+      AppLog.e(T.NOTIFS,"Can't parse restRequest JSON response, notifications: ",e);
     }
   }
  else {
@@ -51,7 +51,7 @@
   if (mPreviousNoteId != null && mPreviousNoteId.equals(note_id)) {
     long seconds=TimeUnit.MILLISECONDS.toSeconds(thisTime - mPreviousNoteTime);
     if (seconds <= 1) {
-      Log.w("WORDPRESS","skipped potential duplicate notification");
+      AppLog.w(T.NOTIFS,"skipped potential duplicate notification");
       return;
     }
   }
