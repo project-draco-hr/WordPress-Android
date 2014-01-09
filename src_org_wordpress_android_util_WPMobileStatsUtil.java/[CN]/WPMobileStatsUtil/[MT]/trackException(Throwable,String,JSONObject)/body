@@ -1,0 +1,18 @@
+{
+  JSONObject properties=new JSONObject();
+  try {
+    properties.put("exception_id",exceptionId);
+    if (throwable != null) {
+      StringWriter errors=new StringWriter();
+      throwable.printStackTrace(new PrintWriter(errors));
+      properties.put("stacktrace",errors.toString());
+    }
+    if (additionalData != null) {
+      properties.put("additional_data",additionalData);
+    }
+  }
+ catch (  JSONException jsonException) {
+    jsonException.printStackTrace();
+  }
+  mixpanel.track(StatsEventException,properties);
+}
