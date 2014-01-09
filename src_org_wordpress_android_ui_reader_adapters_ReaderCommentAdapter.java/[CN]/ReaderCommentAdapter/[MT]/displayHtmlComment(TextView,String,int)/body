@@ -1,16 +1,16 @@
 {
   if (content == null || textView == null)   return;
-  if (content.contains("icon_"))   content=Emoticons.replaceEmoticonsWithEmoji((SpannableStringBuilder)Html.fromHtml(content)).toString().trim();
-  if (!content.contains("<") && !content.contains("&")) {
+  if (!content.contains("<") && content.contains("&")) {
     textView.setText(content.trim());
     return;
   }
-  final SpannableStringBuilder html;
+  content=Emoticons.replaceEmoticonsWithEmoji(content);
+  final Spanned html;
   if (content.contains("<img")) {
-    html=(SpannableStringBuilder)Html.fromHtml(content,new WPImageGetter(textView.getContext(),textView,mMaxImageSz),null);
+    html=Html.fromHtml(content,new WPImageGetter(textView.getContext(),textView,maxImageSize),null);
   }
  else {
-    html=(SpannableStringBuilder)Html.fromHtml(content);
+    html=Html.fromHtml(content);
   }
   CharSequence source=html;
   int start=0;
