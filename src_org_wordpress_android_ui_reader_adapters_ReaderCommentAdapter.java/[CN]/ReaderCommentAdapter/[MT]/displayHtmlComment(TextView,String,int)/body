@@ -1,13 +1,13 @@
 {
   if (content == null || textView == null)   return;
-  if (!content.contains("<") && content.contains("&")) {
+  if (!content.contains("<") && !content.contains("&")) {
     textView.setText(content.trim());
     return;
   }
   content=Emoticons.replaceEmoticonsWithEmoji(content);
   final Spanned html;
   if (content.contains("<img")) {
-    html=Html.fromHtml(content,new WPImageGetter(textView.getContext(),textView,mMaxImageSz),null);
+    html=Html.fromHtml(content,new WPImageGetter(textView.getContext(),textView,maxImageSize),null);
   }
  else {
     html=Html.fromHtml(content);
