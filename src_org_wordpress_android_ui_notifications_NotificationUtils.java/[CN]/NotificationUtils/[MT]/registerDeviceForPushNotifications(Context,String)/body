@@ -1,6 +1,6 @@
 {
   SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(ctx);
-  String uuid=settings.getString("wp_pref_notifications_uuid",null);
+  String uuid=settings.getString(WPCOM_PUSH_DEVICE_UUID,null);
   if (uuid == null)   return;
   String deviceName=DeviceUtils.getInstance().getDeviceName(ctx);
   Map<String,String> contentStruct=new HashMap<String,String>();
@@ -15,34 +15,32 @@
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       AppLog.d(T.NOTIFS,"Register token action succeeded");
-      if (loadSettings) {
-        com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
-          @Override public void onResponse(          JSONObject jsonObject){
-            AppLog.d(T.NOTIFS,"token action succeeded");
-            SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(ctx);
-            Editor editor=settings.edit();
-            try {
-              JSONObject settingsJSON=jsonObject.getJSONObject("settings");
-              editor.putString("wp_pref_notification_settings",settingsJSON.toString());
-              editor.commit();
-            }
- catch (            JSONException e) {
-              e.printStackTrace();
-            }
-          }
+      try {
+        String deviceID=jsonObject.getString("ID");
+        if (deviceID == null) {
+          AppLog.e(T.NOTIFS,"Server response is missing of the device_id. Registration skipped!!");
+          return;
         }
-;
-        NotificationUtils.getPushNotificationSettings(ctx,listener,null);
+        SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(ctx);
+        SharedPreferences.Editor editor=settings.edit();
+        editor.putString(WPCOM_PUSH_DEVICE_SERVER_ID,deviceID);
+        JSONObject settingsJSON=jsonObject.getJSONObject("settings");
+        editor.putString(WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,settingsJSON.toString());
+        editor.commit();
+        AppLog.d(T.NOTIFS,"Server response OK. The device_id : " + deviceID);
+      }
+ catch (      JSONException e1) {
+        AppLog.e(T.NOTIFS,"Server response is NOT ok. Registration skipped!!",e1);
+        return;
       }
     }
   }
 ;
   RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
-      AppLog.w(T.NOTIFS,"Register token action failed");
-      AppLog.e(T.NOTIFS,volleyError);
+      AppLog.e(T.NOTIFS,"Register token action failed",volleyError);
     }
   }
 ;
-  WordPress.restClient.post("/push/register",contentStruct,null,listener,errorListener);
+  WordPress.restClient.post("/devices/new",contentStruct,null,listener,errorListener);
 }
