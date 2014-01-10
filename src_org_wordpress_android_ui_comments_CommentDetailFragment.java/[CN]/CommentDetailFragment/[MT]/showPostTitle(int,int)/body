@@ -1,8 +1,31 @@
 {
   if (!hasActivity())   return;
   final TextView txtPostTitle=(TextView)getActivity().findViewById(R.id.text_post_title);
-  String postTitle=ReaderPostTable.getPostTitle(blogId,postId);
-  if (!TextUtils.isEmpty(postTitle))   txtPostTitle.setText(postTitle);
+  boolean postExists=ReaderPostTable.postExists(blogId,postId);
+  final boolean hasTitle;
+  if (getNote() != null) {
+    txtPostTitle.setText(getNote().getSubject());
+    hasTitle=true;
+  }
+ else   if (postExists) {
+    txtPostTitle.setText(ReaderPostTable.getPostTitle(blogId,postId));
+    hasTitle=true;
+  }
+ else {
+    hasTitle=false;
+  }
+  if (!postExists) {
+    final ProgressBar progress=(ProgressBar)getActivity().findViewById(R.id.progress_post_title);
+    if (!hasTitle)     progress.setVisibility(View.VISIBLE);
+    ReaderPostActions.requestPost(blogId,postId,new ReaderActions.ActionListener(){
+      @Override public void onActionResult(      boolean succeeded){
+        if (!hasActivity())         return;
+        progress.setVisibility(View.INVISIBLE);
+        if (succeeded && !hasTitle)         txtPostTitle.setText(ReaderPostTable.getPostTitle(blogId,postId));
+      }
+    }
+);
+  }
   txtPostTitle.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
       viewPostInReader();
