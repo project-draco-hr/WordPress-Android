@@ -1,0 +1,30 @@
+{
+  if (textView == null)   return;
+  if (content == null) {
+    textView.setText(null);
+    return;
+  }
+  if (!content.contains("<") && !content.contains("&")) {
+    textView.setText(content.trim());
+    if (content.contains("://"))     Linkify.addLinks(textView,Linkify.WEB_URLS);
+    return;
+  }
+  content=Emoticons.replaceEmoticonsWithEmoji(content);
+  final Spanned html;
+  if (maxImageSize > 0 && content.contains("<img")) {
+    html=Html.fromHtml(content,new WPImageGetter(textView.getContext(),textView,maxImageSize),null);
+  }
+ else {
+    html=Html.fromHtml(content);
+  }
+  CharSequence source=html;
+  int start=0;
+  int end=source.length();
+  while (start < end && Character.isWhitespace(source.charAt(start))) {
+    start++;
+  }
+  while (end > start && Character.isWhitespace(source.charAt(end - 1))) {
+    end--;
+  }
+  textView.setText(source.subSequence(start,end));
+}

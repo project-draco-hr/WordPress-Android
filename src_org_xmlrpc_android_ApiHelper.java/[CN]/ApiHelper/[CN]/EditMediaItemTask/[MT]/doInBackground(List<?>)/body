@@ -3,7 +3,7 @@
   WordPress.currentBlog=(Blog)arguments.get(0);
   Blog blog=WordPress.currentBlog;
   if (blog == null) {
-    AppLog.e(T.API,"ApiHelper - current blog is null");
+    setError(ErrorType.INVALID_CURRENT_BLOG,"ApiHelper - current blog is null");
     return null;
   }
   client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
@@ -17,7 +17,7 @@
     result=(Boolean)client.call("wp.editPost",apiParams);
   }
  catch (  XMLRPCException e) {
-    AppLog.e(T.API,"XMLRPCException: " + e.getMessage());
+    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
   }
   return result;
 }

@@ -19,18 +19,9 @@
   txtName.setText(TextUtils.isEmpty(mComment.name) ? getString(R.string.anonymous) : StringUtils.unescapeHTML(mComment.name));
   txtDate.setText(mComment.dateCreatedFormatted);
   txtContent.setLinksClickable(true);
-  txtContent.setMovementMethod(LinkMovementMethod.getInstance());
-  String content=StringUtils.notNullStr(mComment.comment);
-  if (content.contains("icon_"))   content=Emoticons.replaceEmoticonsWithEmoji((SpannableStringBuilder)Html.fromHtml(content)).toString().trim();
-  final SpannableStringBuilder html;
-  if (content.contains("<img")) {
-    int maxImageSz=getResources().getDimensionPixelSize(R.dimen.reader_comment_max_image_size);
-    html=(SpannableStringBuilder)Html.fromHtml(content,new WPImageGetter(getActivity(),txtContent,maxImageSz),null);
-  }
- else {
-    html=(SpannableStringBuilder)Html.fromHtml(content);
-  }
-  txtContent.setText(html);
+  txtContent.setMovementMethod(WPLinkMovementMethod.getInstance());
+  int maxImageSz=getResources().getDimensionPixelSize(R.dimen.reader_comment_max_image_size);
+  CommentUtils.displayHtmlComment(txtContent,mComment.comment,maxImageSz);
   imgAvatar.setDefaultImageResId(R.drawable.placeholder);
   if (mComment.hasProfileImageUrl()) {
     imgAvatar.setImageUrl(mComment.getProfileImageUrl(),WordPress.imageLoader);
