@@ -1,0 +1,40 @@
+{
+  if (context == null || view == null)   return;
+  if (view.isInEditMode())   return;
+  int variation=TypefaceCache.VARIATION_NORMAL;
+  if (attrs != null) {
+    TypedArray a=context.getTheme().obtainStyledAttributes(attrs,R.styleable.WPTypeface,0,0);
+    if (a != null) {
+      try {
+        variation=a.getInteger(R.styleable.WPTypeface_fontVariation,TypefaceCache.VARIATION_NORMAL);
+      }
+  finally {
+        a.recycle();
+      }
+    }
+  }
+  final int fontStyle;
+  if (view.getTypeface() != null) {
+    boolean isBold=view.getTypeface().isBold();
+    boolean isItalic=view.getTypeface().isItalic();
+    if (isBold && isItalic) {
+      fontStyle=Typeface.BOLD_ITALIC;
+    }
+ else     if (isBold) {
+      fontStyle=Typeface.BOLD;
+    }
+ else     if (isItalic) {
+      fontStyle=Typeface.ITALIC;
+    }
+ else {
+      fontStyle=Typeface.NORMAL;
+    }
+  }
+ else {
+    fontStyle=Typeface.NORMAL;
+  }
+  Typeface typeface=getTypeface(context,fontStyle,variation);
+  if (typeface != null) {
+    view.setTypeface(typeface);
+  }
+}
