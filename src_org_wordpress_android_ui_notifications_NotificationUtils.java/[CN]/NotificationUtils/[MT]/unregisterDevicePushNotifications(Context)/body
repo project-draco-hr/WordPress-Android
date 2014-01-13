@@ -4,6 +4,8 @@
       AppLog.d(T.NOTIFS,"Unregister token action succeeded");
       SharedPreferences.Editor editor=PreferenceManager.getDefaultSharedPreferences(ctx).edit();
       editor.remove(WPCOM_PUSH_DEVICE_SERVER_ID);
+      editor.remove(WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS);
+      editor.remove(WPCOM_PUSH_DEVICE_UUID);
       editor.commit();
     }
   }
@@ -16,7 +18,7 @@
 ;
   SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(ctx);
   String deviceID=settings.getString(WPCOM_PUSH_DEVICE_SERVER_ID,null);
-  if (deviceID == null) {
+  if (TextUtils.isEmpty(deviceID)) {
     AppLog.e(T.NOTIFS,"Wait, device_ID is null in preferences. Unregistration skipped. WTF has appenend here?!?!");
     return;
   }
