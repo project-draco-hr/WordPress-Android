@@ -6,16 +6,16 @@
     JSONObject jsonAction=actions.get(firstKey);
     JSONObject jsonParams=jsonAction.optJSONObject("params");
     if (jsonParams != null) {
-      int remoteBlogId=jsonParams.optInt("blog_id");
+      mRemoteBlogId=jsonParams.optInt("blog_id");
       int commentId=jsonParams.optInt("comment_id");
-      int localBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(remoteBlogId);
+      int localBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(mRemoteBlogId);
       Comment comment=WordPress.wpDB.getComment(localBlogId,commentId);
       if (comment != null) {
         comment.setProfileImageUrl(note.getIconURL());
         setComment(localBlogId,comment);
       }
  else {
-        requestComment(localBlogId,remoteBlogId,commentId,note.getIconURL());
+        requestComment(localBlogId,mRemoteBlogId,commentId,note.getIconURL());
       }
     }
   }
