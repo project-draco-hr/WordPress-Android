@@ -9,14 +9,15 @@
     if (!mHttpAuthRequired)     mErrorMsgId=R.string.no_site_error;
     return null;
   }
+  URI uri;
   try {
-    URI.create(mXmlrpcUrl);
+    uri=URI.create(mXmlrpcUrl);
   }
  catch (  Exception e1) {
     mErrorMsgId=R.string.no_site_error;
     return null;
   }
-  XMLRPCClient client=new XMLRPCClient(mXmlrpcUrl,mHttpUsername,mHttpPassword);
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(uri,mHttpUsername,mHttpPassword);
   Object[] params={mUsername,mPassword};
   try {
     Object[] userBlogs=(Object[])client.call("wp.getUsersBlogs",params);
