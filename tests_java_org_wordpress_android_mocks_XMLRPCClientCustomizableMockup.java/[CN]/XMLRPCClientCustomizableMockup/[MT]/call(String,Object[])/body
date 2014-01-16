@@ -1,0 +1,17 @@
+{
+  AppLog.v(T.TESTS,"XMLRPCClientCustomizableMockup: <call(" + method + ", ...)>");
+  Gson gson=new Gson();
+  if ("wp.getUsersBlogs".equals(method)) {
+    String filename=mPrefix + "-wp.getUsersBlogs.json";
+    try {
+      InputStream is=mContext.getAssets().open(filename);
+      InputStreamReader inputStreamReader=new InputStreamReader(is);
+      BufferedReader f=new BufferedReader(inputStreamReader);
+      return gson.fromJson(inputStreamReader,Object[].class);
+    }
+ catch (    IOException e) {
+      AppLog.e(T.TESTS,"can't read file: " + filename);
+    }
+  }
+  return null;
+}
