@@ -1,0 +1,27 @@
+{
+  String siteId=request.getSiteId();
+  String token=null;
+  Blog blog=null;
+  SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
+  if (siteId == null) {
+    token=settings.getString(WordPress.ACCESS_TOKEN_PREFERENCE,null);
+  }
+ else {
+    blog=WordPress.wpDB.getBlogForDotComBlogId(siteId);
+    if (blog != null) {
+      token=blog.getApi_key();
+      if (token != null && token.length() < 64 && !blog.isDotcomFlag()) {
+        token=null;
+      }
+      if (token == null && (blog.isDotcomFlag() && blog.getUsername().equals(settings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,"")))) {
+        token=settings.getString(WordPress.ACCESS_TOKEN_PREFERENCE,null);
+      }
+    }
+  }
+  if (token != null) {
+    request.sendWithAccessToken(token);
+  }
+ else {
+    requestAccessToken(request,blog);
+  }
+}

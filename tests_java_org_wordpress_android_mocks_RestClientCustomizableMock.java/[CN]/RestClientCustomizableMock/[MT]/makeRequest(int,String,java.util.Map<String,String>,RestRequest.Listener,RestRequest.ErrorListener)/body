@@ -1,0 +1,19 @@
+{
+  AppLog.v(T.TESTS,this.getClass() + ": makeRequest(" + url+ ")");
+  Gson gson=new Gson();
+  String filename=mPrefix + "-" + url.replace("https://","").replace("/","-").replace(".","-")+ ".json";
+  try {
+    InputStream is=mContext.getAssets().open(filename);
+    String data=convertStreamToString(is);
+    AppLog.v(T.TESTS,"file read:" + filename);
+    JSONObject jsonObj=new JSONObject(data);
+    listener.onResponse(jsonObj);
+  }
+ catch (  IOException e) {
+    AppLog.e(T.TESTS,"can't read file: " + filename + " - "+ e.toString());
+  }
+catch (  JSONException je) {
+    AppLog.e(T.TESTS,"can't read file: " + filename + " - "+ je.toString());
+  }
+  return new RestRequest(method,url,params,listener,errorListener);
+}

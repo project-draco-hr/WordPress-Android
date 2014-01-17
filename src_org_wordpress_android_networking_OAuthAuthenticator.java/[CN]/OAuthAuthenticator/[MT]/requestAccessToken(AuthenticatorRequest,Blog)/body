@@ -1,10 +1,11 @@
 {
   Oauth oauth=new Oauth(Config.OAUTH_APP_ID,Config.OAUTH_APP_SECRET,Config.OAUTH_REDIRECT_URI);
-  String username=null, password=null;
-  final SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WordPress.this);
+  String username;
+  String password;
+  final SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
   if (blog == null) {
-    username=settings.getString(WPCOM_USERNAME_PREFERENCE,null);
-    password=WordPressDB.decryptPassword(settings.getString(WPCOM_PASSWORD_PREFERENCE,null));
+    username=settings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,null);
+    password=WordPressDB.decryptPassword(settings.getString(WordPress.WPCOM_PASSWORD_PREFERENCE,null));
   }
  else {
     if (blog.isDotcomFlag()) {
@@ -19,7 +20,7 @@
   Request oauthRequest=oauth.makeRequest(username,password,new Oauth.Listener(){
     @Override public void onResponse(    Oauth.Token token){
       if (blog == null) {
-        settings.edit().putString(ACCESS_TOKEN_PREFERENCE,token.toString()).commit();
+        settings.edit().putString(WordPress.ACCESS_TOKEN_PREFERENCE,token.toString()).commit();
       }
  else {
         blog.setApi_key(token.toString());
@@ -34,5 +35,5 @@
     }
   }
 );
-  requestQueue.add(oauthRequest);
+  WordPress.requestQueue.add(oauthRequest);
 }
