@@ -1,7 +1,14 @@
 {
-  List<Map<String,Object>> accounts=getAllAccounts();
-  for (  Map<String,Object> account : accounts) {
-    deleteAccount(context,(Integer)account.get("id"));
+  List<Integer> accountIDs=getAccountIDs();
+  db.beginTransaction();
+  try {
+    for (    int id : accountIDs) {
+      deleteAccount(context,id);
+    }
+    db.setTransactionSuccessful();
+  }
+  finally {
+    db.endTransaction();
   }
   return true;
 }
