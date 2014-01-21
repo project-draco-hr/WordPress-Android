@@ -46,13 +46,14 @@
         nuxAlert=NUXDialogFragment.newInstance(getString(R.string.nux_cannot_log_in),getString(mErrorMsgId),getString(R.string.nux_tap_continue),R.drawable.nux_icon_alert);
       }
     }
-    nuxAlert.show(ft,"alert");
+    ft.add(nuxAlert,"alert");
+    ft.commitAllowingStateLoss();
     mErrorMsgId=0;
     endProgress();
     return;
   }
   if (mSetupBlog.getXmlrpcUrl().contains("wordpress.com")) {
-    SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(getActivity());
+    SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
     SharedPreferences.Editor editor=settings.edit();
     editor.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mSetupBlog.getUsername());
     editor.putString(WordPress.WPCOM_PASSWORD_PREFERENCE,WordPressDB.encryptPassword(mSetupBlog.getPassword()));
