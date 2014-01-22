@@ -22,7 +22,7 @@
             }
           }
 );
-          if (avatars.size() == 0 && mPost.numLikes == 0) {
+          if (avatars.size() == 0 || mPost.numLikes == 0) {
             mLayoutLikes.setVisibility(View.GONE);
             return;
           }
@@ -37,21 +37,19 @@
  else {
             txtLikeCount.setText(mPost.numLikes == 1 ? getString(R.string.reader_likes_one) : getString(R.string.reader_likes_multi,mPost.numLikes));
           }
-          if (avatars.size() > 0) {
-            View.OnClickListener clickListener=new View.OnClickListener(){
-              @Override public void onClick(              View view){
-                ReaderActivityLauncher.showReaderLikingUsers(ReaderPostDetailActivity.this,mPost);
-              }
+          View.OnClickListener clickListener=new View.OnClickListener(){
+            @Override public void onClick(            View view){
+              ReaderActivityLauncher.showReaderLikingUsers(ReaderPostDetailActivity.this,mPost);
             }
+          }
 ;
-            mLayoutLikes.setOnClickListener(clickListener);
-            if (forceReload || layoutLikingAvatars.getChildCount() < maxAvatars) {
-              layoutLikingAvatars.removeAllViews();
-              for (              String url : avatars) {
-                WPNetworkImageView imgAvatar=(WPNetworkImageView)mInflater.inflate(R.layout.reader_like_avatar,layoutLikingAvatars,false);
-                layoutLikingAvatars.addView(imgAvatar);
-                imgAvatar.setImageUrl(PhotonUtils.fixAvatar(url,likeAvatarSize),WPNetworkImageView.ImageType.AVATAR);
-              }
+          mLayoutLikes.setOnClickListener(clickListener);
+          if (forceReload || layoutLikingAvatars.getChildCount() < maxAvatars) {
+            layoutLikingAvatars.removeAllViews();
+            for (            String url : avatars) {
+              WPNetworkImageView imgAvatar=(WPNetworkImageView)mInflater.inflate(R.layout.reader_like_avatar,layoutLikingAvatars,false);
+              layoutLikingAvatars.addView(imgAvatar);
+              imgAvatar.setImageUrl(PhotonUtils.fixAvatar(url,likeAvatarSize),WPNetworkImageView.ImageType.AVATAR);
             }
           }
           if (mLayoutLikes.getVisibility() != View.VISIBLE) {
