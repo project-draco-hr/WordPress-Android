@@ -14,15 +14,14 @@ case FAILED:
 default :
 break;
 }
+if (origNumLikes > 0 || mPost.numLikes > 0) refreshLikes(false);
 new Thread(){
 @Override public void run(){
-final boolean isLikesChanged=(mPost.numLikes != origNumLikes || mPost.numLikes != ReaderLikeTable.getNumLikesForPost(mPost));
 final boolean isCommentsChanged=(mPost.numReplies != origNumReplies || mPost.numReplies != ReaderCommentTable.getNumCommentsForPost(mPost));
-if (isLikesChanged || isCommentsChanged) {
+if (isCommentsChanged) {
   mHandler.post(new Runnable(){
     public void run(){
-      if (isLikesChanged)       updateLikes();
-      if (isCommentsChanged)       updateComments();
+      updateComments();
     }
   }
 );
