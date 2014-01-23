@@ -1,0 +1,23 @@
+{
+  if (!NetworkUtils.isNetworkAvailable(this))   return;
+  mHasPerformedInitialUpdate=true;
+  final boolean showUpdate=!mIsUpdating && ReaderTagTable.isEmpty();
+  if (showUpdate)   setIsUpdating(true);
+  ReaderActions.UpdateResultListener listener=new ReaderActions.UpdateResultListener(){
+    @Override public void onUpdateResult(    UpdateResult result){
+      if (showUpdate)       setIsUpdating(false);
+      if (result == UpdateResult.CHANGED) {
+        ReaderPostListFragment fragment=getPostListFragment();
+        if (fragment != null)         fragment.refreshTags();
+      }
+      AppLog.i(T.READER,"updating current user");
+      ReaderUserActions.updateCurrentUser(null);
+      AppLog.i(T.READER,"updating followed blogs");
+      ReaderBlogActions.updateFollowedBlogs();
+      AppLog.i(T.READER,"updating cookies");
+      ReaderAuthActions.updateCookies(ReaderActivity.this);
+    }
+  }
+;
+  ReaderTagActions.updateTags(listener);
+}
