@@ -1,9 +1,12 @@
 {
   solo=new Solo(getInstrumentation(),getActivity());
+  targetContext=new RenamingDelegatingContext(getInstrumentation().getTargetContext(),"test_");
   XMLRPCFactoryTest.sContext=getInstrumentation().getContext();
   RestClientFactoryTest.sContext=getInstrumentation().getContext();
   AppLog.v(T.TESTS,"Contexts set");
   XMLRPCFactoryTest.sMode=XMLRPCFactoryTest.Mode.CUSTOMIZABLE;
   RestClientFactoryTest.sMode=RestClientFactoryTest.Mode.CUSTOMIZABLE;
   AppLog.v(T.TESTS,"Modes set to customizable");
+  TestUtils.clearDefaultSharedPreferences(targetContext);
+  TestUtils.dropDB(targetContext);
 }
