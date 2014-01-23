@@ -1,9 +1,10 @@
 {
-  String path="sites/" + blogId + "/posts/"+ postId+ "/?meta=site";
+  String path="sites/" + blogId + "/posts/"+ postId+ "/?meta=site,likes";
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       ReaderPost post=ReaderPost.fromJson(jsonObject);
       ReaderPostTable.addOrUpdatePost(post);
+      handlePostLikes(post,jsonObject);
       if (actionListener != null)       actionListener.onActionResult(true);
     }
   }
