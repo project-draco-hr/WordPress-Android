@@ -1,18 +1,22 @@
 {
   AppLog.v(T.TESTS,this.getClass() + ": makeRequest(" + url+ ")");
+  RestRequest dummyReturnValue=new RestRequest(method,url,params,listener,errorListener);
   String filename=mPrefix + "-" + url.replace("https://","").replace("/","-").replace(".","-").replace("?","-")+ ".json";
+  if ("password-invalid".equals(mPrefix)) {
+    errorListener.onErrorResponse(createVolleyErrorFromFilename(filename));
+    return dummyReturnValue;
+  }
+  if ("username-exists".equals(mPrefix)) {
+    errorListener.onErrorResponse(createVolleyErrorFromFilename(filename));
+    return dummyReturnValue;
+  }
   try {
-    InputStream is=mContext.getAssets().open(filename);
-    String data=convertStreamToString(is);
-    AppLog.v(T.TESTS,"file read:" + filename);
+    String data=fileToString(filename);
     JSONObject jsonObj=new JSONObject(data);
     listener.onResponse(jsonObj);
   }
- catch (  IOException e) {
-    AppLog.e(T.TESTS,"can't read file: " + filename + " - "+ e.toString());
-  }
-catch (  JSONException je) {
+ catch (  JSONException je) {
     AppLog.e(T.TESTS,"can't read file: " + filename + " - "+ je.toString());
   }
-  return new RestRequest(method,url,params,listener,errorListener);
+  return dummyReturnValue;
 }
