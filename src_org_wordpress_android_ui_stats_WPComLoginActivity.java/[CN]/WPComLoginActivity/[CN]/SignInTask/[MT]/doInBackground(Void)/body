@@ -1,5 +1,13 @@
 {
-  XMLRPCClient client=new XMLRPCClient(Constants.wpcomXMLRPCURL,"","");
+  URI uri;
+  try {
+    uri=new URI(Constants.wpcomXMLRPCURL);
+  }
+ catch (  URISyntaxException e) {
+    AppLog.e(T.API,"Invalid URI syntax: " + Constants.wpcomXMLRPCURL);
+    return false;
+  }
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(uri,"","");
   Object[] signInParams={mUsername,mPassword};
   try {
     client.call("wp.getUsersBlogs",signInParams);
