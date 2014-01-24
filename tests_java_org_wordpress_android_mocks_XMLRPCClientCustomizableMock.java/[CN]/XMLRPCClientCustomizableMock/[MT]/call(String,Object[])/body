@@ -7,9 +7,13 @@
   try {
     Gson gson=new Gson();
     InputStream is=mContext.getAssets().open(filename);
-    InputStreamReader inputStreamReader=new InputStreamReader(is);
-    BufferedReader f=new BufferedReader(inputStreamReader);
-    return gson.fromJson(inputStreamReader,Object[].class);
+    String jsonString=TestUtils.convertStreamToString(is);
+    try {
+      return gson.fromJson(jsonString,Object[].class);
+    }
+ catch (    Exception e) {
+      return TestUtils.stringMapToHashMap((StringMap)gson.fromJson(jsonString,Object.class));
+    }
   }
  catch (  IOException e) {
     AppLog.e(T.TESTS,"can't read file: " + filename);
