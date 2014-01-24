@@ -1,7 +1,7 @@
 {
   Blog blog=WordPress.getCurrentBlog();
   if (blog == null)   return null;
-  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
   String author, postID, comment, status, authorEmail, authorURL, postTitle;
   int commentID;
   Map<Integer,Map<?,?>> allComments=new HashMap<Integer,Map<?,?>>();
@@ -25,7 +25,18 @@
     status=contentHash.get("status").toString();
     postID=contentHash.get("post_id").toString();
     commentID=Integer.parseInt(contentHash.get("comment_id").toString());
-    d=(Date)contentHash.get("date_created_gmt");
+    Object date=contentHash.get("date_created_gmt");
+    if (Date.class.isInstance(date)) {
+      d=(Date)date;
+    }
+ else {
+      try {
+        d=stringToDate((String)contentHash.get("date_created_gmt"));
+      }
+ catch (      ParseException e) {
+        AppLog.e(T.API,"Can't parse date: " + contentHash.get("date_created_gmt"));
+      }
+    }
     authorURL=contentHash.get("author_url").toString();
     authorEmail=contentHash.get("author_email").toString();
     postTitle=contentHash.get("post_title").toString();
