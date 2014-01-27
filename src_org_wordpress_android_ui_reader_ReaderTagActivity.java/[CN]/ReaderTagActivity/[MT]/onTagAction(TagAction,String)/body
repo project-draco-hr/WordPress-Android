@@ -1,0 +1,61 @@
+{
+  if (TextUtils.isEmpty(tagName))   return;
+  if (!NetworkUtils.checkConnection(this))   return;
+  final String messageBarText;
+  final MessageBarUtils.MessageBarType messageBarType;
+switch (action) {
+case ADD:
+    messageBarText=getString(R.string.reader_label_added_tag,tagName);
+  messageBarType=MessageBarUtils.MessageBarType.INFO;
+break;
+case DELETE:
+messageBarText=getString(R.string.reader_label_removed_tag,tagName);
+messageBarType=MessageBarUtils.MessageBarType.ALERT;
+break;
+default :
+return;
+}
+MessageBarUtils.showMessageBar(this,messageBarText,messageBarType,null);
+ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
+@Override public void onActionResult(boolean succeeded){
+if (!succeeded) {
+getTagAdapter().refreshTags();
+switch (action) {
+case ADD:
+ToastUtils.showToast(ReaderTagActivity.this,R.string.reader_toast_err_add_tag);
+mLastAddedTag=null;
+break;
+case DELETE:
+ToastUtils.showToast(ReaderTagActivity.this,R.string.reader_toast_err_remove_tag);
+break;
+}
+}
+}
+}
+;
+switch (action) {
+case ADD:
+if (ReaderTagActions.performTagAction(TagAction.ADD,tagName,actionListener)) {
+ReaderActions.DataLoadedListener dataListener=new ReaderActions.DataLoadedListener(){
+@Override public void onDataLoaded(boolean isEmpty){
+if (mIsShowingFollowedTags) {
+int index=getTagAdapter().indexOfTagName(tagName);
+if (index > -1) getListView().smoothScrollToPosition(index);
+}
+}
+}
+;
+getTagAdapter().refreshTags(dataListener);
+mTagsChanged=true;
+mLastAddedTag=tagName;
+}
+break;
+case DELETE:
+if (ReaderTagActions.performTagAction(TagAction.DELETE,tagName,actionListener)) {
+getTagAdapter().refreshTags();
+if (mLastAddedTag != null && mLastAddedTag.equals(tagName)) mLastAddedTag=null;
+mTagsChanged=true;
+}
+break;
+}
+}
