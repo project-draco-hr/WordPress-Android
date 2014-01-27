@@ -16,9 +16,26 @@ default :
 return;
 }
 MessageBarUtils.showMessageBar(this,messageBarText,messageBarType,null);
+ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
+@Override public void onActionResult(boolean succeeded){
+if (!succeeded) {
+getTagAdapter().refreshTopics();
 switch (action) {
 case ADD:
-if (ReaderTagActions.performTagAction(ReaderTagActions.TagAction.ADD,topicName,null)) {
+ToastUtils.showToast(ReaderTagActivity.this,R.string.reader_toast_err_add_tag);
+mLastAddedTag=null;
+break;
+case DELETE:
+ToastUtils.showToast(ReaderTagActivity.this,R.string.reader_toast_err_remove_tag);
+break;
+}
+}
+}
+}
+;
+switch (action) {
+case ADD:
+if (ReaderTagActions.performTagAction(TagAction.ADD,topicName,actionListener)) {
 ReaderActions.DataLoadedListener dataListener=new ReaderActions.DataLoadedListener(){
 @Override public void onDataLoaded(boolean isEmpty){
 if (mIsShowingFollowedTags) {
@@ -34,7 +51,7 @@ mLastAddedTag=topicName;
 }
 break;
 case DELETE:
-if (ReaderTagActions.performTagAction(ReaderTagActions.TagAction.DELETE,topicName,null)) {
+if (ReaderTagActions.performTagAction(TagAction.DELETE,topicName,actionListener)) {
 getTagAdapter().refreshTopics();
 if (mLastAddedTag != null && mLastAddedTag.equals(topicName)) mLastAddedTag=null;
 mTagsChanged=true;
