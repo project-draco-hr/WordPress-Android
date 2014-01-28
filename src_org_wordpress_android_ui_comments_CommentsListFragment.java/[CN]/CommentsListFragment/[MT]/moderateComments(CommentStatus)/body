@@ -38,32 +38,34 @@
     }
   }
   dismissDialog(ID_DIALOG_MODERATING);
-  Thread action=new Thread(){
-    public void run(){
-      if (moderateErrorMsg == "") {
-        String msg=getResources().getText(R.string.comment_moderated).toString();
-        if (checkedCommentTotal > 1)         msg=getResources().getText(R.string.comments_moderated).toString();
-        Toast.makeText(getActivity().getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
-        checkedCommentTotal=0;
-        hideModerationBar();
-        mOnCommentChangeListener.onCommentsModerated(commentsUpdatedList);
-        ((WPActionBarActivity)getActivity()).updateMenuDrawer();
-      }
- else {
-        if (!getActivity().isFinishing()) {
+  if (hasActivity()) {
+    Thread action=new Thread(){
+      public void run(){
+        if (moderateErrorMsg == "") {
+          String msg=getResources().getText(R.string.comment_moderated).toString();
+          if (checkedCommentTotal > 1)           msg=getResources().getText(R.string.comments_moderated).toString();
+          Toast.makeText(getActivity().getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
           checkedCommentTotal=0;
           hideModerationBar();
-          getListView().invalidateViews();
-          FragmentTransaction ft=getFragmentManager().beginTransaction();
-          WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(moderateErrorMsg);
-          ft.add(alert,"alert");
-          ft.commitAllowingStateLoss();
+          mOnCommentChangeListener.onCommentsModerated(commentsUpdatedList);
+          ((WPActionBarActivity)getActivity()).updateMenuDrawer();
         }
-        moderateErrorMsg="";
+ else {
+          if (!getActivity().isFinishing()) {
+            checkedCommentTotal=0;
+            hideModerationBar();
+            getListView().invalidateViews();
+            FragmentTransaction ft=getFragmentManager().beginTransaction();
+            WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(moderateErrorMsg);
+            ft.add(alert,"alert");
+            ft.commitAllowingStateLoss();
+          }
+          moderateErrorMsg="";
+        }
       }
     }
-  }
 ;
-  getActivity().runOnUiThread(action);
-  progressDialog=new ProgressDialog(getActivity().getApplicationContext());
+    getActivity().runOnUiThread(action);
+    progressDialog=new ProgressDialog(getActivity().getApplicationContext());
+  }
 }

@@ -1,11 +1,11 @@
 {
-  Map<Integer,Map<?,?>> commentsResult;
+  if (!hasActivity())   return null;
   try {
-    commentsResult=ApiHelper.refreshComments(getActivity().getApplicationContext(),commentParams);
+    Map<Integer,Map<?,?>> commentsResult=ApiHelper.refreshComments(getActivity().getApplicationContext(),commentParams);
+    return commentsResult;
   }
  catch (  XMLRPCException e) {
-    if (!getActivity().isFinishing())     moderateErrorMsg=e.getLocalizedMessage();
+    moderateErrorMsg=e.getLocalizedMessage();
     return null;
   }
-  return commentsResult;
 }
