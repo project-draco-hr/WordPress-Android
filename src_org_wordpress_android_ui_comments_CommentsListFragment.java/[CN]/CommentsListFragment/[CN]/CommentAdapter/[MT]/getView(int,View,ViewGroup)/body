@@ -1,4 +1,5 @@
 {
+  final Comment comment=model.get(position);
   final CommentEntryWrapper wrapper;
   if (convertView == null || convertView.getTag() == null) {
     convertView=mInflater.inflate(R.layout.comment_row,null);
@@ -8,7 +9,10 @@
  else {
     wrapper=(CommentEntryWrapper)convertView.getTag();
   }
-  Comment commentEntry=getItem(position);
-  wrapper.populateFrom(commentEntry,position);
+  wrapper.populateFrom(comment,position);
+  if (mCanLoadMoreComments && !mIsRetrievingComments && position >= getCount() - 1) {
+    AppLog.d(T.COMMENTS,"auto-loading more comments");
+    refreshComments(true);
+  }
   return convertView;
 }

@@ -1,21 +1,4 @@
 {
-  mListScrollPositionManager.saveScrollOffset();
-  if (!isLoadingMore) {
-    mOnAnimateRefreshButton.onAnimateRefreshButton(true);
-  }
-  Map<String,Object> hPost=new HashMap<String,Object>();
-  if (isLoadingMore) {
-    ListView listView=this.getListView();
-    scrollPosition=listView.getFirstVisiblePosition();
-    View firstChild=listView.getChildAt(0);
-    scrollPositionTop=(firstChild == null) ? 0 : firstChild.getTop();
-    int numExisting=allComments.size();
-    hPost.put("number",numExisting + COMMENTS_PER_PAGE);
-  }
- else {
-    hPost.put("number",COMMENTS_PER_PAGE);
-  }
-  Object[] params={WordPress.currentBlog.getRemoteBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),hPost};
-  mGetCommentsTask=new GetRecentCommentsTask(params);
+  mGetCommentsTask=new GetRecentCommentsTask(loadMore);
   mGetCommentsTask.execute();
 }

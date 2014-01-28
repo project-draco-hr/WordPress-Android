@@ -1,29 +1,19 @@
 {
-  View v=inflater.inflate(R.layout.view_comments_fragment,container,false);
-  mSwitcher=new ViewSwitcher(getActivity());
-  Button footer=(Button)View.inflate(getActivity(),R.layout.list_footer_btn,null);
-  footer.setText(getResources().getText(R.string.load_more) + " " + getResources().getText(R.string.tab_comments));
-  footer.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      mSwitcher.showNext();
-      refreshComments(true);
-    }
-  }
-);
-  View progress=View.inflate(getActivity(),R.layout.list_footer_progress,null);
-  mSwitcher.addView(footer);
-  mSwitcher.addView(progress);
-  final Button deleteComments=(Button)v.findViewById(R.id.bulkDeleteComment);
-  final Button approveComments=(Button)v.findViewById(R.id.bulkApproveComment);
-  final Button unapproveComments=(Button)v.findViewById(R.id.bulkUnapproveComment);
-  final Button spamComments=(Button)v.findViewById(R.id.bulkMarkSpam);
+  View view=inflater.inflate(R.layout.view_comments_fragment,container,false);
+  mListView=(ListView)view.findViewById(android.R.id.list);
+  mProgressLoadMore=(ProgressBar)view.findViewById(R.id.progress_loading);
+  mProgressLoadMore.setVisibility(View.GONE);
+  final Button deleteComments=(Button)view.findViewById(R.id.bulkDeleteComment);
+  final Button approveComments=(Button)view.findViewById(R.id.bulkApproveComment);
+  final Button unapproveComments=(Button)view.findViewById(R.id.bulkUnapproveComment);
+  final Button spamComments=(Button)view.findViewById(R.id.bulkMarkSpam);
   deleteComments.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
       getActivity().showDialog(ID_DIALOG_DELETING);
       new Thread(){
         public void run(){
           Looper.prepare();
-          deleteComments();
+          deleteSelectedComments();
         }
       }
 .start();
@@ -36,7 +26,7 @@
       new Thread(){
         public void run(){
           Looper.prepare();
-          moderateComments(CommentStatus.APPROVED);
+          moderateSelectedComments(CommentStatus.APPROVED);
         }
       }
 .start();
@@ -49,7 +39,7 @@
       new Thread(){
         public void run(){
           Looper.prepare();
-          moderateComments(CommentStatus.UNAPPROVED);
+          moderateSelectedComments(CommentStatus.UNAPPROVED);
         }
       }
 .start();
@@ -62,12 +52,12 @@
       new Thread(){
         public void run(){
           Looper.prepare();
-          moderateComments(CommentStatus.SPAM);
+          moderateSelectedComments(CommentStatus.SPAM);
         }
       }
 .start();
     }
   }
 );
-  return v;
+  return view;
 }

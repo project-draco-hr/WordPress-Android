@@ -1,8 +1,11 @@
 {
-  if (isCancelled() || !hasActivity())   return;
+  mIsRetrievingComments=false;
+  if (!hasActivity())   return;
   mOnAnimateRefreshButton.onAnimateRefreshButton(false);
-  mSwitcher.setDisplayedChild(0);
   showOrHideModerationBar();
+  hideLoadingProgress();
+  if (isCancelled())   return;
+  mCanLoadMoreComments=(commentsResult != null && commentsResult.size() > 0);
   if (commentsResult == null) {
     if (model != null && model.size() == 1) {
       WordPress.wpDB.clearComments(WordPress.currentBlog.getLocalTableBlogId());
