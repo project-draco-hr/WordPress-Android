@@ -4,6 +4,7 @@
     Comment listRow=(Comment)getListView().getItemAtPosition(i);
     int curCommentID=listRow.commentID;
     Object[] params={WordPress.currentBlog.getRemoteBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),curCommentID};
+    moderateErrorMsg="";
     try {
       client.call("wp.deleteComment",params);
     }
@@ -23,24 +24,21 @@
  else {
             msg=getResources().getText(R.string.comment_moderated).toString();
           }
-          Toast.makeText(getActivity().getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
+          Toast.makeText(getActivity(),msg,Toast.LENGTH_SHORT).show();
           checkedCommentTotal=0;
           hideModerationBar();
           selectedCommentPositions.clear();
           mOnCommentChangeListener.onCommentDeleted();
         }
- else {
-          if (!getActivity().isFinishing()) {
-            FragmentTransaction ft=getFragmentManager().beginTransaction();
-            WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(moderateErrorMsg);
-            ft.add(alert,"alert");
-            ft.commitAllowingStateLoss();
-          }
+ else         if (!getActivity().isFinishing()) {
+          FragmentTransaction ft=getFragmentManager().beginTransaction();
+          WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(moderateErrorMsg);
+          ft.add(alert,"alert");
+          ft.commitAllowingStateLoss();
         }
       }
     }
 ;
     getActivity().runOnUiThread(action);
-    progressDialog=new ProgressDialog(getActivity().getApplicationContext());
   }
 }

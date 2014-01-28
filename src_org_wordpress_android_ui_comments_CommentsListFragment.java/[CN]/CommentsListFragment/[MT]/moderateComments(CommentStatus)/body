@@ -20,6 +20,7 @@
     postHash.put("author_url",contentHash.get("url"));
     postHash.put("author_email",contentHash.get("email"));
     Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),curCommentID,postHash};
+    moderateErrorMsg="";
     Object result;
     try {
       result=client.call("wp.editComment",params);
@@ -41,10 +42,10 @@
   if (hasActivity()) {
     Thread action=new Thread(){
       public void run(){
-        if (moderateErrorMsg == "") {
+        if (TextUtils.isEmpty(moderateErrorMsg)) {
           String msg=getResources().getText(R.string.comment_moderated).toString();
           if (checkedCommentTotal > 1)           msg=getResources().getText(R.string.comments_moderated).toString();
-          Toast.makeText(getActivity().getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
+          Toast.makeText(getActivity(),msg,Toast.LENGTH_SHORT).show();
           checkedCommentTotal=0;
           hideModerationBar();
           mOnCommentChangeListener.onCommentsModerated(commentsUpdatedList);
@@ -60,12 +61,10 @@
             ft.add(alert,"alert");
             ft.commitAllowingStateLoss();
           }
-          moderateErrorMsg="";
         }
       }
     }
 ;
     getActivity().runOnUiThread(action);
-    progressDialog=new ProgressDialog(getActivity().getApplicationContext());
   }
 }
