@@ -1,21 +1,22 @@
 {
   View v=inflater.inflate(R.layout.view_comments_fragment,container,false);
-  switcher=new ViewSwitcher(getActivity());
+  mSwitcher=new ViewSwitcher(getActivity());
   Button footer=(Button)View.inflate(getActivity(),R.layout.list_footer_btn,null);
   footer.setText(getResources().getText(R.string.load_more) + " " + getResources().getText(R.string.tab_comments));
   footer.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
-      switcher.showNext();
+      mSwitcher.showNext();
       refreshComments(true);
     }
   }
 );
-  mFooterSpacer=new View(getActivity());
-  mFooterSpacer.setLayoutParams(new AbsListView.LayoutParams(10,0));
   View progress=View.inflate(getActivity(),R.layout.list_footer_progress,null);
-  switcher.addView(footer);
-  switcher.addView(progress);
-  Button deleteComments=(Button)v.findViewById(R.id.bulkDeleteComment);
+  mSwitcher.addView(footer);
+  mSwitcher.addView(progress);
+  final Button deleteComments=(Button)v.findViewById(R.id.bulkDeleteComment);
+  final Button approveComments=(Button)v.findViewById(R.id.bulkApproveComment);
+  final Button unapproveComments=(Button)v.findViewById(R.id.bulkUnapproveComment);
+  final Button spamComments=(Button)v.findViewById(R.id.bulkMarkSpam);
   deleteComments.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
       getActivity().showDialog(ID_DIALOG_DELETING);
@@ -29,7 +30,6 @@
     }
   }
 );
-  Button approveComments=(Button)v.findViewById(R.id.bulkApproveComment);
   approveComments.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
       getActivity().showDialog(ID_DIALOG_MODERATING);
@@ -43,7 +43,6 @@
     }
   }
 );
-  Button unapproveComments=(Button)v.findViewById(R.id.bulkUnapproveComment);
   unapproveComments.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
       getActivity().showDialog(ID_DIALOG_MODERATING);
@@ -57,7 +56,6 @@
     }
   }
 );
-  Button spamComments=(Button)v.findViewById(R.id.bulkMarkSpam);
   spamComments.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
       getActivity().showDialog(ID_DIALOG_MODERATING);
