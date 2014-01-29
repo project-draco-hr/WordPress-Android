@@ -3,11 +3,6 @@
   int commentID;
   int blogId=WordPress.currentBlog.getLocalTableBlogId();
   List<Map<String,Object>> loadedComments=WordPress.wpDB.loadComments(blogId);
-  if (!didLoadMore) {
-    mComments.clear();
-    mCommentHashes.clear();
-    getCommentAdapter().notifyDataSetChanged();
-  }
   if (loadedComments == null) {
     return false;
   }
@@ -24,7 +19,6 @@
     postTitle=StringUtils.unescapeHTML(contentHash.get("postTitle").toString());
     Comment comment=new Comment(postID,commentID,i,author,dateCreatedFormatted,commentContent,status,postTitle,authorURL,authorEmail,GravatarUtils.gravatarUrlFromEmail(authorEmail,140));
     mComments.add(comment);
-    mCommentHashes.put((Integer)contentHash.get("commentID"),contentHash);
   }
   getCommentAdapter().notifyDataSetChanged();
   if (this.shouldSelectAfterLoad) {

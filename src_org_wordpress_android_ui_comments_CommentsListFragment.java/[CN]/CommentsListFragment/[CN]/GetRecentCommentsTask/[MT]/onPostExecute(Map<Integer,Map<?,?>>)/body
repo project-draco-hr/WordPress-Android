@@ -11,20 +11,14 @@
   if (isCancelled())   return;
   mCanLoadMoreComments=(commentsResult != null && commentsResult.size() > 0);
   if (commentsResult == null) {
-    if (mComments != null && mComments.size() == 1) {
-      WordPress.wpDB.clearComments(WordPress.currentBlog.getLocalTableBlogId());
-      getCommentAdapter().clear();
-      WordPress.currentComment=null;
-      loadComments(false);
-    }
-    if (isError && !getActivity().isFinishing()) {
-      ToastUtils.showToast(getActivity(),R.string.error_refresh_comments,ToastUtils.Duration.LONG);
-    }
+    WordPress.wpDB.clearComments(WordPress.currentBlog.getLocalTableBlogId());
+    getCommentAdapter().clear();
+    WordPress.currentComment=null;
+    loadComments();
+    if (isError && !getActivity().isFinishing())     ToastUtils.showToast(getActivity(),R.string.error_refresh_comments,ToastUtils.Duration.LONG);
     return;
   }
-  boolean didLoadMore=(commentsResult.size() > 0);
   if (commentsResult.size() > 0) {
-    mCommentHashes.putAll(commentsResult);
-    loadComments(didLoadMore);
+    loadComments();
   }
 }
