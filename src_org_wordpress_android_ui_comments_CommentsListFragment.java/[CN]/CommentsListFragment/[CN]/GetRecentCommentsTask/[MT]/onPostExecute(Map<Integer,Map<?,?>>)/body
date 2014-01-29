@@ -1,17 +1,19 @@
 {
   mIsRetrievingComments=false;
   if (!hasActivity())   return;
-  mOnAnimateRefreshButton.onAnimateRefreshButton(false);
+  if (isLoadingMore) {
+    hideLoadingProgress();
+  }
+ else {
+    mOnAnimateRefreshButton.onAnimateRefreshButton(false);
+  }
   showOrHideModerationBar();
-  hideLoadingProgress();
   if (isCancelled())   return;
   mCanLoadMoreComments=(commentsResult != null && commentsResult.size() > 0);
   if (commentsResult == null) {
-    if (model != null && model.size() == 1) {
+    if (mComments != null && mComments.size() == 1) {
       WordPress.wpDB.clearComments(WordPress.currentBlog.getLocalTableBlogId());
-      model.clear();
-      allComments.clear();
-      getListView().invalidateViews();
+      getCommentAdapter().clear();
       WordPress.currentComment=null;
       loadComments(false);
     }
@@ -22,7 +24,7 @@
   }
   boolean didLoadMore=(commentsResult.size() > 0);
   if (commentsResult.size() > 0) {
-    allComments.putAll(commentsResult);
+    mCommentHashes.putAll(commentsResult);
     loadComments(didLoadMore);
   }
 }

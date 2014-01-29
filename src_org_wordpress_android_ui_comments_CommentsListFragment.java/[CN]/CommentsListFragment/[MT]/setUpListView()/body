@@ -3,10 +3,10 @@
   listView.setAdapter(getCommentAdapter());
   listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
     public void onItemClick(    AdapterView<?> parent,    View view,    int position,    long id){
-      if (position < 0 || position >= model.size()) {
+      if (position < 0 || position >= mComments.size()) {
         return;
       }
-      Comment comment=model.get(position);
+      Comment comment=mComments.get(position);
       mOnCommentSelectedListener.onCommentSelected(comment);
       getListView().invalidateViews();
     }
@@ -22,7 +22,7 @@
         AppLog.e(T.COMMENTS,"bad menuInfo",e);
         return;
       }
-      WordPress.currentComment=model.get(info.position);
+      WordPress.currentComment=mComments.get(info.position);
       menu.setHeaderTitle(getResources().getText(R.string.comment_actions));
       CommentStatus status=WordPress.currentComment.getStatusEnum();
       if (status != CommentStatus.APPROVED) {

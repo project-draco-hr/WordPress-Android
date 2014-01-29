@@ -6,24 +6,21 @@
   txtEmailURL.setVisibility(TextUtils.isEmpty(fEmailURL) ? View.GONE : View.VISIBLE);
   txtEmailURL.setText(fEmailURL);
   row.setId(Integer.valueOf(comment.commentID));
-  final String status;
-  final String textColor;
 switch (comment.getStatusEnum()) {
 case SPAM:
-    status=getResources().getText(R.string.spam).toString();
-  textColor="#FF0000";
+    txtStatus.setText(getResources().getText(R.string.spam).toString());
+  txtStatus.setTextColor(Color.parseColor("#FF0000"));
+txtStatus.setVisibility(View.VISIBLE);
 break;
 case UNAPPROVED:
-status=getResources().getText(R.string.unapproved).toString();
-textColor="#D54E21";
+txtStatus.setText(getResources().getText(R.string.unapproved).toString());
+txtStatus.setTextColor(Color.parseColor("#D54E21"));
+txtStatus.setVisibility(View.VISIBLE);
 break;
 default :
-status=getResources().getText(R.string.approved).toString();
-textColor="#006505";
+txtStatus.setVisibility(View.GONE);
 break;
 }
-txtStatus.setText(status);
-txtStatus.setTextColor(Color.parseColor(textColor));
 bulkCheck.setChecked(selectedCommentPositions.contains(position));
 bulkCheck.setTag(position);
 bulkCheck.setOnClickListener(new OnClickListener(){
@@ -38,6 +35,7 @@ showOrHideModerationBar();
 }
 }
 );
+imgAvatar.setDefaultImageResId(R.drawable.placeholder);
 if (comment.hasProfileImageUrl()) {
 imgAvatar.setImageUrl(GravatarUtils.fixGravatarUrl(comment.getProfileImageUrl()),WordPress.imageLoader);
 }

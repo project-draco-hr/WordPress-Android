@@ -3,17 +3,16 @@
   int commentID;
   int blogId=WordPress.currentBlog.getLocalTableBlogId();
   List<Map<String,Object>> loadedComments=WordPress.wpDB.loadComments(blogId);
-  boolean didBlogChange=(blogId != mPrevLoadedBlogId);
-  mPrevLoadedBlogId=blogId;
-  if (didBlogChange) {
-    model.clear();
+  if (!didLoadMore) {
+    mComments.clear();
+    mCommentHashes.clear();
+    getCommentAdapter().notifyDataSetChanged();
   }
   if (loadedComments == null) {
     return false;
   }
   for (int i=0; i < loadedComments.size(); i++) {
     Map<String,Object> contentHash=loadedComments.get(i);
-    allComments.put((Integer)contentHash.get("commentID"),contentHash);
     author=StringUtils.unescapeHTML(contentHash.get("author").toString());
     commentID=(Integer)contentHash.get("commentID");
     postID=contentHash.get("postID").toString();
@@ -24,25 +23,17 @@
     authorURL=StringUtils.unescapeHTML(contentHash.get("url").toString());
     postTitle=StringUtils.unescapeHTML(contentHash.get("postTitle").toString());
     Comment comment=new Comment(postID,commentID,i,author,dateCreatedFormatted,commentContent,status,postTitle,authorURL,authorEmail,GravatarUtils.gravatarUrlFromEmail(authorEmail,140));
-    model.add(comment);
+    mComments.add(comment);
+    mCommentHashes.put((Integer)contentHash.get("commentID"),contentHash);
   }
   getCommentAdapter().notifyDataSetChanged();
   if (this.shouldSelectAfterLoad) {
-    if (model != null && model.size() > 0) {
-      Comment aComment=model.get(0);
+    if (mComments != null && mComments.size() > 0) {
+      Comment aComment=mComments.get(0);
       mOnCommentSelectedListener.onCommentSelected(aComment);
       getListView().setItemChecked(0,true);
     }
     shouldSelectAfterLoad=false;
   }
-  if (didLoadMore && scrollPosition > 0) {
-    try {
-      getListView().setSelectionFromTop(scrollPosition,scrollPositionTop);
-    }
- catch (    Exception e) {
-      e.printStackTrace();
-    }
-  }
-  mListScrollPositionManager.restoreScrollOffset();
   return true;
 }

@@ -1,16 +1,17 @@
 {
   final String newStatusStr=CommentStatus.toString(newStatus);
   final Blog blog=WordPress.currentBlog;
-  moderateErrorMsg="";
+  final int numChecked=getCheckedCommentCount();
+  mModerateErrorMsg="";
   Iterator it=selectedCommentPositions.iterator();
-  final List<Comment> commentsUpdatedList=new LinkedList<Comment>();
+  final List<Comment> updatedComments=new LinkedList<Comment>();
   while (it.hasNext()) {
     int i=(Integer)it.next();
     XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
     Comment listRow=(Comment)getListView().getItemAtPosition(i);
     int curCommentID=listRow.commentID;
     Map<String,String> contentHash, postHash=new HashMap<String,String>();
-    contentHash=(Map<String,String>)allComments.get(curCommentID);
+    contentHash=(Map<String,String>)mCommentHashes.get(curCommentID);
     if (contentHash.get("status").equals(newStatusStr)) {
       it.remove();
       continue;
@@ -29,13 +30,13 @@
         it.remove();
         listRow.setStatus(newStatusStr);
         contentHash.put("status",newStatusStr);
-        model.set(i,listRow);
+        mComments.set(i,listRow);
         WordPress.wpDB.updateCommentStatus(WordPress.currentBlog.getLocalTableBlogId(),listRow.commentID,newStatusStr);
-        commentsUpdatedList.add(WordPress.wpDB.getComment(WordPress.currentBlog.getLocalTableBlogId(),listRow.commentID));
+        updatedComments.add(WordPress.wpDB.getComment(WordPress.currentBlog.getLocalTableBlogId(),listRow.commentID));
       }
     }
  catch (    XMLRPCException e) {
-      moderateErrorMsg=getResources().getText(R.string.error_moderate_comment).toString();
+      mModerateErrorMsg=getResources().getText(R.string.error_moderate_comment).toString();
     }
   }
   dismissDialog(ID_DIALOG_MODERATING);
@@ -43,19 +44,22 @@
     Thread action=new Thread(){
       public void run(){
         hideModerationBar();
-        if (TextUtils.isEmpty(moderateErrorMsg)) {
-          String msg=getResources().getText(R.string.comment_moderated).toString();
-          if (checkedCommentTotal > 1)           msg=getResources().getText(R.string.comments_moderated).toString();
+        if (TextUtils.isEmpty(mModerateErrorMsg)) {
+          final String msg;
+          if (numChecked > 1) {
+            msg=getResources().getText(R.string.comments_moderated).toString();
+          }
+ else {
+            msg=getResources().getText(R.string.comment_moderated).toString();
+          }
           Toast.makeText(getActivity(),msg,Toast.LENGTH_SHORT).show();
-          checkedCommentTotal=0;
-          mOnCommentChangeListener.onCommentsModerated(commentsUpdatedList);
+          mOnCommentChangeListener.onCommentsModerated(updatedComments);
           ((WPActionBarActivity)getActivity()).updateMenuDrawer();
         }
  else         if (!getActivity().isFinishing()) {
-          checkedCommentTotal=0;
           getListView().invalidateViews();
           FragmentTransaction ft=getFragmentManager().beginTransaction();
-          WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(moderateErrorMsg);
+          WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(mModerateErrorMsg);
           ft.add(alert,"alert");
           ft.commitAllowingStateLoss();
         }
