@@ -1,35 +1,29 @@
 {
   final String newStatusStr=CommentStatus.toString(newStatus);
   final Blog blog=WordPress.currentBlog;
-  final int numChecked=getCheckedCommentCount();
+  final List<Comment> selectedComments=getCommentAdapter().getSelectedComments();
   final List<Comment> updatedComments=new LinkedList<Comment>();
   mModerateErrorMsg="";
-  Iterator it=selectedCommentPositions.iterator();
-  while (it.hasNext()) {
-    int i=(Integer)it.next();
+  for (  Comment comment : selectedComments) {
     XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
-    Comment curComment=(Comment)getListView().getItemAtPosition(i);
-    if (newStatusStr.equals(curComment.getStatus())) {
-      it.remove();
+    if (newStatusStr.equals(comment.getStatus())) {
       continue;
     }
     Map<String,String> postHash=new HashMap<String,String>();
     postHash.put("status",newStatusStr);
-    postHash.put("content",StringUtils.notNullStr(curComment.comment));
-    postHash.put("author",StringUtils.notNullStr(curComment.name));
-    postHash.put("author_url",StringUtils.notNullStr(curComment.authorURL));
-    postHash.put("author_email",StringUtils.notNullStr(curComment.authorEmail));
-    Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),curComment.commentID,postHash};
+    postHash.put("content",StringUtils.notNullStr(comment.comment));
+    postHash.put("author",StringUtils.notNullStr(comment.name));
+    postHash.put("author_url",StringUtils.notNullStr(comment.authorURL));
+    postHash.put("author_email",StringUtils.notNullStr(comment.authorEmail));
+    Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),comment.commentID,postHash};
     Object result;
     try {
       result=client.call("wp.editComment",params);
       boolean bResult=Boolean.parseBoolean(result.toString());
       if (bResult) {
-        it.remove();
-        curComment.setStatus(newStatusStr);
-        mComments.set(i,curComment);
-        WordPress.wpDB.updateCommentStatus(WordPress.currentBlog.getLocalTableBlogId(),curComment.commentID,newStatusStr);
-        updatedComments.add(curComment);
+        comment.setStatus(newStatusStr);
+        WordPress.wpDB.updateCommentStatus(WordPress.currentBlog.getLocalTableBlogId(),comment.commentID,newStatusStr);
+        updatedComments.add(comment);
       }
     }
  catch (    XMLRPCException e) {
@@ -43,7 +37,7 @@
         hideModerationBar();
         if (TextUtils.isEmpty(mModerateErrorMsg)) {
           final String msg;
-          if (numChecked > 1) {
+          if (updatedComments.size() > 1) {
             msg=getResources().getText(R.string.comments_moderated).toString();
           }
  else {

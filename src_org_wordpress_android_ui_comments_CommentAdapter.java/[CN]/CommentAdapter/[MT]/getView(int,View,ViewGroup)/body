@@ -10,9 +10,6 @@
     wrapper=(CommentEntryWrapper)convertView.getTag();
   }
   wrapper.populateFrom(comment,position);
-  if (mCanLoadMoreComments && !mIsRetrievingComments && position >= getCount() - 1) {
-    AppLog.d(T.COMMENTS,"auto-loading more comments");
-    refreshComments(true);
-  }
+  if (mOnLoadMoreListener != null && position >= getCount() - 1)   mOnLoadMoreListener.onLoadMore();
   return convertView;
 }

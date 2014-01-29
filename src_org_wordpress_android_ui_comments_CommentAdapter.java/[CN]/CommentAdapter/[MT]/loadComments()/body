@@ -1,0 +1,25 @@
+{
+  String author, postID, commentContent, dateCreatedFormatted, status, authorEmail, authorURL, postTitle;
+  int commentID;
+  int blogId=WordPress.currentBlog.getLocalTableBlogId();
+  List<Map<String,Object>> loadedComments=WordPress.wpDB.loadComments(blogId);
+  if (loadedComments == null) {
+    return false;
+  }
+  for (int i=0; i < loadedComments.size(); i++) {
+    Map<String,Object> contentHash=loadedComments.get(i);
+    commentID=(Integer)contentHash.get("commentID");
+    postID=contentHash.get("postID").toString();
+    commentContent=contentHash.get("comment").toString();
+    dateCreatedFormatted=contentHash.get("commentDateFormatted").toString();
+    status=contentHash.get("status").toString();
+    author=StringUtils.unescapeHTML(contentHash.get("author").toString());
+    authorEmail=StringUtils.unescapeHTML(contentHash.get("email").toString());
+    authorURL=StringUtils.unescapeHTML(contentHash.get("url").toString());
+    postTitle=StringUtils.unescapeHTML(contentHash.get("postTitle").toString());
+    Comment comment=new Comment(postID,commentID,i,author,dateCreatedFormatted,commentContent,status,postTitle,authorURL,authorEmail,GravatarUtils.gravatarUrlFromEmail(authorEmail,140));
+    mComments.add(comment);
+  }
+  notifyDataSetChanged();
+  return true;
+}

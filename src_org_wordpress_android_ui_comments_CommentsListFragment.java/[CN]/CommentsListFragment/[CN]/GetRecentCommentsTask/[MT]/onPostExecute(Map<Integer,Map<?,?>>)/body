@@ -11,14 +11,8 @@
   if (isCancelled())   return;
   mCanLoadMoreComments=(commentsResult != null && commentsResult.size() > 0);
   if (commentsResult == null) {
-    WordPress.wpDB.clearComments(WordPress.currentBlog.getLocalTableBlogId());
-    getCommentAdapter().clear();
-    WordPress.currentComment=null;
-    loadComments();
     if (isError && !getActivity().isFinishing())     ToastUtils.showToast(getActivity(),R.string.error_refresh_comments,ToastUtils.Duration.LONG);
     return;
   }
-  if (commentsResult.size() > 0) {
-    loadComments();
-  }
+  if (commentsResult.size() > 0)   getCommentAdapter().loadComments();
 }

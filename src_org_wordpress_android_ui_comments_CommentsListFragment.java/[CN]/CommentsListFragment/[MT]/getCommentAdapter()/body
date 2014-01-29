@@ -1,6 +1,18 @@
 {
   if (mCommentAdapter == null) {
-    mCommentAdapter=new CommentAdapter();
+    CommentAdapter.OnLoadMoreListener loadMoreListener=new CommentAdapter.OnLoadMoreListener(){
+      @Override public void onLoadMore(){
+        if (mCanLoadMoreComments && !mIsRetrievingComments)         refreshComments(true);
+      }
+    }
+;
+    CommentAdapter.OnSelectionChangeListener changeListener=new CommentAdapter.OnSelectionChangeListener(){
+      @Override public void onSelectionChanged(){
+        showOrHideModerationBar();
+      }
+    }
+;
+    mCommentAdapter=new CommentAdapter(getActivity(),loadMoreListener,changeListener);
   }
   return mCommentAdapter;
 }

@@ -1,11 +1,9 @@
 {
-  final int numChecked=getCheckedCommentCount();
+  final List<Comment> selectedComments=getCommentAdapter().getSelectedComments();
   mModerateErrorMsg="";
-  for (  int i : selectedCommentPositions) {
+  for (  Comment comment : selectedComments) {
     XMLRPCClient client=new XMLRPCClient(WordPress.currentBlog.getUrl(),WordPress.currentBlog.getHttpuser(),WordPress.currentBlog.getHttppassword());
-    Comment listRow=(Comment)getListView().getItemAtPosition(i);
-    int curCommentID=listRow.commentID;
-    Object[] params={WordPress.currentBlog.getRemoteBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),curCommentID};
+    Object[] params={WordPress.currentBlog.getRemoteBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),comment.commentID};
     try {
       client.call("wp.deleteComment",params);
     }
@@ -19,7 +17,7 @@
       public void run(){
         if (TextUtils.isEmpty(mModerateErrorMsg)) {
           final String msg;
-          if (numChecked > 1) {
+          if (selectedComments.size() > 1) {
             msg=getResources().getText(R.string.comments_moderated).toString();
           }
  else {
@@ -27,7 +25,7 @@
           }
           Toast.makeText(getActivity(),msg,Toast.LENGTH_SHORT).show();
           hideModerationBar();
-          selectedCommentPositions.clear();
+          getCommentAdapter().clearSelectedComments();
           mOnCommentChangeListener.onCommentDeleted();
         }
  else         if (!getActivity().isFinishing()) {

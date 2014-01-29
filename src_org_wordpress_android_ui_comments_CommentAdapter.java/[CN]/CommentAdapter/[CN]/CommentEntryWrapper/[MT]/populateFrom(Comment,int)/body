@@ -1,6 +1,6 @@
 {
-  txtName.setText(!TextUtils.isEmpty(comment.name) ? comment.name : getString(R.string.anonymous));
-  txtPostTitle.setText(getResources().getText(R.string.on) + " " + comment.postTitle);
+  txtName.setText(!TextUtils.isEmpty(comment.name) ? comment.name : mAnonymous);
+  txtPostTitle.setText(comment.postTitle);
   txtComment.setText(StringUtils.unescapeHTML(comment.comment));
   String fEmailURL=(TextUtils.isEmpty(comment.authorURL) ? comment.emailURL : comment.authorURL);
   txtEmailURL.setVisibility(TextUtils.isEmpty(fEmailURL) ? View.GONE : View.VISIBLE);
@@ -8,12 +8,12 @@
   row.setId(Integer.valueOf(comment.commentID));
 switch (comment.getStatusEnum()) {
 case SPAM:
-    txtStatus.setText(getResources().getText(R.string.spam).toString());
+    txtStatus.setText(mStatusTextSpam);
   txtStatus.setTextColor(mStatusColorSpam);
 txtStatus.setVisibility(View.VISIBLE);
 break;
 case UNAPPROVED:
-txtStatus.setText(getResources().getText(R.string.unapproved).toString());
+txtStatus.setText(mStatusTextUnapproved);
 txtStatus.setTextColor(mStatusColorUnapproved);
 txtStatus.setVisibility(View.VISIBLE);
 break;
@@ -21,17 +21,16 @@ default :
 txtStatus.setVisibility(View.GONE);
 break;
 }
-bulkCheck.setChecked(selectedCommentPositions.contains(position));
-bulkCheck.setTag(position);
-bulkCheck.setOnClickListener(new OnClickListener(){
+bulkCheck.setChecked(mSelectedCommentPositions.contains(position));
+bulkCheck.setOnClickListener(new View.OnClickListener(){
 public void onClick(View arg0){
 if (bulkCheck.isChecked()) {
-selectedCommentPositions.add(position);
+mSelectedCommentPositions.add(position);
 }
  else {
-selectedCommentPositions.remove(position);
+mSelectedCommentPositions.remove(position);
 }
-showOrHideModerationBar();
+if (mOnSelectionChangeListener != null) mOnSelectionChangeListener.onSelectionChanged();
 }
 }
 );
