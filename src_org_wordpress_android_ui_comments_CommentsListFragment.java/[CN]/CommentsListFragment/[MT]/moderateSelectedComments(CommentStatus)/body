@@ -1,62 +1,26 @@
 {
-  final String newStatusStr=CommentStatus.toString(newStatus);
-  final Blog blog=WordPress.currentBlog;
-  final List<Comment> selectedComments=getCommentAdapter().getSelectedComments();
-  final List<Comment> updatedComments=new LinkedList<Comment>();
-  mModerateErrorMsg="";
+  final CommentList selectedComments=getCommentAdapter().getSelectedComments();
+  final CommentList updateComments=new CommentList();
   for (  Comment comment : selectedComments) {
-    XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
-    if (newStatusStr.equals(comment.getStatus())) {
-      continue;
-    }
-    Map<String,String> postHash=new HashMap<String,String>();
-    postHash.put("status",newStatusStr);
-    postHash.put("content",StringUtils.notNullStr(comment.comment));
-    postHash.put("author",StringUtils.notNullStr(comment.name));
-    postHash.put("author_url",StringUtils.notNullStr(comment.authorURL));
-    postHash.put("author_email",StringUtils.notNullStr(comment.authorEmail));
-    Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),comment.commentID,postHash};
-    Object result;
-    try {
-      result=client.call("wp.editComment",params);
-      boolean bResult=Boolean.parseBoolean(result.toString());
-      if (bResult) {
-        comment.setStatus(newStatusStr);
-        WordPress.wpDB.updateCommentStatus(WordPress.currentBlog.getLocalTableBlogId(),comment.commentID,newStatusStr);
-        updatedComments.add(comment);
-      }
-    }
- catch (    XMLRPCException e) {
-      mModerateErrorMsg=getResources().getText(R.string.error_moderate_comment).toString();
-    }
+    if (comment.getStatusEnum() != newStatus)     updateComments.add(comment);
   }
-  dismissDialog(ID_DIALOG_MODERATING);
-  if (hasActivity()) {
-    Thread action=new Thread(){
-      public void run(){
-        hideModerationBar();
-        if (TextUtils.isEmpty(mModerateErrorMsg)) {
-          final String msg;
-          if (updatedComments.size() > 1) {
-            msg=getResources().getText(R.string.comments_moderated).toString();
-          }
+  if (updateComments.size() == 0)   return;
+  if (!NetworkUtils.checkConnection(getActivity()))   return;
+  getActivity().showDialog(ID_DIALOG_MODERATING);
+  CommentActions.OnCommentsModeratedListener listener=new CommentActions.OnCommentsModeratedListener(){
+    @Override public void onCommentsModerated(    final CommentList moderatedComments){
+      if (!hasActivity())       return;
+      dismissDialog(ID_DIALOG_MODERATING);
+      if (moderatedComments.size() > 0) {
+        getCommentAdapter().clearSelectedComments();
+        getCommentAdapter().replaceComments(moderatedComments);
+        if (getActivity() instanceof WPActionBarActivity)         ((WPActionBarActivity)getActivity()).updateMenuDrawer();
+      }
  else {
-            msg=getResources().getText(R.string.comment_moderated).toString();
-          }
-          Toast.makeText(getActivity(),msg,Toast.LENGTH_SHORT).show();
-          mOnCommentChangeListener.onCommentsModerated(updatedComments);
-          ((WPActionBarActivity)getActivity()).updateMenuDrawer();
-        }
- else         if (!getActivity().isFinishing()) {
-          getListView().invalidateViews();
-          FragmentTransaction ft=getFragmentManager().beginTransaction();
-          WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(mModerateErrorMsg);
-          ft.add(alert,"alert");
-          ft.commitAllowingStateLoss();
-        }
+        ToastUtils.showToast(getActivity(),R.string.error_moderate_comment);
       }
     }
-;
-    getActivity().runOnUiThread(action);
   }
+;
+  CommentActions.moderateComments(WordPress.getCurrentLocalTableBlogId(),updateComments,newStatus,listener);
 }
