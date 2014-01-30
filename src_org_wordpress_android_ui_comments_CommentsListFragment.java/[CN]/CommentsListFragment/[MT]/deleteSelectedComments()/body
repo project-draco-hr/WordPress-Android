@@ -1,14 +1,14 @@
 {
   if (!NetworkUtils.checkConnection(getActivity()))   return false;
-  final CommentList checkedComments=getCommentAdapter().getCheckedComments();
-  getActivity().showDialog(ID_DIALOG_DELETING);
+  final CommentList selectedComments=getCommentAdapter().getSelectedComments();
+  getActivity().showDialog(CommentsActivity.ID_DIALOG_DELETING);
   CommentActions.OnCommentsModeratedListener listener=new CommentActions.OnCommentsModeratedListener(){
     @Override public void onCommentsModerated(    final CommentList deletedComments){
       if (!hasActivity())       return;
       finishActionMode();
-      dismissDialog(ID_DIALOG_DELETING);
+      dismissDialog(CommentsActivity.ID_DIALOG_DELETING);
       if (deletedComments.size() > 0) {
-        getCommentAdapter().clearCheckedComments();
+        getCommentAdapter().clearSelectedComments();
         getCommentAdapter().deleteComments(deletedComments);
         if (getActivity() instanceof WPActionBarActivity)         ((WPActionBarActivity)getActivity()).updateMenuDrawer();
       }
@@ -18,6 +18,6 @@
     }
   }
 ;
-  CommentActions.deleteComments(WordPress.getCurrentLocalTableBlogId(),checkedComments,listener);
+  CommentActions.deleteComments(WordPress.getCurrentLocalTableBlogId(),selectedComments,listener);
   return true;
 }

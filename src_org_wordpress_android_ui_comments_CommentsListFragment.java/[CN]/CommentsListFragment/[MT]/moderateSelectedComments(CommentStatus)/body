@@ -1,19 +1,19 @@
 {
-  final CommentList checkedComments=getCommentAdapter().getCheckedComments();
+  final CommentList selectedComments=getCommentAdapter().getSelectedComments();
   final CommentList updateComments=new CommentList();
-  for (  Comment comment : checkedComments) {
+  for (  Comment comment : selectedComments) {
     if (comment.getStatusEnum() != newStatus)     updateComments.add(comment);
   }
   if (updateComments.size() == 0)   return false;
   if (!NetworkUtils.checkConnection(getActivity()))   return false;
-  getActivity().showDialog(ID_DIALOG_MODERATING);
+  getActivity().showDialog(CommentsActivity.ID_DIALOG_MODERATING);
   CommentActions.OnCommentsModeratedListener listener=new CommentActions.OnCommentsModeratedListener(){
     @Override public void onCommentsModerated(    final CommentList moderatedComments){
       if (!hasActivity())       return;
       finishActionMode();
-      dismissDialog(ID_DIALOG_MODERATING);
+      dismissDialog(CommentsActivity.ID_DIALOG_MODERATING);
       if (moderatedComments.size() > 0) {
-        getCommentAdapter().clearCheckedComments();
+        getCommentAdapter().clearSelectedComments();
         getCommentAdapter().replaceComments(moderatedComments);
         if (getActivity() instanceof WPActionBarActivity)         ((WPActionBarActivity)getActivity()).updateMenuDrawer();
       }
