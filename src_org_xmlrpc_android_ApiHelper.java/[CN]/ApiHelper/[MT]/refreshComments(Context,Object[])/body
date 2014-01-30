@@ -10,10 +10,9 @@
     throw new XMLRPCException(e);
   }
   if (result.length == 0)   return null;
-  int commentID, postID;
-  java.util.Date date;
   Map<?,?> contentHash;
-  String authorName, content, status, authorEmail, authorURL, postTitle;
+  int commentID, postID;
+  String authorName, content, status, authorEmail, authorURL, postTitle, pubDate;
   CommentList comments=new CommentList();
   for (int ctr=0; ctr < result.length; ctr++) {
     contentHash=(Map<?,?>)result[ctr];
@@ -21,13 +20,12 @@
     status=contentHash.get("status").toString();
     postID=Integer.parseInt(contentHash.get("post_id").toString());
     commentID=Integer.parseInt(contentHash.get("comment_id").toString());
-    date=(Date)contentHash.get("date_created_gmt");
+    pubDate=contentHash.get("date_created_gmt").toString();
     authorName=contentHash.get("author").toString();
     authorURL=contentHash.get("author_url").toString();
     authorEmail=contentHash.get("author_email").toString();
     postTitle=contentHash.get("post_title").toString();
-    String formattedDate=getFormattedCommentDate(ctx,date);
-    Comment comment=new Comment(postID,commentID,authorName,formattedDate,content,status,postTitle,authorURL,authorEmail,null);
+    Comment comment=new Comment(postID,commentID,authorName,pubDate,content,status,postTitle,authorURL,authorEmail,null);
     comments.add(comment);
   }
   int localBlogId=blog.getLocalTableBlogId();
