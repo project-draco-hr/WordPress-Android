@@ -19,19 +19,21 @@ default :
 txtStatus.setVisibility(View.GONE);
 break;
 }
-bulkCheck.setChecked(mSelectedCommentPositions.contains(position));
+bulkCheck.setVisibility(mEnableCheckBoxes ? View.VISIBLE : View.GONE);
+if (mEnableCheckBoxes) {
+bulkCheck.setChecked(mCheckedCommentPositions.contains(position));
 bulkCheck.setOnClickListener(new View.OnClickListener(){
 public void onClick(View view){
 if (bulkCheck.isChecked()) {
-mSelectedCommentPositions.add(position);
+setItemChecked(position,true);
 }
  else {
-mSelectedCommentPositions.remove(position);
+setItemChecked(position,false);
 }
-if (mOnSelectionChangeListener != null) mOnSelectionChangeListener.onSelectionChanged();
 }
 }
 );
+}
 String avatarUrl=comment.getAvatarForDisplay(mAvatarSz);
 if (!TextUtils.isEmpty(avatarUrl)) {
 imgAvatar.setImageUrl(avatarUrl,WordPress.imageLoader);

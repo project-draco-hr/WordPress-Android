@@ -1,18 +1,18 @@
 {
-  final CommentList selectedComments=getCommentAdapter().getSelectedComments();
+  final CommentList checkedComments=getCommentAdapter().getCheckedComments();
   final CommentList updateComments=new CommentList();
-  for (  Comment comment : selectedComments) {
+  for (  Comment comment : checkedComments) {
     if (comment.getStatusEnum() != newStatus)     updateComments.add(comment);
   }
-  if (updateComments.size() == 0)   return;
-  if (!NetworkUtils.checkConnection(getActivity()))   return;
+  if (updateComments.size() == 0)   return false;
+  if (!NetworkUtils.checkConnection(getActivity()))   return false;
   getActivity().showDialog(ID_DIALOG_MODERATING);
   CommentActions.OnCommentsModeratedListener listener=new CommentActions.OnCommentsModeratedListener(){
     @Override public void onCommentsModerated(    final CommentList moderatedComments){
       if (!hasActivity())       return;
       dismissDialog(ID_DIALOG_MODERATING);
       if (moderatedComments.size() > 0) {
-        getCommentAdapter().clearSelectedComments();
+        getCommentAdapter().clearCheckedComments();
         getCommentAdapter().replaceComments(moderatedComments);
         if (getActivity() instanceof WPActionBarActivity)         ((WPActionBarActivity)getActivity()).updateMenuDrawer();
       }
@@ -23,4 +23,5 @@
   }
 ;
   CommentActions.moderateComments(WordPress.getCurrentLocalTableBlogId(),updateComments,newStatus,listener);
+  return true;
 }
