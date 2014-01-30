@@ -1,0 +1,32 @@
+{
+  if (comments == null || comments.size() == 0)   return false;
+  SQLiteDatabase db=getWritableDb();
+  db.beginTransaction();
+  try {
+    try {
+      for (      Comment comment : comments) {
+        ContentValues values=new ContentValues();
+        values.put("blog_id",localBlogId);
+        values.put("post_id",comment.postID);
+        values.put("comment_id",comment.commentID);
+        values.put("author",comment.authorName);
+        values.put("comment",comment.comment);
+        values.put("commentDateFormatted",comment.dateCreatedFormatted);
+        values.put("status",comment.getStatus());
+        values.put("url",comment.authorURL);
+        values.put("email",comment.authorEmail);
+        values.put("postTitle",comment.postTitle);
+        db.insertWithOnConflict(COMMENTS_TABLE,null,values,SQLiteDatabase.CONFLICT_REPLACE);
+      }
+      db.setTransactionSuccessful();
+      return true;
+    }
+ catch (    SQLiteException e) {
+      AppLog.e(AppLog.T.COMMENTS,e);
+      return false;
+    }
+  }
+  finally {
+    db.endTransaction();
+  }
+}

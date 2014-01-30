@@ -1,8 +1,8 @@
 {
-  txtName.setText(!TextUtils.isEmpty(comment.name) ? comment.name : mAnonymous);
+  txtName.setText(!TextUtils.isEmpty(comment.authorName) ? comment.authorName : mAnonymous);
   txtPostTitle.setText(comment.postTitle);
   txtComment.setText(StringUtils.unescapeHTML(comment.comment));
-  String fEmailURL=(TextUtils.isEmpty(comment.authorURL) ? comment.emailURL : comment.authorURL);
+  String fEmailURL=(TextUtils.isEmpty(comment.authorURL) ? comment.authorEmail : comment.authorURL);
   txtEmailURL.setVisibility(TextUtils.isEmpty(fEmailURL) ? View.GONE : View.VISIBLE);
   txtEmailURL.setText(fEmailURL);
   row.setId(Integer.valueOf(comment.commentID));
@@ -23,7 +23,7 @@ break;
 }
 bulkCheck.setChecked(mSelectedCommentPositions.contains(position));
 bulkCheck.setOnClickListener(new View.OnClickListener(){
-public void onClick(View arg0){
+public void onClick(View view){
 if (bulkCheck.isChecked()) {
 mSelectedCommentPositions.add(position);
 }
@@ -37,6 +37,9 @@ if (mOnSelectionChangeListener != null) mOnSelectionChangeListener.onSelectionCh
 imgAvatar.setDefaultImageResId(R.drawable.placeholder);
 if (comment.hasProfileImageUrl()) {
 imgAvatar.setImageUrl(GravatarUtils.fixGravatarUrl(comment.getProfileImageUrl()),WordPress.imageLoader);
+}
+ else if (comment.hasAuthorEmail()) {
+imgAvatar.setImageUrl(GravatarUtils.gravatarUrlFromEmail(comment.authorEmail),WordPress.imageLoader);
 }
  else {
 imgAvatar.setImageResource(R.drawable.placeholder);

@@ -1,29 +1,18 @@
 {
-  List<Map<String,Object>> returnVector=new Vector<Map<String,Object>>();
-  Cursor c=getReadableDb().query(COMMENTS_TABLE,new String[]{"blogID","postID","iCommentID","author","comment","commentDate","commentDateFormatted","status","url","email","postTitle"},"blogID=" + blogID,null,null,null,null);
-  int numRows=c.getCount();
-  c.moveToFirst();
-  for (int i=0; i < numRows; i++) {
-    if (c.getString(0) != null) {
-      Map<String,Object> returnHash=new HashMap<String,Object>();
-      returnHash.put("blogID",c.getString(0));
-      returnHash.put("postID",c.getInt(1));
-      returnHash.put("commentID",c.getInt(2));
-      returnHash.put("author",c.getString(3));
-      returnHash.put("comment",c.getString(4));
-      returnHash.put("commentDate",c.getString(5));
-      returnHash.put("commentDateFormatted",c.getString(6));
-      returnHash.put("status",c.getString(7));
-      returnHash.put("url",c.getString(8));
-      returnHash.put("email",c.getString(9));
-      returnHash.put("postTitle",c.getString(10));
-      returnVector.add(i,returnHash);
+  CommentList comments=new CommentList();
+  String[] args={Integer.toString(localBlogId)};
+  Cursor c=getReadableDb().rawQuery("SELECT * FROM " + COMMENTS_TABLE + " WHERE blog_id=?",args);
+  try {
+    if (c.moveToFirst()) {
+      do {
+        Comment comment=getCommentFromCursor(c);
+        comments.add(comment);
+      }
+ while (c.moveToNext());
     }
-    c.moveToNext();
+    return comments;
   }
-  c.close();
-  if (numRows == 0) {
-    returnVector=null;
+  finally {
+    SqlUtils.closeCursor(c);
   }
-  return returnVector;
 }
