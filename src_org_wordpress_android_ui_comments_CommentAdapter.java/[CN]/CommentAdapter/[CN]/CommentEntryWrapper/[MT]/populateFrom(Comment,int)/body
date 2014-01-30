@@ -1,10 +1,8 @@
 {
   txtName.setText(comment.hasAuthorName() ? comment.getAuthorName() : mAnonymous);
   txtPostTitle.setText(comment.getPostTitle());
-  txtComment.setText(StringUtils.unescapeHTML(comment.getCommentText()));
-  String fEmailURL=(comment.hasAuthorUrl() ? comment.getAuthorUrl() : comment.getAuthorEmail());
-  txtEmailURL.setVisibility(TextUtils.isEmpty(fEmailURL) ? View.GONE : View.VISIBLE);
-  txtEmailURL.setText(fEmailURL);
+  txtComment.setText(comment.getUnescapedCommentText());
+  txtDate.setText(DateTimeUtils.javaDateToTimeSpan(comment.getDatePublished()));
   row.setId(Integer.valueOf(comment.commentID));
 switch (comment.getStatusEnum()) {
 case SPAM:
@@ -34,14 +32,11 @@ if (mOnSelectionChangeListener != null) mOnSelectionChangeListener.onSelectionCh
 }
 }
 );
-imgAvatar.setDefaultImageResId(R.drawable.placeholder);
-if (comment.hasProfileImageUrl()) {
-imgAvatar.setImageUrl(GravatarUtils.fixGravatarUrl(comment.getProfileImageUrl()),WordPress.imageLoader);
-}
- else if (comment.hasAuthorEmail()) {
-imgAvatar.setImageUrl(GravatarUtils.gravatarUrlFromEmail(comment.getAuthorEmail()),WordPress.imageLoader);
+String avatarUrl=comment.getAvatarForDisplay(mAvatarSz);
+if (!TextUtils.isEmpty(avatarUrl)) {
+imgAvatar.setImageUrl(avatarUrl,WordPress.imageLoader);
 }
  else {
-imgAvatar.setImageResource(R.drawable.placeholder);
+imgAvatar.setImageDrawable(mDefaultAvatar);
 }
 }

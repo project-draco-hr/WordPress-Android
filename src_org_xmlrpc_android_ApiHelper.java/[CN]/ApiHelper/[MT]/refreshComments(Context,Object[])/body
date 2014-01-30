@@ -13,6 +13,7 @@
   Map<?,?> contentHash;
   int commentID, postID;
   String authorName, content, status, authorEmail, authorURL, postTitle, pubDate;
+  java.util.Date date;
   CommentList comments=new CommentList();
   for (int ctr=0; ctr < result.length; ctr++) {
     contentHash=(Map<?,?>)result[ctr];
@@ -20,11 +21,12 @@
     status=contentHash.get("status").toString();
     postID=Integer.parseInt(contentHash.get("post_id").toString());
     commentID=Integer.parseInt(contentHash.get("comment_id").toString());
-    pubDate=contentHash.get("date_created_gmt").toString();
     authorName=contentHash.get("author").toString();
     authorURL=contentHash.get("author_url").toString();
     authorEmail=contentHash.get("author_email").toString();
     postTitle=contentHash.get("post_title").toString();
+    date=(java.util.Date)contentHash.get("date_created_gmt");
+    pubDate=DateTimeUtils.javaDateToIso8601(date);
     Comment comment=new Comment(postID,commentID,authorName,pubDate,content,status,postTitle,authorURL,authorEmail,null);
     comments.add(comment);
   }
