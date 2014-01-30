@@ -1,0 +1,21 @@
+{
+  if (json == null)   throw new IllegalArgumentException("null json comment");
+  ReaderComment comment=new ReaderComment();
+  comment.blogId=blogId;
+  comment.commentId=json.optLong("ID");
+  comment.status=JSONUtil.getString(json,"status");
+  comment.text=HtmlUtils.stripScript(JSONUtil.getString(json,"content"));
+  comment.published=JSONUtil.getString(json,"date");
+  comment.timestamp=DateTimeUtils.iso8601ToTimestamp(comment.published);
+  JSONObject jsonPost=json.optJSONObject("post");
+  if (jsonPost != null)   comment.postId=jsonPost.optLong("ID");
+  JSONObject jsonAuthor=json.optJSONObject("author");
+  if (jsonAuthor != null) {
+    comment.authorName=JSONUtil.getStringDecoded(jsonAuthor,"name");
+    comment.authorAvatar=JSONUtil.getString(jsonAuthor,"avatar_URL");
+    comment.authorUrl=JSONUtil.getString(jsonAuthor,"URL");
+  }
+  JSONObject jsonParent=json.optJSONObject("parent");
+  if (jsonParent != null)   comment.parentId=jsonParent.optLong("ID");
+  return comment;
+}

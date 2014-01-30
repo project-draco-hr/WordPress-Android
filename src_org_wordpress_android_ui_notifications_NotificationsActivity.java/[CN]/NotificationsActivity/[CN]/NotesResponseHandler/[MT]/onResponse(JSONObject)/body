@@ -1,18 +1,17 @@
 {
   mLoadingMore=false;
-  List<Note> notes=null;
   if (response == null) {
-    Log.w(TAG,"Success, but did not receive any notes");
+    AppLog.w(T.NOTIFS,"Success, but did not receive any notes");
     notes=new ArrayList<Note>(0);
     onNotes(notes);
     return;
   }
   try {
-    notes=parseNotes(response);
+    notes=NotificationUtils.parseNotes(response);
     onNotes(notes);
   }
  catch (  JSONException e) {
-    Log.e(TAG,"Success, but can't parse the response",e);
+    AppLog.e(T.NOTIFS,"Success, but can't parse the response",e);
     showError(getString(R.string.error_parsing_response));
     return;
   }

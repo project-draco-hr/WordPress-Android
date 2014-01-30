@@ -4,40 +4,54 @@
   setTitle(getResources().getText(R.string.settings));
   ActionBar ab=getSupportActionBar();
   ab.setDisplayHomeAsUpEnabled(true);
-  if (WordPress.currentBlog == null) {
-    try {
-      WordPress.currentBlog=new Blog(WordPress.wpDB.getLastBlogId());
-    }
- catch (    Exception e) {
-      Toast.makeText(this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
-      finish();
-    }
-  }
   addPreferencesFromResource(R.xml.preferences);
   mNotificationsGroup=(PreferenceGroup)findPreference("wp_pref_notifications_category");
-  preferenceChangeListener=new OnPreferenceChangeListener(){
+  OnPreferenceChangeListener preferenceChangeListener=new OnPreferenceChangeListener(){
     @Override public boolean onPreferenceChange(    Preference preference,    Object newValue){
-      preference.setSummary(newValue.toString());
+      if (newValue != null) {
+        preference.setSummary(newValue.toString());
+      }
+      InputMethodManager imm=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+      imm.hideSoftInputFromWindow(getListView().getWindowToken(),0);
       return true;
     }
   }
 ;
-  taglineTextPreference=(EditTextPreference)findPreference("wp_pref_post_signature");
-  taglineTextPreference.setOnPreferenceChangeListener(preferenceChangeListener);
-  Preference signOutPreference=(Preference)findPreference("wp_pref_sign_out");
+  mTaglineTextPreference=(WPEditTextPreference)findPreference("wp_pref_post_signature");
+  if (mTaglineTextPreference != null) {
+    mTaglineTextPreference.setOnPreferenceChangeListener(preferenceChangeListener);
+  }
+  Preference signOutPreference=findPreference("wp_pref_sign_out");
   signOutPreference.setOnPreferenceClickListener(signOutPreferenceClickListener);
+  Preference resetAutoShare=findPreference("wp_reset_share_pref");
+  resetAutoShare.setOnPreferenceClickListener(resetAUtoSharePreferenceClickListener);
   mSettings=PreferenceManager.getDefaultSharedPreferences(this);
   if (WordPress.hasValidWPComCredentials(PreferencesActivity.this)) {
-    String settingsJson=mSettings.getString("wp_pref_notification_settings",null);
+    String settingsJson=mSettings.getString(NotificationUtils.WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,null);
     if (settingsJson == null) {
-      new WPComXMLRPCApi().getNotificationSettings(new XMLRPCCallback(){
-        public void onSuccess(        long id,        Object result){
+      com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+        @Override public void onResponse(        JSONObject jsonObject){
+          AppLog.d(T.NOTIFS,"Get settings action succeeded");
+          Editor editor=mSettings.edit();
+          try {
+            JSONObject settingsJSON=jsonObject.getJSONObject("settings");
+            editor.putString(NotificationUtils.WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,settingsJSON.toString());
+            editor.commit();
+          }
+ catch (          JSONException e) {
+            AppLog.e(T.NOTIFS,"Can't parse the JSON object returned from the server that contains PN settings.",e);
+          }
           refreshWPComAuthCategory();
         }
-        public void onFailure(        long id,        XMLRPCException error){
+      }
+;
+      RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+        @Override public void onErrorResponse(        VolleyError volleyError){
+          AppLog.e(T.NOTIFS,"Get settings action failed",volleyError);
         }
       }
-,this);
+;
+      NotificationUtils.getPushNotificationSettings(PreferencesActivity.this,listener,errorListener);
     }
   }
   if (AppLockManager.getInstance().isAppLockFeatureEnabled() == false) {

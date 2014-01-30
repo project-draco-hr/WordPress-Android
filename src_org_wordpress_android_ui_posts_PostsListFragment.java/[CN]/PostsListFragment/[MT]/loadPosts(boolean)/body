@@ -1,12 +1,10 @@
 {
   List<Map<String,Object>> loadedPosts;
+  if (WordPress.currentBlog != null) {
+    mLoadedBlogId=WordPress.currentBlog.getRemoteBlogId();
+  }
   try {
-    if (isPage) {
-      loadedPosts=WordPress.wpDB.loadUploadedPosts(WordPress.currentBlog.getId(),true);
-    }
- else {
-      loadedPosts=WordPress.wpDB.loadUploadedPosts(WordPress.currentBlog.getId(),false);
-    }
+    loadedPosts=WordPress.wpDB.loadUploadedPosts(WordPress.currentBlog.getLocalTableBlogId(),isPage);
   }
  catch (  Exception e1) {
     return false;
@@ -27,8 +25,10 @@
     mStatuses=new String[0];
     if (mPostListAdapter != null) {
       mPostListAdapter.notifyDataSetChanged();
-      mOnPostActionListener.onPostAction(PostsActivity.POST_CLEAR,WordPress.currentPost);
-      WordPress.currentPost=null;
+      if (WordPress.currentPost != null) {
+        mOnPostActionListener.onPostAction(PostsActivity.POST_CLEAR,WordPress.currentPost);
+        WordPress.currentPost=null;
+      }
     }
   }
   if (loadedPosts != null) {
@@ -75,7 +75,6 @@
   if (loadedPosts != null || drafts == true) {
     ListView listView=getListView();
     listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-    listView.setBackgroundColor(getResources().getColor(R.color.list_row_bg));
     listView.setDivider(getResources().getDrawable(R.drawable.list_divider));
     listView.setDividerHeight(1);
     listView.removeFooterView(switcher);
@@ -94,25 +93,9 @@
         public void onItemClick(        AdapterView<?> arg0,        View v,        int position,        long id){
           if (position >= mPostIDs.length)           return;
           if (v == null)           return;
-          if (!mParentActivity.isRefreshing) {
+          if (!mParentActivity.mIsRefreshing) {
             mSelectedID=v.getId();
-            Post post=new Post(WordPress.currentBlog.getId(),mSelectedID,isPage);
-            if (PostUploadService.isUploading(post)) {
-              Toast.makeText(mParentActivity,R.string.please_wait_uploading_done,Toast.LENGTH_SHORT).show();
-              return;
-            }
-            if (post.getId() >= 0) {
-              WordPress.currentPost=post;
-              mOnPostSelectedListener.onPostSelected(post);
-              mPostListAdapter.notifyDataSetChanged();
-            }
- else {
-              if (!getActivity().isFinishing()) {
-                FragmentTransaction ft=getFragmentManager().beginTransaction();
-                WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(getString(R.string.post_not_found));
-                alert.show(ft,"alert");
-              }
-            }
+            showPost(mSelectedID);
           }
  else {
             Toast.makeText(mParentActivity,R.string.please_wait_refresh_done,Toast.LENGTH_SHORT).show();
@@ -127,9 +110,10 @@
             info=(AdapterView.AdapterContextMenuInfo)menuInfo;
           }
  catch (          ClassCastException e) {
+            AppLog.e(T.POSTS,"bad menuInfo",e);
             return;
           }
-          if (mParentActivity.isRefreshing)           return;
+          if (mParentActivity.mIsRefreshing)           return;
           Object[] args={R.id.row_post_id};
           try {
             Method m=android.view.View.class.getMethod("getTag");
@@ -148,7 +132,7 @@ catch (          InvocationTargetException e) {
             mSelectedID=info.targetView.getId();
           }
           boolean allowComments=false;
-          Post post=new Post(WordPress.currentBlog.getId(),mSelectedID,isPage);
+          Post post=new Post(WordPress.currentBlog.getLocalTableBlogId(),mSelectedID,isPage);
           if (post.getId() >= 0) {
             allowComments=post.isMt_allow_comments();
           }
@@ -169,40 +153,32 @@ catch (          InvocationTargetException e) {
               menu.add(MENU_GROUP_PAGES,MENU_ITEM_EDIT,0,getResources().getText(R.string.edit_page));
               menu.add(MENU_GROUP_PAGES,MENU_ITEM_DELETE,0,getResources().getText(R.string.delete_page));
               menu.add(MENU_GROUP_PAGES,MENU_ITEM_PREVIEW,0,getResources().getText(R.string.preview_page));
-              menu.add(MENU_GROUP_PAGES,MENU_ITEM_SHARE,0,getResources().getText(R.string.share_url_page));
-              if (allowComments)               menu.add(MENU_GROUP_PAGES,MENU_ITEM_ADD_COMMENT,0,getResources().getText(R.string.add_comment));
+              if ("publish".equals(post.getPost_status())) {
+                menu.add(MENU_GROUP_PAGES,MENU_ITEM_SHARE,0,getResources().getText(R.string.share_url_page));
+              }
             }
  else {
               menu.setHeaderTitle(getResources().getText(R.string.post_actions));
               menu.add(MENU_GROUP_POSTS,MENU_ITEM_EDIT,0,getResources().getText(R.string.edit_post));
               menu.add(MENU_GROUP_POSTS,MENU_ITEM_DELETE,0,getResources().getText(R.string.delete_post));
               menu.add(MENU_GROUP_POSTS,MENU_ITEM_PREVIEW,0,getResources().getText(R.string.preview_post));
-              menu.add(MENU_GROUP_POSTS,MENU_ITEM_SHARE,0,getResources().getText(R.string.share_url));
-              if (allowComments)               menu.add(MENU_GROUP_POSTS,MENU_ITEM_ADD_COMMENT,0,getResources().getText(R.string.add_comment));
+              if ("publish".equals(post.getPost_status())) {
+                menu.add(MENU_GROUP_POSTS,MENU_ITEM_SHARE,0,getResources().getText(R.string.share_url));
+              }
             }
           }
         }
       }
 );
     }
-    if (this.shouldSelectAfterLoad) {
-      if (mPostIDs != null) {
-        if (mPostIDs.length >= 1) {
-          Post post=new Post(WordPress.currentBlog.getId(),Integer.valueOf(mPostIDs[0]),isPage);
-          if (post.getId() >= 0) {
-            WordPress.currentPost=post;
-            mOnPostSelectedListener.onPostSelected(post);
-            FragmentManager fm=getActivity().getSupportFragmentManager();
-            ViewPostFragment f=(ViewPostFragment)fm.findFragmentById(R.id.postDetail);
-            if (f != null && f.isInLayout())             getListView().setItemChecked(0,true);
-          }
-        }
-      }
+    if (this.shouldSelectAfterLoad && mPostIDs != null && mPostIDs.length >= 1) {
+      selectAndShowFirstPost();
       shouldSelectAfterLoad=false;
     }
     if (loadedPosts == null) {
       refreshPosts(false);
     }
+    mListScrollPositionManager.restoreScrollOffset();
     return true;
   }
  else {
@@ -210,6 +186,7 @@ catch (          InvocationTargetException e) {
       refreshPosts(false);
       if (!isPage)       new ApiHelper.RefreshBlogContentTask(getActivity(),WordPress.getCurrentBlog(),null).execute(false);
     }
+    mListScrollPositionManager.restoreScrollOffset();
     return false;
   }
 }

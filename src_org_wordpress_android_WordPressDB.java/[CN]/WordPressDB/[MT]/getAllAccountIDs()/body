@@ -1,0 +1,16 @@
+{
+  Cursor c=db.rawQuery("SELECT DISTINCT id FROM " + SETTINGS_TABLE,null);
+  try {
+    List<Integer> ids=new ArrayList<Integer>();
+    if (c.moveToFirst()) {
+      do {
+        ids.add(c.getInt(0));
+      }
+ while (c.moveToNext());
+    }
+    return ids;
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+}

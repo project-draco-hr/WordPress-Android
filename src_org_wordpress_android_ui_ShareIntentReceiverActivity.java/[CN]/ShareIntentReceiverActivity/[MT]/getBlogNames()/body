@@ -1,5 +1,5 @@
 {
-  List<Map<String,Object>> accounts=WordPress.wpDB.getAccounts();
+  List<Map<String,Object>> accounts=WordPress.wpDB.getVisibleAccounts();
   if (accounts.size() > 0) {
     final String blogNames[]=new String[accounts.size()];
     mAccountIDs=new int[accounts.size()];
@@ -17,16 +17,11 @@
         blog=new Blog(mAccountIDs[i]);
       }
  catch (      Exception e) {
-        showBlogErrorAndFinish();
+        ToastUtils.showToast(this,R.string.blog_not_found,ToastUtils.Duration.SHORT);
         return null;
       }
     }
     return blogNames;
   }
- else {
-    Toast.makeText(this,getResources().getText(R.string.no_account),Toast.LENGTH_LONG).show();
-    startActivity(new Intent(this,NewAccountActivity.class));
-    finish();
-    return null;
-  }
+  return null;
 }

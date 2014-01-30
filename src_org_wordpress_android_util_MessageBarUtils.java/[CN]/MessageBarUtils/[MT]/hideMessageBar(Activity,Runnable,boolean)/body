@@ -1,0 +1,24 @@
+{
+  if (activity == null)   return;
+  final TextView txtMessageBar=(TextView)activity.findViewById(R.id.text_message_bar);
+  if (txtMessageBar == null)   return;
+  if (txtMessageBar.getVisibility() != View.VISIBLE)   return;
+  txtMessageBar.clearAnimation();
+  if (hideImmediate) {
+    txtMessageBar.setVisibility(View.GONE);
+    if (runnable != null)     runnable.run();
+    return;
+  }
+  Animation.AnimationListener listener=new Animation.AnimationListener(){
+    @Override public void onAnimationStart(    Animation animation){
+    }
+    @Override public void onAnimationEnd(    Animation animation){
+      txtMessageBar.setVisibility(View.GONE);
+      if (runnable != null)       runnable.run();
+    }
+    @Override public void onAnimationRepeat(    Animation animation){
+    }
+  }
+;
+  AniUtils.startAnimation(txtMessageBar,R.anim.reader_message_bar_out,listener);
+}

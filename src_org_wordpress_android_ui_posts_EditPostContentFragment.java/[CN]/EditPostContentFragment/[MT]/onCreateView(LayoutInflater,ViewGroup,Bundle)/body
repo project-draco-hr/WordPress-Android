@@ -1,0 +1,78 @@
+{
+  mActivity=(EditPostActivity)getActivity();
+  final ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.fragment_edit_post_content,container,false);
+  mFormatBar=(LinearLayout)rootView.findViewById(R.id.format_bar);
+  mTitleEditText=(EditText)rootView.findViewById(R.id.post_title);
+  mTitleEditText.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+    @Override public boolean onEditorAction(    TextView v,    int actionId,    KeyEvent event){
+      if (actionId == EditorInfo.IME_ACTION_NEXT && mActivity.getSupportActionBar().isShowing())       setContentEditingModeVisible(true);
+      return false;
+    }
+  }
+);
+  mContentEditText=(WPEditText)rootView.findViewById(R.id.post_content);
+  mPostContentLinearLayout=(LinearLayout)rootView.findViewById(R.id.post_content_wrapper);
+  mPostSettingsLinearLayout=(LinearLayout)rootView.findViewById(R.id.post_settings_wrapper);
+  Button postSettingsButton=(Button)rootView.findViewById(R.id.post_settings_button);
+  postSettingsButton.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      mActivity.showPostSettings();
+    }
+  }
+);
+  mBoldToggleButton=(ToggleButton)rootView.findViewById(R.id.bold);
+  mEmToggleButton=(ToggleButton)rootView.findViewById(R.id.em);
+  mBquoteToggleButton=(ToggleButton)rootView.findViewById(R.id.bquote);
+  mUnderlineToggleButton=(ToggleButton)rootView.findViewById(R.id.underline);
+  mStrikeToggleButton=(ToggleButton)rootView.findViewById(R.id.strike);
+  mAddPictureButton=(Button)rootView.findViewById(R.id.addPictureButton);
+  Button linkButton=(Button)rootView.findViewById(R.id.link);
+  Button moreButton=(Button)rootView.findViewById(R.id.more);
+  registerForContextMenu(mAddPictureButton);
+  mContentEditText.setOnSelectionChangedListener(this);
+  mContentEditText.setOnTouchListener(this);
+  mContentEditText.addTextChangedListener(this);
+  mContentEditText.setOnEditTextImeBackListener(new WPEditText.EditTextImeBackListener(){
+    @Override public void onImeBack(    WPEditText ctrl,    String text){
+      if (mRootView.getBottom() < mFullViewBottom && !mActivity.getSupportActionBar().isShowing()) {
+        setContentEditingModeVisible(false);
+      }
+    }
+  }
+);
+  mAddPictureButton.setOnClickListener(mFormatBarButtonClickListener);
+  mBoldToggleButton.setOnClickListener(mFormatBarButtonClickListener);
+  linkButton.setOnClickListener(mFormatBarButtonClickListener);
+  mEmToggleButton.setOnClickListener(mFormatBarButtonClickListener);
+  mUnderlineToggleButton.setOnClickListener(mFormatBarButtonClickListener);
+  mStrikeToggleButton.setOnClickListener(mFormatBarButtonClickListener);
+  mBquoteToggleButton.setOnClickListener(mFormatBarButtonClickListener);
+  moreButton.setOnClickListener(mFormatBarButtonClickListener);
+  Post post=mActivity.getPost();
+  if (post != null) {
+    if (!TextUtils.isEmpty(post.getContent())) {
+      if (post.isLocalDraft())       mContentEditText.setText(WPHtml.fromHtml(post.getContent().replaceAll("\uFFFC",""),mActivity,post));
+ else       mContentEditText.setText(post.getContent().replaceAll("\uFFFC",""));
+    }
+    if (!TextUtils.isEmpty(post.getTitle())) {
+      mTitleEditText.setText(post.getTitle());
+    }
+    postSettingsButton.setText(post.isPage() ? R.string.page_settings : R.string.post_settings);
+  }
+  String action=mActivity.getIntent().getAction();
+  if (mActivity.getIntent().getExtras() != null)   mQuickMediaType=mActivity.getIntent().getExtras().getInt("quick-media",-1);
+  if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action))   setPostContentFromShareAction();
+ else   if (NEW_MEDIA_GALLERY.equals(action))   prepareMediaGallery();
+ else   if (NEW_MEDIA_POST.equals(action))   prepareMediaPost();
+ else   if (mQuickMediaType >= 0) {
+    if (mQuickMediaType == Constants.QUICK_POST_PHOTO_CAMERA)     launchCamera();
+ else     if (mQuickMediaType == Constants.QUICK_POST_PHOTO_LIBRARY)     launchPictureLibrary();
+ else     if (mQuickMediaType == Constants.QUICK_POST_VIDEO_CAMERA)     launchVideoCamera();
+ else     if (mQuickMediaType == Constants.QUICK_POST_VIDEO_LIBRARY)     launchVideoLibrary();
+    if (post != null) {
+      if (mQuickMediaType == Constants.QUICK_POST_PHOTO_CAMERA || mQuickMediaType == Constants.QUICK_POST_PHOTO_LIBRARY)       post.setQuickPostType(Post.QUICK_MEDIA_TYPE_PHOTO);
+ else       if (mQuickMediaType == Constants.QUICK_POST_VIDEO_CAMERA || mQuickMediaType == Constants.QUICK_POST_VIDEO_LIBRARY)       post.setQuickPostType(Post.QUICK_MEDIA_TYPE_VIDEO);
+    }
+  }
+  return rootView;
+}

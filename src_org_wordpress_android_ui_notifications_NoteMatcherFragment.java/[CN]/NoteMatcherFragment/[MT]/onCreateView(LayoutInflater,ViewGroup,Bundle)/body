@@ -1,0 +1,32 @@
+{
+  View view=inflater.inflate(R.layout.notifications_matcher,parent,false);
+  if (getNote() == null)   return view;
+  JSONObject noteBody=getNote().queryJSON("body",new JSONObject());
+  JSONArray noteBodyItems=getNote().queryJSON("body.items",new JSONArray());
+  JSONObject noteBodyItemAtPositionZero=JSONUtil.queryJSON(noteBodyItems,String.format("[%d]",0),new JSONObject());
+  DetailHeader noteHeader=(DetailHeader)view.findViewById(R.id.header);
+  JSONObject subject=getNote().queryJSON("subject",new JSONObject());
+  String headerText=JSONUtil.getStringDecoded(subject,"text");
+  noteHeader.setText(headerText);
+  noteHeader.setBackgroundColor(getResources().getColor(R.color.light_gray));
+  noteHeader.getTextView().setGravity(Gravity.CENTER_HORIZONTAL);
+  noteHeader.setClickable(false);
+  String gravURL=JSONUtil.queryJSON(noteBodyItemAtPositionZero,"icon","");
+  if (!gravURL.equals("")) {
+    NetworkImageView mBadgeImageView=(NetworkImageView)view.findViewById(R.id.gravatar);
+    mBadgeImageView.setImageUrl(gravURL,WordPress.imageLoader);
+  }
+  TextView bodyTextView=(TextView)view.findViewById(R.id.body);
+  bodyTextView.setMovementMethod(WPLinkMovementMethod.getInstance());
+  String noteHTML=JSONUtil.getString(noteBodyItemAtPositionZero,"html");
+  bodyTextView.setText(Html.fromHtml(noteHTML));
+  DetailHeader noteFooter=(DetailHeader)view.findViewById(R.id.footer);
+  String footerText=JSONUtil.getStringDecoded(noteBody,"header_text");
+  noteFooter.setText(footerText);
+  JSONObject bodyObject=getNote().queryJSON("body",new JSONObject());
+  String itemURL=JSONUtil.getString(bodyObject,"header_link");
+  if (!itemURL.equals("")) {
+    noteFooter.setUrl(itemURL);
+  }
+  return view;
+}

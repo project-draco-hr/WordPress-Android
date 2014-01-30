@@ -1,0 +1,12 @@
+{
+  if (!WordPress.hasValidWPComCredentials(context))   return;
+  String gcmToken=GCMRegistrar.getRegistrationId(context);
+  if (TextUtils.isEmpty(gcmToken))   return;
+  SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(context);
+  String deviceID=settings.getString(WPCOM_PUSH_DEVICE_SERVER_ID,null);
+  if (TextUtils.isEmpty(deviceID)) {
+    AppLog.e(T.NOTIFS,"Wait, device_ID is null in preferences. Get device settings skipped. WTF has appenend here?!?!");
+    return;
+  }
+  WordPress.restClient.get("/device/" + deviceID,listener,errorListener);
+}

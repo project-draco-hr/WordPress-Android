@@ -11,11 +11,11 @@
     return;
   }
   if (WordPress.shouldRestoreSelectedActivity && WordPress.getCurrentBlog() != null && !(this instanceof PagesActivity)) {
-    new ApiHelper.RefreshBlogContentTask(this,WordPress.getCurrentBlog(),new ApiHelper.RefreshBlogContentTask.Callback(){
+    new ApiHelper.RefreshBlogContentTask(this,WordPress.getCurrentBlog(),new ApiHelper.GenericCallback(){
       @Override public void onSuccess(){
         if (!isFinishing())         updateMenuDrawer();
       }
-      @Override public void onFailure(){
+      @Override public void onFailure(      ApiHelper.ErrorType errorType,      String errorMessage,      Throwable throwable){
       }
     }
 ).execute(false);
@@ -40,13 +40,12 @@
   actionBar.setDisplayShowTitleEnabled(true);
   FragmentManager fm=getSupportFragmentManager();
   fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
-  postList=(PostsListFragment)fm.findFragmentById(R.id.postList);
-  postList.setListShown(true);
+  mPostList=(PostsListFragment)fm.findFragmentById(R.id.postList);
   if (extras != null) {
-    isPage=extras.getBoolean("viewPages");
+    mIsPage=extras.getBoolean("viewPages");
     showErrorDialogIfNeeded(extras);
   }
-  if (isPage)   setTitle(getString(R.string.pages));
+  if (mIsPage)   setTitle(getString(R.string.pages));
  else   setTitle(getString(R.string.posts));
   WordPress.currentPost=null;
   WordPress.setOnPostUploadedListener(new WordPress.OnPostUploadedListener(){
@@ -57,4 +56,5 @@
   }
 );
   if (savedInstanceState != null)   popPostDetail();
+  WPMobileStatsUtil.trackEventForWPCom(statEventForViewOpening());
 }

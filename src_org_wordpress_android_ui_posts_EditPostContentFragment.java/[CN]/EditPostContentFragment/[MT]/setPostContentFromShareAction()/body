@@ -1,0 +1,40 @@
+{
+  Intent intent=mActivity.getIntent();
+  String text=intent.getStringExtra(Intent.EXTRA_TEXT);
+  String title=intent.getStringExtra(Intent.EXTRA_SUBJECT);
+  if (text != null) {
+    if (title != null) {
+      mTitleEditText.setText(title);
+    }
+    if (text.contains("youtube_gdata")) {
+      mContentEditText.setText(text);
+    }
+ else {
+      text=text.replaceAll("((http|https|ftp|mailto):\\S+)","<a href=\"$1\">$1</a>");
+      mContentEditText.setText(WPHtml.fromHtml(StringUtils.addPTags(text),getActivity(),mActivity.getPost()));
+    }
+  }
+  if (intent.hasExtra(Intent.EXTRA_STREAM)) {
+    String action=intent.getAction();
+    String type=intent.getType();
+    ArrayList<Uri> sharedUris;
+    if (Intent.ACTION_SEND_MULTIPLE.equals(action)) {
+      sharedUris=intent.getParcelableArrayListExtra((Intent.EXTRA_STREAM));
+    }
+ else {
+      if (type != null && (type.startsWith("image") || type.startsWith("video"))) {
+        sharedUris=new ArrayList<Uri>();
+        sharedUris.add((Uri)intent.getParcelableExtra(Intent.EXTRA_STREAM));
+      }
+ else {
+        return;
+      }
+    }
+    if (sharedUris != null) {
+      List<Serializable> params=new Vector<Serializable>();
+      params.add(sharedUris);
+      params.add(type);
+      new processAttachmentsTask().execute(params);
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.reader_activity_photo_viewer);
+  if (savedInstanceState != null && savedInstanceState.containsKey(ARG_IMAGE_URL)) {
+    mImageUrl=savedInstanceState.getString(ARG_IMAGE_URL);
+  }
+ else   if (getIntent().hasExtra(ARG_IMAGE_URL)) {
+    mImageUrl=getIntent().getStringExtra(ARG_IMAGE_URL);
+    if (!UrlUtils.isHttps(mImageUrl)) {
+      Point pt=DisplayUtils.getDisplayPixelSize(this);
+      int maxWidth=Math.max(pt.x,pt.y);
+      mImageUrl=PhotonUtils.getPhotonImageUrl(mImageUrl,maxWidth,0);
+    }
+  }
+  final WPNetworkImageView imageView=(WPNetworkImageView)findViewById(R.id.image_photo);
+  final ProgressBar progress=(ProgressBar)findViewById(R.id.progress);
+  if (!TextUtils.isEmpty(mImageUrl)) {
+    progress.setVisibility(View.VISIBLE);
+    imageView.setImageUrl(mImageUrl,ImageType.PHOTO_FULL,new ImageListener(){
+      @Override public void onImageLoaded(      boolean succeeded){
+        progress.setVisibility(View.GONE);
+        if (succeeded) {
+          new PhotoViewAttacher(imageView);
+        }
+ else {
+          ToastUtils.showToast(ReaderPhotoViewerActivity.this,R.string.reader_toast_err_view_image,ToastUtils.Duration.LONG);
+        }
+      }
+    }
+);
+  }
+ else {
+    imageView.setImageResource(R.drawable.ic_error);
+  }
+}

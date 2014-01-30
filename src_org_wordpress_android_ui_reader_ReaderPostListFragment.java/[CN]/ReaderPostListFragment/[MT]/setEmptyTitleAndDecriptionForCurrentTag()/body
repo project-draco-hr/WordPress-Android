@@ -1,0 +1,42 @@
+{
+  if (!isPostAdapterEmpty()) {
+    return;
+  }
+  int title, description=-1;
+  if (isUpdating()) {
+    title=R.string.reader_empty_posts_in_tag_updating;
+  }
+ else {
+    int tagIndex=mActionBarAdapter.getIndexOfTagName(mCurrentTag);
+    final String tagId;
+    if (tagIndex > -1) {
+      ReaderTag tag=(ReaderTag)getActionBarAdapter().getItem(tagIndex);
+      tagId=tag.getStringIdFromEndpoint();
+    }
+ else {
+      tagId="";
+    }
+    if (tagId.equals(ReaderTag.TAG_ID_FOLLOWING)) {
+      title=R.string.reader_empty_followed_blogs_title;
+      description=R.string.reader_empty_followed_blogs_description;
+    }
+ else {
+      if (tagId.equals(ReaderTag.TAG_ID_LIKED)) {
+        title=R.string.reader_empty_posts_liked;
+      }
+ else {
+        title=R.string.reader_empty_posts_in_tag;
+      }
+    }
+  }
+  TextView titleView=(TextView)getActivity().findViewById(R.id.title_empty);
+  TextView descriptionView=(TextView)getActivity().findViewById(R.id.description_empty);
+  titleView.setText(getString(title));
+  if (description == -1) {
+    descriptionView.setVisibility(View.INVISIBLE);
+  }
+ else {
+    descriptionView.setText(getString(description));
+    descriptionView.setVisibility(View.VISIBLE);
+  }
+}

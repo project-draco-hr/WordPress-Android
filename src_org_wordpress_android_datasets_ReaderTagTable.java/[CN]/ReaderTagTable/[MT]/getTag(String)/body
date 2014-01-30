@@ -1,0 +1,11 @@
+{
+  if (TextUtils.isEmpty(tagName))   return null;
+  Cursor c=ReaderDatabase.getReadableDb().rawQuery("SELECT * FROM tbl_tags WHERE tag_name=? LIMIT 1",new String[]{tagName});
+  try {
+    if (!c.moveToFirst())     return null;
+    return getTagFromCursor(c);
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+}

@@ -10,70 +10,41 @@
     hPost.put("home_url","home_url");
     hPost.put("admin_url","admin_url");
     hPost.put("login_url","login_url");
-    Object[] vParams={mBlog.getBlogId(),mBlog.getUsername(),mBlog.getPassword(),hPost};
-    Object versionResult=new Object();
+    Object[] vParams={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword(),hPost};
+    Object versionResult=null;
     try {
-      versionResult=(Object)client.call("wp.getOptions",vParams);
+      versionResult=client.call("wp.getOptions",vParams);
     }
  catch (    XMLRPCException e) {
+      setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
       return false;
     }
     if (versionResult != null) {
-      try {
-        Map<?,?> blogOptions=(HashMap<?,?>)versionResult;
-        Gson gson=new Gson();
-        String blogOptionsJson=gson.toJson(blogOptions);
-        if (blogOptionsJson != null)         mBlog.setBlogOptions(blogOptionsJson);
-        if (!mBlog.isDotcomFlag()) {
-          Map<?,?> sv=(HashMap<?,?>)blogOptions.get("software_version");
-          String wpVersion=sv.get("value").toString();
-          if (wpVersion.length() > 0) {
-            mBlog.setWpVersion(wpVersion);
-          }
-        }
-        Map<?,?> featuredImageHash=(HashMap<?,?>)blogOptions.get("post_thumbnail");
-        if (featuredImageHash != null) {
-          boolean featuredImageCapable=Boolean.parseBoolean(featuredImageHash.get("value").toString());
-          mBlog.setFeaturedImageCapable(featuredImageCapable);
-        }
- else {
-          mBlog.setFeaturedImageCapable(false);
-        }
-        if (WordPress.getCurrentBlog() != null && WordPress.getCurrentBlog().isActive())         mBlog.save("");
-      }
- catch (      Exception e) {
-      }
+      Map<?,?> blogOptions=(HashMap<?,?>)versionResult;
+      updateBlogOptions(blogOptions);
     }
     List<Object> args=new Vector<Object>();
     args.add(mBlog);
     args.add(mContext);
-    new ApiHelper.getPostFormatsTask().execute(args);
+    new GetPostFormatsTask().execute(args);
   }
-  Object[] userParams={mBlog.getBlogId(),mBlog.getUsername(),mBlog.getPassword()};
+  Object[] userParams={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword()};
   try {
-    Map<String,Object> userInfo=(HashMap<String,Object>)client.call("wp.getProfile",userParams);
-    if (userInfo.containsKey("roles") && (userInfo.get("roles") instanceof Object[])) {
-      Object[] userRoles=(Object[])userInfo.get("roles");
-      mBlog.setAdmin(false);
-      for (int i=0; i < userRoles.length; i++) {
-        if (userRoles[i].toString().equals("administrator")) {
-          mBlog.setAdmin(true);
-          break;
-        }
-      }
-      mBlog.save("");
-    }
+    Map<String,Object> userInfos=(HashMap<String,Object>)client.call("wp.getProfile",userParams);
+    updateBlogAdmin(userInfos);
   }
  catch (  XMLRPCException e) {
+    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
     return false;
   }
   Map<String,Object> hPost=new HashMap<String,Object>();
   hPost.put("number",30);
-  Object[] commentParams={mBlog.getBlogId(),mBlog.getUsername(),mBlog.getPassword(),hPost};
+  Object[] commentParams={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword(),hPost};
   try {
     ApiHelper.refreshComments(mContext,commentParams);
   }
  catch (  XMLRPCException e) {
+    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
     return false;
   }
   return true;

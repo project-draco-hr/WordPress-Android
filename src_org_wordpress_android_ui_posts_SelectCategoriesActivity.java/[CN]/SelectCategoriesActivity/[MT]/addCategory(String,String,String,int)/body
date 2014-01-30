@@ -1,14 +1,14 @@
 {
-  String returnString="";
+  String returnString="addCategory_failed";
   updateSelectedCategoryList();
-  saveScrollOffset();
+  mListScrollPositionManager.saveScrollOffset();
   Map<String,Object> struct=new HashMap<String,Object>();
   struct.put("name",category_name);
   struct.put("slug",category_slug);
   struct.put("description",category_desc);
   struct.put("parent_id",parent_id);
   client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
-  Object[] params={blog.getBlogId(),blog.getUsername(),blog.getPassword(),struct};
+  Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),struct};
   Object result=null;
   try {
     result=client.call("wp.newCategory",params);
@@ -16,14 +16,24 @@
  catch (  XMLRPCException e) {
     e.printStackTrace();
   }
-  if (result == null) {
-    returnString="addCategory_failed";
-  }
- else {
+  if (result != null) {
     int category_id=Integer.parseInt(result.toString());
-    WordPress.wpDB.insertCategory(blog.getId(),category_id,parent_id,category_name);
+    final String new_category_name=getCanonicalCategoryName(category_id);
+    if (new_category_name == null) {
+      return returnString;
+    }
+    final Activity that=this;
+    if (!new_category_name.equals(category_name)) {
+      mHandler.post(new Runnable(){
+        @Override public void run(){
+          Toast.makeText(that,String.format(String.valueOf(getText(R.string.category_automatically_renamed)),category_name,new_category_name),Toast.LENGTH_LONG).show();
+        }
+      }
+);
+    }
+    WordPress.wpDB.insertCategory(blog.getLocalTableBlogId(),category_id,parent_id,new_category_name);
     returnString="addCategory_success";
-    mSelectedCategories.add(category_name);
+    mSelectedCategories.add(new_category_name);
   }
   return returnString;
 }

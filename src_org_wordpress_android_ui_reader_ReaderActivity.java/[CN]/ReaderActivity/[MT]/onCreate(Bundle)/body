@@ -1,31 +1,11 @@
 {
-  requestWindowFeature(Window.FEATURE_PROGRESS);
   super.onCreate(savedInstanceState);
+  setContentView(R.layout.reader_activity_main);
   getSupportActionBar().setDisplayShowTitleEnabled(false);
   setSupportProgressBarVisibility(false);
+  createMenuDrawer(R.layout.reader_activity_main);
   if (savedInstanceState != null) {
-    readerPage=getSupportFragmentManager().getFragment(savedInstanceState,ReaderImplFragment.class.getName());
-    topicPage=getSupportFragmentManager().getFragment(savedInstanceState,ReaderTopicsSelectorFragment.class.getName());
-    detailPage=getSupportFragmentManager().getFragment(savedInstanceState,ReaderDetailPageFragment.class.getName());
-    webPage=getSupportFragmentManager().getFragment(savedInstanceState,ReaderWebPageFragment.class.getName());
+    mHasPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);
+    mHasPerformedPurge=savedInstanceState.getBoolean(KEY_HAS_PURGED);
   }
-  createMenuDrawer(R.layout.reader_wpcom_pager);
-  readerPager=(WPViewPager)findViewById(R.id.pager);
-  readerPager.setOffscreenPageLimit(3);
-  readerAdapter=new ReaderPagerAdapter(super.getSupportFragmentManager());
-  readerPager.setAdapter(readerAdapter);
-  readerPager.setCurrentItem(1,true);
-  ActionBar actionBar=getSupportActionBar();
-  actionBar.setDisplayShowCustomEnabled(true);
-  actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-  LayoutInflater inflator=(LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-  topicSelector=(RelativeLayout)inflator.inflate(R.layout.reader_topics,null);
-  topicText=(TextView)topicSelector.findViewById(R.id.topic_title);
-  topicSelector.setOnClickListener(new OnClickListener(){
-    @Override public void onClick(    View v){
-      if (!isFinishing())       showTopics();
-    }
-  }
-);
-  actionBar.setCustomView(topicSelector);
 }

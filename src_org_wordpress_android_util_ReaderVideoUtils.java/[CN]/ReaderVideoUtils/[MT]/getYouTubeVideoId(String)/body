@@ -1,0 +1,33 @@
+{
+  if (link == null)   return "";
+  Uri uri=Uri.parse(link);
+  try {
+    String host=uri.getHost();
+    if (host == null)     return "";
+    if (host.equals("youtube.com") || host.equals("www.youtube.com")) {
+      if (link.contains("watch"))       return uri.getQueryParameter("v");
+      if (link.contains("/embed/"))       return uri.getLastPathSegment();
+      return "";
+    }
+    if (host.equals("youtu.be")) {
+      String path=uri.getPath();
+      if (path == null)       return "";
+      return path.replace("/","");
+    }
+    if (host.equals("m.youtube.com")) {
+      String fragment=uri.getFragment();
+      if (fragment == null)       return "";
+      int index=fragment.lastIndexOf("v=");
+      if (index != -1)       return fragment.substring(index + 2,fragment.length());
+    }
+    return "";
+  }
+ catch (  UnsupportedOperationException e) {
+    AppLog.e(T.READER,e);
+    return "";
+  }
+catch (  IndexOutOfBoundsException e) {
+    AppLog.e(T.READER,e);
+    return "";
+  }
+}

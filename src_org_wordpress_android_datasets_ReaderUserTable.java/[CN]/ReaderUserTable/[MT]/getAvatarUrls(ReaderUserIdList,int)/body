@@ -1,0 +1,37 @@
+{
+  ArrayList<String> avatars=new ArrayList<String>();
+  if (userIds == null || userIds.size() == 0)   return avatars;
+  StringBuilder sb=new StringBuilder("SELECT user_id, avatar_url FROM tbl_users WHERE user_id IN (");
+  long currentUserId=UserPrefs.getCurrentUserId();
+  boolean containsCurrentUser=userIds.contains(currentUserId);
+  if (containsCurrentUser)   sb.append(currentUserId);
+  int numAdded=(containsCurrentUser ? 1 : 0);
+  for (  Long id : userIds) {
+    if (id != currentUserId) {
+      if (numAdded > 0)       sb.append(",");
+      sb.append(id);
+      numAdded++;
+      if (max > 0 && numAdded >= max)       break;
+    }
+  }
+  sb.append(")");
+  Cursor c=ReaderDatabase.getReadableDb().rawQuery(sb.toString(),null);
+  try {
+    if (c.moveToFirst()) {
+      do {
+        long userId=c.getLong(0);
+        if (userId == currentUserId) {
+          avatars.add(0,c.getString(1));
+        }
+ else {
+          avatars.add(c.getString(1));
+        }
+      }
+ while (c.moveToNext());
+    }
+    return avatars;
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+}

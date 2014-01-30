@@ -1,0 +1,40 @@
+{
+  String message=null;
+  int messageId;
+  AppLog.e(T.NUX,error);
+  if (error.networkResponse != null && error.networkResponse.data != null) {
+    AppLog.e(T.NUX,String.format("Error message: %s",new String(error.networkResponse.data)));
+    String jsonString=new String(error.networkResponse.data);
+    try {
+      JSONObject errorObj=new JSONObject(jsonString);
+      messageId=getErrorMessageForErrorCode((String)errorObj.get("error"));
+      if (messageId == 0) {
+        message=(String)errorObj.get("message");
+      }
+    }
+ catch (    JSONException e) {
+      AppLog.e(T.NUX,e);
+      messageId=R.string.error_generic;
+    }
+  }
+ else {
+    if (error.getMessage() != null) {
+      if (error.getMessage().contains("Limit reached")) {
+        messageId=R.string.limit_reached;
+      }
+ else {
+        messageId=R.string.error_generic;
+      }
+    }
+ else {
+      messageId=R.string.error_generic;
+    }
+  }
+  endProgress();
+  if (messageId == 0) {
+    showError(message);
+  }
+ else {
+    showError(messageId);
+  }
+}

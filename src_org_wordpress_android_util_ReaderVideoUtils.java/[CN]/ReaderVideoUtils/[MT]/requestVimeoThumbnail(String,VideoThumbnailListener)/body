@@ -1,0 +1,34 @@
+{
+  if (thumbListener == null)   return;
+  String id=getVimeoVideoId(videoUrl);
+  if (TextUtils.isEmpty(id)) {
+    thumbListener.onResponse(false,null);
+    return;
+  }
+  Response.Listener<JSONArray> listener=new Response.Listener<JSONArray>(){
+    public void onResponse(    JSONArray response){
+      String thumbnailUrl=null;
+      if (response != null && response.length() > 0) {
+        JSONObject json=response.optJSONObject(0);
+        if (json != null && json.has("thumbnail_large"))         thumbnailUrl=JSONUtil.getString(json,"thumbnail_large");
+      }
+      if (TextUtils.isEmpty(thumbnailUrl)) {
+        thumbListener.onResponse(false,null);
+      }
+ else {
+        thumbListener.onResponse(true,thumbnailUrl);
+      }
+    }
+  }
+;
+  Response.ErrorListener errorListener=new Response.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.READER,volleyError);
+      thumbListener.onResponse(false,null);
+    }
+  }
+;
+  String url="http://vimeo.com/api/v2/video/" + id + ".json";
+  JsonArrayRequest request=new JsonArrayRequest(url,listener,errorListener);
+  WordPress.requestQueue.add(request);
+}

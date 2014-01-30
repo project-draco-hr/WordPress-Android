@@ -1,0 +1,41 @@
+{
+  final ReaderTag tag=(ReaderTag)getItem(position);
+  TagViewHolder holder;
+  if (convertView == null) {
+    convertView=mInflater.inflate(R.layout.reader_listitem_tag,parent,false);
+    holder=new TagViewHolder();
+    holder.txtTagName=(TextView)convertView.findViewById(R.id.text_topic);
+    holder.btnAddRemove=(ImageButton)convertView.findViewById(R.id.btn_add_remove);
+    convertView.setTag(holder);
+  }
+ else {
+    holder=(TagViewHolder)convertView.getTag();
+  }
+  holder.txtTagName.setText(tag.getCapitalizedTagName());
+switch (tag.tagType) {
+case SUBSCRIBED:
+    holder.btnAddRemove.setImageDrawable(mDrawableRemove);
+  holder.btnAddRemove.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      if (mTagListener != null)       mTagListener.onTagAction(ReaderTagActions.TagAction.DELETE,tag.getTagName());
+    }
+  }
+);
+holder.btnAddRemove.setVisibility(View.VISIBLE);
+break;
+case RECOMMENDED:
+holder.btnAddRemove.setImageDrawable(mDrawableAdd);
+holder.btnAddRemove.setOnClickListener(new View.OnClickListener(){
+@Override public void onClick(View v){
+if (mTagListener != null) mTagListener.onTagAction(ReaderTagActions.TagAction.ADD,tag.getTagName());
+}
+}
+);
+holder.btnAddRemove.setVisibility(View.VISIBLE);
+break;
+default :
+holder.btnAddRemove.setVisibility(View.GONE);
+break;
+}
+return convertView;
+}

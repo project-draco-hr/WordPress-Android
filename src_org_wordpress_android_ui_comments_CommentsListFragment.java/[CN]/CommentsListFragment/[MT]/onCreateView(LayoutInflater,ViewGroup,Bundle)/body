@@ -6,7 +6,7 @@
   footer.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
       switcher.showNext();
-      refreshComments(true,false,false);
+      refreshComments(true);
     }
   }
 );
@@ -15,7 +15,6 @@
   View progress=View.inflate(getActivity().getApplicationContext(),R.layout.list_footer_progress,null);
   switcher.addView(footer);
   switcher.addView(progress);
-  getActivity().setTitle(" - Moderate Comments");
   Button deleteComments=(Button)v.findViewById(R.id.bulkDeleteComment);
   deleteComments.setOnClickListener(new Button.OnClickListener(){
     public void onClick(    View v){
@@ -37,7 +36,7 @@
       new Thread(){
         public void run(){
           Looper.prepare();
-          moderateComments("approve");
+          moderateComments(CommentStatus.APPROVED);
         }
       }
 .start();
@@ -51,7 +50,7 @@
       new Thread(){
         public void run(){
           Looper.prepare();
-          moderateComments("hold");
+          moderateComments(CommentStatus.UNAPPROVED);
         }
       }
 .start();
@@ -65,7 +64,7 @@
       new Thread(){
         public void run(){
           Looper.prepare();
-          moderateComments("spam");
+          moderateComments(CommentStatus.SPAM);
         }
       }
 .start();

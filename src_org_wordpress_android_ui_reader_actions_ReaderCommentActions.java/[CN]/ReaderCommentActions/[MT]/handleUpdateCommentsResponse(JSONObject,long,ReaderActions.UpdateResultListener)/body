@@ -1,0 +1,26 @@
+{
+  if (jsonObject == null) {
+    if (resultListener != null)     resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED);
+    return;
+  }
+  final Handler handler=new Handler();
+  new Thread(){
+    @Override public void run(){
+      ReaderCommentList serverComments=ReaderCommentList.fromJson(jsonObject,blogId);
+      final int numNew=serverComments.size();
+      if (numNew > 0) {
+        AppLog.d(T.READER,"new comments found");
+        ReaderCommentTable.addOrUpdateComments(serverComments);
+      }
+      if (resultListener != null) {
+        handler.post(new Runnable(){
+          public void run(){
+            resultListener.onUpdateResult(numNew > 0 ? ReaderActions.UpdateResult.CHANGED : ReaderActions.UpdateResult.UNCHANGED);
+          }
+        }
+);
+      }
+    }
+  }
+.start();
+}

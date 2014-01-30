@@ -1,0 +1,37 @@
+{
+  if (TextUtils.isEmpty(source))   return null;
+  if (source.startsWith("//"))   source="http:" + source;
+  if (mMaxSize > 0)   source=PhotonUtils.getPhotonImageUrl(source,mMaxSize,0);
+  TextView view=getView();
+  Drawable loading=view.getContext().getResources().getDrawable(R.drawable.remote_image);
+  Drawable failed=view.getContext().getResources().getDrawable(R.drawable.remote_failed);
+  final RemoteDrawable remote=new RemoteDrawable(loading,failed);
+  WordPress.imageLoader.get(source,new ImageLoader.ImageListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+      remote.displayFailed();
+      TextView view=getView();
+      if (view != null)       view.invalidate();
+    }
+    @Override public void onResponse(    ImageLoader.ImageContainer response,    boolean isImmediate){
+      if (response.getBitmap() != null) {
+        TextView view=getView();
+        if (view == null) {
+          AppLog.w(T.UTILS,"WPImageGetter view is invalid");
+          return;
+        }
+        Drawable drawable=new BitmapDrawable(view.getContext().getResources(),response.getBitmap());
+        final int oldHeight=remote.getBounds().height();
+        int maxWidth=view.getWidth() - view.getPaddingLeft() - view.getPaddingRight();
+        if (mMaxSize > 0 && (maxWidth > mMaxSize || maxWidth == 0))         maxWidth=mMaxSize;
+        remote.setRemoteDrawable(drawable,maxWidth);
+        if (isImmediate)         return;
+        int newHeight=remote.getBounds().height();
+        view.invalidate();
+        view.setHeight(view.getHeight() + newHeight - oldHeight);
+        view.setEllipsize(null);
+      }
+    }
+  }
+);
+  return remote;
+}

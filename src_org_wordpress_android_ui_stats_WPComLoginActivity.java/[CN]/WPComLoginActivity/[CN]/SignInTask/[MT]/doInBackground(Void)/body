@@ -5,16 +5,16 @@
     client.call("wp.getUsersBlogs",signInParams);
     WordPress.currentBlog.setDotcom_username(mUsername);
     WordPress.currentBlog.setDotcom_password(mPassword);
-    WordPress.currentBlog.save(WordPress.currentBlog.getUsername());
+    WordPress.currentBlog.save();
     if (!mIsJetpackAuthRequest) {
       if (WordPress.hasValidWPComCredentials(WPComLoginActivity.this)) {
-        new WPComXMLRPCApi().unregisterWPComToken(WPComLoginActivity.this,GCMRegistrar.getRegistrationId(WPComLoginActivity.this));
+        NotificationUtils.unregisterDevicePushNotifications(WPComLoginActivity.this);
         try {
           GCMRegistrar.checkDevice(WPComLoginActivity.this);
           GCMRegistrar.unregister(WPComLoginActivity.this);
         }
  catch (        Exception e) {
-          Log.v("WORDPRESS","Could not unregister for GCM: " + e.getMessage());
+          AppLog.v(T.NUX,"Could not unregister for GCM: " + e.getMessage());
         }
       }
       Editor settings=PreferenceManager.getDefaultSharedPreferences(WPComLoginActivity.this).edit();

@@ -1,0 +1,28 @@
+{
+  if (comments == null || comments.size() == 0)   return;
+  SQLiteDatabase db=ReaderDatabase.getWritableDb();
+  db.beginTransaction();
+  SQLiteStatement stmt=db.compileStatement("INSERT OR REPLACE INTO tbl_comments (" + COLUMN_NAMES + ") VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11)");
+  try {
+    for (    ReaderComment comment : comments) {
+      stmt.bindLong(1,comment.blogId);
+      stmt.bindLong(2,comment.postId);
+      stmt.bindLong(3,comment.commentId);
+      stmt.bindLong(4,comment.parentId);
+      stmt.bindString(5,comment.getAuthorName());
+      stmt.bindString(6,comment.getAuthorAvatar());
+      stmt.bindString(7,comment.getAuthorUrl());
+      stmt.bindString(8,comment.getPublished());
+      stmt.bindLong(9,comment.timestamp);
+      stmt.bindString(10,comment.getStatus());
+      stmt.bindString(11,comment.getText());
+      stmt.execute();
+      stmt.clearBindings();
+    }
+    db.setTransactionSuccessful();
+  }
+  finally {
+    db.endTransaction();
+    SqlUtils.closeStatement(stmt);
+  }
+}

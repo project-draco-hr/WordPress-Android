@@ -1,7 +1,7 @@
 {
-  List<Object> blogVals=WordPress.wpDB.loadSettings(blog_id);
+  List<Object> blogVals=WordPress.wpDB.getBlog(blog_id);
   if (blogVals != null) {
-    this.id=blog_id;
+    this.localTableBlogId=blog_id;
     this.url=blogVals.get(0).toString();
     this.blogName=blogVals.get(1).toString();
     this.username=blogVals.get(2).toString();
@@ -14,7 +14,7 @@
     this.maxImageWidth=blogVals.get(9).toString();
     this.maxImageWidthId=(Integer)blogVals.get(10);
     this.runService=(Integer)blogVals.get(11) > 0;
-    this.blogId=(Integer)blogVals.get(12);
+    this.remoteBlogId=(Integer)blogVals.get(12);
     this.location=(Integer)blogVals.get(13) > 0;
     this.dotcomFlag=(Integer)blogVals.get(14) > 0;
     if (blogVals.get(15) != null)     this.dotcom_username=blogVals.get(15).toString();
@@ -30,6 +30,7 @@
     if (blogVals.get(25) != null && blogVals.get(25).toString().length() > 0)     this.blogOptions=blogVals.get(25).toString();
  else     this.blogOptions="";
     if (blogVals.get(26) != null && (Integer)blogVals.get(26) > 0)     this.setAdmin(true);
+    if (blogVals.get(27) != null && (Integer)blogVals.get(27) > 0)     this.isHidden=true;
   }
  else {
     throw new Exception();

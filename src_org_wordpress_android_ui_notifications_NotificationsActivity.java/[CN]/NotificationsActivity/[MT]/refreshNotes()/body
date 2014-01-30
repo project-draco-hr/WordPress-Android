@@ -1,18 +1,24 @@
 {
   mFirstLoadComplete=false;
-  shouldAnimateRefreshButton=true;
+  mShouldAnimateRefreshButton=true;
   startAnimatingRefreshButton(mRefreshMenuItem);
-  NotesResponseHandler handler=new NotesResponseHandler(){
-    @Override public void onNotes(    List<Note> notes){
+  NotesResponseHandler notesHandler=new NotesResponseHandler(){
+    @Override public void onNotes(    final List<Note> notes){
       mFirstLoadComplete=true;
-      final NotificationsListFragment.NotesAdapter adapter=mNotesList.getNotesAdapter();
-      adapter.clear();
-      adapter.addAll(notes);
-      adapter.notifyDataSetChanged();
-      if (!notes.isEmpty()) {
-        updateLastSeen(notes.get(0).getTimestamp());
+      new Thread(){
+        @Override public void run(){
+          WordPress.wpDB.clearNotes();
+          WordPress.wpDB.saveNotes(notes);
+          NotificationsActivity.this.runOnUiThread(new Runnable(){
+            @Override public void run(){
+              refreshNotificationsListFragment(notes);
+              stopAnimatingRefreshButton(mRefreshMenuItem);
+            }
+          }
+);
+        }
       }
-      stopAnimatingRefreshButton(mRefreshMenuItem);
+.start();
     }
     @Override public void onErrorResponse(    VolleyError error){
       mFirstLoadComplete=true;
@@ -20,11 +26,11 @@
       adapter.clear();
       adapter.addAll(new ArrayList<Note>());
       adapter.notifyDataSetChanged();
-      Toast.makeText(NotificationsActivity.this,String.format(getResources().getString(R.string.error_refresh),getResources().getText(R.string.notifications).toString().toLowerCase()),Toast.LENGTH_LONG).show();
+      ToastUtils.showToast(getContext(),R.string.error_refresh_notifications,ToastUtils.Duration.LONG);
       stopAnimatingRefreshButton(mRefreshMenuItem);
-      shouldAnimateRefreshButton=false;
+      mShouldAnimateRefreshButton=false;
     }
   }
 ;
-  WordPress.refreshNotifications(this,handler,handler);
+  NotificationUtils.refreshNotifications(notesHandler,notesHandler);
 }

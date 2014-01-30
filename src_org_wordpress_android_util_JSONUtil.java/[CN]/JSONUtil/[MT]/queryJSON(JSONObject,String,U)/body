@@ -13,11 +13,11 @@
       }
     }
  catch (    JSONException e) {
-      Log.e(TAG,String.format("Could not complete query %s",query),e);
+      AppLog.e(T.UTILS,String.format("Could not complete query %s",query),e);
       return defaultObject;
     }
 catch (    ClassCastException e) {
-      Log.e(TAG,String.format("Could not cast object %s",query),e);
+      AppLog.e(T.UTILS,String.format("Could not cast object %s",query),e);
       return defaultObject;
     }
   }
@@ -31,6 +31,9 @@ catch (    ClassCastException e) {
   String nextQuery=query.substring(endQuery);
   String key=query.substring(0,endQuery);
   try {
+    if (source == null) {
+      return defaultObject;
+    }
     if (nextQuery.indexOf(QUERY_SEPERATOR) == 0) {
       return queryJSON(source.getJSONObject(key),nextQuery.substring(1),defaultObject);
     }
@@ -49,11 +52,11 @@ catch (    ClassCastException e) {
     }
   }
  catch (  java.lang.ClassCastException e) {
-    Log.e(TAG,String.format("Could not cast object at %s",query),e);
+    AppLog.e(T.UTILS,String.format("Could not cast object at %s",query),e);
     return defaultObject;
   }
 catch (  JSONException e) {
-    Log.e(TAG,String.format("Could not complete query %s",query),e);
+    AppLog.e(T.UTILS,String.format("Could not complete query %s",query),e);
     return defaultObject;
   }
 }

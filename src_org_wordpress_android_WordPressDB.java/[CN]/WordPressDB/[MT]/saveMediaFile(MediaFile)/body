@@ -9,7 +9,7 @@
   values.put("horizontalAlignment",mf.getHorizontalAlignment());
   values.put("width",mf.getWidth());
   values.put("height",mf.getHeight());
-  values.put("mimeType",mf.getMIMEType());
+  values.put("mimeType",mf.getMimeType());
   values.put("featured",mf.isFeatured());
   values.put("isVideo",mf.isVideo());
   values.put("isFeaturedInPost",mf.isFeaturedInPost());
@@ -18,19 +18,23 @@
   values.put("mediaId",mf.getMediaId());
   values.put("blogId",mf.getBlogId());
   values.put("date_created_gmt",mf.getDateCreatedGMT());
+  values.put("videoPressShortcode",mf.getVideoPressShortCode());
   if (mf.getUploadState() != null)   values.put("uploadState",mf.getUploadState());
  else   values.putNull("uploadState");
 synchronized (this) {
     int result=0;
     boolean isMarkedForDelete=false;
     if (mf.getMediaId() != null) {
-      Cursor cursor=db.rawQuery("SELECT uploadState FROM " + MEDIA_TABLE + " WHERE mediaId=?",new String[]{mf.getMediaId()});
+      Cursor cursor=db.rawQuery("SELECT uploadState FROM " + MEDIA_TABLE + " WHERE mediaId=?",new String[]{StringUtils.notNullStr(mf.getMediaId())});
       if (cursor != null && cursor.moveToFirst()) {
         isMarkedForDelete="delete".equals(cursor.getString(0));
         cursor.close();
       }
-      if (!isMarkedForDelete)       result=db.update(MEDIA_TABLE,values,"blogId=? AND mediaId=?",new String[]{mf.getBlogId(),mf.getMediaId()});
+      if (!isMarkedForDelete)       result=db.update(MEDIA_TABLE,values,"blogId=? AND mediaId=?",new String[]{StringUtils.notNullStr(mf.getBlogId()),StringUtils.notNullStr(mf.getMediaId())});
     }
-    if (result == 0 && !isMarkedForDelete)     db.insert(MEDIA_TABLE,null,values);
+    if (result == 0 && !isMarkedForDelete) {
+      result=db.update(MEDIA_TABLE,values,"postID=? AND filePath=?",new String[]{String.valueOf(mf.getPostID()),StringUtils.notNullStr(mf.getFilePath())});
+      if (result == 0)       db.insert(MEDIA_TABLE,null,values);
+    }
   }
 }

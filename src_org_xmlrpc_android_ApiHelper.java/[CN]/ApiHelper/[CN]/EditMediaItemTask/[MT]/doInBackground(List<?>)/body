@@ -3,7 +3,7 @@
   WordPress.currentBlog=(Blog)arguments.get(0);
   Blog blog=WordPress.currentBlog;
   if (blog == null) {
-    Log.e("WordPress","ApiHelper - current blog is null");
+    setError(ErrorType.INVALID_CURRENT_BLOG,"ApiHelper - current blog is null");
     return null;
   }
   client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
@@ -11,13 +11,13 @@
   contentStruct.put("post_title",mTitle);
   contentStruct.put("post_content",mDescription);
   contentStruct.put("post_excerpt",mCaption);
-  Object[] apiParams={blog.getBlogId(),blog.getUsername(),blog.getPassword(),mMediaId,contentStruct};
+  Object[] apiParams={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),mMediaId,contentStruct};
   Boolean result=null;
   try {
     result=(Boolean)client.call("wp.editPost",apiParams);
   }
  catch (  XMLRPCException e) {
-    Log.e("WordPress","XMLRPCException: " + e.getMessage());
+    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
   }
   return result;
 }

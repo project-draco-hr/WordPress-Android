@@ -1,0 +1,12 @@
+{
+  if (TextUtils.isEmpty(tagName))   return;
+  ContentValues values=new ContentValues();
+  values.put("tag_name",tagName);
+  values.put("date_updated",date);
+  try {
+    ReaderDatabase.getWritableDb().insertWithOnConflict("tbl_tag_updates",null,values,SQLiteDatabase.CONFLICT_REPLACE);
+  }
+ catch (  SQLException e) {
+    AppLog.e(T.READER,e);
+  }
+}

@@ -1,0 +1,32 @@
+{
+  final View view=inflater.inflate(R.layout.comment_detail_fragment,container,false);
+  mTxtStatus=(TextView)view.findViewById(R.id.text_status);
+  mLayoutReply=(ViewGroup)view.findViewById(R.id.layout_comment_box);
+  mEditReply=(EditText)mLayoutReply.findViewById(R.id.edit_comment);
+  mImgSubmitReply=(ImageView)mLayoutReply.findViewById(R.id.image_post_comment);
+  mLayoutButtons=(ViewGroup)view.findViewById(R.id.layout_buttons);
+  mBtnModerate=(Button)mLayoutButtons.findViewById(R.id.text_btn_moderate);
+  mBtnSpam=(Button)mLayoutButtons.findViewById(R.id.text_btn_spam);
+  mLayoutButtons.setVisibility(View.GONE);
+  mEditReply.setHint(R.string.reader_hint_comment_on_comment);
+  mEditReply.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+    @Override public boolean onEditorAction(    TextView v,    int actionId,    KeyEvent event){
+      if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEND)       submitReply();
+      return false;
+    }
+  }
+);
+  mImgSubmitReply.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      submitReply();
+    }
+  }
+);
+  mBtnSpam.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      moderateComment(CommentStatus.SPAM);
+    }
+  }
+);
+  return view;
+}

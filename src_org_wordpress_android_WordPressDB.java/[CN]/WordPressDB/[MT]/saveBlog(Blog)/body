@@ -1,0 +1,31 @@
+{
+  ContentValues values=new ContentValues();
+  values.put("url",blog.getUrl());
+  values.put("homeURL",blog.getHomeURL());
+  values.put("username",blog.getUsername());
+  values.put("password",encryptPassword(blog.getPassword()));
+  values.put("httpuser",blog.getHttpuser());
+  values.put("httppassword",encryptPassword(blog.getHttppassword()));
+  values.put("imagePlacement",blog.getImagePlacement());
+  values.put("centerThumbnail",blog.isFeaturedImageCapable());
+  values.put("fullSizeImage",blog.isFullSizeImage());
+  values.put("maxImageWidth",blog.getMaxImageWidth());
+  values.put("maxImageWidthId",blog.getMaxImageWidthId());
+  values.put("location",blog.isLocation());
+  values.put("postFormats",blog.getPostFormats());
+  values.put("dotcom_username",blog.getDotcom_username());
+  values.put("dotcom_password",encryptPassword(blog.getDotcom_password()));
+  values.put("api_blogid",blog.getApi_blogid());
+  values.put("api_key",blog.getApi_key());
+  values.put("isScaledImage",blog.isScaledImage());
+  values.put("scaledImgWidth",blog.getScaledImageWidth());
+  values.put("blog_options",blog.getBlogOptions());
+  values.put("isHidden",blog.isHidden());
+  values.put("blogName",blog.getBlogName());
+  values.put("isAdmin",blog.isAdmin());
+  boolean returnValue=db.update(SETTINGS_TABLE,values,"id=" + blog.getLocalTableBlogId(),null) > 0;
+  if (blog.isDotcomFlag()) {
+    returnValue=updateWPComCredentials(blog.getUsername(),blog.getPassword());
+  }
+  return (returnValue);
+}

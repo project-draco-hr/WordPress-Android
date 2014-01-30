@@ -1,0 +1,23 @@
+{
+  SQLiteDatabase db=ReaderDatabase.getWritableDb();
+  db.beginTransaction();
+  SQLiteStatement stmt=db.compileStatement("INSERT OR REPLACE INTO tbl_blog_urls (blog_url, is_followed) VALUES (?1,?2)");
+  try {
+    db.execSQL("UPDATE tbl_blog_urls SET is_followed=0");
+    if (urls != null && urls.size() > 0) {
+      Iterator<String> it=urls.iterator();
+      long sqlTrue=SqlUtils.boolToSql(true);
+      while (it.hasNext()) {
+        stmt.bindString(1,it.next());
+        stmt.bindLong(2,sqlTrue);
+        stmt.execute();
+        stmt.clearBindings();
+      }
+    }
+    db.setTransactionSuccessful();
+  }
+  finally {
+    db.endTransaction();
+    SqlUtils.closeStatement(stmt);
+  }
+}

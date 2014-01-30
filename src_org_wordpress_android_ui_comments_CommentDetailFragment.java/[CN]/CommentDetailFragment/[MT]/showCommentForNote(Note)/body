@@ -1,0 +1,25 @@
+{
+  mEnabledActions=note.getEnabledActions();
+  Map<String,JSONObject> actions=note.getActions();
+  if (actions.size() > 0) {
+    String firstKey=actions.keySet().iterator().next();
+    JSONObject jsonAction=actions.get(firstKey);
+    JSONObject jsonParams=jsonAction.optJSONObject("params");
+    if (jsonParams != null) {
+      mRemoteBlogId=jsonParams.optInt("blog_id");
+      int commentId=jsonParams.optInt("comment_id");
+      int localBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(mRemoteBlogId);
+      Comment comment=WordPress.wpDB.getComment(localBlogId,commentId);
+      if (comment != null) {
+        comment.setProfileImageUrl(note.getIconURL());
+        setComment(localBlogId,comment);
+      }
+ else {
+        requestComment(localBlogId,mRemoteBlogId,commentId,note.getIconURL());
+      }
+    }
+  }
+ else {
+    if (hasActivity())     ToastUtils.showToast(getActivity(),R.string.reader_toast_err_get_comment,ToastUtils.Duration.LONG);
+  }
+}

@@ -1,37 +1,44 @@
 {
-  String authorName=s.name;
-  if (authorName.length() > 0)   getName().setText(authorName);
- else   getName().setText(getResources().getText(R.string.anonymous));
-  String fEmailURL=s.authorURL;
-  if (fEmailURL == "")   fEmailURL=s.emailURL;
-  getEmailURL().setText(fEmailURL);
-  getComment().setText(s.comment);
-  getPostTitle().setText(getResources().getText(R.string.on) + " " + s.postTitle);
-  row.setId(Integer.valueOf(s.commentID));
-  String prettyComment, textColor="";
-  if (s.status.equals("spam")) {
-    prettyComment=getResources().getText(R.string.spam).toString();
-    textColor="#FF0000";
-  }
- else   if (s.status.equals("hold")) {
-    prettyComment=getResources().getText(R.string.unapproved).toString();
-    textColor="#D54E21";
-  }
+  txtName.setText(!TextUtils.isEmpty(comment.name) ? comment.name : getString(R.string.anonymous));
+  txtPostTitle.setText(getResources().getText(R.string.on) + " " + comment.postTitle);
+  txtComment.setText(StringUtils.unescapeHTML(comment.comment));
+  String fEmailURL=(TextUtils.isEmpty(comment.authorURL) ? comment.emailURL : comment.authorURL);
+  txtEmailURL.setVisibility(TextUtils.isEmpty(fEmailURL) ? View.GONE : View.VISIBLE);
+  txtEmailURL.setText(fEmailURL);
+  row.setId(Integer.valueOf(comment.commentID));
+switch (comment.getStatusEnum()) {
+case SPAM:
+    txtStatus.setText(getResources().getText(R.string.spam).toString());
+  txtStatus.setTextColor(mStatusColorSpam);
+txtStatus.setVisibility(View.VISIBLE);
+break;
+case UNAPPROVED:
+txtStatus.setText(getResources().getText(R.string.unapproved).toString());
+txtStatus.setTextColor(mStatusColorUnapproved);
+txtStatus.setVisibility(View.VISIBLE);
+break;
+default :
+txtStatus.setVisibility(View.GONE);
+break;
+}
+bulkCheck.setChecked(selectedCommentPositions.contains(position));
+bulkCheck.setTag(position);
+bulkCheck.setOnClickListener(new OnClickListener(){
+public void onClick(View arg0){
+if (bulkCheck.isChecked()) {
+selectedCommentPositions.add(position);
+}
  else {
-    prettyComment=getResources().getText(R.string.approved).toString();
-    textColor="#006505";
-  }
-  getBulkEditGroup().setVisibility(View.VISIBLE);
-  getStatus().setText(prettyComment);
-  getStatus().setTextColor(Color.parseColor(textColor));
-  getBulkCheck().setChecked(Boolean.parseBoolean(checkedComments.get(position)));
-  getBulkCheck().setTag(position);
-  getBulkCheck().setOnClickListener(new OnClickListener(){
-    public void onClick(    View arg0){
-      checkedComments.set(position,String.valueOf(getBulkCheck().isChecked()));
-      showOrHideModerationBar();
-    }
-  }
+selectedCommentPositions.remove(position);
+}
+showOrHideModerationBar();
+}
+}
 );
-  getAvatar().setImageUrl(s.profileImageUrl.toString(),WordPress.imageLoader);
+if (comment.hasProfileImageUrl()) {
+imgAvatar.setImageUrl(GravatarUtils.fixGravatarUrl(comment.getProfileImageUrl()),WordPress.imageLoader);
+}
+ else {
+imgAvatar.setImageResource(R.drawable.placeholder);
+}
 }

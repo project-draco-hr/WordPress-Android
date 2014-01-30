@@ -3,13 +3,13 @@
   post=params[0];
   XMLRPCClient client=new XMLRPCClient(WordPress.currentBlog.getUrl(),WordPress.currentBlog.getHttpuser(),WordPress.currentBlog.getHttppassword());
   Object[] postParams={"",post.getPostid(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword()};
-  Object[] pageParams={WordPress.currentBlog.getBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),post.getPostid()};
+  Object[] pageParams={WordPress.currentBlog.getRemoteBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),post.getPostid()};
   try {
-    client.call((isPage) ? "wp.deletePage" : "blogger.deletePost",(isPage) ? pageParams : postParams);
+    client.call((mIsPage) ? "wp.deletePage" : "blogger.deletePost",(mIsPage) ? pageParams : postParams);
     result=true;
   }
  catch (  final XMLRPCException e) {
-    errorMsg=String.format(getResources().getString(R.string.error_delete_post),(isPage) ? getResources().getText(R.string.page) : getResources().getText(R.string.post));
+    mErrorMsg=String.format(getResources().getString(R.string.error_delete_post),(mIsPage) ? getResources().getText(R.string.page) : getResources().getText(R.string.post));
     result=false;
   }
   return result;

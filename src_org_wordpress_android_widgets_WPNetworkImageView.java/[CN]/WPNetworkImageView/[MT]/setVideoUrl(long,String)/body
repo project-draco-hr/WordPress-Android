@@ -1,0 +1,24 @@
+{
+  mImageType=ImageType.VIDEO;
+  if (TextUtils.isEmpty(videoUrl)) {
+    showDefaultImage(ImageType.VIDEO,false);
+    return;
+  }
+  String cachedThumbnail=ReaderThumbnailTable.getThumbnailUrl(videoUrl);
+  if (!TextUtils.isEmpty(cachedThumbnail)) {
+    setImageUrl(cachedThumbnail,ImageType.VIDEO);
+    return;
+  }
+  showDefaultImage(ImageType.VIDEO,false);
+  if (ReaderVideoUtils.isVimeoLink(videoUrl)) {
+    ReaderVideoUtils.requestVimeoThumbnail(videoUrl,new ReaderVideoUtils.VideoThumbnailListener(){
+      @Override public void onResponse(      boolean successful,      String thumbnailUrl){
+        if (successful) {
+          ReaderThumbnailTable.addThumbnail(postId,videoUrl,thumbnailUrl);
+          setImageUrl(thumbnailUrl,ImageType.VIDEO);
+        }
+      }
+    }
+);
+  }
+}

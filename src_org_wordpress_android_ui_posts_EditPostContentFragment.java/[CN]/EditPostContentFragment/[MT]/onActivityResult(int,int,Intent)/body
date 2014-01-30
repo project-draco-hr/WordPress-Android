@@ -1,0 +1,106 @@
+{
+  super.onActivityResult(requestCode,resultCode,data);
+  if (data != null || ((requestCode == MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO || requestCode == MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO))) {
+    Bundle extras;
+switch (requestCode) {
+case MediaGalleryActivity.REQUEST_CODE:
+      if (resultCode == Activity.RESULT_OK) {
+        handleMediaGalleryResult(data);
+      }
+    break;
+case MediaGalleryPickerActivity.REQUEST_CODE:
+  if (resultCode == Activity.RESULT_OK) {
+    handleMediaGalleryPickerResult(data);
+  }
+break;
+case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_PICTURE_LIBRARY:
+Uri imageUri=data.getData();
+fetchMedia(imageUri);
+break;
+case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO:
+if (resultCode == Activity.RESULT_OK) {
+try {
+File f=new File(mMediaCapturePath);
+Uri capturedImageUri=Uri.fromFile(f);
+if (!addMedia(capturedImageUri,null)) Toast.makeText(getActivity(),getResources().getText(R.string.gallery_error),Toast.LENGTH_SHORT).show();
+getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+}
+ catch (Exception e) {
+e.printStackTrace();
+}
+catch (OutOfMemoryError e) {
+e.printStackTrace();
+}
+}
+ else if (mActivity != null && mQuickMediaType > -1 && TextUtils.isEmpty(mContentEditText.getText())) {
+mActivity.getPost().delete();
+mActivity.finish();
+}
+break;
+case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_VIDEO_LIBRARY:
+Uri videoUri=data.getData();
+fetchMedia(videoUri);
+break;
+case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO:
+if (resultCode == Activity.RESULT_OK) {
+Uri capturedVideoUri=MediaUtils.getLastRecordedVideoUri(getActivity());
+if (!addMedia(capturedVideoUri,null)) Toast.makeText(getActivity(),getResources().getText(R.string.gallery_error),Toast.LENGTH_SHORT).show();
+}
+ else if (mActivity != null && mQuickMediaType > -1 && TextUtils.isEmpty(mContentEditText.getText())) {
+mActivity.getPost().delete();
+mActivity.finish();
+}
+break;
+case ACTIVITY_REQUEST_CODE_CREATE_LINK:
+try {
+extras=data.getExtras();
+if (extras == null) return;
+String linkURL=extras.getString("linkURL");
+if (linkURL != null && !linkURL.equals("http://") && !linkURL.equals("")) {
+if (mSelectionStart > mSelectionEnd) {
+int temp=mSelectionEnd;
+mSelectionEnd=mSelectionStart;
+mSelectionStart=temp;
+}
+Editable str=mContentEditText.getText();
+if (str == null) return;
+if (mActivity.getPost().isLocalDraft()) {
+if (extras.getString("linkText") == null) {
+if (mSelectionStart < mSelectionEnd) str.delete(mSelectionStart,mSelectionEnd);
+str.insert(mSelectionStart,linkURL);
+str.setSpan(new URLSpan(linkURL),mSelectionStart,mSelectionStart + linkURL.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+mContentEditText.setSelection(mSelectionStart + linkURL.length());
+}
+ else {
+String linkText=extras.getString("linkText");
+if (linkText == null) return;
+if (mSelectionStart < mSelectionEnd) str.delete(mSelectionStart,mSelectionEnd);
+str.insert(mSelectionStart,linkText);
+str.setSpan(new URLSpan(linkURL),mSelectionStart,mSelectionStart + linkText.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+mContentEditText.setSelection(mSelectionStart + linkText.length());
+}
+}
+ else {
+if (extras.getString("linkText") == null) {
+if (mSelectionStart < mSelectionEnd) str.delete(mSelectionStart,mSelectionEnd);
+String urlHTML="<a href=\"" + linkURL + "\">"+ linkURL+ "</a>";
+str.insert(mSelectionStart,urlHTML);
+mContentEditText.setSelection(mSelectionStart + urlHTML.length());
+}
+ else {
+String linkText=extras.getString("linkText");
+if (mSelectionStart < mSelectionEnd) str.delete(mSelectionStart,mSelectionEnd);
+String urlHTML="<a href=\"" + linkURL + "\">"+ linkText+ "</a>";
+str.insert(mSelectionStart,urlHTML);
+mContentEditText.setSelection(mSelectionStart + urlHTML.length());
+}
+}
+}
+}
+ catch (Exception e) {
+e.printStackTrace();
+}
+break;
+}
+}
+}

@@ -1,0 +1,14 @@
+{
+  if (date == null)   return "";
+  long localTime=date.getTime();
+  long currentMs=System.currentTimeMillis();
+  long secondsSince=(currentMs - localTime) / 1000;
+  if (secondsSince < 60)   return WordPress.getContext().getString(R.string.reader_timespan_now);
+  long minutesSince=secondsSince / 60;
+  if (minutesSince < 60)   return Long.toString(minutesSince) + "m";
+  long hoursSince=minutesSince / 60;
+  if (hoursSince < 24)   return Long.toString(hoursSince) + "h";
+  long daysSince=hoursSince / 24;
+  if (daysSince < 7)   return Long.toString(daysSince) + "d";
+  return DateUtils.getRelativeTimeSpanString(localTime,currentMs,DateUtils.SECOND_IN_MILLIS,DateUtils.FORMAT_ABBREV_ALL).toString();
+}

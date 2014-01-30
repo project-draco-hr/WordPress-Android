@@ -1,0 +1,17 @@
+{
+  if (comment == null)   return;
+  deleteComment(localBlogId,comment.commentID);
+  ContentValues values=new ContentValues();
+  values.put("blogID",localBlogId);
+  values.put("postID",StringUtils.notNullStr(comment.postID));
+  values.put("iCommentID",comment.commentID);
+  values.put("author",StringUtils.notNullStr(comment.name));
+  values.put("url",StringUtils.notNullStr(comment.authorURL));
+  values.put("comment",StringUtils.notNullStr(comment.comment));
+  values.put("status",StringUtils.notNullStr(comment.getStatus()));
+  values.put("email",StringUtils.notNullStr(comment.authorEmail));
+  values.put("postTitle",StringUtils.notNullStr(comment.postTitle));
+  values.put("commentDateFormatted",StringUtils.notNullStr(comment.dateCreatedFormatted));
+  values.put("commentDate",StringUtils.notNullStr(comment.dateCreatedFormatted));
+  db.insertWithOnConflict(COMMENTS_TABLE,null,values,SQLiteDatabase.CONFLICT_REPLACE);
+}

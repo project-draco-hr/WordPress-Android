@@ -1,0 +1,15 @@
+{
+  super.onCreate(savedInstanceState);
+  mWebView.getSettings().setJavaScriptEnabled(true);
+  mWebView.getSettings().setUserAgentString(Constants.USER_AGENT);
+  if (android.os.Build.VERSION.SDK_INT >= 11) {
+    mWebView.getSettings().setDisplayZoomControls(false);
+  }
+  mWebView.setWebChromeClient(new WordPressWebChromeClient(this));
+  ActionBar actionBar=getSupportActionBar();
+  actionBar.setDisplayHomeAsUpEnabled(true);
+  String url=getIntent().getStringExtra(URL_TO_LOAD);
+  if (url != null) {
+    loadUrl(url);
+  }
+}

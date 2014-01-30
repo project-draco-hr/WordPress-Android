@@ -3,7 +3,7 @@
   rootScreen.addPreference(mNotificationsGroup);
   PreferenceCategory notificationTypesCategory=(PreferenceCategory)findPreference("wp_pref_notification_types");
   SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
-  String settingsJson=settings.getString("wp_pref_notification_settings",null);
+  String settingsJson=settings.getString(NotificationUtils.WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,null);
   if (settingsJson == null) {
     rootScreen.removePreference(mNotificationsGroup);
     return;
@@ -15,7 +15,7 @@
       StringMap<?> mutedBlogsMap=(StringMap<?>)mNotificationSettings.get("muted_blogs");
       mMutedBlogsList=(ArrayList<StringMap<Double>>)mutedBlogsMap.get("value");
       Collections.sort(mMutedBlogsList,this.BlogNameComparatorForMutedBlogsList);
-      mTypeList=mNotificationSettings.keySet().toArray();
+      Object[] mTypeList=mNotificationSettings.keySet().toArray();
       for (int i=0; i < mTypeList.length; i++) {
         if (!mTypeList[i].equals("muted_blogs") && !mTypeList[i].equals("mute_until")) {
           StringMap<?> typeMap=(StringMap<?>)mNotificationSettings.get(mTypeList[i].toString());
@@ -40,11 +40,11 @@
       }
     }
  catch (    JsonSyntaxException e) {
-      Log.v("WORDPRESS","Notification Settings Json could not be parsed.");
+      AppLog.v(T.NOTIFS,"Notification Settings Json could not be parsed.");
       return;
     }
 catch (    Exception e) {
-      Log.v("WORDPRESS","Failed to load notification settings.");
+      AppLog.v(T.NOTIFS,"Failed to load notification settings.");
       return;
     }
     CheckBoxPreference notificationsEnabledCheckBox=(CheckBoxPreference)findPreference("wp_pref_notifications_enabled");

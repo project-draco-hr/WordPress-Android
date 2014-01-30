@@ -1,0 +1,21 @@
+{
+  if (json == null)   return;
+  this.commentID=json.optInt("ID");
+  this.status=JSONUtil.getString(json,"status");
+  this.comment=HtmlUtils.stripScript(JSONUtil.getString(json,"content"));
+  java.util.Date date=DateTimeUtils.iso8601ToJavaDate(JSONUtil.getString(json,"date"));
+  if (date != null)   this.dateCreatedFormatted=ApiHelper.getFormattedCommentDate(WordPress.getContext(),date);
+  JSONObject jsonPost=json.optJSONObject("post");
+  if (jsonPost != null) {
+    this.postID=Integer.toString(jsonPost.optInt("ID"));
+  }
+  JSONObject jsonAuthor=json.optJSONObject("author");
+  if (jsonAuthor != null) {
+    this.name=JSONUtil.getStringDecoded(jsonAuthor,"name");
+    this.authorURL=JSONUtil.getString(jsonAuthor,"URL");
+    this.authorEmail=JSONUtil.getString(jsonAuthor,"email");
+    if (this.authorEmail.equals("false"))     this.authorEmail="";
+    this.emailURL=this.authorEmail;
+    this.profileImageUrl=JSONUtil.getString(jsonAuthor,"avatar_URL");
+  }
+}

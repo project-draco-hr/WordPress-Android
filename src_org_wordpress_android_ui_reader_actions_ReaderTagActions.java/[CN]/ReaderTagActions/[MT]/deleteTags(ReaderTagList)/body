@@ -1,0 +1,14 @@
+{
+  if (topics == null || topics.size() == 0)   return;
+  ReaderDatabase.getWritableDb().beginTransaction();
+  try {
+    for (    ReaderTag topic : topics) {
+      ReaderTagTable.deleteTag(topic.getTagName());
+      ReaderPostTable.deletePostsWithTag(topic.getTagName());
+    }
+    ReaderDatabase.getWritableDb().setTransactionSuccessful();
+  }
+  finally {
+    ReaderDatabase.getWritableDb().endTransaction();
+  }
+}

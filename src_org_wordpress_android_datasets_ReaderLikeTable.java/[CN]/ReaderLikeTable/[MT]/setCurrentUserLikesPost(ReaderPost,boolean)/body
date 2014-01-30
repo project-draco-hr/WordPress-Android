@@ -1,0 +1,15 @@
+{
+  if (post == null)   return;
+  long userId=UserPrefs.getCurrentUserId();
+  if (isLiked) {
+    ContentValues values=new ContentValues();
+    values.put("blog_id",post.blogId);
+    values.put("post_id",post.postId);
+    values.put("user_id",userId);
+    ReaderDatabase.getWritableDb().insert("tbl_post_likes",null,values);
+  }
+ else {
+    String args[]={Long.toString(post.blogId),Long.toString(post.postId),Long.toString(userId)};
+    ReaderDatabase.getWritableDb().delete("tbl_post_likes","blog_id=? AND post_id=? AND user_id=?",args);
+  }
+}

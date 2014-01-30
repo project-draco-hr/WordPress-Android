@@ -1,0 +1,16 @@
+{
+  NotificationUtils.refreshNotifications(new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      try {
+        List<Note> notes=NotificationUtils.parseNotes(jsonObject);
+        WordPress.wpDB.clearNotes();
+        WordPress.wpDB.saveNotes(notes);
+        broadcastNewNotification();
+      }
+ catch (      JSONException e) {
+        AppLog.e(T.NOTIFS,"Can't parse restRequest JSON response, notifications: " + e);
+      }
+    }
+  }
+,null);
+}

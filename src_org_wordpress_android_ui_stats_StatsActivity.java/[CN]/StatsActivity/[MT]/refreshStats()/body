@@ -1,7 +1,7 @@
 {
   if (WordPress.getCurrentBlog() == null)   return;
   String blogId;
-  if (WordPress.getCurrentBlog().isDotcomFlag() && dotComCredentialsMatch())   blogId=String.valueOf(WordPress.getCurrentBlog().getBlogId());
+  if (WordPress.getCurrentBlog().isDotcomFlag() && dotComCredentialsMatch())   blogId=String.valueOf(WordPress.getCurrentBlog().getRemoteBlogId());
  else {
     blogId=getBlogId();
     if (blogId == null) {
@@ -13,7 +13,9 @@
     @Override public void onSuccess(){
     }
     @Override public void onFailure(    VolleyError error){
-      if (mSignInDialog != null && mSignInDialog.isShowing())       return;
+      if (mSignInDialog != null && mSignInDialog.isShowing()) {
+        return;
+      }
       if (!isFinishing() && error.networkResponse != null && error.networkResponse.statusCode == 403) {
         AlertDialog.Builder builder=new AlertDialog.Builder(StatsActivity.this);
         builder.setTitle(getString(R.string.jetpack_stats_unauthorized)).setMessage(getString(R.string.jetpack_stats_switch_user));
@@ -30,6 +32,10 @@
 );
         mSignInDialog=builder.create();
         mSignInDialog.show();
+        return;
+      }
+      if (!isFinishing()) {
+        ToastUtils.showToast(getBaseContext(),R.string.error_refresh_stats,ToastUtils.Duration.LONG);
       }
     }
   }

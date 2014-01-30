@@ -14,6 +14,14 @@
   n.setLatestEventInfo(context,message,message,pendingIntent);
   notificationID=(new Random()).nextInt() + Integer.valueOf(post.getBlogID());
   nm.notify(notificationID,n);
+  Blog blog;
+  try {
+    blog=new Blog(post.getBlogID());
+  }
+ catch (  Exception e) {
+    mErrorMessage=context.getString(R.string.blog_not_found);
+    return false;
+  }
   if (post.getPost_status() == null) {
     post.setPost_status("publish");
   }
@@ -47,7 +55,7 @@
         if (!imgPath.equals("")) {
           MediaFile mf=WordPress.wpDB.getMediaFile(imgPath,post);
           if (mf != null) {
-            String imgHTML=uploadMediaFile(mf);
+            String imgHTML=uploadMediaFile(mf,blog);
             if (imgHTML != null) {
               if (x == 0) {
                 descriptionContent=descriptionContent.replace(tag,imgHTML);
@@ -144,7 +152,7 @@
     }
   }
   if (featuredImageID != -1)   contentStruct.put("wp_post_thumbnail",featuredImageID);
-  XMLRPCClient client=new XMLRPCClient(post.getBlog().getUrl(),post.getBlog().getHttpuser(),post.getBlog().getHttppassword());
+  XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
   if (post.getQuickPostType() != null)   client.addQuickPostHeader(post.getQuickPostType());
   n.setLatestEventInfo(context,message,message,n.contentIntent);
   nm.notify(notificationID,n);
@@ -152,8 +160,8 @@
     contentStruct.put("wp_password",post.getWP_password());
   }
   Object[] params;
-  if (post.isLocalDraft() && !post.isUploaded())   params=new Object[]{post.getBlog().getBlogId(),post.getBlog().getUsername(),post.getBlog().getPassword(),contentStruct,publishThis};
- else   params=new Object[]{post.getPostid(),post.getBlog().getUsername(),post.getBlog().getPassword(),contentStruct,publishThis};
+  if (post.isLocalDraft() && !post.isUploaded())   params=new Object[]{blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),contentStruct,publishThis};
+ else   params=new Object[]{post.getPostid(),blog.getUsername(),blog.getPassword(),contentStruct,publishThis};
   try {
     client.call((post.isLocalDraft() && !post.isUploaded()) ? "metaWeblog.newPost" : "metaWeblog.editPost",params);
     post.setUploaded(true);
@@ -164,7 +172,7 @@
  catch (  final XMLRPCException e) {
     mErrorMessage=String.format(context.getResources().getText(R.string.error_upload).toString(),post.isPage() ? context.getResources().getText(R.string.page).toString() : context.getResources().getText(R.string.post).toString()) + " " + cleanXMLRPCErrorMessage(e.getMessage());
     mIsMediaError=false;
-    Log.i("WP",mErrorMessage);
+    AppLog.i(T.EDITOR,mErrorMessage);
   }
   return false;
 }

@@ -1,0 +1,30 @@
+{
+  if (imageUrl == null)   throw new IllegalArgumentException("photon imageUrl cannot be null");
+  int schemePos=imageUrl.indexOf("://");
+  if (schemePos == -1)   return imageUrl;
+  imageUrl=UrlUtils.removeQuery(imageUrl);
+  if (imageUrl.endsWith(".gif"))   return imageUrl;
+  if (isMshotsUrl(imageUrl))   return imageUrl + String.format("?w=%d&h=%d",width,height);
+  final String query;
+  if (width > 0 && height > 0) {
+    query=String.format("?resize=%d,%d",width,height);
+  }
+ else   if (width > 0) {
+    query=String.format("?w=%d",width);
+  }
+ else   if (height > 0) {
+    query=String.format("?h=%d",height);
+  }
+ else {
+    query="";
+  }
+  if (imageUrl.contains(".wp.com")) {
+    if (imageUrl.contains("i0.wp.com") || imageUrl.contains("i1.wp.com") || imageUrl.contains("i2.wp.com"))     return imageUrl + query;
+  }
+  if (UrlUtils.isHttps(imageUrl)) {
+    return "https://i0.wp.com/" + imageUrl.substring(schemePos + 3,imageUrl.length()) + query;
+  }
+ else {
+    return "http://i0.wp.com/" + imageUrl.substring(schemePos + 3,imageUrl.length()) + query;
+  }
+}

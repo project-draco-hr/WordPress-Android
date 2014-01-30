@@ -29,18 +29,8 @@
     authorURL=contentHash.get("author_url").toString();
     authorEmail=contentHash.get("author_email").toString();
     postTitle=contentHash.get("post_title").toString();
-    String formattedDate=d.toString();
-    try {
-      int flags=0;
-      flags|=android.text.format.DateUtils.FORMAT_SHOW_DATE;
-      flags|=android.text.format.DateUtils.FORMAT_ABBREV_MONTH;
-      flags|=android.text.format.DateUtils.FORMAT_SHOW_YEAR;
-      flags|=android.text.format.DateUtils.FORMAT_SHOW_TIME;
-      formattedDate=DateUtils.formatDateTime(ctx,d.getTime(),flags);
-    }
- catch (    Exception e) {
-    }
-    dbValues.put("blogID",String.valueOf(blog.getId()));
+    String formattedDate=getFormattedCommentDate(ctx,d);
+    dbValues.put("blogID",String.valueOf(blog.getLocalTableBlogId()));
     dbValues.put("postID",postID);
     dbValues.put("commentID",commentID);
     dbValues.put("author",author);

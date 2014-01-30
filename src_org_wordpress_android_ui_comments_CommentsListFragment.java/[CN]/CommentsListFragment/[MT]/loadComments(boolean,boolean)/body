@@ -2,26 +2,22 @@
   refreshOnly=refresh;
   String author, postID, comment, dateCreatedFormatted, status, authorEmail, authorURL, postTitle;
   int commentID;
-  List<Map<String,Object>> loadedComments=WordPress.wpDB.loadComments(WordPress.currentBlog.getId());
-  if (refreshOnly) {
-    if (model != null) {
-      model.clear();
-    }
+  List<Map<String,Object>> loadedComments=WordPress.wpDB.loadComments(WordPress.currentBlog.getLocalTableBlogId());
+  if (model != null) {
+    model.clear();
   }
  else {
     model=new ArrayList<Comment>();
   }
   if (loadedComments != null) {
     numRecords=loadedComments.size();
-    checkedComments=new Vector<String>();
     for (int i=0; i < loadedComments.size(); i++) {
-      checkedComments.add(i,"false");
       Map<String,Object> contentHash=loadedComments.get(i);
       allComments.put((Integer)contentHash.get("commentID"),contentHash);
       author=StringUtils.unescapeHTML(contentHash.get("author").toString());
       commentID=(Integer)contentHash.get("commentID");
       postID=contentHash.get("postID").toString();
-      comment=StringUtils.unescapeHTML(contentHash.get("comment").toString());
+      comment=contentHash.get("comment").toString();
       dateCreatedFormatted=contentHash.get("commentDateFormatted").toString();
       status=contentHash.get("status").toString();
       authorEmail=StringUtils.unescapeHTML(contentHash.get("email").toString());
@@ -30,7 +26,7 @@
       if (model == null) {
         model=new ArrayList<Comment>();
       }
-      model.add(new Comment(postID,commentID,i,author,dateCreatedFormatted,comment,status,postTitle,authorURL,authorEmail,URI.create("http://gravatar.com/avatar/" + StringUtils.getMd5Hash(authorEmail.trim()) + "?s=140&d=404")));
+      model.add(new Comment(postID,commentID,i,author,dateCreatedFormatted,comment,status,postTitle,authorURL,authorEmail,GravatarUtils.gravatarUrlFromEmail(authorEmail,140)));
     }
     if (!refreshOnly) {
       boolean showSwitcher=loadedComments.size() % COMMENTS_PER_PAGE == 0;
@@ -44,7 +40,7 @@
         if (model.size() > 0) {
           selectedPosition=0;
           Comment aComment=model.get((int)0);
-          onCommentSelectedListener.onCommentSelected(aComment);
+          mOnCommentSelectedListener.onCommentSelected(aComment);
           getListView().setItemChecked(0,true);
         }
       }
@@ -59,6 +55,7 @@
         e.printStackTrace();
       }
     }
+    mListScrollPositionManager.restoreScrollOffset();
     return true;
   }
  else {

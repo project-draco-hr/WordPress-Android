@@ -1,0 +1,21 @@
+{
+  if (mDestinationBlogId == 0) {
+    ToastUtils.showToast(this,R.string.reader_toast_err_reblog_requires_blog);
+    return;
+  }
+  String commentText=EditTextUtils.getText(mEditComment);
+  setIsSubmittingReblog(true);
+  final ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      setIsSubmittingReblog(false);
+      if (succeeded) {
+        reblogSucceeded();
+      }
+ else {
+        ToastUtils.showToast(ReaderReblogActivity.this,R.string.reader_toast_err_reblog_failed);
+      }
+    }
+  }
+;
+  ReaderPostActions.reblogPost(mPost,mDestinationBlogId,commentText,actionListener);
+}

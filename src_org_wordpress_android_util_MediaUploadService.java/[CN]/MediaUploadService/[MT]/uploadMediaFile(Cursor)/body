@@ -10,23 +10,33 @@
   mediaFile.setBlogId(blogIdStr);
   mediaFile.setFileName(fileName);
   mediaFile.setFilePath(filePath);
-  mediaFile.setMIMEType(mimeType);
-  ApiHelper.UploadMediaTask task=new ApiHelper.UploadMediaTask(mContext,mediaFile,new Callback(){
+  mediaFile.setMimeType(mimeType);
+  ApiHelper.UploadMediaTask task=new ApiHelper.UploadMediaTask(mContext,mediaFile,new ApiHelper.UploadMediaTask.Callback(){
     @Override public void onSuccess(    String id){
       WordPress.wpDB.deleteMediaFile(blogIdStr,mediaId);
-      sendUpdateBroadcast(mediaId);
+      sendUpdateBroadcast(mediaId,null);
       fetchMediaFile(id);
     }
-    @Override public void onFailure(){
+    @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
       WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,"failed");
       mUploadInProgress=false;
-      sendUpdateBroadcast(mediaId);
+      sendUpdateBroadcast(mediaId,getString(R.string.upload_failed));
       mHandler.post(mFetchQueueTask);
+      if (errorType != ErrorType.NETWORK_XMLRPC) {
+        JSONObject properties=new JSONObject();
+        try {
+          properties.put("error_message",errorType.name() + "-" + errorMessage);
+        }
+ catch (        JSONException e) {
+          AppLog.e(T.MEDIA,"Can't serialize message to JSON: " + errorMessage);
+        }
+        WPMobileStatsUtil.trackException(throwable,WPMobileStatsUtil.StatsPropertyExceptionUploadMedia,properties);
+      }
     }
   }
 );
   WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,"uploading");
-  sendUpdateBroadcast(mediaId);
+  sendUpdateBroadcast(mediaId,null);
   List<Object> apiArgs=new ArrayList<Object>();
   apiArgs.add(WordPress.getCurrentBlog());
   task.execute(apiArgs);

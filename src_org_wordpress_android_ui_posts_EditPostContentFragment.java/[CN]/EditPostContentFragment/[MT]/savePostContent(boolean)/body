@@ -1,0 +1,68 @@
+{
+  Post post=mActivity.getPost();
+  if (post == null)   return;
+  String title=(mTitleEditText.getText() != null) ? mTitleEditText.getText().toString() : "";
+  String content="";
+  Editable postContentEditable=new SpannableStringBuilder(mContentEditText.getText());
+  if (post.isLocalDraft()) {
+    if (android.os.Build.VERSION.SDK_INT >= 14 && postContentEditable != null) {
+      CharacterStyle[] characterStyles=postContentEditable.getSpans(0,postContentEditable.length(),CharacterStyle.class);
+      for (      CharacterStyle characterStyle : characterStyles) {
+        if (characterStyle.getClass().getName().equals("android.text.style.SuggestionSpan"))         postContentEditable.removeSpan(characterStyle);
+      }
+    }
+    content=WPHtml.toHtml(postContentEditable);
+    content=content.replace("<p><p>","<p>");
+    content=content.replace("</p></p>","</p>");
+    content=content.replace("<br><br>","<br>");
+    content=content.replace("</strong><strong>","").replace("</em><em>","").replace("</u><u>","").replace("</strike><strike>","").replace("</blockquote><blockquote>","");
+  }
+ else {
+    WPImageSpan[] imageSpans=postContentEditable.getSpans(0,postContentEditable.length(),WPImageSpan.class);
+    if (imageSpans.length != 0) {
+      for (      WPImageSpan wpIS : imageSpans) {
+        MediaFile mediaFile=wpIS.getMediaFile();
+        if (mediaFile == null)         continue;
+        if (mediaFile.getMediaId() != null) {
+          updateMediaFileOnServer(wpIS);
+        }
+ else {
+          mediaFile.setFileName(wpIS.getImageSource().toString());
+          mediaFile.setFilePath(wpIS.getImageSource().toString());
+          mediaFile.save();
+        }
+        int tagStart=postContentEditable.getSpanStart(wpIS);
+        if (!isAutoSave) {
+          postContentEditable.removeSpan(wpIS);
+          if (mediaFile.getMediaId() != null && mediaFile.getMediaId().length() > 0) {
+            postContentEditable.insert(tagStart,WPHtml.getContent(wpIS));
+          }
+ else {
+            postContentEditable.insert(tagStart,"<img android-uri=\"" + wpIS.getImageSource().toString() + "\" />");
+          }
+        }
+      }
+    }
+    content=postContentEditable.toString();
+  }
+  if (!isAutoSave) {
+    MediaGalleryImageSpan[] gallerySpans=postContentEditable.getSpans(0,postContentEditable.length(),MediaGalleryImageSpan.class);
+    for (    MediaGalleryImageSpan gallerySpan : gallerySpans) {
+      int start=postContentEditable.getSpanStart(gallerySpan);
+      postContentEditable.removeSpan(gallerySpan);
+      postContentEditable.insert(start,WPHtml.getGalleryShortcode(gallerySpan));
+    }
+  }
+  String moreTag="<!--more-->";
+  post.setTitle(title);
+  if (post.isLocalDraft() && content.contains(moreTag)) {
+    post.setDescription(content.substring(0,content.indexOf(moreTag)));
+    post.setMt_text_more(content.substring(content.indexOf(moreTag) + moreTag.length(),content.length()));
+  }
+ else {
+    post.setDescription(content);
+    post.setMt_text_more("");
+  }
+  if (!post.isLocalDraft())   post.setLocalChange(true);
+  post.update();
+}
