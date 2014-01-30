@@ -1,15 +1,46 @@
 {
   final Comment comment=mComments.get(position);
-  final CommentEntryWrapper wrapper;
+  final CommentHolder holder;
   if (convertView == null || convertView.getTag() == null) {
     convertView=mInflater.inflate(R.layout.comment_row,null);
-    wrapper=new CommentEntryWrapper(convertView);
-    convertView.setTag(wrapper);
+    holder=new CommentHolder(convertView);
+    convertView.setTag(holder);
   }
  else {
-    wrapper=(CommentEntryWrapper)convertView.getTag();
+    holder=(CommentHolder)convertView.getTag();
   }
-  wrapper.populateFrom(comment,position);
-  if (mOnLoadMoreListener != null && position >= getCount() - 1)   mOnLoadMoreListener.onLoadMore();
-  return convertView;
+  holder.txtName.setText(comment.hasAuthorName() ? comment.getAuthorName() : mAnonymous);
+  holder.txtPostTitle.setText(comment.getPostTitle());
+  holder.txtComment.setText(comment.getUnescapedCommentText());
+  holder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(comment.getDatePublished()));
+switch (comment.getStatusEnum()) {
+case SPAM:
+    holder.txtStatus.setText(mStatusTextSpam);
+  holder.txtStatus.setTextColor(mStatusColorSpam);
+holder.txtStatus.setVisibility(View.VISIBLE);
+break;
+case UNAPPROVED:
+holder.txtStatus.setText(mStatusTextUnapproved);
+holder.txtStatus.setTextColor(mStatusColorUnapproved);
+holder.txtStatus.setVisibility(View.VISIBLE);
+break;
+default :
+holder.txtStatus.setVisibility(View.GONE);
+break;
+}
+String avatarUrl=comment.getAvatarForDisplay(mAvatarSz);
+if (!TextUtils.isEmpty(avatarUrl)) {
+holder.imgAvatar.setImageUrl(avatarUrl,WordPress.imageLoader);
+}
+ else {
+holder.imgAvatar.setImageDrawable(mDefaultAvatar);
+}
+if (mEnableCheckBoxes && isItemChecked(position)) {
+convertView.setBackgroundColor(mSelectedColor);
+}
+ else {
+convertView.setBackgroundColor(Color.TRANSPARENT);
+}
+if (mOnLoadMoreListener != null && position >= getCount() - 1) mOnLoadMoreListener.onLoadMore();
+return convertView;
 }
