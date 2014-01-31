@@ -3,6 +3,7 @@
   listView.removeFooterView(switcher);
   listView.removeFooterView(mFooterSpacer);
   if (showSwitcher) {
+    switcher.setDisplayedChild(0);
     listView.addFooterView(switcher);
   }
   listView.addFooterView(mFooterSpacer);
@@ -27,6 +28,10 @@
       }
  catch (      ClassCastException e) {
         AppLog.e(T.COMMENTS,"bad menuInfo",e);
+        return;
+      }
+      if (info.position < 0 || info.position >= model.size()) {
+        menu.clear();
         return;
       }
       WordPress.currentComment=model.get(info.position);
