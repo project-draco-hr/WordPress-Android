@@ -1,11 +1,9 @@
 {
-  int localBlogId=WordPress.currentBlog.getLocalTableBlogId();
-  mComments=CommentTable.getCommentsForBlog(localBlogId);
-  for (  Comment comment : mComments) {
-    comment.getDatePublished();
-    comment.getUnescapedCommentText();
-    comment.getAvatarForDisplay(mAvatarSz);
+  if (mIsLoadTaskRunning)   AppLog.w(AppLog.T.COMMENTS,"load comments task already active");
+  if (SysUtils.canUseExecuteOnExecutor()) {
+    new LoadCommentsTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
-  notifyDataSetChanged();
-  return true;
+ else {
+    new LoadCommentsTask().execute();
+  }
 }
