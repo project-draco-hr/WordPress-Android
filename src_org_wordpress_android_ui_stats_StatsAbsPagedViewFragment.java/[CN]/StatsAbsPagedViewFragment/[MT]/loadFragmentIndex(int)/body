@@ -1,7 +1,11 @@
 {
   mChildIndex=index;
   if (getChildFragmentManager().findFragmentByTag(CHILD_TAG + ":" + mChildIndex) == null) {
+    mFragmentContainer.setMinimumHeight(mFragmentContainer.getHeight());
     Fragment fragment=getFragment(index);
-    getChildFragmentManager().beginTransaction().replace(R.id.stats_pager_container,fragment,CHILD_TAG + ":" + mChildIndex).commit();
+    FragmentTransaction ft=getChildFragmentManager().beginTransaction();
+    ft.setCustomAnimations(R.anim.stats_fade_in,R.anim.stats_fade_out);
+    ft.replace(R.id.stats_pager_container,fragment,CHILD_TAG + ":" + mChildIndex);
+    ft.commit();
   }
 }
