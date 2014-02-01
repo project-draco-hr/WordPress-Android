@@ -1,18 +1,14 @@
 {
-  View row=convertView;
-  CommentEntryWrapper wrapper=null;
-  if (row == null) {
-    LayoutInflater inflater=getActivity().getLayoutInflater();
-    row=inflater.inflate(R.layout.comment_row,null);
-    NetworkImageView avatar=(NetworkImageView)row.findViewById(R.id.avatar);
-    avatar.setDefaultImageResId(R.drawable.placeholder);
-    wrapper=new CommentEntryWrapper(row);
-    row.setTag(wrapper);
+  final CommentEntryWrapper wrapper;
+  if (convertView == null || convertView.getTag() == null) {
+    convertView=mInflater.inflate(R.layout.comment_row,null);
+    wrapper=new CommentEntryWrapper(convertView);
+    convertView.setTag(wrapper);
   }
  else {
-    wrapper=(CommentEntryWrapper)row.getTag();
+    wrapper=(CommentEntryWrapper)convertView.getTag();
   }
   Comment commentEntry=getItem(position);
   wrapper.populateFrom(commentEntry,position);
-  return (row);
+  return convertView;
 }

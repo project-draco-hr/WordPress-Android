@@ -1,0 +1,33 @@
+{
+  if (isCancelled() || !hasActivity())   return;
+  if (commentsResult == null) {
+    if (model != null && model.size() == 1) {
+      WordPress.wpDB.clearComments(WordPress.currentBlog.getLocalTableBlogId());
+      model.clear();
+      allComments.clear();
+      getListView().invalidateViews();
+      WordPress.currentComment=null;
+      loadComments(false,false);
+    }
+    mOnAnimateRefreshButton.onAnimateRefreshButton(false);
+    if (!moderateErrorMsg.equals("") && !getActivity().isFinishing()) {
+      ToastUtils.showToast(getActivity(),R.string.error_refresh_comments,ToastUtils.Duration.LONG);
+      moderateErrorMsg="";
+    }
+    return;
+  }
+  if (commentsResult.size() == 0) {
+    if (progressDialog.isShowing()) {
+      progressDialog.dismiss();
+    }
+  }
+ else {
+    allComments.putAll(commentsResult);
+    loadComments(refreshOnly,loadMore);
+  }
+  mOnAnimateRefreshButton.onAnimateRefreshButton(false);
+  if (loadMore) {
+    switcher.showPrevious();
+  }
+  showOrHideModerationBar();
+}
