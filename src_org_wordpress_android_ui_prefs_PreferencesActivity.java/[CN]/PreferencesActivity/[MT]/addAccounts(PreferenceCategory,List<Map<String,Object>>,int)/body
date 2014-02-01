@@ -1,0 +1,21 @@
+{
+  for (  Map<String,Object> account : blogs) {
+    String blogName=StringUtils.unescapeHTML(account.get("blogName").toString());
+    int accountId=(Integer)account.get("id");
+    Preference blogSettingsPreference=new Preference(this);
+    blogSettingsPreference.setTitle(blogName);
+    try {
+      URL blogUrl=new URL(account.get("url").toString());
+      if (!blogName.equals(blogUrl.getHost())) {
+        blogSettingsPreference.setSummary(blogUrl.getHost());
+      }
+    }
+ catch (    MalformedURLException e) {
+    }
+    Intent intent=new Intent(this,BlogPreferencesActivity.class);
+    intent.putExtra("id",accountId);
+    blogSettingsPreference.setIntent(intent);
+    blogSettingsPreference.setOrder(order++);
+    category.addPreference(blogSettingsPreference);
+  }
+}
