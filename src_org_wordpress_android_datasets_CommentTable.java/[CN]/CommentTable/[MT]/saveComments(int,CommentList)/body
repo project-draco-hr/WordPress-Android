@@ -1,22 +1,23 @@
 {
   if (comments == null || comments.size() == 0)   return false;
+  final String sql=" INSERT OR REPLACE INTO " + COMMENTS_TABLE + "("+ " blog_id,"+ " post_id,"+ " comment_id,"+ " comment,"+ " published,"+ " status,"+ " author_name,"+ " author_url,"+ " author_email,"+ " post_title"+ " ) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10)";
   SQLiteDatabase db=getWritableDb();
+  SQLiteStatement stmt=db.compileStatement(sql);
   db.beginTransaction();
   try {
     try {
       for (      Comment comment : comments) {
-        ContentValues values=new ContentValues();
-        values.put("blog_id",localBlogId);
-        values.put("post_id",comment.postID);
-        values.put("comment_id",comment.commentID);
-        values.put("comment",comment.getCommentText());
-        values.put("published",comment.getPublished());
-        values.put("status",comment.getStatus());
-        values.put("author_name",comment.getAuthorName());
-        values.put("author_url",comment.getAuthorUrl());
-        values.put("author_email",comment.getAuthorEmail());
-        values.put("post_title",comment.getPostTitle());
-        db.insertWithOnConflict(COMMENTS_TABLE,null,values,SQLiteDatabase.CONFLICT_REPLACE);
+        stmt.bindLong(1,localBlogId);
+        stmt.bindLong(2,comment.postID);
+        stmt.bindLong(3,comment.commentID);
+        stmt.bindString(4,comment.getCommentText());
+        stmt.bindString(5,comment.getPublished());
+        stmt.bindString(6,comment.getStatus());
+        stmt.bindString(7,comment.getAuthorName());
+        stmt.bindString(8,comment.getAuthorUrl());
+        stmt.bindString(9,comment.getAuthorEmail());
+        stmt.bindString(10,comment.getPostTitle());
+        stmt.execute();
       }
       db.setTransactionSuccessful();
       return true;
@@ -28,5 +29,6 @@
   }
   finally {
     db.endTransaction();
+    SqlUtils.closeStatement(stmt);
   }
 }
