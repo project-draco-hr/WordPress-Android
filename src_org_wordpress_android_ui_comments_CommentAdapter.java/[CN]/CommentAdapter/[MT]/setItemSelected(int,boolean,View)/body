@@ -8,7 +8,9 @@
   }
   notifyDataSetChanged();
   if (view != null && view.getTag() instanceof CommentHolder) {
-    animateSelection((CommentHolder)view.getTag(),isSelected);
+    CommentHolder holder=(CommentHolder)view.getTag();
+    if (SysUtils.isGteAndroid4())     AniUtils.startAnimation(holder.imgCheckmark,isSelected ? R.anim.zoom : R.anim.zoom_out);
+    holder.imgCheckmark.setVisibility(isSelected ? View.VISIBLE : View.GONE);
   }
   if (mOnSelectedChangeListener != null)   mOnSelectedChangeListener.onSelectedItemsChanged();
 }
