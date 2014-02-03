@@ -1,7 +1,7 @@
 {
   if (!hasActivity())   return;
   final ViewGroup viewDetail=(ViewGroup)getActivity().findViewById(R.id.layout_detail);
-  final NetworkImageView imgAvatar=(NetworkImageView)viewDetail.findViewById(R.id.image_avatar);
+  final WPNetworkImageView imgAvatar=(WPNetworkImageView)viewDetail.findViewById(R.id.image_avatar);
   final TextView txtName=(TextView)viewDetail.findViewById(R.id.text_name);
   final TextView txtDate=(TextView)viewDetail.findViewById(R.id.text_date);
   final TextView txtContent=(TextView)viewDetail.findViewById(R.id.text_content);
@@ -24,14 +24,13 @@
   txtContent.setMovementMethod(WPLinkMovementMethod.getInstance());
   int maxImageSz=getResources().getDimensionPixelSize(R.dimen.reader_comment_max_image_size);
   CommentUtils.displayHtmlComment(txtContent,mComment.getCommentText(),maxImageSz);
-  imgAvatar.setDefaultImageResId(R.drawable.placeholder);
   if (mComment.hasProfileImageUrl()) {
-    imgAvatar.setImageUrl(mComment.getProfileImageUrl(),WordPress.imageLoader);
+    imgAvatar.setImageUrl(mComment.getProfileImageUrl(),WPNetworkImageView.ImageType.AVATAR);
   }
  else   if (mComment.hasAuthorEmail()) {
     int avatarSz=getResources().getDimensionPixelSize(R.dimen.avatar_sz_large);
     String avatarUrl=GravatarUtils.gravatarUrlFromEmail(mComment.getAuthorEmail(),avatarSz);
-    imgAvatar.setImageUrl(avatarUrl,WordPress.imageLoader);
+    imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
   }
  else {
     imgAvatar.setImageResource(R.drawable.placeholder);

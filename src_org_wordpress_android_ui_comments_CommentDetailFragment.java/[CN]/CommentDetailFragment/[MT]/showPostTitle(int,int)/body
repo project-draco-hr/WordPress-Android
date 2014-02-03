@@ -2,18 +2,14 @@
   if (!hasActivity())   return;
   final TextView txtPostTitle=(TextView)getActivity().findViewById(R.id.text_post_title);
   boolean postExists=ReaderPostTable.postExists(blogId,postId);
-  final String title;
-  if (getNote() != null) {
-    title=getNote().getSubject();
-  }
- else   if (postExists) {
-    title=ReaderPostTable.getPostTitle(blogId,postId);
+  final String title=(postExists ? ReaderPostTable.getPostTitle(blogId,postId) : null);
+  final boolean hasTitle=!TextUtils.isEmpty(title);
+  if (hasTitle) {
+    setPostTitle(txtPostTitle,title);
   }
  else {
-    title=null;
+    txtPostTitle.setText(R.string.loading);
   }
-  final boolean hasTitle=!TextUtils.isEmpty(title);
-  if (hasTitle)   txtPostTitle.setText(title);
   if (!postExists) {
     final ProgressBar progress=(ProgressBar)getActivity().findViewById(R.id.progress_post_title);
     if (!hasTitle)     progress.setVisibility(View.VISIBLE);
@@ -24,7 +20,7 @@
         if (succeeded && !hasTitle) {
           String title=ReaderPostTable.getPostTitle(blogId,postId);
           if (!TextUtils.isEmpty(title)) {
-            txtPostTitle.setText(title);
+            setPostTitle(txtPostTitle,title);
           }
  else {
             txtPostTitle.setText(R.string.untitled);
