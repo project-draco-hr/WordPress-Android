@@ -1,33 +1,33 @@
 {
   if (!hasActivity() || !hasComment())   return;
-  final int btnTextResId;
-  final int btnDrawResId;
+  final int moderationTextResId;
+  final int moderationDrawResId;
   final CommentStatus newStatus;
   final int statusTextResId;
   final int statusColor;
-  final boolean showSpamButton;
+  final boolean enableMarkAsSpam;
 switch (mComment.getStatusEnum()) {
 case APPROVED:
-    btnTextResId=R.string.unapprove;
-  btnDrawResId=R.drawable.moderate_unapprove;
+    moderationTextResId=R.string.unapprove;
+  moderationDrawResId=R.drawable.ic_cab_unapprove;
 newStatus=CommentStatus.UNAPPROVED;
-showSpamButton=true;
+enableMarkAsSpam=true;
 statusTextResId=R.string.approved;
 statusColor=getActivity().getResources().getColor(R.color.blue_extra_dark);
 break;
 case UNAPPROVED:
-btnTextResId=R.string.approve;
-btnDrawResId=R.drawable.moderate_approve;
+moderationTextResId=R.string.approve;
+moderationDrawResId=R.drawable.ic_cab_approve;
 newStatus=CommentStatus.APPROVED;
-showSpamButton=true;
+enableMarkAsSpam=true;
 statusTextResId=R.string.unapproved;
 statusColor=getActivity().getResources().getColor(R.color.orange_medium);
 break;
 case SPAM:
-btnTextResId=R.string.approve;
-btnDrawResId=R.drawable.moderate_approve;
+moderationTextResId=R.string.approve;
+moderationDrawResId=R.drawable.ic_cab_approve;
 newStatus=CommentStatus.APPROVED;
-showSpamButton=false;
+enableMarkAsSpam=false;
 statusTextResId=R.string.spam;
 statusColor=Color.RED;
 break;
@@ -45,9 +45,9 @@ AniUtils.fadeIn(mTxtStatus);
  else {
 mTxtStatus.setVisibility(View.GONE);
 }
-if (isModerationEnabled()) {
-mBtnModerate.setText(btnTextResId);
-mBtnModerate.setCompoundDrawablesWithIntrinsicBounds(btnDrawResId,0,0,0);
+if (canModerate()) {
+mBtnModerate.setText(moderationTextResId);
+setButtonDrawable(mBtnModerate,moderationDrawResId,true);
 mBtnModerate.setOnClickListener(new View.OnClickListener(){
 @Override public void onClick(View v){
 moderateComment(newStatus);
@@ -59,8 +59,15 @@ mBtnModerate.setVisibility(View.VISIBLE);
  else {
 mBtnModerate.setVisibility(View.GONE);
 }
-mBtnSpam.setVisibility(isMarkSpamEnabled() && showSpamButton ? View.VISIBLE : View.GONE);
-if (mLayoutButtons.getVisibility() != View.VISIBLE && (isMarkSpamEnabled() || isModerationEnabled())) {
+if (canMarkAsSpam()) {
+mBtnSpam.setVisibility(View.VISIBLE);
+mBtnSpam.setEnabled(enableMarkAsSpam);
+setButtonDrawable(mBtnSpam,R.drawable.ic_cab_spam,enableMarkAsSpam);
+}
+ else {
+mBtnSpam.setVisibility(View.GONE);
+}
+if (mLayoutButtons.getVisibility() != View.VISIBLE && (canMarkAsSpam() || canModerate())) {
 mLayoutButtons.clearAnimation();
 AniUtils.flyIn(mLayoutButtons);
 }
