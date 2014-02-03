@@ -4,12 +4,11 @@
   final WPNetworkImageView imgAvatar=(WPNetworkImageView)viewDetail.findViewById(R.id.image_avatar);
   final TextView txtName=(TextView)viewDetail.findViewById(R.id.text_name);
   final TextView txtDate=(TextView)viewDetail.findViewById(R.id.text_date);
-  final TextView txtContent=(TextView)viewDetail.findViewById(R.id.text_content);
   if (mComment == null) {
     imgAvatar.setImageDrawable(null);
     txtName.setText(null);
     txtDate.setText(null);
-    txtContent.setText(null);
+    mTxtContent.setText(null);
     mTxtStatus.setText(null);
     mLayoutButtons.setVisibility(View.GONE);
     mLayoutReply.setVisibility(View.GONE);
@@ -20,10 +19,8 @@
   viewDetail.setVisibility(View.VISIBLE);
   txtName.setText(mComment.hasAuthorName() ? mComment.getAuthorName() : getString(R.string.anonymous));
   txtDate.setText(DateTimeUtils.javaDateToTimeSpan(mComment.getDatePublished()));
-  txtContent.setLinksClickable(true);
-  txtContent.setMovementMethod(WPLinkMovementMethod.getInstance());
   int maxImageSz=getResources().getDimensionPixelSize(R.dimen.reader_comment_max_image_size);
-  CommentUtils.displayHtmlComment(txtContent,mComment.getCommentText(),maxImageSz);
+  CommentUtils.displayHtmlComment(mTxtContent,mComment.getCommentText(),maxImageSz);
   if (mComment.hasProfileImageUrl()) {
     imgAvatar.setImageUrl(mComment.getProfileImageUrl(),WPNetworkImageView.ImageType.AVATAR);
   }
