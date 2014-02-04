@@ -1,0 +1,48 @@
+{
+  if (!isCommentEdited())   return true;
+  final Blog blog;
+  try {
+    blog=new Blog(mLocalBlogId);
+  }
+ catch (  Exception e) {
+    AppLog.e(AppLog.T.COMMENTS,"localTableBlogId: " + mLocalBlogId + " not found");
+    return false;
+  }
+  final String authorName=getEditTextStr(R.id.author_name);
+  final String authorEmail=getEditTextStr(R.id.author_email);
+  final String authorURL=getEditTextStr(R.id.author_url);
+  final String content=getEditTextStr(R.id.comment_content);
+  final String status=getSelectedStatus();
+  final Map<String,String> postHash=new HashMap<String,String>();
+  postHash.put("status",status);
+  postHash.put("content",content);
+  postHash.put("author",authorName);
+  postHash.put("author_url",authorURL);
+  postHash.put("author_email",authorEmail);
+  XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+  Object[] xmlParams={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),mCommentId,postHash};
+  Object result;
+  boolean isSaved;
+  try {
+    result=client.call("wp.editComment",xmlParams);
+    isSaved=(result != null && Boolean.parseBoolean(result.toString()));
+    if (isSaved) {
+      mComment.setAuthorEmail(authorEmail);
+      mComment.setAuthorUrl(authorURL);
+      mComment.setCommentText(content);
+      mComment.setStatus(status);
+      mComment.setAuthorName(authorName);
+      postHash.put("url",postHash.get("author_url"));
+      postHash.put("email",postHash.get("author_email"));
+      postHash.put("comment",postHash.get("content"));
+      postHash.remove("author_url");
+      postHash.remove("author_email");
+      postHash.remove("content");
+      CommentTable.updateComment(mLocalBlogId,mCommentId,postHash);
+    }
+    return isSaved;
+  }
+ catch (  XMLRPCException e) {
+    return false;
+  }
+}
