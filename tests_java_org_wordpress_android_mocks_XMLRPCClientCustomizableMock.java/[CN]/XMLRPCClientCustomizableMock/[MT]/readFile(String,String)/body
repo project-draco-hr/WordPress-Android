@@ -1,0 +1,19 @@
+{
+  String filename=prefix + "-" + method+ ".json";
+  try {
+    Gson gson=new Gson();
+    InputStream is=mContext.getAssets().open(filename);
+    String jsonString=TestUtils.convertStreamToString(is);
+    AppLog.i(T.TESTS,"loading: " + filename);
+    try {
+      return gson.fromJson(jsonString,Object[].class);
+    }
+ catch (    Exception e) {
+      return TestUtils.stringMapToHashMap((StringMap)gson.fromJson(jsonString,Object.class));
+    }
+  }
+ catch (  IOException e) {
+    AppLog.e(T.TESTS,"can't read file: " + filename);
+  }
+  return null;
+}
