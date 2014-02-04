@@ -2,23 +2,13 @@
   super.onCreate(icicle);
   setContentView(R.layout.edit_comment);
   setTitle(getString(R.string.edit_comment));
-  ((TextView)findViewById(R.id.l_section1)).setText(getResources().getString(R.string.comment_content).toUpperCase());
-  ((TextView)findViewById(R.id.l_status)).setText(getResources().getString(R.string.status).toUpperCase());
-  String[] items=new String[]{getResources().getString(R.string.approved),getResources().getString(R.string.unapproved),getResources().getString(R.string.spam)};
-  Spinner spinner=(Spinner)findViewById(R.id.status);
-  ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,items);
-  adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-  spinner.setAdapter(adapter);
+  ActionBar actionBar=getSupportActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayShowTitleEnabled(true);
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
   if (!loadComment(getIntent())) {
-    Toast.makeText(this,getString(R.string.error_load_comment),Toast.LENGTH_SHORT).show();
+    ToastUtils.showToast(this,R.string.error_load_comment);
     finish();
-    return;
   }
-  final Button saveButton=(Button)findViewById(R.id.post);
-  saveButton.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      saveComment();
-    }
-  }
-);
 }

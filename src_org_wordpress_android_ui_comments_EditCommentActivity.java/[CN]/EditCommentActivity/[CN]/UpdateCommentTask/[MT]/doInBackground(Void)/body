@@ -12,9 +12,8 @@
   final String authorEmail=getEditTextStr(R.id.author_email);
   final String authorURL=getEditTextStr(R.id.author_url);
   final String content=getEditTextStr(R.id.comment_content);
-  final String status=getSelectedStatus();
   final Map<String,String> postHash=new HashMap<String,String>();
-  postHash.put("status",status);
+  postHash.put("status",mComment.getStatus());
   postHash.put("content",content);
   postHash.put("author",authorName);
   postHash.put("author_url",authorURL);
@@ -30,15 +29,8 @@
       mComment.setAuthorEmail(authorEmail);
       mComment.setAuthorUrl(authorURL);
       mComment.setCommentText(content);
-      mComment.setStatus(status);
       mComment.setAuthorName(authorName);
-      postHash.put("url",postHash.get("author_url"));
-      postHash.put("email",postHash.get("author_email"));
-      postHash.put("comment",postHash.get("content"));
-      postHash.remove("author_url");
-      postHash.remove("author_email");
-      postHash.remove("content");
-      CommentTable.updateComment(mLocalBlogId,mCommentId,postHash);
+      CommentTable.updateComment(mLocalBlogId,mComment);
     }
     return isSaved;
   }
