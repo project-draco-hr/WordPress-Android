@@ -17,15 +17,13 @@
         try {
           result=client.call("wp.deleteComment",params);
           boolean success=(result != null && Boolean.parseBoolean(result.toString()));
-          if (success) {
-            CommentTable.deleteComment(localBlogId,comment.commentID);
-            deletedComments.add(comment);
-          }
+          if (success)           deletedComments.add(comment);
         }
  catch (        final XMLRPCException e) {
           AppLog.e(T.COMMENTS,e.getMessage(),e);
         }
       }
+      CommentTable.deleteComments(localBlogId,deletedComments);
       if (actionListener != null) {
         handler.post(new Runnable(){
           @Override public void run(){
