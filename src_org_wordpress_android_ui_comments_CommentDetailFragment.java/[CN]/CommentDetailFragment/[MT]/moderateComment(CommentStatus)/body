@@ -37,16 +37,17 @@ MessageBarUtils.showMessageBar(getActivity(),getString(msgResId),msgType,null);
 CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
 @Override public void onActionResult(boolean succeeded){
 mIsModeratingComment=false;
-if (!hasActivity()) return;
+if (succeeded && mOnCommentChangeListener != null) mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL);
+if (hasActivity()) {
 mLayoutButtons.setEnabled(true);
 if (succeeded) {
 mComment.setStatus(CommentStatus.toString(newStatus));
-if (mOnCommentChangeListener != null) mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL);
 }
  else {
 ToastUtils.showToast(getActivity(),R.string.error_moderate_comment,ToastUtils.Duration.LONG);
 }
 updateStatusViews();
+}
 }
 }
 ;

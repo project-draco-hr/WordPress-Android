@@ -11,20 +11,21 @@
   CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
     @Override public void onActionResult(    boolean succeeded){
       mIsSubmittingReply=false;
-      if (!hasActivity())       return;
-      mEditReply.setEnabled(true);
-      mImgSubmitReply.setVisibility(View.VISIBLE);
-      progress.setVisibility(View.GONE);
-      if (succeeded) {
-        if (mOnCommentChangeListener != null)         mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL);
-        MessageBarUtils.showMessageBar(getActivity(),getString(R.string.note_reply_successful));
-        mEditReply.setText(null);
-      }
+      if (succeeded && mOnCommentChangeListener != null)       mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL);
+      if (hasActivity()) {
+        mEditReply.setEnabled(true);
+        mImgSubmitReply.setVisibility(View.VISIBLE);
+        progress.setVisibility(View.GONE);
+        if (succeeded) {
+          MessageBarUtils.showMessageBar(getActivity(),getString(R.string.note_reply_successful));
+          mEditReply.setText(null);
+        }
  else {
-        ToastUtils.showToast(getActivity(),R.string.reply_failed,ToastUtils.Duration.LONG);
-        mEditReply.requestFocus();
-        InputMethodManager imm=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(mEditReply,InputMethodManager.SHOW_IMPLICIT);
+          ToastUtils.showToast(getActivity(),R.string.reply_failed,ToastUtils.Duration.LONG);
+          mEditReply.requestFocus();
+          InputMethodManager imm=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+          imm.showSoftInput(mEditReply,InputMethodManager.SHOW_IMPLICIT);
+        }
       }
     }
   }
