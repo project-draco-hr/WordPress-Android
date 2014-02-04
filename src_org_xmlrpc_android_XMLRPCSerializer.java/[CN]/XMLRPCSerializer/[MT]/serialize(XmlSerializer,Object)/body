@@ -14,7 +14,21 @@
     serializer.startTag(null,TYPE_BOOLEAN).text(boolStr).endTag(null,TYPE_BOOLEAN);
   }
  else   if (object instanceof String) {
-    serializer.startTag(null,TYPE_STRING).text(object.toString()).endTag(null,TYPE_STRING);
+    serializer.startTag(null,TYPE_STRING);
+    try {
+      serializer.text(object.toString());
+    }
+ catch (    IllegalArgumentException e) {
+      AppLog.e(AppLog.T.EDITOR,"There are characters outside the XML unicode charset as specified by the XML 1.0 standard",e);
+      final String noEmojiString=Emoticons.replaceEmojiWithEmoticons((String)object);
+      try {
+        serializer.text(noEmojiString);
+      }
+ catch (      Exception exNoEmoji) {
+        serializer.text(StringUtils.stripNonValidXMLCharacters(noEmojiString));
+      }
+    }
+    serializer.endTag(null,TYPE_STRING);
   }
  else   if (object instanceof Date || object instanceof Calendar) {
     Date date=(Date)object;
