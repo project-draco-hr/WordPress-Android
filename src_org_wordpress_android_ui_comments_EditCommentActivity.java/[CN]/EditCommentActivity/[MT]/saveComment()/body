@@ -4,6 +4,11 @@
     editContent.setError(getString(R.string.content_required));
     return;
   }
+  if (!isCommentEdited()) {
+    ToastUtils.showToast(this,R.string.toast_comment_unedited);
+    return;
+  }
+  if (!NetworkUtils.checkConnection(this))   return;
   if (mIsUpdateTaskRunning)   AppLog.w(AppLog.T.COMMENTS,"update task already running");
   new UpdateCommentTask().execute();
 }

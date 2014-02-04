@@ -4,10 +4,11 @@
   ActionBar actionBar=getSupportActionBar();
   actionBar.setDisplayShowTitleEnabled(true);
   setTitle(getString(R.string.tab_comments));
+  boolean isFromNotification=false;
   Bundle extras=getIntent().getExtras();
   if (extras != null) {
-    fromNotification=extras.getBoolean("fromNotification");
-    if (fromNotification) {
+    isFromNotification=extras.getBoolean("fromNotification");
+    if (isFromNotification) {
       try {
         WordPress.currentBlog=new Blog(extras.getInt("id"));
       }
@@ -19,8 +20,8 @@
   }
   FragmentManager fm=getSupportFragmentManager();
   fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
-  commentList=(CommentsListFragment)fm.findFragmentById(R.id.commentList);
+  mCommentListFragment=(CommentsListFragment)fm.findFragmentById(R.id.commentList);
   WordPress.currentComment=null;
-  if (fromNotification)   refreshCommentList();
+  if (isFromNotification)   refreshCommentList();
   if (savedInstanceState != null)   popCommentDetail();
 }

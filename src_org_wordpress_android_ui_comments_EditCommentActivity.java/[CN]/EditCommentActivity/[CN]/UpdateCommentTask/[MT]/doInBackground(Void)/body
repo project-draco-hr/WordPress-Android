@@ -1,40 +1,38 @@
 {
-  if (!isCommentEdited())   return true;
   final Blog blog;
   try {
     blog=new Blog(mLocalBlogId);
   }
  catch (  Exception e) {
-    AppLog.e(AppLog.T.COMMENTS,"localTableBlogId: " + mLocalBlogId + " not found");
+    AppLog.e(AppLog.T.COMMENTS,e);
     return false;
   }
   final String authorName=getEditTextStr(R.id.author_name);
   final String authorEmail=getEditTextStr(R.id.author_email);
-  final String authorURL=getEditTextStr(R.id.author_url);
+  final String authorUrl=getEditTextStr(R.id.author_url);
   final String content=getEditTextStr(R.id.comment_content);
   final Map<String,String> postHash=new HashMap<String,String>();
   postHash.put("status",mComment.getStatus());
   postHash.put("content",content);
   postHash.put("author",authorName);
-  postHash.put("author_url",authorURL);
+  postHash.put("author_url",authorUrl);
   postHash.put("author_email",authorEmail);
   XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
   Object[] xmlParams={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),mCommentId,postHash};
-  Object result;
-  boolean isSaved;
   try {
-    result=client.call("wp.editComment",xmlParams);
-    isSaved=(result != null && Boolean.parseBoolean(result.toString()));
+    Object result=client.call("wp.editComment",xmlParams);
+    boolean isSaved=(result != null && Boolean.parseBoolean(result.toString()));
     if (isSaved) {
       mComment.setAuthorEmail(authorEmail);
-      mComment.setAuthorUrl(authorURL);
-      mComment.setCommentText(content);
+      mComment.setAuthorUrl(authorUrl);
       mComment.setAuthorName(authorName);
+      mComment.setCommentText(content);
       CommentTable.updateComment(mLocalBlogId,mComment);
     }
     return isSaved;
   }
  catch (  XMLRPCException e) {
+    AppLog.e(AppLog.T.COMMENTS,e);
     return false;
   }
 }
