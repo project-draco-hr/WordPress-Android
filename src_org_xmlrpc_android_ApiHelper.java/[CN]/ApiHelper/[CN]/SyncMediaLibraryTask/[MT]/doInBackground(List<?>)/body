@@ -22,7 +22,11 @@
   try {
     results=(Object[])client.call("wp.getMediaLibrary",apiParams);
   }
- catch (  XMLRPCException e) {
+ catch (  ClassCastException cce) {
+    setError(ErrorType.INVALID_RESULT,cce.getMessage(),cce);
+    return 0;
+  }
+catch (  XMLRPCException e) {
     AppLog.e(T.API,e);
     if (e.getMessage().contains("401")) {
       setError(ErrorType.NO_UPLOAD_FILES_CAP,e.getMessage(),e);

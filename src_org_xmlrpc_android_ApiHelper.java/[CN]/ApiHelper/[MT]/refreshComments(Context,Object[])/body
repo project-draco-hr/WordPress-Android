@@ -5,17 +5,23 @@
   String author, postID, comment, status, authorEmail, authorURL, postTitle;
   int commentID;
   Map<Integer,Map<?,?>> allComments=new HashMap<Integer,Map<?,?>>();
-  Map<?,?> contentHash=new HashMap<Object,Object>();
+  Map<?,?> contentHash;
   List<Map<?,?>> dbVector=new Vector<Map<?,?>>();
-  Date d=new Date();
+  Date date;
   Object[] result;
   try {
     result=(Object[])client.call("wp.getComments",commentParams);
   }
- catch (  XMLRPCException e) {
+ catch (  ClassCastException cce) {
+    AppLog.e(T.API,cce);
+    return null;
+  }
+catch (  XMLRPCException e) {
     throw new XMLRPCException(e);
   }
-  if (result.length == 0)   return null;
+  if (result.length == 0) {
+    return null;
+  }
   for (int ctr=0; ctr < result.length; ctr++) {
     Map<Object,Object> dbValues=new HashMap<Object,Object>();
     contentHash=(Map<?,?>)result[ctr];
@@ -25,11 +31,11 @@
     status=contentHash.get("status").toString();
     postID=contentHash.get("post_id").toString();
     commentID=Integer.parseInt(contentHash.get("comment_id").toString());
-    d=(Date)contentHash.get("date_created_gmt");
+    date=(Date)contentHash.get("date_created_gmt");
     authorURL=contentHash.get("author_url").toString();
     authorEmail=contentHash.get("author_email").toString();
     postTitle=contentHash.get("post_title").toString();
-    String formattedDate=getFormattedCommentDate(ctx,d);
+    String formattedDate=getFormattedCommentDate(ctx,date);
     dbValues.put("blogID",String.valueOf(blog.getLocalTableBlogId()));
     dbValues.put("postID",postID);
     dbValues.put("commentID",commentID);
