@@ -28,17 +28,13 @@ default :
 holder.txtStatus.setVisibility(View.GONE);
 break;
 }
+final boolean useSelectionBackground;
 if (mEnableSelection && isItemSelected(position)) {
-convertView.setBackgroundDrawable(mSelectedBackground);
+useSelectionBackground=true;
 if (holder.imgCheckmark.getVisibility() != View.VISIBLE) holder.imgCheckmark.setVisibility(View.VISIBLE);
 }
  else {
-if (mHighlightedCommentId == comment.commentID) {
-convertView.setBackgroundDrawable(mSelectedBackground);
-}
- else {
-convertView.setBackgroundDrawable(null);
-}
+useSelectionBackground=(mHighlightedCommentId == comment.commentID);
 if (holder.imgCheckmark.getVisibility() == View.VISIBLE) holder.imgCheckmark.setVisibility(View.GONE);
 String avatarUrl=comment.getAvatarForDisplay(mAvatarSz);
 if (!TextUtils.isEmpty(avatarUrl)) {
@@ -47,6 +43,12 @@ holder.imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
  else {
 holder.imgAvatar.setImageDrawable(mDefaultAvatar);
 }
+}
+if (useSelectionBackground) {
+convertView.setBackgroundColor(mSelectionColor);
+}
+ else {
+convertView.setBackgroundDrawable(null);
 }
 if (mOnLoadMoreListener != null && position >= getCount() - 1) mOnLoadMoreListener.onLoadMore();
 return convertView;
