@@ -16,12 +16,14 @@
  else   if (object instanceof String) {
     serializer.startTag(null,TYPE_STRING);
     try {
+      serializeTester.text(object.toString());
       serializer.text(object.toString());
     }
  catch (    IllegalArgumentException e) {
       AppLog.e(AppLog.T.EDITOR,"There are characters outside the XML unicode charset as specified by the XML 1.0 standard",e);
       final String noEmojiString=StringUtils.replaceUnicodeSurrogateBlocksWithHTMLEntities((String)object);
       try {
+        serializeTester.text(noEmojiString);
         serializer.text(noEmojiString);
       }
  catch (      Exception exNoEmoji) {
