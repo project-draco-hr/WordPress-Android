@@ -1,0 +1,26 @@
+{
+  if (WordPress.hasValidWPComCredentials(PreferencesActivity.this)) {
+    String username=mSettings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,null);
+    Preference usernamePref=new Preference(this);
+    usernamePref.setTitle(getString(R.string.username));
+    usernamePref.setSummary(username);
+    usernamePref.setSelectable(false);
+    usernamePref.setOrder(order);
+    wpComCategory.addPreference(usernamePref);
+    Preference createWPComBlogPref=new Preference(this);
+    createWPComBlogPref.setTitle(getString(R.string.create_new_blog_wpcom));
+    Intent intent=new Intent(this,NewBlogActivity.class);
+    createWPComBlogPref.setIntent(intent);
+    createWPComBlogPref.setOrder(order + 1);
+    wpComCategory.addPreference(createWPComBlogPref);
+    loadNotifications();
+  }
+ else {
+    Preference signInPref=new Preference(this);
+    signInPref.setTitle(getString(R.string.sign_in));
+    signInPref.setOnPreferenceClickListener(signInPreferenceClickListener);
+    wpComCategory.addPreference(signInPref);
+    PreferenceScreen rootScreen=(PreferenceScreen)findPreference("wp_pref_root");
+    rootScreen.removePreference(mNotificationsGroup);
+  }
+}

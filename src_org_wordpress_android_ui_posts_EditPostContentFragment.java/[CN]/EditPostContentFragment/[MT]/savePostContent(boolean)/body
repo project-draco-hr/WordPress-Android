@@ -1,11 +1,18 @@
 {
   Post post=mActivity.getPost();
-  if (post == null)   return;
+  if (post == null || mContentEditText.getText() == null)   return;
   String title=(mTitleEditText.getText() != null) ? mTitleEditText.getText().toString() : "";
-  String content="";
-  Editable postContentEditable=new SpannableStringBuilder(mContentEditText.getText());
+  String content;
+  Editable postContentEditable;
+  try {
+    postContentEditable=new SpannableStringBuilder(mContentEditText.getText());
+  }
+ catch (  IndexOutOfBoundsException e) {
+    postContentEditable=mContentEditText.getText();
+  }
+  if (postContentEditable == null)   return;
   if (post.isLocalDraft()) {
-    if (android.os.Build.VERSION.SDK_INT >= 14 && postContentEditable != null) {
+    if (android.os.Build.VERSION.SDK_INT >= 14) {
       CharacterStyle[] characterStyles=postContentEditable.getSpans(0,postContentEditable.length(),CharacterStyle.class);
       for (      CharacterStyle characterStyle : characterStyles) {
         if (characterStyle.getClass().getName().equals("android.text.style.SuggestionSpan"))         postContentEditable.removeSpan(characterStyle);

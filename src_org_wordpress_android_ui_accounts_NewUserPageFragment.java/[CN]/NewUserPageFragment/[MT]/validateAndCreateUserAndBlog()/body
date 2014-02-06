@@ -3,8 +3,10 @@
     AlertUtil.showAlert(getActivity(),R.string.no_network_title,R.string.no_network_message);
     return;
   }
-  if (!checkUserData())   return;
-  if (View.VISIBLE == mProgressBarSignIn.getVisibility())   return;
+  if (!isUserDataValid())   return;
+  if (View.VISIBLE == mProgressBarSignIn.getVisibility()) {
+    return;
+  }
   startProgress(getString(R.string.validating_user_data));
   final String siteUrl=mSiteUrlTextField.getText().toString().trim();
   final String email=mEmailTextField.getText().toString().trim();
@@ -32,11 +34,15 @@ break;
 }
 @Override public void onSuccess(JSONObject createSiteResponse){
 endProgress();
+if (hasActivity()) {
 finishThisStuff(username);
+}
 }
 @Override public void onError(int messageId){
 endProgress();
+if (hasActivity()) {
 showError(getString(messageId));
+}
 }
 }
 );

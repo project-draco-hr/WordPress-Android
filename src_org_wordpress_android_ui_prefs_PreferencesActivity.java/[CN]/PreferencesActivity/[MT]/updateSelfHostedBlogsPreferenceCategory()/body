@@ -1,0 +1,14 @@
+{
+  PreferenceCategory blogsCategory=(PreferenceCategory)findPreference("wp_pref_self_hosted_blogs");
+  blogsCategory.removeAll();
+  int order=0;
+  Preference addBlogPreference=new Preference(this);
+  addBlogPreference.setTitle(R.string.add_self_hosted_blog);
+  Intent intentWelcome=new Intent(this,WelcomeActivity.class);
+  intentWelcome.putExtra(WelcomeActivity.START_FRAGMENT_KEY,WelcomeActivity.ADD_SELF_HOSTED_BLOG);
+  addBlogPreference.setIntent(intentWelcome);
+  addBlogPreference.setOrder(order++);
+  blogsCategory.addPreference(addBlogPreference);
+  List<Map<String,Object>> accounts=WordPress.wpDB.getAccountsBy("dotcomFlag=0",null);
+  addAccounts(blogsCategory,accounts,order);
+}

@@ -15,7 +15,11 @@
     try {
       versionResult=client.call("wp.getOptions",vParams);
     }
- catch (    XMLRPCException e) {
+ catch (    ClassCastException cce) {
+      setError(ErrorType.INVALID_RESULT,cce.getMessage(),cce);
+      return false;
+    }
+catch (    XMLRPCException e) {
       setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
       return false;
     }
@@ -33,7 +37,11 @@
     Map<String,Object> userInfos=(HashMap<String,Object>)client.call("wp.getProfile",userParams);
     updateBlogAdmin(userInfos);
   }
- catch (  XMLRPCException e) {
+ catch (  ClassCastException cce) {
+    setError(ErrorType.INVALID_RESULT,cce.getMessage(),cce);
+    return false;
+  }
+catch (  XMLRPCException e) {
     setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
     return false;
   }
