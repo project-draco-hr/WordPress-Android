@@ -4,25 +4,41 @@
   for (  Comment comment : selectedComments) {
     if (comment.getStatusEnum() != newStatus)     updateComments.add(comment);
   }
-  if (updateComments.size() == 0)   return false;
-  if (!NetworkUtils.checkConnection(getActivity()))   return false;
-  getActivity().showDialog(CommentsActivity.ID_DIALOG_MODERATING);
-  CommentActions.OnCommentsModeratedListener listener=new CommentActions.OnCommentsModeratedListener(){
-    @Override public void onCommentsModerated(    final CommentList moderatedComments){
-      if (!hasActivity())       return;
-      finishActionMode();
-      dismissDialog(CommentsActivity.ID_DIALOG_MODERATING);
-      if (moderatedComments.size() > 0) {
-        getCommentAdapter().clearSelectedComments();
-        getCommentAdapter().replaceComments(moderatedComments);
-        if (mOnCommentChangeListener != null)         mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_LIST);
-      }
+  if (updateComments.size() == 0)   return;
+  if (!NetworkUtils.checkConnection(getActivity()))   return;
+  final int dlgId;
+switch (newStatus) {
+case APPROVED:
+    dlgId=CommentsActivity.ID_DIALOG_APPROVING;
+  break;
+case UNAPPROVED:
+dlgId=CommentsActivity.ID_DIALOG_UNAPPROVING;
+break;
+case SPAM:
+dlgId=CommentsActivity.ID_DIALOG_SPAMMING;
+break;
+case TRASH:
+dlgId=CommentsActivity.ID_DIALOG_TRASHING;
+break;
+default :
+return;
+}
+getActivity().showDialog(dlgId);
+CommentActions.OnCommentsModeratedListener listener=new CommentActions.OnCommentsModeratedListener(){
+@Override public void onCommentsModerated(final CommentList moderatedComments){
+if (!hasActivity()) return;
+finishActionMode();
+dismissDialog(dlgId);
+if (moderatedComments.size() > 0) {
+getCommentAdapter().clearSelectedComments();
+getCommentAdapter().replaceComments(moderatedComments);
+if (mOnCommentChangeListener != null) mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_LIST);
+}
  else {
-        ToastUtils.showToast(getActivity(),R.string.error_moderate_comment);
-      }
-    }
-  }
+ToastUtils.showToast(getActivity(),R.string.error_moderate_comment);
+}
+}
+}
 ;
-  CommentActions.moderateComments(WordPress.getCurrentLocalTableBlogId(),updateComments,newStatus,listener);
-  return true;
+CommentActions.moderateComments(WordPress.getCurrentLocalTableBlogId(),updateComments,newStatus,listener);
 }

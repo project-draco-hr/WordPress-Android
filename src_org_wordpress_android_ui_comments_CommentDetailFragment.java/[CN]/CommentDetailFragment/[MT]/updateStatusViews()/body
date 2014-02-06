@@ -1,6 +1,5 @@
 {
   if (!hasActivity() || !hasComment())   return;
-  final int moderationTextResId;
   final int moderationDrawResId;
   final CommentStatus newStatus;
   final int statusTextResId;
@@ -8,35 +7,31 @@
   final boolean enableMarkAsSpam;
 switch (mComment.getStatusEnum()) {
 case APPROVED:
-    moderationTextResId=R.string.unapprove;
-  moderationDrawResId=R.drawable.ic_cab_unapprove;
-newStatus=CommentStatus.UNAPPROVED;
+    moderationDrawResId=R.drawable.ic_cab_unapprove;
+  newStatus=CommentStatus.UNAPPROVED;
 enableMarkAsSpam=true;
-statusTextResId=R.string.approved;
+statusTextResId=R.string.comment_status_approved;
 statusColor=getActivity().getResources().getColor(R.color.blue_extra_dark);
 break;
 case UNAPPROVED:
-moderationTextResId=R.string.approve;
 moderationDrawResId=R.drawable.ic_cab_approve;
 newStatus=CommentStatus.APPROVED;
 enableMarkAsSpam=true;
-statusTextResId=R.string.unapproved;
+statusTextResId=R.string.comment_status_unapproved;
 statusColor=getActivity().getResources().getColor(R.color.orange_medium);
 break;
 case SPAM:
-moderationTextResId=R.string.approve;
 moderationDrawResId=R.drawable.ic_cab_approve;
 newStatus=CommentStatus.APPROVED;
 enableMarkAsSpam=false;
-statusTextResId=R.string.spam;
+statusTextResId=R.string.comment_status_spam;
 statusColor=Color.RED;
 break;
 case TRASH:
-moderationTextResId=R.string.approve;
 moderationDrawResId=R.drawable.ic_cab_approve;
 newStatus=CommentStatus.APPROVED;
 enableMarkAsSpam=false;
-statusTextResId=R.string.deleted;
+statusTextResId=R.string.comment_status_trash;
 statusColor=Color.RED;
 break;
 default :
@@ -54,27 +49,28 @@ AniUtils.fadeIn(mTxtStatus);
 mTxtStatus.setVisibility(View.GONE);
 }
 if (canModerate()) {
-mTxtBtnModerate.setText(moderationTextResId);
-setTextDrawable(mTxtBtnModerate,moderationDrawResId,true);
-mTxtBtnModerate.setOnClickListener(new View.OnClickListener(){
+setImageDrawable(mImgModerateComment,moderationDrawResId,true);
+mImgModerateComment.setOnClickListener(new View.OnClickListener(){
 @Override public void onClick(View v){
 moderateComment(newStatus);
 }
 }
 );
-mTxtBtnModerate.setVisibility(View.VISIBLE);
+mImgModerateComment.setVisibility(View.VISIBLE);
 }
  else {
-mTxtBtnModerate.setVisibility(View.GONE);
+mImgModerateComment.setVisibility(View.GONE);
 }
 if (canMarkAsSpam()) {
-mTxtBtnSpam.setVisibility(View.VISIBLE);
-mTxtBtnSpam.setEnabled(enableMarkAsSpam);
-setTextDrawable(mTxtBtnSpam,R.drawable.ic_cab_spam,enableMarkAsSpam);
+mImgSpamComment.setVisibility(View.VISIBLE);
+mImgSpamComment.setEnabled(enableMarkAsSpam);
+setImageDrawable(mImgSpamComment,R.drawable.ic_cab_spam,enableMarkAsSpam);
 }
  else {
-mTxtBtnSpam.setVisibility(View.GONE);
+mImgSpamComment.setVisibility(View.GONE);
 }
+mImgTrashComment.setVisibility(canTrash() ? View.VISIBLE : View.GONE);
+mImgEditComment.setVisibility(canEdit() ? View.VISIBLE : View.GONE);
 if (mLayoutButtons.getVisibility() != View.VISIBLE && (canMarkAsSpam() || canModerate())) {
 mLayoutButtons.clearAnimation();
 AniUtils.flyIn(mLayoutButtons);
