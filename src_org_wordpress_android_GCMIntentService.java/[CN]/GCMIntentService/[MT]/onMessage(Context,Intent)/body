@@ -42,11 +42,6 @@
     WordPress.wpDB.addNote(note,true);
     refreshNotes();
   }
-  boolean md5GeneratedNoteId=false;
-  if (note_id == null && note != null) {
-    note_id=String.valueOf(WordPressDB.generateIdFor(note));
-    md5GeneratedNoteId=true;
-  }
   long thisTime=System.currentTimeMillis();
   if (mPreviousNoteId != null && mPreviousNoteId.equals(note_id)) {
     long seconds=TimeUnit.MILLISECONDS.toSeconds(thisTime - mPreviousNoteTime);
@@ -87,7 +82,6 @@
   resultIntent.putExtra(NotificationsActivity.FROM_NOTIFICATION_EXTRA,true);
   if (activeNotificationsMap.size() <= 1) {
     mBuilder=new NotificationCompat.Builder(this).setSmallIcon(R.drawable.notification_icon).setContentTitle(title).setContentText(message).setTicker(message).setAutoCancel(true).setStyle(new NotificationCompat.BigTextStyle().bigText(message));
-    if (md5GeneratedNoteId)     resultIntent.putExtra(NotificationsActivity.MD5_NOTE_ID_EXTRA,note_id);
     if (note_id != null)     resultIntent.putExtra(NotificationsActivity.NOTE_ID_EXTRA,note_id);
     String noteType=extras.getString("type");
     if (noteType != null && noteType.equals("c")) {
