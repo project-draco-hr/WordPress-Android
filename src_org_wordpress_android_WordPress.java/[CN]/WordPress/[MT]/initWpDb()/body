@@ -1,0 +1,17 @@
+{
+  if (!createAndVerifyWpDb()) {
+    AppLog.e(T.DB,"Invalid database, sign out user and delete database");
+    SharedPreferences.Editor editor=PreferenceManager.getDefaultSharedPreferences(this).edit();
+    currentBlog=null;
+    editor.remove(WordPress.WPCOM_USERNAME_PREFERENCE);
+    editor.remove(WordPress.WPCOM_PASSWORD_PREFERENCE);
+    editor.remove(WordPress.ACCESS_TOKEN_PREFERENCE);
+    editor.commit();
+    if (wpDB != null) {
+      wpDB.deleteAllAccounts();
+      wpDB.updateLastBlogId(-1);
+      wpDB.deleteDatabase(this);
+    }
+    wpDB=new WordPressDB(this);
+  }
+}
