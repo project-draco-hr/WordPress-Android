@@ -1,0 +1,38 @@
+{
+  final Blog blog=WordPress.getBlog(accountId);
+  if (blog == null || comments == null || comments.size() == 0) {
+    if (actionListener != null)     actionListener.onCommentsModerated(new CommentList());
+    return;
+  }
+  final CommentList deletedComments=new CommentList();
+  final int localBlogId=blog.getLocalTableBlogId();
+  final int remoteBlogId=blog.getRemoteBlogId();
+  final Handler handler=new Handler();
+  new Thread(){
+    @Override public void run(){
+      XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+      for (      Comment comment : comments) {
+        Object[] params={remoteBlogId,blog.getUsername(),blog.getPassword(),comment.commentID};
+        Object result;
+        try {
+          result=client.call("wp.deleteComment",params);
+          boolean success=(result != null && Boolean.parseBoolean(result.toString()));
+          if (success)           deletedComments.add(comment);
+        }
+ catch (        final XMLRPCException e) {
+          AppLog.e(T.COMMENTS,e.getMessage(),e);
+        }
+      }
+      CommentTable.deleteComments(localBlogId,deletedComments);
+      if (actionListener != null) {
+        handler.post(new Runnable(){
+          @Override public void run(){
+            actionListener.onCommentsModerated(deletedComments);
+          }
+        }
+);
+      }
+    }
+  }
+.start();
+}

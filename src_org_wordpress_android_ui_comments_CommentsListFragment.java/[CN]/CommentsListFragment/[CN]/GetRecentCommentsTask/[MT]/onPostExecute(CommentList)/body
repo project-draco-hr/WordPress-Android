@@ -1,0 +1,17 @@
+{
+  mIsRetrievingComments=false;
+  if (!hasActivity())   return;
+  if (isLoadingMore) {
+    hideLoadingProgress();
+  }
+ else {
+    mOnAnimateRefreshButton.onAnimateRefreshButton(false);
+  }
+  if (isCancelled())   return;
+  mCanLoadMoreComments=(comments != null && comments.size() > 0);
+  if (comments == null) {
+    if (isError && !getActivity().isFinishing())     ToastUtils.showToast(getActivity(),R.string.error_refresh_comments,ToastUtils.Duration.LONG);
+    return;
+  }
+  if (comments.size() > 0)   getCommentAdapter().loadComments();
+}

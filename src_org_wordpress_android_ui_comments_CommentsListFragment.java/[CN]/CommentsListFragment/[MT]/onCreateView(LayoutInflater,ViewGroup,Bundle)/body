@@ -1,75 +1,8 @@
 {
-  View v=inflater.inflate(R.layout.view_comments_fragment,container,false);
-  switcher=new ViewSwitcher(getActivity().getApplicationContext());
-  Button footer=(Button)View.inflate(getActivity().getApplicationContext(),R.layout.list_footer_btn,null);
-  footer.setText(getResources().getText(R.string.load_more) + " " + getResources().getText(R.string.tab_comments));
-  footer.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      switcher.showNext();
-      refreshComments(true);
-    }
-  }
-);
-  mFooterSpacer=new View(getActivity());
-  mFooterSpacer.setLayoutParams(new AbsListView.LayoutParams(10,0));
-  View progress=View.inflate(getActivity().getApplicationContext(),R.layout.list_footer_progress,null);
-  switcher.addView(footer);
-  switcher.addView(progress);
-  Button deleteComments=(Button)v.findViewById(R.id.bulkDeleteComment);
-  deleteComments.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      getActivity().showDialog(ID_DIALOG_DELETING);
-      new Thread(){
-        public void run(){
-          Looper.prepare();
-          deleteComments();
-        }
-      }
-.start();
-    }
-  }
-);
-  Button approveComments=(Button)v.findViewById(R.id.bulkApproveComment);
-  approveComments.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      getActivity().showDialog(ID_DIALOG_MODERATING);
-      new Thread(){
-        public void run(){
-          Looper.prepare();
-          moderateComments(CommentStatus.APPROVED);
-        }
-      }
-.start();
-    }
-  }
-);
-  Button unapproveComments=(Button)v.findViewById(R.id.bulkUnapproveComment);
-  unapproveComments.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      getActivity().showDialog(ID_DIALOG_MODERATING);
-      new Thread(){
-        public void run(){
-          Looper.prepare();
-          moderateComments(CommentStatus.UNAPPROVED);
-        }
-      }
-.start();
-    }
-  }
-);
-  Button spamComments=(Button)v.findViewById(R.id.bulkMarkSpam);
-  spamComments.setOnClickListener(new Button.OnClickListener(){
-    public void onClick(    View v){
-      getActivity().showDialog(ID_DIALOG_MODERATING);
-      new Thread(){
-        public void run(){
-          Looper.prepare();
-          moderateComments(CommentStatus.SPAM);
-        }
-      }
-.start();
-    }
-  }
-);
-  return v;
+  View view=inflater.inflate(R.layout.view_comments_fragment,container,false);
+  mListView=(ListView)view.findViewById(android.R.id.list);
+  mListView.setEmptyView(view.findViewById(android.R.id.empty));
+  mProgressLoadMore=(ProgressBar)view.findViewById(R.id.progress_loading);
+  mProgressLoadMore.setVisibility(View.GONE);
+  return view;
 }

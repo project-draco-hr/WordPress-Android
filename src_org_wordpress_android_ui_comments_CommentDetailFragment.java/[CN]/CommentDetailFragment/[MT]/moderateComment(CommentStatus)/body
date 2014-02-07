@@ -1,46 +1,53 @@
 {
   if (!hasActivity() || !hasComment() || mIsModeratingComment)   return;
   if (!NetworkUtils.checkConnection(getActivity()))   return;
-  mBtnModerate.setEnabled(false);
-  mBtnSpam.setEnabled(false);
-  mLayoutButtons.clearAnimation();
-  AniUtils.flyOut(mLayoutButtons);
-  if (mTxtStatus.getVisibility() == View.VISIBLE)   AniUtils.fadeOut(mTxtStatus);
-  final int msgResId;
-  final MessageBarType msgType;
+  final int dlgId;
 switch (newStatus) {
 case APPROVED:
-    msgResId=R.string.comment_approved;
-  msgType=MessageBarType.INFO;
-break;
+    dlgId=CommentDialogs.ID_COMMENT_DLG_APPROVING;
+  break;
 case UNAPPROVED:
-msgResId=R.string.comment_unapproved;
-msgType=MessageBarType.ALERT;
+dlgId=CommentDialogs.ID_COMMENT_DLG_UNAPPROVING;
 break;
 case SPAM:
-msgResId=R.string.comment_spammed;
-msgType=MessageBarType.ALERT;
+dlgId=CommentDialogs.ID_COMMENT_DLG_SPAMMING;
+break;
+case TRASH:
+dlgId=CommentDialogs.ID_COMMENT_DLG_TRASHING;
 break;
 default :
-msgResId=R.string.comment_moderated;
-msgType=MessageBarType.INFO;
-break;
+return;
 }
-MessageBarUtils.showMessageBar(getActivity(),getString(msgResId),msgType,null);
+getActivity().showDialog(dlgId);
+mLayoutButtons.setEnabled(false);
+mLayoutButtons.clearAnimation();
+AniUtils.flyOut(mLayoutButtons);
+if (mTxtStatus.getVisibility() == View.VISIBLE) {
+mTxtStatus.clearAnimation();
+AniUtils.startAnimation(mTxtStatus,R.anim.fade_out);
+mTxtStatus.setVisibility(View.INVISIBLE);
+}
 CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
 @Override public void onActionResult(boolean succeeded){
 mIsModeratingComment=false;
-if (!hasActivity()) return;
-mBtnModerate.setEnabled(true);
-mBtnSpam.setEnabled(true);
+if (succeeded && mOnCommentChangeListener != null) mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL);
+if (hasActivity()) {
+dismissDialog(dlgId);
+mLayoutButtons.setEnabled(true);
 if (succeeded) {
 mComment.setStatus(CommentStatus.toString(newStatus));
-if (mChangeListener != null) mChangeListener.onCommentModerated(mComment,mNote);
 }
  else {
 ToastUtils.showToast(getActivity(),R.string.error_moderate_comment,ToastUtils.Duration.LONG);
 }
+if (newStatus == CommentStatus.TRASH) {
+clearComment();
+closeThisFragment();
+}
+ else {
 updateStatusViews();
+}
+}
 }
 }
 ;

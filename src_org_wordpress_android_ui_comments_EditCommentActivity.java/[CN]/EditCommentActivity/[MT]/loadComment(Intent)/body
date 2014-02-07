@@ -1,0 +1,33 @@
+{
+  if (intent == null)   return false;
+  mLocalBlogId=intent.getIntExtra(ARG_LOCAL_BLOG_ID,0);
+  mCommentId=intent.getIntExtra(ARG_COMMENT_ID,0);
+  mComment=CommentTable.getComment(mLocalBlogId,mCommentId);
+  if (mComment == null)   return false;
+  final EditText editAuthorName=(EditText)this.findViewById(R.id.author_name);
+  editAuthorName.setText(mComment.getAuthorName());
+  final EditText editAuthorEmail=(EditText)this.findViewById(R.id.author_email);
+  editAuthorEmail.setText(mComment.getAuthorEmail());
+  final EditText editAuthorUrl=(EditText)this.findViewById(R.id.author_url);
+  editAuthorUrl.setText(mComment.getAuthorUrl());
+  final EditText editContent=(EditText)this.findViewById(R.id.comment_content);
+  editContent.setText(mComment.getCommentText());
+  editContent.addTextChangedListener(new TextWatcher(){
+    @Override public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
+    }
+    @Override public void onTextChanged(    CharSequence s,    int start,    int before,    int count){
+    }
+    @Override public void afterTextChanged(    Editable s){
+      boolean hasError=(editContent.getError() != null);
+      boolean hasText=(s != null && s.length() > 0);
+      if (!hasText && !hasError) {
+        editContent.setError(getString(R.string.content_required));
+      }
+ else       if (hasText && hasError) {
+        editContent.setError(null);
+      }
+    }
+  }
+);
+  return true;
+}
