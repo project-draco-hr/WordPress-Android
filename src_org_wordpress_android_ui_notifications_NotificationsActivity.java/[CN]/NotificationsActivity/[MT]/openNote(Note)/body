@@ -3,10 +3,7 @@
   if (note.isUnread()) {
     restClient.markNoteAsRead(note,new RestRequest.Listener(){
       @Override public void onResponse(      JSONObject response){
-        Activity notificationsActivity=NotificationsActivity.this;
-        if (notificationsActivity == null || notificationsActivity.isFinishing()) {
-          return;
-        }
+        if (isFinishing())         return;
         final NotesAdapter notesAdapter=mNotesList.getNotesAdapter();
         note.setUnreadCount("0");
         if (notesAdapter.getPosition(note) < 0) {

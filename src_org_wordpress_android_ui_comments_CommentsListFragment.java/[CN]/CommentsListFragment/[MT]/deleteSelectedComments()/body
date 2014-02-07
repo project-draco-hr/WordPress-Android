@@ -1,12 +1,12 @@
 {
-  if (!NetworkUtils.checkConnection(getActivity()))   return false;
+  if (!NetworkUtils.checkConnection(getActivity()))   return;
   final CommentList selectedComments=getCommentAdapter().getSelectedComments();
-  getActivity().showDialog(CommentsActivity.ID_DIALOG_TRASHING);
+  getActivity().showDialog(CommentDialogs.ID_COMMENT_DLG_TRASHING);
   CommentActions.OnCommentsModeratedListener listener=new CommentActions.OnCommentsModeratedListener(){
     @Override public void onCommentsModerated(    final CommentList deletedComments){
       if (!hasActivity())       return;
       finishActionMode();
-      dismissDialog(CommentsActivity.ID_DIALOG_TRASHING);
+      dismissDialog(CommentDialogs.ID_COMMENT_DLG_TRASHING);
       if (deletedComments.size() > 0) {
         getCommentAdapter().clearSelectedComments();
         getCommentAdapter().deleteComments(deletedComments);
@@ -19,5 +19,4 @@
   }
 ;
   CommentActions.moderateComments(WordPress.getCurrentLocalTableBlogId(),selectedComments,CommentStatus.TRASH,listener);
-  return true;
 }
