@@ -1,12 +1,6 @@
 {
   this.context=ctx;
-  try {
-    db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
-  }
- catch (  SQLiteException e) {
-    db=null;
-    return;
-  }
+  db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
   db.execSQL(CREATE_TABLE_SETTINGS);
   db.execSQL(CREATE_TABLE_POSTS);
   db.execSQL(CREATE_TABLE_CATEGORIES);
@@ -15,14 +9,13 @@
   db.execSQL(CREATE_TABLE_THEMES);
   db.execSQL(CREATE_TABLE_NOTES);
   CommentTable.createTables(db);
-  try {
-    int currentVersion=db.getVersion();
+  int currentVersion=db.getVersion();
 switch (currentVersion) {
 case 0:
-      currentVersion++;
+    currentVersion++;
 case 1:
-    db.execSQL(ADD_BLOGID);
-  db.execSQL(UPDATE_BLOGID);
+  db.execSQL(ADD_BLOGID);
+db.execSQL(UPDATE_BLOGID);
 db.execSQL(ADD_LOCATION_FLAG);
 db.execSQL(ADD_DOTCOM_USERNAME);
 db.execSQL(ADD_DOTCOM_PASSWORD);
@@ -86,8 +79,4 @@ CommentTable.reset(db);
 currentVersion++;
 }
 db.setVersion(DATABASE_VERSION);
-}
- catch (SQLException e) {
-e.printStackTrace();
-}
 }
