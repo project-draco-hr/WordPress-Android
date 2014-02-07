@@ -12,18 +12,24 @@
   hPost.put("post_id","");
   hPost.put("number",30);
   Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),hPost};
-  Object[] result=null;
+  Object[] result;
   try {
     result=(Object[])client.call("wp.getComments",params);
   }
- catch (  XMLRPCException e) {
+ catch (  ClassCastException cce) {
+    AppLog.e(T.API,cce);
+    result=null;
+  }
+catch (  XMLRPCException e) {
+    AppLog.e(T.API,e);
+    result=null;
   }
   if (result != null) {
     if (result.length > 0) {
       String author, postID, commentID, comment, status, authorEmail, authorURL, postTitle;
-      Map<Object,Object> contentHash=new HashMap<Object,Object>();
+      Map<Object,Object> contentHash;
       List<Map<String,String>> dbVector=new Vector<Map<String,String>>();
-      Date d=new Date();
+      Date date;
       for (int ctr=0; ctr < result.length; ctr++) {
         Map<String,String> dbValues=new HashMap<String,String>();
         contentHash=(Map<Object,Object>)result[ctr];
@@ -32,18 +38,18 @@
         status=contentHash.get("status").toString();
         postID=contentHash.get("post_id").toString();
         commentID=contentHash.get("comment_id").toString();
-        d=(Date)contentHash.get("date_created_gmt");
+        date=(Date)contentHash.get("date_created_gmt");
         authorURL=contentHash.get("author_url").toString();
         authorEmail=contentHash.get("author_email").toString();
         postTitle=contentHash.get("post_title").toString();
-        String formattedDate=d.toString();
+        String formattedDate=date.toString();
         try {
           int flags=0;
           flags|=DateUtils.FORMAT_SHOW_DATE;
           flags|=DateUtils.FORMAT_ABBREV_MONTH;
           flags|=DateUtils.FORMAT_SHOW_YEAR;
           flags|=DateUtils.FORMAT_SHOW_TIME;
-          formattedDate=DateUtils.formatDateTime(ctx,d.getTime(),flags);
+          formattedDate=DateUtils.formatDateTime(ctx,date.getTime(),flags);
         }
  catch (        Exception e) {
         }
