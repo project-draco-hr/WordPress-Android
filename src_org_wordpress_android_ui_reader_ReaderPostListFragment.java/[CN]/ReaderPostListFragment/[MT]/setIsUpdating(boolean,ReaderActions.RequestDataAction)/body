@@ -4,7 +4,14 @@
   mIsUpdating=isUpdating;
 switch (updateAction) {
 case LOAD_NEWER:
-    if (getActivity() instanceof ReaderActivity)     ((ReaderActivity)getActivity()).setIsUpdating(isUpdating);
+    if (mRefreshMenuItem != null && getActivity() instanceof WPActionBarActivity) {
+      if (isUpdating) {
+        ((WPActionBarActivity)getActivity()).startAnimatingRefreshButton(mRefreshMenuItem);
+      }
+ else {
+        ((WPActionBarActivity)getActivity()).stopAnimatingRefreshButton(mRefreshMenuItem);
+      }
+    }
   break;
 case LOAD_OLDER:
 if (isUpdating) {
