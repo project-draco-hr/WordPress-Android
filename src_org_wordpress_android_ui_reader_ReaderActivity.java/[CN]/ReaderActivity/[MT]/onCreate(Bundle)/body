@@ -1,12 +1,16 @@
 {
+  if (isFullScreenSupported())   ReaderFullScreenUtils.enableActionBarOverlay(this);
   super.onCreate(savedInstanceState);
-  if (isFullScreenSupported())   enableActionBarOverlay();
   setContentView(R.layout.reader_activity_main);
-  getSupportActionBar().setDisplayShowTitleEnabled(false);
-  setSupportProgressBarVisibility(false);
   createMenuDrawer(R.layout.reader_activity_main);
   if (savedInstanceState != null) {
     mHasPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);
     mHasPerformedPurge=savedInstanceState.getBoolean(KEY_HAS_PURGED);
   }
+  getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener(){
+    @Override public void onBackStackChanged(){
+      onRequestFullScreen(false);
+    }
+  }
+);
 }

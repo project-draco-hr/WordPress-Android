@@ -1,36 +1,38 @@
 {
   super.onActivityResult(requestCode,resultCode,data);
   boolean isResultOK=(resultCode == Activity.RESULT_OK);
-  final ReaderPostListFragment postListFragment=getPostListFragment();
+  final ReaderPostListFragment listFragment=getPostListFragment();
+  final ReaderPostDetailFragment detailFragment=getPostDetailFragment();
 switch (requestCode) {
 case Constants.INTENT_READER_TAGS:
-    if (isResultOK && postListFragment != null && data != null) {
+    if (isResultOK && listFragment != null && data != null) {
       if (data.getBooleanExtra(ReaderTagActivity.KEY_TAGS_CHANGED,false)) {
-        postListFragment.reloadTags();
+        listFragment.reloadTags();
         String lastAddedTag=data.getStringExtra(ReaderTagActivity.KEY_LAST_ADDED_TAG);
-        if (!TextUtils.isEmpty(lastAddedTag))         postListFragment.setCurrentTag(lastAddedTag);
+        if (!TextUtils.isEmpty(lastAddedTag))         listFragment.setCurrentTag(lastAddedTag);
       }
     }
   break;
 case Constants.INTENT_READER_POST_DETAIL:
-if (isResultOK && postListFragment != null && data != null) {
+if (isResultOK && listFragment != null && data != null) {
   long blogId=data.getLongExtra(ReaderPostDetailActivity.ARG_BLOG_ID,0);
   long postId=data.getLongExtra(ReaderPostDetailActivity.ARG_POST_ID,0);
   boolean isBlogFollowStatusChanged=data.getBooleanExtra(ReaderPostDetailActivity.ARG_BLOG_FOLLOW_STATUS_CHANGED,false);
   ReaderPost updatedPost=ReaderPostTable.getPost(blogId,postId);
   if (updatedPost != null) {
-    postListFragment.reloadPost(updatedPost);
+    listFragment.reloadPost(updatedPost);
     if (isBlogFollowStatusChanged) {
-      postListFragment.updateFollowStatusOnPostsForBlog(blogId,updatedPost.isFollowedByCurrentUser);
+      listFragment.updateFollowStatusOnPostsForBlog(blogId,updatedPost.isFollowedByCurrentUser);
     }
   }
 }
 break;
 case Constants.INTENT_READER_REBLOG:
-if (isResultOK && postListFragment != null && data != null) {
+if (isResultOK && data != null) {
 long blogId=data.getLongExtra(ReaderReblogActivity.ARG_BLOG_ID,0);
 long postId=data.getLongExtra(ReaderReblogActivity.ARG_POST_ID,0);
-postListFragment.reloadPost(ReaderPostTable.getPost(blogId,postId));
+if (listFragment != null) listFragment.reloadPost(ReaderPostTable.getPost(blogId,postId));
+if (detailFragment != null) detailFragment.reloadPost();
 }
 break;
 }

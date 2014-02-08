@@ -1,10 +1,11 @@
 {
-  if (ReaderActivity.isFullScreenSupported()) {
+  if (isFullScreenSupported()) {
     listView.setOnTouchListener(new View.OnTouchListener(){
       @Override public boolean onTouch(      View v,      MotionEvent event){
         int action=event.getAction() & MotionEvent.ACTION_MASK;
         final float y=event.getY();
         final int yDiff=(int)(y - mLastMotionY);
+        final boolean isFullScreen=isFullScreen();
         mLastMotionY=y;
 switch (action) {
 case MotionEvent.ACTION_MOVE:
@@ -12,17 +13,17 @@ case MotionEvent.ACTION_MOVE:
             if (mIsAddCommentBoxShowing) {
               return false;
             }
- else             if (yDiff < -MOVE_MIN_DIFF && !mIsFullScreen && canScrollDown(mListView)) {
+ else             if (yDiff < -MOVE_MIN_DIFF && !isFullScreen && ReaderFullScreenUtils.canScrollDown(mListView)) {
               setIsFullScreen(true);
               return true;
             }
- else             if (mIsFullScreen && !canScrollUp(mListView)) {
+ else             if (isFullScreen && !ReaderFullScreenUtils.canScrollUp(mListView)) {
               setIsFullScreen(false);
             }
- else             if (mIsFullScreen && !canScrollDown(mListView)) {
+ else             if (isFullScreen && !ReaderFullScreenUtils.canScrollDown(mListView)) {
               setIsFullScreen(false);
             }
- else             if (yDiff > MOVE_MIN_DIFF && mIsFullScreen) {
+ else             if (yDiff > MOVE_MIN_DIFF && isFullScreen) {
               setIsFullScreen(false);
               return true;
             }
