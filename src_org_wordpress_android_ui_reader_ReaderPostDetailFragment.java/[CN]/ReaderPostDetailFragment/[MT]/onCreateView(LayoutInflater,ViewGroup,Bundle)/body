@@ -1,0 +1,41 @@
+{
+  final View view=inflater.inflate(R.layout.reader_activity_post_detail,container,false);
+  mListView=(ListView)view.findViewById(android.R.id.list);
+  setupListView(mListView);
+  mListView.setVisibility(View.INVISIBLE);
+  if (ReaderActivity.isFullScreenSupported()) {
+    ReaderActivity.addListViewHeader(container.getContext(),mListView);
+  }
+  ViewGroup headerDetail=(ViewGroup)inflater.inflate(R.layout.reader_listitem_post_detail,mListView,false);
+  mListView.addHeaderView(headerDetail,null,false);
+  mCommentFooter=(ViewGroup)inflater.inflate(R.layout.reader_footer_progress,mListView,false);
+  mCommentFooter.setVisibility(View.GONE);
+  mCommentFooter.setBackgroundColor(getResources().getColor(R.color.grey_extra_light));
+  mProgressFooter=(ProgressBar)mCommentFooter.findViewById(R.id.progress_footer);
+  mProgressFooter.setVisibility(View.INVISIBLE);
+  mListView.addFooterView(mCommentFooter);
+  mLayoutIcons=(ViewGroup)view.findViewById(R.id.layout_actions);
+  mLayoutLikes=(ViewGroup)view.findViewById(R.id.layout_likes);
+  mWebView=(WebView)view.findViewById(R.id.webView);
+  mWebView.getSettings().setJavaScriptEnabled(false);
+  mWebView.getSettings().setUserAgentString(Constants.USER_AGENT);
+  mWebView.setOnTouchListener(new View.OnTouchListener(){
+    public boolean onTouch(    View v,    MotionEvent event){
+      if (event.getAction() == MotionEvent.ACTION_UP) {
+        HitTestResult hr=((WebView)v).getHitTestResult();
+        if (hr != null && (hr.getType() == HitTestResult.IMAGE_TYPE || hr.getType() == HitTestResult.SRC_IMAGE_ANCHOR_TYPE)) {
+          String imageUrl=hr.getExtra();
+          if (imageUrl == null)           return false;
+          if (imageUrl.startsWith("file:"))           return false;
+          if (mVideoThumbnailUrls.contains(imageUrl))           return false;
+          if (imageUrl.contains("videos.files."))           return false;
+          showPhotoViewer(imageUrl);
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+);
+  return view;
+}

@@ -1,0 +1,35 @@
+{
+  final ViewGroup container=getContainerView();
+  final EditText editComment=(EditText)container.findViewById(R.id.edit_comment);
+  final String commentText=EditTextUtils.getText(editComment);
+  if (TextUtils.isEmpty(commentText))   return;
+  hideAddCommentBox();
+  final long fakeCommentId=ReaderCommentActions.generateFakeCommentId();
+  mIsSubmittingComment=true;
+  ReaderActions.CommentActionListener actionListener=new ReaderActions.CommentActionListener(){
+    @Override public void onActionResult(    boolean succeeded,    ReaderComment newComment){
+      mIsSubmittingComment=false;
+      if (!hasActivity())       return;
+      if (succeeded) {
+        getCommentAdapter().setHighlightCommentId(0,false);
+        getCommentAdapter().replaceComment(fakeCommentId,newComment);
+        getListView().invalidateViews();
+      }
+ else {
+        editComment.setText(commentText);
+        showAddCommentBox(replyToCommentId);
+        getCommentAdapter().removeComment(fakeCommentId);
+        ToastUtils.showToast(getActivity(),R.string.reader_toast_err_comment_failed,ToastUtils.Duration.LONG);
+      }
+    }
+  }
+;
+  final ReaderComment newComment=ReaderCommentActions.submitPostComment(mPost,fakeCommentId,commentText,replyToCommentId,actionListener);
+  if (newComment != null) {
+    mIsPostChanged=true;
+    editComment.setText(null);
+    getCommentAdapter().setHighlightCommentId(newComment.commentId,true);
+    getCommentAdapter().addComment(newComment);
+    scrollToCommentId(fakeCommentId);
+  }
+}

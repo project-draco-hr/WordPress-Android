@@ -1,0 +1,18 @@
+{
+  final ProgressBar progress=(ProgressBar)getContainerView().findViewById(R.id.progress_loading);
+  progress.setVisibility(View.VISIBLE);
+  progress.bringToFront();
+  ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      progress.setVisibility(View.GONE);
+      if (succeeded) {
+        showPost();
+      }
+ else {
+        postFailed();
+      }
+    }
+  }
+;
+  ReaderPostActions.requestPost(mBlogId,mPostId,actionListener);
+}
