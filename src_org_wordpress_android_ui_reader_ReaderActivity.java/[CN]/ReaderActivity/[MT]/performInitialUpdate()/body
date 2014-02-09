@@ -1,11 +1,15 @@
 {
   if (!NetworkUtils.isNetworkAvailable(this))   return;
   mHasPerformedInitialUpdate=true;
+  ReaderPostListFragment listFragment=getPostListFragment();
+  final boolean animateRefresh=(listFragment != null && ReaderTagTable.isEmpty());
+  if (animateRefresh && listFragment != null)   listFragment.animateRefreshButton(true);
   ReaderActions.UpdateResultListener listener=new ReaderActions.UpdateResultListener(){
     @Override public void onUpdateResult(    UpdateResult result){
-      if (result == UpdateResult.CHANGED) {
-        ReaderPostListFragment fragment=getPostListFragment();
-        if (fragment != null)         fragment.refreshTags();
+      ReaderPostListFragment listFragment=getPostListFragment();
+      if (listFragment != null) {
+        if (animateRefresh)         listFragment.animateRefreshButton(false);
+        if (result == UpdateResult.CHANGED)         listFragment.refreshTags();
       }
       AppLog.i(T.READER,"updating current user");
       ReaderUserActions.updateCurrentUser(null);

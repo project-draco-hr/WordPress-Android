@@ -83,23 +83,10 @@
     txtAuthorName.setOnClickListener(clickListener);
     imgAvatar.setOnClickListener(clickListener);
   }
-  mWebView.setWebViewClient(new WebViewClient(){
-    @Override public void onPageFinished(    WebView view,    String url){
-      if (mWebView.getVisibility() != View.VISIBLE)       mWebView.setVisibility(View.VISIBLE);
-    }
-    @Override public boolean shouldOverrideUrlLoading(    WebView view,    String url){
-      if (view.getVisibility() == View.VISIBLE) {
-        ReaderActivityLauncher.openUrl(getActivity(),url);
-        return true;
-      }
- else {
-        return false;
-      }
-    }
-  }
-);
+  mWebView.setWebViewClient(readerWebViewClient);
   new Handler().postDelayed(new Runnable(){
     @Override public void run(){
+      if (getListView().getAdapter() == null)       getListView().setAdapter(getCommentAdapter());
       if (mWebView.getVisibility() != View.VISIBLE) {
         mWebView.setVisibility(View.VISIBLE);
         AppLog.w(T.READER,"forced webView to appear before page finished");
@@ -109,7 +96,6 @@
 ,WEBVIEW_DELAY_MS);
   mWebView.loadDataWithBaseURL(null,postHtml,"text/html","UTF-8",null);
   mLayoutIcons.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
-  if (!hasCommentAdapter())   getListView().setAdapter(getCommentAdapter());
   refreshLikes(false);
   refreshComments();
   if (!mHasAlreadyUpdatedPost) {

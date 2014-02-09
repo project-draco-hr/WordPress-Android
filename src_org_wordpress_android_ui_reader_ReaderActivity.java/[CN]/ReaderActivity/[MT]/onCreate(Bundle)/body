@@ -3,18 +3,6 @@
   super.onCreate(savedInstanceState);
   setContentView(R.layout.reader_activity_main);
   createMenuDrawer(R.layout.reader_activity_main);
-  getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener(){
-    @Override public void onBackStackChanged(){
-      if (isFullScreen())       onRequestFullScreen(false);
-      int entryCount=getSupportFragmentManager().getBackStackEntryCount();
-      mMenuDrawer.setDrawerIndicatorEnabled(entryCount <= 1);
-      if (entryCount > 0) {
-        Fragment fragment=getSupportFragmentManager().getFragments().get(entryCount - 1);
-        setupActionBarForFragment(fragment);
-      }
-    }
-  }
-);
   getSupportActionBar().setListNavigationCallbacks(getActionBarTagAdapter(),this);
   if (savedInstanceState == null) {
     final ReaderFragmentType fragmentType;
@@ -26,10 +14,13 @@
     }
 switch (fragmentType) {
 case POST_LIST:
-      showPostListFragment();
-    break;
+      String tagName=getIntent().getStringExtra(ReaderPostListFragment.KEY_TAG_NAME);
+    if (TextUtils.isEmpty(tagName))     tagName=UserPrefs.getReaderTag();
+  if (TextUtils.isEmpty(tagName) || !ReaderTagTable.tagExists(tagName))   tagName=ReaderTag.TAG_NAME_DEFAULT;
+showPostListFragment(tagName);
+break;
 case POST_DETAIL:
-  long blogId=getIntent().getLongExtra(ReaderPostDetailFragment.ARG_BLOG_ID,0);
+long blogId=getIntent().getLongExtra(ReaderPostDetailFragment.ARG_BLOG_ID,0);
 long postId=getIntent().getLongExtra(ReaderPostDetailFragment.ARG_POST_ID,0);
 showPostDetailFragment(blogId,postId);
 break;

@@ -1,5 +1,11 @@
 {
-  super.onBackPressed();
-  int entryCount=getSupportFragmentManager().getBackStackEntryCount();
-  if (entryCount == 0)   finish();
+  Fragment listFragment=getPostListFragment();
+  Fragment detailFragment=getPostDetailFragment();
+  if (listFragment != null && detailFragment != null) {
+    getSupportFragmentManager().beginTransaction().remove(detailFragment).commit();
+    setupActionBarForFragmentType(ReaderFragmentType.POST_LIST);
+  }
+ else {
+    super.onBackPressed();
+  }
 }
