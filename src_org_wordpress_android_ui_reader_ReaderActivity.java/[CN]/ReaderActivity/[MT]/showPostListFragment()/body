@@ -1,3 +1,6 @@
 {
-  getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,ReaderPostListFragment.newInstance(this),TAG_FRAGMENT_POST_LIST).commit();
+  String tagName=UserPrefs.getReaderTag();
+  if (TextUtils.isEmpty(tagName) || !ReaderTagTable.tagExists(tagName))   tagName=ReaderTag.TAG_NAME_DEFAULT;
+  FragmentTransaction ft=getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,ReaderPostListFragment.newInstance(tagName),TAG_FRAGMENT_POST_LIST);
+  ft.commit();
 }
