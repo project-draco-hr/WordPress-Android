@@ -3,10 +3,6 @@
   super.onCreate(savedInstanceState);
   setContentView(R.layout.reader_activity_main);
   createMenuDrawer(R.layout.reader_activity_main);
-  if (savedInstanceState != null) {
-    mHasPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);
-    mHasPerformedPurge=savedInstanceState.getBoolean(KEY_HAS_PURGED);
-  }
   getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener(){
     @Override public void onBackStackChanged(){
       if (isFullScreen())       onRequestFullScreen(false);
@@ -19,7 +15,7 @@
     }
   }
 );
-  getSupportActionBar().setListNavigationCallbacks(getActionBarAdapter(),this);
+  getSupportActionBar().setListNavigationCallbacks(getActionBarTagAdapter(),this);
   if (savedInstanceState == null) {
     final ReaderFragmentType fragmentType;
     if (getIntent().hasExtra(ARG_READER_FRAGMENT)) {
@@ -38,5 +34,9 @@ long postId=getIntent().getLongExtra(ReaderPostDetailFragment.ARG_POST_ID,0);
 showPostDetailFragment(blogId,postId);
 break;
 }
+}
+ else {
+mHasPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);
+mHasPerformedPurge=savedInstanceState.getBoolean(KEY_HAS_PURGED);
 }
 }

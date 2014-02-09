@@ -1,20 +1,21 @@
 {
   if (fragment == null)   return;
+  final ReaderFragmentType fragmentType=getFragmentType(fragment);
+  if (fragmentType.equals(mPrevFragmentType))   return;
   ActionBar actionBar=getSupportActionBar();
   if (actionBar == null) {
     AppLog.w(T.READER,"null actionbar in reader");
     return;
   }
-  if (fragment instanceof ReaderPostListFragment) {
-    if (actionBar.getNavigationMode() != ActionBar.NAVIGATION_MODE_LIST) {
-      actionBar.setDisplayShowTitleEnabled(false);
-      actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-    }
-  }
- else   if (fragment instanceof ReaderPostDetailFragment) {
-    if (actionBar.getNavigationMode() != ActionBar.NAVIGATION_MODE_STANDARD) {
-      actionBar.setDisplayShowTitleEnabled(true);
-      actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-    }
-  }
+  mPrevFragmentType=fragmentType;
+switch (fragmentType) {
+case POST_LIST:
+    actionBar.setDisplayShowTitleEnabled(false);
+  actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+break;
+case POST_DETAIL:
+actionBar.setDisplayShowTitleEnabled(true);
+actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+break;
+}
 }
