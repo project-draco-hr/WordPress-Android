@@ -10,10 +10,33 @@
   getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener(){
     @Override public void onBackStackChanged(){
       if (isFullScreen())       onRequestFullScreen(false);
-      FragmentManager fm=getSupportFragmentManager();
-      int entryCount=fm.getBackStackEntryCount();
-      mMenuDrawer.setDrawerIndicatorEnabled(entryCount == 0);
+      int entryCount=getSupportFragmentManager().getBackStackEntryCount();
+      mMenuDrawer.setDrawerIndicatorEnabled(entryCount <= 1);
+      if (entryCount > 0) {
+        Fragment fragment=getSupportFragmentManager().getFragments().get(entryCount - 1);
+        setupActionBarForFragment(fragment);
+      }
     }
   }
 );
+  getSupportActionBar().setListNavigationCallbacks(getActionBarAdapter(),this);
+  if (savedInstanceState == null) {
+    final ReaderFragmentType fragmentType;
+    if (getIntent().hasExtra(ARG_READER_FRAGMENT)) {
+      fragmentType=(ReaderFragmentType)getIntent().getSerializableExtra(ARG_READER_FRAGMENT);
+    }
+ else {
+      fragmentType=ReaderFragmentType.POST_LIST;
+    }
+switch (fragmentType) {
+case POST_LIST:
+      showPostListFragment();
+    break;
+case POST_DETAIL:
+  long blogId=getIntent().getLongExtra(ReaderPostDetailFragment.ARG_BLOG_ID,0);
+long postId=getIntent().getLongExtra(ReaderPostDetailFragment.ARG_POST_ID,0);
+showPostDetailFragment(blogId,postId);
+break;
+}
+}
 }
