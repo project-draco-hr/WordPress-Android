@@ -84,23 +84,21 @@
     imgAvatar.setOnClickListener(clickListener);
   }
   mWebView.setWebViewClient(readerWebViewClient);
-  new Handler().postDelayed(new Runnable(){
-    @Override public void run(){
-      if (getListView().getAdapter() == null)       getListView().setAdapter(getCommentAdapter());
-      if (mWebView.getVisibility() != View.VISIBLE) {
-        mWebView.setVisibility(View.VISIBLE);
-        AppLog.w(T.READER,"reader post detail > forced webView to appear before page finished");
-      }
-    }
-  }
-,WEBVIEW_DELAY_MS);
   mWebView.loadDataWithBaseURL(null,postHtml,"text/html","UTF-8",null);
-  mLayoutIcons.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
+  if (getListView().getAdapter() == null)   getListView().setAdapter(getCommentAdapter());
   refreshLikes(false);
   refreshComments();
   if (!mHasAlreadyUpdatedPost) {
     updatePost();
     mHasAlreadyUpdatedPost=true;
   }
-  getListView().setVisibility(View.VISIBLE);
+  mLayoutIcons.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
+  if (getListView().getVisibility() != View.VISIBLE) {
+    new Handler().postDelayed(new Runnable(){
+      @Override public void run(){
+        if (hasActivity())         getListView().setVisibility(View.VISIBLE);
+      }
+    }
+,500L);
+  }
 }
