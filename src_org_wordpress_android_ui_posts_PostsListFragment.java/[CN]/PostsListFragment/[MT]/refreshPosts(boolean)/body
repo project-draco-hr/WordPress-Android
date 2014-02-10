@@ -1,14 +1,10 @@
 {
-  mListScrollPositionManager.saveScrollOffset();
-  if (!loadMore) {
-    mOnRefreshListener.onRefresh(true);
-    numRecords=20;
-  }
+  int postCount=getPostListAdapter().getCount() + POSTS_REQUEST_COUNT;
   List<Object> apiArgs=new Vector<Object>();
   apiArgs.add(WordPress.getCurrentBlog());
   apiArgs.add(isPage);
-  apiArgs.add(numRecords);
+  apiArgs.add(postCount);
   apiArgs.add(loadMore);
-  getPostsTask=new getRecentPostsTask();
-  getPostsTask.execute(apiArgs);
+  if (mProgressFooterView != null && loadMore)   mProgressFooterView.setVisibility(View.VISIBLE);
+  new getRecentPostsTask().execute(apiArgs);
 }

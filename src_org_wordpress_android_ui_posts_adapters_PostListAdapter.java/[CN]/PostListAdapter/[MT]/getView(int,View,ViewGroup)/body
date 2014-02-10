@@ -1,0 +1,34 @@
+{
+  PostsListPost post=mPosts.get(position);
+  PostViewWrapper wrapper;
+  if (view == null) {
+    view=mLayoutInflater.inflate(R.layout.row_post_page,parent,false);
+    wrapper=new PostViewWrapper(view);
+    view.setTag(wrapper);
+  }
+ else {
+    wrapper=(PostViewWrapper)view.getTag();
+  }
+  String date=post.getFormattedDate();
+  String status=post.getStatus();
+  String formattedStatus="";
+  if (status.equals("publish")) {
+    formattedStatus=mContext.getResources().getText(R.string.published).toString();
+  }
+ else   if (status.equals("draft")) {
+    formattedStatus=mContext.getResources().getText(R.string.draft).toString();
+  }
+ else   if (status.equals("pending")) {
+    formattedStatus=mContext.getResources().getText(R.string.pending_review).toString();
+  }
+ else   if (status.equals("private")) {
+    formattedStatus=mContext.getResources().getText(R.string.post_private).toString();
+  }
+  String titleText=post.getTitle();
+  if (titleText.equals(""))   titleText="(" + mContext.getResources().getText(R.string.untitled) + ")";
+  wrapper.getTitle().setText(titleText);
+  wrapper.getDate().setText(date);
+  wrapper.getStatus().setText(formattedStatus);
+  if (mOnLoadMoreListener != null && position >= getCount() - 1)   mOnLoadMoreListener.onLoadMore();
+  return view;
+}

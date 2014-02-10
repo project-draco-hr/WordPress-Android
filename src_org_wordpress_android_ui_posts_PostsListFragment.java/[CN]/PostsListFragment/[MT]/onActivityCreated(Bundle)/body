@@ -1,6 +1,10 @@
 {
   super.onActivityCreated(bundle);
-  TextView textview=(TextView)getActivity().findViewById(R.id.title_empty);
+  mProgressFooterView=View.inflate(getActivity(),R.layout.list_footer_progress,null);
+  getListView().addFooterView(mProgressFooterView,null,false);
+  getListView().setDivider(getResources().getDrawable(R.drawable.list_divider));
+  getListView().setDividerHeight(1);
+  TextView textview=(TextView)getListView().getEmptyView();
   if (textview != null) {
     if (isPage) {
       textview.setText(getText(R.string.pages_empty_list));
@@ -8,7 +12,14 @@
  else {
       textview.setText(getText(R.string.posts_empty_list));
     }
+    textview.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        mParentActivity.newPost();
+      }
+    }
+);
   }
-  createSwitcher();
+  getListView().setAdapter(getPostListAdapter());
+  getPostListAdapter().loadPosts();
   mListScrollPositionManager=new ListScrollPositionManager(getListView(),true);
 }
