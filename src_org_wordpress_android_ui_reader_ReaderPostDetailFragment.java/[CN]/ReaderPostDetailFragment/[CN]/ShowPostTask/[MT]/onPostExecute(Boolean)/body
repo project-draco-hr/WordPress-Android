@@ -83,7 +83,6 @@
     txtAuthorName.setOnClickListener(clickListener);
     imgAvatar.setOnClickListener(clickListener);
   }
-  mWebView.setWebViewClient(readerWebViewClient);
   mWebView.loadDataWithBaseURL(null,postHtml,"text/html","UTF-8",null);
   if (getListView().getAdapter() == null)   getListView().setAdapter(getCommentAdapter());
   refreshLikes(false);
@@ -93,12 +92,5 @@
     mHasAlreadyUpdatedPost=true;
   }
   mLayoutIcons.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
-  if (getListView().getVisibility() != View.VISIBLE) {
-    new Handler().postDelayed(new Runnable(){
-      @Override public void run(){
-        if (hasActivity())         getListView().setVisibility(View.VISIBLE);
-      }
-    }
-,500L);
-  }
+  if (getListView().getVisibility() != View.VISIBLE)   showListViewDelayed();
 }
