@@ -1,7 +1,7 @@
 {
   if (TextUtils.isEmpty(tagName))   return;
   if (!NetworkUtils.isNetworkAvailable(getActivity())) {
-    AppLog.i(T.READER,"network unavailable, canceled tag update");
+    AppLog.i(T.READER,"reader post list > network unavailable, canceled tag update");
     return;
   }
   setIsUpdating(true,updateAction);
@@ -12,7 +12,7 @@
   ReaderPostActions.updatePostsWithTag(tagName,updateAction,new ReaderActions.UpdateResultAndCountListener(){
     @Override public void onUpdateResult(    ReaderActions.UpdateResult result,    int numNewPosts){
       if (!hasActivity()) {
-        AppLog.w(T.READER,"volley response when fragment has no activity");
+        AppLog.w(T.READER,"reader post list > volley response when fragment has no activity");
         if (numNewPosts > 0)         LocalBroadcastManager.getInstance(WordPress.getContext()).sendBroadcast(new Intent(ReaderActivity.ACTION_REFRESH_POSTS));
         return;
       }
