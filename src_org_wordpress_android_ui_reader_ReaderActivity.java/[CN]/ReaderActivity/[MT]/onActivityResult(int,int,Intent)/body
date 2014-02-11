@@ -7,31 +7,17 @@ switch (requestCode) {
 case Constants.INTENT_READER_TAGS:
     if (isResultOK && listFragment != null && data != null) {
       if (data.getBooleanExtra(ReaderTagActivity.KEY_TAGS_CHANGED,false)) {
-        final String lastAddedTag=data.getStringExtra(ReaderTagActivity.KEY_LAST_ADDED_TAG);
+        String lastAddedTag=data.getStringExtra(ReaderTagActivity.KEY_LAST_ADDED_TAG);
         listFragment.doTagsChanged(lastAddedTag);
       }
     }
   break;
-case Constants.INTENT_READER_POST_DETAIL:
-if (isResultOK && listFragment != null && data != null) {
-  long blogId=data.getLongExtra(ReaderPostDetailFragment.ARG_BLOG_ID,0);
-  long postId=data.getLongExtra(ReaderPostDetailFragment.ARG_POST_ID,0);
-  boolean isBlogFollowStatusChanged=data.getBooleanExtra(ReaderPostDetailFragment.ARG_BLOG_FOLLOW_STATUS_CHANGED,false);
-  ReaderPost updatedPost=ReaderPostTable.getPost(blogId,postId);
-  if (updatedPost != null) {
-    listFragment.reloadPost(updatedPost);
-    if (isBlogFollowStatusChanged) {
-      listFragment.updateFollowStatusOnPostsForBlog(blogId,updatedPost.isFollowedByCurrentUser);
-    }
-  }
-}
-break;
 case Constants.INTENT_READER_REBLOG:
 if (isResultOK && data != null) {
-long blogId=data.getLongExtra(ReaderReblogActivity.ARG_BLOG_ID,0);
-long postId=data.getLongExtra(ReaderReblogActivity.ARG_POST_ID,0);
-if (listFragment != null) listFragment.reloadPost(ReaderPostTable.getPost(blogId,postId));
-if (detailFragment != null) detailFragment.reloadPost();
+  long blogId=data.getLongExtra(ReaderReblogActivity.ARG_BLOG_ID,0);
+  long postId=data.getLongExtra(ReaderReblogActivity.ARG_POST_ID,0);
+  if (listFragment != null)   listFragment.reloadPost(ReaderPostTable.getPost(blogId,postId));
+  if (detailFragment != null)   detailFragment.reloadPost();
 }
 break;
 }
