@@ -1,9 +1,13 @@
 {
-  if (txtTitle == null)   return;
-  if (TextUtils.isEmpty(title)) {
-    txtTitle.setText(null);
+  if (txtTitle == null || !hasActivity())   return;
+  if (TextUtils.isEmpty(postTitle)) {
+    txtTitle.setText(R.string.untitled);
     return;
   }
-  String html=getString(R.string.on) + " <font color=" + HtmlUtils.colorResToHtmlColor(getActivity(),R.color.reader_hyperlink)+ ">"+ title.trim()+ "</font>";
+  if (hasComment() && !mComment.hasPostTitle()) {
+    mComment.setPostTitle(postTitle);
+    CommentTable.updateCommentPostTitle(getLocalBlogId(),getCommentId(),postTitle);
+  }
+  String html=getString(R.string.on) + " <font color=" + HtmlUtils.colorResToHtmlColor(getActivity(),R.color.reader_hyperlink)+ ">"+ postTitle.trim()+ "</font>";
   txtTitle.setText(Html.fromHtml(html));
 }

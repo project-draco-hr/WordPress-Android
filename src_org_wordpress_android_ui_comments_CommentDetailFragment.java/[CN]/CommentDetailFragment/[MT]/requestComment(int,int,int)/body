@@ -1,5 +1,5 @@
 {
-  final ProgressBar progress=(hasActivity() ? (ProgressBar)getActivity().findViewById(R.id.progress_loading) : null);
+  final ProgressBar progress=(hasActivity() ? (ProgressBar)getView().findViewById(R.id.progress_loading) : null);
   if (progress != null)   progress.setVisibility(View.VISIBLE);
   RestRequest.Listener restListener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
@@ -8,7 +8,6 @@
         if (progress != null)         progress.setVisibility(View.GONE);
         Comment comment=Comment.fromJSON(jsonObject);
         if (comment != null) {
-          if (profileImageUrl != null)           comment.setProfileImageUrl(profileImageUrl);
           CommentTable.addComment(localBlogId,comment);
           setComment(localBlogId,comment);
         }
