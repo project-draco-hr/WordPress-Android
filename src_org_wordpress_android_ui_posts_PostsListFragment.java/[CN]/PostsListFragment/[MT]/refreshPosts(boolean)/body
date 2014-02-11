@@ -10,5 +10,29 @@
   apiArgs.add(postCount);
   apiArgs.add(loadMore);
   if (mProgressFooterView != null && loadMore)   mProgressFooterView.setVisibility(View.VISIBLE);
-  new getRecentPostsTask().execute(apiArgs);
+  ApiHelper.FetchPostsTask fetchPostsTaskTask=new ApiHelper.FetchPostsTask(new ApiHelper.FetchPostsTask.Callback(){
+    @Override public void onSuccess(){
+      if (isAdded() && hasActivity()) {
+        mOnRefreshListener.onRefresh(false);
+        getPostListAdapter().loadPosts();
+      }
+    }
+    @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
+      if (!hasActivity())       return;
+      mOnRefreshListener.onRefresh(false);
+      if (mProgressFooterView != null)       mProgressFooterView.setVisibility(View.GONE);
+      if (!TextUtils.isEmpty(errorMessage) && !getActivity().isFinishing()) {
+        FragmentTransaction ft=getFragmentManager().beginTransaction();
+        WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(isPage ? getString(R.string.error_refresh_pages) : getString(R.string.error_refresh_posts));
+        try {
+          alert.show(ft,"alert");
+        }
+ catch (        Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+);
+  fetchPostsTaskTask.execute(apiArgs);
 }

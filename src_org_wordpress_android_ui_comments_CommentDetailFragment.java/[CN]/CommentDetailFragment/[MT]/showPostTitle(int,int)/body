@@ -1,32 +1,36 @@
 {
   if (!hasActivity())   return;
-  final TextView txtPostTitle=(TextView)getActivity().findViewById(R.id.text_post_title);
+  final TextView txtPostTitle=(TextView)getView().findViewById(R.id.text_post_title);
   boolean postExists=ReaderPostTable.postExists(blogId,postId);
   final String title;
+  final boolean hasTitle;
   if (mComment.hasPostTitle()) {
     title=mComment.getPostTitle();
+    hasTitle=true;
   }
  else   if (postExists) {
     title=ReaderPostTable.getPostTitle(blogId,postId);
+    hasTitle=!TextUtils.isEmpty(title);
   }
  else {
     title=null;
+    hasTitle=false;
   }
-  final boolean hasTitle=!TextUtils.isEmpty(title);
   if (hasTitle) {
     setPostTitle(txtPostTitle,title);
   }
  else {
-    txtPostTitle.setText(R.string.loading);
+    txtPostTitle.setText(postExists ? R.string.untitled : R.string.loading);
   }
   if (!postExists) {
+    AppLog.d(T.COMMENTS,"comment detail > retrieving post");
     ReaderPostActions.requestPost(blogId,postId,new ReaderActions.ActionListener(){
       @Override public void onActionResult(      boolean succeeded){
         if (!hasActivity())         return;
-        if (succeeded && !hasTitle) {
-          String title=ReaderPostTable.getPostTitle(blogId,postId);
-          if (!TextUtils.isEmpty(title)) {
-            setPostTitle(txtPostTitle,title);
+        if (!hasTitle) {
+          String postTitle=ReaderPostTable.getPostTitle(blogId,postId);
+          if (!TextUtils.isEmpty(postTitle)) {
+            setPostTitle(txtPostTitle,postTitle);
           }
  else {
             txtPostTitle.setText(R.string.untitled);
