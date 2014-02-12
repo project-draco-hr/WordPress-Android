@@ -11,6 +11,16 @@
   }
   String date=post.getFormattedDate();
   String status=post.getStatus();
+  String titleText=post.getTitle();
+  if (titleText.equals(""))   titleText="(" + mContext.getResources().getText(R.string.untitled) + ")";
+  wrapper.getTitle().setText(titleText);
+  if (post.isLocalDraft()) {
+    wrapper.getDate().setVisibility(View.GONE);
+  }
+ else {
+    wrapper.getDate().setText(date);
+    wrapper.getDate().setVisibility(View.VISIBLE);
+  }
   String formattedStatus="";
   if (post.isLocalDraft()) {
     formattedStatus=mContext.getResources().getText(R.string.local_draft).toString();
@@ -27,17 +37,8 @@
  else   if (status.equals("private")) {
     formattedStatus=mContext.getResources().getText(R.string.post_private).toString();
   }
-  String titleText=post.getTitle();
-  if (titleText.equals(""))   titleText="(" + mContext.getResources().getText(R.string.untitled) + ")";
-  wrapper.getTitle().setText(titleText);
-  if (post.isLocalDraft()) {
-    wrapper.getDate().setVisibility(View.GONE);
-  }
- else {
-    wrapper.getDate().setText(date);
-    wrapper.getDate().setVisibility(View.VISIBLE);
-  }
+  formattedStatus=formattedStatus.toUpperCase(Locale.getDefault());
   wrapper.getStatus().setText(formattedStatus);
-  if (mOnLoadMoreListener != null && position >= getCount() - 1)   mOnLoadMoreListener.onLoadMore();
+  if (mOnLoadMoreListener != null && position >= getCount() - 1 && position >= PostsListFragment.POSTS_REQUEST_COUNT - 1)   mOnLoadMoreListener.onLoadMore(true);
   return view;
 }

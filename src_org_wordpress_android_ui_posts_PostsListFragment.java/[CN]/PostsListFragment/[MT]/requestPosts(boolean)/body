@@ -6,13 +6,22 @@
   }
   List<Object> apiArgs=new Vector<Object>();
   apiArgs.add(WordPress.getCurrentBlog());
-  apiArgs.add(isPage);
+  apiArgs.add(mIsPage);
   apiArgs.add(postCount);
   apiArgs.add(loadMore);
   if (mProgressFooterView != null && loadMore)   mProgressFooterView.setVisibility(View.VISIBLE);
   ApiHelper.FetchPostsTask fetchPostsTaskTask=new ApiHelper.FetchPostsTask(new ApiHelper.FetchPostsTask.Callback(){
-    @Override public void onSuccess(){
+    @Override public void onSuccess(    int postCount){
       if (isAdded() && hasActivity()) {
+        if (postCount == 0) {
+          mCanLoadMorePosts=false;
+          return;
+        }
+ else         if (postCount == getPostListAdapter().getCount()) {
+          mCanLoadMorePosts=false;
+          if (mProgressFooterView != null)           mProgressFooterView.setVisibility(View.GONE);
+          return;
+        }
         mOnRefreshListener.onRefresh(false);
         getPostListAdapter().loadPosts();
       }
@@ -23,7 +32,7 @@
       if (mProgressFooterView != null)       mProgressFooterView.setVisibility(View.GONE);
       if (!TextUtils.isEmpty(errorMessage) && !getActivity().isFinishing()) {
         FragmentTransaction ft=getFragmentManager().beginTransaction();
-        WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(isPage ? getString(R.string.error_refresh_pages) : getString(R.string.error_refresh_posts));
+        WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(mIsPage ? getString(R.string.error_refresh_pages) : getString(R.string.error_refresh_posts));
         try {
           alert.show(ft,"alert");
         }

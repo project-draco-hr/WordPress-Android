@@ -2,6 +2,7 @@
   super.onActivityCreated(bundle);
   mProgressFooterView=View.inflate(getActivity(),R.layout.list_footer_progress,null);
   getListView().addFooterView(mProgressFooterView,null,false);
+  mProgressFooterView.setVisibility(View.GONE);
   getListView().setDivider(getResources().getDrawable(R.drawable.list_divider));
   getListView().setDividerHeight(1);
   getListView().setOnItemClickListener(new AdapterView.OnItemClickListener(){
@@ -21,7 +22,7 @@
 );
   TextView textview=(TextView)getListView().getEmptyView();
   if (textview != null) {
-    if (isPage) {
+    if (mIsPage) {
       textview.setText(getText(R.string.pages_empty_list));
     }
  else {
@@ -33,9 +34,5 @@
       }
     }
 );
-  }
-  if (WordPress.getCurrentBlog() != null) {
-    getListView().setAdapter(getPostListAdapter());
-    getPostListAdapter().loadPosts();
   }
 }

@@ -1,12 +1,12 @@
 {
   if (mPostListAdapter == null) {
     PostListAdapter.OnLoadMoreListener loadMoreListener=new PostListAdapter.OnLoadMoreListener(){
-      @Override public void onLoadMore(){
-        refreshPosts(true);
+      @Override public void onLoadMore(      boolean loadMore){
+        if (mCanLoadMorePosts)         requestPosts(loadMore);
       }
     }
 ;
-    mPostListAdapter=new PostListAdapter(getActivity(),WordPress.getCurrentBlog().getLocalTableBlogId(),isPage,loadMoreListener);
+    mPostListAdapter=new PostListAdapter(getActivity(),mIsPage,loadMoreListener);
   }
   return mPostListAdapter;
 }
