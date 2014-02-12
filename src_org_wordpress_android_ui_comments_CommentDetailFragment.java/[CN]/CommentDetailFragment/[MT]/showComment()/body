@@ -1,6 +1,6 @@
 {
   if (!hasActivity())   return;
-  final ViewGroup viewDetail=(ViewGroup)getActivity().findViewById(R.id.layout_detail);
+  final ViewGroup viewDetail=(ViewGroup)getView().findViewById(R.id.layout_detail);
   final WPNetworkImageView imgAvatar=(WPNetworkImageView)viewDetail.findViewById(R.id.image_avatar);
   final TextView txtName=(TextView)viewDetail.findViewById(R.id.text_name);
   final TextView txtDate=(TextView)viewDetail.findViewById(R.id.text_date);
@@ -21,11 +21,11 @@
   txtDate.setText(DateTimeUtils.javaDateToTimeSpan(mComment.getDatePublished()));
   int maxImageSz=getResources().getDimensionPixelSize(R.dimen.reader_comment_max_image_size);
   CommentUtils.displayHtmlComment(mTxtContent,mComment.getCommentText(),maxImageSz);
+  int avatarSz=getResources().getDimensionPixelSize(R.dimen.avatar_sz_large);
   if (mComment.hasProfileImageUrl()) {
-    imgAvatar.setImageUrl(mComment.getProfileImageUrl(),WPNetworkImageView.ImageType.AVATAR);
+    imgAvatar.setImageUrl(PhotonUtils.fixAvatar(mComment.getProfileImageUrl(),avatarSz),WPNetworkImageView.ImageType.AVATAR);
   }
  else   if (mComment.hasAuthorEmail()) {
-    int avatarSz=getResources().getDimensionPixelSize(R.dimen.avatar_sz_large);
     String avatarUrl=GravatarUtils.gravatarUrlFromEmail(mComment.getAuthorEmail(),avatarSz);
     imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
   }
