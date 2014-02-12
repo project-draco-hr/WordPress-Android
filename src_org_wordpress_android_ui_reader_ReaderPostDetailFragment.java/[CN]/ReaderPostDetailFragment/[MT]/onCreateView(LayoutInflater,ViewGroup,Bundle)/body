@@ -2,7 +2,6 @@
   final View view=inflater.inflate(R.layout.reader_fragment_post_detail,container,false);
   mListView=(ListView)view.findViewById(android.R.id.list);
   setupListView(mListView);
-  mListView.setVisibility(View.INVISIBLE);
   if (isFullScreenSupported()) {
     ReaderFullScreenUtils.addListViewHeader(container.getContext(),mListView);
   }
@@ -17,10 +16,12 @@
   mLayoutIcons=(ViewGroup)view.findViewById(R.id.layout_actions);
   mLayoutLikes=(ViewGroup)view.findViewById(R.id.layout_likes);
   mWebView=(WebView)view.findViewById(R.id.webView);
-  mWebView.setVisibility(View.INVISIBLE);
   mWebView.setWebViewClient(readerWebViewClient);
   mWebView.getSettings().setJavaScriptEnabled(false);
   mWebView.getSettings().setUserAgentString(Constants.USER_AGENT);
+  mListView.setVisibility(View.INVISIBLE);
+  mWebView.setVisibility(View.INVISIBLE);
+  mLayoutIcons.setVisibility(View.GONE);
   mWebView.setOnTouchListener(new View.OnTouchListener(){
     public boolean onTouch(    View v,    MotionEvent event){
       if (event.getAction() == MotionEvent.ACTION_UP) {
