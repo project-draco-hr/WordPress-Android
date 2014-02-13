@@ -2,14 +2,7 @@
   boolean commentsOnly=params[0];
   XMLRPCClient client=new XMLRPCClient(mBlog.getUrl(),mBlog.getHttpuser(),mBlog.getHttppassword());
   if (!commentsOnly) {
-    Map<String,String> hPost=new HashMap<String,String>();
-    hPost.put("software_version","software_version");
-    hPost.put("post_thumbnail","post_thumbnail");
-    hPost.put("jetpack_client_id","jetpack_client_id");
-    hPost.put("blog_public","blog_public");
-    hPost.put("home_url","home_url");
-    hPost.put("admin_url","admin_url");
-    hPost.put("login_url","login_url");
+    Map<String,String> hPost=ApiHelper.blogOptionsXMLRPCParameters;
     Object[] vParams={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword(),hPost};
     Object versionResult=null;
     try {
@@ -25,7 +18,7 @@ catch (    XMLRPCException e) {
     }
     if (versionResult != null) {
       Map<?,?> blogOptions=(HashMap<?,?>)versionResult;
-      updateBlogOptions(blogOptions);
+      ApiHelper.updateBlogOptions(mBlog,blogOptions);
     }
     List<Object> args=new Vector<Object>();
     args.add(mBlog);
