@@ -1,11 +1,12 @@
 {
-  int localBlogID=0;
-  List<Map<String,Object>> allAccounts=this.getAccountsBy("dotcomFlag=0",new String[]{"api_blogid","url"});
-  for (  Map<String,Object> currentAccount : allAccounts) {
-    if (MapUtils.getMapInt(currentAccount,"api_blogid") == remoteBlogId && (xmlRpcUrl == null || xmlRpcUrl.equals(MapUtils.getMapStr(currentAccount,"url")))) {
-      localBlogID=MapUtils.getMapInt(currentAccount,"id");
-      break;
-    }
+  if (TextUtils.isEmpty(xmlRpcUrl)) {
+    String sql="SELECT id FROM " + SETTINGS_TABLE + " WHERE dotcomFlag=0 AND api_blogid=?";
+    String[] args={Integer.toString(remoteBlogId)};
+    return SqlUtils.intForQuery(db,sql,args);
   }
-  return localBlogID;
+ else {
+    String sql="SELECT id FROM " + SETTINGS_TABLE + " WHERE dotcomFlag=0 AND api_blogid=? AND url=?";
+    String[] args={Integer.toString(remoteBlogId),xmlRpcUrl};
+    return SqlUtils.intForQuery(db,sql,args);
+  }
 }
