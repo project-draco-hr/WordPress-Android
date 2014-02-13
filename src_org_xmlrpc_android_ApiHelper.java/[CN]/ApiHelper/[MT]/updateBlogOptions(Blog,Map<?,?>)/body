@@ -3,24 +3,24 @@
   Gson gson=new Gson();
   String blogOptionsJson=gson.toJson(blogOptions);
   if (blogOptionsJson != null) {
-    isModified|=mBlog.bsetBlogOptions(blogOptionsJson);
+    isModified|=currentBlog.bsetBlogOptions(blogOptionsJson);
   }
-  if (!mBlog.isDotcomFlag()) {
+  if (!currentBlog.isDotcomFlag()) {
     Map<?,?> sv=(HashMap<?,?>)blogOptions.get("software_version");
     String wpVersion=MapUtils.getMapStr(sv,"value");
     if (wpVersion.length() > 0) {
-      isModified|=mBlog.bsetWpVersion(wpVersion);
+      isModified|=currentBlog.bsetWpVersion(wpVersion);
     }
   }
   Map<?,?> featuredImageHash=(HashMap<?,?>)blogOptions.get("post_thumbnail");
   if (featuredImageHash != null) {
     boolean featuredImageCapable=MapUtils.getMapBool(featuredImageHash,"value");
-    isModified|=mBlog.bsetFeaturedImageCapable(featuredImageCapable);
+    isModified|=currentBlog.bsetFeaturedImageCapable(featuredImageCapable);
   }
  else {
-    isModified|=mBlog.bsetFeaturedImageCapable(false);
+    isModified|=currentBlog.bsetFeaturedImageCapable(false);
   }
   if (isModified) {
-    WordPress.wpDB.saveBlog(mBlog);
+    WordPress.wpDB.saveBlog(currentBlog);
   }
 }
