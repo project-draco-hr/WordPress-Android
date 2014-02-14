@@ -1,3 +1,13 @@
 {
-  return SqlUtils.intForQuery(db,"SELECT blogId FROM accounts WHERE id=?",new String[]{Integer.toString(localBlogId)});
+  int remoteBlogID=SqlUtils.intForQuery(db,"SELECT blogId FROM accounts WHERE id=?",new String[]{Integer.toString(localBlogId)});
+  if (remoteBlogID <= 1) {
+    List<Map<String,Object>> allAccounts=this.getAccountsBy("dotcomFlag=0",new String[]{"api_blogid"});
+    for (    Map<String,Object> currentAccount : allAccounts) {
+      if (MapUtils.getMapInt(currentAccount,"id") == localBlogId) {
+        remoteBlogID=MapUtils.getMapInt(currentAccount,"api_blogid");
+        break;
+      }
+    }
+  }
+  return remoteBlogID;
 }
