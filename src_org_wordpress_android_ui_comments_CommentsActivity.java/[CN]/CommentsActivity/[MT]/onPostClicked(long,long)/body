@@ -1,5 +1,8 @@
 {
   ReaderPostDetailFragment readerFragment=ReaderPostDetailFragment.newInstance(remoteBlogId,postId);
-  FragmentManager fm=getSupportFragmentManager();
-  fm.beginTransaction().add(R.id.layout_fragment_container,readerFragment,FRAGMENT_TAG_READER_DETAIL).addToBackStack(FRAGMENT_TAG_READER_DETAIL).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+  FragmentTransaction ft=getSupportFragmentManager().beginTransaction();
+  String tagForFragment=getString(R.string.fragment_tag_reader_post_detail);
+  ft.add(R.id.layout_fragment_container,readerFragment,tagForFragment).addToBackStack(tagForFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+  if (hasDetailFragment())   ft.hide(getDetailFragment());
+  ft.commit();
 }
