@@ -1,27 +1,41 @@
 {
   if (!hasActivity())   return;
-  final TextView txtPostTitle=(TextView)getActivity().findViewById(R.id.text_post_title);
+  final TextView txtPostTitle=(TextView)getView().findViewById(R.id.text_post_title);
   boolean postExists=ReaderPostTable.postExists(blogId,postId);
+  final String title;
   final boolean hasTitle;
-  if (getNote() != null) {
-    txtPostTitle.setText(getNote().getSubject());
+  if (mComment.hasPostTitle()) {
+    title=mComment.getPostTitle();
     hasTitle=true;
   }
  else   if (postExists) {
-    txtPostTitle.setText(ReaderPostTable.getPostTitle(blogId,postId));
-    hasTitle=true;
+    title=ReaderPostTable.getPostTitle(blogId,postId);
+    hasTitle=!TextUtils.isEmpty(title);
   }
  else {
+    title=null;
     hasTitle=false;
   }
+  if (hasTitle) {
+    setPostTitle(txtPostTitle,title);
+  }
+ else {
+    txtPostTitle.setText(postExists ? R.string.untitled : R.string.loading);
+  }
   if (!postExists) {
-    final ProgressBar progress=(ProgressBar)getActivity().findViewById(R.id.progress_post_title);
-    if (!hasTitle)     progress.setVisibility(View.VISIBLE);
+    AppLog.d(T.COMMENTS,"comment detail > retrieving post");
     ReaderPostActions.requestPost(blogId,postId,new ReaderActions.ActionListener(){
       @Override public void onActionResult(      boolean succeeded){
         if (!hasActivity())         return;
-        progress.setVisibility(View.INVISIBLE);
-        if (succeeded && !hasTitle)         txtPostTitle.setText(ReaderPostTable.getPostTitle(blogId,postId));
+        if (!hasTitle) {
+          String postTitle=ReaderPostTable.getPostTitle(blogId,postId);
+          if (!TextUtils.isEmpty(postTitle)) {
+            setPostTitle(txtPostTitle,postTitle);
+          }
+ else {
+            txtPostTitle.setText(R.string.untitled);
+          }
+        }
       }
     }
 );

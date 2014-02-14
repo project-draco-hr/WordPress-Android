@@ -1,41 +1,38 @@
 {
   if (!hasActivity())   return;
-  final ViewGroup viewDetail=(ViewGroup)getActivity().findViewById(R.id.layout_detail);
-  final NetworkImageView imgAvatar=(NetworkImageView)viewDetail.findViewById(R.id.image_avatar);
-  final TextView txtName=(TextView)viewDetail.findViewById(R.id.text_name);
-  final TextView txtDate=(TextView)viewDetail.findViewById(R.id.text_date);
-  final TextView txtContent=(TextView)viewDetail.findViewById(R.id.text_content);
+  final ScrollView scrollView=(ScrollView)getView().findViewById(R.id.scroll_view);
+  final View layoutBottom=getView().findViewById(R.id.layout_bottom);
   if (mComment == null) {
-    imgAvatar.setImageDrawable(null);
-    txtName.setText(null);
-    txtDate.setText(null);
-    txtContent.setText(null);
-    mTxtStatus.setText(null);
-    mLayoutButtons.setVisibility(View.GONE);
-    mLayoutReply.setVisibility(View.GONE);
+    scrollView.setVisibility(View.GONE);
+    layoutBottom.setVisibility(View.GONE);
     if (mNote != null && !mIsRequestingComment)     showCommentForNote(mNote);
     return;
   }
-  txtName.setText(TextUtils.isEmpty(mComment.name) ? getString(R.string.anonymous) : StringUtils.unescapeHTML(mComment.name));
-  txtDate.setText(mComment.dateCreatedFormatted);
-  txtContent.setLinksClickable(true);
-  txtContent.setMovementMethod(WPLinkMovementMethod.getInstance());
+  scrollView.setVisibility(View.VISIBLE);
+  layoutBottom.setVisibility(View.VISIBLE);
+  final WPNetworkImageView imgAvatar=(WPNetworkImageView)getView().findViewById(R.id.image_avatar);
+  final TextView txtName=(TextView)getView().findViewById(R.id.text_name);
+  final TextView txtDate=(TextView)getView().findViewById(R.id.text_date);
+  txtName.setText(mComment.hasAuthorName() ? mComment.getAuthorName() : getString(R.string.anonymous));
+  txtDate.setText(DateTimeUtils.javaDateToTimeSpan(mComment.getDatePublished()));
   int maxImageSz=getResources().getDimensionPixelSize(R.dimen.reader_comment_max_image_size);
-  CommentUtils.displayHtmlComment(txtContent,mComment.comment,maxImageSz);
-  imgAvatar.setDefaultImageResId(R.drawable.placeholder);
+  CommentUtils.displayHtmlComment(mTxtContent,mComment.getCommentText(),maxImageSz);
+  int avatarSz=getResources().getDimensionPixelSize(R.dimen.avatar_sz_large);
   if (mComment.hasProfileImageUrl()) {
-    imgAvatar.setImageUrl(mComment.getProfileImageUrl(),WordPress.imageLoader);
+    imgAvatar.setImageUrl(PhotonUtils.fixAvatar(mComment.getProfileImageUrl(),avatarSz),WPNetworkImageView.ImageType.AVATAR);
+  }
+ else   if (mComment.hasAuthorEmail()) {
+    String avatarUrl=GravatarUtils.gravatarUrlFromEmail(mComment.getAuthorEmail(),avatarSz);
+    imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
   }
  else {
-    int avatarSz=getResources().getDimensionPixelSize(R.dimen.avatar_sz_large);
-    String avatarUrl=GravatarUtils.gravatarUrlFromEmail(mComment.authorEmail,avatarSz);
-    imgAvatar.setImageUrl(avatarUrl,WordPress.imageLoader);
+    imgAvatar.setImageUrl(null,WPNetworkImageView.ImageType.AVATAR);
   }
   updateStatusViews();
-  if (!TextUtils.isEmpty(mComment.authorURL)) {
+  if (mComment.hasAuthorUrl()) {
     View.OnClickListener authorListener=new View.OnClickListener(){
       @Override public void onClick(      View v){
-        ReaderActivityLauncher.openUrl(getActivity(),mComment.authorURL);
+        ReaderActivityLauncher.openUrl(getActivity(),mComment.getAuthorUrl());
       }
     }
 ;
@@ -46,8 +43,6 @@
  else {
     txtName.setTextColor(getResources().getColor(R.color.grey_medium_dark));
   }
-  int blogId=getRemoteBlogId();
-  int postId=Integer.valueOf(mComment.postID);
-  showPostTitle(blogId,postId);
-  if (mLayoutReply.getVisibility() != View.VISIBLE && isReplyingEnabled())   AniUtils.flyIn(mLayoutReply);
+  showPostTitle(getRemoteBlogId(),mComment.postID);
+  if (mLayoutReply.getVisibility() != View.VISIBLE && canReply())   AniUtils.flyIn(mLayoutReply);
 }
