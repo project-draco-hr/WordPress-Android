@@ -1,0 +1,28 @@
+{
+  HashSet<Object> res=new HashSet<Object>();
+  for (  Object value : array) {
+    if (value instanceof HashMap) {
+      HashMap newValue=injectDateInHashMap((HashMap<String,Object>)value);
+      res.add(newValue);
+    }
+ else     if (value instanceof String) {
+      Date newValue=parseString((String)value);
+      if (newValue != null) {
+        res.add(newValue);
+      }
+ else {
+        res.add(value);
+      }
+    }
+ else     if (value instanceof Object[]) {
+      res.add(injectDateInArray((Object[])value));
+    }
+ else     if (value instanceof StringMap) {
+      res.add(injectDateInHashMap(stringMapToHashMap((StringMap)value)));
+    }
+ else {
+      res.add(value);
+    }
+  }
+  return res.toArray();
+}
