@@ -1,22 +1,18 @@
 {
   if (!hasActivity())   return;
-  final ViewGroup viewDetail=(ViewGroup)getView().findViewById(R.id.layout_detail);
-  final WPNetworkImageView imgAvatar=(WPNetworkImageView)viewDetail.findViewById(R.id.image_avatar);
-  final TextView txtName=(TextView)viewDetail.findViewById(R.id.text_name);
-  final TextView txtDate=(TextView)viewDetail.findViewById(R.id.text_date);
+  final ScrollView scrollView=(ScrollView)getView().findViewById(R.id.scroll_view);
+  final View layoutBottom=getView().findViewById(R.id.layout_bottom);
   if (mComment == null) {
-    imgAvatar.setImageDrawable(null);
-    txtName.setText(null);
-    txtDate.setText(null);
-    mTxtContent.setText(null);
-    mTxtStatus.setText(null);
-    mLayoutButtons.setVisibility(View.GONE);
-    mLayoutReply.setVisibility(View.GONE);
-    viewDetail.setVisibility(View.GONE);
+    scrollView.setVisibility(View.GONE);
+    layoutBottom.setVisibility(View.GONE);
     if (mNote != null && !mIsRequestingComment)     showCommentForNote(mNote);
     return;
   }
-  viewDetail.setVisibility(View.VISIBLE);
+  scrollView.setVisibility(View.VISIBLE);
+  layoutBottom.setVisibility(View.VISIBLE);
+  final WPNetworkImageView imgAvatar=(WPNetworkImageView)getView().findViewById(R.id.image_avatar);
+  final TextView txtName=(TextView)getView().findViewById(R.id.text_name);
+  final TextView txtDate=(TextView)getView().findViewById(R.id.text_date);
   txtName.setText(mComment.hasAuthorName() ? mComment.getAuthorName() : getString(R.string.anonymous));
   txtDate.setText(DateTimeUtils.javaDateToTimeSpan(mComment.getDatePublished()));
   int maxImageSz=getResources().getDimensionPixelSize(R.dimen.reader_comment_max_image_size);
