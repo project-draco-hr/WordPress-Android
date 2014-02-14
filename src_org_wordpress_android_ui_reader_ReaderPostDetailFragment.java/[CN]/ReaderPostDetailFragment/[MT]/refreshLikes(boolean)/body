@@ -47,7 +47,18 @@
           }
 ;
           mLayoutLikes.setOnClickListener(clickListener);
-          if (forceReload || layoutLikingAvatars.getChildCount() < maxAvatars) {
+          final boolean reloadAvatars;
+          if (forceReload) {
+            reloadAvatars=true;
+          }
+ else           if (isSameAvatars(avatars)) {
+            reloadAvatars=false;
+          }
+ else {
+            reloadAvatars=(layoutLikingAvatars.getChildCount() < maxAvatars);
+          }
+          if (reloadAvatars) {
+            AppLog.d(T.READER,"reader post detail > displaying liking avatars");
             layoutLikingAvatars.removeAllViews();
             LayoutInflater inflater=getActivity().getLayoutInflater();
             for (            String url : avatars) {
@@ -55,6 +66,8 @@
               layoutLikingAvatars.addView(imgAvatar);
               imgAvatar.setImageUrl(PhotonUtils.fixAvatar(url,likeAvatarSize),WPNetworkImageView.ImageType.AVATAR);
             }
+            mPrevAvatarUrls.clear();
+            mPrevAvatarUrls.addAll(avatars);
           }
           if (mLayoutLikes.getVisibility() != View.VISIBLE)           mLayoutLikes.setVisibility(View.VISIBLE);
         }
