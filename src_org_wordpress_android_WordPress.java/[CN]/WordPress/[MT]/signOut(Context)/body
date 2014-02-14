@@ -13,12 +13,14 @@
   editor.remove(WordPress.WPCOM_PASSWORD_PREFERENCE);
   editor.remove(WordPress.ACCESS_TOKEN_PREFERENCE);
   editor.commit();
-  wpDB.deleteAllAccounts();
-  wpDB.updateLastBlogId(-1);
+  if (wpDB != null) {
+    wpDB.deleteAllAccounts();
+    wpDB.updateLastBlogId(-1);
+    wpDB.clearNotes();
+  }
   currentBlog=null;
   UserPrefs.reset();
   ReaderDatabase.reset();
-  WordPress.wpDB.clearNotes();
   Intent broadcastIntent=new Intent();
   broadcastIntent.setAction(BROADCAST_ACTION_SIGNOUT);
   context.sendBroadcast(broadcastIntent);
