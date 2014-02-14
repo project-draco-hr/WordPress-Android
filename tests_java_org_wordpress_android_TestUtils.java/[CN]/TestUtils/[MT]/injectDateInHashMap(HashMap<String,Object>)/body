@@ -2,28 +2,7 @@
   HashMap<String,Object> res=new HashMap<String,Object>();
   for (  String key : hashMap.keySet()) {
     Object value=hashMap.get(key);
-    if (value instanceof HashMap) {
-      HashMap newValue=injectDateInHashMap((HashMap<String,Object>)value);
-      res.put(key,newValue);
-    }
- else     if (value instanceof String) {
-      Date newValue=parseString((String)value);
-      if (newValue != null) {
-        res.put(key,newValue);
-      }
- else {
-        res.put(key,value);
-      }
-    }
- else     if (value instanceof Object[]) {
-      res.put(key,injectDateInArray((Object[])value));
-    }
- else     if (value instanceof StringMap) {
-      res.put(key,injectDateInHashMap(stringMapToHashMap((StringMap)value)));
-    }
- else {
-      res.put(key,value);
-    }
+    res.put(key,castIt(value));
   }
   return res;
 }

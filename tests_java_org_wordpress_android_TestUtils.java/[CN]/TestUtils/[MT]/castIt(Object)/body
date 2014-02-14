@@ -1,0 +1,31 @@
+{
+  if (value instanceof HashMap) {
+    HashMap newValue=injectDateInHashMap((HashMap<String,Object>)value);
+    return newValue;
+  }
+ else   if (value instanceof String) {
+    Date newValue=parseStringToDate((String)value);
+    if (newValue != null) {
+      return newValue;
+    }
+ else {
+      return value;
+    }
+  }
+ else   if (value instanceof Double) {
+    Integer newValue=Integer.valueOf((int)Math.round((Double)value));
+    if (newValue != null) {
+      return newValue;
+    }
+ else {
+      return value;
+    }
+  }
+ else   if (value instanceof Object[]) {
+    return injectDateInArray((Object[])value);
+  }
+ else   if (value instanceof StringMap) {
+    return injectDateInHashMap(stringMapToHashMap((StringMap)value));
+  }
+  return value;
+}
