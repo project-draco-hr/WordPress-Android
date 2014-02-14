@@ -3,9 +3,7 @@
   if (!hasPost() || !mPost.isWP())   return;
   new Thread(){
     @Override public void run(){
-      final View container=getContainerView();
-      final ImageView imgBtnLike=(ImageView)container.findViewById(R.id.image_like_btn);
-      final ViewGroup layoutLikingAvatars=(ViewGroup)mLayoutLikes.findViewById(R.id.layout_liking_avatars);
+      final ImageView imgBtnLike=(ImageView)getView().findViewById(R.id.image_like_btn);
       final TextView txtLikeCount=(TextView)mLayoutLikes.findViewById(R.id.text_like_count);
       final int marginExtraSmall=getResources().getDimensionPixelSize(R.dimen.margin_extra_small);
       final int marginLarge=getResources().getDimensionPixelSize(R.dimen.margin_large);
@@ -14,7 +12,8 @@
       final int displayWidth=DisplayUtils.getDisplayPixelWidth(getActivity());
       final int spaceForAvatars=displayWidth - (marginLarge * 2);
       final int maxAvatars=spaceForAvatars / likeAvatarSizeWithMargin;
-      final ArrayList<String> avatars=ReaderUserTable.getAvatarUrls(ReaderLikeTable.getLikesForPost(mPost),maxAvatars);
+      ReaderUserIdList avatarIds=ReaderLikeTable.getLikesForPost(mPost);
+      final ArrayList<String> avatars=ReaderUserTable.getAvatarUrls(avatarIds,maxAvatars,likeAvatarSize);
       mHandler.post(new Runnable(){
         public void run(){
           if (!hasActivity())           return;
@@ -40,38 +39,13 @@
  else {
             txtLikeCount.setText(mPost.numLikes == 1 ? getString(R.string.reader_likes_one) : getString(R.string.reader_likes_multi,mPost.numLikes));
           }
-          View.OnClickListener clickListener=new View.OnClickListener(){
+          mLayoutLikes.setOnClickListener(new View.OnClickListener(){
             @Override public void onClick(            View view){
               ReaderActivityLauncher.showReaderLikingUsers(getActivity(),mPost);
             }
           }
-;
-          mLayoutLikes.setOnClickListener(clickListener);
-          final boolean reloadAvatars;
-          if (forceReload) {
-            reloadAvatars=true;
-          }
- else           if (isSameAvatars(avatars)) {
-            reloadAvatars=false;
-          }
- else {
-            reloadAvatars=(layoutLikingAvatars.getChildCount() < maxAvatars);
-          }
-          if (reloadAvatars) {
-            AppLog.d(T.READER,"reader post detail > displaying liking avatars");
-            layoutLikingAvatars.removeAllViews();
-            LayoutInflater inflater=getActivity().getLayoutInflater();
-            for (            String url : avatars) {
-              WPNetworkImageView imgAvatar=(WPNetworkImageView)inflater.inflate(R.layout.reader_like_avatar,layoutLikingAvatars,false);
-              layoutLikingAvatars.addView(imgAvatar);
-              imgAvatar.setImageUrl(PhotonUtils.fixAvatar(url,likeAvatarSize),WPNetworkImageView.ImageType.AVATAR);
-            }
-            mPrevAvatarUrls.clear();
-            mPrevAvatarUrls.addAll(avatars);
-          }
-          if (mLayoutLikes.getVisibility() != View.VISIBLE) {
-            AniUtils.fadeIn(mLayoutLikes);
-          }
+);
+          showLikingAvatars(avatars,maxAvatars,forceReload);
         }
       }
 );
