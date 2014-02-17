@@ -4,10 +4,13 @@
     @Override public void onResponse(    JSONObject response){
       try {
         Theme theme=Theme.fromJSON(response);
-        WordPress.wpDB.setCurrentTheme(siteId,theme.getThemeId());
-        refreshViewPager();
+        if (theme != null) {
+          WordPress.wpDB.setCurrentTheme(siteId,theme.getThemeId());
+          refreshViewPager();
+        }
       }
  catch (      JSONException e) {
+        AppLog.e(T.THEMES,e);
       }
     }
   }
