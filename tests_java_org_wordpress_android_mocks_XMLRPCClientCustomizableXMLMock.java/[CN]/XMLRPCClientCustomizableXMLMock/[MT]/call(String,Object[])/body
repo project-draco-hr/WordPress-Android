@@ -1,0 +1,12 @@
+{
+  AppLog.v(T.TESTS,"XMLRPCClientCustomizableJSONMock: <call(" + method + ", ...)>");
+  if ("login-failure".equals(mPrefix)) {
+    throw new XMLRPCException("code 403");
+  }
+  Object retValue=readFile(method,mPrefix);
+  if (retValue == null) {
+    AppLog.w(T.TESTS,"failback to default");
+    retValue=readFile(method,"default");
+  }
+  return retValue;
+}
