@@ -61,57 +61,8 @@
     if (statusCode != HttpStatus.SC_OK) {
       throw new XMLRPCException("HTTP status code: " + statusCode + " was returned. "+ response.getStatusLine().getReasonPhrase());
     }
-    XmlPullParser pullParser=XmlPullParserFactory.newInstance().newPullParser();
     HttpEntity entity=response.getEntity();
-    InputStream is=entity.getContent();
-    int bomCheck=-1;
-    int stopper=0;
-    while ((bomCheck=is.read()) != -1 && stopper <= 5000) {
-      stopper++;
-      String snippet="";
-      if (bomCheck == 60) {
-        for (int i=0; i < 4; i++) {
-          byte[] chunk=new byte[1];
-          is.read(chunk);
-          snippet+=new String(chunk,"UTF-8");
-        }
-        if (snippet.equals("?xml")) {
-          String start="<" + snippet;
-          List<InputStream> streams=Arrays.asList(new ByteArrayInputStream(start.getBytes()),is);
-          is=new SequenceInputStream(Collections.enumeration(streams));
-          break;
-        }
- else {
-          List<InputStream> streams=Arrays.asList(new ByteArrayInputStream(snippet.getBytes()),is);
-          is=new SequenceInputStream(Collections.enumeration(streams));
-        }
-      }
-    }
-    pullParser.setInput(is,"UTF-8");
-    pullParser.nextTag();
-    pullParser.require(XmlPullParser.START_TAG,null,TAG_METHOD_RESPONSE);
-    pullParser.nextTag();
-    String tag=pullParser.getName();
-    if (tag.equals(TAG_PARAMS)) {
-      pullParser.nextTag();
-      pullParser.require(XmlPullParser.START_TAG,null,TAG_PARAM);
-      pullParser.nextTag();
-      Object obj=XMLRPCSerializer.deserialize(pullParser);
-      entity.consumeContent();
-      return obj;
-    }
- else     if (tag.equals(TAG_FAULT)) {
-      pullParser.nextTag();
-      Map<String,Object> map=(Map<String,Object>)XMLRPCSerializer.deserialize(pullParser);
-      String faultString=(String)map.get(TAG_FAULT_STRING);
-      int faultCode=(Integer)map.get(TAG_FAULT_CODE);
-      entity.consumeContent();
-      throw new XMLRPCFault(faultString,faultCode);
-    }
- else {
-      entity.consumeContent();
-      throw new XMLRPCException("Bad tag <" + tag + "> in XMLRPC response - neither <params> nor <fault>");
-    }
+    return XMLRPCClient.parseXMLRPCResponse(entity.getContent(),entity);
   }
  catch (  XMLRPCException e) {
     deleteTempFile(method,tempFile);
