@@ -1,17 +1,29 @@
 {
 switch (sMode) {
-case CUSTOMIZABLE:
-    XMLRPCClientCustomizableMock client=new XMLRPCClientCustomizableMock(uri,httpUser,httpPassword);
+case CUSTOMIZABLE_JSON:
+    XMLRPCClientCustomizableJSONMock clientJSONMock=new XMLRPCClientCustomizableJSONMock(uri,httpUser,httpPassword);
   if (sContext != null) {
-    client.setContextAndPrefix(sContext,sPrefix);
+    clientJSONMock.setContextAndPrefix(sContext,sPrefix);
   }
  else {
     AppLog.e(T.TESTS,"You have to set XMLRPCFactoryTest.sContext field before running tests");
     throw new IllegalStateException();
   }
-AppLog.v(T.TESTS,"make: XMLRPCClientCustomizableMock");
-sInstances.add(client);
-return client;
+AppLog.v(T.TESTS,"make: XMLRPCClientCustomizableJSONMock");
+sInstances.add(clientJSONMock);
+return clientJSONMock;
+case CUSTOMIZABLE_XML:
+XMLRPCClientCustomizableXMLMock clientXMLMock=new XMLRPCClientCustomizableXMLMock(uri,httpUser,httpPassword);
+if (sContext != null) {
+clientXMLMock.setContextAndPrefix(sContext,sPrefix);
+}
+ else {
+AppLog.e(T.TESTS,"You have to set XMLRPCFactoryTest.sContext field before running tests");
+throw new IllegalStateException();
+}
+AppLog.v(T.TESTS,"make: XMLRPCClientCustomizableJSONMock");
+sInstances.add(clientXMLMock);
+return clientXMLMock;
 case EMPTY:
 default :
 AppLog.v(T.TESTS,"make: XMLRPCClientEmptyMock");
