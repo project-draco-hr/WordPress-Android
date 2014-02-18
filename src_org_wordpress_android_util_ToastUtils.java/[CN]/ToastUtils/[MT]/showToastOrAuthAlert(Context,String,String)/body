@@ -1,0 +1,13 @@
+{
+  if (context == null || !(context instanceof FragmentActivity))   return;
+  FragmentActivity activity=(FragmentActivity)context;
+  if (!TextUtils.isEmpty(xmlrpcMessage) && xmlrpcMessage.contains("code 403") || xmlrpcMessage.contains("code 503")) {
+    FragmentTransaction ft=activity.getSupportFragmentManager().beginTransaction();
+    AuthErrorDialogFragment authAlert=AuthErrorDialogFragment.newInstance(WordPress.getCurrentBlog().isDotcomFlag());
+    ft.add(authAlert,"alert");
+    ft.commitAllowingStateLoss();
+  }
+ else   if (!TextUtils.isEmpty(friendlyMessage)) {
+    showToast(context,friendlyMessage);
+  }
+}

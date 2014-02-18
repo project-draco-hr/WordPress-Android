@@ -1,11 +1,12 @@
 {
   XMLRPCClient client=new XMLRPCClient(Constants.wpcomXMLRPCURL,"","");
   Object[] signInParams={mUsername,mPassword};
+  Blog blog=WordPress.getCurrentBlog();
+  if (blog == null)   return false;
   try {
     client.call("wp.getUsersBlogs",signInParams);
-    WordPress.currentBlog.setDotcom_username(mUsername);
-    WordPress.currentBlog.setDotcom_password(mPassword);
-    WordPress.currentBlog.save();
+    blog.setDotcom_username(mUsername);
+    blog.setDotcom_password(mPassword);
     if (!mIsJetpackAuthRequest) {
       if (WordPress.hasValidWPComCredentials(WPComLoginActivity.this)) {
         NotificationUtils.unregisterDevicePushNotifications(WPComLoginActivity.this);
@@ -21,7 +22,10 @@
       settings.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mUsername);
       settings.putString(WordPress.WPCOM_PASSWORD_PREFERENCE,WordPressDB.encryptPassword(mPassword));
       settings.commit();
+      blog.setUsername(mUsername);
+      blog.setPassword(mPassword);
     }
+    blog.save();
     return true;
   }
  catch (  XMLRPCException e) {
