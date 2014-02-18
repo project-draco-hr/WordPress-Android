@@ -19,6 +19,7 @@
   postHash.put("author_email",authorEmail);
   XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
   Object[] xmlParams={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),mCommentId,postHash};
+  ApiHelper.addAuthorizationHeaderIfNeeded(blog,client);
   try {
     Object result=client.call("wp.editComment",xmlParams);
     boolean isSaved=(result != null && Boolean.parseBoolean(result.toString()));
