@@ -1,60 +1,6 @@
 {
   try {
-    if (method.equals("wp.uploadFile")) {
-      if (!tempFile.exists() && !tempFile.mkdirs()) {
-        throw new XMLRPCException("Path to file could not be created.");
-      }
-      FileWriter fileWriter=new FileWriter(tempFile);
-      serializer.setOutput(fileWriter);
-      serializer.startDocument(null,null);
-      serializer.startTag(null,TAG_METHOD_CALL);
-      serializer.startTag(null,TAG_METHOD_NAME).text(method).endTag(null,TAG_METHOD_NAME);
-      if (params != null && params.length != 0) {
-        serializer.startTag(null,TAG_PARAMS);
-        for (int i=0; i < params.length; i++) {
-          serializer.startTag(null,TAG_PARAM).startTag(null,XMLRPCSerializer.TAG_VALUE);
-          XMLRPCSerializer.serialize(serializer,params[i]);
-          serializer.endTag(null,XMLRPCSerializer.TAG_VALUE).endTag(null,TAG_PARAM);
-        }
-        serializer.endTag(null,TAG_PARAMS);
-      }
-      serializer.endTag(null,TAG_METHOD_CALL);
-      serializer.endDocument();
-      fileWriter.flush();
-      fileWriter.close();
-      FileEntity fEntity=new FileEntity(tempFile,"text/xml; charset=\"UTF-8\"");
-      fEntity.setContentType("text/xml");
-      postMethod.setEntity(fEntity);
-    }
- else {
-      StringWriter bodyWriter=new StringWriter();
-      serializer.setOutput(bodyWriter);
-      serializer.startDocument(null,null);
-      serializer.startTag(null,TAG_METHOD_CALL);
-      serializer.startTag(null,TAG_METHOD_NAME).text(method).endTag(null,TAG_METHOD_NAME);
-      if (params != null && params.length != 0) {
-        serializer.startTag(null,TAG_PARAMS);
-        for (int i=0; i < params.length; i++) {
-          serializer.startTag(null,TAG_PARAM).startTag(null,XMLRPCSerializer.TAG_VALUE);
-          if (method.equals("metaWeblog.editPost") || method.equals("metaWeblog.newPost")) {
-            XMLRPCSerializer.serialize(serializer,params[i]);
-          }
- else {
-            XMLRPCSerializer.serialize(serializer,params[i]);
-          }
-          serializer.endTag(null,XMLRPCSerializer.TAG_VALUE).endTag(null,TAG_PARAM);
-        }
-        serializer.endTag(null,TAG_PARAMS);
-      }
-      serializer.endTag(null,TAG_METHOD_CALL);
-      serializer.endDocument();
-      HttpEntity entity=new StringEntity(bodyWriter.toString());
-      postMethod.setEntity(entity);
-    }
-    client.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT,40000);
-    client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT,40000);
-    postMethod.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT,40000);
-    postMethod.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT,40000);
+    preparePostMethod(method,params,tempFile);
     HttpResponse response=client.execute(postMethod);
     int statusCode=response.getStatusLine().getStatusCode();
     deleteTempFile(method,tempFile);
