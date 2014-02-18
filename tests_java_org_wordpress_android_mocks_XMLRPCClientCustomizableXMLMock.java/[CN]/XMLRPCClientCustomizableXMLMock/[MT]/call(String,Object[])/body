@@ -1,5 +1,11 @@
 {
-  AppLog.v(T.TESTS,"XMLRPCClientCustomizableJSONMock: <call(" + method + ", ...)>");
+  try {
+    mXmlRpcClient.preparePostMethod(method,params,null);
+  }
+ catch (  IOException e) {
+    throw new XMLRPCException("preparePostMethod failed");
+  }
+  AppLog.v(T.TESTS,"XMLRPCClientCustomizableXMLMock call: " + method);
   if ("login-failure".equals(mPrefix)) {
     throw new XMLRPCException("code 403");
   }
