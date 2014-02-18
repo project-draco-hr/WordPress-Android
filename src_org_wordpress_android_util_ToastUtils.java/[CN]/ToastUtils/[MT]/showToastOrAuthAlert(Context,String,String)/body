@@ -1,13 +1,14 @@
 {
-  if (context == null || !(context instanceof FragmentActivity))   return;
-  FragmentActivity activity=(FragmentActivity)context;
-  if (!TextUtils.isEmpty(xmlrpcMessage) && xmlrpcMessage.contains("code 403") || xmlrpcMessage.contains("code 503")) {
+  if (context == null)   return;
+  if ((context instanceof FragmentActivity) && !TextUtils.isEmpty(xmlrpcMessage) && xmlrpcMessage.contains("code 403") || xmlrpcMessage.contains("code 503")) {
+    FragmentActivity activity=(FragmentActivity)context;
     FragmentTransaction ft=activity.getSupportFragmentManager().beginTransaction();
     AuthErrorDialogFragment authAlert=AuthErrorDialogFragment.newInstance(WordPress.getCurrentBlog().isDotcomFlag());
     ft.add(authAlert,"alert");
     ft.commitAllowingStateLoss();
   }
- else   if (!TextUtils.isEmpty(friendlyMessage)) {
-    showToast(context,friendlyMessage);
+ else {
+    String errorMessage=TextUtils.isEmpty(friendlyMessage) ? context.getString(R.string.error_generic) : friendlyMessage;
+    showToast(context,errorMessage);
   }
 }
