@@ -2,12 +2,20 @@
   AppLog.v(T.TESTS,this.getClass() + ": makeRequest(" + url+ ")");
   RestRequest dummyReturnValue=new RestRequest(method,url,params,listener,errorListener);
   String filename=mPrefix + "-" + url.replace("https://","").replace("/","-").replace(".","-").replace("?","-")+ ".json";
-  if ("password-invalid".equals(mPrefix)) {
-    errorListener.onErrorResponse(createVolleyErrorFromFilename(filename));
+  if ("password-invalid".equals(mPrefix) && errorListener != null) {
+    errorListener.onErrorResponse(forgeVolleyErrorFromFilename(filename));
     return dummyReturnValue;
   }
-  if ("username-exists".equals(mPrefix)) {
-    errorListener.onErrorResponse(createVolleyErrorFromFilename(filename));
+  if ("username-exists".equals(mPrefix) && errorListener != null) {
+    errorListener.onErrorResponse(forgeVolleyErrorFromFilename(filename));
+    return dummyReturnValue;
+  }
+  if ("timeout".equals(mPrefix) && errorListener != null) {
+    errorListener.onErrorResponse(forgeVolleyTimeoutError());
+    return dummyReturnValue;
+  }
+  if ("site-reserved".equals(mPrefix) && errorListener != null) {
+    errorListener.onErrorResponse(forgeVolleyErrorFromFilename(filename));
     return dummyReturnValue;
   }
   try {
