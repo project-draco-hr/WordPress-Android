@@ -4,6 +4,7 @@
       WordPress.restClient.get("me",new RestRequest.Listener(){
         @Override public void onResponse(        JSONObject jsonObject){
           WPComLoginActivity.this.setResult(RESULT_OK);
+          WordPress.registerForCloudMessaging(WPComLoginActivity.this);
           ReaderUserActions.setCurrentUser(jsonObject);
           finish();
         }
@@ -16,8 +17,9 @@
     }
   }
  else {
-    Toast.makeText(getBaseContext(),getString(R.string.invalid_login),Toast.LENGTH_SHORT).show();
-    mSignInButon.setEnabled(true);
-    mSignInButon.setText(R.string.sign_in);
+    String errorMessage=mIsWpcomAccountWith2FA ? getString(R.string.account_two_step_auth_enabled) : getString(R.string.nux_cannot_log_in);
+    Toast.makeText(getBaseContext(),errorMessage,Toast.LENGTH_LONG).show();
+    mSignInButton.setEnabled(true);
+    mSignInButton.setText(R.string.sign_in);
   }
 }
