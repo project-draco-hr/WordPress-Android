@@ -2,6 +2,7 @@
   if (context == null)   return;
   if ((context instanceof FragmentActivity) && !TextUtils.isEmpty(xmlrpcMessage) && xmlrpcMessage.contains("code 403") || xmlrpcMessage.contains("code 503")) {
     FragmentActivity activity=(FragmentActivity)context;
+    if (activity.isFinishing())     return;
     FragmentTransaction ft=activity.getSupportFragmentManager().beginTransaction();
     AuthErrorDialogFragment authAlert=AuthErrorDialogFragment.newInstance(WordPress.getCurrentBlog().isDotcomFlag());
     ft.add(authAlert,"alert");
