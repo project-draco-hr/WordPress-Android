@@ -2,53 +2,13 @@
   super.onCreate(icicle);
   setContentView(R.layout.edit_comment);
   setTitle(getString(R.string.edit_comment));
-  ((TextView)findViewById(R.id.l_section1)).setText(getResources().getString(R.string.comment_content).toUpperCase());
-  ((TextView)findViewById(R.id.l_status)).setText(getResources().getString(R.string.status).toUpperCase());
-  Comment comment=WordPress.currentComment;
-  if (comment == null) {
-    Toast.makeText(this,getString(R.string.error_load_comment),Toast.LENGTH_SHORT).show();
-    finish();
-    return;
+  ActionBar actionBar=getSupportActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayShowTitleEnabled(true);
+    actionBar.setDisplayHomeAsUpEnabled(true);
   }
-  final EditText authorNameET=(EditText)this.findViewById(R.id.author_name);
-  authorNameET.setText(comment.name);
-  final EditText authorEmailET=(EditText)this.findViewById(R.id.author_email);
-  authorEmailET.setText(comment.authorEmail);
-  final EditText authorURLET=(EditText)this.findViewById(R.id.author_url);
-  authorURLET.setText(comment.authorURL);
-  final EditText commentContentET=(EditText)this.findViewById(R.id.comment_content);
-  commentContentET.setText(comment.comment);
-  String[] items=new String[]{getResources().getString(R.string.approved),getResources().getString(R.string.pending_review),getResources().getString(R.string.spam)};
-  Spinner spinner=(Spinner)findViewById(R.id.status);
-  ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,items);
-  adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-  spinner.setAdapter(adapter);
-switch (comment.getStatusEnum()) {
-case APPROVED:
-    spinner.setSelection(0,true);
-  break;
-case UNAPPROVED:
-spinner.setSelection(1,true);
-break;
-case SPAM:
-spinner.setSelection(2,true);
-break;
-}
-spinner.setOnItemSelectedListener(new OnItemSelectedListener(){
-@Override public void onItemSelected(AdapterView<?> arg0,View arg1,int arg2,long arg3){
-}
-@Override public void onNothingSelected(AdapterView<?> arg0){
-}
-}
-);
-final Button saveButton=(Button)findViewById(R.id.post);
-saveButton.setOnClickListener(new Button.OnClickListener(){
-public void onClick(View v){
-boolean result=saveComment();
-if (result) {
-finish();
-}
-}
-}
-);
+  if (!loadComment(getIntent())) {
+    ToastUtils.showToast(this,R.string.error_load_comment);
+    finish();
+  }
 }

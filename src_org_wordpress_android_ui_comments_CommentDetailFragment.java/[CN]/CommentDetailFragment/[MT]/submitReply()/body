@@ -6,25 +6,26 @@
   mEditReply.setEnabled(false);
   EditTextUtils.hideSoftInput(mEditReply);
   mImgSubmitReply.setVisibility(View.GONE);
-  final ProgressBar progress=(ProgressBar)getActivity().findViewById(R.id.progress_submit_comment);
+  final ProgressBar progress=(ProgressBar)getView().findViewById(R.id.progress_submit_comment);
   progress.setVisibility(View.VISIBLE);
   CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
     @Override public void onActionResult(    boolean succeeded){
       mIsSubmittingReply=false;
-      if (!hasActivity())       return;
-      mEditReply.setEnabled(true);
-      mImgSubmitReply.setVisibility(View.VISIBLE);
-      progress.setVisibility(View.GONE);
-      if (succeeded) {
-        if (mChangeListener != null)         mChangeListener.onCommentAdded();
-        MessageBarUtils.showMessageBar(getActivity(),getString(R.string.note_reply_successful));
-        mEditReply.setText(null);
-      }
+      if (succeeded && mOnCommentChangeListener != null)       mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL);
+      if (hasActivity()) {
+        mEditReply.setEnabled(true);
+        mImgSubmitReply.setVisibility(View.VISIBLE);
+        progress.setVisibility(View.GONE);
+        if (succeeded) {
+          ToastUtils.showToast(getActivity(),getString(R.string.note_reply_successful));
+          mEditReply.setText(null);
+        }
  else {
-        ToastUtils.showToast(getActivity(),R.string.reply_failed,ToastUtils.Duration.LONG);
-        mEditReply.requestFocus();
-        InputMethodManager imm=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(mEditReply,InputMethodManager.SHOW_IMPLICIT);
+          ToastUtils.showToast(getActivity(),R.string.reply_failed,ToastUtils.Duration.LONG);
+          mEditReply.requestFocus();
+          InputMethodManager imm=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+          imm.showSoftInput(mEditReply,InputMethodManager.SHOW_IMPLICIT);
+        }
       }
     }
   }

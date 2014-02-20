@@ -1,5 +1,9 @@
 {
   WPMobileStatsUtil.trackEventForWPCom(statEventForNewPost());
+  if (WordPress.getCurrentBlog() == null) {
+    if (!isFinishing())     Toast.makeText(this,R.string.blog_not_found,Toast.LENGTH_SHORT).show();
+    return;
+  }
   Post newPost=new Post(WordPress.getCurrentBlog().getLocalTableBlogId(),mIsPage);
   Intent i=new Intent(this,EditPostActivity.class);
   i.putExtra(EditPostActivity.EXTRA_POSTID,newPost.getId());

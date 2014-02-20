@@ -1,5 +1,6 @@
 {
   if (WordPress.getCurrentBlog() == null)   return;
+  if (!NetworkUtils.isNetworkAvailable(this))   return;
   String blogId;
   if (WordPress.getCurrentBlog().isDotcomFlag() && dotComCredentialsMatch())   blogId=String.valueOf(WordPress.getCurrentBlog().getRemoteBlogId());
  else {
@@ -16,7 +17,8 @@
       if (mSignInDialog != null && mSignInDialog.isShowing()) {
         return;
       }
-      if (!isFinishing() && error.networkResponse != null && error.networkResponse.statusCode == 403) {
+      if (isFinishing())       return;
+      if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
         AlertDialog.Builder builder=new AlertDialog.Builder(StatsActivity.this);
         builder.setTitle(getString(R.string.jetpack_stats_unauthorized)).setMessage(getString(R.string.jetpack_stats_switch_user));
         builder.setPositiveButton(R.string.yes,new DialogInterface.OnClickListener(){
@@ -34,9 +36,7 @@
         mSignInDialog.show();
         return;
       }
-      if (!isFinishing()) {
-        ToastUtils.showToast(getBaseContext(),R.string.error_refresh_stats,ToastUtils.Duration.LONG);
-      }
+      ToastUtils.showToastOrAuthAlert(StatsActivity.this,error,StatsActivity.this.getString(R.string.error_refresh_stats));
     }
   }
 );

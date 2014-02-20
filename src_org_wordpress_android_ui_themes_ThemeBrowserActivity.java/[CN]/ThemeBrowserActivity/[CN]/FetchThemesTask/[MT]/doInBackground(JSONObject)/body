@@ -10,13 +10,15 @@
         for (int i=0; i < count; i++) {
           JSONObject object=array.getJSONObject(i);
           Theme theme=Theme.fromJSON(object);
-          theme.save();
-          themes.add(theme);
+          if (theme != null) {
+            theme.save();
+            themes.add(theme);
+          }
         }
       }
     }
  catch (    JSONException e) {
-      e.printStackTrace();
+      AppLog.e(T.THEMES,e);
     }
   }
   fetchCurrentTheme();

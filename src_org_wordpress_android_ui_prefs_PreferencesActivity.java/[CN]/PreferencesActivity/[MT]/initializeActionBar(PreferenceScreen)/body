@@ -1,0 +1,29 @@
+{
+  if (android.os.Build.VERSION.SDK_INT < 11)   return;
+  final Dialog dialog=preferenceScreen.getDialog();
+  if (dialog != null) {
+    dialog.getActionBar().setDisplayHomeAsUpEnabled(true);
+    View homeBtn=dialog.findViewById(android.R.id.home);
+    if (homeBtn != null) {
+      OnClickListener dismissDialogClickListener=new OnClickListener(){
+        @Override public void onClick(        View v){
+          dialog.dismiss();
+        }
+      }
+;
+      ViewParent homeBtnContainer=homeBtn.getParent();
+      if (homeBtnContainer instanceof FrameLayout) {
+        ViewGroup containerParent=(ViewGroup)homeBtnContainer.getParent();
+        if (containerParent instanceof LinearLayout) {
+          ((LinearLayout)containerParent).setOnClickListener(dismissDialogClickListener);
+        }
+ else {
+          ((FrameLayout)homeBtnContainer).setOnClickListener(dismissDialogClickListener);
+        }
+      }
+ else {
+        homeBtn.setOnClickListener(dismissDialogClickListener);
+      }
+    }
+  }
+}

@@ -1,3 +1,7 @@
 {
-  return SqlUtils.intForQuery(db,"SELECT id FROM accounts WHERE blogId=? AND url=?",new String[]{Integer.toString(remoteBlogId),xmlRpcUrl});
+  int localBlogID=SqlUtils.intForQuery(db,"SELECT id FROM accounts WHERE blogId=? AND url=?",new String[]{Integer.toString(remoteBlogId),xmlRpcUrl});
+  if (localBlogID == 0) {
+    localBlogID=this.getLocalTableBlogIdForJetpackRemoteID(remoteBlogId,xmlRpcUrl);
+  }
+  return localBlogID;
 }

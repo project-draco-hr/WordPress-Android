@@ -1,0 +1,21 @@
+{
+  if (!hasActivity())   return null;
+  Map<String,Object> hPost=new HashMap<String,Object>();
+  if (isLoadingMore) {
+    int numExisting=getCommentAdapter().getCount();
+    hPost.put("offset",numExisting);
+    hPost.put("number",COMMENTS_PER_PAGE);
+  }
+ else {
+    hPost.put("number",COMMENTS_PER_PAGE);
+  }
+  Object[] params={WordPress.currentBlog.getRemoteBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),hPost};
+  try {
+    return ApiHelper.refreshComments(getActivity(),params);
+  }
+ catch (  XMLRPCException e) {
+    errorMessage=e.getMessage();
+    isError=true;
+    return null;
+  }
+}

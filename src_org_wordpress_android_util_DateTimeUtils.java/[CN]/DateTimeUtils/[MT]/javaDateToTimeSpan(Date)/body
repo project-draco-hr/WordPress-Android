@@ -1,8 +1,8 @@
 {
   if (date == null)   return "";
-  long localTime=date.getTime();
-  long currentMs=System.currentTimeMillis();
-  long secondsSince=(currentMs - localTime) / 1000;
+  long passedTime=date.getTime();
+  long currentTime=System.currentTimeMillis();
+  long secondsSince=(currentTime - passedTime) / 1000;
   if (secondsSince < 60)   return WordPress.getContext().getString(R.string.reader_timespan_now);
   long minutesSince=secondsSince / 60;
   if (minutesSince < 60)   return Long.toString(minutesSince) + "m";
@@ -10,5 +10,6 @@
   if (hoursSince < 24)   return Long.toString(hoursSince) + "h";
   long daysSince=hoursSince / 24;
   if (daysSince < 7)   return Long.toString(daysSince) + "d";
-  return DateUtils.getRelativeTimeSpanString(localTime,currentMs,DateUtils.SECOND_IN_MILLIS,DateUtils.FORMAT_ABBREV_ALL).toString();
+  if (daysSince < 365)   return DateUtils.formatDateTime(WordPress.getContext(),passedTime,DateUtils.FORMAT_NO_YEAR | DateUtils.FORMAT_ABBREV_ALL);
+  return DateUtils.formatDateTime(WordPress.getContext(),passedTime,DateUtils.FORMAT_ABBREV_ALL);
 }
