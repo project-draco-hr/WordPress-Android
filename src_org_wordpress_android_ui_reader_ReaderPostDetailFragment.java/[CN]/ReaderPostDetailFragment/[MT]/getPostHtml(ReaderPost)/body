@@ -14,6 +14,7 @@
   int marginLarge=getResources().getDimensionPixelSize(R.dimen.margin_large);
   int marginSmall=getResources().getDimensionPixelSize(R.dimen.margin_small);
   int marginExtraSmall=getResources().getDimensionPixelSize(R.dimen.margin_extra_small);
+  int fullSizeImageWidth=getFullSizeImageWidth();
   final Context context=WordPress.getContext();
   final String linkColor=HtmlUtils.colorResToHtmlColor(context,R.color.reader_hyperlink);
   final String greyLight=HtmlUtils.colorResToHtmlColor(context,R.color.grey_light);
@@ -27,7 +28,7 @@
   sbHtml.append("  p { margin-top: 0px; margin-bottom: ").append(marginSmall).append("px; }");
   sbHtml.append("  a { word-wrap: break-word; text-decoration: none; color: ").append(linkColor).append("; }");
   if (ENABLE_EMBEDS) {
-    int videoWidth=320;
+    int videoWidth=DisplayUtils.pxToDp(getActivity(),fullSizeImageWidth - (marginLarge * 2));
     int videoHeight=(int)(videoWidth * 0.5625f);
     sbHtml.append("  iframe, embed { width: ").append(videoWidth).append("px !important;").append("                  height: ").append(videoHeight).append("px !important; }");
   }
@@ -40,7 +41,7 @@
   sbHtml.append("  img.size-full, img.size-large { display: block; width: 100% !important; height: auto; }");
   sbHtml.append("  img.size-medium { display: block; margin-left: auto !important; margin-right: auto !important; }");
   if (content.contains("tiled-gallery-item")) {
-    String widthParam="w=" + Integer.toString(getFullSizeImageWidth());
+    String widthParam="w=" + Integer.toString(fullSizeImageWidth);
     content=content.replaceAll("w=[0-9]+",widthParam).replaceAll("h=[0-9]+","");
     sbHtml.append("  div.gallery-row, div.gallery-group { width: auto !important; height: auto !important; }").append("  div.tiled-gallery-item img { ").append("     width: auto !important; height: auto !important;").append("     margin-top: ").append(marginExtraSmall).append("px; ").append("     margin-bottom: ").append(marginExtraSmall).append("px; ").append(" }").append("  div.tiled-gallery-caption { clear: both; }");
   }
