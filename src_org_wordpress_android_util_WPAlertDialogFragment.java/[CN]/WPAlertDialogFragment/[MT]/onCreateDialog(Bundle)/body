@@ -1,58 +1,49 @@
 {
-  AlertDialog.Builder b=new AlertDialog.Builder(getActivity());
-  if (isXMLRPC) {
-    String error=this.getArguments().getString("alert-error");
-    if (error == null)     error=getString(R.string.error_generic);
-    String message=this.getArguments().getString("alert-message");
-    if (message == null)     message=getString(R.string.error_generic);
-    b.setIcon(android.R.drawable.ic_dialog_alert);
-    b.setTitle(R.string.connection_error);
-    b.setMessage((error.contains("code 405")) ? error : message);
-    b.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener(){
-      @Override public void onClick(      DialogInterface dialog,      int which){
-      }
-    }
-);
-    b.setCancelable(true);
-    return b.create();
-  }
- else   if (isLoadMore) {
-    String error=this.getArguments().getString("alert-error");
-    String message=this.getArguments().getString("alert-message");
-    b.setIcon(android.R.drawable.ic_dialog_alert);
-    b.setTitle(error);
-    b.setMessage(message);
-    b.setCancelable(true);
-    b.setPositiveButton(R.string.yes,new DialogInterface.OnClickListener(){
-      @Override public void onClick(      DialogInterface dialog,      int which){
-        OnDialogConfirmListener act=(OnDialogConfirmListener)getActivity();
-        act.onDialogConfirm();
-      }
-    }
-);
-    b.setNegativeButton(R.string.no,new DialogInterface.OnClickListener(){
-      @Override public void onClick(      DialogInterface dialog,      int which){
-      }
-    }
-);
-    return b.create();
+  Bundle bundle=getArguments();
+  final String title=bundle.getString(ARG_TITLE);
+  final String message=bundle.getString(ARG_MESSAGE);
+  final WPAlertDialogType dialogType;
+  if (bundle.containsKey(ARG_TYPE)) {
+    dialogType=(WPAlertDialogType)bundle.getSerializable(ARG_TYPE);
   }
  else {
-    String infoTitle=this.getArguments().getString("info-title");
-    final String infoURL=this.getArguments().getString("info-url");
-    String error=this.getArguments().getString("alert-error");
-    if (error != null)     b.setTitle(error);
- else     b.setTitle(R.string.error);
-    b.setPositiveButton("OK",this);
-    if (infoTitle != null && infoURL != null) {
-      b.setNeutralButton(infoTitle,new DialogInterface.OnClickListener(){
-        @Override public void onClick(        DialogInterface dialog,        int which){
-          startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(infoURL)));
-        }
-      }
-);
-    }
-    b.setMessage(this.getArguments().getString("alert-message"));
-    return b.create();
+    dialogType=WPAlertDialogType.ALERT;
   }
+  AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+  builder.setTitle(title);
+  builder.setMessage(message);
+switch (dialogType) {
+case ERROR:
+    builder.setIcon(android.R.drawable.ic_dialog_alert);
+  builder.setNeutralButton(R.string.ok,this);
+break;
+case ALERT:
+builder.setIcon(android.R.drawable.ic_dialog_alert);
+builder.setPositiveButton(R.string.yes,new DialogInterface.OnClickListener(){
+@Override public void onClick(DialogInterface dialog,int which){
+if (getActivity() instanceof OnDialogConfirmListener) {
+  OnDialogConfirmListener act=(OnDialogConfirmListener)getActivity();
+  act.onDialogConfirm();
+}
+}
+}
+);
+builder.setNegativeButton(R.string.no,this);
+break;
+case URL_INFO:
+final String infoTitle=bundle.getString(ARG_INFO_TITLE);
+final String infoURL=bundle.getString(ARG_INFO_URL);
+builder.setIcon(android.R.drawable.ic_dialog_info);
+builder.setPositiveButton(R.string.ok,this);
+if (infoTitle != null && infoURL != null) {
+builder.setNeutralButton(infoTitle,new DialogInterface.OnClickListener(){
+@Override public void onClick(DialogInterface dialog,int which){
+startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(infoURL)));
+}
+}
+);
+}
+break;
+}
+return builder.create();
 }
