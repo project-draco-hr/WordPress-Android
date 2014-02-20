@@ -1,0 +1,34 @@
+{
+  AlertDialog.Builder b=new AlertDialog.Builder(getActivity());
+  b.setTitle(R.string.connection_error);
+  if (mIsWPCom) {
+    b.setMessage(getResources().getText(R.string.incorrect_credentials) + " " + getResources().getText(R.string.please_sign_in));
+    b.setPositiveButton(R.string.sign_in,new DialogInterface.OnClickListener(){
+      @Override public void onClick(      DialogInterface dialog,      int which){
+        Intent authIntent=new Intent(getActivity(),WPComLoginActivity.class);
+        authIntent.putExtra("wpcom",true);
+        authIntent.putExtra("auth-only",true);
+        getActivity().startActivity(authIntent);
+      }
+    }
+);
+  }
+ else {
+    b.setMessage(getResources().getText(R.string.incorrect_credentials) + " " + getResources().getText(R.string.load_settings));
+    b.setCancelable(true);
+    b.setPositiveButton(R.string.yes,new DialogInterface.OnClickListener(){
+      @Override public void onClick(      DialogInterface dialog,      int which){
+        Intent settingsIntent=new Intent(getActivity(),BlogPreferencesActivity.class);
+        settingsIntent.putExtra("id",WordPress.getCurrentBlog().getLocalTableBlogId());
+        getActivity().startActivity(settingsIntent);
+      }
+    }
+);
+    b.setNegativeButton(R.string.no,new DialogInterface.OnClickListener(){
+      @Override public void onClick(      DialogInterface dialog,      int which){
+      }
+    }
+);
+  }
+  return b.create();
+}
