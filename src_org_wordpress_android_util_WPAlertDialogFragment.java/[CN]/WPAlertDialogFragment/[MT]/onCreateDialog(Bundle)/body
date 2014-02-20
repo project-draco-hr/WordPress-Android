@@ -13,18 +13,17 @@
   builder.setTitle(title);
   builder.setMessage(message);
 switch (dialogType) {
-case ERROR:
+case ALERT:
     builder.setIcon(android.R.drawable.ic_dialog_alert);
   builder.setNeutralButton(R.string.ok,this);
 break;
-case ALERT:
-builder.setIcon(android.R.drawable.ic_dialog_alert);
+case CONFIRM:
 builder.setPositiveButton(R.string.yes,new DialogInterface.OnClickListener(){
 @Override public void onClick(DialogInterface dialog,int which){
-if (getActivity() instanceof OnDialogConfirmListener) {
-  OnDialogConfirmListener act=(OnDialogConfirmListener)getActivity();
-  act.onDialogConfirm();
-}
+  if (getActivity() instanceof OnDialogConfirmListener) {
+    OnDialogConfirmListener act=(OnDialogConfirmListener)getActivity();
+    act.onDialogConfirm();
+  }
 }
 }
 );
@@ -33,16 +32,12 @@ break;
 case URL_INFO:
 final String infoTitle=bundle.getString(ARG_INFO_TITLE);
 final String infoURL=bundle.getString(ARG_INFO_URL);
-builder.setIcon(android.R.drawable.ic_dialog_info);
-builder.setPositiveButton(R.string.ok,this);
-if (infoTitle != null && infoURL != null) {
-builder.setNeutralButton(infoTitle,new DialogInterface.OnClickListener(){
+builder.setPositiveButton(infoTitle,new DialogInterface.OnClickListener(){
 @Override public void onClick(DialogInterface dialog,int which){
-startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(infoURL)));
+if (!TextUtils.isEmpty(infoURL)) startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(infoURL)));
 }
 }
 );
-}
 break;
 }
 return builder.create();
