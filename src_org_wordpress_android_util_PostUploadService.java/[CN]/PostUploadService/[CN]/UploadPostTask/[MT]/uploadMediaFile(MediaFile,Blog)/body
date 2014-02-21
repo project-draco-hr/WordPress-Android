@@ -57,31 +57,11 @@
       mErrorMessage=context.getResources().getString(R.string.error_media_upload);
       return null;
     }
-    String videoName=videoFile.getName();
     if (TextUtils.isEmpty(mimeType)) {
-      MimeTypeMap mimeTypeMap=MimeTypeMap.getSingleton();
-      String fileExtension=MimeTypeMap.getFileExtensionFromUrl(videoName);
-      if (!TextUtils.isEmpty(fileExtension)) {
-        mimeType=mimeTypeMap.getMimeTypeFromExtension(fileExtension);
-      }
-    }
-    if (TextUtils.isEmpty(mimeType)) {
-      try {
-        String videoFilePathForGuessingMime=videoFile.getPath().contains("://") ? videoFile.getPath() : "file://" + videoFile.getPath();
-        URL urlForGuessingMime=new URL(videoFilePathForGuessingMime);
-        URLConnection uc=urlForGuessingMime.openConnection();
-        String guessedContentType=uc.getContentType();
-        if (!TextUtils.isEmpty(guessedContentType) && !guessedContentType.equals("content/unknown"))         mimeType=guessedContentType;
-      }
- catch (      Exception e) {
-        AppLog.e(T.API,"Error while trying to guess the content type for the Video here " + videoFile.getPath() + " with URLConnection",e);
-      }
-    }
-    if (mimeType == null)     mimeType="";
-    if (mimeType.equalsIgnoreCase("video/mp4v-es")) {
-      mimeType="video/mp4";
+      mimeType=getMediaMimeType(videoFile,false);
     }
     Map<String,Object> m=new HashMap<String,Object>();
+    String videoName=videoFile.getName();
     m.put("name",videoName);
     m.put("type",mimeType);
     m.put("bits",mf);
@@ -147,40 +127,14 @@
       mIsMediaError=true;
       return null;
     }
-    String fileName=imageFile.getName();
-    MimeTypeMap mimeTypeMap=MimeTypeMap.getSingleton();
-    String fileExtension=MimeTypeMap.getFileExtensionFromUrl(fileName).toLowerCase();
-    if (!TextUtils.isEmpty(fileExtension)) {
-      String newMimeType=mimeTypeMap.getMimeTypeFromExtension(fileExtension);
-      if (newMimeType != null) {
-        mimeType=newMimeType;
-      }
-    }
- else {
-      try {
-        DataInputStream inputStream=new DataInputStream(new FileInputStream(imageFile));
-        String imageMimeType=MediaUtils.getMimeTypeOfInputStream(inputStream);
-        if (!TextUtils.isEmpty(imageMimeType)) {
-          mimeType=imageMimeType;
-          if (mimeTypeMap.hasMimeType(mimeType)) {
-            fileExtension=mimeTypeMap.getExtensionFromMimeType(mimeType);
-            fileName+="." + fileExtension;
-          }
-        }
-        inputStream.close();
-      }
- catch (      FileNotFoundException e) {
-        e.printStackTrace();
-      }
-catch (      IOException e) {
-        e.printStackTrace();
-      }
+    if (TextUtils.isEmpty(mimeType)) {
+      mimeType=getMediaMimeType(imageFile,true);
     }
     ImageHelper ih=new ImageHelper();
     orientation=ih.getExifOrientation(path,orientation);
     String resizedPictureURL=null;
     boolean shouldUploadResizedVersion=false;
-    if (!fileExtension.equals("gif") && !blog.getMaxImageWidth().equals("Original Size")) {
+    if (!mimeType.equals("image/gif") && !blog.getMaxImageWidth().equals("Original Size")) {
       int pictureSettingWidth=mf.getWidth();
       BitmapFactory.Options options=new BitmapFactory.Options();
       options.inJustDecodeBounds=true;
@@ -192,6 +146,7 @@ catch (      IOException e) {
         shouldUploadResizedVersion=true;
       }
     }
+    String fileName=imageFile.getName();
     if (shouldUploadResizedVersion) {
       byte[] bytes;
       byte[] finalBytes;
@@ -223,7 +178,8 @@ catch (      IOException e) {
         e.printStackTrace();
       }
       String width=String.valueOf(mf.getWidth());
-      finalBytes=ih.createThumbnail(bytes,width,orientation,false,fileExtension);
+      String fileExtensionThumb=MimeTypeMap.getFileExtensionFromUrl(fileName).toLowerCase();
+      finalBytes=ih.createThumbnail(bytes,width,orientation,false,fileExtensionThumb);
       if (finalBytes == null) {
         mErrorMessage=context.getString(R.string.out_of_memory);
         mIsMediaError=true;
