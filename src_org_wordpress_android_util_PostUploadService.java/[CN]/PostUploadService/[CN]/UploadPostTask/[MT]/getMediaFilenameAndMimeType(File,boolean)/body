@@ -1,7 +1,9 @@
 {
-  String videoName=mediaFile.getName();
-  String mimeType=UrlUtils.getUrlMimeType(videoName);
+  String originalFileName=mediaFile.getName();
+  String mimeType=UrlUtils.getUrlMimeType(originalFileName);
+  boolean shouldFixfileName=false;
   if (TextUtils.isEmpty(mimeType)) {
+    shouldFixfileName=true;
     try {
       String filePathForGuessingMime=mediaFile.getPath().contains("://") ? mediaFile.getPath() : "file://" + mediaFile.getPath();
       URL urlForGuessingMime=new URL(filePathForGuessingMime);
@@ -35,12 +37,21 @@ catch (    IOException e) {
     }
   }
   if (TextUtils.isEmpty(mimeType)) {
-    return "";
+    mimeType="";
   }
  else {
     if (mimeType.equalsIgnoreCase("video/mp4v-es")) {
       mimeType="video/mp4";
     }
   }
-  return mimeType;
+  if (shouldFixfileName) {
+    MimeTypeMap mimeTypeMap=MimeTypeMap.getSingleton();
+    String fileExtension=mimeTypeMap.getExtensionFromMimeType(mimeType);
+    originalFileName+="." + fileExtension;
+    ;
+  }
+  Hashtable<String,String> returnValues=new Hashtable<String,String>();
+  returnValues.put("mimetype",mimeType);
+  returnValues.put("filename",originalFileName);
+  return returnValues;
 }

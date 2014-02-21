@@ -57,11 +57,12 @@
       mErrorMessage=context.getResources().getString(R.string.error_media_upload);
       return null;
     }
+    Hashtable<String,String> mimeTypeAndFileName=getMediaFilenameAndMimeType(videoFile,false);
     if (TextUtils.isEmpty(mimeType)) {
-      mimeType=getMediaMimeType(videoFile,false);
+      mimeType=mimeTypeAndFileName.get("mimetype");
     }
+    String videoName=mimeTypeAndFileName.get("filename");
     Map<String,Object> m=new HashMap<String,Object>();
-    String videoName=videoFile.getName();
     m.put("name",videoName);
     m.put("type",mimeType);
     m.put("bits",mf);
@@ -127,9 +128,11 @@
       mIsMediaError=true;
       return null;
     }
+    Hashtable<String,String> mimeTypeAndFileName=getMediaFilenameAndMimeType(imageFile,false);
     if (TextUtils.isEmpty(mimeType)) {
-      mimeType=getMediaMimeType(imageFile,true);
+      mimeType=mimeTypeAndFileName.get("mimetype");
     }
+    String fileName=mimeTypeAndFileName.get("filename");
     ImageHelper ih=new ImageHelper();
     orientation=ih.getExifOrientation(path,orientation);
     String resizedPictureURL=null;
@@ -146,7 +149,6 @@
         shouldUploadResizedVersion=true;
       }
     }
-    String fileName=imageFile.getName();
     if (shouldUploadResizedVersion) {
       byte[] bytes;
       byte[] finalBytes;
