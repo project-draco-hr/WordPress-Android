@@ -1,13 +1,13 @@
 {
   SpannableStringBuilder html;
   try {
-    html=(SpannableStringBuilder)Html.fromHtml(text,null,new WPHtmlTagHandler());
+    html=(SpannableStringBuilder)Html.fromHtml(source,null,new WPHtmlTagHandler());
   }
  catch (  RuntimeException runtimeException) {
-    html=(SpannableStringBuilder)Html.fromHtml(text,null,null);
+    html=(SpannableStringBuilder)Html.fromHtml(source,null,null);
     try {
       JSONObject additionalData=new JSONObject();
-      additionalData.put("input_text",text);
+      additionalData.put("input_text",source);
       WPMobileStatsUtil.trackException(runtimeException,WPMobileStatsUtil.StatsPropertyExceptionNoteParsing,additionalData);
     }
  catch (    JSONException jsonException) {
