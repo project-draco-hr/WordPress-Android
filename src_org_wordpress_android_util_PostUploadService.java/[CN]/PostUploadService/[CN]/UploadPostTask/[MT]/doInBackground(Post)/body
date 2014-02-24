@@ -1,7 +1,7 @@
 {
   mErrorUnavailableVideoPress=false;
   post=posts[0];
-  nm=(NotificationManager)context.getSystemService("notification");
+  nm=(NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
   String postOrPage=(String)(post.isPage() ? context.getResources().getText(R.string.page_id) : context.getResources().getText(R.string.post_id));
   String message=context.getResources().getText(R.string.uploading) + " " + postOrPage;
   n=new Notification(R.drawable.notification_icon,message,System.currentTimeMillis());
@@ -12,7 +12,7 @@
   notificationIntent.setData((Uri.parse("custom://wordpressNotificationIntent" + post.getBlogID())));
   PendingIntent pendingIntent=PendingIntent.getActivity(context,0,notificationIntent,Intent.FLAG_ACTIVITY_CLEAR_TOP);
   n.setLatestEventInfo(context,message,message,pendingIntent);
-  notificationID=(new Random()).nextInt() + Integer.valueOf(post.getBlogID());
+  notificationID=(new Random()).nextInt() + post.getBlogID();
   nm.notify(notificationID,n);
   Blog blog;
   try {
@@ -26,7 +26,6 @@
     post.setPost_status("publish");
   }
   Boolean publishThis=false;
-  Spannable s;
   String descriptionContent="", moreContent="";
   int moreCount=1;
   if (post.getMt_text_more() != null)   moreCount++;
@@ -49,9 +48,8 @@
     for (    String tag : imageTags) {
       Pattern p=Pattern.compile("android-uri=\"([^\"]+)\"");
       Matcher m=p.matcher(tag);
-      String imgPath="";
       if (m.find()) {
-        imgPath=m.group(1);
+        String imgPath=m.group(1);
         if (!imgPath.equals("")) {
           MediaFile mf=WordPress.wpDB.getMediaFile(imgPath,post);
           if (mf != null) {
@@ -84,19 +82,18 @@
         theCategories[i]=TextUtils.htmlEncode(categoriesJsonArray.getString(i));
       }
  catch (      JSONException e) {
-        e.printStackTrace();
+        AppLog.e(T.POSTS,e);
       }
     }
   }
   Map<String,Object> contentStruct=new HashMap<String,Object>();
   if (!post.isPage() && post.isLocalDraft()) {
     SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(context);
-    String tagline="";
     if (prefs.getBoolean("wp_pref_signature_enabled",false)) {
-      tagline=prefs.getString("wp_pref_post_signature","");
+      String tagline=prefs.getString("wp_pref_post_signature","");
       if (tagline != null) {
         String tag="\n\n<span class=\"post_sig\">" + tagline + "</span>\n\n";
-        if (moreContent == "")         descriptionContent+=tag;
+        if (TextUtils.isEmpty(moreContent))         descriptionContent+=tag;
  else         moreContent+=tag;
       }
     }
@@ -125,25 +122,21 @@
   descriptionContent=descriptionContent.replaceAll("\uFFFC","");
   contentStruct.put("description",descriptionContent);
   if (!post.isPage()) {
-    if (post.getMt_keywords() != "") {
+    if (!TextUtils.isEmpty(post.getMt_keywords())) {
       contentStruct.put("mt_keywords",post.getMt_keywords());
     }
     if (theCategories != null && theCategories.length > 0)     contentStruct.put("categories",theCategories);
   }
   if (post.getMt_excerpt() != null)   contentStruct.put("mt_excerpt",post.getMt_excerpt());
   contentStruct.put((post.isPage()) ? "page_status" : "post_status",post.getPost_status());
-  Double latitude=0.0;
-  Double longitude=0.0;
   if (!post.isPage()) {
-    latitude=(Double)post.getLatitude();
-    longitude=(Double)post.getLongitude();
-    if (latitude > 0) {
+    if (post.getLatitude() > 0) {
       Map<Object,Object> hLatitude=new HashMap<Object,Object>();
       hLatitude.put("key","geo_latitude");
-      hLatitude.put("value",latitude);
+      hLatitude.put("value",post.getLatitude());
       Map<Object,Object> hLongitude=new HashMap<Object,Object>();
       hLongitude.put("key","geo_longitude");
-      hLongitude.put("value",longitude);
+      hLongitude.put("value",post.getLongitude());
       Map<Object,Object> hPublic=new HashMap<Object,Object>();
       hPublic.put("key","geo_public");
       hPublic.put("value",1);
