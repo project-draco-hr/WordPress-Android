@@ -1,0 +1,21 @@
+{
+  String originalFileName=mediaFile.getName().toLowerCase();
+  String extension=MimeTypeMap.getFileExtensionFromUrl(originalFileName);
+  if (!TextUtils.isEmpty(extension))   return originalFileName;
+  if (!TextUtils.isEmpty(mimeType)) {
+    MimeTypeMap mimeTypeMap=MimeTypeMap.getSingleton();
+    String fileExtensionFromMimeType=mimeTypeMap.getExtensionFromMimeType(mimeType).toLowerCase();
+    if (!TextUtils.isEmpty(fileExtensionFromMimeType)) {
+      originalFileName+="." + fileExtensionFromMimeType;
+    }
+ else {
+      String[] split=mimeType.split("/");
+      String guessedExt=split.length > 1 ? split[1] : split[0];
+      originalFileName+="." + guessedExt;
+    }
+  }
+ else {
+    AppLog.e(T.API,"No mimetype and no extension for " + mediaFile.getPath());
+  }
+  return originalFileName;
+}

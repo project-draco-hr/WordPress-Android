@@ -1,4 +1,12 @@
 {
+  if (getView() == null) {
+    AppLog.w(T.NOTIFS,"requestMoreNotifications called before view exists");
+    return;
+  }
+  if (!hasActivity()) {
+    AppLog.w(T.NOTIFS,"requestMoreNotifications called without activity");
+    return;
+  }
   if (mNoteProvider != null && mNoteProvider.canRequestMore()) {
     showProgressFooter();
     mNoteProvider.onRequestMoreNotifications(getListView(),getListAdapter());
