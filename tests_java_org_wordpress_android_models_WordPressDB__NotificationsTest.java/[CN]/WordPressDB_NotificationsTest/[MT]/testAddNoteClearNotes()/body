@@ -5,7 +5,9 @@
   wpdb.addNote(note,true);
   ArrayList<Note> notes=wpdb.getLatestNotes();
   assertTrue(notes.size() >= 0);
-  wpdb.clearNotes();
+  Method method=WordPressDB.class.getDeclaredMethod("clearNotes");
+  method.setAccessible(true);
+  method.invoke(wpdb);
   notes=wpdb.getLatestNotes();
   assertTrue(notes.size() == 0);
 }
