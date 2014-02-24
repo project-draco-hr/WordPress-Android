@@ -1,0 +1,47 @@
+{
+  if (filePath == null)   return null;
+  Display display=((Activity)ctx).getWindowManager().getDefaultDisplay();
+  int width=display.getWidth();
+  int height=display.getHeight();
+  if (width > height)   width=height;
+  Uri curStream=null;
+  if (!filePath.contains("content://"))   curStream=Uri.parse("content://media" + filePath);
+ else   curStream=Uri.parse(filePath);
+  if (curStream == null) {
+    return null;
+  }
+  if (filePath.contains("video")) {
+    int videoId=0;
+    try {
+      videoId=Integer.parseInt(curStream.getLastPathSegment());
+    }
+ catch (    NumberFormatException e) {
+    }
+    ContentResolver crThumb=ctx.getContentResolver();
+    BitmapFactory.Options options=new BitmapFactory.Options();
+    options.inSampleSize=1;
+    Bitmap videoBitmap=MediaStore.Video.Thumbnails.getThumbnail(crThumb,videoId,MediaStore.Video.Thumbnails.MINI_KIND,options);
+    return videoBitmap;
+  }
+ else {
+    String orientation=getExifOrientation(filePath,"");
+    int[] dimensions=getImageSize(curStream,ctx);
+    float conversionFactor=0.40f;
+    if (dimensions[0] > dimensions[1])     conversionFactor=0.60f;
+    int resizedWitdh=(int)(width * conversionFactor);
+    int rotation;
+    try {
+      rotation=(TextUtils.isEmpty(orientation) ? 0 : Integer.valueOf(orientation));
+    }
+ catch (    NumberFormatException e) {
+      rotation=0;
+    }
+    byte[] bytes=createThumbnailFromUri(ctx,curStream,resizedWitdh,null,rotation);
+    if (bytes != null && bytes.length > 0) {
+      return BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+    }
+ else {
+      return null;
+    }
+  }
+}
