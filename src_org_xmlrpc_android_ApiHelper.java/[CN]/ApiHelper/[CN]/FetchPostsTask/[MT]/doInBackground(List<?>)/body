@@ -10,19 +10,21 @@
   Object[] xmlrpcParams={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),recordCount};
   try {
     result=(Object[])client.call((isPage) ? "wp.getPages" : "metaWeblog.getRecentPosts",xmlrpcParams);
-    if (result != null) {
-      if (result.length > 0) {
-        List<Map<?,?>> postsList=new ArrayList<Map<?,?>>();
-        if (!loadMore) {
-          WordPress.wpDB.deleteUploadedPosts(blog.getLocalTableBlogId(),isPage);
-        }
-        for (int ctr=0; ctr < result.length; ctr++) {
-          Map<?,?> postMap=(Map<?,?>)result[ctr];
-          postsList.add(ctr,postMap);
-        }
-        WordPress.wpDB.savePosts(postsList,blog.getLocalTableBlogId(),isPage);
-        mPostCount=postsList.size();
+    if (result != null && result.length > 0) {
+      List<Map<?,?>> postsList=new ArrayList<Map<?,?>>();
+      if (!loadMore) {
+        WordPress.wpDB.deleteUploadedPosts(blog.getLocalTableBlogId(),isPage);
       }
+      int startPosition=0;
+      if (loadMore && result.length > PostsListFragment.POSTS_REQUEST_COUNT) {
+        startPosition=(result.length - PostsListFragment.POSTS_REQUEST_COUNT);
+      }
+      for (int ctr=startPosition; ctr < result.length; ctr++) {
+        Map<?,?> postMap=(Map<?,?>)result[ctr];
+        postsList.add(postMap);
+      }
+      WordPress.wpDB.savePosts(postsList,blog.getLocalTableBlogId(),isPage,!loadMore);
+      mPostCount=postsList.size();
     }
     return true;
   }

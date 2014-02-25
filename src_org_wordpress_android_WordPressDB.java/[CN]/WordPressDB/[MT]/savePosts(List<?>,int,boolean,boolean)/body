@@ -73,7 +73,11 @@
         values.put("mt_keywords",MapUtils.getMapStr(postMap,"mt_keywords"));
         values.put("wp_post_format",MapUtils.getMapStr(postMap,"wp_post_format"));
       }
-      int result=db.update(POSTS_TABLE,values,"postID=? AND isPage=?",new String[]{postID,String.valueOf(SqlUtils.boolToSql(isPage))});
+      String whereClause="blogID=? AND postID=? AND isPage=?";
+      if (!shouldOverwrite) {
+        whereClause+=" AND NOT isLocalChange=1";
+      }
+      int result=db.update(POSTS_TABLE,values,whereClause,new String[]{String.valueOf(localBlogId),postID,String.valueOf(SqlUtils.boolToSql(isPage))});
       if (result == 0)       db.insert(POSTS_TABLE,null,values);
     }
   }
