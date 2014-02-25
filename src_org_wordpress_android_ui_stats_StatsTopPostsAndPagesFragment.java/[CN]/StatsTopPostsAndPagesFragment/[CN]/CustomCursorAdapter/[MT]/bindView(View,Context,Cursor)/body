@@ -1,12 +1,10 @@
 {
-  final ViewHolder holder=(ViewHolder)view.getTag();
-  String entry=cursor.getString(cursor.getColumnIndex(StatsTopPostsAndPagesTable.Columns.TITLE));
-  String url=cursor.getString(cursor.getColumnIndex(StatsTopPostsAndPagesTable.Columns.URL));
+  final StatsChildViewHolder holder=(StatsChildViewHolder)view.getTag();
+  final String entry=cursor.getString(cursor.getColumnIndex(StatsTopPostsAndPagesTable.Columns.TITLE));
+  final String url=cursor.getString(cursor.getColumnIndex(StatsTopPostsAndPagesTable.Columns.URL));
   int total=cursor.getInt(cursor.getColumnIndex(StatsTopPostsAndPagesTable.Columns.VIEWS));
-  if (url != null && url.length() > 0) {
-    Spanned link=Html.fromHtml("<a href=\"" + url + "\">"+ entry+ "</a>");
-    holder.entryTextView.setText(link);
-    holder.entryTextView.setMovementMethod(WPLinkMovementMethod.getInstance());
+  if (!TextUtils.isEmpty(url)) {
+    StatUtils.hyperlinkEntryText(holder.entryTextView,url,entry);
   }
  else {
     holder.entryTextView.setText(entry);

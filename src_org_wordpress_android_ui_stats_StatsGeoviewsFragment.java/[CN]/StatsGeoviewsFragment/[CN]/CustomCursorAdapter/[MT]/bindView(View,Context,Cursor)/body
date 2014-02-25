@@ -1,24 +1,18 @@
 {
+  final StatsChildViewHolder holder=(StatsChildViewHolder)view.getTag();
   String entry=cursor.getString(cursor.getColumnIndex(StatsGeoviewsTable.Columns.COUNTRY));
-  int total=cursor.getInt(cursor.getColumnIndex(StatsGeoviewsTable.Columns.VIEWS));
   String imageUrl=cursor.getString(cursor.getColumnIndex(StatsGeoviewsTable.Columns.IMAGE_URL));
-  TextView entryTextView=(TextView)view.findViewById(R.id.stats_list_cell_entry);
-  entryTextView.setText(entry);
-  DecimalFormat formatter=(DecimalFormat)DecimalFormat.getInstance(Locale.getDefault());
-  TextView totalsTextView=(TextView)view.findViewById(R.id.stats_list_cell_total);
-  totalsTextView.setText(formatter.format(total));
-  view.findViewById(R.id.stats_list_cell_image_frame).setVisibility(View.VISIBLE);
-  NetworkImageView imageView=(NetworkImageView)view.findViewById(R.id.stats_list_cell_image);
-  ImageView errorImageView=(ImageView)view.findViewById(R.id.stats_list_cell_blank_image);
-  if (imageUrl != null && imageUrl.length() > 0) {
-    imageView.setErrorImageResId(R.drawable.stats_blank_image);
-    imageView.setDefaultImageResId(R.drawable.stats_blank_image);
-    imageView.setImageUrl(imageUrl,WordPress.imageLoader);
-    imageView.setVisibility(View.VISIBLE);
-    errorImageView.setVisibility(View.GONE);
+  int total=cursor.getInt(cursor.getColumnIndex(StatsGeoviewsTable.Columns.VIEWS));
+  holder.entryTextView.setText(entry);
+  holder.totalsTextView.setText(formatter.format(total));
+  holder.imageFrame.setVisibility(View.VISIBLE);
+  if (!TextUtils.isEmpty(imageUrl)) {
+    holder.networkImageView.setImageUrl(imageUrl,WordPress.imageLoader);
+    holder.networkImageView.setVisibility(View.VISIBLE);
+    holder.errorImageView.setVisibility(View.GONE);
   }
  else {
-    imageView.setVisibility(View.GONE);
-    errorImageView.setVisibility(View.VISIBLE);
+    holder.networkImageView.setVisibility(View.GONE);
+    holder.errorImageView.setVisibility(View.VISIBLE);
   }
 }

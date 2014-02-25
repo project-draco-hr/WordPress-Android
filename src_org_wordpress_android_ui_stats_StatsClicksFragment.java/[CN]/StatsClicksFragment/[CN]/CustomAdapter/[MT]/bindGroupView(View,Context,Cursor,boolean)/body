@@ -8,19 +8,14 @@
   boolean urlValid=(url != null && url.length() > 0);
   toggleChevrons(children > 0,isExpanded,view);
   if (urlValid) {
-    Spanned link=Html.fromHtml("<a href=\"" + url + "\">"+ name+ "</a>");
-    holder.entryTextView.setText(link);
-    holder.entryTextView.setMovementMethod(WPLinkMovementMethod.getInstance());
+    StatUtils.hyperlinkEntryText(holder.entryTextView,url,name);
   }
  else {
     holder.entryTextView.setText(name);
-    holder.entryTextView.setMovementMethod(null);
   }
   holder.totalsTextView.setText(formatter.format(total));
   holder.imageFrame.setVisibility(View.VISIBLE);
   if (icon != null && icon.length() > 0) {
-    holder.networkImageView.setErrorImageResId(R.drawable.stats_blank_image);
-    holder.networkImageView.setDefaultImageResId(R.drawable.stats_blank_image);
     holder.networkImageView.setImageUrl(icon,WordPress.imageLoader);
     holder.networkImageView.setVisibility(View.VISIBLE);
     holder.errorImageView.setVisibility(View.GONE);
