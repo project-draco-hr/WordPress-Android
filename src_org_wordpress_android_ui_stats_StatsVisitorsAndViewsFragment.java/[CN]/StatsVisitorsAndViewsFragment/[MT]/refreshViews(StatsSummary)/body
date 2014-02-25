@@ -1,20 +1,30 @@
 {
-  int visitorsToday=0;
-  int viewsToday=0;
-  int visitorsBestEver=0;
-  int viewsAllTime=0;
-  int commentsAllTime=0;
-  if (stats != null) {
-    visitorsToday=stats.getVisitorsToday();
-    viewsToday=stats.getViewsToday();
-    visitorsBestEver=stats.getViewsBestDayTotal();
-    viewsAllTime=stats.getViewsAllTime();
-    commentsAllTime=stats.getCommentsAllTime();
+  final Handler handler=new Handler();
+  new Thread(){
+    @Override public void run(){
+      int visitorsToday=(stats != null ? stats.getVisitorsToday() : 0);
+      int viewsToday=(stats != null ? stats.getViewsToday() : 0);
+      int visitorsBestEver=(stats != null ? stats.getViewsBestDayTotal() : 0);
+      int viewsAllTime=(stats != null ? stats.getViewsAllTime() : 0);
+      int commentsAllTime=(stats != null ? stats.getCommentsAllTime() : 0);
+      DecimalFormat formatter=(DecimalFormat)DecimalFormat.getInstance(Locale.getDefault());
+      final String fmtVisitorsToday=formatter.format(visitorsToday);
+      final String fmtViewsToday=formatter.format(viewsToday);
+      final String fmtVisitorsBestEver=formatter.format(visitorsBestEver);
+      final String fmtViewsAllTime=formatter.format(viewsAllTime);
+      final String fmtCommentsAllTime=formatter.format(commentsAllTime);
+      handler.post(new Runnable(){
+        public void run(){
+          if (getActivity() == null)           return;
+          mVisitorsToday.setText(fmtVisitorsToday);
+          mViewsToday.setText(fmtViewsToday);
+          mViewsBestEver.setText(fmtVisitorsBestEver);
+          mViewsAllTime.setText(fmtViewsAllTime);
+          mCommentsAllTime.setText(fmtCommentsAllTime);
+        }
+      }
+);
+    }
   }
-  DecimalFormat formatter=(DecimalFormat)DecimalFormat.getInstance(Locale.getDefault());
-  mVisitorsToday.setText(formatter.format(visitorsToday));
-  mViewsToday.setText(formatter.format(viewsToday));
-  mViewsBestEver.setText(formatter.format(visitorsBestEver));
-  mViewsAllTime.setText(formatter.format(viewsAllTime));
-  mCommentsAllTime.setText(formatter.format(commentsAllTime));
+.start();
 }
