@@ -1,4 +1,5 @@
 {
+  final StatsGroupViewHolder holder=(StatsGroupViewHolder)view.getTag();
   String name=cursor.getString(cursor.getColumnIndex(StatsReferrerGroupsTable.Columns.NAME));
   int total=cursor.getInt(cursor.getColumnIndex(StatsReferrerGroupsTable.Columns.TOTAL));
   String url=cursor.getString(cursor.getColumnIndex(StatsReferrerGroupsTable.Columns.URL));
@@ -6,31 +7,26 @@
   int children=cursor.getInt(cursor.getColumnIndex(StatsReferrerGroupsTable.Columns.CHILDREN));
   boolean urlValid=(url != null && url.length() > 0);
   toggleChevrons(children > 0,isExpanded,view);
-  TextView entryTextView=(TextView)view.findViewById(R.id.stats_group_cell_entry);
   if (urlValid) {
     Spanned link=Html.fromHtml("<a href=\"" + url + "\">"+ name+ "</a>");
-    entryTextView.setText(link);
-    entryTextView.setMovementMethod(WPLinkMovementMethod.getInstance());
+    holder.entryTextView.setText(link);
+    holder.entryTextView.setMovementMethod(WPLinkMovementMethod.getInstance());
   }
  else {
-    entryTextView.setText(name);
-    entryTextView.setMovementMethod(null);
+    holder.entryTextView.setText(name);
+    holder.entryTextView.setMovementMethod(null);
   }
-  DecimalFormat formatter=(DecimalFormat)DecimalFormat.getInstance(Locale.getDefault());
-  TextView totalsTextView=(TextView)view.findViewById(R.id.stats_group_cell_total);
-  totalsTextView.setText(formatter.format(total));
-  view.findViewById(R.id.stats_group_cell_image_frame).setVisibility(View.VISIBLE);
-  NetworkImageView imageView=(NetworkImageView)view.findViewById(R.id.stats_group_cell_image);
-  ImageView errorImageView=(ImageView)view.findViewById(R.id.stats_group_cell_blank_image);
+  holder.totalsTextView.setText(formatter.format(total));
+  holder.imageFrame.setVisibility(View.VISIBLE);
   if (icon != null && icon.length() > 0) {
-    imageView.setErrorImageResId(R.drawable.stats_blank_image);
-    imageView.setDefaultImageResId(R.drawable.stats_blank_image);
-    imageView.setImageUrl(icon,WordPress.imageLoader);
-    imageView.setVisibility(View.VISIBLE);
-    errorImageView.setVisibility(View.GONE);
+    holder.networkImageView.setErrorImageResId(R.drawable.stats_blank_image);
+    holder.networkImageView.setDefaultImageResId(R.drawable.stats_blank_image);
+    holder.networkImageView.setImageUrl(icon,WordPress.imageLoader);
+    holder.networkImageView.setVisibility(View.VISIBLE);
+    holder.errorImageView.setVisibility(View.GONE);
   }
  else {
-    imageView.setVisibility(View.GONE);
-    errorImageView.setVisibility(View.VISIBLE);
+    holder.networkImageView.setVisibility(View.GONE);
+    holder.errorImageView.setVisibility(View.VISIBLE);
   }
 }
