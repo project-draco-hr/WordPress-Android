@@ -24,18 +24,11 @@
     return videoBitmap;
   }
  else {
-    String orientation=getExifOrientation(filePath,"");
     int[] dimensions=getImageSize(curStream,ctx);
     float conversionFactor=0.40f;
     if (dimensions[0] > dimensions[1])     conversionFactor=0.60f;
     int resizedWitdh=(int)(width * conversionFactor);
-    int rotation;
-    try {
-      rotation=(TextUtils.isEmpty(orientation) ? 0 : Integer.valueOf(orientation));
-    }
- catch (    NumberFormatException e) {
-      rotation=0;
-    }
+    int rotation=getImageOrientation(ctx,filePath);
     byte[] bytes=createThumbnailFromUri(ctx,curStream,resizedWitdh,null,rotation);
     if (bytes != null && bytes.length > 0) {
       return BitmapFactory.decodeByteArray(bytes,0,bytes.length);
