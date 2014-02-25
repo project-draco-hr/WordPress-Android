@@ -2,6 +2,7 @@
   final String blogId=intent.getStringExtra(ARG_BLOG_ID);
   final String today=StatUtils.getCurrentDate();
   final String yesterday=StatUtils.getYesterdaysDate();
+  broadcastAction(ACTION_STAT_UPDATE_STARTED);
   try {
     mExecutor.submit(new SummaryTask(blogId));
     mExecutor.submit(new TopPostsAndPagesTask(blogId,today));
@@ -24,6 +25,9 @@
   }
  catch (  InterruptedException e) {
     AppLog.e(T.STATS,e);
+  }
+ finally {
+    broadcastAction(ACTION_STAT_UPDATE_ENDED);
   }
   return START_NOT_STICKY;
 }
