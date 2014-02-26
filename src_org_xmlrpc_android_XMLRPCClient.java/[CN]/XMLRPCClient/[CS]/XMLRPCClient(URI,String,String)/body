@@ -11,45 +11,51 @@
   httpParams=postMethod.getParams();
   HttpProtocolParams.setUseExpectContinue(httpParams,false);
   UsernamePasswordCredentials creds=new UsernamePasswordCredentials(httpuser,httppasswd);
-  if (uri.getScheme() != null) {
-    if (uri.getScheme().equals("https")) {
-      if (uri.getPort() == -1)       try {
-        client=new ConnectionClient(creds,443);
+  if (uri.getHost().contains("wordpress.com")) {
+    client=new DefaultHttpClient();
+    HttpConnectionParams.setConnectionTimeout(client.getParams(),15000);
+  }
+ else {
+    if (uri.getScheme() != null) {
+      if (uri.getScheme().equals("https")) {
+        if (uri.getPort() == -1)         try {
+          client=new ConnectionClient(creds,443);
+        }
+ catch (        KeyManagementException e) {
+          client=new ConnectionClient(creds);
+        }
+catch (        NoSuchAlgorithmException e) {
+          client=new ConnectionClient(creds);
+        }
+catch (        KeyStoreException e) {
+          client=new ConnectionClient(creds);
+        }
+catch (        UnrecoverableKeyException e) {
+          client=new ConnectionClient(creds);
+        }
+ else         try {
+          client=new ConnectionClient(creds,uri.getPort());
+        }
+ catch (        KeyManagementException e) {
+          client=new ConnectionClient(creds);
+        }
+catch (        NoSuchAlgorithmException e) {
+          client=new ConnectionClient(creds);
+        }
+catch (        KeyStoreException e) {
+          client=new ConnectionClient(creds);
+        }
+catch (        UnrecoverableKeyException e) {
+          client=new ConnectionClient(creds);
+        }
       }
- catch (      KeyManagementException e) {
-        client=new ConnectionClient(creds);
-      }
-catch (      NoSuchAlgorithmException e) {
-        client=new ConnectionClient(creds);
-      }
-catch (      KeyStoreException e) {
-        client=new ConnectionClient(creds);
-      }
-catch (      UnrecoverableKeyException e) {
-        client=new ConnectionClient(creds);
-      }
- else       try {
-        client=new ConnectionClient(creds,uri.getPort());
-      }
- catch (      KeyManagementException e) {
-        client=new ConnectionClient(creds);
-      }
-catch (      NoSuchAlgorithmException e) {
-        client=new ConnectionClient(creds);
-      }
-catch (      KeyStoreException e) {
-        client=new ConnectionClient(creds);
-      }
-catch (      UnrecoverableKeyException e) {
+ else {
         client=new ConnectionClient(creds);
       }
     }
  else {
       client=new ConnectionClient(creds);
     }
-  }
- else {
-    client=new ConnectionClient(creds);
   }
   serializer=Xml.newSerializer();
 }

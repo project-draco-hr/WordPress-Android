@@ -1,5 +1,10 @@
 {
   if (!hasActivity())   return null;
+  Blog blog=WordPress.getCurrentBlog();
+  if (blog == null) {
+    isError=true;
+    return null;
+  }
   Map<String,Object> hPost=new HashMap<String,Object>();
   if (isLoadingMore) {
     int numExisting=getCommentAdapter().getCount();
@@ -9,12 +14,12 @@
  else {
     hPost.put("number",COMMENTS_PER_PAGE);
   }
-  Object[] params={WordPress.currentBlog.getRemoteBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),hPost};
+  Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),hPost};
   try {
     return ApiHelper.refreshComments(getActivity(),params);
   }
  catch (  XMLRPCException e) {
-    errorMessage=e.getMessage();
+    xmlRpcErrorMessage=e.getMessage();
     isError=true;
     return null;
   }
