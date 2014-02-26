@@ -1,7 +1,9 @@
 {
   Blog blog=WordPress.getCurrentBlog();
-  if (blog == null)   return null;
-  XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+  if (blog == null) {
+    return null;
+  }
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
   Object[] result;
   try {
     result=(Object[])client.call("wp.getComments",commentParams);
@@ -9,7 +11,9 @@
  catch (  XMLRPCException e) {
     throw new XMLRPCException(e);
   }
-  if (result.length == 0)   return null;
+  if (result.length == 0) {
+    return null;
+  }
   Map<?,?> contentHash;
   long commentID, postID;
   String authorName, content, status, authorEmail, authorURL, postTitle, pubDate;

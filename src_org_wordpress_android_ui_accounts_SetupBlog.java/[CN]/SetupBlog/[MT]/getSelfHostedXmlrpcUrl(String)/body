@@ -28,7 +28,8 @@
   }
  else {
     try {
-      XMLRPCClient client=new XMLRPCClient(url,mHttpUsername,mHttpPassword);
+      URI nuri=URI.create(url);
+      XMLRPCClientInterface client=XMLRPCFactory.instantiate(nuri,mHttpUsername,mHttpPassword);
       try {
         client.call("system.listMethods");
         xmlrpcUrl=url;
@@ -44,7 +45,8 @@
           guessURL=guessURL.substring(0,guessURL.length() - 1);
         }
         guessURL+="/xmlrpc.php";
-        client=new XMLRPCClient(guessURL,mHttpUsername,mHttpPassword);
+        URI guestUri=URI.create(guessURL);
+        client=XMLRPCFactory.instantiate(guestUri,mHttpUsername,mHttpPassword);
         try {
           client.call("system.listMethods");
           xmlrpcUrl=guessURL;
