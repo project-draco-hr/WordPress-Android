@@ -1,0 +1,22 @@
+{
+  if (source == null)   throw new NullPointerException("Cannot serialize a null array.");
+  if (off < 0)   throw new IllegalArgumentException("Cannot have negative offset: " + off);
+  if (len < 0)   throw new IllegalArgumentException("Cannot have length offset: " + len);
+  if (off + len > source.length)   throw new IllegalArgumentException(String.format("Cannot have offset of %d and length of %d with array of length %d",off,len,source.length));
+  int encLen=(len / 3) * 4 + (len % 3 > 0 ? 4 : 0);
+  byte[] outBuff=new byte[encLen];
+  int d=0;
+  int e=0;
+  int len2=len - 2;
+  for (; d < len2; d+=3, e+=4)   encode3to4(source,d + off,3,outBuff,e);
+  if (d < len) {
+    encode3to4(source,d + off,len - d,outBuff,e);
+    e+=4;
+  }
+  if (e <= outBuff.length - 1) {
+    byte[] finalOut=new byte[e];
+    System.arraycopy(outBuff,0,finalOut,0,e);
+    return finalOut;
+  }
+ else   return outBuff;
+}

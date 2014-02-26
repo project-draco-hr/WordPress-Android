@@ -1,0 +1,34 @@
+{
+  AppLog.v(T.TESTS,this.getClass() + ": makeRequest(" + url+ ")");
+  RestRequest dummyReturnValue=new RestRequest(method,url,params,listener,errorListener);
+  String filename=mPrefix + "-" + url.replace("https://","").replace("/","-").replace(".","-").replace("?","-")+ ".json";
+  if ("password-invalid".equals(mPrefix) && errorListener != null) {
+    errorListener.onErrorResponse(forgeVolleyErrorFromFilename(filename));
+    return dummyReturnValue;
+  }
+  if ("username-exists".equals(mPrefix) && errorListener != null) {
+    errorListener.onErrorResponse(forgeVolleyErrorFromFilename(filename));
+    return dummyReturnValue;
+  }
+  if ("timeout".equals(mPrefix) && errorListener != null) {
+    errorListener.onErrorResponse(forgeVolleyTimeoutError());
+    return dummyReturnValue;
+  }
+  if ("site-reserved".equals(mPrefix) && errorListener != null) {
+    errorListener.onErrorResponse(forgeVolleyErrorFromFilename(filename));
+    return dummyReturnValue;
+  }
+  try {
+    String data=fileToString(filename);
+    if (data == null) {
+      AppLog.e(T.TESTS,"can't read file: " + filename);
+      return dummyReturnValue;
+    }
+    JSONObject jsonObj=new JSONObject(data);
+    listener.onResponse(jsonObj);
+  }
+ catch (  JSONException je) {
+    AppLog.e(T.TESTS,"can't read file: " + filename + " - "+ je.toString());
+  }
+  return dummyReturnValue;
+}
