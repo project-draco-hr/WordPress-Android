@@ -15,7 +15,7 @@ catch (  ExecutionException e) {
       NetworkResponse networkResponse=((ServerError)e.getCause()).networkResponse;
       if ((networkResponse != null) && (networkResponse.statusCode == HttpURLConnection.HTTP_MOVED_PERM || networkResponse.statusCode == HttpURLConnection.HTTP_MOVED_TEMP)) {
         String newUrl=networkResponse.headers.get("Location");
-        if (maxRedirection >= 0) {
+        if (maxRedirection > 0) {
           return getResponse(newUrl,trustAllSslCertificates,maxRedirection - 1);
         }
       }
