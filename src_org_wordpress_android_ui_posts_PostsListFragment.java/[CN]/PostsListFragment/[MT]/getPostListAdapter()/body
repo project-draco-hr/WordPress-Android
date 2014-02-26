@@ -6,7 +6,22 @@
       }
     }
 ;
-    mPostListAdapter=new PostListAdapter(getActivity(),mIsPage,loadMoreListener);
+    PostListAdapter.OnPostsLoadedListener postsLoadedListener=new PostListAdapter.OnPostsLoadedListener(){
+      @Override public void onPostsLoaded(){
+        if (mShouldSelectFirstPost) {
+          mShouldSelectFirstPost=false;
+          if (mPostListAdapter.getCount() > 0) {
+            PostsListPost postsListPost=(PostsListPost)mPostListAdapter.getItem(0);
+            if (postsListPost != null) {
+              showPost(postsListPost.getPostId());
+              getListView().setItemChecked(0,true);
+            }
+          }
+        }
+      }
+    }
+;
+    mPostListAdapter=new PostListAdapter(getActivity(),mIsPage,loadMoreListener,postsLoadedListener);
   }
   return mPostListAdapter;
 }
