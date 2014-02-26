@@ -1,16 +1,20 @@
 {
   if (getChildFragmentManager().findFragmentByTag(CHILD_TAG + ":" + index) == null) {
-    StatsBarChartUnit unit=StatsBarChartUnit.DAY;
-    if (index == 1) {
+    final StatsBarChartUnit unit;
+switch (index) {
+case 1:
       unit=StatsBarChartUnit.WEEK;
-    }
- else     if (index == 2) {
-      unit=StatsBarChartUnit.MONTH;
-    }
-    StatsBarGraphFragment statsBarGraphFragment=StatsBarGraphFragment.newInstance(unit);
-    FragmentTransaction ft=getChildFragmentManager().beginTransaction();
-    ft.setCustomAnimations(R.anim.stats_fade_in,R.anim.stats_fade_out);
-    ft.replace(R.id.stats_bar_chart_fragment_container,statsBarGraphFragment,CHILD_TAG + ":" + index);
-    ft.commit();
-  }
+    break;
+case 2:
+  unit=StatsBarChartUnit.MONTH;
+break;
+default :
+unit=StatsBarChartUnit.DAY;
+}
+StatsBarGraphFragment statsBarGraphFragment=StatsBarGraphFragment.newInstance(unit);
+FragmentTransaction ft=getChildFragmentManager().beginTransaction();
+ft.setCustomAnimations(R.anim.stats_fade_in,R.anim.stats_fade_out);
+ft.replace(R.id.stats_bar_chart_fragment_container,statsBarGraphFragment,CHILD_TAG + ":" + index);
+ft.commit();
+}
 }
