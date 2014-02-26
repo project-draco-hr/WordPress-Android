@@ -1,7 +1,11 @@
 {
   if (WordPress.getCurrentBlog() == null)   return;
   if (!NetworkUtils.isNetworkAvailable(this))   return;
-  String blogId;
+  if (mIsUpdatingStats) {
+    AppLog.w(T.STATS,"stats are already updating, refresh cancelled");
+    return;
+  }
+  final String blogId;
   if (WordPress.getCurrentBlog().isDotcomFlag() && dotComCredentialsMatch())   blogId=String.valueOf(WordPress.getCurrentBlog().getRemoteBlogId());
  else {
     blogId=getBlogId();

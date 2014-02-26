@@ -1,0 +1,33 @@
+{
+  if (response == null || !response.has("data"))   return;
+  Uri uri=StatsContentProvider.STATS_BAR_CHART_DATA_URI;
+  try {
+    JSONArray results=response.getJSONArray("data");
+    int count=results.length();
+    ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
+    if (count > 0) {
+      ContentProviderOperation op=ContentProviderOperation.newDelete(uri).withSelection("blogId=? AND unit=?",new String[]{mBlogId,mBarChartUnit.name()}).build();
+      operations.add(op);
+    }
+    for (int i=0; i < count; i++) {
+      JSONArray result=results.getJSONArray(i);
+      StatsBarChartData stat=new StatsBarChartData(mBlogId,mBarChartUnit,result);
+      ContentValues values=StatsBarChartDataTable.getContentValues(stat);
+      if (values != null && uri != null) {
+        ContentProviderOperation op=ContentProviderOperation.newInsert(uri).withValues(values).build();
+        operations.add(op);
+      }
+    }
+    getContentResolver().applyBatch(BuildConfig.STATS_PROVIDER_AUTHORITY,operations);
+    getContentResolver().notifyChange(uri,null);
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.STATS,e);
+  }
+catch (  RemoteException e) {
+    AppLog.e(AppLog.T.STATS,e);
+  }
+catch (  OperationApplicationException e) {
+    AppLog.e(AppLog.T.STATS,e);
+  }
+}
