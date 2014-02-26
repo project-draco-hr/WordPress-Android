@@ -1,7 +1,7 @@
 {
   final Blog blog;
   try {
-    blog=new Blog(mLocalBlogId);
+    blog=WordPress.wpDB.instantiateBlogByLocalId(mLocalBlogId);
   }
  catch (  Exception e) {
     AppLog.e(AppLog.T.COMMENTS,e);
@@ -17,7 +17,7 @@
   postHash.put("author",authorName);
   postHash.put("author_url",authorUrl);
   postHash.put("author_email",authorEmail);
-  XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
   Object[] xmlParams={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),Long.toString(mCommentId),postHash};
   try {
     Object result=client.call("wp.editComment",xmlParams);
