@@ -1,37 +1,42 @@
 {
-  broadcastAction(ACTION_STAT_UPDATE_STARTED);
-  AppLog.i(T.STATS,"stats update started");
-  try {
-    final ThreadPoolExecutor executor=(ThreadPoolExecutor)Executors.newFixedThreadPool(getMaxConcurrentTasks());
-    new Thread(){
-      @Override public void run(){
-        final String today=StatUtils.getCurrentDate();
-        final String yesterday=StatUtils.getYesterdaysDate();
-        executor.submit(new SummaryTask(blogId));
-        executor.submit(new BarChartTask(blogId,StatsBarChartUnit.WEEK));
-        executor.submit(new BarChartTask(blogId,StatsBarChartUnit.MONTH));
-        executor.submit(new TopPostsAndPagesTask(blogId,today));
-        executor.submit(new TopPostsAndPagesTask(blogId,yesterday));
-        executor.submit(new ClicksTask(blogId,today));
-        executor.submit(new ClicksTask(blogId,yesterday));
-        executor.submit(new ReferrersTask(blogId,today));
-        executor.submit(new ReferrersTask(blogId,yesterday));
-        executor.submit(new SearchEngineTermsTask(blogId,today));
-        executor.submit(new SearchEngineTermsTask(blogId,yesterday));
-        executor.submit(new ViewsByCountryTask(blogId,today));
-        executor.submit(new ViewsByCountryTask(blogId,yesterday));
-        try {
-          executor.awaitTermination(EXECUTOR_TIMEOUT,TimeUnit.MILLISECONDS);
-        }
- catch (        InterruptedException e) {
-          AppLog.e(T.STATS,e);
+  int maxConcurrentTasks=(Runtime.getRuntime().availableProcessors() > 1 ? 2 : 1);
+  final ThreadPoolExecutor executor=(ThreadPoolExecutor)Executors.newFixedThreadPool(maxConcurrentTasks);
+  new Thread(){
+    @Override public void run(){
+      final String today=StatUtils.getCurrentDate();
+      final String yesterday=StatUtils.getYesterdaysDate();
+      executor.submit(new SummaryTask(blogId));
+      executor.submit(new BarChartTask(blogId,StatsBarChartUnit.WEEK));
+      executor.submit(new BarChartTask(blogId,StatsBarChartUnit.MONTH));
+      executor.submit(new TopPostsAndPagesTask(blogId,today));
+      executor.submit(new TopPostsAndPagesTask(blogId,yesterday));
+      executor.submit(new ClicksTask(blogId,today));
+      executor.submit(new ClicksTask(blogId,yesterday));
+      executor.submit(new ReferrersTask(blogId,today));
+      executor.submit(new ReferrersTask(blogId,yesterday));
+      executor.submit(new SearchEngineTermsTask(blogId,today));
+      executor.submit(new SearchEngineTermsTask(blogId,yesterday));
+      executor.submit(new ViewsByCountryTask(blogId,today));
+      executor.submit(new ViewsByCountryTask(blogId,yesterday));
+      AppLog.i(T.STATS,"stats update started");
+      broadcastUpdate(true);
+      try {
+        executor.shutdown();
+        if (!executor.awaitTermination(30,TimeUnit.SECONDS)) {
+          AppLog.w(T.STATS,"executor failed to terminate");
+          executor.shutdownNow();
         }
       }
+ catch (      InterruptedException e) {
+        AppLog.e(T.STATS,e);
+        executor.shutdownNow();
+        Thread.currentThread().interrupt();
+      }
+ finally {
+        AppLog.i(T.STATS,"stats update ended");
+        broadcastUpdate(false);
+      }
     }
+  }
 .start();
-  }
-  finally {
-    AppLog.i(T.STATS,"stats update ended");
-    broadcastAction(ACTION_STAT_UPDATE_ENDED);
-  }
 }
