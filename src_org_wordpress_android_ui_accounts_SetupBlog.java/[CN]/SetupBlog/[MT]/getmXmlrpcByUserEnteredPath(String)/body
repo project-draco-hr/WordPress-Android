@@ -1,0 +1,30 @@
+{
+  String xmlRpcUrl=null;
+  XMLRPCClient client=new XMLRPCClient(baseUrl,mHttpUsername,mHttpPassword);
+  try {
+    client.call("system.listMethods");
+    xmlRpcUrl=baseUrl;
+    mIsCustomUrl=true;
+  }
+ catch (  XMLRPCException e) {
+    AppLog.i(T.NUX,"system.listMethods failed on: " + baseUrl);
+    if (e.getMessage().contains("401")) {
+      mHttpAuthRequired=true;
+      return null;
+    }
+    String guessURL=baseUrl;
+    if (guessURL.substring(guessURL.length() - 1,guessURL.length()).equals("/")) {
+      guessURL=guessURL.substring(0,guessURL.length() - 1);
+    }
+    guessURL+="/xmlrpc.php";
+    client=new XMLRPCClient(guessURL,mHttpUsername,mHttpPassword);
+    try {
+      client.call("system.listMethods");
+      xmlRpcUrl=guessURL;
+    }
+ catch (    XMLRPCException ex) {
+      AppLog.w(T.NUX,"system.listMethods failed on: " + guessURL);
+    }
+  }
+  return xmlRpcUrl;
+}
