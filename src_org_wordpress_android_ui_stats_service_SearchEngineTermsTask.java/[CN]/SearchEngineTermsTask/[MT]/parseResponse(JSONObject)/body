@@ -7,7 +7,7 @@
     ContentProviderOperation delete_op=ContentProviderOperation.newDelete(StatsContentProvider.STATS_SEARCH_ENGINE_TERMS_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mBlogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
     operations.add(delete_op);
     JSONArray results=response.getJSONArray("search-terms");
-    int count=results.length();
+    int count=Math.min(results.length(),StatsActivity.STATS_GROUP_MAX_ITEMS);
     for (int i=0; i < count; i++) {
       JSONArray result=results.getJSONArray(i);
       StatsSearchEngineTerm stat=new StatsSearchEngineTerm(mBlogId,date,result);

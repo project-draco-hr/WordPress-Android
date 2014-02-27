@@ -2,7 +2,7 @@
   if (response == null || !response.has("result"))   return;
   try {
     JSONArray results=response.getJSONArray("result");
-    int count=results.length();
+    int count=Math.min(results.length(),StatsActivity.STATS_GROUP_MAX_ITEMS);
     ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
     if (count > 0) {
       ContentProviderOperation op=ContentProviderOperation.newDelete(StatsContentProvider.STATS_MOST_COMMENTED_URI).withSelection("blogId=?",new String[]{mBlogId}).build();

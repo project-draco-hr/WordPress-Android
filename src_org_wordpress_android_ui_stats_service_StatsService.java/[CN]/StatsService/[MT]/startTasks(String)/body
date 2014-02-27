@@ -1,22 +1,22 @@
 {
-  final ThreadPoolExecutor executor=createExecutor();
+  final StatsTaskExecutor executor=new StatsTaskExecutor();
   new Thread(){
     @Override public void run(){
       final String today=StatUtils.getCurrentDate();
       final String yesterday=StatUtils.getYesterdaysDate();
-      executor.submit(new SummaryTask(blogId));
-      executor.submit(new BarChartTask(blogId,StatsBarChartUnit.WEEK));
-      executor.submit(new BarChartTask(blogId,StatsBarChartUnit.MONTH));
-      executor.submit(new TopPostsAndPagesTask(blogId,today));
-      executor.submit(new TopPostsAndPagesTask(blogId,yesterday));
-      executor.submit(new ViewsByCountryTask(blogId,today));
-      executor.submit(new ViewsByCountryTask(blogId,yesterday));
-      executor.submit(new ClicksTask(blogId,today));
-      executor.submit(new ClicksTask(blogId,yesterday));
-      executor.submit(new ReferrersTask(blogId,today));
-      executor.submit(new ReferrersTask(blogId,yesterday));
-      executor.submit(new SearchEngineTermsTask(blogId,today));
-      executor.submit(new SearchEngineTermsTask(blogId,yesterday));
+      executor.submitTask(new SummaryTask(blogId));
+      executor.submitTask(new BarChartTask(blogId,StatsBarChartUnit.WEEK));
+      executor.submitTask(new BarChartTask(blogId,StatsBarChartUnit.MONTH));
+      executor.submitTask(new TopPostsAndPagesTask(blogId,today));
+      executor.submitTask(new TopPostsAndPagesTask(blogId,yesterday));
+      executor.submitTask(new ViewsByCountryTask(blogId,today));
+      executor.submitTask(new ViewsByCountryTask(blogId,yesterday));
+      executor.submitTask(new ClicksTask(blogId,today));
+      executor.submitTask(new ClicksTask(blogId,yesterday));
+      executor.submitTask(new ReferrersTask(blogId,today));
+      executor.submitTask(new ReferrersTask(blogId,yesterday));
+      executor.submitTask(new SearchEngineTermsTask(blogId,today));
+      executor.submitTask(new SearchEngineTermsTask(blogId,yesterday));
       AppLog.i(T.STATS,"stats update started");
       broadcastUpdate(true);
       try {

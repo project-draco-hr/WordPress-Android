@@ -1,13 +1,14 @@
 {
-  if (mIsCompleted)   return;
-  AppLog.d(AppLog.T.STATS,"waiting for " + getTaskName());
-  while (!mIsCompleted) {
-    try {
-      Thread.sleep(1000);
-    }
- catch (    InterruptedException e) {
-      AppLog.e(AppLog.T.STATS,e);
-      return;
+  if (!mIsCompleted) {
+    AppLog.d(AppLog.T.STATS,"waiting for " + getTaskName());
+    while (!mIsCompleted) {
+      try {
+        Thread.sleep(250);
+      }
+ catch (      InterruptedException e) {
+        AppLog.w(AppLog.T.STATS,"interrupted " + getTaskName());
+        return;
+      }
     }
   }
   AppLog.d(AppLog.T.STATS,"completed " + getTaskName());
