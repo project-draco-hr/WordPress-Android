@@ -1,37 +1,13 @@
 {
-  if (mSetupBlog.isHttpAuthRequired()) {
-    if (!hasActivity()) {
-      return;
-    }
-    mSetupBlog.setHttpAuthRequired(false);
-    AlertDialog.Builder alert=new AlertDialog.Builder(getActivity());
-    alert.setTitle(R.string.http_authorization_required);
-    View httpAuth=getActivity().getLayoutInflater().inflate(R.layout.alert_http_auth,null);
-    final EditText usernameEditText=(EditText)httpAuth.findViewById(R.id.http_username);
-    final EditText passwordEditText=(EditText)httpAuth.findViewById(R.id.http_password);
-    alert.setView(httpAuth);
-    final SetupBlogTask self=this;
-    alert.setPositiveButton(R.string.sign_in,new DialogInterface.OnClickListener(){
-      public void onClick(      DialogInterface dialog,      int whichButton){
-        SetupBlogTask setupBlogTask=new SetupBlogTask();
-        setupBlogTask.setHttpCredentials(EditTextUtils.getText(usernameEditText),EditTextUtils.getText(passwordEditText));
-        setupBlogTask.execute();
-      }
-    }
-);
-    alert.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener(){
-      public void onClick(      DialogInterface dialog,      int whichButton){
-      }
-    }
-);
-    alert.show();
-    endProgress();
+  if (mSetupBlog.isErroneousSslCertificates() && hasActivity()) {
+    askForSslTrust();
     return;
   }
-  if (userBlogList == null && mErrorMsgId != 0) {
-    if (!hasActivity()) {
-      return;
-    }
+  if (mSetupBlog.isHttpAuthRequired() && hasActivity()) {
+    httpAuthRequired();
+    return;
+  }
+  if (userBlogList == null && mErrorMsgId != 0 && hasActivity()) {
     FragmentTransaction ft=getFragmentManager().beginTransaction();
     NUXDialogFragment nuxAlert;
     if (mErrorMsgId == R.string.account_two_step_auth_enabled) {
