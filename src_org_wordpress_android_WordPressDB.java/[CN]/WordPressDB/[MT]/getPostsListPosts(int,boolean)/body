@@ -11,7 +11,8 @@
     if (postDate > d.getTime() && postStatus.equals("publish")) {
       postStatus="scheduled";
     }
-    PostsListPost post=new PostsListPost(c.getInt(c.getColumnIndex("id")),c.getInt(c.getColumnIndex("blogID")),c.getString(c.getColumnIndex("title")),postDate,postStatus,SqlUtils.sqlToBool(c.getInt(c.getColumnIndex("localDraft"))),SqlUtils.sqlToBool(c.getInt(c.getColumnIndex("isLocalChange"))));
+    String postTitle=StringUtils.unescapeHTML(c.getString(c.getColumnIndex("title")));
+    PostsListPost post=new PostsListPost(c.getInt(c.getColumnIndex("id")),c.getInt(c.getColumnIndex("blogID")),postTitle,postDate,postStatus,SqlUtils.sqlToBool(c.getInt(c.getColumnIndex("localDraft"))),SqlUtils.sqlToBool(c.getInt(c.getColumnIndex("isLocalChange"))));
     posts.add(i,post);
     c.moveToNext();
   }
