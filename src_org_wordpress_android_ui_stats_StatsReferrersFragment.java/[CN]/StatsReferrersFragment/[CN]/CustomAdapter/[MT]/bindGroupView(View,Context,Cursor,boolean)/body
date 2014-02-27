@@ -5,23 +5,24 @@
   String url=cursor.getString(cursor.getColumnIndex(StatsReferrerGroupsTable.Columns.URL));
   String icon=cursor.getString(cursor.getColumnIndex(StatsReferrerGroupsTable.Columns.ICON));
   int children=cursor.getInt(cursor.getColumnIndex(StatsReferrerGroupsTable.Columns.CHILDREN));
-  boolean urlValid=(url != null && url.length() > 0);
-  toggleChevrons(children > 0,isExpanded,view);
-  if (urlValid) {
+  if (!TextUtils.isEmpty(url)) {
     StatUtils.setTextHyperlink(holder.entryTextView,url,name);
   }
  else {
     holder.entryTextView.setText(name);
   }
   holder.totalsTextView.setText(FormatUtils.formatDecimal(total));
-  holder.imageFrame.setVisibility(View.VISIBLE);
   if (!TextUtils.isEmpty(icon)) {
     holder.networkImageView.setImageUrl(icon,WordPress.imageLoader);
-    holder.networkImageView.setVisibility(View.VISIBLE);
-    holder.errorImageView.setVisibility(View.GONE);
   }
  else {
-    holder.networkImageView.setVisibility(View.GONE);
-    holder.errorImageView.setVisibility(View.VISIBLE);
+    holder.networkImageView.setImageDrawable(null);
+  }
+  if (children > 0) {
+    holder.chevronImageView.setImageDrawable(isExpanded ? mChevronUp : mChevronDown);
+    holder.chevronImageView.setVisibility(View.VISIBLE);
+  }
+ else {
+    holder.chevronImageView.setVisibility(View.GONE);
   }
 }
