@@ -6,13 +6,8 @@
   c.moveToFirst();
   Date d=new Date();
   for (int i=0; i < numRows; ++i) {
-    long postDate=c.getLong(c.getColumnIndex("date_created_gmt"));
-    String postStatus=StringUtils.notNullStr(c.getString(c.getColumnIndex("post_status")));
-    if (postDate > d.getTime() && postStatus.equals("publish")) {
-      postStatus="scheduled";
-    }
     String postTitle=StringUtils.unescapeHTML(c.getString(c.getColumnIndex("title")));
-    PostsListPost post=new PostsListPost(c.getInt(c.getColumnIndex("id")),c.getInt(c.getColumnIndex("blogID")),postTitle,postDate,postStatus,SqlUtils.sqlToBool(c.getInt(c.getColumnIndex("localDraft"))),SqlUtils.sqlToBool(c.getInt(c.getColumnIndex("isLocalChange"))));
+    PostsListPost post=new PostsListPost(c.getInt(c.getColumnIndex("id")),c.getInt(c.getColumnIndex("blogID")),postTitle,c.getLong(c.getColumnIndex("date_created_gmt")),c.getString(c.getColumnIndex("post_status")),SqlUtils.sqlToBool(c.getInt(c.getColumnIndex("localDraft"))),SqlUtils.sqlToBool(c.getInt(c.getColumnIndex("isLocalChange"))));
     posts.add(i,post);
     c.moveToNext();
   }
