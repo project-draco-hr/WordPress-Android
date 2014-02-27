@@ -5,10 +5,9 @@
   String url=cursor.getString(cursor.getColumnIndex(StatsReferrerGroupsTable.Columns.URL));
   String icon=cursor.getString(cursor.getColumnIndex(StatsReferrerGroupsTable.Columns.ICON));
   int children=cursor.getInt(cursor.getColumnIndex(StatsReferrerGroupsTable.Columns.CHILDREN));
-  boolean urlValid=(url != null && url.length() > 0);
   toggleChevrons(children > 0,isExpanded,view);
-  if (urlValid) {
-    holder.entryTextView.setText(Html.fromHtml("<a href=\"" + url + "\">"+ name+ "</a>"));
+  if (!TextUtils.isEmpty(url)) {
+    StatUtils.setTextHyperlink(holder.entryTextView,url,name);
   }
  else {
     holder.entryTextView.setText(name);
