@@ -2,13 +2,16 @@
   if (mPostsListAdapter == null) {
     PostsListAdapter.OnLoadMoreListener loadMoreListener=new PostsListAdapter.OnLoadMoreListener(){
       @Override public void onLoadMore(      boolean loadMore){
-        if (mCanLoadMorePosts)         requestPosts(loadMore);
+        if (mCanLoadMorePosts && !mIsFetchingPosts)         requestPosts(loadMore);
       }
     }
 ;
     PostsListAdapter.OnPostsLoadedListener postsLoadedListener=new PostsListAdapter.OnPostsLoadedListener(){
-      @Override public void onPostsLoaded(){
-        if (mShouldSelectFirstPost) {
+      @Override public void onPostsLoaded(      int postCount){
+        if (postCount == 0 && mCanLoadMorePosts) {
+          requestPosts(false);
+        }
+ else         if (mShouldSelectFirstPost) {
           mShouldSelectFirstPost=false;
           if (mPostsListAdapter.getCount() > 0) {
             PostsListPost postsListPost=(PostsListPost)mPostsListAdapter.getItem(0);

@@ -12,11 +12,11 @@
       if (v == null)       return;
       PostsListPost postsListPost=(PostsListPost)getPostListAdapter().getItem(position);
       if (postsListPost == null)       return;
-      if (!mParentActivity.mIsRefreshing) {
+      if (!mIsFetchingPosts) {
         showPost(postsListPost.getPostId());
       }
- else {
-        Toast.makeText(mParentActivity,R.string.please_wait_refresh_done,Toast.LENGTH_SHORT).show();
+ else       if (hasActivity()) {
+        Toast.makeText(getActivity(),R.string.please_wait_refresh_done,Toast.LENGTH_SHORT).show();
       }
     }
   }
@@ -31,7 +31,10 @@
     }
     textview.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
-        mParentActivity.newPost();
+        if (hasActivity()) {
+          PostsActivity postsActivity=(PostsActivity)getActivity();
+          postsActivity.newPost();
+        }
       }
     }
 );
