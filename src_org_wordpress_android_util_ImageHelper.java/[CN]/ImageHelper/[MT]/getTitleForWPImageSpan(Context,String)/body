@@ -14,12 +14,12 @@
   }
  else {
     String[] projection=new String[]{Images.Thumbnails.DATA};
-    String path="";
     Cursor cur;
     try {
       cur=ctx.getContentResolver().query(curStream,projection,null,null,null);
     }
  catch (    Exception e1) {
+      AppLog.e(T.UTILS,e1);
       return null;
     }
     File jpeg=null;
@@ -34,10 +34,9 @@
         return null;
       }
       jpeg=new File(thumbData);
-      path=thumbData;
     }
  else {
-      path=filePath.toString().replace("file://","");
+      String path=filePath.toString().replace("file://","");
       jpeg=new File(path);
     }
     title=jpeg.getName();

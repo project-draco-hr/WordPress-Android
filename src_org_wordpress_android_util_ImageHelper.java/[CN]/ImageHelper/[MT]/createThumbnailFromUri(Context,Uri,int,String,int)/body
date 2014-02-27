@@ -1,56 +1,53 @@
 {
   if (context == null || imageUri == null)   return null;
-  AssetFileDescriptor descriptor=null;
-  try {
-    try {
-      descriptor=context.getContentResolver().openAssetFileDescriptor(imageUri,"r");
-    }
- catch (    FileNotFoundException e) {
-      AppLog.e(T.UTILS,e);
-      return null;
-    }
-    BitmapFactory.Options optBounds=new BitmapFactory.Options();
-    optBounds.inJustDecodeBounds=true;
-    BitmapFactory.decodeFileDescriptor(descriptor.getFileDescriptor(),null,optBounds);
-    int scale=1;
-    if (maxWidth > 0 && optBounds.outWidth > maxWidth) {
-      double d=Math.pow(2,(int)Math.round(Math.log(maxWidth / (double)optBounds.outWidth) / Math.log(0.5)));
-      scale=(int)d;
-    }
-    BitmapFactory.Options optActual=new BitmapFactory.Options();
-    optActual.inSampleSize=scale;
-    final Bitmap bmpResized=BitmapFactory.decodeFileDescriptor(descriptor.getFileDescriptor(),null,optActual);
-    if (bmpResized == null)     return null;
-    ByteArrayOutputStream stream=new ByteArrayOutputStream();
-    final Bitmap.CompressFormat fmt;
-    if (fileExtension != null && fileExtension.equalsIgnoreCase("png")) {
-      fmt=Bitmap.CompressFormat.PNG;
-    }
- else {
-      fmt=Bitmap.CompressFormat.JPEG;
-    }
-    if (rotation != 0) {
-      Matrix matrix=new Matrix();
-      matrix.setRotate(rotation);
-      final Bitmap bmpRotated=Bitmap.createBitmap(bmpResized,0,0,bmpResized.getWidth(),bmpResized.getHeight(),matrix,true);
-      bmpRotated.compress(fmt,100,stream);
-      bmpResized.recycle();
-      bmpRotated.recycle();
-    }
- else {
-      bmpResized.compress(fmt,100,stream);
-      bmpResized.recycle();
-    }
-    return stream.toByteArray();
-  }
-  finally {
-    if (descriptor != null) {
-      try {
-        descriptor.close();
+  String filePath=null;
+  if (imageUri.toString().contains("content:")) {
+    String[] projection=new String[]{Images.Media.DATA};
+    Cursor cur=context.getContentResolver().query(imageUri,projection,null,null,null);
+    if (cur != null) {
+      if (cur.moveToFirst()) {
+        int dataColumn=cur.getColumnIndex(Images.Media.DATA);
+        filePath=cur.getString(dataColumn);
       }
- catch (      IOException e) {
-        AppLog.e(T.UTILS,e);
-      }
+      cur.close();
     }
   }
+  if (TextUtils.isEmpty(filePath)) {
+    filePath=imageUri.toString().replace("content://media","");
+    filePath=filePath.replace("file://","");
+  }
+  BitmapFactory.Options optBounds=new BitmapFactory.Options();
+  optBounds.inJustDecodeBounds=true;
+  BitmapFactory.decodeFile(filePath,optBounds);
+  int scale=1;
+  if (maxWidth > 0 && optBounds.outWidth > maxWidth) {
+    double d=Math.pow(2,(int)Math.round(Math.log(maxWidth / (double)optBounds.outWidth) / Math.log(0.5)));
+    scale=(int)d;
+  }
+  BitmapFactory.Options optActual=new BitmapFactory.Options();
+  optActual.inSampleSize=scale;
+  Bitmap bmpResized=null;
+  bmpResized=BitmapFactory.decodeFile(filePath,optActual);
+  if (bmpResized == null)   return null;
+  ByteArrayOutputStream stream=new ByteArrayOutputStream();
+  final Bitmap.CompressFormat fmt;
+  if (fileExtension != null && fileExtension.equalsIgnoreCase("png")) {
+    fmt=Bitmap.CompressFormat.PNG;
+  }
+ else {
+    fmt=Bitmap.CompressFormat.JPEG;
+  }
+  if (rotation != 0) {
+    Matrix matrix=new Matrix();
+    matrix.setRotate(rotation);
+    final Bitmap bmpRotated=Bitmap.createBitmap(bmpResized,0,0,bmpResized.getWidth(),bmpResized.getHeight(),matrix,true);
+    bmpRotated.compress(fmt,100,stream);
+    bmpResized.recycle();
+    bmpRotated.recycle();
+  }
+ else {
+    bmpResized.compress(fmt,100,stream);
+    bmpResized.recycle();
+  }
+  return stream.toByteArray();
 }
