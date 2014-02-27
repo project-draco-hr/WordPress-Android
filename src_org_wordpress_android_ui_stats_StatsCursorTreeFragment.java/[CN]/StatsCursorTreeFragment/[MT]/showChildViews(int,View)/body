@@ -1,0 +1,23 @@
+{
+  int childCount=Math.min(mAdapter.getChildrenCount(groupPosition),StatsActivity.STATS_CHILD_MAX_ITEMS);
+  if (childCount == 0)   return;
+  final ViewGroup childContainer=(ViewGroup)groupView.findViewById(R.id.layout_child_container);
+  int numExistingViews=childContainer.getChildCount();
+  if (childCount < numExistingViews) {
+    int numToRemove=numExistingViews - childCount;
+    childContainer.removeViews(childCount,numToRemove);
+    numExistingViews=childCount;
+  }
+  for (int i=0; i < childCount; i++) {
+    boolean isLastChild=(i == childCount - 1);
+    if (i < numExistingViews) {
+      View convertView=childContainer.getChildAt(i);
+      mAdapter.getChildView(groupPosition,i,isLastChild,convertView,mLinearLayout);
+    }
+ else {
+      childContainer.addView(mAdapter.getChildView(groupPosition,i,isLastChild,null,mLinearLayout));
+    }
+  }
+  childContainer.setVisibility(View.VISIBLE);
+  setGroupChevron(true,groupView);
+}
