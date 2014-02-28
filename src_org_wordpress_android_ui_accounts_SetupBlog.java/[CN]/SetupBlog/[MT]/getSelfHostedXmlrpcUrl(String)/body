@@ -12,51 +12,40 @@
     }
   }
   if (!(url.toLowerCase().startsWith("http://")) && !(url.toLowerCase().startsWith("https://"))) {
-    url="http://" + url;
+    if (mAllSslCertificatesTrusted) {
+      url="https://" + url;
+    }
+ else {
+      url="http://" + url;
+    }
   }
   if (!URLUtil.isValidUrl(url)) {
     mErrorMsgId=R.string.invalid_url_message;
     return null;
   }
-  String rsdUrl=ApiHelper.getRSDMetaTagHrefRegEx(url);
-  if (rsdUrl == null) {
-    rsdUrl=ApiHelper.getRSDMetaTagHref(url);
+  String rsdUrl;
+  try {
+    rsdUrl=getRsdUrl(url,mAllSslCertificatesTrusted);
   }
-  if (rsdUrl != null) {
-    xmlrpcUrl=ApiHelper.getXMLRPCUrl(rsdUrl);
-    if (xmlrpcUrl == null)     xmlrpcUrl=rsdUrl.replace("?rsd","");
+ catch (  SSLHandshakeException e) {
+    if (!UrlUtils.getDomainFromUrl(url).endsWith("wordpress.com")) {
+      mErroneousSslCertificate=true;
+    }
+    AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
+    return null;
   }
+  try {
+    if (rsdUrl != null) {
+      xmlrpcUrl=ApiHelper.getXMLRPCUrl(rsdUrl,mAllSslCertificatesTrusted);
+      if (xmlrpcUrl == null) {
+        xmlrpcUrl=rsdUrl.replace("?rsd","");
+      }
+    }
  else {
-    try {
-      URI nuri=URI.create(url);
-      XMLRPCClientInterface client=XMLRPCFactory.instantiate(nuri,mHttpUsername,mHttpPassword);
-      try {
-        client.call("system.listMethods");
-        xmlrpcUrl=url;
-        mIsCustomUrl=true;
-      }
- catch (      XMLRPCException e) {
-        if (e.getMessage().contains("401")) {
-          mHttpAuthRequired=true;
-          return null;
-        }
-        String guessURL=url;
-        if (guessURL.substring(guessURL.length() - 1,guessURL.length()).equals("/")) {
-          guessURL=guessURL.substring(0,guessURL.length() - 1);
-        }
-        guessURL+="/xmlrpc.php";
-        URI guestUri=URI.create(guessURL);
-        client=XMLRPCFactory.instantiate(guestUri,mHttpUsername,mHttpPassword);
-        try {
-          client.call("system.listMethods");
-          xmlrpcUrl=guessURL;
-        }
- catch (        XMLRPCException ex) {
-        }
-      }
+      xmlrpcUrl=getmXmlrpcByUserEnteredPath(url);
     }
- catch (    Exception e) {
-    }
+  }
+ catch (  SSLHandshakeException e) {
   }
   return xmlrpcUrl;
 }
