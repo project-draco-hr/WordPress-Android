@@ -1,5 +1,6 @@
 {
-  if (loader.getId() == LOADER_URI_GROUP_INDEX) {
+  boolean isGroupLoader=(loader.getId() == LOADER_URI_GROUP_INDEX);
+  if (isGroupLoader) {
     while (data.moveToNext()) {
       String groupId=data.getString(data.getColumnIndex("groupId"));
       long date=data.getLong(data.getColumnIndex("date"));
@@ -12,6 +13,7 @@
     if (mAdapter != null)     mAdapter.changeCursor(data);
   }
  else {
+    if (mNumChildLoaders > 0)     mNumChildLoaders--;
     if (mAdapter != null) {
       try {
         mAdapter.setChildrenCursor(loader.getId(),data);
@@ -20,6 +22,8 @@
       }
     }
   }
-  configureEmptyLabel();
-  reloadLinearLayout();
+  if (isGroupLoader || mNumChildLoaders == 0) {
+    configureEmptyLabel();
+    reloadLinearLayout();
+  }
 }
