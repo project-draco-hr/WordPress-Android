@@ -1,6 +1,5 @@
 {
   if (loader.getId() == LOADER_URI_GROUP_INDEX) {
-    mNumChildLoaders=data.getCount();
     while (data.moveToNext()) {
       String groupId=data.getString(data.getColumnIndex("groupId"));
       long date=data.getLong(data.getColumnIndex("date"));
@@ -11,6 +10,8 @@
     }
     mCallback.onCursorLoaded(getGroupUri(),data);
     if (mAdapter != null)     mAdapter.changeCursor(data);
+    configureEmptyLabel();
+    reloadLinearLayout();
   }
  else {
     if (mAdapter != null) {
@@ -20,11 +21,6 @@
  catch (      NullPointerException e) {
         AppLog.e(AppLog.T.STATS,e);
       }
-      mNumChildLoaders--;
     }
-  }
-  if (mNumChildLoaders <= 0) {
-    configureEmptyLabel();
-    reloadLinearLayout();
   }
 }
