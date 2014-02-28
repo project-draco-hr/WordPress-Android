@@ -9,17 +9,25 @@
     if (!mHttpAuthRequired)     mErrorMsgId=R.string.no_site_error;
     return null;
   }
+  URI uri;
   try {
-    URI.create(mXmlrpcUrl);
+    uri=URI.create(mXmlrpcUrl);
   }
  catch (  Exception e1) {
     mErrorMsgId=R.string.no_site_error;
     return null;
   }
-  XMLRPCClient client=new XMLRPCClient(mXmlrpcUrl,mHttpUsername,mHttpPassword);
+  if (mAllSslCertificatesTrusted) {
+    TrustedSslDomainTable.trustDomain(uri);
+  }
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(uri,mHttpUsername,mHttpPassword);
   Object[] params={mUsername,mPassword};
   try {
     Object[] userBlogs=(Object[])client.call("wp.getUsersBlogs",params);
+    if (userBlogs == null) {
+      mErrorMsgId=R.string.no_network_message;
+      return null;
+    }
     Arrays.sort(userBlogs,Utils.BlogNameComparator);
     List<Map<String,Object>> userBlogList=new ArrayList<Map<String,Object>>();
     for (    Object blog : userBlogs) {
@@ -33,6 +41,9 @@
     return userBlogList;
   }
  catch (  XMLRPCException e) {
+    if (mAllSslCertificatesTrusted) {
+      TrustedSslDomainTable.removeTrustedDomain(uri);
+    }
     String message=e.getMessage();
     if (message.contains("code 403")) {
       mErrorMsgId=R.string.username_or_password_incorrect;

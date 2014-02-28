@@ -1,55 +1,16 @@
 {
-  postMethod=new HttpPost(uri);
-  postMethod.addHeader("Content-Type","text/xml");
-  postMethod.addHeader("charset","UTF-8");
+  mPostMethod=new HttpPost(uri);
+  mPostMethod.addHeader("Content-Type","text/xml");
+  mPostMethod.addHeader("charset","UTF-8");
   if (DeviceUtils.getInstance().isBlackBerry()) {
-    postMethod.addHeader("User-Agent",DeviceUtils.getBlackBerryUserAgent());
+    mPostMethod.addHeader("User-Agent",DeviceUtils.getBlackBerryUserAgent());
   }
  else {
-    postMethod.addHeader("User-Agent","wp-android/" + WordPress.versionName);
+    mPostMethod.addHeader("User-Agent","wp-android/" + WordPress.versionName);
   }
-  httpParams=postMethod.getParams();
-  HttpProtocolParams.setUseExpectContinue(httpParams,false);
-  UsernamePasswordCredentials creds=new UsernamePasswordCredentials(httpuser,httppasswd);
-  if (uri.getScheme() != null) {
-    if (uri.getScheme().equals("https")) {
-      if (uri.getPort() == -1)       try {
-        client=new ConnectionClient(creds,443);
-      }
- catch (      KeyManagementException e) {
-        client=new ConnectionClient(creds);
-      }
-catch (      NoSuchAlgorithmException e) {
-        client=new ConnectionClient(creds);
-      }
-catch (      KeyStoreException e) {
-        client=new ConnectionClient(creds);
-      }
-catch (      UnrecoverableKeyException e) {
-        client=new ConnectionClient(creds);
-      }
- else       try {
-        client=new ConnectionClient(creds,uri.getPort());
-      }
- catch (      KeyManagementException e) {
-        client=new ConnectionClient(creds);
-      }
-catch (      NoSuchAlgorithmException e) {
-        client=new ConnectionClient(creds);
-      }
-catch (      KeyStoreException e) {
-        client=new ConnectionClient(creds);
-      }
-catch (      UnrecoverableKeyException e) {
-        client=new ConnectionClient(creds);
-      }
-    }
- else {
-      client=new ConnectionClient(creds);
-    }
-  }
- else {
-    client=new ConnectionClient(creds);
-  }
-  serializer=Xml.newSerializer();
+  mHttpParams=mPostMethod.getParams();
+  HttpProtocolParams.setUseExpectContinue(mHttpParams,false);
+  UsernamePasswordCredentials credentials=new UsernamePasswordCredentials(httpuser,httppasswd);
+  mClient=instantiateClientForUri(uri,credentials);
+  mSerializer=Xml.newSerializer();
 }

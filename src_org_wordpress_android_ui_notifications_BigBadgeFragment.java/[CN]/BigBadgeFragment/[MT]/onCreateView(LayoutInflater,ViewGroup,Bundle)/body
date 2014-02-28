@@ -5,8 +5,10 @@
   bodyTextView.setMovementMethod(WPLinkMovementMethod.getInstance());
   if (getNote() != null) {
     String noteHTML=JSONUtil.queryJSON(getNote().toJSONObject(),"body.html","");
-    if (noteHTML.equals(""))     noteHTML=getNote().getSubject();
-    Spanned html=Html.fromHtml(noteHTML);
+    if (noteHTML.equals("")) {
+      noteHTML=getNote().getSubject();
+    }
+    Spanned html=HtmlUtils.fromHtml(noteHTML);
     bodyTextView.setText(html);
     String iconURL=getNote().getIconURL();
     if (!iconURL.equals(""))     badgeImageView.setImageUrl(iconURL,WordPress.imageLoader);

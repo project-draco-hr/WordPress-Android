@@ -6,7 +6,9 @@
         ContentValues values=new ContentValues();
         Map<?,?> thisHash=(Map<?,?>)postValues.get(i);
         values.put("blogID",blogID);
-        if (thisHash.get((isPage) ? "page_id" : "postid") == null)         return false;
+        if (thisHash.get((isPage) ? "page_id" : "postid") == null) {
+          return false;
+        }
         String postID=thisHash.get((isPage) ? "page_id" : "postid").toString();
         values.put("postid",postID);
         values.put("title",thisHash.get("title").toString());
@@ -30,23 +32,27 @@
         values.put("description",thisHash.get("description").toString());
         values.put("link",thisHash.get("link").toString());
         values.put("permaLink",thisHash.get("permaLink").toString());
-        Object[] cats=(Object[])thisHash.get("categories");
+        Object[] categories=arrayListToArray(thisHash.get("categories"));
         JSONArray jsonArray=new JSONArray();
-        if (cats != null) {
-          for (int x=0; x < cats.length; x++) {
-            jsonArray.put(cats[x].toString());
+        if (categories != null) {
+          for (int x=0; x < categories.length; x++) {
+            jsonArray.put(categories[x].toString());
           }
         }
         values.put("categories",jsonArray.toString());
-        Object[] custom_fields=(Object[])thisHash.get("custom_fields");
+        Object[] custom_fields=arrayListToArray(thisHash.get("custom_fields"));
         jsonArray=new JSONArray();
         if (custom_fields != null) {
           for (int x=0; x < custom_fields.length; x++) {
             jsonArray.put(custom_fields[x].toString());
             Map<?,?> customField=(Map<?,?>)custom_fields[x];
             if (customField.get("key") != null && customField.get("value") != null) {
-              if (customField.get("key").equals("geo_longitude"))               values.put("longitude",customField.get("value").toString());
-              if (customField.get("key").equals("geo_latitude"))               values.put("latitude",customField.get("value").toString());
+              if (customField.get("key").equals("geo_longitude")) {
+                values.put("longitude",customField.get("value").toString());
+              }
+              if (customField.get("key").equals("geo_latitude")) {
+                values.put("latitude",customField.get("value").toString());
+              }
             }
           }
         }
@@ -78,8 +84,12 @@
           }
         }
         int result=db.update(POSTS_TABLE,values,"postID=" + postID + " AND isPage="+ isPageInt,null);
-        if (result == 0)         returnValue=db.insert(POSTS_TABLE,null,values) > 0;
- else         returnValue=true;
+        if (result == 0) {
+          returnValue=db.insert(POSTS_TABLE,null,values) > 0;
+        }
+ else {
+          returnValue=true;
+        }
       }
  catch (      Exception e) {
         e.printStackTrace();
