@@ -17,7 +17,7 @@
       executor.submit(new ReferrersTask(blogId,yesterday));
       executor.submit(new SearchEngineTermsTask(blogId,today));
       executor.submit(new SearchEngineTermsTask(blogId,yesterday));
-      AppLog.i(T.STATS,"stats update started");
+      AppLog.i(T.STATS,"update started");
       broadcastUpdate(true);
       try {
         executor.shutdown();
@@ -27,12 +27,12 @@
         }
       }
  catch (      InterruptedException e) {
-        AppLog.e(T.STATS,e);
+        AppLog.w(T.STATS,"executor interrupted");
         executor.shutdownNow();
         Thread.currentThread().interrupt();
       }
  finally {
-        AppLog.i(T.STATS,"stats update ended");
+        AppLog.i(T.STATS,"update ended");
         broadcastUpdate(false);
       }
     }
