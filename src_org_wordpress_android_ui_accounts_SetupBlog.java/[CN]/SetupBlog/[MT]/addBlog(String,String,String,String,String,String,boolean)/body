@@ -15,15 +15,15 @@
     blog.setDotcomFlag(xmlRpcUrl.contains("wordpress.com"));
     blog.setWpVersion("");
     blog.setAdmin(isAdmin);
-    blog.save();
+    WordPress.wpDB.saveBlog(blog);
   }
  else {
     int localTableBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogIdAndXmlRpcUrl(Integer.parseInt(blogId),xmlRpcUrl);
     try {
-      blog=new Blog(localTableBlogId);
+      blog=WordPress.wpDB.instantiateBlogByLocalId(localTableBlogId);
       if (!blogName.equals(blog.getBlogName())) {
         blog.setBlogName(blogName);
-        blog.save();
+        WordPress.wpDB.saveBlog(blog);
       }
     }
  catch (    Exception e) {

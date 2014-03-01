@@ -1,7 +1,7 @@
 {
   mErrorUnavailableVideoPress=false;
   post=posts[0];
-  nm=(NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+  nm=(NotificationManager)SystemServiceFactory.get(context,Context.NOTIFICATION_SERVICE);
   String postOrPage=(String)(post.isPage() ? context.getResources().getText(R.string.page_id) : context.getResources().getText(R.string.post_id));
   String message=context.getResources().getText(R.string.uploading) + " " + postOrPage;
   n=new Notification(R.drawable.notification_icon,message,System.currentTimeMillis());
@@ -16,7 +16,7 @@
   nm.notify(notificationID,n);
   Blog blog;
   try {
-    blog=new Blog(post.getBlogID());
+    blog=WordPress.wpDB.instantiateBlogByLocalId(post.getBlogID());
   }
  catch (  Exception e) {
     mErrorMessage=context.getString(R.string.blog_not_found);
@@ -144,9 +144,13 @@
       contentStruct.put("custom_fields",geo);
     }
   }
-  if (featuredImageID != -1)   contentStruct.put("wp_post_thumbnail",featuredImageID);
-  XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
-  if (post.getQuickPostType() != null)   client.addQuickPostHeader(post.getQuickPostType());
+  if (featuredImageID != -1) {
+    contentStruct.put("wp_post_thumbnail",featuredImageID);
+  }
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
+  if (post.getQuickPostType() != null) {
+    client.addQuickPostHeader(post.getQuickPostType());
+  }
   n.setLatestEventInfo(context,message,message,n.contentIntent);
   nm.notify(notificationID,n);
   if (post.getWP_password() != null) {
