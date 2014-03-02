@@ -1,6 +1,26 @@
 {
   final ViewGroup childContainer=(ViewGroup)groupView.findViewById(R.id.layout_child_container);
   if (childContainer == null)   return;
-  childContainer.setVisibility(View.GONE);
+  if (childContainer.getVisibility() != View.GONE) {
+    if (animate) {
+      Animation expand=new ScaleAnimation(1.0f,1.0f,1.0f,0.0f);
+      expand.setDuration(ANIM_DURATION);
+      expand.setInterpolator(getInterpolator());
+      expand.setAnimationListener(new Animation.AnimationListener(){
+        @Override public void onAnimationStart(        Animation animation){
+        }
+        @Override public void onAnimationEnd(        Animation animation){
+          childContainer.setVisibility(View.GONE);
+        }
+        @Override public void onAnimationRepeat(        Animation animation){
+        }
+      }
+);
+      childContainer.startAnimation(expand);
+    }
+ else {
+      childContainer.setVisibility(View.GONE);
+    }
+  }
   setGroupChevron(false,groupView,animate);
 }
