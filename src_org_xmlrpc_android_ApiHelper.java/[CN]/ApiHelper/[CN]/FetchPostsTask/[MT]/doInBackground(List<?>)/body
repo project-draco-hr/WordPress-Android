@@ -12,6 +12,9 @@
     result=(Object[])client.call((isPage) ? "wp.getPages" : "metaWeblog.getRecentPosts",xmlrpcParams);
     if (result != null && result.length > 0) {
       List<Map<?,?>> postsList=new ArrayList<Map<?,?>>();
+      if (!loadMore) {
+        WordPress.wpDB.deleteUploadedPosts(blog.getLocalTableBlogId(),isPage);
+      }
       int startPosition=0;
       if (loadMore && result.length > PostsListFragment.POSTS_REQUEST_COUNT) {
         startPosition=result.length - PostsListFragment.POSTS_REQUEST_COUNT;
