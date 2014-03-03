@@ -1,0 +1,16 @@
+{
+  FragmentActivity activity=(FragmentActivity)context;
+  if (activity.isFinishing()) {
+    return;
+  }
+  FragmentTransaction ft=activity.getSupportFragmentManager().beginTransaction();
+  AuthErrorDialogFragment authAlert;
+  if (WordPress.getCurrentBlog() == null) {
+    authAlert=AuthErrorDialogFragment.newInstance(true);
+  }
+ else {
+    authAlert=AuthErrorDialogFragment.newInstance(WordPress.getCurrentBlog().isDotcomFlag());
+  }
+  ft.add(authAlert,"alert");
+  ft.commitAllowingStateLoss();
+}

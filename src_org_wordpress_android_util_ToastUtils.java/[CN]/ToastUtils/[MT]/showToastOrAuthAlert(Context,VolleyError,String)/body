@@ -8,12 +8,16 @@
       if (errorObj.has("error_description")) {
         message=(String)errorObj.get("error_description");
         String error_code=(String)errorObj.get("error");
-        if (error_code != null && error_code.equals("invalid_request") && message.toLowerCase().contains("incorrect username or password"))         isInvalidTokenError=true;
+        if (error_code != null && error_code.equals("invalid_request") && message.toLowerCase().contains("incorrect username or password")) {
+          isInvalidTokenError=true;
+        }
       }
  else {
         message=(String)errorObj.get("message");
         String error_code=(String)errorObj.get("error");
-        if (error_code != null && error_code.equals("invalid_token"))         isInvalidTokenError=true;
+        if (error_code != null && error_code.equals("invalid_token")) {
+          isInvalidTokenError=true;
+        }
       }
     }
  catch (    JSONException e) {
@@ -24,12 +28,7 @@
     message=error.getMessage();
   }
   if (isInvalidTokenError && (context instanceof FragmentActivity)) {
-    FragmentActivity activity=(FragmentActivity)context;
-    if (activity.isFinishing())     return;
-    FragmentTransaction ft=activity.getSupportFragmentManager().beginTransaction();
-    AuthErrorDialogFragment authAlert=AuthErrorDialogFragment.newInstance(WordPress.getCurrentBlog().isDotcomFlag());
-    ft.add(authAlert,"alert");
-    ft.commitAllowingStateLoss();
+    showAuthErrorDialog(context);
   }
  else {
     String fallbackErrorMessage=TextUtils.isEmpty(friendlyMessage) ? context.getString(R.string.error_generic) : friendlyMessage;
