@@ -70,7 +70,16 @@
       loadLocalImage(mImageView,filePath,width,height);
     }
  else {
-      ((NetworkImageView)mImageView).setImageUrl(imageUri + "?w=" + screenWidth,WordPress.imageLoader);
+      String thumbnailURL=null;
+      if (WordPress.getCurrentBlog() != null && WordPress.getCurrentBlog().isPhotonCapable()) {
+        thumbnailURL=StringUtils.getPhotonUrl(imageUri,(int)screenWidth);
+      }
+      if (thumbnailURL != null) {
+        ((NetworkImageView)mImageView).setImageUrl(thumbnailURL,WordPress.imageLoader);
+      }
+ else {
+        ((NetworkImageView)mImageView).setImageUrl(imageUri + "?w=" + screenWidth,WordPress.imageLoader);
+      }
     }
     mImageView.setVisibility(View.VISIBLE);
     mImageView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,height));
