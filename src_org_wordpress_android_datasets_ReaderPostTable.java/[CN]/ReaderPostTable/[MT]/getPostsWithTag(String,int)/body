@@ -12,11 +12,13 @@
   Cursor cursor=ReaderDatabase.getReadableDb().rawQuery(sql,new String[]{tagName});
   try {
     ReaderPostList posts=new ReaderPostList();
-    if (cursor == null || !cursor.moveToFirst())     return posts;
-    do {
-      posts.add(getPostFromCursor(cursor));
-    }
+    if (cursor != null && cursor.moveToFirst()) {
+      final PostColumnIndexes cols=new PostColumnIndexes(cursor);
+      do {
+        posts.add(getPostFromCursor(cursor,cols));
+      }
  while (cursor.moveToNext());
+    }
     return posts;
   }
   finally {
