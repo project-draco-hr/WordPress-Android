@@ -1,10 +1,12 @@
 {
-  if (TextUtils.isEmpty(tagName))   return;
+  if (TextUtils.isEmpty(tagName)) {
+    return;
+  }
   if (!NetworkUtils.isNetworkAvailable(getActivity())) {
     AppLog.i(T.READER,"reader post list > network unavailable, canceled tag update");
     return;
   }
-  setIsUpdating(true,updateAction);
+  setIsUpdating(true);
   setEmptyTitleAndDescriptionForCurrentTag();
   if (refreshType == RefreshType.MANUAL && isCurrentTag(tagName)) {
     if (tagName.equals(ReaderTag.TAG_NAME_LIKED) || tagName.equals(ReaderTag.TAG_NAME_FOLLOWING))     refreshPosts();
@@ -15,7 +17,7 @@
         AppLog.w(T.READER,"reader post list > volley response when fragment has no activity");
         return;
       }
-      setIsUpdating(false,updateAction);
+      setIsUpdating(false);
       if (result == ReaderActions.UpdateResult.CHANGED && numNewPosts > 0 && isCurrentTag(tagName)) {
         if (!isPostAdapterEmpty() && updateAction == ReaderActions.RequestDataAction.LOAD_NEWER) {
           showNewPostsBar(numNewPosts);
