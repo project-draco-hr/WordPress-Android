@@ -1,8 +1,6 @@
 {
   super.onSaveInstanceState(outState);
+  AppLog.d(T.READER,"reader post list > saving instance state");
   if (hasCurrentTag())   outState.putString(KEY_TAG_NAME,mCurrentTag);
-  if (hasActivity()) {
-    final ListView listView=(ListView)getActivity().findViewById(android.R.id.list);
-    if (listView.getFirstVisiblePosition() > 0)     outState.putParcelable(LIST_STATE,listView.onSaveInstanceState());
-  }
+  if (mListView != null && mListView.getFirstVisiblePosition() > 0)   outState.putParcelable(KEY_LIST_STATE,mListView.onSaveInstanceState());
 }

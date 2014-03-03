@@ -8,14 +8,17 @@
   mImgSubmitReply.setVisibility(View.GONE);
   final ProgressBar progress=(ProgressBar)getView().findViewById(R.id.progress_submit_comment);
   progress.setVisibility(View.VISIBLE);
+  mLayoutButtons.clearAnimation();
+  AniUtils.flyOut(mLayoutButtons);
   CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
     @Override public void onActionResult(    boolean succeeded){
       mIsSubmittingReply=false;
-      if (succeeded && mOnCommentChangeListener != null)       mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL);
+      if (succeeded && mOnCommentChangeListener != null)       mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL,ChangeType.REPLIED);
       if (hasActivity()) {
         mEditReply.setEnabled(true);
         mImgSubmitReply.setVisibility(View.VISIBLE);
         progress.setVisibility(View.GONE);
+        updateStatusViews();
         if (succeeded) {
           ToastUtils.showToast(getActivity(),getString(R.string.note_reply_successful));
           mEditReply.setText(null);
