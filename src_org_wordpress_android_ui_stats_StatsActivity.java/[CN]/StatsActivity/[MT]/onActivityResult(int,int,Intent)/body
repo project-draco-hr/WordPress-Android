@@ -5,7 +5,7 @@
     if (resultCode == RESULT_OK && !WordPress.getCurrentBlog().isDotcomFlag()) {
       if (getBlogId() == null) {
         final Blog currentBlog=WordPress.getCurrentBlog();
-        XMLRPCClientInterface xmlrpcClient=XMLRPCFactory.instantiate(currentBlog.getUri(),"","");
+        XMLRPCClient xmlrpcClient=new XMLRPCClient(currentBlog.getUrl(),"","");
         Map<String,String> args=ApiHelper.blogOptionsXMLRPCParameters;
         Object[] params={currentBlog.getRemoteBlogId(),currentBlog.getUsername(),currentBlog.getPassword(),args};
         xmlrpcClient.callAsync(new XMLRPCCallback(){
