@@ -1,22 +1,25 @@
 {
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-    HurlStack stack=new HurlStack(){
-      @Override public HttpResponse performRequest(      Request<?> request,      Map<String,String> headers) throws IOException, AuthFailureError {
-        addDefaultHeaders(request,headers,currentBlog);
-        return super.performRequest(request,headers);
-      }
+  String domain=UrlUtils.getDomainFromUrl(currentBlog.getUrl());
+  SSLSocketFactory mSslSocketFactory=null;
+  if (TrustedSslDomainTable.isDomainTrusted(domain)) {
+    try {
+      SSLContext context=SSLContext.getInstance("SSL");
+      context.init(null,trustAllCerts,new SecureRandom());
+      mSslSocketFactory=context.getSocketFactory();
     }
-;
-    return stack;
-  }
- else {
-    HttpClientStack stack=new HttpClientStack(AndroidHttpClient.newInstance("volley/0")){
-      @Override public HttpResponse performRequest(      Request<?> request,      Map<String,String> headers) throws IOException, AuthFailureError {
-        addDefaultHeaders(request,headers,currentBlog);
-        return super.performRequest(request,headers);
-      }
+ catch (    NoSuchAlgorithmException e) {
+      AppLog.e(T.API,e);
     }
-;
-    return stack;
+catch (    KeyManagementException e) {
+      AppLog.e(T.API,e);
+    }
   }
+  HurlStack stack=new HurlStack(null,mSslSocketFactory){
+    @Override public HttpResponse performRequest(    Request<?> request,    Map<String,String> headers) throws IOException, AuthFailureError {
+      addDefaultHeaders(request,headers,currentBlog);
+      return super.performRequest(request,headers);
+    }
+  }
+;
+  return stack;
 }
