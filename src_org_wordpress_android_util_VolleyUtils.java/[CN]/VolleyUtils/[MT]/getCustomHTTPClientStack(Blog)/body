@@ -14,24 +14,12 @@ catch (    KeyManagementException e) {
       AppLog.e(T.API,e);
     }
   }
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-    HurlStack stack=new HurlStack(null,mSslSocketFactory){
-      @Override public HttpResponse performRequest(      Request<?> request,      Map<String,String> headers) throws IOException, AuthFailureError {
-        addDefaultHeaders(request,headers,currentBlog);
-        return super.performRequest(request,headers);
-      }
+  HurlStack stack=new HurlStack(null,mSslSocketFactory){
+    @Override public HttpResponse performRequest(    Request<?> request,    Map<String,String> headers) throws IOException, AuthFailureError {
+      addDefaultHeaders(request,headers,currentBlog);
+      return super.performRequest(request,headers);
     }
-;
-    return stack;
   }
- else {
-    HttpClientStack stack=new HttpClientStack(AndroidHttpClient.newInstance("volley/0")){
-      @Override public HttpResponse performRequest(      Request<?> request,      Map<String,String> headers) throws IOException, AuthFailureError {
-        addDefaultHeaders(request,headers,currentBlog);
-        return super.performRequest(request,headers);
-      }
-    }
 ;
-    return stack;
-  }
+  return stack;
 }
