@@ -1,0 +1,22 @@
+{
+  AppLog.i(T.API,"checkServerTrusted from localstore");
+  if (TextUtils.isEmpty(authType))   throw new IllegalArgumentException("The specified authetication type is empy or null");
+  if (certs == null || certs.length == 0)   throw new IllegalArgumentException("The specified certificates chain type is empty or null");
+  boolean trusted=false;
+  for (  X509Certificate cert : certs) {
+    if (cert == null)     continue;
+    String name=cert.getSubjectX500Principal() != null ? cert.getSubjectX500Principal().getName() : null;
+    if (name == null)     continue;
+    try {
+      if (name.indexOf("CN=") > -1)       name=name.substring(name.indexOf("CN=")).replace("CN=","");
+      if (name.indexOf(",") > 0)       name=name.substring(0,name.indexOf(","));
+      if (TrustedSslDomainTable.isDomainTrusted(name)) {
+        trusted=true;
+      }
+    }
+ catch (    Exception e) {
+      AppLog.e(T.API,"Can't parse the certificate X500 Principal",e);
+    }
+  }
+  if (!trusted)   throw new CertificateException("Cant validate the certificate");
+}
