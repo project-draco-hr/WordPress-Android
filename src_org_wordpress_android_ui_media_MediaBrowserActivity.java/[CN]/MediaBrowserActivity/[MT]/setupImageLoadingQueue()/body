@@ -1,0 +1,14 @@
+{
+  if (mRequestQueue != null) {
+    VolleyUtils.cancelAllRequests(mRequestQueue);
+  }
+  if (WordPress.getCurrentBlog() != null && VolleyUtils.isCustomHTTPClientStackNeeded(WordPress.getCurrentBlog())) {
+    mRequestQueue=Volley.newRequestQueue(this,VolleyUtils.getCustomHTTPClientStack(WordPress.getCurrentBlog()));
+    imageLoader=new ImageLoader(mRequestQueue,WordPress.getBitmapCache());
+    imageLoader.setBatchedResponseDelay(0);
+  }
+ else {
+    mRequestQueue=null;
+    imageLoader=WordPress.imageLoader;
+  }
+}

@@ -1,0 +1,14 @@
+{
+  if (mUserAgent == null) {
+    PackageInfo pkgInfo;
+    try {
+      String pkgName=getContext().getApplicationInfo().packageName;
+      pkgInfo=getContext().getPackageManager().getPackageInfo(pkgName,0);
+    }
+ catch (    PackageManager.NameNotFoundException e) {
+      return USER_AGENT_APPNAME;
+    }
+    mUserAgent=USER_AGENT_APPNAME + "/" + pkgInfo.versionName+ " (Android "+ Build.VERSION.RELEASE+ "; "+ Locale.getDefault().toString()+ "; "+ Build.MANUFACTURER+ " "+ Build.MODEL+ "/"+ Build.PRODUCT+ ")";
+  }
+  return mUserAgent;
+}
