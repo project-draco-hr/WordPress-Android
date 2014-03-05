@@ -1,10 +1,8 @@
 {
   String[] fields=new String[]{"url","blogName","username","password","httpuser","httppassword","imagePlacement","centerThumbnail","fullSizeImage","maxImageWidth","maxImageWidthId","runService","blogId","location","dotcomFlag","dotcom_username","dotcom_password","api_key","api_blogid","wpVersion","postFormats","lastCommentId","isScaledImage","scaledImgWidth","homeURL","blog_options","isAdmin","isHidden"};
   Cursor c=db.query(SETTINGS_TABLE,fields,"id=" + localId,null,null,null,null);
-  int numRows=c.getCount();
-  c.moveToFirst();
   Blog blog=new Blog();
-  if (numRows > 0) {
+  if (c.moveToFirst()) {
     if (c.getString(0) != null) {
       blog.setLocalTableBlogId(localId);
       blog.setUrl(c.getString(c.getColumnIndex("url")));
@@ -61,6 +59,9 @@
       blog.setAdmin(c.getInt(c.getColumnIndex("isAdmin")) > 0);
       blog.setHidden(c.getInt(c.getColumnIndex("isHidden")) > 0);
     }
+  }
+ else {
+    return null;
   }
   c.close();
   return blog;
