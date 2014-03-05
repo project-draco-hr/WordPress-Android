@@ -10,7 +10,6 @@
     wrapper=(PostViewWrapper)view.getTag();
   }
   String date=post.getFormattedDate();
-  String status=post.getStatus();
   String titleText=post.getTitle();
   if (titleText.equals(""))   titleText="(" + mContext.getResources().getText(R.string.untitled) + ")";
   wrapper.getTitle().setText(titleText);
@@ -22,7 +21,7 @@
     wrapper.getDate().setVisibility(View.VISIBLE);
   }
   String formattedStatus="";
-  if (status.equals("publish") && !post.isLocalDraft() && !post.hasLocalChanges()) {
+  if (post.getStatusEnum() == PostStatus.PUBLISHED && !post.isLocalDraft() && !post.hasLocalChanges()) {
     wrapper.getStatus().setVisibility(View.GONE);
   }
  else {
@@ -33,29 +32,33 @@
  else     if (post.hasLocalChanges()) {
       formattedStatus=mContext.getResources().getString(R.string.local_changes);
     }
- else     if (status.equals("draft")) {
-      formattedStatus=mContext.getResources().getString(R.string.draft);
-    }
- else     if (status.equals("pending")) {
-      formattedStatus=mContext.getResources().getString(R.string.pending_review);
-    }
- else     if (status.equals("private")) {
-      formattedStatus=mContext.getResources().getString(R.string.post_private);
-    }
- else     if (status.equals("scheduled")) {
-      formattedStatus=mContext.getResources().getString(R.string.scheduled);
-    }
-    if (post.isLocalDraft() || status.equals("draft") || post.hasLocalChanges()) {
-      wrapper.getStatus().setTextColor(mContext.getResources().getColor(R.color.orange_dark));
-    }
  else {
-      wrapper.getStatus().setTextColor(mContext.getResources().getColor(R.color.grey_medium));
-    }
-    formattedStatus=formattedStatus.toUpperCase(Locale.getDefault()).replace(" ","\n");
-    wrapper.getStatus().setText(formattedStatus);
-  }
-  if (mOnLoadMoreListener != null && position >= getCount() - 1 && position >= PostsListFragment.POSTS_REQUEST_COUNT - 1) {
-    mOnLoadMoreListener.onLoadMore();
-  }
-  return view;
+switch (post.getStatusEnum()) {
+case DRAFT:
+        formattedStatus=mContext.getResources().getString(R.string.draft);
+      break;
+case PRIVATE:
+    formattedStatus=mContext.getResources().getString(R.string.post_private);
+  break;
+case PENDING:
+formattedStatus=mContext.getResources().getString(R.string.pending_review);
+break;
+case SCHEDULED:
+formattedStatus=mContext.getResources().getString(R.string.scheduled);
+break;
+}
+}
+if (post.isLocalDraft() || post.getStatusEnum() == PostStatus.DRAFT || post.hasLocalChanges()) {
+wrapper.getStatus().setTextColor(mContext.getResources().getColor(R.color.orange_dark));
+}
+ else {
+wrapper.getStatus().setTextColor(mContext.getResources().getColor(R.color.grey_medium));
+}
+formattedStatus=formattedStatus.toUpperCase(Locale.getDefault()).replace(" ","\n");
+wrapper.getStatus().setText(formattedStatus);
+}
+if (mOnLoadMoreListener != null && position >= getCount() - 1 && position >= PostsListFragment.POSTS_REQUEST_COUNT - 1) {
+mOnLoadMoreListener.onLoadMore();
+}
+return view;
 }
