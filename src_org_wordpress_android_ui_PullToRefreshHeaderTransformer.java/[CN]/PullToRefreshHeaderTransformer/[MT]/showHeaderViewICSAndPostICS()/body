@@ -1,0 +1,19 @@
+{
+  boolean changeVis=mHeaderView.getVisibility() != View.VISIBLE;
+  if (changeVis) {
+    mHeaderView.setVisibility(View.VISIBLE);
+    AnimatorSet animSet=new AnimatorSet();
+    ObjectAnimator alphaAnim=ObjectAnimator.ofFloat(mHeaderView,"alpha",0f,1f);
+    if (!mShowProgressBarOnly) {
+      ObjectAnimator transAnim=ObjectAnimator.ofFloat(mContentLayout,"translationY",-mContentLayout.getHeight(),0f);
+      animSet.playTogether(transAnim,alphaAnim);
+    }
+ else {
+      mContentLayout.setVisibility(View.INVISIBLE);
+      animSet.play(alphaAnim);
+    }
+    animSet.setDuration(mAnimationDuration);
+    animSet.start();
+  }
+  return changeVis;
+}
