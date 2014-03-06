@@ -1,13 +1,7 @@
 {
   if (trusted && !TextUtils.isEmpty(mSelfHostedURL)) {
     try {
-      URI uri;
-      if (!(mSelfHostedURL.toLowerCase().startsWith("http://")) && !(mSelfHostedURL.toLowerCase().startsWith("https://"))) {
-        uri=URI.create("http://" + mSelfHostedURL);
-      }
- else {
-        uri=URI.create(mSelfHostedURL);
-      }
+      URI uri=URI.create(UrlUtils.addHttpProcolIfNeeded(mSelfHostedURL,false));
       TrustedSslDomainTable.trustDomain(uri);
       mCurrentSslCertificatesForcedTrusted=trusted;
     }
