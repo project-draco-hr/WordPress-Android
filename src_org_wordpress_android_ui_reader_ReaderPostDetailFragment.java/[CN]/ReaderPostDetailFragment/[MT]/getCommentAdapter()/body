@@ -1,0 +1,37 @@
+{
+  if (mAdapter == null) {
+    if (!hasActivity())     AppLog.w(T.READER,"reader post detail > comment adapter created before activity");
+    ReaderActions.DataLoadedListener dataLoadedListener=new ReaderActions.DataLoadedListener(){
+      @Override public void onDataLoaded(      boolean isEmpty){
+        if (!hasActivity())         return;
+        mCommentFooter.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+        if (mListState != null) {
+          if (!isEmpty)           getListView().onRestoreInstanceState(mListState);
+          mListState=null;
+        }
+      }
+    }
+;
+    ReaderCommentAdapter.RequestReplyListener replyListener=new ReaderCommentAdapter.RequestReplyListener(){
+      @Override public void onRequestReply(      long commentId){
+        if (!mIsAddCommentBoxShowing) {
+          showAddCommentBox(commentId);
+        }
+ else {
+          hideAddCommentBox();
+        }
+      }
+    }
+;
+    ReaderActions.DataRequestedListener dataRequestedListener=new ReaderActions.DataRequestedListener(){
+      @Override public void onRequestData(      ReaderActions.RequestDataAction action){
+        if (mIsUpdatingComments)         return;
+        AppLog.i(T.READER,"reader post detail > requesting newer comments");
+        updateComments();
+      }
+    }
+;
+    mAdapter=new ReaderCommentAdapter(getActivity(),mPost,replyListener,dataLoadedListener,dataRequestedListener);
+  }
+  return mAdapter;
+}

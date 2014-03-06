@@ -1,0 +1,36 @@
+{
+  if (!hasPost() || !mPost.isWP())   return;
+  final int origNumLikes=mPost.numLikes;
+  final int origNumReplies=mPost.numReplies;
+  ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
+    @Override public void onUpdateResult(    ReaderActions.UpdateResult result){
+switch (result) {
+case CHANGED:
+        mPost=ReaderPostTable.getPost(mBlogId,mPostId);
+      doPostChanged(PostChangeType.CONTENT);
+    break;
+case FAILED:
+  return;
+default :
+break;
+}
+if (origNumLikes > 0 || mPost.numLikes > 0) refreshLikes(false);
+new Thread(){
+@Override public void run(){
+final boolean isCommentsChanged=(mPost.numReplies != origNumReplies || mPost.numReplies != ReaderCommentTable.getNumCommentsForPost(mPost));
+if (isCommentsChanged) {
+  mHandler.post(new Runnable(){
+    public void run(){
+      updateComments();
+    }
+  }
+);
+}
+}
+}
+.start();
+}
+}
+;
+ReaderPostActions.updatePost(mPost,resultListener);
+}

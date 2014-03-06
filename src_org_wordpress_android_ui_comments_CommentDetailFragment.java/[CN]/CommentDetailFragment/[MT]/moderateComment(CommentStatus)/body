@@ -30,7 +30,6 @@ mTxtStatus.setVisibility(View.INVISIBLE);
 CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
 @Override public void onActionResult(boolean succeeded){
 mIsModeratingComment=false;
-if (succeeded && mOnCommentChangeListener != null) mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL);
 if (hasActivity()) {
 dismissDialog(dlgId);
 mLayoutButtons.setEnabled(true);
@@ -41,12 +40,15 @@ mComment.setStatus(CommentStatus.toString(newStatus));
 ToastUtils.showToast(getActivity(),R.string.error_moderate_comment,ToastUtils.Duration.LONG);
 }
 if (newStatus == CommentStatus.TRASH) {
-clearComment();
-closeThisFragment();
+clear();
 }
  else {
 updateStatusViews();
 }
+}
+if (succeeded && mOnCommentChangeListener != null) {
+ChangeType changeType=(newStatus == CommentStatus.TRASH ? ChangeType.TRASHED : ChangeType.STATUS);
+mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL,changeType);
 }
 }
 }

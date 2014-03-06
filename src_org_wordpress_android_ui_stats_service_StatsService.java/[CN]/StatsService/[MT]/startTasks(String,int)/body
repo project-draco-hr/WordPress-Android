@@ -1,0 +1,47 @@
+{
+  final ThreadPoolExecutor executor=(ThreadPoolExecutor)Executors.newFixedThreadPool(getMaxConcurrentTasks());
+  new Thread(){
+    @Override public void run(){
+      final String today=StatUtils.getCurrentDate();
+      final String yesterday=StatUtils.getYesterdaysDate();
+      try {
+        executor.submit(new SummaryTask(blogId));
+        executor.submit(new BarChartTask(blogId,StatsBarChartUnit.WEEK));
+        executor.submit(new BarChartTask(blogId,StatsBarChartUnit.MONTH));
+        executor.submit(new TopPostsAndPagesTask(blogId,today));
+        executor.submit(new TopPostsAndPagesTask(blogId,yesterday));
+        executor.submit(new ViewsByCountryTask(blogId,today));
+        executor.submit(new ViewsByCountryTask(blogId,yesterday));
+        executor.submit(new ReferrersTask(blogId,today));
+        executor.submit(new ReferrersTask(blogId,yesterday));
+        executor.submit(new ClicksTask(blogId,today));
+        executor.submit(new ClicksTask(blogId,yesterday));
+        executor.submit(new SearchEngineTermsTask(blogId,today));
+        executor.submit(new SearchEngineTermsTask(blogId,yesterday));
+      }
+ catch (      RejectedExecutionException e) {
+        AppLog.e(T.STATS,e);
+      }
+      AppLog.i(T.STATS,"update started");
+      broadcastUpdate(true);
+      try {
+        executor.shutdown();
+        if (!executor.awaitTermination(EXECUTOR_TIMEOUT_SECONDS,TimeUnit.SECONDS)) {
+          AppLog.w(T.STATS,"executor failed to terminate");
+          executor.shutdownNow();
+        }
+      }
+ catch (      InterruptedException e) {
+        AppLog.w(T.STATS,"executor interrupted");
+        executor.shutdownNow();
+        Thread.currentThread().interrupt();
+      }
+ finally {
+        AppLog.i(T.STATS,"update ended");
+        broadcastUpdate(false);
+        stopSelf(startId);
+      }
+    }
+  }
+.start();
+}

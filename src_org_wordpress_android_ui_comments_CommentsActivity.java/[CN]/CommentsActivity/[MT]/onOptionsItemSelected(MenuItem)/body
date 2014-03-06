@@ -1,16 +1,20 @@
 {
-  int itemId=item.getItemId();
-  if (itemId == R.id.menu_refresh) {
-    popCommentDetail();
+switch (item.getItemId()) {
+case R.id.menu_refresh:
     updateCommentList();
+  return true;
+case android.R.id.home:
+if (isLargeOrXLarge()) {
+  return super.onOptionsItemSelected(item);
+}
+ else {
+  FragmentManager fm=getSupportFragmentManager();
+  if (fm.getBackStackEntryCount() > 0) {
+    fm.popBackStack();
     return true;
   }
- else   if (itemId == android.R.id.home) {
-    FragmentManager fm=getSupportFragmentManager();
-    if (fm.getBackStackEntryCount() > 0) {
-      popCommentDetail();
-      return true;
-    }
-  }
-  return super.onOptionsItemSelected(item);
+}
+break;
+}
+return super.onOptionsItemSelected(item);
 }

@@ -1,19 +1,20 @@
 {
-  if (context == null)   return;
+  if (context == null) {
+    return;
+  }
   boolean isLoginLimitReached=false;
   boolean is2StepsAuthEnabled=false;
   if (!TextUtils.isEmpty(xmlrpcMessage)) {
     String lowerCaseXmlrpcMessage=xmlrpcMessage.toLowerCase();
-    if (lowerCaseXmlrpcMessage.contains("code 503") && (lowerCaseXmlrpcMessage.contains("limit reached") || lowerCaseXmlrpcMessage.contains("login limit")))     isLoginLimitReached=true;
- else     if (lowerCaseXmlrpcMessage.contains("code 425"))     is2StepsAuthEnabled=true;
+    if (lowerCaseXmlrpcMessage.contains("code 503") && (lowerCaseXmlrpcMessage.contains("limit reached") || lowerCaseXmlrpcMessage.contains("login limit"))) {
+      isLoginLimitReached=true;
+    }
+ else     if (lowerCaseXmlrpcMessage.contains("code 425")) {
+      is2StepsAuthEnabled=true;
+    }
   }
   if ((context instanceof FragmentActivity) && !TextUtils.isEmpty(xmlrpcMessage) && (xmlrpcMessage.contains("code 403") || is2StepsAuthEnabled)) {
-    FragmentActivity activity=(FragmentActivity)context;
-    if (activity.isFinishing())     return;
-    FragmentTransaction ft=activity.getSupportFragmentManager().beginTransaction();
-    AuthErrorDialogFragment authAlert=AuthErrorDialogFragment.newInstance(WordPress.getCurrentBlog().isDotcomFlag());
-    ft.add(authAlert,"alert");
-    ft.commitAllowingStateLoss();
+    showAuthErrorDialog((FragmentActivity)context);
   }
  else {
     String errorMessage=null;
