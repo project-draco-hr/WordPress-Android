@@ -3,7 +3,7 @@
   if (!NetworkUtils.checkConnection(getActivity()))   return;
   int postCount=getPostListAdapter().getRemotePostCount() + POSTS_REQUEST_COUNT;
   if (!loadMore) {
-    mOnRefreshListener.onRefresh(true);
+    mPullToRefreshHelper.setRefreshing(true);
     postCount=POSTS_REQUEST_COUNT;
   }
   List<Object> apiArgs=new Vector<Object>();
@@ -18,7 +18,7 @@
     @Override public void onSuccess(    int postCount){
       mIsFetchingPosts=false;
       if (!hasActivity())       return;
-      mOnRefreshListener.onRefresh(false);
+      mPullToRefreshHelper.setRefreshing(false);
       if (mProgressFooterView != null) {
         mProgressFooterView.setVisibility(View.GONE);
       }
@@ -33,7 +33,7 @@
     @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
       mIsFetchingPosts=false;
       if (!hasActivity())       return;
-      mOnRefreshListener.onRefresh(false);
+      mPullToRefreshHelper.setRefreshing(false);
       if (mProgressFooterView != null)       mProgressFooterView.setVisibility(View.GONE);
       if (!TextUtils.isEmpty(errorMessage) && !getActivity().isFinishing()) {
         FragmentTransaction ft=getFragmentManager().beginTransaction();
