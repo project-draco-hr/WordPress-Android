@@ -1,14 +1,34 @@
 {
   super.onActivityCreated(bundle);
-  TextView textview=(TextView)getActivity().findViewById(R.id.title_empty);
-  if (textview != null) {
-    if (isPage) {
-      textview.setText(getText(R.string.pages_empty_list));
-    }
- else {
-      textview.setText(getText(R.string.posts_empty_list));
+  getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+  mProgressFooterView=View.inflate(getActivity(),R.layout.list_footer_progress,null);
+  getListView().addFooterView(mProgressFooterView,null,false);
+  mProgressFooterView.setVisibility(View.GONE);
+  getListView().setDivider(getResources().getDrawable(R.drawable.list_divider));
+  getListView().setDividerHeight(1);
+  getListView().setOnItemClickListener(new AdapterView.OnItemClickListener(){
+    public void onItemClick(    AdapterView<?> arg0,    View v,    int position,    long id){
+      if (position >= getPostListAdapter().getCount())       return;
+      if (v == null)       return;
+      PostsListPost postsListPost=(PostsListPost)getPostListAdapter().getItem(position);
+      if (postsListPost == null)       return;
+      if (!mIsFetchingPosts || isLoadingMorePosts()) {
+        showPost(postsListPost.getPostId());
+      }
+ else       if (hasActivity()) {
+        Toast.makeText(getActivity(),mIsPage ? R.string.loading_pages : R.string.loading_posts,Toast.LENGTH_SHORT).show();
+      }
     }
   }
-  createSwitcher();
-  mListScrollPositionManager=new ListScrollPositionManager(getListView(),true);
+);
+  TextView textView=(TextView)getActivity().findViewById(R.id.title_empty);
+  if (textView != null) {
+    if (mIsPage) {
+      textView.setText(getText(R.string.pages_empty_list));
+    }
+ else {
+      textView.setText(getText(R.string.posts_empty_list));
+    }
+  }
+  WordPress.setOnPostUploadedListener(this);
 }
