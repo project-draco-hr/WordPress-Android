@@ -1,0 +1,38 @@
+{
+  final ImageView indicator=(ImageView)findViewById(R.id.indicator);
+  if (note == null) {
+    indicator.setVisibility(View.GONE);
+    setClickable(false);
+    setOnClickListener(null);
+    return;
+  }
+  boolean isComment=(note.getBlogId() != 0 && note.getPostId() != 0 && note.getCommentId() != 0);
+  boolean isPost=(note.getBlogId() != 0 && note.getPostId() != 0 && note.getCommentId() == 0);
+  if (isPost || isComment) {
+    indicator.setVisibility(View.VISIBLE);
+    indicator.setImageResource(R.drawable.ic_navigate_next);
+    setClickable(true);
+    setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        showPost(note.getBlogId(),note.getPostId());
+      }
+    }
+);
+  }
+ else   if (!TextUtils.isEmpty(url)) {
+    indicator.setVisibility(View.VISIBLE);
+    indicator.setImageResource(R.drawable.dashboard_icon_wp);
+    setClickable(true);
+    setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        showUrl(url);
+      }
+    }
+);
+  }
+ else {
+    indicator.setVisibility(View.GONE);
+    setClickable(false);
+    setOnClickListener(null);
+  }
+}
