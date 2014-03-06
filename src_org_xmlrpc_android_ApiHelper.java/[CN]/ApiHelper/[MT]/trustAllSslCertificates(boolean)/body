@@ -1,0 +1,25 @@
+{
+  try {
+    if (trustAll) {
+      SSLContext context=SSLContext.getInstance("SSL");
+      context.init(null,VolleyUtils.trustAllCerts,new SecureRandom());
+      HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
+      HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier(){
+        @Override public boolean verify(        String arg0,        SSLSession arg1){
+          return true;
+        }
+      }
+);
+    }
+ else {
+      HttpsURLConnection.setDefaultSSLSocketFactory((SSLSocketFactory)SSLSocketFactory.getDefault());
+      HttpsURLConnection.setDefaultHostnameVerifier(HttpsURLConnection.getDefaultHostnameVerifier());
+    }
+  }
+ catch (  NoSuchAlgorithmException e) {
+    AppLog.e(T.API,e);
+  }
+catch (  KeyManagementException e) {
+    AppLog.e(T.API,e);
+  }
+}

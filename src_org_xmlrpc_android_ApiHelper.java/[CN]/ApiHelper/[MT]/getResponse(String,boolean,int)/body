@@ -1,0 +1,36 @@
+{
+  trustAllSslCertificates(trustAllSslCertificates);
+  RequestFuture<String> requestFuture=RequestFuture.newFuture();
+  StringRequest stringRequest=new StringRequest(Request.Method.GET,url,requestFuture,requestFuture);
+  WordPress.requestQueue.add(stringRequest);
+  try {
+    return requestFuture.get(30,TimeUnit.SECONDS);
+  }
+ catch (  InterruptedException e) {
+    AppLog.e(T.API,e);
+    return null;
+  }
+catch (  ExecutionException e) {
+    if (e.getCause() instanceof ServerError) {
+      NetworkResponse networkResponse=((ServerError)e.getCause()).networkResponse;
+      if ((networkResponse != null) && (networkResponse.statusCode == HttpURLConnection.HTTP_MOVED_PERM || networkResponse.statusCode == HttpURLConnection.HTTP_MOVED_TEMP)) {
+        String newUrl=networkResponse.headers.get("Location");
+        if (maxRedirection > 0) {
+          return getResponse(newUrl,trustAllSslCertificates,maxRedirection - 1);
+        }
+      }
+    }
+    if (e.getCause() != null && e.getCause().getCause() instanceof SSLHandshakeException) {
+      throw (SSLHandshakeException)e.getCause().getCause();
+    }
+    AppLog.e(T.API,e);
+    return null;
+  }
+catch (  TimeoutException e) {
+    AppLog.e(T.API,e);
+    return null;
+  }
+ finally {
+    trustAllSslCertificates(false);
+  }
+}
