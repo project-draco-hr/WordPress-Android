@@ -1,0 +1,53 @@
+{
+  if (!hasActivity() || WordPress.getCurrentBlog() == null || mIsFetchingPosts)   return;
+  if (!NetworkUtils.checkConnection(getActivity()))   return;
+  int postCount=getPostListAdapter().getRemotePostCount() + POSTS_REQUEST_COUNT;
+  if (!loadMore) {
+    mOnRefreshListener.onRefresh(true);
+    postCount=POSTS_REQUEST_COUNT;
+  }
+  List<Object> apiArgs=new Vector<Object>();
+  apiArgs.add(WordPress.getCurrentBlog());
+  apiArgs.add(mIsPage);
+  apiArgs.add(postCount);
+  apiArgs.add(loadMore);
+  if (mProgressFooterView != null && loadMore) {
+    mProgressFooterView.setVisibility(View.VISIBLE);
+  }
+  ApiHelper.FetchPostsTask fetchPostsTask=new ApiHelper.FetchPostsTask(new ApiHelper.FetchPostsTask.Callback(){
+    @Override public void onSuccess(    int postCount){
+      mIsFetchingPosts=false;
+      if (!hasActivity())       return;
+      mOnRefreshListener.onRefresh(false);
+      if (mProgressFooterView != null) {
+        mProgressFooterView.setVisibility(View.GONE);
+      }
+      if (postCount == 0) {
+        mCanLoadMorePosts=false;
+      }
+ else       if (postCount == getPostListAdapter().getRemotePostCount() && postCount != POSTS_REQUEST_COUNT) {
+        mCanLoadMorePosts=false;
+      }
+      getPostListAdapter().loadPosts();
+    }
+    @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
+      mIsFetchingPosts=false;
+      if (!hasActivity())       return;
+      mOnRefreshListener.onRefresh(false);
+      if (mProgressFooterView != null)       mProgressFooterView.setVisibility(View.GONE);
+      if (!TextUtils.isEmpty(errorMessage) && !getActivity().isFinishing()) {
+        FragmentTransaction ft=getFragmentManager().beginTransaction();
+        WPAlertDialogFragment alert=WPAlertDialogFragment.newAlertDialog(mIsPage ? getString(R.string.error_refresh_pages) : getString(R.string.error_refresh_posts));
+        try {
+          alert.show(ft,"alert");
+        }
+ catch (        Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+);
+  mIsFetchingPosts=true;
+  fetchPostsTask.execute(apiArgs);
+}
