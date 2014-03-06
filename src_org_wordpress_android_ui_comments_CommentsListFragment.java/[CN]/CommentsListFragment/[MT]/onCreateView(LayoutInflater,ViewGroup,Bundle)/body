@@ -2,7 +2,15 @@
   View view=inflater.inflate(R.layout.comment_list_fragment,container,false);
   mListView=(ListView)view.findViewById(android.R.id.list);
   mEmptyView=view.findViewById(android.R.id.empty);
-  mPullToRefreshLayout=(PullToRefreshLayout)view.findViewById(R.id.ptr_layout);
-  ActionBarPullToRefresh.from(getActivity()).allChildrenArePullable().listener(this).setup(mPullToRefreshLayout);
+  mPullToRefreshHelper=new PullToRefreshHelper(getActivity(),(PullToRefreshLayout)view.findViewById(R.id.ptr_layout),new RefreshListener(){
+    @Override public void onRefreshStarted(    View view){
+      if (getActivity() == null || !NetworkUtils.checkConnection(getActivity())) {
+        mPullToRefreshHelper.setRefreshing(false);
+        return;
+      }
+      updateComments(false);
+    }
+  }
+);
   return view;
 }

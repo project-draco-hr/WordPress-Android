@@ -26,8 +26,16 @@
     }
   }
 );
-  mPullToRefreshLayout=(PullToRefreshLayout)view.findViewById(R.id.ptr_layout);
-  ActionBarPullToRefresh.from(getActivity()).allChildrenArePullable().listener(this).setup(mPullToRefreshLayout);
+  mPullToRefreshHelper=new PullToRefreshHelper(getActivity(),(PullToRefreshLayout)view.findViewById(R.id.ptr_layout),new RefreshListener(){
+    @Override public void onRefreshStarted(    View view){
+      if (getActivity() == null || !NetworkUtils.checkConnection(getActivity())) {
+        mPullToRefreshHelper.setRefreshing(false);
+        return;
+      }
+      refreshMediaFromServer(0,false);
+    }
+  }
+);
   restoreState(savedInstanceState);
   setupSpinnerAdapter();
   return view;

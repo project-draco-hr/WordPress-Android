@@ -1,7 +1,16 @@
 {
   View view=inflater.inflate(R.layout.empty_listview,container,false);
-  mPullToRefreshLayout=(PullToRefreshLayout)view.findViewById(R.id.ptr_layout);
-  mHeaderTransformer=new PullToRefreshHeaderTransformer();
-  ActionBarPullToRefresh.from(getActivity()).options(Options.create().headerTransformer(mHeaderTransformer).build()).allChildrenArePullable().listener(this).setup(mPullToRefreshLayout);
+  mPullToRefreshHelper=new PullToRefreshHelper(getActivity(),(PullToRefreshLayout)view.findViewById(R.id.ptr_layout),new RefreshListener(){
+    @Override public void onRefreshStarted(    View view){
+      if (getActivity() == null || !NetworkUtils.checkConnection(getActivity())) {
+        mPullToRefreshHelper.setRefreshing(false);
+        return;
+      }
+      if (getActivity() instanceof NotificationsActivity) {
+        ((NotificationsActivity)getActivity()).refreshNotes();
+      }
+    }
+  }
+);
   return view;
 }

@@ -6,8 +6,16 @@
   ActionBar actionBar=getSupportActionBar();
   actionBar.setHomeButtonEnabled(true);
   actionBar.setDisplayHomeAsUpEnabled(true);
-  mPullToRefreshLayout=(PullToRefreshLayout)findViewById(R.id.ptr_layout);
-  ActionBarPullToRefresh.from(this).allChildrenArePullable().listener(this).setup(mPullToRefreshLayout);
+  mPullToRefreshHelper=new PullToRefreshHelper(this,(PullToRefreshLayout)findViewById(R.id.ptr_layout),new RefreshListener(){
+    @Override public void onRefreshStarted(    View view){
+      if (!NetworkUtils.checkConnection(getBaseContext())) {
+        mPullToRefreshHelper.setRefreshing(false);
+        return;
+      }
+      new SetupBlogTask().execute();
+    }
+  }
+);
   loadAccounts();
   refreshBlogs();
 }
