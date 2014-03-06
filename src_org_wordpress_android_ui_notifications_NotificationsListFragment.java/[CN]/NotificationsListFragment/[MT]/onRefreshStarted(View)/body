@@ -1,5 +1,9 @@
 {
-  if (hasActivity() && getActivity() instanceof NotificationsActivity) {
+  if (getActivity() == null || !NetworkUtils.checkConnection(getActivity())) {
+    mPullToRefreshLayout.setRefreshing(false);
+    return;
+  }
+  if (getActivity() instanceof NotificationsActivity) {
     ((NotificationsActivity)getActivity()).refreshNotes();
   }
 }
