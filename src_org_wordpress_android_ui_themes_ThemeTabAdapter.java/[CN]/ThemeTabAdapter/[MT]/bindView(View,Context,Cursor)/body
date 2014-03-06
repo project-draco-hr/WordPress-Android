@@ -1,36 +1,31 @@
 {
+  final ThemeViewHolder themeViewHolder=(ThemeViewHolder)view.getTag();
   final String screenshotURL=cursor.getString(cursor.getColumnIndex("screenshotURL"));
   final String name=cursor.getString(cursor.getColumnIndex("name"));
-  final NetworkImageView imageView=(NetworkImageView)view.findViewById(R.id.theme_grid_item_image);
-  final TextView nameView=(TextView)view.findViewById(R.id.theme_grid_item_name);
-  nameView.setText(name);
-  ImageView themeAttr=(ImageView)view.findViewById(R.id.theme_grid_attributes);
   final int isPremiumTheme=cursor.getInt(cursor.getColumnIndex("isPremium"));
   final int isCurrentTheme=cursor.getInt(cursor.getColumnIndex("isCurrent"));
+  themeViewHolder.nameView.setText(name);
   if (isCurrentTheme != 0) {
-    themeAttr.setVisibility(View.VISIBLE);
-    themeAttr.setImageResource(R.drawable.theme_icon_tag_current);
+    themeViewHolder.themeAttr.setVisibility(View.VISIBLE);
+    themeViewHolder.themeAttr.setImageDrawable(mIconCurrent);
   }
  else   if (isPremiumTheme != 0) {
-    themeAttr.setVisibility(View.VISIBLE);
-    themeAttr.setImageResource(R.drawable.theme_icon_tag_premium);
+    themeViewHolder.themeAttr.setVisibility(View.VISIBLE);
+    themeViewHolder.themeAttr.setImageDrawable(mIconPremium);
   }
  else {
-    themeAttr.setVisibility(View.GONE);
+    themeViewHolder.themeAttr.setVisibility(View.GONE);
   }
-  ViewHolder holder=(ViewHolder)imageView.getTag();
-  if (holder == null) {
-    holder=new ViewHolder();
-    holder.requestURL=screenshotURL;
-    imageView.setTag(holder);
+  ScreenshotHolder urlHolder=(ScreenshotHolder)themeViewHolder.imageView.getTag();
+  if (urlHolder == null) {
+    urlHolder=new ScreenshotHolder();
+    urlHolder.requestURL=screenshotURL;
+    themeViewHolder.imageView.setTag(urlHolder);
   }
-  if (!holder.requestURL.equals(screenshotURL)) {
-    imageView.setImageBitmap(null);
-    holder.requestURL=screenshotURL;
+  if (!urlHolder.requestURL.equals(screenshotURL)) {
+    themeViewHolder.imageView.setImageBitmap(null);
+    urlHolder.requestURL=screenshotURL;
   }
-  RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)imageView.getLayoutParams();
-  params.width=getGridWidth(context);
-  params.height=getGridHeight(context);
-  imageView.setImageUrl(screenshotURL + "?w=" + params.width,WordPress.imageLoader);
-  view.setLayoutParams(new GridView.LayoutParams(params.width,params.height + ((int)Utils.dpToPx(32))));
+  themeViewHolder.imageView.setImageUrl(screenshotURL + "?w=" + mColumnWidth,WordPress.imageLoader);
+  view.setLayoutParams(new GridView.LayoutParams(mColumnWidth,mColumnHeight + m32DpToPx));
 }
