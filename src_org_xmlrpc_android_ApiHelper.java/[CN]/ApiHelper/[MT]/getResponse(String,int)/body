@@ -1,5 +1,4 @@
 {
-  trustAllSslCertificates(trustAllSslCertificates);
   RequestFuture<String> requestFuture=RequestFuture.newFuture();
   StringRequest stringRequest=new StringRequest(Request.Method.GET,url,requestFuture,requestFuture);
   WordPress.requestQueue.add(stringRequest);
@@ -16,7 +15,7 @@ catch (  ExecutionException e) {
       if ((networkResponse != null) && (networkResponse.statusCode == HttpURLConnection.HTTP_MOVED_PERM || networkResponse.statusCode == HttpURLConnection.HTTP_MOVED_TEMP)) {
         String newUrl=networkResponse.headers.get("Location");
         if (maxRedirection > 0) {
-          return getResponse(newUrl,trustAllSslCertificates,maxRedirection - 1);
+          return getResponse(newUrl,maxRedirection - 1);
         }
       }
     }
@@ -29,8 +28,5 @@ catch (  ExecutionException e) {
 catch (  TimeoutException e) {
     AppLog.e(T.API,e);
     return null;
-  }
- finally {
-    trustAllSslCertificates(false);
   }
 }
