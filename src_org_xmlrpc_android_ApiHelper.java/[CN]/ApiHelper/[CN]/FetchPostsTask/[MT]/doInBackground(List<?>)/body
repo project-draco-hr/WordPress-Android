@@ -11,6 +11,7 @@
   try {
     result=(Object[])client.call((isPage) ? "wp.getPages" : "metaWeblog.getRecentPosts",xmlrpcParams);
     if (result != null && result.length > 0) {
+      mPostCount=result.length;
       List<Map<?,?>> postsList=new ArrayList<Map<?,?>>();
       if (!loadMore) {
         WordPress.wpDB.deleteUploadedPosts(blog.getLocalTableBlogId(),isPage);
@@ -24,7 +25,6 @@
         postsList.add(postMap);
       }
       WordPress.wpDB.savePosts(postsList,blog.getLocalTableBlogId(),isPage,!loadMore);
-      mPostCount=postsList.size();
     }
     return true;
   }
