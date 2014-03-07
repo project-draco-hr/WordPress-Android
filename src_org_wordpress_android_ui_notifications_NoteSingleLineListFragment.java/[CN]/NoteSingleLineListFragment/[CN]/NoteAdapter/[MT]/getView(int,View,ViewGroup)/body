@@ -11,7 +11,11 @@
   FollowRow row=(FollowRow)v;
   row.setFollowListener(new FollowListener());
   row.setAction(followAction);
-  row.setText(JSONUtil.queryJSON(noteItem,"header_text",""));
+  String headerText=JSONUtil.queryJSON(noteItem,"header_text","");
+  if (TextUtils.isEmpty(headerText)) {
+    headerText=HtmlUtils.fastStripHtml(JSONUtil.queryJSON(noteItem,"header",""));
+  }
+  row.setNameText(headerText);
   row.getImageView().setImageUrl(JSONUtil.queryJSON(noteItem,"icon",""),WordPress.imageLoader);
   return v;
 }
