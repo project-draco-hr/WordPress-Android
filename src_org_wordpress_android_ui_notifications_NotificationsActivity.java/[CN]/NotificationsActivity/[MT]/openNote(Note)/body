@@ -30,27 +30,26 @@
   if (fm.getBackStackEntryCount() > 0) {
     fm.popBackStack();
   }
-  Fragment fragment=fragmentForNote(note);
-  if (fragment == null) {
+  Fragment detailFragment=getDetailFragmentForNote(note);
+  if (detailFragment == null) {
     AppLog.d(T.NOTIFS,String.format("No fragment found for %s",note.toJSONObject()));
     return;
   }
-  NotificationFragment noteFragment=(NotificationFragment)fragment;
   Intent intent=getIntent();
   if (intent.hasExtra(NOTE_ID_EXTRA) && intent.getStringExtra(NOTE_ID_EXTRA).equals(note.getId())) {
     if (intent.hasExtra(NOTE_REPLY_EXTRA) || intent.hasExtra(NOTE_INSTANT_REPLY_EXTRA)) {
-      fragment.setArguments(intent.getExtras());
+      detailFragment.setArguments(intent.getExtras());
     }
   }
-  noteFragment.setNote(note);
-  FragmentTransaction transaction=fm.beginTransaction();
+  ((NotificationFragment)detailFragment).setNote(note);
+  FragmentTransaction ft=fm.beginTransaction();
+  ft.replace(R.id.layout_fragment_container,detailFragment);
+  ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
   View container=findViewById(R.id.layout_fragment_container);
-  transaction.replace(R.id.layout_fragment_container,fragment);
-  transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
   if (container.findViewById(R.id.fragment_notes_list) != null) {
     mMenuDrawer.setDrawerIndicatorEnabled(false);
-    transaction.addToBackStack(null);
-    if (mNotesList != null)     transaction.hide(mNotesList);
+    ft.addToBackStack(null);
+    if (mNotesList != null)     ft.hide(mNotesList);
   }
-  transaction.commitAllowingStateLoss();
+  ft.commitAllowingStateLoss();
 }
