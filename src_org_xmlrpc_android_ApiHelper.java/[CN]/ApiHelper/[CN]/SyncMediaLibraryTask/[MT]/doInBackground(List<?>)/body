@@ -26,8 +26,28 @@
     setError(ErrorType.INVALID_RESULT,cce.getMessage(),cce);
     return 0;
   }
-catch (  Exception e) {
+catch (  XMLRPCException e) {
     AppLog.e(T.API,e);
+    if (e.getMessage().contains("401")) {
+      setError(ErrorType.NO_UPLOAD_FILES_CAP,e.getMessage(),e);
+      return 0;
+    }
+ else {
+      setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
+      return 0;
+    }
+  }
+catch (  IOException e) {
+    if (e.getMessage().contains("401")) {
+      setError(ErrorType.NO_UPLOAD_FILES_CAP,e.getMessage(),e);
+      return 0;
+    }
+ else {
+      setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
+      return 0;
+    }
+  }
+catch (  XmlPullParserException e) {
     if (e.getMessage().contains("401")) {
       setError(ErrorType.NO_UPLOAD_FILES_CAP,e.getMessage(),e);
       return 0;

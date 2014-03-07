@@ -174,10 +174,14 @@
     post.update();
     return true;
   }
- catch (  final Exception e) {
-    mErrorMessage=String.format(context.getResources().getText(R.string.error_upload).toString(),post.isPage() ? context.getResources().getText(R.string.page).toString() : context.getResources().getText(R.string.post).toString()) + " " + e.getMessage();
-    mIsMediaError=false;
-    AppLog.e(T.EDITOR,mErrorMessage,e);
+ catch (  final XMLRPCException e) {
+    setUploadPostErrorMessage(e);
+  }
+catch (  IOException e) {
+    setUploadPostErrorMessage(e);
+  }
+catch (  XmlPullParserException e) {
+    setUploadPostErrorMessage(e);
   }
   return false;
 }
