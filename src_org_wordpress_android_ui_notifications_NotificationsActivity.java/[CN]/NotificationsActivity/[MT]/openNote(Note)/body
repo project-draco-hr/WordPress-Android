@@ -35,13 +35,7 @@
     AppLog.d(T.NOTIFS,String.format("No fragment found for %s",note.toJSONObject()));
     return;
   }
-  Intent intent=getIntent();
-  if (intent.hasExtra(NOTE_ID_EXTRA) && intent.getStringExtra(NOTE_ID_EXTRA).equals(note.getId())) {
-    if (intent.hasExtra(NOTE_REPLY_EXTRA) || intent.hasExtra(NOTE_INSTANT_REPLY_EXTRA)) {
-      detailFragment.setArguments(intent.getExtras());
-    }
-  }
-  ((NotificationFragment)detailFragment).setNote(note);
+  if (detailFragment instanceof NotificationFragment)   ((NotificationFragment)detailFragment).setNote(note);
   FragmentTransaction ft=fm.beginTransaction();
   ft.replace(R.id.layout_fragment_container,detailFragment);
   ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
