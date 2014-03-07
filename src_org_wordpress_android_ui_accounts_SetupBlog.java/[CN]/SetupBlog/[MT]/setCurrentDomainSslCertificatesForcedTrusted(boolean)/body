@@ -1,7 +1,9 @@
 {
   if (trusted && !TextUtils.isEmpty(mSelfHostedURL)) {
     try {
-      URI uri=URI.create(UrlUtils.addHttpProcolIfNeeded(mSelfHostedURL,false));
+      String sanitizedURL=UrlUtils.convertUrlToPunycodeIfNeeded(mSelfHostedURL);
+      sanitizedURL=UrlUtils.addHttpProcolIfNeeded(sanitizedURL,false);
+      URI uri=URI.create(sanitizedURL);
       TrustedSslDomainTable.trustDomain(uri);
       mCurrentSslCertificatesForcedTrusted=trusted;
     }
