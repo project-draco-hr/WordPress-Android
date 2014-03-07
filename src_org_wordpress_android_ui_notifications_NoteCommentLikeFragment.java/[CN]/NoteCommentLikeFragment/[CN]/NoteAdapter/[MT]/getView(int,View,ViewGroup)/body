@@ -1,17 +1,17 @@
 {
-  View v;
+  final View view;
   if (cachedView == null) {
-    v=getActivity().getLayoutInflater().inflate(R.layout.notifications_follow_row,null);
+    view=mInflater.inflate(R.layout.notifications_follow_row,null);
   }
  else {
-    v=cachedView;
+    view=cachedView;
   }
   JSONObject noteItem=getItem(position + 1);
   JSONObject followAction=JSONUtil.queryJSON(noteItem,"action",new JSONObject());
-  FollowRow row=(FollowRow)v;
+  FollowRow row=(FollowRow)view;
   row.setFollowListener(new FollowListener());
   row.setAction(followAction);
   row.setNameText(JSONUtil.queryJSON(noteItem,"header_text",""));
   row.getImageView().setImageUrl(JSONUtil.queryJSON(noteItem,"icon",""),WordPress.imageLoader);
-  return v;
+  return view;
 }

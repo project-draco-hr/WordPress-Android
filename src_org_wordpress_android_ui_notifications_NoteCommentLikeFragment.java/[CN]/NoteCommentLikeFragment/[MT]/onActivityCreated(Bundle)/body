@@ -5,27 +5,29 @@
   list.setDividerHeight(1);
   list.setHeaderDividersEnabled(false);
   if (getNote() == null)   return;
+  JSONObject bodyObject=getNote().queryJSON("body",new JSONObject());
+  final String footerUrl=(bodyObject != null ? JSONUtil.getString(bodyObject,"header_link") : "");
+  final String headerText=getHeaderText();
+  final String footerText=getFooterText();
+  final String fullHeaderText;
+  if (TextUtils.isEmpty(footerText)) {
+    fullHeaderText=headerText;
+  }
+ else {
+    fullHeaderText=headerText + "<br><small>&quot;" + footerText+ "&quot;</small>";
+  }
   LayoutInflater inflater=getActivity().getLayoutInflater();
   DetailHeader noteHeader=(DetailHeader)inflater.inflate(R.layout.notifications_detail_header,null);
-  noteHeader.setText(getHeaderText());
+  noteHeader.setText(Html.fromHtml(fullHeaderText));
   noteHeader.setBackgroundColor(getResources().getColor(R.color.light_gray));
   noteHeader.getTextView().setGravity(Gravity.CENTER_HORIZONTAL);
-  noteHeader.setClickable(false);
-  list.addHeaderView(noteHeader);
-  DetailHeader noteFooter=(DetailHeader)inflater.inflate(R.layout.notifications_detail_header,null);
-  JSONObject bodyObject=getNote().queryJSON("body",new JSONObject());
-  String footerText=getFooterText();
-  if (!TextUtils.isEmpty(footerText)) {
-    noteFooter.setText(footerText);
-    String footerUrl=JSONUtil.getString(bodyObject,"header_link");
-    noteFooter.setNote(getNote(),footerUrl);
-    if (getActivity() instanceof OnPostClickListener) {
-      noteFooter.setOnPostClickListener(((OnPostClickListener)getActivity()));
-    }
-    if (getActivity() instanceof OnCommentClickListener) {
-      noteFooter.setOnCommentClickListener(((OnCommentClickListener)getActivity()));
-    }
-    list.addFooterView(noteFooter);
+  noteHeader.setNote(getNote(),footerUrl);
+  if (getActivity() instanceof OnPostClickListener) {
+    noteHeader.setOnPostClickListener(((OnPostClickListener)getActivity()));
   }
+  if (getActivity() instanceof OnCommentClickListener) {
+    noteHeader.setOnCommentClickListener(((OnCommentClickListener)getActivity()));
+  }
+  list.addHeaderView(noteHeader);
   setListAdapter(new NoteAdapter());
 }
