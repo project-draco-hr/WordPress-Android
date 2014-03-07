@@ -3,7 +3,7 @@
   ReaderPostListFragment listFragment=getListFragment();
   final boolean animateRefresh=(listFragment != null && ReaderTagTable.isEmpty());
   if (animateRefresh) {
-    listFragment.setIsUpdating(true);
+    listFragment.setIsUpdating(true,RequestDataAction.LOAD_NEWER);
   }
   ReaderActions.UpdateResultListener listener=new ReaderActions.UpdateResultListener(){
     @Override public void onUpdateResult(    UpdateResult result){
@@ -11,7 +11,7 @@
       ReaderPostListFragment listFragment=getListFragment();
       if (listFragment != null) {
         if (animateRefresh) {
-          listFragment.setIsUpdating(false);
+          listFragment.setIsUpdating(false,RequestDataAction.LOAD_NEWER);
         }
         if (result == UpdateResult.CHANGED) {
           listFragment.refreshTags();
