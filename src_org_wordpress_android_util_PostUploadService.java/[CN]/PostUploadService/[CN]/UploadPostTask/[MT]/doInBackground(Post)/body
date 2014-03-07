@@ -160,7 +160,15 @@
   if (post.isLocalDraft() && !post.isUploaded())   params=new Object[]{blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),contentStruct,publishThis};
  else   params=new Object[]{post.getPostid(),blog.getUsername(),blog.getPassword(),contentStruct,publishThis};
   try {
-    client.call((post.isLocalDraft() && !post.isUploaded()) ? "metaWeblog.newPost" : "metaWeblog.editPost",params);
+    if (post.isLocalDraft() && !post.isUploaded()) {
+      Object newPostId=client.call("metaWeblog.newPost",params);
+      if (newPostId instanceof String) {
+        post.setPostid((String)newPostId);
+      }
+    }
+ else {
+      client.call("metaWeblog.editPost",params);
+    }
     post.setUploaded(true);
     post.setLocalChange(false);
     post.update();

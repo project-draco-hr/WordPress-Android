@@ -1,0 +1,39 @@
+{
+  if (mPostsListAdapter == null) {
+    PostsListAdapter.OnLoadMoreListener loadMoreListener=new PostsListAdapter.OnLoadMoreListener(){
+      @Override public void onLoadMore(){
+        if (mCanLoadMorePosts && !mIsFetchingPosts)         requestPosts(true);
+      }
+    }
+;
+    PostsListAdapter.OnPostsLoadedListener postsLoadedListener=new PostsListAdapter.OnPostsLoadedListener(){
+      @Override public void onPostsLoaded(      int postCount){
+        if (postCount == 0 && mCanLoadMorePosts) {
+          requestPosts(false);
+        }
+ else         if (mShouldSelectFirstPost) {
+          mShouldSelectFirstPost=false;
+          if (mPostsListAdapter.getCount() > 0) {
+            PostsListPost postsListPost=(PostsListPost)mPostsListAdapter.getItem(0);
+            if (postsListPost != null) {
+              showPost(postsListPost.getPostId());
+              getListView().setItemChecked(0,true);
+            }
+          }
+        }
+ else         if (Utils.isTablet()) {
+          int selectedPosition=getListView().getCheckedItemPosition();
+          if (selectedPosition != ListView.INVALID_POSITION && selectedPosition < mPostsListAdapter.getCount()) {
+            PostsListPost postsListPost=(PostsListPost)mPostsListAdapter.getItem(selectedPosition);
+            if (postsListPost != null) {
+              showPost(postsListPost.getPostId());
+            }
+          }
+        }
+      }
+    }
+;
+    mPostsListAdapter=new PostsListAdapter(getActivity(),mIsPage,loadMoreListener,postsLoadedListener);
+  }
+  return mPostsListAdapter;
+}

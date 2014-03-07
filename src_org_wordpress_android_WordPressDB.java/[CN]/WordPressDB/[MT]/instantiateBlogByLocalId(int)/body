@@ -1,11 +1,10 @@
 {
   String[] fields=new String[]{"url","blogName","username","password","httpuser","httppassword","imagePlacement","centerThumbnail","fullSizeImage","maxImageWidth","maxImageWidthId","runService","blogId","location","dotcomFlag","dotcom_username","dotcom_password","api_key","api_blogid","wpVersion","postFormats","lastCommentId","isScaledImage","scaledImgWidth","homeURL","blog_options","isAdmin","isHidden"};
-  Cursor c=db.query(SETTINGS_TABLE,fields,"id=" + localId,null,null,null,null);
-  int numRows=c.getCount();
-  c.moveToFirst();
-  Blog blog=new Blog();
-  if (numRows > 0) {
+  Cursor c=db.query(SETTINGS_TABLE,fields,"id=?",new String[]{Integer.toString(localId)},null,null,null);
+  Blog blog=null;
+  if (c.moveToFirst()) {
     if (c.getString(0) != null) {
+      blog=new Blog();
       blog.setLocalTableBlogId(localId);
       blog.setUrl(c.getString(c.getColumnIndex("url")));
       blog.setBlogName(c.getString(c.getColumnIndex("blogName")));
@@ -53,7 +52,7 @@
       blog.setScaledImageWidth(c.getInt(c.getColumnIndex("scaledImgWidth")));
       blog.setHomeURL(c.getString(c.getColumnIndex("homeURL")));
       if (c.getString(c.getColumnIndex("blog_options")) == null) {
-        blog.setBlogOptions("");
+        blog.setBlogOptions("{}");
       }
  else {
         blog.setBlogOptions(c.getString(c.getColumnIndex("blog_options")));

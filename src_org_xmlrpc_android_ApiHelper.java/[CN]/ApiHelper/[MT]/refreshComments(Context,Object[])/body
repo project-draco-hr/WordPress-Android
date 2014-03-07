@@ -5,7 +5,12 @@
   }
   XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
   Object[] result;
-  result=(Object[])client.call("wp.getComments",commentParams);
+  try {
+    result=(Object[])client.call("wp.getComments",commentParams);
+  }
+ catch (  XMLRPCException e) {
+    throw new XMLRPCException(e);
+  }
   if (result.length == 0) {
     return null;
   }
