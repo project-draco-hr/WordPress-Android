@@ -1,0 +1,29 @@
+{
+  if (!hasActivity())   return;
+  if (!NetworkUtils.checkConnection(getActivity()))   return;
+  if (!TextUtils.isEmpty(postId)) {
+    List<Object> apiArgs=new Vector<Object>();
+    apiArgs.add(WordPress.getCurrentBlog());
+    apiArgs.add(postId);
+    apiArgs.add(mIsPage);
+    ApiHelper.FetchSinglePostTask fetchPostTask=new ApiHelper.FetchSinglePostTask(new ApiHelper.FetchSinglePostTask.Callback(){
+      @Override public void onSuccess(){
+        if (!hasActivity())         return;
+        mIsFetchingPosts=false;
+        mOnRefreshListener.onRefresh(false);
+        getPostListAdapter().loadPosts();
+        mOnSinglePostLoadedListener.onSinglePostLoaded();
+      }
+      @Override public void onFailure(      ApiHelper.ErrorType errorType,      String errorMessage,      Throwable throwable){
+        if (!hasActivity())         return;
+        Toast.makeText(getActivity(),R.string.error_refresh_posts,Toast.LENGTH_SHORT).show();
+        mIsFetchingPosts=false;
+        mOnRefreshListener.onRefresh(false);
+      }
+    }
+);
+    mOnRefreshListener.onRefresh(true);
+    mIsFetchingPosts=true;
+    fetchPostTask.execute(apiArgs);
+  }
+}
