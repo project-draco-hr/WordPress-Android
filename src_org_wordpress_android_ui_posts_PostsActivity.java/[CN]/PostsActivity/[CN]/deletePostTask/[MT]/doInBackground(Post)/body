@@ -1,10 +1,10 @@
 {
-  boolean result=false;
+  boolean result;
   post=params[0];
   Blog blog=WordPress.currentBlog;
   XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
-  Object[] postParams={"",post.getPostid(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword()};
-  Object[] pageParams={WordPress.currentBlog.getRemoteBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),post.getPostid()};
+  Object[] postParams={"",post.getRemotePostId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword()};
+  Object[] pageParams={WordPress.currentBlog.getRemoteBlogId(),WordPress.currentBlog.getUsername(),WordPress.currentBlog.getPassword(),post.getRemotePostId()};
   try {
     client.call((mIsPage) ? "wp.deletePage" : "blogger.deletePost",(mIsPage) ? pageParams : postParams);
     result=true;
