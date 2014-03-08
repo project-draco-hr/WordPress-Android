@@ -1,0 +1,24 @@
+{
+  SpannableStringBuilder html;
+  try {
+    html=(SpannableStringBuilder)Html.fromHtml(source,null,new WPHtmlTagHandler());
+  }
+ catch (  RuntimeException runtimeException) {
+    html=(SpannableStringBuilder)Html.fromHtml(source,null,null);
+    try {
+      JSONObject additionalData=new JSONObject();
+      additionalData.put("input_text",source);
+      WPMobileStatsUtil.trackException(runtimeException,WPMobileStatsUtil.StatsPropertyExceptionNoteParsing,additionalData);
+    }
+ catch (    JSONException jsonException) {
+      jsonException.printStackTrace();
+    }
+  }
+  Emoticons.replaceEmoticonsWithEmoji(html);
+  QuoteSpan spans[]=html.getSpans(0,html.length(),QuoteSpan.class);
+  for (  QuoteSpan span : spans) {
+    html.setSpan(new WPHtml.WPQuoteSpan(),html.getSpanStart(span),html.getSpanEnd(span),html.getSpanFlags(span));
+    html.removeSpan(span);
+  }
+  return html;
+}

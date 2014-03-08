@@ -1,13 +1,9 @@
 {
   Blog blog=WordPress.getCurrentBlog();
-  if (blog == null)   return null;
-  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
-  String author, postID, comment, status, authorEmail, authorURL, postTitle;
-  int commentID;
-  Map<Integer,Map<?,?>> allComments=new HashMap<Integer,Map<?,?>>();
-  Map<?,?> contentHash=new HashMap<Object,Object>();
-  List<Map<?,?>> dbVector=new Vector<Map<?,?>>();
-  Date d=new Date();
+  if (blog == null) {
+    return null;
+  }
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
   Object[] result;
   try {
     result=(Object[])client.call("wp.getComments",commentParams);
@@ -15,34 +11,30 @@
  catch (  XMLRPCException e) {
     throw new XMLRPCException(e);
   }
-  if (result.length == 0)   return null;
+  if (result.length == 0) {
+    return null;
+  }
+  Map<?,?> contentHash;
+  long commentID, postID;
+  String authorName, content, status, authorEmail, authorURL, postTitle, pubDate;
+  java.util.Date date;
+  CommentList comments=new CommentList();
   for (int ctr=0; ctr < result.length; ctr++) {
-    Map<Object,Object> dbValues=new HashMap<Object,Object>();
     contentHash=(Map<?,?>)result[ctr];
-    allComments.put(Integer.parseInt(contentHash.get("comment_id").toString()),contentHash);
-    comment=contentHash.get("content").toString();
-    author=contentHash.get("author").toString();
+    content=contentHash.get("content").toString();
     status=contentHash.get("status").toString();
-    postID=contentHash.get("post_id").toString();
-    commentID=Integer.parseInt(contentHash.get("comment_id").toString());
-    d=(Date)contentHash.get("date_created_gmt");
+    postID=Long.parseLong(contentHash.get("post_id").toString());
+    commentID=Long.parseLong(contentHash.get("comment_id").toString());
+    authorName=contentHash.get("author").toString();
     authorURL=contentHash.get("author_url").toString();
     authorEmail=contentHash.get("author_email").toString();
     postTitle=contentHash.get("post_title").toString();
-    String formattedDate=getFormattedCommentDate(ctx,d);
-    dbValues.put("blogID",String.valueOf(blog.getLocalTableBlogId()));
-    dbValues.put("postID",postID);
-    dbValues.put("commentID",commentID);
-    dbValues.put("author",author);
-    dbValues.put("comment",comment);
-    dbValues.put("commentDate",formattedDate);
-    dbValues.put("commentDateFormatted",formattedDate);
-    dbValues.put("status",status);
-    dbValues.put("url",authorURL);
-    dbValues.put("email",authorEmail);
-    dbValues.put("postTitle",postTitle);
-    dbVector.add(ctr,dbValues);
+    date=(java.util.Date)contentHash.get("date_created_gmt");
+    pubDate=DateTimeUtils.javaDateToIso8601(date);
+    Comment comment=new Comment(postID,commentID,authorName,pubDate,content,status,postTitle,authorURL,authorEmail,null);
+    comments.add(comment);
   }
-  WordPress.wpDB.saveComments(dbVector);
-  return allComments;
+  int localBlogId=blog.getLocalTableBlogId();
+  CommentTable.saveComments(localBlogId,comments);
+  return comments;
 }

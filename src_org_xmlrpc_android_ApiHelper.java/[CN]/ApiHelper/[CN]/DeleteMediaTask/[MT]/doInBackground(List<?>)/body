@@ -5,7 +5,7 @@
     setError(ErrorType.INVALID_CONTEXT,"ApiHelper - invalid blog");
     return null;
   }
-  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
   Object[] apiParams=new Object[]{blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),mMediaId};
   try {
     if (client != null) {
@@ -15,7 +15,10 @@
       }
     }
   }
- catch (  XMLRPCException e) {
+ catch (  ClassCastException cce) {
+    setError(ErrorType.INVALID_RESULT,cce.getMessage(),cce);
+  }
+catch (  XMLRPCException e) {
     setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
   }
   return null;

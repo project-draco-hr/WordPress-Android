@@ -1,9 +1,11 @@
 {
   String content="";
   String curImagePath=mf.getFilePath();
-  if (curImagePath == null)   return null;
+  if (curImagePath == null) {
+    return null;
+  }
   if (curImagePath.contains("video")) {
-    XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+    XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
     String tempFileName="wp-" + System.currentTimeMillis();
     try {
       context.openFileOutput(tempFileName,Context.MODE_PRIVATE);
@@ -13,16 +15,12 @@
       mIsMediaError=true;
       return null;
     }
-    File tempFile=context.getFileStreamPath(tempFileName);
     Uri videoUri=Uri.parse(curImagePath);
     File videoFile=null;
     String mimeType="", xRes="", yRes="";
     if (videoUri.toString().contains("content:")) {
-      String[] projection;
-      Uri imgPath;
-      projection=new String[]{Video.Media._ID,Video.Media.DATA,Video.Media.MIME_TYPE,Video.Media.RESOLUTION};
-      imgPath=videoUri;
-      Cursor cur=context.getContentResolver().query(imgPath,projection,null,null,null);
+      String[] projection=new String[]{Video.Media._ID,Video.Media.DATA,Video.Media.MIME_TYPE,Video.Media.RESOLUTION};
+      Cursor cur=context.getContentResolver().query(videoUri,projection,null,null,null);
       if (cur != null && cur.moveToFirst()) {
         int mimeTypeColumn, resolutionColumn, dataColumn;
         dataColumn=cur.getColumnIndex(Video.Media.DATA);
@@ -60,15 +58,10 @@
       mErrorMessage=context.getResources().getString(R.string.error_media_upload);
       return null;
     }
-    String videoName=videoFile.getName();
-    MimeTypeMap mimeTypeMap=MimeTypeMap.getSingleton();
-    String fileExtension=MimeTypeMap.getFileExtensionFromUrl(videoName);
-    if (!TextUtils.isEmpty(fileExtension)) {
-      mimeType=mimeTypeMap.getMimeTypeFromExtension(fileExtension);
+    if (TextUtils.isEmpty(mimeType)) {
+      mimeType=getMediaFileMimeType(videoFile,false);
     }
-    if (mimeType.equalsIgnoreCase("video/mp4v-es")) {
-      mimeType="video/mp4";
-    }
+    String videoName=getMediaFileName(videoFile,mimeType);
     Map<String,Object> m=new HashMap<String,Object>();
     m.put("name",videoName);
     m.put("type",mimeType);
@@ -79,6 +72,16 @@
     boolean selfHosted=WordPress.currentBlog != null && !WordPress.currentBlog.isDotcomFlag();
     boolean isVideoEnabled=selfHosted || (featureSet != null && mFeatureSet.isVideopressEnabled());
     if (isVideoEnabled) {
+      File tempFile;
+      try {
+        String fileExtension=MimeTypeMap.getFileExtensionFromUrl(videoName);
+        tempFile=createTempUploadFile(fileExtension);
+      }
+ catch (      IOException e) {
+        mErrorMessage=getResources().getString(R.string.file_error_create);
+        mIsMediaError=true;
+        return null;
+      }
       Object result=uploadFileHelper(client,params,tempFile);
       Map<?,?> resultMap=(HashMap<?,?>)result;
       if (resultMap != null && resultMap.containsKey("url")) {
@@ -135,40 +138,16 @@
       mIsMediaError=true;
       return null;
     }
-    String fileName=imageFile.getName();
-    MimeTypeMap mimeTypeMap=MimeTypeMap.getSingleton();
+    if (TextUtils.isEmpty(mimeType)) {
+      mimeType=getMediaFileMimeType(imageFile,true);
+    }
+    String fileName=getMediaFileName(imageFile,mimeType);
     String fileExtension=MimeTypeMap.getFileExtensionFromUrl(fileName).toLowerCase();
-    if (!TextUtils.isEmpty(fileExtension)) {
-      String newMimeType=mimeTypeMap.getMimeTypeFromExtension(fileExtension);
-      if (newMimeType != null) {
-        mimeType=newMimeType;
-      }
-    }
- else {
-      try {
-        DataInputStream inputStream=new DataInputStream(new FileInputStream(imageFile));
-        String imageMimeType=MediaUtils.getMimeTypeOfInputStream(inputStream);
-        if (!TextUtils.isEmpty(imageMimeType)) {
-          mimeType=imageMimeType;
-          if (mimeTypeMap.hasMimeType(mimeType)) {
-            fileExtension=mimeTypeMap.getExtensionFromMimeType(mimeType);
-            fileName+="." + fileExtension;
-          }
-        }
-        inputStream.close();
-      }
- catch (      FileNotFoundException e) {
-        e.printStackTrace();
-      }
-catch (      IOException e) {
-        e.printStackTrace();
-      }
-    }
     ImageHelper ih=new ImageHelper();
     orientation=ih.getExifOrientation(path,orientation);
     String resizedPictureURL=null;
     boolean shouldUploadResizedVersion=false;
-    if (!fileExtension.equals("gif") && !blog.getMaxImageWidth().equals("Original Size")) {
+    if (!mimeType.equals("image/gif") && !blog.getMaxImageWidth().equals("Original Size")) {
       int pictureSettingWidth=mf.getWidth();
       BitmapFactory.Options options=new BitmapFactory.Options();
       options.inJustDecodeBounds=true;
@@ -181,49 +160,32 @@ catch (      IOException e) {
       }
     }
     if (shouldUploadResizedVersion) {
-      byte[] bytes;
-      byte[] finalBytes;
+      int rotation;
       try {
-        bytes=new byte[(int)imageFile.length()];
+        rotation=(TextUtils.isEmpty(orientation) ? 0 : Integer.valueOf(orientation));
       }
- catch (      OutOfMemoryError er) {
+ catch (      NumberFormatException e) {
+        rotation=0;
+      }
+      byte[] bytes=ih.createThumbnailFromUri(context,imageUri,mf.getWidth(),fileExtension,rotation);
+      if (bytes != null && bytes.length > 0) {
+        Map<String,Object> m=new HashMap<String,Object>();
+        m.put("name",fileName);
+        m.put("type",mimeType);
+        m.put("bits",bytes);
+        m.put("overwrite",true);
+        resizedPictureURL=uploadPicture(m,mf,blog);
+        if (resizedPictureURL == null) {
+          AppLog.w(T.POSTS,"failed to upload resized picture");
+          return null;
+        }
+      }
+ else {
+        AppLog.w(T.POSTS,"failed to create resized picture");
         mErrorMessage=context.getString(R.string.out_of_memory);
         mIsMediaError=true;
         return null;
       }
-      DataInputStream in=null;
-      try {
-        in=new DataInputStream(new FileInputStream(imageFile));
-      }
- catch (      FileNotFoundException e) {
-        e.printStackTrace();
-      }
-      try {
-        in.readFully(bytes);
-      }
- catch (      IOException e) {
-        e.printStackTrace();
-      }
-      try {
-        in.close();
-      }
- catch (      IOException e) {
-        e.printStackTrace();
-      }
-      String width=String.valueOf(mf.getWidth());
-      finalBytes=ih.createThumbnail(bytes,width,orientation,false,fileExtension);
-      if (finalBytes == null) {
-        mErrorMessage=context.getString(R.string.out_of_memory);
-        mIsMediaError=true;
-        return null;
-      }
-      Map<String,Object> m=new HashMap<String,Object>();
-      m.put("name",fileName);
-      m.put("type",mimeType);
-      m.put("bits",finalBytes);
-      m.put("overwrite",true);
-      resizedPictureURL=uploadPicture(m,mf,blog);
-      if (resizedPictureURL == null)       return null;
     }
     String fullSizeUrl=null;
     if (!shouldUploadResizedVersion || blog.isFullSizeImage()) {
@@ -254,12 +216,10 @@ String alignmentCSS="class=\"" + alignment + " size-full\" ";
 if ((fullSizeUrl != null && fullSizeUrl.equalsIgnoreCase("")) || (resizedPictureURL != null && resizedPictureURL.equalsIgnoreCase(""))) {
 return "";
 }
-if (fullSizeUrl != null && resizedPictureURL != null) {
-}
- else if (fullSizeUrl == null) {
+if (fullSizeUrl == null && resizedPictureURL != null) {
 fullSizeUrl=resizedPictureURL;
 }
- else {
+ else if (fullSizeUrl != null && resizedPictureURL == null) {
 resizedPictureURL=fullSizeUrl;
 }
 String mediaTitle=TextUtils.isEmpty(mf.getTitle()) ? "" : mf.getTitle();

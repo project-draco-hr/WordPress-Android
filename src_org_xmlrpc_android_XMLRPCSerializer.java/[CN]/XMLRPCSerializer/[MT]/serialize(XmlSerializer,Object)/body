@@ -3,7 +3,8 @@
     serializer.startTag(null,TYPE_I4).text(object.toString()).endTag(null,TYPE_I4);
   }
  else   if (object instanceof Long) {
-    serializer.startTag(null,TYPE_I8).text(object.toString()).endTag(null,TYPE_I8);
+    serializer.startTag(null,TYPE_STRING).text(object.toString()).endTag(null,TYPE_STRING);
+    AppLog.w(T.API,"long type could be misinterpreted when sent to the WordPress XMLRPC end point");
   }
  else   if (object instanceof Double || object instanceof Float) {
     serializer.startTag(null,TYPE_DOUBLE).text(object.toString()).endTag(null,TYPE_DOUBLE);
@@ -14,7 +15,7 @@
     serializer.startTag(null,TYPE_BOOLEAN).text(boolStr).endTag(null,TYPE_BOOLEAN);
   }
  else   if (object instanceof String) {
-    serializer.startTag(null,TYPE_STRING).text(object.toString()).endTag(null,TYPE_STRING);
+    serializer.startTag(null,TYPE_STRING).text(makeValidInputString((String)object)).endTag(null,TYPE_STRING);
   }
  else   if (object instanceof Date || object instanceof Calendar) {
     Date date=(Date)object;

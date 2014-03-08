@@ -1,0 +1,18 @@
+{
+  CommentList comments=new CommentList();
+  String[] args={Integer.toString(localBlogId)};
+  Cursor c=getReadableDb().rawQuery("SELECT * FROM " + COMMENTS_TABLE + " WHERE blog_id=? ORDER BY published DESC",args);
+  try {
+    if (c.moveToFirst()) {
+      do {
+        Comment comment=getCommentFromCursor(c);
+        comments.add(comment);
+      }
+ while (c.moveToNext());
+    }
+    return comments;
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+}

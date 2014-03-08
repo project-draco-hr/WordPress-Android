@@ -1,0 +1,24 @@
+{
+  mIsUpdatingComments=false;
+  if (!hasActivity())   return;
+  if (isLoadingMore) {
+    hideLoadingProgress();
+  }
+ else {
+    mOnAnimateRefreshButton.onAnimateRefreshButton(false);
+  }
+  if (isCancelled())   return;
+  mCanLoadMoreComments=(comments != null && comments.size() > 0);
+  if (comments == null) {
+    if (isError && !getActivity().isFinishing()) {
+      if (!TextUtils.isEmpty(xmlRpcErrorMessage)) {
+        ToastUtils.showToastOrAuthAlert(getActivity(),xmlRpcErrorMessage,getString(R.string.error_refresh_comments));
+      }
+ else {
+        ToastUtils.showToast(getActivity(),getString(R.string.error_refresh_comments));
+      }
+    }
+    return;
+  }
+  if (comments.size() > 0)   getCommentAdapter().loadComments();
+}

@@ -1,8 +1,9 @@
 {
   super.onActivityCreated(bundle);
-  TextView textview=(TextView)getListView().getEmptyView();
-  if (textview != null) {
-    textview.setText(getText(R.string.comments_empty_list));
+  setUpListView();
+  getCommentAdapter().loadComments();
+  if (!mHasAutoRefreshedComments) {
+    updateComments(false);
+    mHasAutoRefreshedComments=true;
   }
-  mListScrollPositionManager=new ListScrollPositionManager(getListView(),false);
 }

@@ -1,0 +1,20 @@
+{
+  try {
+    wpDB=new WordPressDB(this);
+    List<Map<String,Object>> accounts=wpDB.getAllAccounts();
+    for (    Map<String,Object> account : accounts) {
+      if (account == null || account.get("blogName") == null || account.get("url") == null) {
+        return false;
+      }
+    }
+    return true;
+  }
+ catch (  SQLiteException sqle) {
+    AppLog.e(T.DB,sqle);
+    return false;
+  }
+catch (  RuntimeException re) {
+    AppLog.e(T.DB,re);
+    return false;
+  }
+}
