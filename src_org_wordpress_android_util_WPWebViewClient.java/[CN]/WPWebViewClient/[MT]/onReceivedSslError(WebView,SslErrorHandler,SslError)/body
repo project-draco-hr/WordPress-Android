@@ -1,9 +1,10 @@
 {
-  String domain=UrlUtils.getDomainFromUrl(error.getUrl());
-  if (TrustedSslDomainTable.isDomainTrusted(domain)) {
-    handler.proceed();
+  if (Build.VERSION.SDK_INT >= 14) {
+    String domain=UrlUtils.getDomainFromUrl(error.getUrl());
+    if (TrustedSslDomainTable.isDomainTrusted(domain)) {
+      handler.proceed();
+      return;
+    }
   }
- else {
-    super.onReceivedSslError(view,handler,error);
-  }
+  super.onReceivedSslError(view,handler,error);
 }
