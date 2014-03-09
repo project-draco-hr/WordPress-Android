@@ -6,8 +6,7 @@
   list.setHeaderDividersEnabled(false);
   Note currentNote=getNote();
   if (currentNote == null)   return;
-  LayoutInflater inflater=getActivity().getLayoutInflater();
-  DetailHeader noteHeader=(DetailHeader)inflater.inflate(R.layout.notifications_detail_header,null);
+  final DetailHeader noteHeader=(DetailHeader)getView().findViewById(R.id.header);
   noteHeader.setText(JSONUtil.getStringDecoded(currentNote.queryJSON("subject",new JSONObject()),"text"));
   noteHeader.getTextView().setGravity(Gravity.CENTER_HORIZONTAL);
   String footerUrl=currentNote.queryJSON("body.header_link","");
@@ -18,6 +17,5 @@
   if (getActivity() instanceof OnCommentClickListener) {
     noteHeader.setOnCommentClickListener(((OnCommentClickListener)getActivity()));
   }
-  list.addHeaderView(noteHeader);
   setListAdapter(new NoteAdapter());
 }

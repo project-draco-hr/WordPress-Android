@@ -10,8 +10,7 @@
   final String headerSubject=getHeaderText(bodyItems);
   final String headerSnippet=getCommentSnippet(bodyItems);
   final String headerLink=(bodyObject != null ? JSONUtil.getString(bodyObject,"header_link") : "");
-  LayoutInflater inflater=getActivity().getLayoutInflater();
-  DetailHeader noteHeader=(DetailHeader)inflater.inflate(R.layout.notifications_detail_header,null);
+  final DetailHeader noteHeader=(DetailHeader)getView().findViewById(R.id.header);
   if (TextUtils.isEmpty(headerSnippet)) {
     noteHeader.setText(headerSubject);
   }
@@ -26,6 +25,5 @@
   if (getActivity() instanceof OnCommentClickListener) {
     noteHeader.setOnCommentClickListener(((OnCommentClickListener)getActivity()));
   }
-  list.addHeaderView(noteHeader);
   setListAdapter(new NoteAdapter());
 }
