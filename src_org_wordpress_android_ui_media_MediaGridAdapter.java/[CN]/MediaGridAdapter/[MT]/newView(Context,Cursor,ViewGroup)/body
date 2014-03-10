@@ -1,16 +1,19 @@
 {
-  LayoutInflater inflater=LayoutInflater.from(context);
   int itemViewType=getItemViewType(cursor.getPosition());
   if (itemViewType == ViewTypes.PROGRESS.ordinal()) {
-    return inflater.inflate(R.layout.media_grid_progress,root,false);
+    return mInflater.inflate(R.layout.media_grid_progress,root,false);
   }
  else   if (itemViewType == ViewTypes.SPACER.ordinal()) {
-    return inflater.inflate(R.layout.media_grid_item,root,false);
+    return mInflater.inflate(R.layout.media_grid_item,root,false);
   }
-  View view=inflater.inflate(R.layout.media_grid_item,root,false);
+  View view=mInflater.inflate(R.layout.media_grid_item,root,false);
   ViewStub imageStub=(ViewStub)view.findViewById(R.id.media_grid_image_stub);
-  if (itemViewType == ViewTypes.LOCAL.ordinal())   imageStub.setLayoutResource(R.layout.media_grid_image_local);
- else   imageStub.setLayoutResource(R.layout.media_grid_image_network);
+  if (itemViewType == ViewTypes.LOCAL.ordinal()) {
+    imageStub.setLayoutResource(R.layout.media_grid_image_local);
+  }
+ else {
+    imageStub.setLayoutResource(R.layout.media_grid_image_network);
+  }
   imageStub.inflate();
   GridViewHolder holder=new GridViewHolder(view);
   view.setTag(holder);
