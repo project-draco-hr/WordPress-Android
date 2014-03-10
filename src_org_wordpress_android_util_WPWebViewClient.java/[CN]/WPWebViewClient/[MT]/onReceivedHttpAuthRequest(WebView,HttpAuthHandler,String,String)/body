@@ -1,8 +1,11 @@
 {
   if (mBlog != null && mBlog.hasValidHTTPAuthCredentials()) {
-    handler.proceed(mBlog.getHttpuser(),mBlog.getHttppassword());
+    String domainFromHttpAuthRequest=UrlUtils.getDomainFromUrl(UrlUtils.addHttpProcolIfNeeded(host,false));
+    String currentBlogDomain=UrlUtils.getDomainFromUrl(mBlog.getUrl());
+    if (domainFromHttpAuthRequest.equals(currentBlogDomain)) {
+      handler.proceed(mBlog.getHttpuser(),mBlog.getHttppassword());
+      return;
+    }
   }
- else {
-    super.onReceivedHttpAuthRequest(view,handler,host,realm);
-  }
+  super.onReceivedHttpAuthRequest(view,handler,host,realm);
 }
