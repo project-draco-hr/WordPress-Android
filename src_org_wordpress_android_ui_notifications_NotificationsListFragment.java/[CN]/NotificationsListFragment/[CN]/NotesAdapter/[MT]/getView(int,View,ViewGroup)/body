@@ -1,13 +1,13 @@
 {
-  View view=super.getView(position,convertView,parent);
   final Note note=getItem(position);
   final NoteViewHolder holder;
-  if (view.getTag() instanceof NoteViewHolder) {
-    holder=(NoteViewHolder)view.getTag();
+  if (convertView == null) {
+    convertView=mInflater.inflate(R.layout.note_list_item,null);
+    holder=new NoteViewHolder(convertView);
+    convertView.setTag(holder);
   }
  else {
-    holder=new NoteViewHolder(view);
-    view.setTag(holder);
+    holder=(NoteViewHolder)convertView.getTag();
   }
   if (note.isCommentType()) {
     holder.txtDetail.setText(note.getCommentPreview());
@@ -16,11 +16,12 @@
  else {
     holder.txtDetail.setVisibility(View.GONE);
   }
+  holder.txtLabel.setText(note.getSubject());
   holder.txtDate.setText(note.getTimeSpan());
   holder.imgNoteIcon.setImageDrawable(getDrawableForType(note.getType()));
   String avatarUrl=PhotonUtils.fixAvatar(note.getIconURL(),mAvatarSz);
   holder.imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
   holder.unreadIndicator.setVisibility(note.isUnread() ? View.VISIBLE : View.INVISIBLE);
   holder.placeholderLoading.setVisibility(note.isPlaceholder() ? View.VISIBLE : View.GONE);
-  return view;
+  return convertView;
 }
