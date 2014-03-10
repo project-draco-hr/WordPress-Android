@@ -1,13 +1,19 @@
 {
   JSONObject options;
-  try {
-    options=new JSONObject(blogOptions);
-    this.blogOptions=blogOptions;
-  }
- catch (  JSONException e) {
+  if (TextUtils.isEmpty(blogOptions)) {
     this.blogOptions="{}";
     options=new JSONObject();
-    e.printStackTrace();
+  }
+ else {
+    try {
+      options=new JSONObject(blogOptions);
+      this.blogOptions=blogOptions;
+    }
+ catch (    JSONException e) {
+      this.blogOptions="{}";
+      options=new JSONObject();
+      e.printStackTrace();
+    }
   }
   try {
     String jetpackBlogId=options.has("jetpack_client_id") ? options.getJSONObject("jetpack_client_id").getString("value") : null;
