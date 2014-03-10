@@ -1,7 +1,7 @@
 {
   if (note == null || isFinishing())   return;
   if (note.isUnread()) {
-    restClient.markNoteAsRead(note,new RestRequest.Listener(){
+    getRestClientUtils().markNoteAsRead(note,new RestRequest.Listener(){
       @Override public void onResponse(      JSONObject response){
         if (isFinishing())         return;
         final NotesAdapter notesAdapter=mNotesList.getNotesAdapter();
@@ -44,12 +44,13 @@
   }
   noteFragment.setNote(note);
   FragmentTransaction transaction=fm.beginTransaction();
-  View container=findViewById(R.id.note_fragment_container);
-  transaction.replace(R.id.note_fragment_container,fragment);
+  View container=findViewById(R.id.layout_fragment_container);
+  transaction.replace(R.id.layout_fragment_container,fragment);
   transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-  if (container.findViewById(R.id.notes_list) != null) {
+  if (container.findViewById(R.id.fragment_notes_list) != null) {
     mMenuDrawer.setDrawerIndicatorEnabled(false);
     transaction.addToBackStack(null);
+    if (mNotesList != null)     transaction.hide(mNotesList);
   }
   transaction.commitAllowingStateLoss();
 }

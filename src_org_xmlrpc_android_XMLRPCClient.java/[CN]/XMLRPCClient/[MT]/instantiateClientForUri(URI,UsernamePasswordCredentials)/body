@@ -1,0 +1,37 @@
+{
+  DefaultHttpClient client;
+  if (TrustedSslDomainTable.isDomainTrusted(uri.getHost())) {
+    if (uri.getScheme() != null && uri.getScheme().equals("https")) {
+      int port=uri.getPort();
+      if (port == -1) {
+        port=443;
+      }
+      try {
+        client=new ConnectionClient(credentials,port);
+      }
+ catch (      KeyManagementException e) {
+        client=new ConnectionClient(credentials);
+      }
+catch (      NoSuchAlgorithmException e) {
+        client=new ConnectionClient(credentials);
+      }
+catch (      KeyStoreException e) {
+        client=new ConnectionClient(credentials);
+      }
+catch (      UnrecoverableKeyException e) {
+        client=new ConnectionClient(credentials);
+      }
+    }
+ else {
+      client=new ConnectionClient(credentials);
+    }
+  }
+ else {
+    client=new DefaultHttpClient();
+    HttpConnectionParams.setConnectionTimeout(client.getParams(),15000);
+    BasicCredentialsProvider cP=new BasicCredentialsProvider();
+    cP.setCredentials(AuthScope.ANY,credentials);
+    client.setCredentialsProvider(cP);
+  }
+  return client;
+}

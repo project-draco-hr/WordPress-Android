@@ -1,12 +1,15 @@
 {
   super.onCreate(savedInstanceState);
-  createMenuDrawer(R.layout.comments);
+  createMenuDrawer(R.layout.comment_activity);
   ActionBar actionBar=getSupportActionBar();
   actionBar.setDisplayShowTitleEnabled(true);
   setTitle(getString(R.string.tab_comments));
   FragmentManager fm=getSupportFragmentManager();
   fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
-  mCommentListFragment=(CommentsListFragment)fm.findFragmentById(R.id.commentList);
-  WordPress.currentComment=null;
-  if (savedInstanceState != null)   popCommentDetail();
+  if (savedInstanceState != null) {
+    long commentId=savedInstanceState.getLong(KEY_HIGHLIGHTED_COMMENT_ID);
+    if (commentId != 0) {
+      if (hasListFragment())       getListFragment().setHighlightedCommentId(commentId);
+    }
+  }
 }

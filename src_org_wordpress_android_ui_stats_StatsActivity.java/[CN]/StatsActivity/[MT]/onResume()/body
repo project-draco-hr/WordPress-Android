@@ -2,7 +2,7 @@
   super.onResume();
   mIsInFront=true;
   LocalBroadcastManager lbm=LocalBroadcastManager.getInstance(this);
-  lbm.registerReceiver(mReceiver,new IntentFilter(StatsRestHelper.REFRESH_VIEW_TYPE));
+  lbm.registerReceiver(mReceiver,new IntentFilter(StatsService.ACTION_STATS_UPDATING));
   if (WordPress.getCurrentBlog() != null && !WordPress.getCurrentBlog().isDotcomFlag() && !WordPress.getCurrentBlog().hasValidJetpackCredentials() && mResultCode != RESULT_CANCELED) {
     if (WordPress.hasValidWPComCredentials(this)) {
       SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
@@ -10,7 +10,7 @@
       String password=WordPressDB.decryptPassword(settings.getString(WordPress.WPCOM_PASSWORD_PREFERENCE,null));
       WordPress.getCurrentBlog().setDotcom_username(username);
       WordPress.getCurrentBlog().setDotcom_password(password);
-      WordPress.getCurrentBlog().save();
+      WordPress.wpDB.saveBlog(WordPress.getCurrentBlog());
       refreshStats();
     }
  else {

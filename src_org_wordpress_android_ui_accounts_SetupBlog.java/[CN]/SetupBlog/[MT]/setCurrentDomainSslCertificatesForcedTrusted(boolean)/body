@@ -1,0 +1,17 @@
+{
+  if (trusted && !TextUtils.isEmpty(mSelfHostedURL)) {
+    try {
+      String sanitizedURL=UrlUtils.convertUrlToPunycodeIfNeeded(mSelfHostedURL);
+      sanitizedURL=UrlUtils.addHttpProcolIfNeeded(sanitizedURL,false);
+      URI uri=URI.create(sanitizedURL);
+      TrustedSslDomainTable.trustDomain(uri);
+      mCurrentSslCertificatesForcedTrusted=trusted;
+    }
+ catch (    Exception e1) {
+      AppLog.e(T.NUX,"Cannot trust the self-hosted URL",e1);
+    }
+  }
+ else {
+    mCurrentSslCertificatesForcedTrusted=false;
+  }
+}

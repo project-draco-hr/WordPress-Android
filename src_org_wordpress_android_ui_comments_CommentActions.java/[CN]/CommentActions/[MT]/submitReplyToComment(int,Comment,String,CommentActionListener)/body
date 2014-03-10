@@ -7,17 +7,27 @@
   final Handler handler=new Handler();
   new Thread(){
     @Override public void run(){
-      XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+      XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
       Map<String,Object> replyHash=new HashMap<String,Object>();
-      replyHash.put("comment_parent",comment.commentID);
+      replyHash.put("comment_parent",Long.toString(comment.commentID));
       replyHash.put("content",replyText);
       replyHash.put("author","");
       replyHash.put("author_url","");
       replyHash.put("author_email","");
-      Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),Integer.valueOf(comment.postID),replyHash};
-      int newCommentID;
+      Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),Long.toString(comment.postID),replyHash};
+      long newCommentID;
       try {
-        newCommentID=(Integer)client.call("wp.newComment",params);
+        Object newCommentIDObject=client.call("wp.newComment",params);
+        if (newCommentIDObject instanceof Integer) {
+          newCommentID=((Integer)newCommentIDObject).longValue();
+        }
+ else         if (newCommentIDObject instanceof Long) {
+          newCommentID=(Long)newCommentIDObject;
+        }
+ else {
+          AppLog.e(T.COMMENTS,"wp.newComment returned the wrong data type");
+          newCommentID=-1;
+        }
       }
  catch (      XMLRPCException e) {
         AppLog.e(T.COMMENTS,e.getMessage(),e);

@@ -1,0 +1,34 @@
+{
+  int childCount=Math.min(mAdapter.getChildrenCount(groupPosition),StatsActivity.STATS_CHILD_MAX_ITEMS);
+  if (childCount == 0)   return;
+  final ViewGroup childContainer=(ViewGroup)groupView.findViewById(R.id.layout_child_container);
+  if (childContainer == null)   return;
+  int numExistingViews=childContainer.getChildCount();
+  if (childCount < numExistingViews) {
+    int numToRemove=numExistingViews - childCount;
+    childContainer.removeViews(childCount,numToRemove);
+    numExistingViews=childCount;
+  }
+  for (int i=0; i < childCount; i++) {
+    boolean isLastChild=(i == childCount - 1);
+    if (i < numExistingViews) {
+      View convertView=childContainer.getChildAt(i);
+      mAdapter.getChildView(groupPosition,i,isLastChild,convertView,mLinearLayout);
+    }
+ else {
+      View childView=mAdapter.getChildView(groupPosition,i,isLastChild,null,mLinearLayout);
+      childView.setPadding(childView.getPaddingLeft(),childView.getPaddingTop(),0,childView.getPaddingBottom());
+      childContainer.addView(childView);
+    }
+  }
+  if (childContainer.getVisibility() != View.VISIBLE) {
+    if (animate) {
+      Animation expand=new ScaleAnimation(1.0f,1.0f,0.0f,1.0f);
+      expand.setDuration(ANIM_DURATION);
+      expand.setInterpolator(getInterpolator());
+      childContainer.startAnimation(expand);
+    }
+    childContainer.setVisibility(View.VISIBLE);
+  }
+  setGroupChevron(true,groupView,animate);
+}

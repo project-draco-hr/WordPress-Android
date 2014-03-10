@@ -1,5 +1,17 @@
 {
   if (mCommentAdapter == null) {
+    CommentAdapter.DataLoadedListener dataLoadedListener=new CommentAdapter.DataLoadedListener(){
+      @Override public void onDataLoaded(      boolean isEmpty){
+        if (!hasActivity())         return;
+        if (isEmpty) {
+          showEmptyView();
+        }
+ else {
+          hideEmptyView();
+        }
+      }
+    }
+;
     CommentAdapter.OnLoadMoreListener loadMoreListener=new CommentAdapter.OnLoadMoreListener(){
       @Override public void onLoadMore(){
         if (mCanLoadMoreComments && !mIsUpdatingComments)         updateComments(true);
@@ -20,7 +32,7 @@
       }
     }
 ;
-    mCommentAdapter=new CommentAdapter(getActivity(),loadMoreListener,changeListener);
+    mCommentAdapter=new CommentAdapter(getActivity(),dataLoadedListener,loadMoreListener,changeListener);
   }
   return mCommentAdapter;
 }

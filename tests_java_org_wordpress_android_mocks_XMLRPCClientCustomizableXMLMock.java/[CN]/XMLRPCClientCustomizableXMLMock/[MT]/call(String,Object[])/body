@@ -1,0 +1,18 @@
+{
+  try {
+    mXmlRpcClient.preparePostMethod(method,params,null);
+  }
+ catch (  IOException e) {
+    throw new XMLRPCException("preparePostMethod failed");
+  }
+  AppLog.v(T.TESTS,"XMLRPCClientCustomizableXMLMock call: " + method);
+  if ("login-failure".equals(mPrefix)) {
+    throw new XMLRPCException("code 403");
+  }
+  Object retValue=readFile(method,mPrefix);
+  if (retValue == null) {
+    AppLog.w(T.TESTS,"failback to default");
+    retValue=readFile(method,"default");
+  }
+  return retValue;
+}

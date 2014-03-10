@@ -1,14 +1,15 @@
 {
+  if (!NetworkUtils.checkConnection(this))   return;
   mFirstLoadComplete=false;
   mShouldAnimateRefreshButton=true;
   startAnimatingRefreshButton(mRefreshMenuItem);
   NotesResponseHandler notesHandler=new NotesResponseHandler(){
     @Override public void onNotes(    final List<Note> notes){
       mFirstLoadComplete=true;
+      mNotesList.setAllNotesLoaded(false);
       new Thread(){
         @Override public void run(){
-          WordPress.wpDB.clearNotes();
-          WordPress.wpDB.saveNotes(notes);
+          WordPress.wpDB.saveNotes(notes,true);
           NotificationsActivity.this.runOnUiThread(new Runnable(){
             @Override public void run(){
               refreshNotificationsListFragment(notes);
@@ -23,11 +24,11 @@
     @Override public void onErrorResponse(    VolleyError error){
       mFirstLoadComplete=true;
       final NotificationsListFragment.NotesAdapter adapter=mNotesList.getNotesAdapter();
-      adapter.clear();
-      adapter.addAll(new ArrayList<Note>());
-      adapter.notifyDataSetChanged();
+      adapter.addAll(new ArrayList<Note>(),true);
       Context context=NotificationsActivity.this;
-      if (context != null)       ToastUtils.showToastOrAuthAlert(context,error,context.getString(R.string.error_refresh_notifications));
+      if (context != null) {
+        ToastUtils.showToastOrAuthAlert(context,error,context.getString(R.string.error_refresh_notifications));
+      }
       stopAnimatingRefreshButton(mRefreshMenuItem);
       mShouldAnimateRefreshButton=false;
     }

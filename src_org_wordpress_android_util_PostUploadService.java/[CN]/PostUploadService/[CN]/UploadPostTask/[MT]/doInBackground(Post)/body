@@ -1,7 +1,7 @@
 {
   mErrorUnavailableVideoPress=false;
   post=posts[0];
-  nm=(NotificationManager)context.getSystemService("notification");
+  nm=(NotificationManager)SystemServiceFactory.get(context,Context.NOTIFICATION_SERVICE);
   String postOrPage=(String)(post.isPage() ? context.getResources().getText(R.string.page_id) : context.getResources().getText(R.string.post_id));
   String message=context.getResources().getText(R.string.uploading) + " " + postOrPage;
   n=new Notification(R.drawable.notification_icon,message,System.currentTimeMillis());
@@ -12,11 +12,11 @@
   notificationIntent.setData((Uri.parse("custom://wordpressNotificationIntent" + post.getBlogID())));
   PendingIntent pendingIntent=PendingIntent.getActivity(context,0,notificationIntent,Intent.FLAG_ACTIVITY_CLEAR_TOP);
   n.setLatestEventInfo(context,message,message,pendingIntent);
-  notificationID=(new Random()).nextInt() + Integer.valueOf(post.getBlogID());
+  notificationID=(new Random()).nextInt() + post.getBlogID();
   nm.notify(notificationID,n);
   Blog blog;
   try {
-    blog=new Blog(post.getBlogID());
+    blog=WordPress.wpDB.instantiateBlogByLocalId(post.getBlogID());
   }
  catch (  Exception e) {
     mErrorMessage=context.getString(R.string.blog_not_found);
@@ -26,7 +26,6 @@
     post.setPost_status("publish");
   }
   Boolean publishThis=false;
-  Spannable s;
   String descriptionContent="", moreContent="";
   int moreCount=1;
   if (post.getMt_text_more() != null)   moreCount++;
@@ -49,9 +48,8 @@
     for (    String tag : imageTags) {
       Pattern p=Pattern.compile("android-uri=\"([^\"]+)\"");
       Matcher m=p.matcher(tag);
-      String imgPath="";
       if (m.find()) {
-        imgPath=m.group(1);
+        String imgPath=m.group(1);
         if (!imgPath.equals("")) {
           MediaFile mf=WordPress.wpDB.getMediaFile(imgPath,post);
           if (mf != null) {
@@ -84,19 +82,18 @@
         theCategories[i]=TextUtils.htmlEncode(categoriesJsonArray.getString(i));
       }
  catch (      JSONException e) {
-        e.printStackTrace();
+        AppLog.e(T.POSTS,e);
       }
     }
   }
   Map<String,Object> contentStruct=new HashMap<String,Object>();
   if (!post.isPage() && post.isLocalDraft()) {
     SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(context);
-    String tagline="";
     if (prefs.getBoolean("wp_pref_signature_enabled",false)) {
-      tagline=prefs.getString("wp_pref_post_signature","");
+      String tagline=prefs.getString("wp_pref_post_signature","");
       if (tagline != null) {
         String tag="\n\n<span class=\"post_sig\">" + tagline + "</span>\n\n";
-        if (moreContent == "")         descriptionContent+=tag;
+        if (TextUtils.isEmpty(moreContent))         descriptionContent+=tag;
  else         moreContent+=tag;
       }
     }
@@ -125,25 +122,21 @@
   descriptionContent=descriptionContent.replaceAll("\uFFFC","");
   contentStruct.put("description",descriptionContent);
   if (!post.isPage()) {
-    if (post.getMt_keywords() != "") {
+    if (!TextUtils.isEmpty(post.getMt_keywords())) {
       contentStruct.put("mt_keywords",post.getMt_keywords());
     }
     if (theCategories != null && theCategories.length > 0)     contentStruct.put("categories",theCategories);
   }
   if (post.getMt_excerpt() != null)   contentStruct.put("mt_excerpt",post.getMt_excerpt());
   contentStruct.put((post.isPage()) ? "page_status" : "post_status",post.getPost_status());
-  Double latitude=0.0;
-  Double longitude=0.0;
   if (!post.isPage()) {
-    latitude=(Double)post.getLatitude();
-    longitude=(Double)post.getLongitude();
-    if (latitude > 0) {
+    if (post.getLatitude() > 0) {
       Map<Object,Object> hLatitude=new HashMap<Object,Object>();
       hLatitude.put("key","geo_latitude");
-      hLatitude.put("value",latitude);
+      hLatitude.put("value",post.getLatitude());
       Map<Object,Object> hLongitude=new HashMap<Object,Object>();
       hLongitude.put("key","geo_longitude");
-      hLongitude.put("value",longitude);
+      hLongitude.put("value",post.getLongitude());
       Map<Object,Object> hPublic=new HashMap<Object,Object>();
       hPublic.put("key","geo_public");
       hPublic.put("value",1);
@@ -151,9 +144,13 @@
       contentStruct.put("custom_fields",geo);
     }
   }
-  if (featuredImageID != -1)   contentStruct.put("wp_post_thumbnail",featuredImageID);
-  XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
-  if (post.getQuickPostType() != null)   client.addQuickPostHeader(post.getQuickPostType());
+  if (featuredImageID != -1) {
+    contentStruct.put("wp_post_thumbnail",featuredImageID);
+  }
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
+  if (post.getQuickPostType() != null) {
+    client.addQuickPostHeader(post.getQuickPostType());
+  }
   n.setLatestEventInfo(context,message,message,n.contentIntent);
   nm.notify(notificationID,n);
   if (post.getWP_password() != null) {
@@ -163,7 +160,15 @@
   if (post.isLocalDraft() && !post.isUploaded())   params=new Object[]{blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),contentStruct,publishThis};
  else   params=new Object[]{post.getPostid(),blog.getUsername(),blog.getPassword(),contentStruct,publishThis};
   try {
-    client.call((post.isLocalDraft() && !post.isUploaded()) ? "metaWeblog.newPost" : "metaWeblog.editPost",params);
+    if (post.isLocalDraft() && !post.isUploaded()) {
+      Object newPostId=client.call("metaWeblog.newPost",params);
+      if (newPostId instanceof String) {
+        post.setPostid((String)newPostId);
+      }
+    }
+ else {
+      client.call("metaWeblog.editPost",params);
+    }
     post.setUploaded(true);
     post.setLocalChange(false);
     post.update();

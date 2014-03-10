@@ -1,14 +1,15 @@
 {
-  Post post=new Post(WordPress.currentBlog.getLocalTableBlogId(),selectedID,isPage);
+  if (WordPress.getCurrentBlog() == null)   return;
+  Post post=new Post(WordPress.getCurrentLocalTableBlogId(),selectedID,mIsPage);
   if (post.getId() >= 0) {
     WordPress.currentPost=post;
     mOnPostSelectedListener.onPostSelected(post);
-    mPostListAdapter.notifyDataSetChanged();
+    mPostsListAdapter.notifyDataSetChanged();
   }
  else {
     if (!getActivity().isFinishing()) {
       FragmentTransaction ft=getFragmentManager().beginTransaction();
-      WPAlertDialogFragment alert=WPAlertDialogFragment.newInstance(getString(R.string.post_not_found));
+      WPAlertDialogFragment alert=WPAlertDialogFragment.newAlertDialog(getString(R.string.post_not_found));
       ft.add(alert,"alert");
       ft.commitAllowingStateLoss();
     }

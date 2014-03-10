@@ -1,15 +1,15 @@
 {
-  XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
-  String tempFileName="wp-" + System.currentTimeMillis();
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
+  File tempFile;
   try {
-    context.openFileOutput(tempFileName,Context.MODE_PRIVATE);
+    String fileExtension=MimeTypeMap.getFileExtensionFromUrl(mf.getFileName());
+    tempFile=createTempUploadFile(fileExtension);
   }
- catch (  FileNotFoundException e) {
+ catch (  IOException e) {
     mIsMediaError=true;
     mErrorMessage=context.getString(R.string.file_not_found);
     return null;
   }
-  File tempFile=context.getFileStreamPath(tempFileName);
   Object[] params={1,blog.getUsername(),blog.getPassword(),pictureParams};
   Object result=uploadFileHelper(client,params,tempFile);
   if (result == null) {
@@ -26,7 +26,7 @@
       }
     }
  catch (    NumberFormatException e) {
-      e.printStackTrace();
+      AppLog.e(T.POSTS,e);
     }
   }
   return pictureURL;

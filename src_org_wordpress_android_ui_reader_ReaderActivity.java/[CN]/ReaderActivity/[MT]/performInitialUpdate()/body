@@ -1,20 +1,21 @@
 {
   if (!NetworkUtils.isNetworkAvailable(this))   return;
   mHasPerformedInitialUpdate=true;
-  final boolean showUpdate=!mIsUpdating && ReaderTagTable.isEmpty();
-  mShouldAnimateRefreshButton=showUpdate;
+  ReaderPostListFragment listFragment=getListFragment();
+  final boolean animateRefresh=(listFragment != null && ReaderTagTable.isEmpty());
+  if (animateRefresh)   listFragment.animateRefreshButton(true);
   ReaderActions.UpdateResultListener listener=new ReaderActions.UpdateResultListener(){
     @Override public void onUpdateResult(    UpdateResult result){
-      if (showUpdate)       setIsUpdating(false);
-      if (result == UpdateResult.CHANGED) {
-        ReaderPostListFragment fragment=getPostListFragment();
-        if (fragment != null)         fragment.refreshTags();
+      ReaderPostListFragment listFragment=getListFragment();
+      if (listFragment != null) {
+        if (animateRefresh)         listFragment.animateRefreshButton(false);
+        if (result == UpdateResult.CHANGED)         listFragment.refreshTags();
       }
-      AppLog.i(T.READER,"updating current user");
+      AppLog.i(T.READER,"reader activity > updating current user");
       ReaderUserActions.updateCurrentUser(null);
-      AppLog.i(T.READER,"updating followed blogs");
+      AppLog.i(T.READER,"reader activity > updating followed blogs");
       ReaderBlogActions.updateFollowedBlogs();
-      AppLog.i(T.READER,"updating cookies");
+      AppLog.i(T.READER,"reader activity > updating cookies");
       ReaderAuthActions.updateCookies(ReaderActivity.this);
     }
   }

@@ -1,6 +1,6 @@
 {
   if (postUploadedSuccessfully) {
-    WordPress.postUploaded();
+    WordPress.postUploaded(post.getPostid());
     nm.cancel(notificationID);
     WordPress.wpDB.deleteMediaFilesForPost(post);
   }
@@ -19,6 +19,7 @@
     notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     PendingIntent pendingIntent=PendingIntent.getActivity(context,0,notificationIntent,PendingIntent.FLAG_UPDATE_CURRENT);
     n.flags|=Notification.FLAG_AUTO_CANCEL;
+    n.icon=android.R.drawable.stat_notify_error;
     String errorText=context.getResources().getText(R.string.upload_failed).toString();
     if (mIsMediaError)     errorText=context.getResources().getText(R.string.media) + " " + context.getResources().getText(R.string.error);
     n.setLatestEventInfo(context,(mIsMediaError) ? errorText : context.getResources().getText(R.string.upload_failed),(mIsMediaError) ? mErrorMessage : postOrPage + " " + errorText+ ": "+ mErrorMessage,pendingIntent);

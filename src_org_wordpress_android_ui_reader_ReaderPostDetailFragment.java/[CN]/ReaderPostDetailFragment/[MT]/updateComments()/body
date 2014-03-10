@@ -1,0 +1,19 @@
+{
+  if (!hasPost() || !mPost.isWP())   return;
+  if (mIsUpdatingComments)   return;
+  mIsUpdatingComments=true;
+  if (!isCommentAdapterEmpty())   showProgressFooter();
+  ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
+    @Override public void onUpdateResult(    ReaderActions.UpdateResult result){
+      mIsUpdatingComments=false;
+      if (!hasActivity())       return;
+      hideProgressFooter();
+      if (result == ReaderActions.UpdateResult.CHANGED) {
+        doPostChanged(PostChangeType.CONTENT);
+        refreshComments();
+      }
+    }
+  }
+;
+  ReaderCommentActions.updateCommentsForPost(mPost,resultListener);
+}

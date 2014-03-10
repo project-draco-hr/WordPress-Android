@@ -8,14 +8,14 @@
   ab.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
   ab.setDisplayShowTitleEnabled(true);
   mWebView=(WebView)findViewById(R.id.webView);
-  mWebView.getSettings().setUserAgentString(Constants.USER_AGENT);
+  mWebView.getSettings().setUserAgentString(WordPress.getUserAgent());
   mWebView.getSettings().setBuiltInZoomControls(true);
   mWebView.getSettings().setJavaScriptEnabled(true);
   mWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
   Bundle extras=getIntent().getExtras();
   if (extras.containsKey("blogID")) {
     try {
-      mBlog=new Blog(extras.getInt("blogID",-1));
+      mBlog=WordPress.wpDB.instantiateBlogByLocalId(extras.getInt("blogID",-1));
     }
  catch (    Exception e) {
       mBlog=WordPress.getCurrentBlog();
@@ -25,7 +25,7 @@
     Toast.makeText(this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
     finish();
   }
-  mWebView.setWebViewClient(new WordPressWebViewClient(mBlog));
+  mWebView.setWebViewClient(new WPWebViewClient(mBlog));
   mWebView.setWebChromeClient(new WordPressWebChromeClient(this));
   mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
   mWebView.getSettings().setSavePassword(false);
