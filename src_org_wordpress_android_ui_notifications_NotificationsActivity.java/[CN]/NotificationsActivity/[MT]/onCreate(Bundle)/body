@@ -9,16 +9,17 @@
   mNotesList=(NotificationsListFragment)fm.findFragmentById(R.id.fragment_notes_list);
   mNotesList.setNoteProvider(new NoteProvider());
   mNotesList.setOnNoteClickListener(new NoteClickListener());
-  mNotes=WordPress.wpDB.getLatestNotes();
+  boolean launchWithNoteId=(savedInstanceState == null);
+  loadNotes(launchWithNoteId);
   GCMIntentService.activeNotificationsMap.clear();
-  if (savedInstanceState == null) {
-    launchWithNoteId();
-  }
- else {
+  if (savedInstanceState != null) {
     mHasPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);
   }
-  refreshNotificationsListFragment(mNotes);
-  if (savedInstanceState != null)   popNoteDetail();
-  if (mBroadcastReceiver == null)   createBroadcastReceiver();
+  if (savedInstanceState != null) {
+    popNoteDetail();
+  }
+  if (mBroadcastReceiver == null) {
+    createBroadcastReceiver();
+  }
   getWindow().setBackgroundDrawable(null);
 }
