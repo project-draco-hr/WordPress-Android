@@ -6,9 +6,12 @@
     if (defaultTrustManager == null) {
       throw new IllegalStateException("Couldn't find X509TrustManager");
     }
-    localTrustManager=new LocalStoreX509TrustManager();
+    localTrustManager=new LocalStoreX509TrustManager(localKeyStore);
     List<X509Certificate> allIssuers=new ArrayList<X509Certificate>();
     for (    X509Certificate cert : defaultTrustManager.getAcceptedIssuers()) {
+      allIssuers.add(cert);
+    }
+    for (    X509Certificate cert : localTrustManager.getAcceptedIssuers()) {
       allIssuers.add(cert);
     }
     acceptedIssuers=allIssuers.toArray(new X509Certificate[allIssuers.size()]);

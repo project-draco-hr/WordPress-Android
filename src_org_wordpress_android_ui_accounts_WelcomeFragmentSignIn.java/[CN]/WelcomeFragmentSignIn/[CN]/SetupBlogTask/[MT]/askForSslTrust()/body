@@ -5,14 +5,29 @@
   alert.setPositiveButton(android.R.string.yes,new DialogInterface.OnClickListener(){
     public void onClick(    DialogInterface dialog,    int which){
       SetupBlogTask setupBlogTask=new SetupBlogTask();
-      setupBlogTask.setCurrentSslCertificatesForcedTrusted(true);
+      try {
+        SelfSignedSSLCertsManager.getIstance(getActivity()).addCertificates(SelfSignedSSLCertsManager.getLastFailureChain());
+      }
+ catch (      IOException e) {
+        AppLog.e(T.NUX,e);
+      }
+catch (      GeneralSecurityException e) {
+        AppLog.e(T.NUX,e);
+      }
       setupBlogTask.execute();
+    }
+  }
+);
+  alert.setNeutralButton("Certificate Details",new DialogInterface.OnClickListener(){
+    public void onClick(    DialogInterface dialog,    int which){
+      Intent intent=new Intent(getActivity(),LicensesActivity.class);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+      startActivity(intent);
     }
   }
 );
   alert.setNegativeButton(android.R.string.no,new DialogInterface.OnClickListener(){
     public void onClick(    DialogInterface dialog,    int which){
-      mIsCurrentSslCertificatesForcedTrusted=false;
     }
   }
 );
