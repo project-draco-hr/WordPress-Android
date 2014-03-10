@@ -1,5 +1,13 @@
 {
-  TransitionDrawable td=new TransitionDrawable(new Drawable[]{new ColorDrawable(android.R.color.transparent),new BitmapDrawable(getContext().getResources(),bm)});
-  setImageDrawable(td);
-  td.startTransition(FADE_IN_TIME_MS);
+  super.setImageBitmap(bm);
+  if (SysUtils.isGteAndroid4()) {
+    ObjectAnimator alpha=ObjectAnimator.ofFloat(this,View.ALPHA,0.25f,1f);
+    alpha.setDuration(FADE_IN_TIME_MS);
+    alpha.start();
+  }
+ else {
+    AlphaAnimation animation=new AlphaAnimation(0.25f,1f);
+    animation.setDuration(FADE_IN_TIME_MS);
+    this.startAnimation(animation);
+  }
 }
