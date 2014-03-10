@@ -23,8 +23,16 @@
       try {
         result=client.call("wp.editComment",params);
       }
- catch (      final XMLRPCException e) {
-        AppLog.e(T.COMMENTS,e.getMessage(),e);
+ catch (      XMLRPCException e) {
+        AppLog.e(T.COMMENTS,"Error while editing comment",e);
+        result=null;
+      }
+catch (      IOException e) {
+        AppLog.e(T.COMMENTS,"Error while editing comment",e);
+        result=null;
+      }
+catch (      XmlPullParserException e) {
+        AppLog.e(T.COMMENTS,"Error while editing comment",e);
         result=null;
       }
       final boolean success=(result != null && Boolean.parseBoolean(result.toString()));
