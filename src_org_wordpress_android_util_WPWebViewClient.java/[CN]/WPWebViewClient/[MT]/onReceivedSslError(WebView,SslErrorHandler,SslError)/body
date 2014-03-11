@@ -1,5 +1,13 @@
 {
-  String domain=UrlUtils.getDomainFromUrl(mCurrentUrl);
-  handler.proceed();
-  return;
+  try {
+    if (SelfSignedSSLCertsManager.getIstance(view.getContext()).isCertificateTrusted(error.getCertificate())) {
+      handler.proceed();
+      return;
+    }
+  }
+ catch (  GeneralSecurityException e) {
+  }
+catch (  IOException e) {
+  }
+  super.onReceivedSslError(view,handler,error);
 }
