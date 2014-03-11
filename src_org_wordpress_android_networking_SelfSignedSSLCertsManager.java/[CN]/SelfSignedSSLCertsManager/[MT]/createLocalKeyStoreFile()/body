@@ -1,18 +1,20 @@
 {
-  FileOutputStream out=null;
-  try {
-    out=new FileOutputStream(localTrustStoreFile);
-    KeyStore localTrustStore=KeyStore.getInstance("BKS");
-    localTrustStore.load(null,Config.DB_SECRET.toCharArray());
-    localTrustStore.store(out,Config.DB_SECRET.toCharArray());
-  }
+  if (!localTrustStoreFile.exists()) {
+    FileOutputStream out=null;
+    try {
+      out=new FileOutputStream(localTrustStoreFile);
+      KeyStore localTrustStore=KeyStore.getInstance("BKS");
+      localTrustStore.load(null,Config.DB_SECRET.toCharArray());
+      localTrustStore.store(out,Config.DB_SECRET.toCharArray());
+    }
   finally {
-    if (out != null) {
-      try {
-        out.close();
-      }
- catch (      IOException e) {
-        AppLog.e(T.UTILS,e);
+      if (out != null) {
+        try {
+          out.close();
+        }
+ catch (        IOException e) {
+          AppLog.e(T.UTILS,e);
+        }
       }
     }
   }
