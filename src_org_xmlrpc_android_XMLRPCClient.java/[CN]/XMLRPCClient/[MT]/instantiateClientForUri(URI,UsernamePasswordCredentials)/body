@@ -9,14 +9,7 @@
       port=443;
     }
     try {
-      HttpParams params=new BasicHttpParams();
-      HttpConnectionParams.setConnectionTimeout(params,30000);
-      SchemeRegistry schemeRegistry=new SchemeRegistry();
-      schemeRegistry.register(new Scheme("http",PlainSocketFactory.getSocketFactory(),80));
-      TrustAllSSLSocketFactory tasslf=new TrustAllSSLSocketFactory();
-      schemeRegistry.register(new Scheme("https",tasslf,port));
-      ClientConnectionManager cm=new ThreadSafeClientConnManager(params,schemeRegistry);
-      client=new DefaultHttpClient(cm,params);
+      client=new ConnectionClient(port);
     }
  catch (    NoSuchAlgorithmException e) {
       AppLog.e(T.API,"Cannot create the DefaultHttpClient object with our TrustAllSSLSocketFactory",e);
