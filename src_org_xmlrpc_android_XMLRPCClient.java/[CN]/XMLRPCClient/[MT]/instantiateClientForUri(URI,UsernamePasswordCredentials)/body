@@ -1,37 +1,42 @@
 {
-  DefaultHttpClient client;
-  if (TrustedSslDomainTable.isDomainTrusted(uri.getHost())) {
-    if (uri.getScheme() != null && uri.getScheme().equals("https")) {
-      int port=uri.getPort();
-      if (port == -1) {
-        port=443;
-      }
-      try {
-        client=new ConnectionClient(credentials,port);
-      }
- catch (      KeyManagementException e) {
-        client=new ConnectionClient(credentials);
-      }
-catch (      NoSuchAlgorithmException e) {
-        client=new ConnectionClient(credentials);
-      }
-catch (      KeyStoreException e) {
-        client=new ConnectionClient(credentials);
-      }
-catch (      UnrecoverableKeyException e) {
-        client=new ConnectionClient(credentials);
-      }
-    }
- else {
-      client=new ConnectionClient(credentials);
-    }
-  }
- else {
+  DefaultHttpClient client=null;
+  if (uri.getHost().endsWith("wordpress.com") || (uri.getScheme() == null || uri.getScheme().equals("http"))) {
     client=new DefaultHttpClient();
-    HttpConnectionParams.setConnectionTimeout(client.getParams(),15000);
-    BasicCredentialsProvider cP=new BasicCredentialsProvider();
-    cP.setCredentials(AuthScope.ANY,credentials);
-    client.setCredentialsProvider(cP);
   }
+ else {
+    int port=uri.getPort();
+    if (port == -1) {
+      port=443;
+    }
+    try {
+      HttpParams params=new BasicHttpParams();
+      HttpConnectionParams.setConnectionTimeout(params,30000);
+      SchemeRegistry schemeRegistry=new SchemeRegistry();
+      schemeRegistry.register(new Scheme("http",PlainSocketFactory.getSocketFactory(),80));
+      TrustAllSSLSocketFactory tasslf=new TrustAllSSLSocketFactory();
+      schemeRegistry.register(new Scheme("https",tasslf,443));
+      ClientConnectionManager cm=new ThreadSafeClientConnManager(params,schemeRegistry);
+      client=new DefaultHttpClient(cm,params);
+    }
+ catch (    NoSuchAlgorithmException e) {
+      client=null;
+    }
+catch (    KeyStoreException e) {
+      client=null;
+    }
+catch (    UnrecoverableKeyException e) {
+      client=null;
+    }
+catch (    GeneralSecurityException e) {
+      client=null;
+    }
+    if (client == null) {
+      client=new DefaultHttpClient();
+    }
+  }
+  HttpConnectionParams.setConnectionTimeout(client.getParams(),30000);
+  BasicCredentialsProvider cP=new BasicCredentialsProvider();
+  cP.setCredentials(AuthScope.ANY,credentials);
+  client.setCredentialsProvider(cP);
   return client;
 }
