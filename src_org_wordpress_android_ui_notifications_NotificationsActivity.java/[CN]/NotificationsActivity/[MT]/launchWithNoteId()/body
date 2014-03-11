@@ -12,8 +12,7 @@
       NotesResponseHandler handler=new NotesResponseHandler(){
         @Override public void onNotes(        List<Note> notes){
           if (!notes.isEmpty()) {
-            Note note=notes.get(0);
-            openNote(note);
+            openNote(notes.get(0));
           }
         }
       }
@@ -24,11 +23,8 @@
  else {
     String fragmentTag=mNotesList.getTag();
     if (fragmentTag != null && fragmentTag.equals("tablet-view")) {
-      if (mNotes != null && mNotes.size() > 0) {
-        Note note=mNotes.get(0);
-        if (note != null) {
-          openNote(note);
-        }
+      if (mNotesList.hasAdapter() && !mNotesList.getNotesAdapter().isEmpty()) {
+        openNote(mNotesList.getNotesAdapter().getItem(0));
       }
     }
     mNotesList.animateRefresh(true);

@@ -21,12 +21,8 @@
     }
     @Override public void onErrorResponse(    VolleyError error){
       mFirstLoadComplete=true;
-      final NotificationsListFragment.NotesAdapter adapter=mNotesList.getNotesAdapter();
-      adapter.addAll(new ArrayList<Note>(),true);
-      Context context=NotificationsActivity.this;
-      if (context != null) {
-        ToastUtils.showToastOrAuthAlert(context,error,context.getString(R.string.error_refresh_notifications));
-      }
+      mNotesList.getNotesAdapter().addAll(new ArrayList<Note>(),true);
+      ToastUtils.showToastOrAuthAlert(NotificationsActivity.this,error,getString(R.string.error_refresh_notifications));
       mNotesList.animateRefresh(false);
     }
   }

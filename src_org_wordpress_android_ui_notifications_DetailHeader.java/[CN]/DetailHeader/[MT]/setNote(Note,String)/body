@@ -1,0 +1,31 @@
+{
+  final boolean isComment=(note != null && note.getBlogId() != 0 && note.getPostId() != 0 && note.getCommentId() != 0);
+  final boolean isPost=(note != null && note.getBlogId() != 0 && note.getPostId() != 0 && note.getCommentId() == 0);
+  if (isPost || isComment) {
+    setClickable(true);
+    setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        if (isComment && mOnCommentClickListener != null) {
+          mOnCommentClickListener.onCommentClicked(note,note.getBlogId(),note.getCommentId());
+        }
+ else         if (isPost && mOnPostClickListener != null) {
+          mOnPostClickListener.onPostClicked(note,note.getBlogId(),note.getPostId());
+        }
+      }
+    }
+);
+  }
+ else   if (!TextUtils.isEmpty(url)) {
+    setClickable(true);
+    setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        NotificationsWebViewActivity.openUrl(getContext(),url);
+      }
+    }
+);
+  }
+ else {
+    setClickable(false);
+    setOnClickListener(null);
+  }
+}
