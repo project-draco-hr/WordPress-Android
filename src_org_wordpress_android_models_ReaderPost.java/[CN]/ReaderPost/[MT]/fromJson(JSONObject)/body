@@ -69,13 +69,15 @@
     JSONObject jsonMedia=json.optJSONObject("featured_media");
     if (jsonMedia != null) {
       String mediaUrl=JSONUtil.getString(jsonMedia,"uri");
-      String type=JSONUtil.getString(jsonMedia,"type");
-      boolean isVideo=(type != null && type.equals("video"));
-      if (isVideo) {
-        post.featuredVideo=mediaUrl;
-      }
+      if (!TextUtils.isEmpty(mediaUrl)) {
+        String type=JSONUtil.getString(jsonMedia,"type");
+        boolean isVideo=(type != null && type.equals("video"));
+        if (isVideo) {
+          post.featuredVideo=mediaUrl;
+        }
  else {
-        post.featuredImage=mediaUrl;
+          post.featuredImage=mediaUrl;
+        }
       }
     }
     if (!post.hasFeaturedImage())     post.featuredImage=findFeaturedImage(post.text);
