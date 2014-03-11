@@ -1,0 +1,27 @@
+{
+  final Note note=getItem(position);
+  final NoteViewHolder holder;
+  if (convertView == null) {
+    convertView=mInflater.inflate(R.layout.note_list_item,null);
+    holder=new NoteViewHolder(convertView);
+    convertView.setTag(holder);
+  }
+ else {
+    holder=(NoteViewHolder)convertView.getTag();
+  }
+  if (note.isCommentType()) {
+    holder.txtDetail.setText(note.getCommentPreview());
+    holder.txtDetail.setVisibility(View.VISIBLE);
+  }
+ else {
+    holder.txtDetail.setVisibility(View.GONE);
+  }
+  holder.txtLabel.setText(note.getSubject());
+  holder.txtDate.setText(note.getTimeSpan());
+  holder.imgNoteIcon.setImageDrawable(getDrawableForType(convertView.getContext(),note.getType()));
+  String avatarUrl=PhotonUtils.fixAvatar(note.getIconURL(),mAvatarSz);
+  holder.imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
+  holder.unreadIndicator.setVisibility(note.isUnread() ? View.VISIBLE : View.INVISIBLE);
+  holder.placeholderLoading.setVisibility(note.isPlaceholder() ? View.VISIBLE : View.GONE);
+  return convertView;
+}
