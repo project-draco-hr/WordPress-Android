@@ -1,0 +1,26 @@
+{
+  if (users == null || users.size() == 0) {
+    clear();
+    return;
+  }
+  final Handler handler=new Handler();
+  new Thread(){
+    @Override public void run(){
+      ReaderUrlList followedBlogUrls=ReaderBlogTable.getFollowedBlogUrls();
+      for (      ReaderUser user : users) {
+        user.isFollowed=user.hasUrl() && followedBlogUrls.contains(user.getUrl());
+        user.setAvatarUrl(PhotonUtils.fixAvatar(user.getAvatarUrl(),mAvatarSz));
+        user.getUrlDomain();
+      }
+      handler.post(new Runnable(){
+        public void run(){
+          mUsers=(ReaderUserList)users.clone();
+          notifyDataSetChanged();
+          if (mDataLoadedListener != null)           mDataLoadedListener.onDataLoaded(isEmpty());
+        }
+      }
+);
+    }
+  }
+.start();
+}

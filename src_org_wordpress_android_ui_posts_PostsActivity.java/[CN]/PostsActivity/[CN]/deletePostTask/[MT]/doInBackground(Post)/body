@@ -1,5 +1,5 @@
 {
-  boolean result;
+  boolean result=false;
   post=params[0];
   Blog blog=WordPress.currentBlog;
   XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
@@ -10,8 +10,13 @@
     result=true;
   }
  catch (  final XMLRPCException e) {
-    mErrorMsg=String.format(getResources().getString(R.string.error_delete_post),(mIsPage) ? getResources().getText(R.string.page) : getResources().getText(R.string.post));
-    result=false;
+    mErrorMsg=prepareErrorMessage(e);
+  }
+catch (  IOException e) {
+    mErrorMsg=prepareErrorMessage(e);
+  }
+catch (  XmlPullParserException e) {
+    mErrorMsg=prepareErrorMessage(e);
   }
   return result;
 }

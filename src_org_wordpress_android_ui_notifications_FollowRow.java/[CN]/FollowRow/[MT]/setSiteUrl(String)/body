@@ -1,17 +1,13 @@
 {
   mBlogURL=url;
-  if (url != null) {
+  final TextView siteTextView=getSiteTextView();
+  if (!TextUtils.isEmpty(url)) {
+    siteTextView.setText(getSiteDomain());
+    siteTextView.setVisibility(View.VISIBLE);
     this.setOnClickListener(new OnClickListener(){
       @Override public void onClick(      View v){
         if (mBlogURL != null) {
-          try {
-            Uri uri=Uri.parse(mBlogURL);
-            getContext().startActivity(new Intent(Intent.ACTION_VIEW,uri));
-            AppLockManager.getInstance().setExtendedTimeout();
-          }
- catch (          Exception e) {
-            e.printStackTrace();
-          }
+          NotificationsWebViewActivity.openUrl(getContext(),mBlogURL);
         }
       }
     }
@@ -19,5 +15,6 @@
   }
  else {
     this.setOnClickListener(null);
+    siteTextView.setVisibility(View.GONE);
   }
 }

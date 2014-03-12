@@ -1,24 +1,13 @@
 {
   mEnabledActions=note.getEnabledActions();
-  Map<String,JSONObject> actions=note.getActions();
-  if (actions.size() > 0) {
-    String firstKey=actions.keySet().iterator().next();
-    JSONObject jsonAction=actions.get(firstKey);
-    JSONObject jsonParams=jsonAction.optJSONObject("params");
-    if (jsonParams != null) {
-      mRemoteBlogId=jsonParams.optInt("blog_id");
-      int commentId=jsonParams.optInt("comment_id");
-      int localBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(mRemoteBlogId);
-      Comment comment=CommentTable.getComment(localBlogId,commentId);
-      if (comment != null) {
-        setComment(localBlogId,comment);
-      }
- else {
-        requestComment(localBlogId,mRemoteBlogId,commentId);
-      }
-    }
+  mRemoteBlogId=note.getBlogId();
+  long commentId=note.getCommentId();
+  int localBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(mRemoteBlogId);
+  final Comment comment=(localBlogId > 0 ? CommentTable.getComment(localBlogId,commentId) : null);
+  if (comment != null) {
+    setComment(localBlogId,comment);
   }
  else {
-    if (hasActivity())     ToastUtils.showToast(getActivity(),R.string.reader_toast_err_get_comment,ToastUtils.Duration.LONG);
+    requestComment(localBlogId,mRemoteBlogId,commentId);
   }
 }

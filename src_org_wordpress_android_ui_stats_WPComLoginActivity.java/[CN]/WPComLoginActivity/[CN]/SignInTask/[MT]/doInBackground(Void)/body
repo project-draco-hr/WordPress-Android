@@ -33,10 +33,22 @@
     }
     return true;
   }
- catch (  XMLRPCException e) {
-    if (!TextUtils.isEmpty(e.getMessage())) {
-      mIsWpcomAccountWith2FA=e.getMessage().contains("code 425");
+ catch (  XMLRPCFault xmlRpcFault) {
+    AppLog.e(T.NUX,"XMLRPCFault received from XMLRPC call wp.getUsersBlogs",xmlRpcFault);
+    if (xmlRpcFault.getFaultCode() == 425) {
+      mIsWpcomAccountWith2FA=true;
+      return false;
     }
-    return false;
   }
+catch (  XMLRPCException e) {
+    AppLog.e(T.NUX,"Exception received from XMLRPC call wp.getUsersBlogs",e);
+  }
+catch (  IOException e) {
+    AppLog.e(T.NUX,"Exception received from XMLRPC call wp.getUsersBlogs",e);
+  }
+catch (  XmlPullParserException e) {
+    AppLog.e(T.NUX,"Exception received from XMLRPC call wp.getUsersBlogs",e);
+  }
+  mIsWpcomAccountWith2FA=false;
+  return false;
 }
