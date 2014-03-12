@@ -1,0 +1,22 @@
+{
+  if (noteId == 0)   return;
+  RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      if (jsonObject == null)       return;
+      try {
+        List<Note> notes=parseNotes(jsonObject);
+        if (notes == null || notes.size() == 0)         return;
+        WordPress.wpDB.addNote(notes.get(0),false);
+        if (updateListener != null) {
+          updateListener.onNoteUpdated(noteId);
+        }
+      }
+ catch (      JSONException e) {
+        AppLog.e(T.NOTIFS,e);
+        return;
+      }
+    }
+  }
+;
+  WordPress.getRestClientUtils().getNotification(Integer.toString(noteId),listener,null);
+}

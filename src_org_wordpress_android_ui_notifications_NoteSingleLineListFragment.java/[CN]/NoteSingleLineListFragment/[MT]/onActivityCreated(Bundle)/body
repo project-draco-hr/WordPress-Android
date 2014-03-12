@@ -4,11 +4,10 @@
   list.setDivider(getResources().getDrawable(R.drawable.list_divider));
   list.setDividerHeight(1);
   list.setHeaderDividersEnabled(false);
-  Note currentNote=getNote();
-  if (currentNote == null)   return;
+  if (getNote() == null)   return;
   final DetailHeader noteHeader=(DetailHeader)getView().findViewById(R.id.header);
-  noteHeader.setText(JSONUtil.getStringDecoded(currentNote.queryJSON("subject",new JSONObject()),"text"));
-  String footerUrl=currentNote.queryJSON("body.header_link","");
+  noteHeader.setText(JSONUtil.getStringDecoded(getNote().queryJSON("subject",new JSONObject()),"text"));
+  String footerUrl=getNote().queryJSON("body.header_link","");
   noteHeader.setNote(getNote(),footerUrl);
   if (getActivity() instanceof OnPostClickListener) {
     noteHeader.setOnPostClickListener(((OnPostClickListener)getActivity()));
@@ -16,6 +15,6 @@
   if (getActivity() instanceof OnCommentClickListener) {
     noteHeader.setOnCommentClickListener(((OnCommentClickListener)getActivity()));
   }
-  setListAdapter(new NoteAdapter());
+  setListAdapter(new NoteAdapter(getActivity()));
   NotificationUtils.updateNotification(getNoteId(),this);
 }
