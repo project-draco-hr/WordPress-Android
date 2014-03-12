@@ -19,8 +19,14 @@
           boolean success=(result != null && Boolean.parseBoolean(result.toString()));
           if (success)           deletedComments.add(comment);
         }
- catch (        final XMLRPCException e) {
-          AppLog.e(T.COMMENTS,e.getMessage(),e);
+ catch (        XMLRPCException e) {
+          AppLog.e(T.COMMENTS,"Error while deleting comment",e);
+        }
+catch (        IOException e) {
+          AppLog.e(T.COMMENTS,"Error while deleting comment",e);
+        }
+catch (        XmlPullParserException e) {
+          AppLog.e(T.COMMENTS,"Error while deleting comment",e);
         }
       }
       CommentTable.deleteComments(localBlogId,deletedComments);

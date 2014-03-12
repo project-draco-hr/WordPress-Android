@@ -9,56 +9,17 @@
   mNotesList=(NotificationsListFragment)fm.findFragmentById(R.id.fragment_notes_list);
   mNotesList.setNoteProvider(new NoteProvider());
   mNotesList.setOnNoteClickListener(new NoteClickListener());
-  mNotes=WordPress.wpDB.getLatestNotes();
-  fragmentDetectors.add(new FragmentDetector(){
-    @Override public Fragment getFragment(    Note note){
-      if (note.isCommentType()) {
-        return CommentDetailFragment.newInstance(note);
-      }
-      return null;
-    }
-  }
-);
-  fragmentDetectors.add(new FragmentDetector(){
-    @Override public Fragment getFragment(    Note note){
-      if (note.isMultiLineListTemplate()) {
-        Fragment fragment=null;
-        if (note.isCommentLikeType())         fragment=new NoteCommentLikeFragment();
- else         if (note.isAutomattcherType())         fragment=new NoteMatcherFragment();
-        return fragment;
-      }
-      return null;
-    }
-  }
-);
-  fragmentDetectors.add(new FragmentDetector(){
-    @Override public Fragment getFragment(    Note note){
-      if (note.isSingleLineListTemplate()) {
-        return new SingleLineListFragment();
-      }
-      return null;
-    }
-  }
-);
-  fragmentDetectors.add(new FragmentDetector(){
-    @Override public Fragment getFragment(    Note note){
-      AppLog.d(T.NOTIFS,String.format("Is it a big badge template? %b",note.isBigBadgeTemplate()));
-      if (note.isBigBadgeTemplate()) {
-        return new BigBadgeFragment();
-      }
-      return null;
-    }
-  }
-);
+  boolean launchWithNoteId=(savedInstanceState == null);
+  loadNotes(launchWithNoteId);
   GCMIntentService.activeNotificationsMap.clear();
-  if (savedInstanceState == null) {
-    launchWithNoteId();
-  }
- else {
+  if (savedInstanceState != null) {
     mHasPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);
   }
-  refreshNotificationsListFragment(mNotes);
-  if (savedInstanceState != null)   popNoteDetail();
-  if (mBroadcastReceiver == null)   createBroadcastReceiver();
+  if (savedInstanceState != null) {
+    popNoteDetail();
+  }
+  if (mBroadcastReceiver == null) {
+    createBroadcastReceiver();
+  }
   getWindow().setBackgroundDrawable(null);
 }
