@@ -8,12 +8,8 @@
     }
     localTrustManager=new LocalStoreX509TrustManager(localKeyStore);
     List<X509Certificate> allIssuers=new ArrayList<X509Certificate>();
-    for (    X509Certificate cert : defaultTrustManager.getAcceptedIssuers()) {
-      allIssuers.add(cert);
-    }
-    for (    X509Certificate cert : localTrustManager.getAcceptedIssuers()) {
-      allIssuers.add(cert);
-    }
+    Collections.addAll(allIssuers,defaultTrustManager.getAcceptedIssuers());
+    Collections.addAll(allIssuers,localTrustManager.getAcceptedIssuers());
     acceptedIssuers=allIssuers.toArray(new X509Certificate[allIssuers.size()]);
   }
  catch (  GeneralSecurityException e) {
