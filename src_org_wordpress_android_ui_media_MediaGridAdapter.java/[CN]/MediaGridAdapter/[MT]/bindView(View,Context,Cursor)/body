@@ -42,19 +42,17 @@
  else {
     loadNetworkImage(cursor,(NetworkImageView)imageView);
   }
-  String fileType=null;
-  String filePath=cursor.getString(cursor.getColumnIndex("filePath"));
-  if (filePath == null)   filePath=cursor.getString(cursor.getColumnIndex("fileURL"));
-  if (filePath != null) {
-    fileType=filePath.replaceAll(".*\\.(\\w+)$","$1").toUpperCase();
-    TextView fileTypeView=(TextView)view.findViewById(R.id.media_grid_item_filetype);
-    if (Utils.isXLarge(context)) {
-      fileTypeView.setText("File type: " + fileType);
-    }
- else {
-      fileTypeView.setText(fileType);
-    }
+  String mimeType=cursor.getString(cursor.getColumnIndex("mimeType"));
+  String fileExtension=StringUtils.notNullStr(MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType));
+  fileExtension=fileExtension.toUpperCase();
+  TextView fileTypeView=(TextView)view.findViewById(R.id.media_grid_item_filetype);
+  if (Utils.isXLarge(context) && !TextUtils.isEmpty(fileExtension)) {
+    fileTypeView.setText("File type: " + fileExtension);
   }
+ else {
+    fileTypeView.setText(fileExtension.toUpperCase());
+  }
+  String filePath=cursor.getString(cursor.getColumnIndex("fileURL"));
   TextView dimensionView=(TextView)view.findViewById(R.id.media_grid_item_dimension);
   if (dimensionView != null) {
     if (MediaUtils.isValidImage(filePath)) {
