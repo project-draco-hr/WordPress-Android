@@ -6,12 +6,13 @@
   }
  else {
     String postOrPage=(String)(post.isPage() ? context.getResources().getText(R.string.page_id) : context.getResources().getText(R.string.post_id));
-    Intent notificationIntent=new Intent(context,(post.isPage()) ? PagesActivity.class : PostsActivity.class);
+    Intent notificationIntent=new Intent(context,PostsActivity.class);
     notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK);
-    notificationIntent.setAction("android.intent.action.MAIN");
-    notificationIntent.addCategory("android.intent.category.LAUNCHER");
+    notificationIntent.setAction(Intent.ACTION_MAIN);
+    notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
     notificationIntent.setData((Uri.parse("custom://wordpressNotificationIntent" + post.getBlogID())));
     notificationIntent.putExtra("errorMessage",mErrorMessage);
+    notificationIntent.putExtra(PostsActivity.EXTRA_VIEW_PAGES,post.isPage());
     if (mErrorUnavailableVideoPress) {
       notificationIntent.putExtra("errorInfoTitle",getString(R.string.learn_more));
       notificationIntent.putExtra("errorInfoLink",Constants.videoPressURL);
