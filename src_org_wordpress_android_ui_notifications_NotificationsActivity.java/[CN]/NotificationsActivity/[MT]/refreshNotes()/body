@@ -1,8 +1,6 @@
 {
   if (!NetworkUtils.checkConnection(this))   return;
   mFirstLoadComplete=false;
-  mShouldAnimateRefreshButton=true;
-  startAnimatingRefreshButton(mRefreshMenuItem);
   NotesResponseHandler notesHandler=new NotesResponseHandler(){
     @Override public void onNotes(    final List<Note> notes){
       mFirstLoadComplete=true;
@@ -13,7 +11,7 @@
           NotificationsActivity.this.runOnUiThread(new Runnable(){
             @Override public void run(){
               refreshNotificationsListFragment(notes);
-              stopAnimatingRefreshButton(mRefreshMenuItem);
+              mNotesList.animateRefresh(false);
             }
           }
 );
@@ -25,8 +23,7 @@
       mFirstLoadComplete=true;
       mNotesList.getNotesAdapter().addAll(new ArrayList<Note>(),true);
       ToastUtils.showToastOrAuthAlert(NotificationsActivity.this,error,getString(R.string.error_refresh_notifications));
-      stopAnimatingRefreshButton(mRefreshMenuItem);
-      mShouldAnimateRefreshButton=false;
+      mNotesList.animateRefresh(false);
     }
   }
 ;
