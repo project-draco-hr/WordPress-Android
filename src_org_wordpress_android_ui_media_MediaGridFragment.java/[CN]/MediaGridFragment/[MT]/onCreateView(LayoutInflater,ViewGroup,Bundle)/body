@@ -28,5 +28,15 @@
 );
   restoreState(savedInstanceState);
   setupSpinnerAdapter();
+  mPullToRefreshHelper=new PullToRefreshHelper(getActivity(),(PullToRefreshLayout)view.findViewById(R.id.ptr_layout),new RefreshListener(){
+    @Override public void onRefreshStarted(    View view){
+      if (getActivity() == null || !NetworkUtils.checkConnection(getActivity())) {
+        mPullToRefreshHelper.setRefreshing(false);
+        return;
+      }
+      refreshMediaFromServer(0,false);
+    }
+  }
+,LinearLayout.class);
   return view;
 }
