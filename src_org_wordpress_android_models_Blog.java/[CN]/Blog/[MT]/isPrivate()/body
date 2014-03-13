@@ -1,18 +1,7 @@
 {
-  try {
-    Gson gson=new Gson();
-    Type type=new TypeToken<Map<String,Object>>(){
-    }
-.getType();
-    Map<String,Object> blogOptions=gson.fromJson(getBlogOptions(),type);
-    StringMap<?> blogPublicOption=(StringMap<?>)blogOptions.get("blog_public");
-    String blogPublicOptionValue=blogPublicOption.get("value").toString();
-    if ("-1".equals(blogPublicOptionValue)) {
-      return true;
-    }
-  }
- catch (  Exception e) {
-    e.printStackTrace();
+  JSONObject jsonOptions=getBlogOptionsJSONObject();
+  if (jsonOptions != null) {
+    return !JSONUtil.queryJSON(jsonOptions,"blog_public.value","1").equals("1");
   }
   return false;
 }
