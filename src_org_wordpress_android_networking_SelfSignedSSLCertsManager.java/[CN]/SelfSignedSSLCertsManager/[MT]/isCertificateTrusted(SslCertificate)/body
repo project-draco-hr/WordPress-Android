@@ -1,0 +1,34 @@
+{
+  if (cert == null)   return false;
+  Bundle bundle=SslCertificate.saveState(cert);
+  X509Certificate x509Certificate;
+  byte[] bytes=bundle.getByteArray("x509-certificate");
+  if (bytes == null) {
+    AppLog.e(T.API,"Cannot load the SSLCertificate bytes from the bundle!");
+    x509Certificate=null;
+  }
+ else {
+    try {
+      CertificateFactory certFactory=CertificateFactory.getInstance("X.509");
+      Certificate certX509=certFactory.generateCertificate(new ByteArrayInputStream(bytes));
+      x509Certificate=(X509Certificate)certX509;
+    }
+ catch (    CertificateException e) {
+      AppLog.e(T.API,"Cannot generate the X509Certificate with the bytes provided",e);
+      x509Certificate=null;
+    }
+  }
+  if (x509Certificate == null)   return false;
+  try {
+    String certificateAlias=this.getLocalKeyStore().getCertificateAlias(x509Certificate);
+    if (certificateAlias != null) {
+      AppLog.w(T.API,"Current certificate " + x509Certificate.getSubjectDN().getName() + " is in KeyStore.");
+      return true;
+    }
+  }
+ catch (  KeyStoreException e) {
+    AppLog.e(T.API,"Cannot check if the certificate is in KeyStore. Seems that Keystore is not initialized.",e);
+  }
+  AppLog.w(T.API,"Current certificate " + x509Certificate.getSubjectDN().getName() + " is NOT in KeyStore.");
+  return false;
+}

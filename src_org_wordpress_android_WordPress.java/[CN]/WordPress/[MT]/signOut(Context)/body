@@ -1,6 +1,14 @@
 {
   removeWpComUserRelatedData(context);
-  TrustedSslDomainTable.emptyTable();
+  try {
+    SelfSignedSSLCertsManager.getInstance(context).emptyLocalKeyStoreFile();
+  }
+ catch (  GeneralSecurityException e) {
+    AppLog.e(T.UTILS,"Error while cleaning the Local KeyStore File",e);
+  }
+catch (  IOException e) {
+    AppLog.e(T.UTILS,"Error while cleaning the Local KeyStore File",e);
+  }
   wpDB.deleteAllAccounts();
   wpDB.updateLastBlogId(-1);
   currentBlog=null;

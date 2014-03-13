@@ -1,0 +1,25 @@
+{
+  if (note == null)   return null;
+  if (note.isCommentType()) {
+    return CommentDetailFragment.newInstance(note);
+  }
+ else   if (note.isCommentLikeType()) {
+    return new NoteCommentLikeFragment();
+  }
+ else   if (note.isAutomattcherType()) {
+    boolean isPost=(note.getBlogId() != 0 && note.getPostId() != 0 && note.getCommentId() == 0);
+    if (isPost) {
+      return ReaderPostDetailFragment.newInstance(note.getBlogId(),note.getPostId());
+    }
+ else {
+      return new NoteMatcherFragment();
+    }
+  }
+ else   if (note.isSingleLineListTemplate()) {
+    return new NoteSingleLineListFragment();
+  }
+ else   if (note.isBigBadgeTemplate()) {
+    return new BigBadgeFragment();
+  }
+  return null;
+}
