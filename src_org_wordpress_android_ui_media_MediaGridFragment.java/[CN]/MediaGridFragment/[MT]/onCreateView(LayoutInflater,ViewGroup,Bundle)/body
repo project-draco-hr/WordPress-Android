@@ -2,7 +2,7 @@
   super.onCreateView(inflater,container,savedInstanceState);
   mCheckedItems=new ArrayList<String>();
   mFiltersText=new String[Filter.values().length];
-  mGridAdapter=new MediaGridAdapter(getActivity(),null,0,mCheckedItems);
+  mGridAdapter=new MediaGridAdapter(getActivity(),null,0,mCheckedItems,MediaImageLoader.getInstance());
   mGridAdapter.setCallback(this);
   View view=inflater.inflate(R.layout.media_grid_fragment,container);
   mGridView=(MultiSelectGridView)view.findViewById(R.id.media_gridview);
@@ -28,5 +28,15 @@
 );
   restoreState(savedInstanceState);
   setupSpinnerAdapter();
+  mPullToRefreshHelper=new PullToRefreshHelper(getActivity(),(PullToRefreshLayout)view.findViewById(R.id.ptr_layout),new RefreshListener(){
+    @Override public void onRefreshStarted(    View view){
+      if (getActivity() == null || !NetworkUtils.checkConnection(getActivity())) {
+        mPullToRefreshHelper.setRefreshing(false);
+        return;
+      }
+      refreshMediaFromServer(0,false);
+    }
+  }
+,LinearLayout.class);
   return view;
 }

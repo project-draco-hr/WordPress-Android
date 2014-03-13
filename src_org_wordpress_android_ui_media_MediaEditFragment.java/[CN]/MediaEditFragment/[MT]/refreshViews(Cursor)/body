@@ -25,13 +25,17 @@
   mTitleView.setSelection(mTitleView.getText().length());
   mCaptionView.setText(cursor.getString(cursor.getColumnIndex("caption")));
   mDescriptionView.setText(cursor.getString(cursor.getColumnIndex("description")));
-  String imageUri=null;
-  if (isLocal)   imageUri=cursor.getString(cursor.getColumnIndex("filePath"));
- else   imageUri=cursor.getString(cursor.getColumnIndex("fileURL"));
+  final String imageUri;
+  if (isLocal) {
+    imageUri=cursor.getString(cursor.getColumnIndex("filePath"));
+  }
+ else {
+    imageUri=cursor.getString(cursor.getColumnIndex("fileURL"));
+  }
   if (MediaUtils.isValidImage(imageUri)) {
     int width=cursor.getInt(cursor.getColumnIndex("width"));
     int height=cursor.getInt(cursor.getColumnIndex("height"));
-    float screenWidth=getActivity().getResources().getDisplayMetrics().widthPixels;
+    float screenWidth;
     if (this.isInLayout()) {
       screenWidth=mLinearLayout.getMeasuredWidth();
     }
@@ -50,7 +54,7 @@
       mLocalImageView.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,height));
     }
  else {
-      mNetworkImageView.setImageUrl(imageUri + "?w=" + screenWidth,WordPress.imageLoader);
+      mNetworkImageView.setImageUrl(imageUri + "?w=" + screenWidth,mImageLoader);
       mNetworkImageView.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,height));
     }
   }

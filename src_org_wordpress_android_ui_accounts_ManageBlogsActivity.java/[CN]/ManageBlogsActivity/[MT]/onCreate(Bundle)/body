@@ -1,9 +1,21 @@
 {
   super.onCreate(savedInstanceState);
+  setContentView(R.layout.empty_listview);
   mListScrollPositionManager=new ListScrollPositionManager(getListView(),false);
   setTitle(getString(R.string.blogs_visibility));
   ActionBar actionBar=getSupportActionBar();
   actionBar.setHomeButtonEnabled(true);
   actionBar.setDisplayHomeAsUpEnabled(true);
+  mPullToRefreshHelper=new PullToRefreshHelper(this,(PullToRefreshLayout)findViewById(R.id.ptr_layout),new RefreshListener(){
+    @Override public void onRefreshStarted(    View view){
+      if (!NetworkUtils.checkConnection(getBaseContext())) {
+        mPullToRefreshHelper.setRefreshing(false);
+        return;
+      }
+      new SetupBlogTask().execute();
+    }
+  }
+);
   loadAccounts();
+  refreshBlogs();
 }
