@@ -1,0 +1,18 @@
+{
+  if (mImageLoader == null) {
+    Blog blog=WordPress.getCurrentBlog();
+    if (blog != null && VolleyUtils.isCustomHTTPClientStackNeeded(blog)) {
+      AppLog.d(AppLog.T.MEDIA,"creating custom imageLoader");
+      Context context=WordPress.getContext();
+      mAuthRequestQueue=Volley.newRequestQueue(context,VolleyUtils.getHTTPClientStack(context,blog));
+      mImageLoader=new ImageLoader(mAuthRequestQueue,WordPress.getBitmapCache());
+      mImageLoader.setBatchedResponseDelay(0);
+    }
+ else {
+      AppLog.d(AppLog.T.MEDIA,"using default imageLoader");
+      mAuthRequestQueue=null;
+      mImageLoader=WordPress.imageLoader;
+    }
+  }
+  return mImageLoader;
+}
