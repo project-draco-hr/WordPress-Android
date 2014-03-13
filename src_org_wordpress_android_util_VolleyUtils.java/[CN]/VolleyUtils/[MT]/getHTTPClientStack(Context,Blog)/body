@@ -1,7 +1,7 @@
 {
   SSLSocketFactory mSslSocketFactory=null;
   try {
-    TrustManager[] trustAllowedCerts=new TrustManager[]{new WPTrustManager()};
+    TrustManager[] trustAllowedCerts=new TrustManager[]{new WPTrustManager(SelfSignedSSLCertsManager.getInstance(ctx).getLocalKeyStore())};
     SSLContext context=SSLContext.getInstance("SSL");
     context.init(null,trustAllowedCerts,new SecureRandom());
     mSslSocketFactory=context.getSocketFactory();
@@ -10,6 +10,12 @@
     AppLog.e(T.API,e);
   }
 catch (  KeyManagementException e) {
+    AppLog.e(T.API,e);
+  }
+catch (  GeneralSecurityException e) {
+    AppLog.e(T.API,e);
+  }
+catch (  IOException e) {
     AppLog.e(T.API,e);
   }
   HurlStack stack=new HurlStack(null,mSslSocketFactory){
