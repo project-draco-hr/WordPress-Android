@@ -6,8 +6,10 @@
         mPullToRefreshHelper.setRefreshing(false);
         return;
       }
-      ((PostsActivity)getActivity()).checkForLocalChanges(true);
-      new ApiHelper.RefreshBlogContentTask(getActivity(),WordPress.getCurrentBlog(),new ApiHelper.VerifyCredentialsCallback(getActivity())).execute(false);
+      PostsActivity postsActivity=(PostsActivity)getActivity();
+      postsActivity.checkForLocalChanges(true);
+      Blog currentBlog=WordPress.getCurrentBlog();
+      new ApiHelper.RefreshBlogContentTask(postsActivity,currentBlog,new ApiHelper.VerifyCredentialsCallback(postsActivity,currentBlog.isDotcomFlag())).execute(false);
     }
   }
 ,LinearLayout.class);
