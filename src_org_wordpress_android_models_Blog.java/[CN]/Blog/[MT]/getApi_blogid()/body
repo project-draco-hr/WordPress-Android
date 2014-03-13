@@ -1,3 +1,13 @@
 {
+  if (api_blogid == null) {
+    JSONObject jsonOptions=getBlogOptionsJSONObject();
+    if (jsonOptions != null) {
+      String newApiBlogid=JSONUtil.queryJSON(jsonOptions,"jetpack_client_id.value","");
+      if (!TextUtils.isEmpty(newApiBlogid)) {
+        setApi_blogid(newApiBlogid);
+        WordPress.wpDB.saveBlog(this);
+      }
+    }
+  }
   return api_blogid;
 }
