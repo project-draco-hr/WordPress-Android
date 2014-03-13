@@ -1,37 +1,39 @@
 {
-  DefaultHttpClient client;
-  if (TrustedSslDomainTable.isDomainTrusted(uri.getHost())) {
-    if (uri.getScheme() != null && uri.getScheme().equals("https")) {
-      int port=uri.getPort();
-      if (port == -1) {
-        port=443;
-      }
-      try {
-        client=new ConnectionClient(credentials,port);
-      }
- catch (      KeyManagementException e) {
-        client=new ConnectionClient(credentials);
-      }
-catch (      NoSuchAlgorithmException e) {
-        client=new ConnectionClient(credentials);
-      }
-catch (      KeyStoreException e) {
-        client=new ConnectionClient(credentials);
-      }
-catch (      UnrecoverableKeyException e) {
-        client=new ConnectionClient(credentials);
-      }
-    }
- else {
-      client=new ConnectionClient(credentials);
-    }
-  }
- else {
+  DefaultHttpClient client=null;
+  if (uri.getHost().endsWith("wordpress.com") || (uri.getScheme() == null || uri.getScheme().equals("http"))) {
     client=new DefaultHttpClient();
-    HttpConnectionParams.setConnectionTimeout(client.getParams(),15000);
-    BasicCredentialsProvider cP=new BasicCredentialsProvider();
-    cP.setCredentials(AuthScope.ANY,credentials);
-    client.setCredentialsProvider(cP);
   }
+ else {
+    int port=uri.getPort();
+    if (port == -1) {
+      port=443;
+    }
+    try {
+      client=new ConnectionClient(port);
+    }
+ catch (    NoSuchAlgorithmException e) {
+      AppLog.e(T.API,"Cannot create the DefaultHttpClient object with our TrustAllSSLSocketFactory",e);
+      client=null;
+    }
+catch (    KeyStoreException e) {
+      AppLog.e(T.API,"Cannot create the DefaultHttpClient object with our TrustAllSSLSocketFactory",e);
+      client=null;
+    }
+catch (    UnrecoverableKeyException e) {
+      AppLog.e(T.API,"Cannot create the DefaultHttpClient object with our TrustAllSSLSocketFactory",e);
+      client=null;
+    }
+catch (    GeneralSecurityException e) {
+      AppLog.e(T.API,"Cannot create the DefaultHttpClient object with our TrustAllSSLSocketFactory",e);
+      client=null;
+    }
+    if (client == null) {
+      client=new DefaultHttpClient();
+    }
+  }
+  HttpConnectionParams.setConnectionTimeout(client.getParams(),30000);
+  BasicCredentialsProvider cP=new BasicCredentialsProvider();
+  cP.setCredentials(AuthScope.ANY,credentials);
+  client.setCredentialsProvider(cP);
   return client;
 }

@@ -1,7 +1,14 @@
 {
-  Activity act=activityWeakRef.get();
+  PostsActivity act=activityWeakRef.get();
   if (act == null || act.isFinishing()) {
     return;
   }
-  ToastUtils.showToastOrAuthAlert(act,errorMessage,"An error occurred");
+  act.onRefresh(false);
+  if (throwable != null && throwable instanceof SSLHandshakeException && !isWPCOM) {
+    AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
+    askForSslTrust(act);
+  }
+ else {
+    ToastUtils.showToastOrAuthAlert(act,errorMessage,"An error occurred");
+  }
 }
