@@ -1,0 +1,18 @@
+{
+  try {
+    TrustManagerFactory tmf=TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+    tmf.init((KeyStore)null);
+    defaultTrustManager=findX509TrustManager(tmf);
+    if (defaultTrustManager == null) {
+      throw new IllegalStateException("Couldn't find X509TrustManager");
+    }
+    localTrustManager=new LocalStoreX509TrustManager(localKeyStore);
+    List<X509Certificate> allIssuers=new ArrayList<X509Certificate>();
+    Collections.addAll(allIssuers,defaultTrustManager.getAcceptedIssuers());
+    Collections.addAll(allIssuers,localTrustManager.getAcceptedIssuers());
+    acceptedIssuers=allIssuers.toArray(new X509Certificate[allIssuers.size()]);
+  }
+ catch (  GeneralSecurityException e) {
+    throw new RuntimeException(e);
+  }
+}
