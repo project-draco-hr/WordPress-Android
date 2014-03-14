@@ -1,30 +1,7 @@
 {
   if (note == null || isFinishing())   return;
   if (note.isUnread()) {
-    getRestClientUtils().markNoteAsRead(note,new RestRequest.Listener(){
-      @Override public void onResponse(      JSONObject response){
-        if (isFinishing())         return;
-        final NotesAdapter notesAdapter=mNotesList.getNotesAdapter();
-        note.setUnreadCount("0");
-        if (notesAdapter.indexOfNote(note) < 0) {
-          for (int i=0; i < notesAdapter.getCount(); i++) {
-            Note item=notesAdapter.getItem(i);
-            if (item.getId().equals(note.getId())) {
-              item.setUnreadCount("0");
-              break;
-            }
-          }
-        }
-        WordPress.wpDB.addNote(note,false);
-        notesAdapter.notifyDataSetChanged();
-      }
-    }
-,new RestRequest.ErrorListener(){
-      @Override public void onErrorResponse(      VolleyError error){
-        AppLog.d(T.NOTIFS,String.format("Failed to mark as read %s",error));
-      }
-    }
-);
+    markNoteAsRead(note);
   }
   FragmentManager fm=getSupportFragmentManager();
   if (fm.getBackStackEntryCount() > 0) {
