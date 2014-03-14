@@ -5,9 +5,17 @@
   String pubDate=(mPubDateText.getText() != null) ? mPubDateText.getText().toString() : "";
   String excerpt=(mExcerptEditText.getText() != null) ? mExcerptEditText.getText().toString() : "";
   long pubDateTimestamp=0;
-  if (!pubDate.equals(getResources().getText(R.string.immediately))) {
+  if (mIsCustomPubDate && pubDate.equals(getResources().getText(R.string.immediately)) && !post.isLocalDraft()) {
+    Date d=new Date();
+    pubDateTimestamp=d.getTime();
+  }
+ else   if (!pubDate.equals(getResources().getText(R.string.immediately))) {
     if (mIsCustomPubDate)     pubDateTimestamp=mCustomPubDate;
  else     if (post.getDate_created_gmt() > 0)     pubDateTimestamp=post.getDate_created_gmt();
+  }
+ else   if (pubDate.equals(getResources().getText(R.string.immediately)) && post.isLocalDraft()) {
+    post.setDate_created_gmt(0);
+    post.setDateCreated(0);
   }
   String tags="", postFormat="";
   if (!post.isPage()) {
