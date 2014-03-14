@@ -1,0 +1,12 @@
+{
+  super(null);
+  try {
+    SSLContext sslcontext=SSLContext.getInstance("TLS");
+    TrustManager[] trustAllowedCerts=new TrustManager[]{new WPTrustManager(SelfSignedSSLCertsManager.getInstance(null).getLocalKeyStore())};
+    sslcontext.init(null,trustAllowedCerts,null);
+    factory=sslcontext.getSocketFactory();
+    setHostnameVerifier(new AllowAllHostnameVerifier());
+  }
+ catch (  Exception ex) {
+  }
+}

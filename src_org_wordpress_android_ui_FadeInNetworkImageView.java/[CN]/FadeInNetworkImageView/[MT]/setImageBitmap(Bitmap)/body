@@ -1,5 +1,15 @@
 {
-  TransitionDrawable td=new TransitionDrawable(new Drawable[]{new ColorDrawable(android.R.color.transparent),new BitmapDrawable(getContext().getResources(),bm)});
-  setImageDrawable(td);
-  td.startTransition(FADE_IN_TIME_MS);
+  super.setImageBitmap(bm);
+  if (getContext() == null)   return;
+  int duration=getContext().getResources().getInteger(android.R.integer.config_shortAnimTime);
+  if (SysUtils.isGteAndroid4()) {
+    ObjectAnimator alpha=ObjectAnimator.ofFloat(this,View.ALPHA,0.25f,1f);
+    alpha.setDuration(duration);
+    alpha.start();
+  }
+ else {
+    AlphaAnimation animation=new AlphaAnimation(0.25f,1f);
+    animation.setDuration(duration);
+    this.startAnimation(animation);
+  }
 }

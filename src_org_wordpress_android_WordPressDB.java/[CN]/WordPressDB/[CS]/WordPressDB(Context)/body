@@ -9,7 +9,6 @@
   db.execSQL(CREATE_TABLE_THEMES);
   db.execSQL(CREATE_TABLE_NOTES);
   CommentTable.createTables(db);
-  TrustedSslDomainTable.createTable(db);
   int currentVersion=db.getVersion();
 switch (currentVersion) {
 case 0:
@@ -33,7 +32,6 @@ currentVersion++;
 case 10:
 db.delete(POSTS_TABLE,null,null);
 db.execSQL(CREATE_TABLE_POSTS);
-migrateDrafts();
 db.execSQL(ADD_POST_FORMATS);
 currentVersion++;
 case 11:
@@ -79,8 +77,6 @@ case 22:
 currentVersion++;
 case 23:
 CommentTable.reset(db);
-currentVersion++;
-case 24:
 currentVersion++;
 }
 db.setVersion(DATABASE_VERSION);

@@ -1,6 +1,6 @@
 {
   if (postUploadedSuccessfully) {
-    WordPress.postUploaded(post.getPostid());
+    WordPress.postUploaded(post.getRemotePostId());
     nm.cancel(notificationID);
     WordPress.wpDB.deleteMediaFilesForPost(post);
   }
@@ -10,7 +10,7 @@
     notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK);
     notificationIntent.setAction("android.intent.action.MAIN");
     notificationIntent.addCategory("android.intent.category.LAUNCHER");
-    notificationIntent.setData((Uri.parse("custom://wordpressNotificationIntent" + post.getBlogID())));
+    notificationIntent.setData((Uri.parse("custom://wordpressNotificationIntent" + post.getLocalTableBlogId())));
     notificationIntent.putExtra("errorMessage",mErrorMessage);
     if (mErrorUnavailableVideoPress) {
       notificationIntent.putExtra("errorInfoTitle",getString(R.string.learn_more));

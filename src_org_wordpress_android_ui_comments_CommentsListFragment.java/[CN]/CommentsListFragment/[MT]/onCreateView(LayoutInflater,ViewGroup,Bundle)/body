@@ -4,5 +4,15 @@
   mEmptyView=view.findViewById(android.R.id.empty);
   mProgressLoadMore=(ProgressBar)view.findViewById(R.id.progress_loading);
   mProgressLoadMore.setVisibility(View.GONE);
+  mPullToRefreshHelper=new PullToRefreshHelper(getActivity(),(PullToRefreshLayout)view.findViewById(R.id.ptr_layout),new RefreshListener(){
+    @Override public void onRefreshStarted(    View view){
+      if (getActivity() == null || !NetworkUtils.checkConnection(getActivity())) {
+        mPullToRefreshHelper.setRefreshing(false);
+        return;
+      }
+      updateComments(false);
+    }
+  }
+);
   return view;
 }
