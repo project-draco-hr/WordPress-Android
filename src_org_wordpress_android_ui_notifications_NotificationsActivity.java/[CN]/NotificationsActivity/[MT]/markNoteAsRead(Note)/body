@@ -1,0 +1,16 @@
+{
+  if (note == null)   return;
+  getRestClientUtils().markNoteAsRead(note,new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject response){
+      note.setUnreadCount("0");
+      WordPress.wpDB.addNote(note,note.isPlaceholder());
+      if (!isFinishing() && mNotesList != null)       mNotesList.updateNote(note);
+    }
+  }
+,new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+      AppLog.d(T.NOTIFS,String.format("Failed to mark as read %s",error));
+    }
+  }
+);
+}
