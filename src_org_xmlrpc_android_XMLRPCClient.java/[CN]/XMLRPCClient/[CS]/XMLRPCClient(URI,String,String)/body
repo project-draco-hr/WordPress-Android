@@ -5,7 +5,10 @@
   mPostMethod.addHeader("User-Agent",WordPress.getUserAgent());
   mHttpParams=mPostMethod.getParams();
   HttpProtocolParams.setUseExpectContinue(mHttpParams,false);
-  UsernamePasswordCredentials credentials=new UsernamePasswordCredentials(httpuser,httppasswd);
+  UsernamePasswordCredentials credentials=null;
+  if (!TextUtils.isEmpty(httpuser) && !TextUtils.isEmpty(httppasswd)) {
+    credentials=new UsernamePasswordCredentials(httpuser,httppasswd);
+  }
   mClient=instantiateClientForUri(uri,credentials);
   mSerializer=Xml.newSerializer();
 }
