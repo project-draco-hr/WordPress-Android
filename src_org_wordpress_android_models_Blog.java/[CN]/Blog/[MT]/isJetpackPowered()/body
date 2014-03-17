@@ -1,12 +1,7 @@
 {
-  String optionsString=getBlogOptions();
-  if (optionsString == null)   return false;
-  try {
-    JSONObject options=new JSONObject(optionsString);
-    if (options.has("jetpack_client_id"))     return true;
-  }
- catch (  JSONException e) {
-    e.printStackTrace();
+  JSONObject jsonOptions=getBlogOptionsJSONObject();
+  if (jsonOptions != null) {
+    return !JSONUtil.queryJSON(jsonOptions,"jetpack_client_id.value","").equals("");
   }
   return false;
 }

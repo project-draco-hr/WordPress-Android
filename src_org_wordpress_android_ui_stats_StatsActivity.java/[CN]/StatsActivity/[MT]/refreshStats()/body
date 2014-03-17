@@ -1,7 +1,14 @@
 {
-  if (WordPress.getCurrentBlog() == null)   return;
-  if (!NetworkUtils.isNetworkAvailable(this))   return;
+  if (WordPress.getCurrentBlog() == null) {
+    mPullToRefreshHelper.setRefreshing(false);
+    return;
+  }
+  if (!NetworkUtils.isNetworkAvailable(this)) {
+    mPullToRefreshHelper.setRefreshing(false);
+    return;
+  }
   if (mIsUpdatingStats) {
+    mPullToRefreshHelper.setRefreshing(false);
     AppLog.w(T.STATS,"stats are already updating, refresh cancelled");
     return;
   }

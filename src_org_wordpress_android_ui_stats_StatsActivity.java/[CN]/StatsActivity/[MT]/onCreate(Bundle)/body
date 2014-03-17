@@ -14,6 +14,16 @@
     createMenuDrawer(R.layout.stats_activity);
   }
   mFragmentContainer=(LinearLayout)findViewById(R.id.stats_fragment_container);
+  mPullToRefreshHelper=new PullToRefreshHelper(this,(PullToRefreshLayout)findViewById(R.id.ptr_layout),new RefreshListener(){
+    @Override public void onRefreshStarted(    View view){
+      if (!NetworkUtils.checkConnection(getBaseContext())) {
+        mPullToRefreshHelper.setRefreshing(false);
+        return;
+      }
+      refreshStats();
+    }
+  }
+);
   loadStatsFragments();
   setTitle(R.string.stats);
   restoreState(savedInstanceState);

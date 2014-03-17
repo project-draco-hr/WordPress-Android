@@ -38,5 +38,15 @@
   if (mSelectedCategories == null) {
     mSelectedCategories=new HashSet<String>();
   }
+  mPullToRefreshHelper=new PullToRefreshHelper(this,(PullToRefreshLayout)findViewById(R.id.ptr_layout),new RefreshListener(){
+    @Override public void onRefreshStarted(    View view){
+      if (!NetworkUtils.checkConnection(getBaseContext())) {
+        mPullToRefreshHelper.setRefreshing(false);
+        return;
+      }
+      refreshCategories();
+    }
+  }
+);
   populateOrFetchCategories();
 }

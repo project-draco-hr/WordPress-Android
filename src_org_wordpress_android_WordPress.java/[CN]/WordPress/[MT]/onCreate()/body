@@ -1,12 +1,10 @@
 {
-  versionName=getVersionName();
+  AppLog.enableRecording(true);
+  versionName=getVersionName(this);
   initWpDb();
   wpStatsDB=new WordPressStatsDB(this);
   mContext=this;
-  requestQueue=Volley.newRequestQueue(this,VolleyUtils.getHTTPClientStack(this));
-  imageLoader=new ImageLoader(requestQueue,getBitmapCache());
-  VolleyLog.setTag(TAG);
-  imageLoader.setBatchedResponseDelay(0);
+  setupVolleyQueue();
   SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
   if (settings.getInt("wp_pref_last_activity",-1) >= 0) {
     shouldRestoreSelectedActivity=true;
@@ -23,8 +21,5 @@
     PushNotificationsBackendMonitor pnBackendMponitor=new PushNotificationsBackendMonitor();
     registerComponentCallbacks(pnBackendMponitor);
     registerActivityLifecycleCallbacks(pnBackendMponitor);
-  }
-  if (NotificationUtils.getAppPushNotificationsName().equals("org.wordpress.android.beta.build")) {
-    AppLog.enableRecording(true);
   }
 }

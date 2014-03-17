@@ -1,3 +1,14 @@
 {
-  return inflater.inflate(R.layout.post_listview,container,false);
+  View view=inflater.inflate(R.layout.post_listview,container,false);
+  mPullToRefreshHelper=new PullToRefreshHelper(getActivity(),(PullToRefreshLayout)view.findViewById(R.id.ptr_layout),new RefreshListener(){
+    @Override public void onRefreshStarted(    View view){
+      if (getActivity() == null || !NetworkUtils.checkConnection(getActivity())) {
+        mPullToRefreshHelper.setRefreshing(false);
+        return;
+      }
+      refreshPosts((PostsActivity)getActivity());
+    }
+  }
+,LinearLayout.class);
+  return view;
 }

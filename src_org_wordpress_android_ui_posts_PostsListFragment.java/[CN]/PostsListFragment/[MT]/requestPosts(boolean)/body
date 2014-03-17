@@ -4,7 +4,6 @@
   int postCount=getPostListAdapter().getRemotePostCount() + POSTS_REQUEST_COUNT;
   if (!loadMore) {
     mCanLoadMorePosts=true;
-    mOnRefreshListener.onRefresh(true);
     postCount=POSTS_REQUEST_COUNT;
   }
   List<Object> apiArgs=new Vector<Object>();
@@ -19,7 +18,7 @@
     @Override public void onSuccess(    int postCount){
       mIsFetchingPosts=false;
       if (!hasActivity())       return;
-      mOnRefreshListener.onRefresh(false);
+      mPullToRefreshHelper.setRefreshing(false);
       if (mProgressFooterView != null) {
         mProgressFooterView.setVisibility(View.GONE);
       }
@@ -33,19 +32,14 @@
     }
     @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
       mIsFetchingPosts=false;
-      if (!hasActivity())       return;
-      mOnRefreshListener.onRefresh(false);
-      if (mProgressFooterView != null)       mProgressFooterView.setVisibility(View.GONE);
-      if (!TextUtils.isEmpty(errorMessage) && !getActivity().isFinishing()) {
-        FragmentTransaction ft=getFragmentManager().beginTransaction();
-        WPAlertDialogFragment alert=WPAlertDialogFragment.newAlertDialog(mIsPage ? getString(R.string.error_refresh_pages) : getString(R.string.error_refresh_posts));
-        try {
-          alert.show(ft,"alert");
-        }
- catch (        Exception e) {
-          e.printStackTrace();
-        }
+      if (!hasActivity()) {
+        return;
       }
+      mPullToRefreshHelper.setRefreshing(false);
+      if (mProgressFooterView != null) {
+        mProgressFooterView.setVisibility(View.GONE);
+      }
+      ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_pages : R.string.error_refresh_posts,Duration.LONG);
     }
   }
 );
