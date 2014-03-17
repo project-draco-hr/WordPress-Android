@@ -1,5 +1,8 @@
 {
-  if (!NetworkUtils.checkConnection(this))   return;
+  if (!NetworkUtils.isNetworkAvailable(this)) {
+    mNotesList.animateRefresh(false);
+    return;
+  }
   mFirstLoadComplete=false;
   NotesResponseHandler notesHandler=new NotesResponseHandler(){
     @Override public void onNotes(    final List<Note> notes){
