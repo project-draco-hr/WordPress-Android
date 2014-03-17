@@ -1,11 +1,15 @@
 {
-  if (!WordPress.hasValidWPComCredentials(context))   return;
+  if (!WordPress.hasValidWPComCredentials(context)) {
+    return;
+  }
   String gcmToken=GCMRegistrar.getRegistrationId(context);
-  if (TextUtils.isEmpty(gcmToken))   return;
+  if (TextUtils.isEmpty(gcmToken)) {
+    return;
+  }
   SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(context);
   String deviceID=settings.getString(WPCOM_PUSH_DEVICE_SERVER_ID,null);
   if (TextUtils.isEmpty(deviceID)) {
-    AppLog.e(T.NOTIFS,"Wait, device_ID is null in preferences. Get device settings skipped. What happened here?!?!");
+    AppLog.e(T.NOTIFS,"device_ID is null in preferences. Get device settings skipped.");
     return;
   }
   WordPress.getRestClientUtils().get("/device/" + deviceID,listener,errorListener);

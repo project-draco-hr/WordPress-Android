@@ -1,25 +1,12 @@
 {
-  JSONObject options;
-  if (TextUtils.isEmpty(blogOptions)) {
+  this.blogOptions=blogOptions;
+  JSONObject options=getBlogOptionsJSONObject();
+  if (options == null) {
     this.blogOptions="{}";
-    options=new JSONObject();
+    options=getBlogOptionsJSONObject();
   }
- else {
-    try {
-      options=new JSONObject(blogOptions);
-      this.blogOptions=blogOptions;
-    }
- catch (    JSONException e) {
-      this.blogOptions="{}";
-      options=new JSONObject();
-      e.printStackTrace();
-    }
-  }
-  try {
-    String jetpackBlogId=options.has("jetpack_client_id") ? options.getJSONObject("jetpack_client_id").getString("value") : null;
-    if (jetpackBlogId != null)     this.setApi_blogid(jetpackBlogId);
-  }
- catch (  JSONException e) {
-    e.printStackTrace();
+  String jetpackBlogId=JSONUtil.queryJSON(options,"jetpack_client_id.value","");
+  if (!TextUtils.isEmpty(jetpackBlogId)) {
+    this.setApi_blogid(jetpackBlogId);
   }
 }
