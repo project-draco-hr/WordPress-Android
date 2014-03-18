@@ -11,19 +11,7 @@
     return;
   }
   if (WordPress.shouldRestoreSelectedActivity && WordPress.getCurrentBlog() != null && !(this instanceof PagesActivity)) {
-    new ApiHelper.RefreshBlogContentTask(this,WordPress.getCurrentBlog(),new ApiHelper.GenericCallback(){
-      @Override public void onSuccess(){
-        if (!isFinishing()) {
-          updateMenuDrawer();
-        }
-      }
-      @Override public void onFailure(      ApiHelper.ErrorType errorType,      String errorMessage,      Throwable throwable){
-        if (!isFinishing()) {
-          ToastUtils.showToastOrAuthAlert(PostsActivity.this,errorMessage,getString(R.string.error_generic));
-        }
-      }
-    }
-).execute(false);
+    new ApiHelper.RefreshBlogContentTask(this,WordPress.getCurrentBlog(),new VerifyCredentialsCallback(WordPress.getCurrentBlog().isDotcomFlag())).execute(false);
     WordPress.shouldRestoreSelectedActivity=false;
     SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
     int lastActivitySelection=settings.getInt(LAST_ACTIVITY_PREFERENCE,-1);
