@@ -29,21 +29,34 @@
     HttpEntity entity=response.getEntity();
     return XMLRPCClient.parseXMLRPCResponse(entity.getContent(),entity);
   }
- catch (  XMLRPCException e) {
-    checkXMLRPCErrorMessage(e);
-    throw e;
-  }
-catch (  SSLHandshakeException e) {
-    if (mIsWpcom) {
-      AppLog.e(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected on wordpress.com");
-    }
+ catch (  XMLRPCFault e) {
+switch (e.getFaultCode()) {
+case 403:
+      broadcastAction(WordPress.BROADCAST_ACTION_XMLRPC_INVALID_CREDENTIALS);
+    break;
+case 425:
+  broadcastAction(WordPress.BROADCAST_ACTION_XMLRPC_TWO_FA_AUTH);
+break;
+default :
+break;
+}
+throw e;
+}
+catch (XMLRPCException e) {
+checkXMLRPCErrorMessage(e);
+throw e;
+}
+catch (SSLHandshakeException e) {
+if (mIsWpcom) {
+AppLog.e(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected on wordpress.com");
+}
  else {
-      AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
-      broadcastAction(WordPress.BROADCAST_ACTION_XMLRPC_INVALID_SSL_CERTIFICATE);
-    }
-    throw e;
-  }
+AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
+broadcastAction(WordPress.BROADCAST_ACTION_XMLRPC_INVALID_SSL_CERTIFICATE);
+}
+throw e;
+}
  finally {
-    deleteTempFile(method,tempFile);
-  }
+deleteTempFile(method,tempFile);
+}
 }

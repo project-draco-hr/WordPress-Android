@@ -1,14 +1,6 @@
 {
   String errorMessage=exception.getMessage().toLowerCase();
-  if (errorMessage.contains("code: 403")) {
-    broadcastAction(WordPress.BROADCAST_ACTION_XMLRPC_INVALID_CREDENTIALS);
-    return true;
-  }
-  if (errorMessage.contains("code 425")) {
-    broadcastAction(WordPress.BROADCAST_ACTION_XMLRPC_TWO_FA_AUTH);
-    return true;
-  }
-  if (errorMessage.contains("code 503") && (errorMessage.contains("limit reached") || errorMessage.contains("login limit"))) {
+  if ((errorMessage.contains("code: 503") || errorMessage.contains("code 503")) && (errorMessage.contains("limit reached") || errorMessage.contains("login limit"))) {
     broadcastAction(WordPress.BROADCAST_ACTION_XMLRPC_LOGIN_LIMIT);
     return true;
   }
