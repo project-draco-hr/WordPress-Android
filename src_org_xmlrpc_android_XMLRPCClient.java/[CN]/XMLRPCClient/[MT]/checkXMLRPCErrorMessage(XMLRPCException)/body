@@ -1,0 +1,21 @@
+{
+  String errorMessage=exception.getMessage().toLowerCase();
+  Intent intent=new Intent();
+  intent.putExtra("exception",exception);
+  if (errorMessage.contains("code: 403")) {
+    intent.setAction(WordPress.BROADCAST_ACTION_XMLRPC_INVALID_CREDENTIALS);
+    WordPress.getContext().sendBroadcast(intent);
+    return true;
+  }
+  if (errorMessage.contains("code 425")) {
+    intent.setAction(WordPress.BROADCAST_ACTION_XMLRPC_TWO_FA_AUTH);
+    WordPress.getContext().sendBroadcast(intent);
+    return true;
+  }
+  if (errorMessage.contains("code 503") && (errorMessage.contains("limit reached") || errorMessage.contains("login limit"))) {
+    intent.setAction(WordPress.BROADCAST_ACTION_XMLRPC_LOGIN_LIMIT);
+    WordPress.getContext().sendBroadcast(intent);
+    return true;
+  }
+  return false;
+}

@@ -29,7 +29,11 @@
     HttpEntity entity=response.getEntity();
     return XMLRPCClient.parseXMLRPCResponse(entity.getContent(),entity);
   }
-  finally {
+ catch (  XMLRPCException e) {
+    checkXMLRPCErrorMessage(e);
+    throw e;
+  }
+ finally {
     deleteTempFile(method,tempFile);
   }
 }
