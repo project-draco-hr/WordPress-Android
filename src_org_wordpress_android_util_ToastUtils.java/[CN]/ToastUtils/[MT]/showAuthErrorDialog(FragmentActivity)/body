@@ -1,5 +1,9 @@
 {
+  final String ALERT_TAG="alert_ask_credentials";
   if (activity.isFinishing()) {
+    return;
+  }
+  if (activity.getSupportFragmentManager().findFragmentByTag(ALERT_TAG) != null) {
     return;
   }
   FragmentTransaction ft=activity.getSupportFragmentManager().beginTransaction();
@@ -10,6 +14,6 @@
  else {
     authAlert=AuthErrorDialogFragment.newInstance(WordPress.getCurrentBlog().isDotcomFlag());
   }
-  ft.add(authAlert,"alert");
+  ft.add(authAlert,ALERT_TAG);
   ft.commitAllowingStateLoss();
 }

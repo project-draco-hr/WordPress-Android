@@ -14,8 +14,9 @@
   if (mProgressFooterView != null && loadMore) {
     mProgressFooterView.setVisibility(View.VISIBLE);
   }
-  ApiHelper.FetchPostsTask fetchPostsTask=new ApiHelper.FetchPostsTask(new ApiHelper.FetchPostsTask.Callback(){
+  mCurrentFetchPostsTask=new ApiHelper.FetchPostsTask(new ApiHelper.FetchPostsTask.Callback(){
     @Override public void onSuccess(    int postCount){
+      mCurrentFetchPostsTask=null;
       mIsFetchingPosts=false;
       if (!hasActivity())       return;
       mPullToRefreshHelper.setRefreshing(false);
@@ -31,6 +32,7 @@
       getPostListAdapter().loadPosts();
     }
     @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
+      mCurrentFetchPostsTask=null;
       mIsFetchingPosts=false;
       if (!hasActivity()) {
         return;
@@ -39,10 +41,12 @@
       if (mProgressFooterView != null) {
         mProgressFooterView.setVisibility(View.GONE);
       }
-      ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_pages : R.string.error_refresh_posts,Duration.LONG);
+      if (errorType != ErrorType.TASK_CANCELLED) {
+        ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_pages : R.string.error_refresh_posts,Duration.LONG);
+      }
     }
   }
 );
   mIsFetchingPosts=true;
-  fetchPostsTask.execute(apiArgs);
+  mCurrentFetchPostsTask.execute(apiArgs);
 }
