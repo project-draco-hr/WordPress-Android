@@ -33,6 +33,16 @@
     checkXMLRPCErrorMessage(e);
     throw e;
   }
+catch (  SSLHandshakeException e) {
+    if (mIsWpcom) {
+      AppLog.e(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected on wordpress.com");
+    }
+ else {
+      AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
+      broadcastAction(WordPress.BROADCAST_ACTION_XMLRPC_INVALID_SSL_CERTIFICATE);
+    }
+    throw e;
+  }
  finally {
     deleteTempFile(method,tempFile);
   }
