@@ -1,7 +1,15 @@
 {
   JSONObject jsonOptions=getBlogOptionsJSONObject();
-  if (jsonOptions != null) {
-    return !JSONUtil.queryJSON(jsonOptions,"blog_public.value","1").equals("1");
+  if (jsonOptions != null && jsonOptions.has("blog_public")) {
+    try {
+      String blogPublicValue=jsonOptions.getJSONObject("blog_public").getString("value");
+      if (!TextUtils.isEmpty(blogPublicValue) && "-1".equals(blogPublicValue)) {
+        return true;
+      }
+    }
+ catch (    JSONException e) {
+      AppLog.e(T.UTILS,"Cannot load blog_public from options: " + jsonOptions,e);
+    }
   }
   return false;
 }

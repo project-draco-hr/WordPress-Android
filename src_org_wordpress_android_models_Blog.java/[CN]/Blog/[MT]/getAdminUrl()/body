@@ -2,14 +2,19 @@
   String adminUrl=null;
   JSONObject jsonOptions=getBlogOptionsJSONObject();
   if (jsonOptions != null) {
-    adminUrl=JSONUtil.queryJSON(jsonOptions,"admin_url.value","");
-    if (TextUtils.isEmpty(adminUrl)) {
-      if (this.getUrl().lastIndexOf("/") != -1) {
-        adminUrl=this.getUrl().substring(0,this.getUrl().lastIndexOf("/")) + "/wp-admin";
-      }
+    try {
+      adminUrl=jsonOptions.getJSONObject("admin_url").getString("value");
+    }
+ catch (    JSONException e) {
+      AppLog.e(T.UTILS,"Cannot load admin_url from options: " + jsonOptions,e);
+    }
+  }
+  if (TextUtils.isEmpty(adminUrl)) {
+    if (this.getUrl().lastIndexOf("/") != -1) {
+      adminUrl=this.getUrl().substring(0,this.getUrl().lastIndexOf("/")) + "/wp-admin";
+    }
  else {
-        adminUrl=this.getUrl().replace("xmlrpc.php","wp-admin");
-      }
+      adminUrl=this.getUrl().replace("xmlrpc.php","wp-admin");
     }
   }
   return adminUrl;
