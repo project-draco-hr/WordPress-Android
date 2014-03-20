@@ -1,0 +1,23 @@
+{
+  ExifInterface exif;
+  try {
+    exif=new ExifInterface(path);
+  }
+ catch (  IOException e) {
+    AppLog.e(T.UTILS,e);
+    return ExifInterface.ORIENTATION_NORMAL;
+  }
+  int exifOrientation=exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,0);
+switch (exifOrientation) {
+case ExifInterface.ORIENTATION_NORMAL:
+    return 0;
+case ExifInterface.ORIENTATION_ROTATE_90:
+  return 90;
+case ExifInterface.ORIENTATION_ROTATE_180:
+return 180;
+case ExifInterface.ORIENTATION_ROTATE_270:
+return 270;
+default :
+return 0;
+}
+}
