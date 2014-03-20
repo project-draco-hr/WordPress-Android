@@ -1,0 +1,23 @@
+{
+  if (num == 0)   return "0";
+  StringBuilder out;
+  try {
+    String index="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    out=new StringBuilder();
+    if (num < 0) {
+      out.append('-');
+      num=Math.abs(num);
+    }
+    double t=Math.floor(Math.log10(num) / Math.log10(62));
+    for (; t >= 0; t--) {
+      int a=(int)Math.floor(num / Math.pow(62,t));
+      out.append(index.substring(a,a + 1));
+      num=num - (a * Math.pow(62,t));
+    }
+    return out.toString();
+  }
+ catch (  IndexOutOfBoundsException e) {
+    AppLog.e(T.UTILS,"Connot convert number " + num + " to base 62",e);
+  }
+  return null;
+}
