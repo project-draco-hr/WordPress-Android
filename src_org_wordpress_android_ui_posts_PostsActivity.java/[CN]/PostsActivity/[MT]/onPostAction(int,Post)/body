@@ -57,7 +57,8 @@
     Intent share=new Intent(Intent.ACTION_SEND);
     share.setType("text/plain");
     share.putExtra(Intent.EXTRA_SUBJECT,post.getTitle());
-    share.putExtra(Intent.EXTRA_TEXT,post.getPermaLink());
+    String shortlink=WPMeShortlinks.getPostShortlink(WordPress.getCurrentBlog(),post);
+    share.putExtra(Intent.EXTRA_TEXT,shortlink != null ? shortlink : post.getPermaLink());
     startActivity(Intent.createChooser(share,getResources().getText(R.string.share_url)));
     AppLockManager.getInstance().setExtendedTimeout();
     WPMobileStatsUtil.flagProperty(statEventForViewClosing(),WPMobileStatsUtil.StatsPropertyPostDetailClickedShare);
