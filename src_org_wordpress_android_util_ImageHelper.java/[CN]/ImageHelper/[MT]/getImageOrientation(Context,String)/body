@@ -1,13 +1,13 @@
 {
   Uri curStream;
-  String orientation=null;
+  int orientation=0;
   if (!filePath.contains("content://"))   curStream=Uri.parse("content://media" + filePath);
  else   curStream=Uri.parse(filePath);
   try {
     Cursor cur=ctx.getContentResolver().query(curStream,new String[]{Images.Media.ORIENTATION},null,null,null);
     if (cur != null) {
       if (cur.moveToFirst()) {
-        orientation=cur.getString(cur.getColumnIndex(Images.Media.ORIENTATION));
+        orientation=cur.getInt(cur.getColumnIndex(Images.Media.ORIENTATION));
       }
       cur.close();
     }
@@ -15,16 +15,8 @@
  catch (  Exception errReadingContentResolver) {
     AppLog.e(T.UTILS,errReadingContentResolver);
   }
-  if (TextUtils.isEmpty(orientation)) {
-    orientation=getExifOrientation(filePath,"");
+  if (orientation == 0) {
+    orientation=getExifOrientation(filePath);
   }
-  int calculatedOrientation;
-  try {
-    calculatedOrientation=(TextUtils.isEmpty(orientation) ? 0 : Integer.valueOf(orientation));
-  }
- catch (  NumberFormatException e) {
-    AppLog.e(T.UTILS,e);
-    calculatedOrientation=0;
-  }
-  return calculatedOrientation;
+  return orientation;
 }
