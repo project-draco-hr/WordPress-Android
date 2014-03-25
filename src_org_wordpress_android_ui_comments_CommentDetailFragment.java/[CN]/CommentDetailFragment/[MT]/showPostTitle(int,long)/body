@@ -2,6 +2,7 @@
   if (!hasActivity())   return;
   final TextView txtPostTitle=(TextView)getView().findViewById(R.id.text_post_title);
   boolean postExists=ReaderPostTable.postExists(blogId,postId);
+  boolean isDotComOrJetpack=WordPress.wpDB.isRemoteBlogIdDotComOrJetpack(mRemoteBlogId);
   final String title;
   final boolean hasTitle;
   if (mComment.hasPostTitle()) {
@@ -17,39 +18,41 @@
     hasTitle=false;
   }
   if (hasTitle) {
-    setPostTitle(txtPostTitle,title);
+    setPostTitle(txtPostTitle,title,isDotComOrJetpack);
   }
  else {
     txtPostTitle.setText(postExists ? R.string.untitled : R.string.loading);
   }
-  if (!postExists) {
-    AppLog.d(T.COMMENTS,"comment detail > retrieving post");
-    ReaderPostActions.requestPost(blogId,postId,new ReaderActions.ActionListener(){
-      @Override public void onActionResult(      boolean succeeded){
-        if (!hasActivity())         return;
-        if (!hasTitle) {
-          String postTitle=ReaderPostTable.getPostTitle(blogId,postId);
-          if (!TextUtils.isEmpty(postTitle)) {
-            setPostTitle(txtPostTitle,postTitle);
-          }
+  if (isDotComOrJetpack) {
+    txtPostTitle.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        if (mOnPostClickListener != null) {
+          mOnPostClickListener.onPostClicked(getNote(),mRemoteBlogId,(int)mComment.postID);
+        }
  else {
-            txtPostTitle.setText(R.string.untitled);
-          }
+          AppLog.i(T.COMMENTS,"comment detail > no post click listener");
+          ReaderActivityLauncher.showReaderPostDetail(getActivity(),mRemoteBlogId,mComment.postID);
         }
       }
     }
 );
-  }
-  txtPostTitle.setOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View v){
-      if (mOnPostClickListener != null) {
-        mOnPostClickListener.onPostClicked(getNote(),mRemoteBlogId,(int)mComment.postID);
-      }
+    if (!postExists) {
+      AppLog.d(T.COMMENTS,"comment detail > retrieving post");
+      ReaderPostActions.requestPost(blogId,postId,new ReaderActions.ActionListener(){
+        @Override public void onActionResult(        boolean succeeded){
+          if (!hasActivity())           return;
+          if (!hasTitle) {
+            String postTitle=ReaderPostTable.getPostTitle(blogId,postId);
+            if (!TextUtils.isEmpty(postTitle)) {
+              setPostTitle(txtPostTitle,postTitle,true);
+            }
  else {
-        AppLog.i(T.COMMENTS,"comment detail > no post click listener");
-        ReaderActivityLauncher.showReaderPostDetail(getActivity(),mRemoteBlogId,mComment.postID);
+              txtPostTitle.setText(R.string.untitled);
+            }
+          }
+        }
       }
+);
     }
   }
-);
 }
