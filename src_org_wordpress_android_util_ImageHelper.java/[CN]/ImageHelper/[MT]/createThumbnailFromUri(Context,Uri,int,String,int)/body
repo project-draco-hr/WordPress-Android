@@ -52,7 +52,11 @@
     bmpRotated=Bitmap.createBitmap(bmpResized,0,0,bmpResized.getWidth(),bmpResized.getHeight(),matrix,true);
   }
  catch (  OutOfMemoryError e) {
-    WPMobileStatsUtil.trackEventForSelfHostedAndWPCom(WPMobileStatsUtil.StatsEventMediaOutOfMemory);
+    CrashlyticsUtils.setInt(ExtraKey.IMAGE_ANGLE,rotation);
+    CrashlyticsUtils.setInt(ExtraKey.IMAGE_WIDTH,bmpResized.getWidth());
+    CrashlyticsUtils.setInt(ExtraKey.IMAGE_HEIGHT,bmpResized.getHeight());
+    CrashlyticsUtils.setFloat(ExtraKey.IMAGE_RESIZE_SCALE,scaleBy);
+    CrashlyticsUtils.logException(e,ExceptionType.SPECIFIC,T.UTILS);
     return null;
   }
   bmpRotated.compress(fmt,100,stream);
