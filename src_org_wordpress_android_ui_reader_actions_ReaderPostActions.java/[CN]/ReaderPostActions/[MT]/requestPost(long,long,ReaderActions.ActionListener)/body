@@ -3,6 +3,7 @@
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       ReaderPost post=ReaderPost.fromJson(jsonObject);
+      post.blogId=blogId;
       ReaderPostTable.addOrUpdatePost(post);
       handlePostLikes(post,jsonObject);
       if (actionListener != null)       actionListener.onActionResult(true);
