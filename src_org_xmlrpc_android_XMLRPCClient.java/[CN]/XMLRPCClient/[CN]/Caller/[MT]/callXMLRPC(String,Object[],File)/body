@@ -2,32 +2,40 @@
   try {
     preparePostMethod(method,params,tempFile);
     HttpResponse response=mClient.execute(mPostMethod);
+    if (response.getStatusLine() == null)     throw new XMLRPCException("HTTP Status code is missing!");
     int statusCode=response.getStatusLine().getStatusCode();
-    if (statusCode != HttpStatus.SC_OK) {
-      if (statusCode == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
-        HttpEntity entity=response.getEntity();
-        if (entity != null) {
-          try {
-            String responseString=EntityUtils.toString(entity,"UTF-8");
-            if (!TextUtils.isEmpty(responseString) && responseString.contains("php fatal error") && responseString.contains("bytes exhausted")) {
-              String newErrorMsg=null;
-              if (method.equals("wp.uploadFile")) {
-                newErrorMsg="The server doesn't have enough memory to upload this file. You may need to increase the PHP memory limit on your site.";
-              }
+    HttpEntity entity=response.getEntity();
+    if (entity == null) {
+      throw new XMLRPCException("HTTP status code: " + statusCode + " was returned AND no response from the server.");
+    }
+    if (statusCode == HttpStatus.SC_OK) {
+      return XMLRPCClient.parseXMLRPCResponse(entity.getContent(),entity);
+    }
+    String statusLineReasonPhrase=StringUtils.notNullStr(response.getStatusLine().getReasonPhrase());
+    try {
+      String responseString=EntityUtils.toString(entity,"UTF-8");
+      if (TextUtils.isEmpty(responseString)) {
+        AppLog.e(T.API,"No HTTP error document document from the server");
+      }
  else {
-                newErrorMsg="The server doesn't have enough memory to fulfill the request. You may need to increase the PHP memory limit on your site.";
-              }
-              throw new XMLRPCException(response.getStatusLine().getReasonPhrase() + ".\n\n" + newErrorMsg);
-            }
+        AppLog.e(T.API,"HTTP error document received from the server: " + responseString);
+      }
+      if (statusCode == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+        if (!TextUtils.isEmpty(responseString) && responseString.contains("php fatal error") && responseString.contains("bytes exhausted")) {
+          String newErrorMsg;
+          if (method.equals("wp.uploadFile")) {
+            newErrorMsg="The server doesn't have enough memory to upload this file. You may need to increase the PHP memory limit on your site.";
           }
- catch (          Exception e) {
+ else {
+            newErrorMsg="The server doesn't have enough memory to fulfill the request. You may need to increase the PHP memory limit on your site.";
           }
+          throw new XMLRPCException(statusLineReasonPhrase + ".\n\n" + newErrorMsg);
         }
       }
-      throw new XMLRPCException("HTTP status code: " + statusCode + " was returned. "+ response.getStatusLine().getReasonPhrase());
     }
-    HttpEntity entity=response.getEntity();
-    return XMLRPCClient.parseXMLRPCResponse(entity.getContent(),entity);
+ catch (    Exception e) {
+    }
+    throw new XMLRPCException("HTTP status code: " + statusCode + " was returned. "+ statusLineReasonPhrase);
   }
  catch (  XMLRPCFault e) {
 switch (e.getFaultCode()) {
@@ -40,6 +48,11 @@ break;
 default :
 break;
 }
+throw e;
+}
+catch (XmlPullParserException e) {
+AppLog.e(T.API,"Error while parsing the XML-RPC response document received from the server.",e);
+checkXMLRPCErrorMessage(e);
 throw e;
 }
 catch (XMLRPCException e) {
