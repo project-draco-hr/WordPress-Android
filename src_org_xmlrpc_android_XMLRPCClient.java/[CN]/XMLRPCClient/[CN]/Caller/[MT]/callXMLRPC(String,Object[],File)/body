@@ -1,4 +1,5 @@
 {
+  LoggedInputStream loggedInputStream=null;
   try {
     preparePostMethod(method,params,tempFile);
     HttpResponse response=mClient.execute(mPostMethod);
@@ -9,7 +10,8 @@
       throw new XMLRPCException("HTTP status code: " + statusCode + " was returned AND no response from the server.");
     }
     if (statusCode == HttpStatus.SC_OK) {
-      return XMLRPCClient.parseXMLRPCResponse(entity.getContent(),entity);
+      loggedInputStream=new LoggedInputStream(entity.getContent());
+      return XMLRPCClient.parseXMLRPCResponse(loggedInputStream,entity);
     }
     String statusLineReasonPhrase=StringUtils.notNullStr(response.getStatusLine().getReasonPhrase());
     try {
@@ -38,6 +40,9 @@
     throw new XMLRPCException("HTTP status code: " + statusCode + " was returned. "+ statusLineReasonPhrase);
   }
  catch (  XMLRPCFault e) {
+    if (loggedInputStream != null) {
+      AppLog.w(T.API,"Response document received from the server: " + loggedInputStream.getResponseDocument());
+    }
 switch (e.getFaultCode()) {
 case 403:
       broadcastAction(WordPress.BROADCAST_ACTION_XMLRPC_INVALID_CREDENTIALS);
@@ -52,10 +57,16 @@ throw e;
 }
 catch (XmlPullParserException e) {
 AppLog.e(T.API,"Error while parsing the XML-RPC response document received from the server.",e);
+if (loggedInputStream != null) {
+AppLog.e(T.API,"Response document received from the server: " + loggedInputStream.getResponseDocument());
+}
 checkXMLRPCErrorMessage(e);
 throw e;
 }
 catch (XMLRPCException e) {
+if (loggedInputStream != null) {
+AppLog.e(T.API,"Response document received from the server: " + loggedInputStream.getResponseDocument());
+}
 checkXMLRPCErrorMessage(e);
 throw e;
 }
@@ -71,5 +82,12 @@ throw e;
 }
  finally {
 deleteTempFile(method,tempFile);
+try {
+if (loggedInputStream != null) {
+loggedInputStream.close();
+}
+}
+ catch (Exception e) {
+}
 }
 }
