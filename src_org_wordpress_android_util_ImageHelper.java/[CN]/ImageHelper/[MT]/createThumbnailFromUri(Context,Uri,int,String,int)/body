@@ -22,7 +22,7 @@
     BitmapFactory.decodeFile(filePath,optBounds);
   }
  catch (  OutOfMemoryError e) {
-    WPMobileStatsUtil.trackEventForSelfHostedAndWPCom(WPMobileStatsUtil.StatsEventMediaOutOfMemory);
+    CrashlyticsUtils.logException(e,ExceptionType.SPECIFIC,T.UTILS);
     return null;
   }
   int scale=1;
@@ -37,7 +37,8 @@
     bmpResized=BitmapFactory.decodeFile(filePath,optActual);
   }
  catch (  OutOfMemoryError e) {
-    WPMobileStatsUtil.trackEventForSelfHostedAndWPCom(WPMobileStatsUtil.StatsEventMediaOutOfMemory);
+    CrashlyticsUtils.setFloat(ExtraKey.IMAGE_RESIZE_SCALE,scale);
+    CrashlyticsUtils.logException(e,ExceptionType.SPECIFIC,T.UTILS);
     return null;
   }
   if (bmpResized == null)   return null;
