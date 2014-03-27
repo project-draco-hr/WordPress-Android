@@ -18,7 +18,13 @@
   }
   BitmapFactory.Options optBounds=new BitmapFactory.Options();
   optBounds.inJustDecodeBounds=true;
-  BitmapFactory.decodeFile(filePath,optBounds);
+  try {
+    BitmapFactory.decodeFile(filePath,optBounds);
+  }
+ catch (  OutOfMemoryError e) {
+    WPMobileStatsUtil.trackEventForSelfHostedAndWPCom(WPMobileStatsUtil.StatsEventMediaOutOfMemory);
+    return null;
+  }
   int scale=1;
   if (maxWidth > 0 && optBounds.outWidth > maxWidth) {
     double d=Math.pow(2,(int)Math.round(Math.log(maxWidth / (double)optBounds.outWidth) / Math.log(0.5)));
@@ -26,7 +32,14 @@
   }
   BitmapFactory.Options optActual=new BitmapFactory.Options();
   optActual.inSampleSize=scale;
-  Bitmap bmpResized=BitmapFactory.decodeFile(filePath,optActual);
+  Bitmap bmpResized;
+  try {
+    bmpResized=BitmapFactory.decodeFile(filePath,optActual);
+  }
+ catch (  OutOfMemoryError e) {
+    WPMobileStatsUtil.trackEventForSelfHostedAndWPCom(WPMobileStatsUtil.StatsEventMediaOutOfMemory);
+    return null;
+  }
   if (bmpResized == null)   return null;
   ByteArrayOutputStream stream=new ByteArrayOutputStream();
   float percentage=(float)maxWidth / bmpResized.getWidth();
