@@ -1,0 +1,26 @@
+{
+  View view=inflater.inflate(R.layout.stats_visitors_and_views_fragment,container,false);
+  TextView titleTextView=(TextView)view.findViewById(R.id.stats_pager_title);
+  titleTextView.setText(getTitle().toUpperCase(Locale.getDefault()));
+  mVisitorsToday=(TextView)view.findViewById(R.id.stats_visitors_and_views_today_visitors_count);
+  mViewsToday=(TextView)view.findViewById(R.id.stats_visitors_and_views_today_views_count);
+  mViewsBestEver=(TextView)view.findViewById(R.id.stats_visitors_and_views_best_ever_views_count);
+  mViewsAllTime=(TextView)view.findViewById(R.id.stats_visitors_and_views_all_time_view_count);
+  mCommentsAllTime=(TextView)view.findViewById(R.id.stats_visitors_and_views_all_time_comment_count);
+  RadioGroup mRadioGroup=(RadioGroup)view.findViewById(R.id.stats_pager_tabs);
+  mRadioGroup.setVisibility(View.VISIBLE);
+  mRadioGroup.setOnCheckedChangeListener(this);
+  for (int i=0; i < TITLES.length; i++) {
+    RadioButton rb=(RadioButton)LayoutInflater.from(getActivity()).inflate(R.layout.stats_radio_button,null,false);
+    RadioGroup.LayoutParams params=new RadioGroup.LayoutParams(RadioGroup.LayoutParams.WRAP_CONTENT,RadioGroup.LayoutParams.WRAP_CONTENT);
+    int dp8=(int)Utils.dpToPx(8);
+    params.setMargins(0,0,dp8,0);
+    rb.setMinimumWidth((int)Utils.dpToPx(80));
+    rb.setGravity(Gravity.CENTER);
+    rb.setLayoutParams(params);
+    rb.setText(TITLES[i]);
+    mRadioGroup.addView(rb);
+    if (i == mSelectedButtonIndex)     rb.setChecked(true);
+  }
+  return view;
+}

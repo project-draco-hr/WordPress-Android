@@ -1,0 +1,31 @@
+{
+  long result=-1;
+  if (post != null) {
+    ContentValues values=new ContentValues();
+    values.put("blogID",post.getLocalTableBlogId());
+    values.put("title",post.getTitle());
+    values.put("date_created_gmt",post.getDate_created_gmt());
+    values.put("description",post.getDescription());
+    values.put("mt_text_more",post.getMoreText());
+    JSONArray categoriesJsonArray=post.getJSONCategories();
+    if (categoriesJsonArray != null) {
+      values.put("categories",categoriesJsonArray.toString());
+    }
+    values.put("localDraft",post.isLocalDraft());
+    values.put("mt_keywords",post.getKeywords());
+    values.put("wp_password",post.getPassword());
+    values.put("post_status",post.getPostStatus());
+    values.put("uploaded",post.isUploaded());
+    values.put("isPage",post.isPage());
+    values.put("wp_post_format",post.getPostFormat());
+    values.put("latitude",post.getLatitude());
+    values.put("longitude",post.getLongitude());
+    values.put("isLocalChange",post.isLocalChange());
+    values.put("mt_excerpt",post.getPostExcerpt());
+    result=db.insert(POSTS_TABLE,null,values);
+    if (result >= 0 && post.isLocalDraft() && !post.isUploaded()) {
+      post.setLocalTablePostId(result);
+    }
+  }
+  return (result);
+}

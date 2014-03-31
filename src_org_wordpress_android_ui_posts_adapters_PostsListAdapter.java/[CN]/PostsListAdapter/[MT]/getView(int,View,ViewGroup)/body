@@ -1,0 +1,66 @@
+{
+  PostsListPost post=mPosts.get(position);
+  PostViewWrapper wrapper;
+  if (view == null) {
+    view=mLayoutInflater.inflate(R.layout.post_list_row,parent,false);
+    wrapper=new PostViewWrapper(view);
+    view.setTag(wrapper);
+  }
+ else {
+    wrapper=(PostViewWrapper)view.getTag();
+  }
+  String date=post.getFormattedDate();
+  String titleText=post.getTitle();
+  if (titleText.equals(""))   titleText="(" + mContext.getResources().getText(R.string.untitled) + ")";
+  wrapper.getTitle().setText(titleText);
+  if (post.isLocalDraft()) {
+    wrapper.getDate().setVisibility(View.GONE);
+  }
+ else {
+    wrapper.getDate().setText(date);
+    wrapper.getDate().setVisibility(View.VISIBLE);
+  }
+  String formattedStatus="";
+  if ((post.getStatusEnum() == PostStatus.PUBLISHED) && !post.isLocalDraft() && !post.hasLocalChanges()) {
+    wrapper.getStatus().setVisibility(View.GONE);
+  }
+ else {
+    wrapper.getStatus().setVisibility(View.VISIBLE);
+    if (post.isLocalDraft()) {
+      formattedStatus=mContext.getResources().getString(R.string.local_draft);
+    }
+ else     if (post.hasLocalChanges()) {
+      formattedStatus=mContext.getResources().getString(R.string.local_changes);
+    }
+ else {
+switch (post.getStatusEnum()) {
+case DRAFT:
+        formattedStatus=mContext.getResources().getString(R.string.draft);
+      break;
+case PRIVATE:
+    formattedStatus=mContext.getResources().getString(R.string.post_private);
+  break;
+case PENDING:
+formattedStatus=mContext.getResources().getString(R.string.pending_review);
+break;
+case SCHEDULED:
+formattedStatus=mContext.getResources().getString(R.string.scheduled);
+break;
+default :
+break;
+}
+}
+if (post.isLocalDraft() || post.getStatusEnum() == PostStatus.DRAFT || post.hasLocalChanges()) {
+wrapper.getStatus().setTextColor(mContext.getResources().getColor(R.color.orange_dark));
+}
+ else {
+wrapper.getStatus().setTextColor(mContext.getResources().getColor(R.color.grey_medium));
+}
+formattedStatus=formattedStatus.toUpperCase(Locale.getDefault()).replace(" ","\n");
+wrapper.getStatus().setText(formattedStatus);
+}
+if (mOnLoadMoreListener != null && position >= getCount() - 1 && position >= PostsListFragment.POSTS_REQUEST_COUNT - 1) {
+mOnLoadMoreListener.onLoadMore();
+}
+return view;
+}

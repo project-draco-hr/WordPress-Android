@@ -9,17 +9,23 @@
     if (!mHttpAuthRequired)     mErrorMsgId=R.string.no_site_error;
     return null;
   }
+  URI uri;
   try {
-    URI.create(mXmlrpcUrl);
+    uri=URI.create(mXmlrpcUrl);
   }
  catch (  Exception e1) {
     mErrorMsgId=R.string.no_site_error;
     return null;
   }
-  XMLRPCClient client=new XMLRPCClient(mXmlrpcUrl,mHttpUsername,mHttpPassword);
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(uri,mHttpUsername,mHttpPassword);
   Object[] params={mUsername,mPassword};
   try {
     Object[] userBlogs=(Object[])client.call("wp.getUsersBlogs",params);
+    if (userBlogs == null) {
+      mErrorMsgId=R.string.xmlrpc_error;
+      ;
+      return null;
+    }
     Arrays.sort(userBlogs,Utils.BlogNameComparator);
     List<Map<String,Object>> userBlogList=new ArrayList<Map<String,Object>>();
     for (    Object blog : userBlogs) {
@@ -27,25 +33,45 @@
         userBlogList.add((Map<String,Object>)blog);
       }
  catch (      ClassCastException e) {
-        AppLog.e(T.NUX,"invalid date received from XMLRPC call wp.getUsersBlogs");
+        AppLog.e(T.NUX,"invalid data received from XMLRPC call wp.getUsersBlogs");
       }
     }
     return userBlogList;
   }
- catch (  XMLRPCException e) {
-    String message=e.getMessage();
-    if (message.contains("code 403")) {
-      mErrorMsgId=R.string.username_or_password_incorrect;
-    }
- else     if (message.contains("404")) {
-      mErrorMsgId=R.string.xmlrpc_error;
-    }
- else     if (message.contains("425")) {
-      mErrorMsgId=R.string.account_two_step_auth_enabled;
-    }
- else {
-      mErrorMsgId=R.string.no_network_message;
-    }
-    return null;
+ catch (  XmlPullParserException parserException) {
+    mErrorMsgId=R.string.xmlrpc_error;
+    AppLog.e(T.NUX,"invalid data received from XMLRPC call wp.getUsersBlogs",parserException);
   }
+catch (  XMLRPCFault xmlRpcFault) {
+    AppLog.e(T.NUX,"XMLRPCFault received from XMLRPC call wp.getUsersBlogs",xmlRpcFault);
+switch (xmlRpcFault.getFaultCode()) {
+case 403:
+      mErrorMsgId=R.string.username_or_password_incorrect;
+    break;
+case 404:
+  mErrorMsgId=R.string.xmlrpc_error;
+break;
+case 425:
+mErrorMsgId=R.string.account_two_step_auth_enabled;
+break;
+default :
+mErrorMsgId=R.string.no_site_error;
+break;
+}
+}
+catch (XMLRPCException xmlRpcException) {
+AppLog.e(T.NUX,"XMLRPCException received from XMLRPC call wp.getUsersBlogs",xmlRpcException);
+mErrorMsgId=R.string.no_site_error;
+}
+catch (SSLHandshakeException e) {
+if (!UrlUtils.getDomainFromUrl(mXmlrpcUrl).endsWith("wordpress.com")) {
+mErroneousSslCertificate=true;
+}
+AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
+}
+catch (IOException e) {
+AppLog.e(T.NUX,"Exception received from XMLRPC call wp.getUsersBlogs",e);
+mErrorMsgId=R.string.no_site_error;
+}
+return null;
 }

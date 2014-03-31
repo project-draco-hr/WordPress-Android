@@ -1,0 +1,28 @@
+{
+  boolean hasItems=(mItems != null);
+  mNote=note;
+  final JSONArray items;
+  if (mNote != null) {
+    items=mNote.queryJSON("body.items",new JSONArray());
+  }
+ else {
+    items=new JSONArray();
+  }
+  if (mDiscardFirstItem && items.length() > 0) {
+    mItems=new JSONArray();
+    for (int i=1; i < items.length(); i++) {
+      try {
+        mItems.put(items.get(i));
+      }
+ catch (      JSONException e) {
+        AppLog.e(AppLog.T.NOTIFS,e);
+      }
+    }
+  }
+ else {
+    mItems=items;
+  }
+  if (hasItems) {
+    notifyDataSetChanged();
+  }
+}

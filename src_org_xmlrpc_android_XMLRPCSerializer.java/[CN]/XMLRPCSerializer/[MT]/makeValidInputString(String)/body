@@ -1,0 +1,20 @@
+{
+  if (TextUtils.isEmpty(input))   return "";
+  if (serializeTester == null)   return input;
+  try {
+    serializeTester.text(input);
+    return input;
+  }
+ catch (  IllegalArgumentException e) {
+    AppLog.e(AppLog.T.EDITOR,"There are characters outside the XML unicode charset as specified by the XML 1.0 standard",e);
+  }
+  final String noEmojiString=StringUtils.replaceUnicodeSurrogateBlocksWithHTMLEntities(input);
+  try {
+    serializeTester.text(noEmojiString);
+    return noEmojiString;
+  }
+ catch (  IllegalArgumentException e) {
+    AppLog.e(AppLog.T.EDITOR,"noEmojiString still contains characters outside the XML unicode charset as specified by the XML 1.0 standard",e);
+    return StringUtils.stripNonValidXMLCharacters(noEmojiString);
+  }
+}

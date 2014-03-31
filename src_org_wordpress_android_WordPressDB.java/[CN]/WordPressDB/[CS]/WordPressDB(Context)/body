@@ -1,28 +1,21 @@
 {
   this.context=ctx;
-  try {
-    db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
-  }
- catch (  SQLiteException e) {
-    db=null;
-    return;
-  }
+  db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
   db.execSQL(CREATE_TABLE_SETTINGS);
   db.execSQL(CREATE_TABLE_POSTS);
-  db.execSQL(CREATE_TABLE_COMMENTS);
   db.execSQL(CREATE_TABLE_CATEGORIES);
   db.execSQL(CREATE_TABLE_QUICKPRESS_SHORTCUTS);
   db.execSQL(CREATE_TABLE_MEDIA);
   db.execSQL(CREATE_TABLE_THEMES);
   db.execSQL(CREATE_TABLE_NOTES);
-  try {
-    int currentVersion=db.getVersion();
+  CommentTable.createTables(db);
+  int currentVersion=db.getVersion();
 switch (currentVersion) {
 case 0:
-      currentVersion++;
+    currentVersion++;
 case 1:
-    db.execSQL(ADD_BLOGID);
-  db.execSQL(UPDATE_BLOGID);
+  db.execSQL(ADD_BLOGID);
+db.execSQL(UPDATE_BLOGID);
 db.execSQL(ADD_LOCATION_FLAG);
 db.execSQL(ADD_DOTCOM_USERNAME);
 db.execSQL(ADD_DOTCOM_PASSWORD);
@@ -39,7 +32,6 @@ currentVersion++;
 case 10:
 db.delete(POSTS_TABLE,null,null);
 db.execSQL(CREATE_TABLE_POSTS);
-migrateDrafts();
 db.execSQL(ADD_POST_FORMATS);
 currentVersion++;
 case 11:
@@ -81,10 +73,15 @@ currentVersion++;
 case 21:
 db.execSQL(ADD_MEDIA_VIDEOPRESS_SHORTCODE);
 currentVersion++;
+case 22:
+currentVersion++;
+case 23:
+CommentTable.reset(db);
+currentVersion++;
+case 24:
+currentVersion++;
+case 25:
+currentVersion++;
 }
 db.setVersion(DATABASE_VERSION);
-}
- catch (SQLException e) {
-e.printStackTrace();
-}
 }

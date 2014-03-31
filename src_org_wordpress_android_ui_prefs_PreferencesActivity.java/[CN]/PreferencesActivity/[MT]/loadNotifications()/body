@@ -1,7 +1,9 @@
 {
+  AppLog.d(T.NOTIFS,"Preferences > loading notification settings");
   PreferenceScreen rootScreen=(PreferenceScreen)findPreference("wp_pref_root");
   rootScreen.addPreference(mNotificationsGroup);
   PreferenceCategory notificationTypesCategory=(PreferenceCategory)findPreference("wp_pref_notification_types");
+  notificationTypesCategory.removeAll();
   SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
   String settingsJson=settings.getString(NotificationUtils.WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,null);
   if (settingsJson == null) {
@@ -28,6 +30,7 @@
         }
       }
       PreferenceCategory selectBlogsCategory=(PreferenceCategory)findPreference("wp_pref_notification_blogs");
+      selectBlogsCategory.removeAll();
       for (int i=0; i < mMutedBlogsList.size(); i++) {
         StringMap<?> blogMap=(StringMap<?>)mMutedBlogsList.get(i);
         String blogName=(String)blogMap.get("blog_name");
@@ -36,6 +39,7 @@
         blogPreference.setChecked(!MapUtils.getMapBool(blogMap,"value"));
         blogPreference.setTitle(StringUtils.unescapeHTML(blogName));
         blogPreference.setOnPreferenceChangeListener(mMuteBlogChangeListener);
+        blogPreference.setOrder(i);
         selectBlogsCategory.addPreference(blogPreference);
       }
     }

@@ -1,0 +1,24 @@
+{
+  final View container=getView();
+  txtTitle=(TextView)container.findViewById(R.id.text_title);
+  txtBlogName=(TextView)container.findViewById(R.id.text_blog_name);
+  txtDate=(TextView)container.findViewById(R.id.text_date);
+  txtFollow=(TextView)container.findViewById(R.id.text_follow);
+  txtAuthorName=(TextView)container.findViewById(R.id.text_author_name);
+  imgAvatar=(WPNetworkImageView)container.findViewById(R.id.image_avatar);
+  imgFeatured=(WPNetworkImageView)container.findViewById(R.id.image_featured);
+  imgBtnReblog=(ImageView)mLayoutIcons.findViewById(R.id.image_reblog_btn);
+  imgBtnComment=(ImageView)mLayoutIcons.findViewById(R.id.image_comment_btn);
+  mPost=ReaderPostTable.getPost(mBlogId,mPostId);
+  if (mPost == null)   return false;
+  postHtml=getPostHtml();
+  if (mPost.hasFeaturedImage() && !PhotonUtils.isMshotsUrl(mPost.getFeaturedImage())) {
+    Uri uri=Uri.parse(mPost.getFeaturedImage());
+    String path=StringUtils.notNullStr(uri.getLastPathSegment());
+    if (!mPost.getText().contains(path)) {
+      showFeaturedImage=true;
+      featuredImageUrl=mPost.getFeaturedImageForDisplay(getFullSizeImageWidth(),0);
+    }
+  }
+  return true;
+}

@@ -10,7 +10,7 @@
       mImageContainer.cancelRequest();
       mImageContainer=null;
     }
-    showDefaultImage(mImageType,false);
+    showErrorImage(mImageType);
     return;
   }
   if (mImageContainer != null && mImageContainer.getRequestUrl() != null) {
@@ -19,12 +19,12 @@
     }
  else {
       mImageContainer.cancelRequest();
-      setImageDrawable(null);
+      showDefaultImage(mImageType);
     }
   }
   ImageLoader.ImageContainer newContainer=WordPress.imageLoader.get(mUrl,new ImageLoader.ImageListener(){
     @Override public void onErrorResponse(    VolleyError error){
-      showDefaultImage(mImageType,true);
+      showErrorImage(mImageType);
       if (mImageListener != null)       mImageListener.onImageLoaded(false);
     }
     @Override public void onResponse(    final ImageLoader.ImageContainer response,    boolean isImmediate){

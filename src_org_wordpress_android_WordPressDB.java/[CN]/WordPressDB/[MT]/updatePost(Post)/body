@@ -1,0 +1,26 @@
+{
+  int result=0;
+  if (post != null) {
+    ContentValues values=new ContentValues();
+    values.put("title",post.getTitle());
+    values.put("date_created_gmt",post.getDate_created_gmt());
+    values.put("description",post.getDescription());
+    values.put("mt_text_more",post.getMoreText());
+    values.put("uploaded",post.isUploaded());
+    JSONArray categoriesJsonArray=post.getJSONCategories();
+    if (categoriesJsonArray != null) {
+      values.put("categories",categoriesJsonArray.toString());
+    }
+    values.put("localDraft",post.isLocalDraft());
+    values.put("mediaPaths",post.getMediaPaths());
+    values.put("mt_keywords",post.getKeywords());
+    values.put("wp_password",post.getPassword());
+    values.put("post_status",post.getPostStatus());
+    values.put("isPage",post.isPage());
+    values.put("wp_post_format",post.getPostFormat());
+    values.put("isLocalChange",post.isLocalChange());
+    values.put("mt_excerpt",post.getPostExcerpt());
+    result=db.update(POSTS_TABLE,values,"blogID=? AND id=? AND isPage=?",new String[]{String.valueOf(post.getLocalTableBlogId()),String.valueOf(post.getLocalTablePostId()),String.valueOf(SqlUtils.boolToSql(post.isPage()))});
+  }
+  return (result);
+}

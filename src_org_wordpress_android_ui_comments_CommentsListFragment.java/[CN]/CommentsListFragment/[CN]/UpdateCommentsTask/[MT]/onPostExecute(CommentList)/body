@@ -1,0 +1,22 @@
+{
+  mIsUpdatingComments=false;
+  mUpdateCommentsTask=null;
+  if (!hasActivity()) {
+    return;
+  }
+  if (isLoadingMore) {
+    hideLoadingProgress();
+  }
+  mPullToRefreshHelper.setRefreshing(false);
+  if (isCancelled())   return;
+  mCanLoadMoreComments=(comments != null && comments.size() > 0);
+  if (comments == null) {
+    if (isError && !getActivity().isFinishing()) {
+      ToastUtils.showToast(getActivity(),getString(R.string.error_refresh_comments));
+    }
+    return;
+  }
+  if (comments.size() > 0) {
+    getCommentAdapter().loadComments();
+  }
+}

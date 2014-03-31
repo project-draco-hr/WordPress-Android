@@ -1,0 +1,41 @@
+{
+  List<?> arguments=params[0];
+  Blog blog=(Blog)arguments.get(0);
+  if (blog == null)   return false;
+  boolean isPage=(Boolean)arguments.get(1);
+  int recordCount=(Integer)arguments.get(2);
+  boolean loadMore=(Boolean)arguments.get(3);
+  XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+  Object[] result;
+  Object[] xmlrpcParams={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),recordCount};
+  try {
+    result=(Object[])client.call((isPage) ? "wp.getPages" : "metaWeblog.getRecentPosts",xmlrpcParams);
+    if (result != null && result.length > 0) {
+      mPostCount=result.length;
+      List<Map<?,?>> postsList=new ArrayList<Map<?,?>>();
+      if (!loadMore) {
+        WordPress.wpDB.deleteUploadedPosts(blog.getLocalTableBlogId(),isPage);
+      }
+      int startPosition=0;
+      if (loadMore && result.length > PostsListFragment.POSTS_REQUEST_COUNT) {
+        startPosition=result.length - PostsListFragment.POSTS_REQUEST_COUNT;
+      }
+      for (int ctr=startPosition; ctr < result.length; ctr++) {
+        Map<?,?> postMap=(Map<?,?>)result[ctr];
+        postsList.add(postMap);
+      }
+      WordPress.wpDB.savePosts(postsList,blog.getLocalTableBlogId(),isPage,!loadMore);
+    }
+    return true;
+  }
+ catch (  XMLRPCException e) {
+    mErrorMessage=e.getMessage();
+  }
+catch (  IOException e) {
+    mErrorMessage=e.getMessage();
+  }
+catch (  XmlPullParserException e) {
+    mErrorMessage=e.getMessage();
+  }
+  return false;
+}

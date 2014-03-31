@@ -1,15 +1,15 @@
 {
   String adminUrl=null;
-  Gson gson=new Gson();
-  Type type=new TypeToken<Map<?,?>>(){
+  JSONObject jsonOptions=getBlogOptionsJSONObject();
+  if (jsonOptions != null) {
+    try {
+      adminUrl=jsonOptions.getJSONObject("admin_url").getString("value");
+    }
+ catch (    JSONException e) {
+      AppLog.e(T.UTILS,"Cannot load admin_url from options: " + jsonOptions,e);
+    }
   }
-.getType();
-  Map<?,?> blogOptions=gson.fromJson(this.getBlogOptions(),type);
-  if (blogOptions != null) {
-    Map<?,?> homeURLMap=(Map<?,?>)blogOptions.get("admin_url");
-    if (homeURLMap != null)     adminUrl=homeURLMap.get("value").toString();
-  }
-  if (adminUrl == null) {
+  if (TextUtils.isEmpty(adminUrl)) {
     if (this.getUrl().lastIndexOf("/") != -1) {
       adminUrl=this.getUrl().substring(0,this.getUrl().lastIndexOf("/")) + "/wp-admin";
     }

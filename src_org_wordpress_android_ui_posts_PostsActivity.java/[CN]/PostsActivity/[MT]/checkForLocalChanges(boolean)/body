@@ -1,7 +1,12 @@
 {
+  if (WordPress.getCurrentBlog() == null) {
+    return;
+  }
   boolean hasLocalChanges=WordPress.wpDB.findLocalChanges(WordPress.getCurrentBlog().getLocalTableBlogId(),mIsPage);
   if (hasLocalChanges) {
-    if (!shouldPrompt)     return;
+    if (!shouldPrompt) {
+      return;
+    }
     AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(PostsActivity.this);
     dialogBuilder.setTitle(getResources().getText(R.string.local_changes));
     dialogBuilder.setMessage(getResources().getText(R.string.remote_changes));
@@ -9,12 +14,13 @@
       public void onClick(      DialogInterface dialog,      int whichButton){
         popPostDetail();
         attemptToSelectPost();
-        mPostList.refreshPosts(false);
+        mPostList.requestPosts(false);
       }
     }
 );
     dialogBuilder.setNegativeButton(getResources().getText(R.string.no),new DialogInterface.OnClickListener(){
       public void onClick(      DialogInterface dialog,      int whichButton){
+        mPostList.setRefreshing(false);
       }
     }
 );
@@ -25,8 +31,7 @@
   }
  else {
     popPostDetail();
-    attemptToSelectPost();
-    shouldAnimateRefreshButton=true;
-    mPostList.refreshPosts(false);
+    mPostList.requestPosts(false);
+    mPostList.setRefreshing(true);
   }
 }

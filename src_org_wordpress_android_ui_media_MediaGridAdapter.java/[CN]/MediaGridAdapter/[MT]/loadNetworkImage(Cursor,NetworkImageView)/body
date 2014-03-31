@@ -1,6 +1,6 @@
 {
   String thumbnailURL=cursor.getString(cursor.getColumnIndex("thumbnailURL"));
-  if (WordPress.getCurrentBlog() != null && WordPress.getCurrentBlog().isPhotonCapable()) {
+  if (mIsCurrentBlogPhotonCapable) {
     String imageURL=cursor.getString(cursor.getColumnIndex("fileURL"));
     if (imageURL != null) {
       thumbnailURL=StringUtils.getPhotonUrl(imageURL,mGridItemWidth);
@@ -12,10 +12,10 @@
     int placeholderResId=MediaUtils.getPlaceholder(filepath);
     imageView.setImageResource(0);
     imageView.setErrorImageResId(placeholderResId);
-    imageView.setDefaultImageResId(placeholderResId);
+    imageView.setDefaultImageResId(0);
     if (MediaUtils.isValidImage(filepath)) {
       imageView.setTag(thumbnailURL);
-      imageView.setImageUrl(thumbnailURL,WordPress.imageLoader);
+      imageView.setImageUrl(thumbnailURL,mImageLoader);
     }
  else {
       imageView.setImageResource(placeholderResId);

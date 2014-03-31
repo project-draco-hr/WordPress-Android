@@ -18,43 +18,44 @@
     view.setVisibility(View.INVISIBLE);
     return;
   }
+  final GridViewHolder holder;
+  if (view.getTag() instanceof GridViewHolder) {
+    holder=(GridViewHolder)view.getTag();
+  }
+ else {
+    holder=new GridViewHolder(view);
+    view.setTag(holder);
+  }
   final String mediaId=cursor.getString(cursor.getColumnIndex("mediaId"));
   String state=cursor.getString(cursor.getColumnIndex("uploadState"));
   boolean isLocalFile=MediaUtils.isLocalFile(state);
-  TextView filenameView=(TextView)view.findViewById(R.id.media_grid_item_filename);
   String fileName=cursor.getString(cursor.getColumnIndex("fileName"));
-  if (filenameView != null) {
-    filenameView.setText("File name: " + fileName);
+  if (holder.filenameView != null) {
+    holder.filenameView.setText(fileName);
   }
-  TextView titleView=(TextView)view.findViewById(R.id.media_grid_item_name);
   String title=cursor.getString(cursor.getColumnIndex("title"));
   if (title == null || title.equals(""))   title=fileName;
-  titleView.setText(title);
-  TextView uploadDateView=(TextView)view.findViewById(R.id.media_grid_item_upload_date);
-  if (uploadDateView != null) {
+  holder.titleView.setText(title);
+  if (holder.uploadDateView != null) {
     String date=MediaUtils.getDate(cursor.getLong(cursor.getColumnIndex("date_created_gmt")));
-    uploadDateView.setText("Uploaded on: " + date);
+    holder.uploadDateView.setText(date);
   }
-  final ImageView imageView=(ImageView)view.findViewById(R.id.media_grid_item_image);
   if (isLocalFile) {
-    loadLocalImage(cursor,imageView);
+    loadLocalImage(cursor,holder.imageView);
   }
  else {
-    loadNetworkImage(cursor,(NetworkImageView)imageView);
+    loadNetworkImage(cursor,(NetworkImageView)holder.imageView);
   }
-  String fileType=null;
-  String filePath=cursor.getString(cursor.getColumnIndex("filePath"));
-  if (filePath == null)   filePath=cursor.getString(cursor.getColumnIndex("fileURL"));
-  if (filePath != null) {
-    fileType=filePath.replaceAll(".*\\.(\\w+)$","$1").toUpperCase();
-    TextView fileTypeView=(TextView)view.findViewById(R.id.media_grid_item_filetype);
-    if (Utils.isXLarge(context)) {
-      fileTypeView.setText("File type: " + fileType);
-    }
+  String mimeType=cursor.getString(cursor.getColumnIndex("mimeType"));
+  String fileExtension=MediaUtils.getExtensionForMimeType(mimeType);
+  fileExtension=fileExtension.toUpperCase();
+  if (Utils.isXLarge(context) && !TextUtils.isEmpty(fileExtension)) {
+    holder.fileTypeView.setText("File type: " + fileExtension);
+  }
  else {
-      fileTypeView.setText(fileType);
-    }
+    holder.fileTypeView.setText(fileExtension);
   }
+  String filePath=cursor.getString(cursor.getColumnIndex("fileURL"));
   TextView dimensionView=(TextView)view.findViewById(R.id.media_grid_item_dimension);
   if (dimensionView != null) {
     if (MediaUtils.isValidImage(filePath)) {
@@ -62,17 +63,16 @@
       int height=cursor.getInt(cursor.getColumnIndex("height"));
       if (width > 0 && height > 0) {
         String dimensions=width + "x" + height;
-        dimensionView.setText("Dimensions: " + dimensions);
-        dimensionView.setVisibility(View.VISIBLE);
+        holder.dimensionView.setText(dimensions);
+        holder.dimensionView.setVisibility(View.VISIBLE);
       }
     }
  else {
-      dimensionView.setVisibility(View.GONE);
+      holder.dimensionView.setVisibility(View.GONE);
     }
   }
-  CheckableFrameLayout frameLayout=(CheckableFrameLayout)view.findViewById(R.id.media_grid_frame_layout);
-  frameLayout.setTag(mediaId);
-  frameLayout.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+  holder.frameLayout.setTag(mediaId);
+  holder.frameLayout.setOnCheckedChangeListener(new OnCheckedChangeListener(){
     @Override public void onCheckedChanged(    CheckableFrameLayout view,    boolean isChecked){
       String mediaId=(String)view.getTag();
       if (isChecked) {
@@ -86,22 +86,19 @@
     }
   }
 );
-  frameLayout.setChecked(mCheckedItems.contains(mediaId));
-  updateGridWidth(context,frameLayout);
-  final TextView stateTextView=(TextView)view.findViewById(R.id.media_grid_item_upload_state);
-  final ProgressBar progressUpload=(ProgressBar)view.findViewById(R.id.media_grid_item_upload_progress);
-  final RelativeLayout uploadStateView=(RelativeLayout)view.findViewById(R.id.media_grid_item_upload_state_container);
-  if (stateTextView != null) {
+  holder.frameLayout.setChecked(mCheckedItems.contains(mediaId));
+  updateGridWidth(context,holder.frameLayout);
+  if (holder.stateTextView != null) {
     if (state != null && state.length() > 0) {
       if (state.equals("uploading")) {
-        progressUpload.setVisibility(View.VISIBLE);
+        holder.progressUpload.setVisibility(View.VISIBLE);
       }
  else {
-        progressUpload.setVisibility(View.GONE);
+        holder.progressUpload.setVisibility(View.GONE);
       }
       if (state.equals("failed")) {
         state="retry";
-        stateTextView.setOnClickListener(new OnClickListener(){
+        holder.stateTextView.setOnClickListener(new OnClickListener(){
           @Override public void onClick(          View v){
             if (!inMultiSelect()) {
               ((TextView)v).setText("queued");
@@ -112,11 +109,11 @@
         }
 );
       }
-      stateTextView.setText(state);
-      uploadStateView.setVisibility(View.VISIBLE);
+      holder.stateTextView.setText(state);
+      holder.uploadStateView.setVisibility(View.VISIBLE);
     }
  else {
-      uploadStateView.setVisibility(View.GONE);
+      holder.uploadStateView.setVisibility(View.GONE);
     }
   }
   int position=cursor.getPosition();

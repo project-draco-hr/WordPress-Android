@@ -1,0 +1,17 @@
+{
+  XMLRPCFactoryTest.setPrefixAllInstances("malformed-software-version");
+  final CountDownLatch countDownLatch=new CountDownLatch(1);
+  Blog dummyBlog=new Blog("","","");
+  new ApiHelper.RefreshBlogContentTask(mTargetContext,dummyBlog,new GenericCallback(){
+    @Override public void onSuccess(){
+      assertTrue(true);
+      countDownLatch.countDown();
+    }
+    @Override public void onFailure(    ErrorType errorType,    String errorMessage,    Throwable throwable){
+      assertTrue(false);
+      countDownLatch.countDown();
+    }
+  }
+).execute(false);
+  countDownLatch.await(5000,TimeUnit.SECONDS);
+}

@@ -1,0 +1,39 @@
+{
+  if (post == null || blog == null)   return null;
+  if (!blog.isDotcomFlag() && !blog.isJetpackPowered())   return null;
+  String postID=post.getRemotePostId();
+  if (postID == null)   return null;
+  String id=null;
+  String type=null;
+  String postName=StringUtils.notNullStr(post.getSlug());
+  if (post.getStatusEnum() == PostStatus.PUBLISHED && postName.length() > 0 && postName.length() <= 8 && !postName.contains("%") && !postName.contains("-")) {
+    id=postName;
+    type="s";
+  }
+ else {
+    try {
+      id=wpme_dec2sixtwo(Double.parseDouble(postID));
+    }
+ catch (    NumberFormatException e) {
+      AppLog.e(T.UTILS,"Remote postID cannot be converted to double" + postID,e);
+      return null;
+    }
+    if (post.isPage()) {
+      type="P";
+    }
+ else {
+      type="p";
+    }
+  }
+  String blogShortlink=null;
+  try {
+    double blogID=blog.isDotcomFlag() ? blog.getRemoteBlogId() : Double.parseDouble(blog.getApi_blogid());
+    blogShortlink=wpme_dec2sixtwo(blogID);
+  }
+ catch (  NumberFormatException e) {
+    AppLog.e(T.UTILS,"Remote Blog ID cannot be converted to double",e);
+    return null;
+  }
+  if (TextUtils.isEmpty(type) || TextUtils.isEmpty(id) || TextUtils.isEmpty(blogShortlink))   return null;
+  return "http://wp.me/" + type + blogShortlink+ "-"+ id;
+}

@@ -1,6 +1,10 @@
 {
-  if (WordPress.getCurrentBlog() == null || mFilter == Filter.CUSTOM_DATE)   return;
-  if (mSearchTerm != null && mSearchTerm.length() > 0)   return;
+  if (WordPress.getCurrentBlog() == null || mFilter == Filter.CUSTOM_DATE) {
+    return;
+  }
+  if (mSearchTerm != null && mSearchTerm.length() > 0) {
+    return;
+  }
   if (offset == 0 || !mIsRefreshing) {
     if (offset == mOldMediaSyncOffset) {
       offset=0;
@@ -15,7 +19,7 @@
       @Override public void onSuccess(      int count){
         MediaGridAdapter adapter=(MediaGridAdapter)mGridView.getAdapter();
         mHasRetrievedAllMedia=(count == 0);
-        adapter.setHasRetrieviedAll(mHasRetrievedAllMedia);
+        adapter.setHasRetrievedAll(mHasRetrievedAllMedia);
         mIsRefreshing=false;
         if (getActivity() != null && MediaGridFragment.this.isVisible()) {
           getActivity().runOnUiThread(new Runnable(){
@@ -25,6 +29,7 @@
               if (!auto)               mGridView.setSelection(0);
               mListener.onMediaItemListDownloaded();
               mGridAdapter.setRefreshing(false);
+              mPullToRefreshHelper.setRefreshing(false);
             }
           }
 );
@@ -32,11 +37,13 @@
       }
       @Override public void onFailure(      ApiHelper.ErrorType errorType,      String errorMessage,      Throwable throwable){
         if (errorType != ApiHelper.ErrorType.NO_ERROR) {
-          String message=errorType == ApiHelper.ErrorType.NO_UPLOAD_FILES_CAP ? getString(R.string.media_error_no_permission) : getString(R.string.error_refresh_media);
-          Toast.makeText(getActivity(),message,Toast.LENGTH_SHORT).show();
+          if (getActivity() != null) {
+            String message=errorType == ApiHelper.ErrorType.NO_UPLOAD_FILES_CAP ? getString(R.string.media_error_no_permission) : getString(R.string.error_refresh_media);
+            ToastUtils.showToast(getActivity(),message,Duration.LONG);
+          }
           MediaGridAdapter adapter=(MediaGridAdapter)mGridView.getAdapter();
           mHasRetrievedAllMedia=true;
-          adapter.setHasRetrieviedAll(mHasRetrievedAllMedia);
+          adapter.setHasRetrievedAll(mHasRetrievedAllMedia);
         }
         if (getActivity() != null && MediaGridFragment.this.isVisible()) {
           getActivity().runOnUiThread(new Runnable(){
@@ -44,6 +51,7 @@
               mIsRefreshing=false;
               mListener.onMediaItemListDownloaded();
               mGridAdapter.setRefreshing(false);
+              mPullToRefreshHelper.setRefreshing(false);
             }
           }
 );

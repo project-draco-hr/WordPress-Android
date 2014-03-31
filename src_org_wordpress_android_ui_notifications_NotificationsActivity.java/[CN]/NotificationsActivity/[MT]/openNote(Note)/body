@@ -1,43 +1,27 @@
 {
   if (note == null || isFinishing())   return;
   if (note.isUnread()) {
-    restClient.markNoteAsRead(note,new RestRequest.Listener(){
-      @Override public void onResponse(      JSONObject response){
-        note.setUnreadCount("0");
-        mNotesList.getNotesAdapter().notifyDataSetChanged();
-      }
-    }
-,new RestRequest.ErrorListener(){
-      @Override public void onErrorResponse(      VolleyError error){
-        AppLog.d(T.NOTIFS,String.format("Failed to mark as read %s",error));
-      }
-    }
-);
+    markNoteAsRead(note);
   }
   FragmentManager fm=getSupportFragmentManager();
   if (fm.getBackStackEntryCount() > 0) {
     fm.popBackStack();
   }
-  Fragment fragment=fragmentForNote(note);
-  if (fragment == null) {
+  Fragment detailFragment=getDetailFragmentForNote(note);
+  if (detailFragment == null) {
     AppLog.d(T.NOTIFS,String.format("No fragment found for %s",note.toJSONObject()));
     return;
   }
-  NotificationFragment noteFragment=(NotificationFragment)fragment;
-  Intent intent=getIntent();
-  if (intent.hasExtra(NOTE_ID_EXTRA) && intent.getStringExtra(NOTE_ID_EXTRA).equals(note.getId())) {
-    if (intent.hasExtra(NOTE_REPLY_EXTRA) || intent.hasExtra(NOTE_INSTANT_REPLY_EXTRA)) {
-      fragment.setArguments(intent.getExtras());
-    }
+  if (detailFragment instanceof NotificationFragment) {
+    ((NotificationFragment)detailFragment).setNote(note);
   }
-  noteFragment.setNote(note);
-  FragmentTransaction transaction=fm.beginTransaction();
-  View container=findViewById(R.id.note_fragment_container);
-  transaction.replace(R.id.note_fragment_container,fragment);
-  transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-  if (container.findViewById(R.id.notes_list) != null) {
+  FragmentTransaction ft=fm.beginTransaction();
+  ft.replace(R.id.layout_fragment_container,detailFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+  View container=findViewById(R.id.layout_fragment_container);
+  if (container.findViewById(R.id.fragment_notes_list) != null) {
     mMenuDrawer.setDrawerIndicatorEnabled(false);
-    transaction.addToBackStack(null);
+    ft.addToBackStack(null);
+    if (mNotesList != null)     ft.hide(mNotesList);
   }
-  transaction.commitAllowingStateLoss();
+  ft.commitAllowingStateLoss();
 }

@@ -1,11 +1,15 @@
 {
-  if (!WordPress.hasValidWPComCredentials(context))   return;
+  if (!WordPress.hasValidWPComCredentials(context)) {
+    return;
+  }
   String gcmToken=GCMRegistrar.getRegistrationId(context);
-  if (TextUtils.isEmpty(gcmToken))   return;
+  if (TextUtils.isEmpty(gcmToken)) {
+    return;
+  }
   SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(context);
   String deviceID=settings.getString(WPCOM_PUSH_DEVICE_SERVER_ID,null);
   if (TextUtils.isEmpty(deviceID)) {
-    AppLog.e(T.NOTIFS,"Wait, device_ID is null in preferences. Set device settings skipped. WTF has appenend here?!?!");
+    AppLog.e(T.NOTIFS,"device_ID is null in preferences. Set device settings skipped.");
     return;
   }
   String settingsJson=settings.getString(WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,null);
@@ -14,8 +18,8 @@
   Map<String,StringMap<String>> notificationSettings=gson.fromJson(settingsJson,HashMap.class);
   Map<String,Object> updatedSettings=new HashMap<String,Object>();
   if (notificationSettings == null)   return;
-  StringMap<?> mutedBlogsMap=(StringMap<?>)notificationSettings.get("muted_blogs");
-  StringMap<?> muteUntilMap=(StringMap<?>)notificationSettings.get("mute_until");
+  StringMap<?> mutedBlogsMap=notificationSettings.get("muted_blogs");
+  StringMap<?> muteUntilMap=notificationSettings.get("mute_until");
   ArrayList<StringMap<Double>> blogsList=(ArrayList<StringMap<Double>>)mutedBlogsMap.get("value");
   notificationSettings.remove("muted_blogs");
   notificationSettings.remove("mute_until");
@@ -27,8 +31,7 @@
     updatedSettings.put("mute_until",muteUntilMap.get("value"));
   }
   ArrayList<StringMap<Double>> mutedBlogsList=new ArrayList<StringMap<Double>>();
-  for (int i=0; i < blogsList.size(); i++) {
-    StringMap<Double> userBlog=blogsList.get(i);
+  for (  StringMap<Double> userBlog : blogsList) {
     if (MapUtils.getMapBool(userBlog,"value")) {
       mutedBlogsList.add(userBlog);
     }
@@ -40,5 +43,5 @@
   contentStruct.put("device_family","android");
   contentStruct.put("app_secret_key",NotificationUtils.getAppPushNotificationsName());
   contentStruct.put("settings",gson.toJson(updatedSettings));
-  WordPress.restClient.post("/device/" + deviceID,contentStruct,null,null,null);
+  WordPress.getRestClientUtils().post("/device/" + deviceID,contentStruct,null,null,null);
 }

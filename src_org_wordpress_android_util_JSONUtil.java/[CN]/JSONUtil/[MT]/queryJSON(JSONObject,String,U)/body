@@ -3,7 +3,9 @@
   int nextIndexStart=query.indexOf(QUERY_ARRAY_INDEX_START);
   if (nextSeperator == -1 && nextIndexStart == -1) {
     try {
-      if (!source.has(query))       return defaultObject;
+      if (!source.has(query)) {
+        return defaultObject;
+      }
       Object result=source.get(query);
       if (result.getClass().isAssignableFrom(defaultObject.getClass())) {
         return (U)result;
@@ -12,12 +14,12 @@
         return defaultObject;
       }
     }
- catch (    JSONException e) {
-      AppLog.e(T.UTILS,String.format("Could not complete query %s",query),e);
+ catch (    java.lang.ClassCastException e) {
+      AppLog.e(T.UTILS,"Unable to cast the object to " + defaultObject.getClass().getName(),e);
       return defaultObject;
     }
-catch (    ClassCastException e) {
-      AppLog.e(T.UTILS,String.format("Could not cast object %s",query),e);
+catch (    JSONException e) {
+      AppLog.e(T.UTILS,"Unable to get the Key from the input object. Key:" + query,e);
       return defaultObject;
     }
   }
@@ -48,15 +50,16 @@ catch (    ClassCastException e) {
       return (U)result;
     }
  else {
+      AppLog.w(T.UTILS,String.format("The returned object type %s is not assignable to the type %s. Using default!",result.getClass(),defaultObject.getClass()));
       return defaultObject;
     }
   }
  catch (  java.lang.ClassCastException e) {
-    AppLog.e(T.UTILS,String.format("Could not cast object at %s",query),e);
+    AppLog.e(T.UTILS,"Unable to cast the object to " + defaultObject.getClass().getName(),e);
     return defaultObject;
   }
 catch (  JSONException e) {
-    AppLog.e(T.UTILS,String.format("Could not complete query %s",query),e);
+    AppLog.e(T.UTILS,"Unable to get the Key from the input object. Key:" + query,e);
     return defaultObject;
   }
 }

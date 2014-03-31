@@ -1,27 +1,15 @@
 {
   super.onCreate(savedInstanceState);
-  createMenuDrawer(R.layout.comments);
+  createMenuDrawer(R.layout.comment_activity);
   ActionBar actionBar=getSupportActionBar();
   actionBar.setDisplayShowTitleEnabled(true);
   setTitle(getString(R.string.tab_comments));
-  Bundle extras=getIntent().getExtras();
-  if (extras != null) {
-    fromNotification=extras.getBoolean("fromNotification");
-    if (fromNotification) {
-      try {
-        WordPress.currentBlog=new Blog(extras.getInt("id"));
-      }
- catch (      Exception e) {
-        Toast.makeText(this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
-        finish();
-      }
-    }
-  }
   FragmentManager fm=getSupportFragmentManager();
   fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
-  commentList=(CommentsListFragment)fm.findFragmentById(R.id.commentList);
-  WordPress.currentComment=null;
-  attemptToSelectComment();
-  if (fromNotification)   refreshCommentList();
-  if (savedInstanceState != null)   popCommentDetail();
+  if (savedInstanceState != null) {
+    long commentId=savedInstanceState.getLong(KEY_HIGHLIGHTED_COMMENT_ID);
+    if (commentId != 0) {
+      if (hasListFragment())       getListFragment().setHighlightedCommentId(commentId);
+    }
+  }
 }

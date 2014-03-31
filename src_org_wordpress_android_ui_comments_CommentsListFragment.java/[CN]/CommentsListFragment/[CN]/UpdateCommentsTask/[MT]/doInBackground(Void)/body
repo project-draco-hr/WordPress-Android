@@ -1,0 +1,29 @@
+{
+  if (!hasActivity())   return null;
+  Blog blog=WordPress.getCurrentBlog();
+  if (blog == null) {
+    isError=true;
+    return null;
+  }
+  if (!mHasCheckedDeletedComments && !isLoadingMore) {
+    mHasCheckedDeletedComments=true;
+    ApiHelper.removeDeletedComments(blog);
+  }
+  Map<String,Object> hPost=new HashMap<String,Object>();
+  if (isLoadingMore) {
+    int numExisting=getCommentAdapter().getCount();
+    hPost.put("offset",numExisting);
+    hPost.put("number",COMMENTS_PER_PAGE);
+  }
+ else {
+    hPost.put("number",COMMENTS_PER_PAGE);
+  }
+  Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),hPost};
+  try {
+    return ApiHelper.refreshComments(getActivity(),blog,params);
+  }
+ catch (  Exception e) {
+    isError=true;
+    return null;
+  }
+}

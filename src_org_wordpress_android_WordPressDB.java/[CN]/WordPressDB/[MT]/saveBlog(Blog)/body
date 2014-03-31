@@ -1,4 +1,7 @@
 {
+  if (blog.getLocalTableBlogId() == -1) {
+    return addBlog(blog);
+  }
   ContentValues values=new ContentValues();
   values.put("url",blog.getUrl());
   values.put("homeURL",blog.getHomeURL());
@@ -23,6 +26,12 @@
   values.put("isHidden",blog.isHidden());
   values.put("blogName",blog.getBlogName());
   values.put("isAdmin",blog.isAdmin());
+  if (blog.getWpVersion() != null) {
+    values.put("wpVersion",blog.getWpVersion());
+  }
+ else {
+    values.putNull("wpVersion");
+  }
   boolean returnValue=db.update(SETTINGS_TABLE,values,"id=" + blog.getLocalTableBlogId(),null) > 0;
   if (blog.isDotcomFlag()) {
     returnValue=updateWPComCredentials(blog.getUsername(),blog.getPassword());

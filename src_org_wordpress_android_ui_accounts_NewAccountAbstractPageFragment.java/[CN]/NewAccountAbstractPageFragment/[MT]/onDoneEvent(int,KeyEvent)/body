@@ -1,5 +1,13 @@
 {
-  if (actionId == EditorInfo.IME_ACTION_DONE || (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+  if (actionId == EditorInfo.IME_ACTION_DONE || event != null && (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+    if (!isUserDataValid()) {
+      return true;
+    }
+    InputMethodManager inputManager=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+    View view=getActivity().getCurrentFocus();
+    if (view != null) {
+      inputManager.hideSoftInputFromWindow(view.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+    }
     onDoneAction();
     return true;
   }

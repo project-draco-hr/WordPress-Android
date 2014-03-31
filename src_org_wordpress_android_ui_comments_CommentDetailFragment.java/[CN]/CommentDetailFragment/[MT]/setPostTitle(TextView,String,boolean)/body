@@ -1,0 +1,18 @@
+{
+  if (txtTitle == null || !hasActivity())   return;
+  if (TextUtils.isEmpty(postTitle)) {
+    txtTitle.setText(R.string.untitled);
+    return;
+  }
+  if (hasComment() && !mComment.hasPostTitle()) {
+    mComment.setPostTitle(postTitle);
+    CommentTable.updateCommentPostTitle(getLocalBlogId(),getCommentId(),postTitle);
+  }
+  if (isHyperlink) {
+    String html=getString(R.string.on) + " <font color=" + HtmlUtils.colorResToHtmlColor(getActivity(),R.color.reader_hyperlink)+ ">"+ postTitle.trim()+ "</font>";
+    txtTitle.setText(Html.fromHtml(html));
+  }
+ else {
+    txtTitle.setText(getString(R.string.on) + " " + postTitle.trim());
+  }
+}

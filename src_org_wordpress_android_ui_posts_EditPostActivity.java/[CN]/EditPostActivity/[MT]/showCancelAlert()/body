@@ -1,12 +1,14 @@
 {
   if (mEditPostContentFragment != null && mEditPostContentFragment.hasEmptyContentFields()) {
-    if (mIsNewPost)     mPost.delete();
+    if (mIsNewPost) {
+      WordPress.wpDB.deletePost(mPost);
+    }
     finish();
     return;
   }
   savePost(true);
   if (mOriginalPost != null && !mPost.hasChanges(mOriginalPost)) {
-    mOriginalPost.update();
+    WordPress.wpDB.updatePost(mOriginalPost);
     WordPress.currentPost=mOriginalPost;
     finish();
     return;
@@ -17,6 +19,7 @@
   dialogBuilder.setPositiveButton(getResources().getText(R.string.save),new DialogInterface.OnClickListener(){
     public void onClick(    DialogInterface dialog,    int whichButton){
       savePost(false);
+      WordPress.currentPost=mPost;
       Intent i=new Intent();
       i.putExtra("shouldRefresh",true);
       setResult(RESULT_OK,i);
@@ -27,11 +30,11 @@
   dialogBuilder.setNeutralButton(getString(R.string.discard),new DialogInterface.OnClickListener(){
     public void onClick(    DialogInterface dialog,    int whichButton){
       if (mOriginalPost != null && !mIsNewPost) {
-        mOriginalPost.update();
+        WordPress.wpDB.updatePost(mOriginalPost);
         WordPress.currentPost=mOriginalPost;
       }
  else       if (mPost != null && mIsNewPost) {
-        mPost.delete();
+        WordPress.wpDB.deletePost(mPost);
       }
       finish();
     }

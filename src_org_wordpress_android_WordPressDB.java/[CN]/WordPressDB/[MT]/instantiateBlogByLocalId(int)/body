@@ -1,0 +1,64 @@
+{
+  String[] fields=new String[]{"url","blogName","username","password","httpuser","httppassword","imagePlacement","centerThumbnail","fullSizeImage","maxImageWidth","maxImageWidthId","blogId","location","dotcomFlag","dotcom_username","dotcom_password","api_key","api_blogid","wpVersion","postFormats","isScaledImage","scaledImgWidth","homeURL","blog_options","isAdmin","isHidden"};
+  Cursor c=db.query(SETTINGS_TABLE,fields,"id=?",new String[]{Integer.toString(localId)},null,null,null);
+  Blog blog=null;
+  if (c.moveToFirst()) {
+    if (c.getString(0) != null) {
+      blog=new Blog();
+      blog.setLocalTableBlogId(localId);
+      blog.setUrl(c.getString(c.getColumnIndex("url")));
+      blog.setBlogName(c.getString(c.getColumnIndex("blogName")));
+      blog.setUsername(c.getString(c.getColumnIndex("username")));
+      blog.setPassword(decryptPassword(c.getString(c.getColumnIndex("password"))));
+      if (c.getString(c.getColumnIndex("httpuser")) == null) {
+        blog.setHttpuser("");
+      }
+ else {
+        blog.setHttpuser(c.getString(c.getColumnIndex("httpuser")));
+      }
+      if (c.getString(c.getColumnIndex("httppassword")) == null) {
+        blog.setHttppassword("");
+      }
+ else {
+        blog.setHttppassword(decryptPassword(c.getString(c.getColumnIndex("httppassword"))));
+      }
+      blog.setImagePlacement(c.getString(c.getColumnIndex("imagePlacement")));
+      blog.setFeaturedImageCapable(c.getInt(c.getColumnIndex("centerThumbnail")) > 0);
+      blog.setFullSizeImage(c.getInt(c.getColumnIndex("fullSizeImage")) > 0);
+      blog.setMaxImageWidth(c.getString(c.getColumnIndex("maxImageWidth")));
+      blog.setMaxImageWidthId(c.getInt(c.getColumnIndex("maxImageWidthId")));
+      blog.setRemoteBlogId(c.getInt(c.getColumnIndex("blogId")));
+      blog.setLocation(c.getInt(c.getColumnIndex("location")) > 0);
+      blog.setDotcomFlag(c.getInt(c.getColumnIndex("dotcomFlag")) > 0);
+      if (c.getString(c.getColumnIndex("dotcom_username")) != null) {
+        blog.setDotcom_username(c.getString(c.getColumnIndex("dotcom_username")));
+      }
+      if (c.getString(c.getColumnIndex("dotcom_password")) != null) {
+        blog.setDotcom_password(decryptPassword(c.getString(c.getColumnIndex("dotcom_password"))));
+      }
+      if (c.getString(c.getColumnIndex("api_key")) != null) {
+        blog.setApi_key(c.getString(c.getColumnIndex("api_key")));
+      }
+      if (c.getString(c.getColumnIndex("api_blogid")) != null) {
+        blog.setApi_blogid(c.getString(c.getColumnIndex("api_blogid")));
+      }
+      if (c.getString(c.getColumnIndex("wpVersion")) != null) {
+        blog.setWpVersion(c.getString(c.getColumnIndex("wpVersion")));
+      }
+      blog.setPostFormats(c.getString(c.getColumnIndex("postFormats")));
+      blog.setScaledImage(c.getInt(c.getColumnIndex("isScaledImage")) > 0);
+      blog.setScaledImageWidth(c.getInt(c.getColumnIndex("scaledImgWidth")));
+      blog.setHomeURL(c.getString(c.getColumnIndex("homeURL")));
+      if (c.getString(c.getColumnIndex("blog_options")) == null) {
+        blog.setBlogOptions("{}");
+      }
+ else {
+        blog.setBlogOptions(c.getString(c.getColumnIndex("blog_options")));
+      }
+      blog.setAdmin(c.getInt(c.getColumnIndex("isAdmin")) > 0);
+      blog.setHidden(c.getInt(c.getColumnIndex("isHidden")) > 0);
+    }
+  }
+  c.close();
+  return blog;
+}

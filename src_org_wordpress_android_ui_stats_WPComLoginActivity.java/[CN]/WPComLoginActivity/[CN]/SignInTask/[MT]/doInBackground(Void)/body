@@ -1,30 +1,54 @@
 {
-  XMLRPCClient client=new XMLRPCClient(Constants.wpcomXMLRPCURL,"","");
+  URI uri;
+  try {
+    uri=new URI(Constants.wpcomXMLRPCURL);
+  }
+ catch (  URISyntaxException e) {
+    AppLog.e(T.API,"Invalid URI syntax: " + Constants.wpcomXMLRPCURL);
+    return false;
+  }
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(uri,"","");
   Object[] signInParams={mUsername,mPassword};
   try {
     client.call("wp.getUsersBlogs",signInParams);
-    WordPress.currentBlog.setDotcom_username(mUsername);
-    WordPress.currentBlog.setDotcom_password(mPassword);
-    WordPress.currentBlog.save();
+    Blog blog=WordPress.getCurrentBlog();
+    if (blog != null) {
+      blog.setDotcom_username(mUsername);
+      blog.setDotcom_password(mPassword);
+    }
     if (!mIsJetpackAuthRequest) {
-      if (WordPress.hasValidWPComCredentials(WPComLoginActivity.this)) {
-        NotificationUtils.unregisterDevicePushNotifications(WPComLoginActivity.this);
-        try {
-          GCMRegistrar.checkDevice(WPComLoginActivity.this);
-          GCMRegistrar.unregister(WPComLoginActivity.this);
-        }
- catch (        Exception e) {
-          AppLog.v(T.NUX,"Could not unregister for GCM: " + e.getMessage());
-        }
-      }
+      WordPress.removeWpComUserRelatedData(WPComLoginActivity.this);
       Editor settings=PreferenceManager.getDefaultSharedPreferences(WPComLoginActivity.this).edit();
       settings.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mUsername);
       settings.putString(WordPress.WPCOM_PASSWORD_PREFERENCE,WordPressDB.encryptPassword(mPassword));
       settings.commit();
+      WordPress.wpDB.updateWPComCredentials(mUsername,mPassword);
+      if (blog != null) {
+        blog.setUsername(mUsername);
+        blog.setPassword(mPassword);
+      }
+    }
+    if (blog != null) {
+      WordPress.wpDB.saveBlog(blog);
     }
     return true;
   }
- catch (  XMLRPCException e) {
-    return false;
+ catch (  XMLRPCFault xmlRpcFault) {
+    AppLog.e(T.NUX,"XMLRPCFault received from XMLRPC call wp.getUsersBlogs",xmlRpcFault);
+    if (xmlRpcFault.getFaultCode() == 425) {
+      mIsWpcomAccountWith2FA=true;
+      return false;
+    }
   }
+catch (  XMLRPCException e) {
+    AppLog.e(T.NUX,"Exception received from XMLRPC call wp.getUsersBlogs",e);
+  }
+catch (  IOException e) {
+    AppLog.e(T.NUX,"Exception received from XMLRPC call wp.getUsersBlogs",e);
+  }
+catch (  XmlPullParserException e) {
+    AppLog.e(T.NUX,"Exception received from XMLRPC call wp.getUsersBlogs",e);
+  }
+  mIsWpcomAccountWith2FA=false;
+  return false;
 }

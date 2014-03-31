@@ -1,0 +1,19 @@
+{
+  if (entryTextView == null)   return;
+  if (TextUtils.isEmpty(linkUrl)) {
+    entryTextView.setText(linkName);
+    if (linkName != null && linkName.startsWith("http")) {
+      Linkify.addLinks(entryTextView,Linkify.WEB_URLS);
+    }
+  }
+ else   if (TextUtils.isEmpty(linkName)) {
+    entryTextView.setText(linkUrl);
+    if (linkUrl != null && linkUrl.startsWith("http")) {
+      Linkify.addLinks(entryTextView,Linkify.WEB_URLS);
+    }
+  }
+ else {
+    entryTextView.setText(Html.fromHtml("<a href=\"" + linkUrl + "\">"+ linkName+ "</a>"));
+    entryTextView.setMovementMethod(WPLinkMovementMethod.getInstance());
+  }
+}

@@ -1,0 +1,26 @@
+{
+  if (db == null)   return false;
+  if (db.isReadOnly()) {
+    throw new SQLiteException("can't drop tables from a read-only database");
+  }
+  List<String> tableNames=new ArrayList<String>();
+  Cursor cursor=db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'",null);
+  if (cursor.moveToFirst()) {
+    do {
+      String tableName=cursor.getString(0);
+      if (!tableName.equals("android_metadata") && !tableName.equals("sqlite_sequence"))       tableNames.add(tableName);
+    }
+ while (cursor.moveToNext());
+  }
+  db.beginTransaction();
+  try {
+    for (    String tableName : tableNames) {
+      db.execSQL("DROP TABLE IF EXISTS " + tableName);
+    }
+    db.setTransactionSuccessful();
+    return true;
+  }
+  finally {
+    db.endTransaction();
+  }
+}

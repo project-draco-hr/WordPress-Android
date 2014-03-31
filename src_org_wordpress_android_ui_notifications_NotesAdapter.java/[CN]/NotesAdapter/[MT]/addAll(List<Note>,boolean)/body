@@ -1,0 +1,15 @@
+{
+  if (notes.size() > 0) {
+    Collections.sort(notes,new Note.TimeStampComparator());
+    mIsAddingNotes=true;
+    try {
+      if (clearBeforeAdding)       mNotes.clear();
+      mNotes.addAll(notes);
+    }
+  finally {
+      notifyDataSetChanged();
+      mIsAddingNotes=false;
+    }
+  }
+  if (mDataLoadedListener != null)   mDataLoadedListener.onDataLoaded(isEmpty());
+}

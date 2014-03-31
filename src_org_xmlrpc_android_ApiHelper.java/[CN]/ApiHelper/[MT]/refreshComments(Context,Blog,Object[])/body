@@ -1,0 +1,34 @@
+{
+  if (blog == null) {
+    return null;
+  }
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
+  Object[] result;
+  result=(Object[])client.call("wp.getComments",commentParams);
+  if (result.length == 0) {
+    return null;
+  }
+  Map<?,?> contentHash;
+  long commentID, postID;
+  String authorName, content, status, authorEmail, authorURL, postTitle, pubDate;
+  java.util.Date date;
+  CommentList comments=new CommentList();
+  for (int ctr=0; ctr < result.length; ctr++) {
+    contentHash=(Map<?,?>)result[ctr];
+    content=contentHash.get("content").toString();
+    status=contentHash.get("status").toString();
+    postID=Long.parseLong(contentHash.get("post_id").toString());
+    commentID=Long.parseLong(contentHash.get("comment_id").toString());
+    authorName=contentHash.get("author").toString();
+    authorURL=contentHash.get("author_url").toString();
+    authorEmail=contentHash.get("author_email").toString();
+    postTitle=contentHash.get("post_title").toString();
+    date=(java.util.Date)contentHash.get("date_created_gmt");
+    pubDate=DateTimeUtils.javaDateToIso8601(date);
+    Comment comment=new Comment(postID,commentID,authorName,pubDate,content,status,postTitle,authorURL,authorEmail,null);
+    comments.add(comment);
+  }
+  int localBlogId=blog.getLocalTableBlogId();
+  CommentTable.saveComments(localBlogId,comments);
+  return comments;
+}

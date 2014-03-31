@@ -7,7 +7,7 @@
   final Handler handler=new Handler();
   new Thread(){
     @Override public void run(){
-      XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+      XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
       Map<String,Object> commentHash=new HashMap<String,Object>();
       commentHash.put("content",commentText);
       commentHash.put("author","");
@@ -19,11 +19,18 @@
         newCommentID=(Integer)client.call("wp.newComment",params);
       }
  catch (      XMLRPCException e) {
-        AppLog.e(T.COMMENTS,e.getMessage(),e);
+        AppLog.e(T.COMMENTS,"Error while sending new comment",e);
+        newCommentID=-1;
+      }
+catch (      IOException e) {
+        AppLog.e(T.COMMENTS,"Error while sending new comment",e);
+        newCommentID=-1;
+      }
+catch (      XmlPullParserException e) {
+        AppLog.e(T.COMMENTS,"Error while sending new comment",e);
         newCommentID=-1;
       }
       final boolean succeeded=(newCommentID >= 0);
-      if (succeeded)       WordPress.wpDB.updateLatestCommentID(accountId,newCommentID);
       if (actionListener != null) {
         handler.post(new Runnable(){
           @Override public void run(){

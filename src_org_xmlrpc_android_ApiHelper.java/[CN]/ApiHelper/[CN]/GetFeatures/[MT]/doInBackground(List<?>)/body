@@ -2,14 +2,23 @@
   List<?> arguments=params[0];
   Blog blog=(Blog)arguments.get(0);
   if (blog == null)   return null;
-  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
   Object[] apiParams=new Object[]{blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword()};
   Map<?,?> resultMap=null;
   try {
     resultMap=(HashMap<?,?>)client.call("wpcom.getFeatures",apiParams);
   }
- catch (  XMLRPCException e) {
-    AppLog.e(T.API,"XMLRPCException: " + e.getMessage());
+ catch (  ClassCastException cce) {
+    AppLog.e(T.API,"wpcom.getFeatures error",cce);
+  }
+catch (  XMLRPCException e) {
+    AppLog.e(T.API,"wpcom.getFeatures error",e);
+  }
+catch (  IOException e) {
+    AppLog.e(T.API,"wpcom.getFeatures error",e);
+  }
+catch (  XmlPullParserException e) {
+    AppLog.e(T.API,"wpcom.getFeatures error",e);
   }
   if (resultMap != null) {
     return new FeatureSet(blog.getRemoteBlogId(),resultMap);

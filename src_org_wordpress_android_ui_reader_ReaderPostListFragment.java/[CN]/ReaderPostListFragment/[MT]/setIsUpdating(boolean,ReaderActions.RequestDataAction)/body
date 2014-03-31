@@ -1,18 +1,19 @@
 {
-  if (mIsUpdating == isUpdating)   return;
-  if (!hasActivity())   return;
-  mIsUpdating=isUpdating;
+  if (!hasActivity() || mIsUpdating == isUpdating) {
+    return;
+  }
 switch (updateAction) {
-case LOAD_NEWER:
-    if (getActivity() instanceof ReaderActivity)     ((ReaderActivity)getActivity()).setIsUpdating(isUpdating);
-  break;
 case LOAD_OLDER:
-if (isUpdating) {
-  showLoadingProgress();
-}
+    if (isUpdating) {
+      showLoadingProgress();
+    }
  else {
-  hideLoadingProgress();
-}
+      hideLoadingProgress();
+    }
+  break;
+default :
+mPullToRefreshHelper.setRefreshing(isUpdating);
 break;
 }
+mIsUpdating=isUpdating;
 }

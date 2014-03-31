@@ -1,20 +1,19 @@
 {
-  List<Map<String,Object>> accounts=WordPress.wpDB.getVisibleAccounts();
+  List<Map<String,Object>> accounts=WordPress.wpDB.getVisibleDotComAccounts();
   if (accounts == null || accounts.size() == 0)   return false;
-  Blog blog=WordPress.getCurrentBlog();
-  int currentBlogId=(blog != null ? blog.getRemoteBlogId() : 0);
-  Iterator<Map<String,Object>> it=accounts.iterator();
-  while (it.hasNext()) {
-    Map<String,Object> curHash=it.next();
+  int currentRemoteBlogId=WordPress.getCurrentRemoteBlogId();
+  for (  Map<String,Object> curHash : accounts) {
     int blogId=(Integer)curHash.get("blogId");
-    String blogName=StringUtils.unescapeHTML(curHash.get("blogName").toString());
-    if (TextUtils.isEmpty(blogName))     blogName=curHash.get("url").toString();
-    SimpleAccountItem item=new SimpleAccountItem(blogId,blogName);
-    if (tmpAccounts.size() > 0 && blogId == currentBlogId) {
-      tmpAccounts.add(0,item);
-    }
+    if (blogId != mExcludeBlogId) {
+      String blogName=StringUtils.unescapeHTML(curHash.get("blogName").toString());
+      if (TextUtils.isEmpty(blogName))       blogName=curHash.get("url").toString();
+      SimpleAccountItem item=new SimpleAccountItem(blogId,blogName);
+      if (tmpAccounts.size() > 0 && blogId == currentRemoteBlogId) {
+        tmpAccounts.add(0,item);
+      }
  else {
-      tmpAccounts.add(item);
+        tmpAccounts.add(item);
+      }
     }
   }
   return true;

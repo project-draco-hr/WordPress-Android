@@ -1,8 +1,4 @@
 {
-  if (mPostList.getPostsTask != null) {
-    mPostList.getPostsTask.cancel(true);
-    mIsRefreshing=false;
-  }
   if (post == null) {
     Toast.makeText(PostsActivity.this,R.string.post_not_found,Toast.LENGTH_SHORT).show();
     return;
@@ -15,10 +11,10 @@
       dialogBuilder.setMessage(getResources().getText(R.string.delete_sure) + " '" + post.getTitle()+ "'?");
       dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
         public void onClick(        DialogInterface dialog,        int whichButton){
-          post.delete();
+          WordPress.wpDB.deletePost(post);
           popPostDetail();
           attemptToSelectPost();
-          mPostList.loadPosts(false);
+          mPostList.getPostListAdapter().loadPosts();
         }
       }
 );
@@ -54,7 +50,17 @@
     }
   }
  else   if (action == POST_SHARE) {
-    new shareURLTask().execute(post);
+    if (post.getStatusEnum() != PostStatus.PUBLISHED && post.getStatusEnum() != PostStatus.SCHEDULED) {
+      AlertUtil.showAlert(this,R.string.error,post.isPage() ? R.string.page_not_published : R.string.post_not_published);
+      return;
+    }
+    Intent share=new Intent(Intent.ACTION_SEND);
+    share.setType("text/plain");
+    share.putExtra(Intent.EXTRA_SUBJECT,post.getTitle());
+    String shortlink=WPMeShortlinks.getPostShortlink(WordPress.getCurrentBlog(),post);
+    share.putExtra(Intent.EXTRA_TEXT,shortlink != null ? shortlink : post.getPermaLink());
+    startActivity(Intent.createChooser(share,getResources().getText(R.string.share_url)));
+    AppLockManager.getInstance().setExtendedTimeout();
     WPMobileStatsUtil.flagProperty(statEventForViewClosing(),WPMobileStatsUtil.StatsPropertyPostDetailClickedShare);
   }
  else   if (action == POST_CLEAR) {

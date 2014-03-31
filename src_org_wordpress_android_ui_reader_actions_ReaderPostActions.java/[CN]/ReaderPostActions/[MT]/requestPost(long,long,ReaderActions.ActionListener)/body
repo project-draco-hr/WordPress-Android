@@ -1,9 +1,11 @@
 {
-  String path="sites/" + blogId + "/posts/"+ postId+ "/?meta=site";
+  String path="sites/" + blogId + "/posts/"+ postId+ "/?meta=site,likes";
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       ReaderPost post=ReaderPost.fromJson(jsonObject);
+      post.blogId=blogId;
       ReaderPostTable.addOrUpdatePost(post);
+      handlePostLikes(post,jsonObject);
       if (actionListener != null)       actionListener.onActionResult(true);
     }
   }
@@ -16,5 +18,5 @@
   }
 ;
   AppLog.d(T.READER,"requesting post");
-  WordPress.restClient.get(path,null,null,listener,errorListener);
+  WordPress.getRestClientUtils().get(path,null,null,listener,errorListener);
 }

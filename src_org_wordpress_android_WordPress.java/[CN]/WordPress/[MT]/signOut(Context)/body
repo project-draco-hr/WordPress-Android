@@ -1,23 +1,17 @@
 {
-  NotificationUtils.unregisterDevicePushNotifications(context);
+  removeWpComUserRelatedData(context);
   try {
-    GCMRegistrar.checkDevice(context);
-    GCMRegistrar.unregister(context);
+    SelfSignedSSLCertsManager.getInstance(context).emptyLocalKeyStoreFile();
   }
- catch (  Exception e) {
-    AppLog.v(T.NOTIFS,"Could not unregister for GCM: " + e.getMessage());
+ catch (  GeneralSecurityException e) {
+    AppLog.e(T.UTILS,"Error while cleaning the Local KeyStore File",e);
   }
-  SharedPreferences.Editor editor=PreferenceManager.getDefaultSharedPreferences(context).edit();
-  editor.remove(WordPress.WPCOM_USERNAME_PREFERENCE);
-  editor.remove(WordPress.WPCOM_PASSWORD_PREFERENCE);
-  editor.remove(WordPress.ACCESS_TOKEN_PREFERENCE);
-  editor.commit();
-  wpDB.deactivateAccounts();
+catch (  IOException e) {
+    AppLog.e(T.UTILS,"Error while cleaning the Local KeyStore File",e);
+  }
+  wpDB.deleteAllAccounts();
   wpDB.updateLastBlogId(-1);
   currentBlog=null;
-  UserPrefs.reset();
-  ReaderDatabase.reset();
-  WordPress.wpDB.clearNotes();
   Intent broadcastIntent=new Intent();
   broadcastIntent.setAction(BROADCAST_ACTION_SIGNOUT);
   context.sendBroadcast(broadcastIntent);

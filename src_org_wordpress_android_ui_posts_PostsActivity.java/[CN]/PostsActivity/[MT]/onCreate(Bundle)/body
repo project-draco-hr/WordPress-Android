@@ -11,14 +11,7 @@
     return;
   }
   if (WordPress.shouldRestoreSelectedActivity && WordPress.getCurrentBlog() != null && !(this instanceof PagesActivity)) {
-    new ApiHelper.RefreshBlogContentTask(this,WordPress.getCurrentBlog(),new ApiHelper.GenericCallback(){
-      @Override public void onSuccess(){
-        if (!isFinishing())         updateMenuDrawer();
-      }
-      @Override public void onFailure(      ApiHelper.ErrorType errorType,      String errorMessage,      Throwable throwable){
-      }
-    }
-).execute(false);
+    new ApiHelper.RefreshBlogContentTask(this,WordPress.getCurrentBlog(),new RefreshBlogContentCallback()).execute(false);
     WordPress.shouldRestoreSelectedActivity=false;
     SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
     int lastActivitySelection=settings.getInt(LAST_ACTIVITY_PREFERENCE,-1);
@@ -42,19 +35,13 @@
   fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
   mPostList=(PostsListFragment)fm.findFragmentById(R.id.postList);
   if (extras != null) {
-    mIsPage=extras.getBoolean("viewPages");
+    mIsPage=extras.getBoolean(EXTRA_VIEW_PAGES);
     showErrorDialogIfNeeded(extras);
   }
   if (mIsPage)   setTitle(getString(R.string.pages));
  else   setTitle(getString(R.string.posts));
   WordPress.currentPost=null;
-  WordPress.setOnPostUploadedListener(new WordPress.OnPostUploadedListener(){
-    @Override public void OnPostUploaded(){
-      if (isFinishing())       return;
-      checkForLocalChanges(false);
-    }
-  }
-);
   if (savedInstanceState != null)   popPostDetail();
+  attemptToSelectPost();
   WPMobileStatsUtil.trackEventForWPCom(statEventForViewOpening());
 }

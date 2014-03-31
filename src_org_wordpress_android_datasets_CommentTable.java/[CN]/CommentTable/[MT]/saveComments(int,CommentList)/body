@@ -1,0 +1,35 @@
+{
+  if (comments == null || comments.size() == 0)   return false;
+  final String sql=" INSERT OR REPLACE INTO " + COMMENTS_TABLE + "("+ " blog_id,"+ " post_id,"+ " comment_id,"+ " comment,"+ " published,"+ " status,"+ " author_name,"+ " author_url,"+ " author_email,"+ " post_title,"+ " profile_image_url"+ " ) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11)";
+  SQLiteDatabase db=getWritableDb();
+  SQLiteStatement stmt=db.compileStatement(sql);
+  db.beginTransaction();
+  try {
+    try {
+      for (      Comment comment : comments) {
+        stmt.bindLong(1,localBlogId);
+        stmt.bindLong(2,comment.postID);
+        stmt.bindLong(3,comment.commentID);
+        stmt.bindString(4,comment.getCommentText());
+        stmt.bindString(5,comment.getPublished());
+        stmt.bindString(6,comment.getStatus());
+        stmt.bindString(7,comment.getAuthorName());
+        stmt.bindString(8,comment.getAuthorUrl());
+        stmt.bindString(9,comment.getAuthorEmail());
+        stmt.bindString(10,comment.getPostTitle());
+        stmt.bindString(11,comment.getProfileImageUrl());
+        stmt.execute();
+      }
+      db.setTransactionSuccessful();
+      return true;
+    }
+ catch (    SQLiteException e) {
+      AppLog.e(AppLog.T.COMMENTS,e);
+      return false;
+    }
+  }
+  finally {
+    db.endTransaction();
+    SqlUtils.closeStatement(stmt);
+  }
+}

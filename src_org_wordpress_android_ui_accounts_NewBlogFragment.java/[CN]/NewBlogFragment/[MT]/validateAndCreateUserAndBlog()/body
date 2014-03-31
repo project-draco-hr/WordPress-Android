@@ -3,12 +3,15 @@
     AlertUtil.showAlert(getActivity(),R.string.no_network_title,R.string.no_network_message);
     return;
   }
-  if (!checkUserData())   return;
+  if (!isUserDataValid())   return;
+  if (View.VISIBLE == mProgressBarSignIn.getVisibility()) {
+    return;
+  }
   startProgress(getString(R.string.validating_site_data));
   final String siteUrl=mSiteUrlTextField.getText().toString().trim();
   final String siteName=mSiteTitleTextField.getText().toString().trim();
   final String language=CreateUserAndBlog.getDeviceLanguage(getActivity().getResources());
-  CreateUserAndBlog createUserAndBlog=new CreateUserAndBlog("","","",siteUrl,siteName,language,restClient,getActivity(),new ErrorListener(),new CreateUserAndBlog.Callback(){
+  CreateUserAndBlog createUserAndBlog=new CreateUserAndBlog("","","",siteUrl,siteName,language,getRestClientUtils(),getActivity(),new ErrorListener(),new CreateUserAndBlog.Callback(){
     @Override public void onStepFinished(    CreateUserAndBlog.Step step){
       if (getActivity() != null) {
         updateProgress(getString(R.string.create_new_blog_wpcom));

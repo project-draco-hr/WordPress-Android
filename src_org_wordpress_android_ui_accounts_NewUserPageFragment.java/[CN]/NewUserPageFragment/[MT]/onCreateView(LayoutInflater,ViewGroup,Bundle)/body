@@ -13,7 +13,7 @@
   mSignupButton.setOnClickListener(signupClickListener);
   mSignupButton.setEnabled(false);
   mProgressTextSignIn=(WPTextView)rootView.findViewById(R.id.nux_sign_in_progress_text);
-  mProgressBarSignIn=(ProgressBar)rootView.findViewById(R.id.nux_sign_in_progress_bar);
+  mProgressBarSignIn=(RelativeLayout)rootView.findViewById(R.id.nux_sign_in_progress_bar);
   mEmailTextField=(EditText)rootView.findViewById(R.id.email_address);
   mEmailTextField.setText(UserEmail.getPrimaryEmail(getActivity()));
   mEmailTextField.setSelection(mEmailTextField.getText().toString().length());
@@ -29,6 +29,7 @@
     @Override public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
     }
     @Override public void onTextChanged(    CharSequence s,    int start,    int before,    int count){
+      mSiteUrlTextField.setError(null);
       mSiteUrlTextField.setText(mUsernameTextField.getText().toString());
     }
     @Override public void afterTextChanged(    Editable s){
@@ -43,5 +44,7 @@
     }
   }
 );
+  initPasswordVisibilityButton(rootView,mPasswordTextField);
+  initInfoButton(rootView);
   return rootView;
 }

@@ -7,7 +7,7 @@
     return 0;
   }
   String blogId=String.valueOf(blog.getLocalTableBlogId());
-  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
   Map<String,Object> filter=new HashMap<String,Object>();
   filter.put("number",50);
   filter.put("offset",mOffset);
@@ -22,12 +22,21 @@
   try {
     results=(Object[])client.call("wp.getMediaLibrary",apiParams);
   }
- catch (  XMLRPCException e) {
-    AppLog.e(T.API,e);
-    if (e.getMessage().contains("401")) {
-      setError(ErrorType.NO_UPLOAD_FILES_CAP,e.getMessage(),e);
-      return 0;
-    }
+ catch (  ClassCastException cce) {
+    setError(ErrorType.INVALID_RESULT,cce.getMessage(),cce);
+    return 0;
+  }
+catch (  XMLRPCException e) {
+    prepareErrorMessage(e);
+    return 0;
+  }
+catch (  IOException e) {
+    prepareErrorMessage(e);
+    return 0;
+  }
+catch (  XmlPullParserException e) {
+    prepareErrorMessage(e);
+    return 0;
   }
   if (blogId == null) {
     setError(ErrorType.INVALID_CURRENT_BLOG,"Invalid blogId");
