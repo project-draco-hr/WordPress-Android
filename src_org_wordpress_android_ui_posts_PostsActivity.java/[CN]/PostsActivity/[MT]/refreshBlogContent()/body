@@ -1,0 +1,19 @@
+{
+  ApiHelper.GenericCallback callback=new ApiHelper.GenericCallback(){
+    @Override public void onSuccess(){
+      if (isFinishing()) {
+        return;
+      }
+      updateMenuDrawer();
+      mPostList.setRefreshing(false);
+    }
+    @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
+      if (isFinishing()) {
+        return;
+      }
+      mPostList.setRefreshing(false);
+    }
+  }
+;
+  new ApiHelper.RefreshBlogContentTask(this,WordPress.getCurrentBlog(),callback).execute(false);
+}
