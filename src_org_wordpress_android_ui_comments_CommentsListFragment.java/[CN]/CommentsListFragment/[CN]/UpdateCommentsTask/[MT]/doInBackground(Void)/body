@@ -5,6 +5,10 @@
     isError=true;
     return null;
   }
+  if (!mHasCheckedDeletedComments && !isLoadingMore) {
+    mHasCheckedDeletedComments=true;
+    ApiHelper.removeDeletedComments(blog);
+  }
   Map<String,Object> hPost=new HashMap<String,Object>();
   if (isLoadingMore) {
     int numExisting=getCommentAdapter().getCount();
@@ -19,7 +23,6 @@
     return ApiHelper.refreshComments(getActivity(),blog,params);
   }
  catch (  Exception e) {
-    xmlRpcErrorMessage=e.getMessage();
     isError=true;
     return null;
   }
