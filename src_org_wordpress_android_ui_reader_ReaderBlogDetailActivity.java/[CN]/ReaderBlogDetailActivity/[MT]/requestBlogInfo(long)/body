@@ -4,11 +4,16 @@
     showBlogInfo(blogInfo);
   }
  else {
+    showLoadingProgress();
     showBlogInfo(null);
   }
   ReaderBlogActions.updateBlogInfo(blogId,new ReaderActions.ActionListener(){
     @Override public void onActionResult(    boolean succeeded){
-      if (succeeded && !isFinishing()) {
+      if (isFinishing()) {
+        return;
+      }
+      hideLoadingProgress();
+      if (succeeded) {
         showBlogInfo(ReaderBlogTable.getBlogInfo(blogId));
       }
     }
