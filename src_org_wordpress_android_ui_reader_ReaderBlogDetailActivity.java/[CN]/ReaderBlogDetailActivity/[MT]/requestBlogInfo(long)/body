@@ -1,0 +1,17 @@
+{
+  ReaderBlogInfo blogInfo=ReaderBlogTable.getBlogInfo(blogId);
+  if (blogInfo != null) {
+    showBlogInfo(blogInfo);
+  }
+ else {
+    showBlogInfo(null);
+  }
+  ReaderBlogActions.updateBlogInfo(blogId,new ReaderActions.ActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      if (succeeded && !isFinishing()) {
+        showBlogInfo(ReaderBlogTable.getBlogInfo(blogId));
+      }
+    }
+  }
+);
+}

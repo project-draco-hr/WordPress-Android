@@ -4,9 +4,11 @@
   }
   AniUtils.zoomAction(txtFollow);
   boolean isCurrentlyFollowing=ReaderBlogTable.isFollowedBlogUrl(blogInfo.getUrl());
-  BlogAction blogAction=(isCurrentlyFollowing ? BlogAction.UNFOLLOW : BlogAction.FOLLOW);
+  ReaderBlogActions.BlogAction blogAction=(isCurrentlyFollowing ? ReaderBlogActions.BlogAction.UNFOLLOW : ReaderBlogActions.BlogAction.FOLLOW);
   if (!ReaderBlogActions.performBlogAction(blogAction,blogInfo.getUrl()))   return;
   boolean isNowFollowing=!isCurrentlyFollowing;
   showBlogFollowStatus(txtFollow,isNowFollowing);
-  updateFollowStatusOnPostsForBlog(blogInfo.blogId,isNowFollowing);
+  if (hasListFragment()) {
+    getListFragment().updateFollowStatusOnPostsForBlog(blogInfo.blogId,isNowFollowing);
+  }
 }
