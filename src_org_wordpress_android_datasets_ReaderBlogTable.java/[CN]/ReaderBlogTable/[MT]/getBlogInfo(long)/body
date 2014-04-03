@@ -1,0 +1,21 @@
+{
+  String args[]={Long.toString(blogId)};
+  String sql="SELECT blog_id, name, description, url, is_private, is_jetpack, is_following, num_followers FROM tbl_blog_info WHERE blog_id=?";
+  Cursor c=ReaderDatabase.getReadableDb().rawQuery(sql,args);
+  try {
+    if (!c.moveToFirst())     return null;
+    ReaderBlogInfo blog=new ReaderBlogInfo();
+    blog.blogId=c.getLong(0);
+    blog.setName(c.getString(1));
+    blog.setDescription(c.getString(2));
+    blog.setUrl(c.getString(3));
+    blog.isPrivate=SqlUtils.sqlToBool(c.getInt(4));
+    blog.isJetpack=SqlUtils.sqlToBool(c.getInt(5));
+    blog.isFollowing=SqlUtils.sqlToBool(c.getInt(6));
+    blog.numSubscribers=c.getInt(7);
+    return blog;
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+}

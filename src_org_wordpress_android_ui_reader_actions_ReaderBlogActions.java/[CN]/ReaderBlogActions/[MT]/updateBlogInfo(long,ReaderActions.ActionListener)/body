@@ -1,0 +1,16 @@
+{
+  RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      handleUpdateBlogInfoResponse(jsonObject,actionListener);
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.READER,volleyError);
+      if (actionListener != null)       actionListener.onActionResult(false);
+    }
+  }
+;
+  WordPress.getRestClientUtils().get("/sites/" + blogId,listener,errorListener);
+}

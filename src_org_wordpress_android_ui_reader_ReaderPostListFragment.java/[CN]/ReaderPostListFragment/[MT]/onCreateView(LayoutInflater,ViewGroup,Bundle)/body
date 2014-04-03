@@ -1,4 +1,5 @@
 {
+  Context context=container.getContext();
   final View view=inflater.inflate(R.layout.reader_fragment_post_list,container,false);
   mListView=(ListView)view.findViewById(android.R.id.list);
   mNewPostsBar=(TextView)view.findViewById(R.id.text_new_posts);
@@ -11,11 +12,15 @@
   }
 );
   if (isFullScreenSupported()) {
-    Context context=container.getContext();
     ReaderFullScreenUtils.addListViewHeader(context,mListView);
     final int actionbarHeight=DisplayUtils.getActionBarHeight(context);
     RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)mNewPostsBar.getLayoutParams();
     params.topMargin=actionbarHeight;
+  }
+  if (getPostListType() == ReaderPostListType.BLOG) {
+    mBlogHeaderView=inflater.inflate(R.layout.reader_blog_header,mListView);
+    mListView.addHeaderView(mBlogHeaderView,null,false);
+    requestBlogInfo();
   }
   mEmptyView=view.findViewById(R.id.empty_view);
   mListView.setOnScrollListener(this);

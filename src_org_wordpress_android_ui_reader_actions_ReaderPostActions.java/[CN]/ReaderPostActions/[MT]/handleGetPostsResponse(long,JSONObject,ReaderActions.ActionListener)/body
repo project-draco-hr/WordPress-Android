@@ -1,0 +1,14 @@
+{
+  if (jsonObject == null) {
+    if (actionListener != null)     actionListener.onActionResult(false);
+    return;
+  }
+  ReaderPostList posts=ReaderPostList.fromJson(jsonObject);
+  for (  ReaderPost post : posts) {
+    post.blogId=blogId;
+  }
+  ReaderPostTable.addOrUpdatePosts(null,posts);
+  if (actionListener != null) {
+    actionListener.onActionResult(posts.size() > 0 ? true : false);
+  }
+}
