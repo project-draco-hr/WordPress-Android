@@ -14,19 +14,14 @@
       }
       mAccountIDs[i]=(Integer)curHash.get("id");
       try {
-        blog=new Blog(mAccountIDs[i]);
+        blog=WordPress.wpDB.instantiateBlogByLocalId(mAccountIDs[i]);
       }
  catch (      Exception e) {
-        showBlogErrorAndFinish();
+        ToastUtils.showToast(this,R.string.blog_not_found,ToastUtils.Duration.SHORT);
         return null;
       }
     }
     return blogNames;
   }
- else {
-    Toast.makeText(this,getResources().getText(R.string.no_account),Toast.LENGTH_LONG).show();
-    startActivity(new Intent(this,WelcomeActivity.class));
-    finish();
-    return null;
-  }
+  return null;
 }

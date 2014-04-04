@@ -1,29 +1,4 @@
 {
   if (WordPress.getCurrentBlog() == null)   return;
   final String blogId=String.valueOf(WordPress.getCurrentBlog());
-  WordPress.restClient.getStatsVideoSummary(blogId,new Listener(){
-    @Override public void onResponse(    final JSONObject response){
-      new AsyncTask<Void,Void,Void>(){
-        @Override protected Void doInBackground(        Void... params){
-          StatUtils.saveVideoSummary(blogId,response);
-          return null;
-        }
-        protected void onPostExecute(        Void result){
-          if (getActivity() == null)           return;
-          getActivity().runOnUiThread(new Runnable(){
-            @Override public void run(){
-              refreshSummary();
-            }
-          }
-);
-        }
-      }
-.execute();
-    }
-  }
-,new ErrorListener(){
-    @Override public void onErrorResponse(    VolleyError error){
-    }
-  }
-);
 }

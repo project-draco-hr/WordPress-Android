@@ -2,15 +2,16 @@
   super.onResume();
   mIsInFront=true;
   LocalBroadcastManager lbm=LocalBroadcastManager.getInstance(this);
-  lbm.registerReceiver(mReceiver,new IntentFilter(StatsRestHelper.REFRESH_VIEW_TYPE));
-  if (!WordPress.getCurrentBlog().isDotcomFlag() && !WordPress.getCurrentBlog().hasValidJetpackCredentials() && mResultCode != RESULT_CANCELED) {
+  lbm.registerReceiver(mReceiver,new IntentFilter(StatsService.ACTION_STATS_UPDATING));
+  if (WordPress.getCurrentBlog() != null && !WordPress.getCurrentBlog().isDotcomFlag() && !WordPress.getCurrentBlog().hasValidJetpackCredentials() && mResultCode != RESULT_CANCELED) {
     if (WordPress.hasValidWPComCredentials(this)) {
       SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
       String username=settings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,null);
       String password=WordPressDB.decryptPassword(settings.getString(WordPress.WPCOM_PASSWORD_PREFERENCE,null));
       WordPress.getCurrentBlog().setDotcom_username(username);
       WordPress.getCurrentBlog().setDotcom_password(password);
-      WordPress.getCurrentBlog().save();
+      WordPress.wpDB.saveBlog(WordPress.getCurrentBlog());
+      mPullToRefreshHelper.setRefreshing(true);
       refreshStats();
     }
  else {
@@ -18,5 +19,8 @@
     }
     return;
   }
-  if (!mIsRestoredFromState)   refreshStats();
+  if (!mIsRestoredFromState) {
+    mPullToRefreshHelper.setRefreshing(true);
+    refreshStats();
+  }
 }

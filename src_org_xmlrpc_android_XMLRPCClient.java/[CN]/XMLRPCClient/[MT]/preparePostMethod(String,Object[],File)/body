@@ -1,0 +1,57 @@
+{
+  if (method.equals("wp.uploadFile")) {
+    if (!tempFile.exists() && !tempFile.mkdirs()) {
+      throw new XMLRPCException("Path to file could not be created.");
+    }
+    FileWriter fileWriter=new FileWriter(tempFile);
+    mSerializer.setOutput(fileWriter);
+    mSerializer.startDocument(null,null);
+    mSerializer.startTag(null,TAG_METHOD_CALL);
+    mSerializer.startTag(null,TAG_METHOD_NAME).text(method).endTag(null,TAG_METHOD_NAME);
+    if (params != null && params.length != 0) {
+      mSerializer.startTag(null,TAG_PARAMS);
+      for (int i=0; i < params.length; i++) {
+        mSerializer.startTag(null,TAG_PARAM).startTag(null,XMLRPCSerializer.TAG_VALUE);
+        XMLRPCSerializer.serialize(mSerializer,params[i]);
+        mSerializer.endTag(null,XMLRPCSerializer.TAG_VALUE).endTag(null,TAG_PARAM);
+      }
+      mSerializer.endTag(null,TAG_PARAMS);
+    }
+    mSerializer.endTag(null,TAG_METHOD_CALL);
+    mSerializer.endDocument();
+    fileWriter.flush();
+    fileWriter.close();
+    FileEntity fEntity=new FileEntity(tempFile,"text/xml; charset=\"UTF-8\"");
+    fEntity.setContentType("text/xml");
+    mPostMethod.setEntity(fEntity);
+  }
+ else {
+    StringWriter bodyWriter=new StringWriter();
+    mSerializer.setOutput(bodyWriter);
+    mSerializer.startDocument(null,null);
+    mSerializer.startTag(null,TAG_METHOD_CALL);
+    mSerializer.startTag(null,TAG_METHOD_NAME).text(method).endTag(null,TAG_METHOD_NAME);
+    if (params != null && params.length != 0) {
+      mSerializer.startTag(null,TAG_PARAMS);
+      for (int i=0; i < params.length; i++) {
+        mSerializer.startTag(null,TAG_PARAM).startTag(null,XMLRPCSerializer.TAG_VALUE);
+        if (method.equals("metaWeblog.editPost") || method.equals("metaWeblog.newPost")) {
+          XMLRPCSerializer.serialize(mSerializer,params[i]);
+        }
+ else {
+          XMLRPCSerializer.serialize(mSerializer,params[i]);
+        }
+        mSerializer.endTag(null,XMLRPCSerializer.TAG_VALUE).endTag(null,TAG_PARAM);
+      }
+      mSerializer.endTag(null,TAG_PARAMS);
+    }
+    mSerializer.endTag(null,TAG_METHOD_CALL);
+    mSerializer.endDocument();
+    HttpEntity entity=new StringEntity(bodyWriter.toString());
+    mPostMethod.setEntity(entity);
+  }
+  mClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT,DEFAULT_CONNECTION_TIMEOUT);
+  mClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT,DEFAULT_SOCKET_TIMEOUT);
+  mPostMethod.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT,DEFAULT_CONNECTION_TIMEOUT);
+  mPostMethod.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT,DEFAULT_SOCKET_TIMEOUT);
+}

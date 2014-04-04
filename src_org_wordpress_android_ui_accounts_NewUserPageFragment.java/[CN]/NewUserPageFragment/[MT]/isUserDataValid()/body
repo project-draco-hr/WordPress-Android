@@ -1,0 +1,42 @@
+{
+  final String email=mEmailTextField.getText().toString().trim();
+  final String password=mPasswordTextField.getText().toString().trim();
+  final String username=mUsernameTextField.getText().toString().trim();
+  final String siteUrl=mSiteUrlTextField.getText().toString().trim();
+  boolean retValue=true;
+  if (email.equals("")) {
+    showEmailError(R.string.required_field);
+    retValue=false;
+  }
+  final Pattern emailRegExPattern=Patterns.EMAIL_ADDRESS;
+  Matcher matcher=emailRegExPattern.matcher(email);
+  if (!matcher.find() || email.length() > 100) {
+    showEmailError(R.string.invalid_email_message);
+    retValue=false;
+  }
+  if (username.equals("")) {
+    showUsernameError(R.string.required_field);
+    retValue=false;
+  }
+  if (username.length() < 4) {
+    showUsernameError(R.string.invalid_username_too_short);
+    retValue=false;
+  }
+  if (username.length() > 60) {
+    showUsernameError(R.string.invalid_username_too_long);
+    retValue=false;
+  }
+  if (siteUrl.length() < 4) {
+    showSiteUrlError(R.string.blog_name_must_be_at_least_four_characters);
+    retValue=false;
+  }
+  if (password.equals("")) {
+    showPasswordError(R.string.required_field);
+    retValue=false;
+  }
+  if (password.length() < 4) {
+    showPasswordError(R.string.invalid_password_message);
+    retValue=false;
+  }
+  return retValue;
+}

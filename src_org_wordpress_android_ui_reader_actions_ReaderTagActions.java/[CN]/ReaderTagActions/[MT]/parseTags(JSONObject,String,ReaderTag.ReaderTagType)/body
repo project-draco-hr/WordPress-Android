@@ -1,0 +1,17 @@
+{
+  ReaderTagList topics=new ReaderTagList();
+  if (jsonObject == null)   return topics;
+  JSONObject jsonTopics=jsonObject.optJSONObject(name);
+  if (jsonTopics == null)   return topics;
+  Iterator<String> it=jsonTopics.keys();
+  while (it.hasNext()) {
+    String internalName=it.next();
+    JSONObject jsonTopic=jsonTopics.optJSONObject(internalName);
+    if (jsonTopic != null) {
+      String tagName=JSONUtil.getStringDecoded(jsonTopic,"title");
+      String endpoint=JSONUtil.getString(jsonTopic,"URL");
+      topics.add(new ReaderTag(tagName,endpoint,topicType));
+    }
+  }
+  return topics;
+}

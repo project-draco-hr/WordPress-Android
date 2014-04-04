@@ -1,0 +1,13 @@
+{
+  if (mIsUpdatingComments) {
+    AppLog.w(AppLog.T.COMMENTS,"update comments task already running");
+    return;
+  }
+  mUpdateCommentsTask=new UpdateCommentsTask(loadMore);
+  if (SysUtils.canUseExecuteOnExecutor()) {
+    mUpdateCommentsTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+  }
+ else {
+    mUpdateCommentsTask.execute();
+  }
+}

@@ -1,0 +1,21 @@
+{
+  String action=getIntent().getAction();
+  if (intent != null) {
+    intent.setAction(action);
+    intent.setType(getIntent().getType());
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.putExtra(Intent.EXTRA_TEXT,getIntent().getStringExtra(Intent.EXTRA_TEXT));
+    intent.putExtra(Intent.EXTRA_SUBJECT,getIntent().getStringExtra(Intent.EXTRA_SUBJECT));
+    if (Intent.ACTION_SEND_MULTIPLE.equals(action)) {
+      ArrayList<Uri> extra=getIntent().getParcelableArrayListExtra((Intent.EXTRA_STREAM));
+      intent.putExtra(Intent.EXTRA_STREAM,extra);
+    }
+ else {
+      Uri extra=getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+      intent.putExtra(Intent.EXTRA_STREAM,extra);
+    }
+    savePreferences();
+    startActivity(intent);
+    finish();
+  }
+}

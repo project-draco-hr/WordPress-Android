@@ -1,5 +1,8 @@
 {
   super.onBlogChanged();
+  stopStatsService();
+  scrollToTop();
+  mHasVerifiedCreds=false;
   FragmentManager fm=getSupportFragmentManager();
   FragmentTransaction ft=fm.beginTransaction();
   StatsAbsViewFragment fragment;
@@ -18,5 +21,6 @@
   fragment=StatsReferrersFragment.newInstance(StatsViewType.REFERRERS);
   ft.replace(R.id.stats_referrers_container,fragment,StatsReferrersFragment.TAG);
   ft.commit();
+  mPullToRefreshHelper.setRefreshing(true);
   refreshStats();
 }

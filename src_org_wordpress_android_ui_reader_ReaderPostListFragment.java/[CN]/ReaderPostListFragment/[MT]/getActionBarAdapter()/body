@@ -1,0 +1,21 @@
+{
+  if (mActionBarAdapter == null) {
+    ReaderActions.DataLoadedListener dataListener=new ReaderActions.DataLoadedListener(){
+      @Override public void onDataLoaded(      boolean isEmpty){
+        if (!hasActivity())         return;
+        AppLog.d(T.READER,"reader post list > ActionBar adapter loaded");
+        selectTagInActionBar(getCurrentTag());
+      }
+    }
+;
+    boolean isStaticMenuDrawer;
+    if (getActivity() instanceof WPActionBarActivity) {
+      isStaticMenuDrawer=((WPActionBarActivity)getActivity()).isStaticMenuDrawer();
+    }
+ else {
+      isStaticMenuDrawer=false;
+    }
+    mActionBarAdapter=new ReaderActionBarTagAdapter(getActivity(),isStaticMenuDrawer,dataListener);
+  }
+  return mActionBarAdapter;
+}

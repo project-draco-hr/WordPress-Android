@@ -1,0 +1,40 @@
+{
+  if (filePath == null)   return null;
+  Uri curStream;
+  String title;
+  if (!filePath.contains("content://"))   curStream=Uri.parse("content://media" + filePath);
+ else   curStream=Uri.parse(filePath);
+  if (filePath.contains("video")) {
+    return "Video";
+  }
+ else {
+    String[] projection=new String[]{Images.Thumbnails.DATA};
+    Cursor cur;
+    try {
+      cur=ctx.getContentResolver().query(curStream,projection,null,null,null);
+    }
+ catch (    Exception e1) {
+      AppLog.e(T.UTILS,e1);
+      return null;
+    }
+    File jpeg;
+    if (cur != null) {
+      String thumbData="";
+      if (cur.moveToFirst()) {
+        int dataColumn=cur.getColumnIndex(Images.Media.DATA);
+        thumbData=cur.getString(dataColumn);
+      }
+      cur.close();
+      if (thumbData == null) {
+        return null;
+      }
+      jpeg=new File(thumbData);
+    }
+ else {
+      String path=filePath.toString().replace("file://","");
+      jpeg=new File(path);
+    }
+    title=jpeg.getName();
+    return title;
+  }
+}

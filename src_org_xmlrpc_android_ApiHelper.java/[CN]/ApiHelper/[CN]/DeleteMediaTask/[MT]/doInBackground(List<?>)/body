@@ -1,15 +1,31 @@
 {
   List<?> arguments=params[0];
   Blog blog=(Blog)arguments.get(0);
-  if (blog == null)   return false;
-  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
-  Object[] apiParams=new Object[]{blog.getBlogId(),blog.getUsername(),blog.getPassword(),mMediaId};
-  Boolean result=null;
+  if (blog == null) {
+    setError(ErrorType.INVALID_CONTEXT,"ApiHelper - invalid blog");
+    return null;
+  }
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
+  Object[] apiParams=new Object[]{blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),mMediaId};
   try {
-    if (client != null)     result=(Boolean)client.call("wp.deletePost",apiParams);
+    if (client != null) {
+      Boolean result=(Boolean)client.call("wp.deletePost",apiParams);
+      if (!result) {
+        setError(ErrorType.INVALID_RESULT,"wp.deletePost returned false");
+      }
+    }
   }
- catch (  XMLRPCException e) {
-    Log.e("WordPress","XMLRPCException: " + e.getMessage());
+ catch (  ClassCastException cce) {
+    setError(ErrorType.INVALID_RESULT,cce.getMessage(),cce);
   }
-  return result;
+catch (  XMLRPCException e) {
+    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
+  }
+catch (  IOException e) {
+    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
+  }
+catch (  XmlPullParserException e) {
+    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
+  }
+  return null;
 }

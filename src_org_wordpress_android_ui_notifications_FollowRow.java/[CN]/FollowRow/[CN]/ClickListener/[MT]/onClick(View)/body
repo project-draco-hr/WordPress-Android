@@ -1,15 +1,14 @@
 {
-  if (!hasListener()) {
+  if (!hasFollowListener()) {
     return;
   }
-  ImageButton followButton=getFollowButton();
-  OnFollowListener listener=getListener();
+  if (!NetworkUtils.checkConnection(getContext()))   return;
+  updateFollowButton(!isFollowing());
+  AniUtils.zoomAction(getFollowButton());
   if (isFollowing()) {
-    followButton.setImageResource(R.drawable.follow_plus);
-    listener.onUnfollow(FollowRow.this,getSiteId());
+    getFollowListener().onUnfollow(FollowRow.this,getSiteId());
   }
  else {
-    followButton.setImageResource(R.drawable.follow_minus);
-    listener.onFollow(FollowRow.this,getSiteId());
+    getFollowListener().onFollow(FollowRow.this,getSiteId());
   }
 }

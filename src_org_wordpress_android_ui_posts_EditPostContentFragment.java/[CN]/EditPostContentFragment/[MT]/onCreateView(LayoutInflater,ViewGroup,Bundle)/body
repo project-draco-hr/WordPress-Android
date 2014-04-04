@@ -5,12 +5,21 @@
   mTitleEditText=(EditText)rootView.findViewById(R.id.post_title);
   mTitleEditText.setOnEditorActionListener(new TextView.OnEditorActionListener(){
     @Override public boolean onEditorAction(    TextView v,    int actionId,    KeyEvent event){
-      if (actionId == EditorInfo.IME_ACTION_NEXT && mActivity.getSupportActionBar().isShowing())       setContentEditingModeVisible(true);
+      if (actionId == EditorInfo.IME_ACTION_NEXT && mActivity.getSupportActionBar().isShowing()) {
+        setContentEditingModeVisible(true);
+      }
       return false;
     }
   }
 );
   mContentEditText=(WPEditText)rootView.findViewById(R.id.post_content);
+  if (Build.VERSION.SDK_INT <= VERSION_CODES.GINGERBREAD_MR1) {
+    mContentEditText.setBackgroundResource(android.R.drawable.editbox_background_normal);
+    LinearLayout.LayoutParams layoutParams=(LinearLayout.LayoutParams)mContentEditText.getLayoutParams();
+    int sideMargin=mActivity.getResources().getDimensionPixelSize(R.dimen.post_editor_content_side_margin_gingerbread);
+    layoutParams.setMargins(sideMargin,layoutParams.topMargin,sideMargin,layoutParams.bottomMargin);
+    mContentEditText.setLayoutParams(layoutParams);
+  }
   mPostContentLinearLayout=(LinearLayout)rootView.findViewById(R.id.post_content_wrapper);
   mPostSettingsLinearLayout=(LinearLayout)rootView.findViewById(R.id.post_settings_wrapper);
   Button postSettingsButton=(Button)rootView.findViewById(R.id.post_settings_button);

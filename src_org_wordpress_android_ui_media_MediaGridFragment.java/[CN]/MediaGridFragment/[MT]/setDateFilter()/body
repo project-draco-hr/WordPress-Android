@@ -1,7 +1,7 @@
 {
   Blog blog=WordPress.getCurrentBlog();
-  if (blog == null)   return;
-  String blogId=String.valueOf(blog.getBlogId());
+  if (blog == null)   return null;
+  String blogId=String.valueOf(blog.getLocalTableBlogId());
   GregorianCalendar startDate=new GregorianCalendar(mStartYear,mStartMonth,mStartDay);
   GregorianCalendar endDate=new GregorianCalendar(mEndYear,mEndMonth,mEndDay);
   long one_day=24 * 60 * 60* 1000;
@@ -9,14 +9,16 @@
   mGridAdapter.swapCursor(cursor);
   if (cursor != null && cursor.moveToFirst()) {
     mResultView.setVisibility(View.VISIBLE);
+    setEmptyViewVisible(false);
     SimpleDateFormat fmt=new SimpleDateFormat("dd-MMM-yyyy");
     fmt.setCalendar(startDate);
     String formattedStart=fmt.format(startDate.getTime());
     String formattedEnd=fmt.format(endDate.getTime());
     mResultView.setText("Displaying media from " + formattedStart + " to "+ formattedEnd);
+    return cursor;
   }
  else {
-    mResultView.setVisibility(View.VISIBLE);
-    mResultView.setText(getResources().getString(R.string.empty_fields));
+    setEmptyViewVisible(true,R.string.media_empty_list_custom_date);
   }
+  return null;
 }

@@ -1,0 +1,30 @@
+{
+  if (!NetworkUtils.isNetworkAvailable(this))   return;
+  ReaderPostListFragment listFragment=getListFragment();
+  final boolean animateRefresh=(listFragment != null && ReaderTagTable.isEmpty());
+  if (animateRefresh) {
+    listFragment.setIsUpdating(true,RequestDataAction.LOAD_NEWER);
+  }
+  ReaderActions.UpdateResultListener listener=new ReaderActions.UpdateResultListener(){
+    @Override public void onUpdateResult(    UpdateResult result){
+      mHasPerformedInitialUpdate=true;
+      ReaderPostListFragment listFragment=getListFragment();
+      if (listFragment != null) {
+        if (animateRefresh) {
+          listFragment.setIsUpdating(false,RequestDataAction.LOAD_NEWER);
+        }
+        if (result == UpdateResult.CHANGED) {
+          listFragment.refreshTags();
+        }
+      }
+      AppLog.i(T.READER,"reader activity > updating current user");
+      ReaderUserActions.updateCurrentUser(null);
+      AppLog.i(T.READER,"reader activity > updating followed blogs");
+      ReaderBlogActions.updateFollowedBlogs();
+      AppLog.i(T.READER,"reader activity > updating cookies");
+      ReaderAuthActions.updateCookies(ReaderActivity.this);
+    }
+  }
+;
+  ReaderTagActions.updateTags(listener);
+}

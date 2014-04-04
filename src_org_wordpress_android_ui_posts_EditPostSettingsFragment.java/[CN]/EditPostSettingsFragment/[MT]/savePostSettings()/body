@@ -5,9 +5,17 @@
   String pubDate=(mPubDateText.getText() != null) ? mPubDateText.getText().toString() : "";
   String excerpt=(mExcerptEditText.getText() != null) ? mExcerptEditText.getText().toString() : "";
   long pubDateTimestamp=0;
-  if (!pubDate.equals(getResources().getText(R.string.immediately))) {
+  if (mIsCustomPubDate && pubDate.equals(getResources().getText(R.string.immediately)) && !post.isLocalDraft()) {
+    Date d=new Date();
+    pubDateTimestamp=d.getTime();
+  }
+ else   if (!pubDate.equals(getResources().getText(R.string.immediately))) {
     if (mIsCustomPubDate)     pubDateTimestamp=mCustomPubDate;
  else     if (post.getDate_created_gmt() > 0)     pubDateTimestamp=post.getDate_created_gmt();
+  }
+ else   if (pubDate.equals(getResources().getText(R.string.immediately)) && post.isLocalDraft()) {
+    post.setDate_created_gmt(0);
+    post.setDateCreated(0);
   }
   String tags="", postFormat="";
   if (!post.isPage()) {
@@ -19,41 +27,36 @@
   String status="";
 switch (selectedStatus) {
 case 0:
-    status="publish";
+    status=PostStatus.toString(PostStatus.PUBLISHED);
   break;
 case 1:
-status="draft";
+status=PostStatus.toString(PostStatus.DRAFT);
 break;
 case 2:
-status="pending";
+status=PostStatus.toString(PostStatus.PENDING);
 break;
 case 3:
-status="private";
+status=PostStatus.toString(PostStatus.PRIVATE);
 break;
 }
-Double latitude=0.0;
-Double longitude=0.0;
-if (WordPress.getCurrentBlog().isLocation()) {
-try {
-latitude=mCurrentLocation.getLatitude();
-longitude=mCurrentLocation.getLongitude();
-}
- catch (Exception e) {
-e.printStackTrace();
-}
-}
+double latitude=0.0;
+double longitude=0.0;
 if (mCurrentLocation == null) {
 latitude=post.getLatitude();
 longitude=post.getLongitude();
 }
-post.setMt_excerpt(excerpt);
+ else if (WordPress.getCurrentBlog().isLocation() && !mActivity.getPost().isPage()) {
+latitude=mCurrentLocation.getLatitude();
+longitude=mCurrentLocation.getLongitude();
+}
+post.setPostExcerpt(excerpt);
 post.setDate_created_gmt(pubDateTimestamp);
 post.setJSONCategories(new JSONArray(mCategories));
-post.setMt_keywords(tags);
-post.setPost_status(status);
-post.setWP_password(password);
+post.setKeywords(tags);
+post.setPostStatus(status);
+post.setPassword(password);
 post.setLatitude(latitude);
 post.setLongitude(longitude);
-post.setWP_post_form(postFormat);
-post.update();
+post.setPostFormat(postFormat);
+WordPress.wpDB.updatePost(post);
 }

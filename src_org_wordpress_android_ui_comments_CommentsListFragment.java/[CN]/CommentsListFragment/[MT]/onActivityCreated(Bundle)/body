@@ -1,8 +1,13 @@
 {
   super.onActivityCreated(bundle);
-  TextView textview=(TextView)getListView().getEmptyView();
-  if (textview != null) {
-    textview.setText(getText(R.string.comments_empty_list));
+  setUpListView();
+  getCommentAdapter().loadComments();
+  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+    return;
   }
-  mListScrollPositionManager=new ListScrollPositionManager(getListView(),false);
+  if (!mHasAutoRefreshedComments) {
+    updateComments(false);
+    mPullToRefreshHelper.setRefreshing(true);
+    mHasAutoRefreshedComments=true;
+  }
 }

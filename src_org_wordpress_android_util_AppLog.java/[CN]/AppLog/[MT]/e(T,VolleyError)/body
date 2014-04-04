@@ -1,0 +1,16 @@
+{
+  if (volleyError == null) {
+    return;
+  }
+  String logText;
+  if (volleyError.networkResponse == null) {
+    logText=volleyError.getMessage();
+  }
+ else {
+    logText=volleyError.getMessage() + ", status " + volleyError.networkResponse.statusCode+ " - "+ volleyError.networkResponse.toString();
+  }
+  Log.e(TAG + "-" + tag.toString(),logText,volleyError);
+  addEntry(tag,LogLevel.w,logText);
+  addEntry(tag,LogLevel.e,"StackTrace: " + getHTMLStringStackTrace(volleyError));
+  crashlyticsLog(tag,volleyError,logText);
+}

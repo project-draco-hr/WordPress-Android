@@ -1,0 +1,16 @@
+{
+  Cursor cursor=db.query(NOTES_TABLE,new String[]{"raw_note_data"},"id=" + id,null,null,null,null);
+  cursor.moveToFirst();
+  try {
+    JSONObject jsonNote=new JSONObject(cursor.getString(0));
+    return new Note(jsonNote);
+  }
+ catch (  JSONException e) {
+    AppLog.e(T.DB,"Can't parse JSON Note: " + e);
+    return null;
+  }
+catch (  CursorIndexOutOfBoundsException e) {
+    AppLog.v(T.DB,"No Note with this id: " + e);
+    return null;
+  }
+}

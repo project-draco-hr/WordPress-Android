@@ -1,0 +1,60 @@
+{
+  DefaultHttpClient client=null;
+  if (uri.getHost().endsWith("wordpress.com")) {
+    mIsWpcom=true;
+  }
+  if (mIsWpcom || (uri.getScheme() == null || uri.getScheme().equals("http"))) {
+    client=new DefaultHttpClient();
+  }
+ else {
+    int port=uri.getPort();
+    if (port == -1) {
+      port=443;
+    }
+    try {
+      client=new ConnectionClient(port);
+    }
+ catch (    NoSuchAlgorithmException e) {
+      AppLog.e(T.API,"Cannot create the DefaultHttpClient object with our TrustAllSSLSocketFactory",e);
+      client=null;
+    }
+catch (    KeyStoreException e) {
+      AppLog.e(T.API,"Cannot create the DefaultHttpClient object with our TrustAllSSLSocketFactory",e);
+      client=null;
+    }
+catch (    UnrecoverableKeyException e) {
+      AppLog.e(T.API,"Cannot create the DefaultHttpClient object with our TrustAllSSLSocketFactory",e);
+      client=null;
+    }
+catch (    GeneralSecurityException e) {
+      AppLog.e(T.API,"Cannot create the DefaultHttpClient object with our TrustAllSSLSocketFactory",e);
+      client=null;
+    }
+    if (client == null) {
+      client=new DefaultHttpClient();
+    }
+  }
+  HttpConnectionParams.setConnectionTimeout(client.getParams(),DEFAULT_CONNECTION_TIMEOUT);
+  HttpConnectionParams.setSoTimeout(client.getParams(),DEFAULT_SOCKET_TIMEOUT);
+  if (usernamePasswordCredentials != null) {
+    BasicCredentialsProvider cP=new BasicCredentialsProvider();
+    cP.setCredentials(AuthScope.ANY,usernamePasswordCredentials);
+    client.setCredentialsProvider(cP);
+    HttpRequestInterceptor preemptiveAuth=new HttpRequestInterceptor(){
+      @Override public void process(      HttpRequest request,      HttpContext context) throws HttpException, IOException {
+        AuthState authState=(AuthState)context.getAttribute(ClientContext.TARGET_AUTH_STATE);
+        if (authState.getAuthScheme() == null) {
+          CredentialsProvider credsProvider=(CredentialsProvider)context.getAttribute(ClientContext.CREDS_PROVIDER);
+          HttpHost targetHost=(HttpHost)context.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
+          AuthScope authScope=new AuthScope(targetHost.getHostName(),targetHost.getPort());
+          Credentials creds=credsProvider.getCredentials(authScope);
+          authState.setCredentials(creds);
+          authState.setAuthScheme(new BasicScheme());
+        }
+      }
+    }
+;
+    client.addRequestInterceptor(preemptiveAuth,0);
+  }
+  return client;
+}

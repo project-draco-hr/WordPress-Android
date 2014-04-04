@@ -1,12 +1,13 @@
 {
   super.onResume();
-  if (isSignedIn()) {
-    showReaderIfNoBlog();
+  if (WordPress.isSignedIn(PostsActivity.this)) {
+    if (showReaderIfNoBlog()) {
+      finish();
+    }
   }
-  if (postList.getListView().getCount() == 0)   postList.loadPosts(false);
   if (WordPress.postsShouldRefresh) {
     checkForLocalChanges(false);
+    mPostList.setRefreshing(true);
     WordPress.postsShouldRefresh=false;
   }
-  attemptToSelectPost();
 }

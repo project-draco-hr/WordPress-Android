@@ -1,19 +1,22 @@
 {
   List<Object> apiArgs=new ArrayList<Object>();
   apiArgs.add(WordPress.getCurrentBlog());
-  GetMediaItemTask task=new GetMediaItemTask(Integer.valueOf(id),new GetMediaItemTask.Callback(){
+  GetMediaItemTask task=new GetMediaItemTask(Integer.valueOf(id),new ApiHelper.GetMediaItemTask.Callback(){
     @Override public void onSuccess(    MediaFile mediaFile){
       String blogId=mediaFile.getBlogId();
       String mediaId=mediaFile.getMediaId();
       WordPress.wpDB.updateMediaUploadState(blogId,mediaId,"uploaded");
       mUploadInProgress=false;
-      sendUpdateBroadcast(id);
+      sendUpdateBroadcast(id,null);
       mHandler.post(mFetchQueueTask);
     }
-    @Override public void onFailure(){
+    @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
       mUploadInProgress=false;
-      sendUpdateBroadcast(id);
+      sendUpdateBroadcast(id,getString(R.string.error_refresh_media));
       mHandler.post(mFetchQueueTask);
+      if (errorType != ErrorType.NETWORK_XMLRPC) {
+        CrashlyticsUtils.logException(throwable,ExceptionType.SPECIFIC,T.MEDIA,errorMessage);
+      }
     }
   }
 );

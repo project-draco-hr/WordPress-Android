@@ -1,0 +1,16 @@
+{
+  ContentValues values=new ContentValues();
+  values.put("type",note.getType());
+  values.put("timestamp",note.getTimestamp());
+  values.put("placeholder",placeholder);
+  values.put("raw_note_data",note.toJSONObject().toString());
+  if (note.getId().equals("0") || note.getId().equals("")) {
+    values.put("id",generateIdFor(note));
+    values.put("note_id","0");
+  }
+ else {
+    values.put("id",note.getId());
+    values.put("note_id",note.getId());
+  }
+  db.insertWithOnConflict(NOTES_TABLE,null,values,SQLiteDatabase.CONFLICT_REPLACE);
+}

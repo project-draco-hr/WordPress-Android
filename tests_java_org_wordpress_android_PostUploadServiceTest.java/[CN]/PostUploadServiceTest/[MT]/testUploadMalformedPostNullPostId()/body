@@ -1,0 +1,28 @@
+{
+  SQLiteDatabase db=TestUtils.loadDBFromDump(targetContext,testContext,"taliwutt-blogs-sample.sql");
+  WordPressDB wpdb=WordPress.wpDB;
+  final CountDownLatch countDownLatch=new CountDownLatch(3);
+  final int[] notifyCount={0};
+  final int[] cancelCount={0};
+  SystemServiceFactoryTest.sNotificationCallback=new Answer(){
+    @Override public Object answer(    InvocationOnMock invocation) throws Throwable {
+      Object[] args=invocation.getArguments();
+      if ("notify".equals(invocation.getMethod().getName())) {
+        notifyCount[0]+=1;
+      }
+      if ("cancel".equals(invocation.getMethod().getName())) {
+        cancelCount[0]+=1;
+      }
+      countDownLatch.countDown();
+      return null;
+    }
+  }
+;
+  int postId=27;
+  Post post=wpdb.getPostForLocalTablePostId(postId);
+  post.setRemotePostId(null);
+  PostUploadService.addPostToUpload(post);
+  startService(new Intent(getContext(),PostUploadService.class));
+  countDownLatch.await(15,TimeUnit.SECONDS);
+  assertTrue("NotificationManager.cancel must be called at least once - see #884",cancelCount[0] == 1 && notifyCount[0] == 2);
+}

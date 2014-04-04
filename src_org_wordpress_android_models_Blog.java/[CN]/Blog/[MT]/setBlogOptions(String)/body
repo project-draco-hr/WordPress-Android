@@ -1,3 +1,19 @@
 {
   this.blogOptions=blogOptions;
+  JSONObject options=getBlogOptionsJSONObject();
+  if (options == null) {
+    this.blogOptions="{}";
+    options=getBlogOptionsJSONObject();
+  }
+  if (options.has("jetpack_client_id")) {
+    try {
+      String jetpackBlogId=options.getJSONObject("jetpack_client_id").getString("value");
+      if (!TextUtils.isEmpty(jetpackBlogId)) {
+        this.setApi_blogid(jetpackBlogId);
+      }
+    }
+ catch (    JSONException e) {
+      AppLog.e(T.UTILS,"Cannot load jetpack_client_id from options: " + blogOptions,e);
+    }
+  }
 }

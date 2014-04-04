@@ -1,0 +1,13 @@
+{
+  SQLiteDatabase db=ReaderDatabase.getWritableDb();
+  db.beginTransaction();
+  try {
+    String sql="UPDATE tbl_posts SET is_followed=" + SqlUtils.boolToSql(isFollowed) + " WHERE blog_id=?";
+    db.execSQL(sql,new String[]{Long.toString(blogId)});
+    if (!isFollowed)     db.delete("tbl_post_tags","blog_id=? AND tag_name=?",new String[]{Long.toString(blogId),ReaderTag.TAG_NAME_FOLLOWING});
+    db.setTransactionSuccessful();
+  }
+  finally {
+    db.endTransaction();
+  }
+}

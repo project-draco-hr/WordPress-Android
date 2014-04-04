@@ -1,0 +1,26 @@
+{
+  if (post == null) {
+    if (actionListener != null)     actionListener.onActionResult(false);
+    return;
+  }
+  Map<String,String> params=new HashMap<String,String>();
+  params.put("destination_site_id",Long.toString(destinationBlogId));
+  if (!TextUtils.isEmpty(optionalComment))   params.put("note",optionalComment);
+  StringBuilder sb=new StringBuilder("/sites/").append(post.blogId).append("/posts/").append(post.postId).append("/reblogs/new");
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      boolean isReblogged=(jsonObject != null ? JSONUtil.getBool(jsonObject,"is_reblogged") : false);
+      if (isReblogged)       ReaderPostTable.setPostReblogged(post,true);
+      if (actionListener != null)       actionListener.onActionResult(isReblogged);
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.READER,volleyError);
+      if (actionListener != null)       actionListener.onActionResult(false);
+    }
+  }
+;
+  WordPress.getRestClientUtils().post(sb.toString(),params,null,listener,errorListener);
+}

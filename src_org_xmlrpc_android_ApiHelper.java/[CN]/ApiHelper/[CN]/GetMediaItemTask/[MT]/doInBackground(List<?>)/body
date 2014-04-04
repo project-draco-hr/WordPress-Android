@@ -3,18 +3,27 @@
   WordPress.currentBlog=(Blog)arguments.get(0);
   Blog blog=WordPress.currentBlog;
   if (blog == null) {
-    Log.e("WordPress","ApiHelper - current blog is null");
+    setError(ErrorType.INVALID_CURRENT_BLOG,"ApiHelper - current blog is null");
     return null;
   }
-  String blogId=String.valueOf(blog.getBlogId());
-  client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
-  Object[] apiParams={blog.getBlogId(),blog.getUsername(),blog.getPassword(),mMediaId};
+  String blogId=String.valueOf(blog.getLocalTableBlogId());
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
+  Object[] apiParams={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),mMediaId};
   Map<?,?> results=null;
   try {
     results=(Map<?,?>)client.call("wp.getMediaItem",apiParams);
   }
- catch (  XMLRPCException e) {
-    Log.e("WordPress",e.getMessage());
+ catch (  ClassCastException cce) {
+    setError(ErrorType.INVALID_RESULT,cce.getMessage(),cce);
+  }
+catch (  XMLRPCException e) {
+    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
+  }
+catch (  IOException e) {
+    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
+  }
+catch (  XmlPullParserException e) {
+    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
   }
   if (results != null && blogId != null) {
     MediaFile mediaFile=new MediaFile(blogId,results);

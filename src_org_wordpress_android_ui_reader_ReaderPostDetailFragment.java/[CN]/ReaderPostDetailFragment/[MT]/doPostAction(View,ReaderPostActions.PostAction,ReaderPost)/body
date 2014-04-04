@@ -1,0 +1,26 @@
+{
+  boolean isSelected=actionView.isSelected();
+  actionView.setSelected(!isSelected);
+  AniUtils.zoomAction(actionView);
+  if (!ReaderPostActions.performPostAction(action,post,null)) {
+    actionView.setSelected(isSelected);
+    return;
+  }
+  mPost=ReaderPostTable.getPost(mBlogId,mPostId);
+switch (action) {
+case TOGGLE_LIKE:
+    doPostChanged(mPost.isLikedByCurrentUser ? PostChangeType.LIKED : PostChangeType.UNLIKED);
+  break;
+case TOGGLE_FOLLOW:
+doPostChanged(mPost.isFollowedByCurrentUser ? PostChangeType.FOLLOWED : PostChangeType.UNFOLLOWED);
+break;
+}
+switch (action) {
+case TOGGLE_LIKE:
+refreshLikes(true);
+break;
+case TOGGLE_FOLLOW:
+refreshFollowed();
+break;
+}
+}

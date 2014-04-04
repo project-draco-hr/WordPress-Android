@@ -1,0 +1,23 @@
+{
+  List<?> arguments=args[0];
+  mBlog=(Blog)arguments.get(0);
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(mBlog.getUri(),mBlog.getHttpuser(),mBlog.getHttppassword());
+  Object result=null;
+  Object[] params={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword(),"show-supported"};
+  try {
+    result=client.call("wp.getPostFormats",params);
+  }
+ catch (  ClassCastException cce) {
+    setError(ErrorType.INVALID_RESULT,cce.getMessage(),cce);
+  }
+catch (  XMLRPCException e) {
+    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
+  }
+catch (  IOException e) {
+    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
+  }
+catch (  XmlPullParserException e) {
+    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
+  }
+  return result;
+}

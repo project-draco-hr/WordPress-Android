@@ -1,0 +1,19 @@
+{
+  try {
+    byte[] digest=MessageDigest.getInstance("MD5").digest(principal.getEncoded());
+    String result=Integer.toString(leInt(digest),16);
+    if (result.length() > 8) {
+      StringBuilder buff=new StringBuilder();
+      int padding=8 - result.length();
+      for (int i=0; i < padding; i++) {
+        buff.append("0");
+      }
+      buff.append(result);
+      return buff.toString();
+    }
+    return result;
+  }
+ catch (  NoSuchAlgorithmException e) {
+    throw new AssertionError(e);
+  }
+}

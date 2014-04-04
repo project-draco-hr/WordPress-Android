@@ -4,24 +4,11 @@
   if (previewURL == null || mBlog == null)   getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
   View view=inflater.inflate(R.layout.webview,container,false);
   mWebView=(WebView)view.findViewById(R.id.webView);
-  mProgressBar=(ProgressBar)view.findViewById(R.id.progressBar);
   mWebView.getSettings().setUserAgentString(DESKTOP_UA);
   mWebView.getSettings().setBuiltInZoomControls(true);
   mWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-  mWebView.setWebChromeClient(new WebChromeClient(){
-    @Override public void onProgressChanged(    WebView view,    int newProgress){
-      super.onProgressChanged(view,newProgress);
-      if (newProgress < 100 && !mProgressBar.isShown()) {
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);
-      }
-      mProgressBar.setProgress(newProgress);
-      if (newProgress == 100) {
-        mProgressBar.setVisibility(ProgressBar.GONE);
-      }
-    }
-  }
-);
-  mWebView.setWebViewClient(new WordPressWebViewClient(mBlog));
+  mWebView.setWebChromeClient(new WPWebChromeClient(getActivity(),(ProgressBar)view.findViewById(R.id.progress_bar)));
+  mWebView.setWebViewClient(new WPWebViewClient(mBlog));
   mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
   mWebView.getSettings().setSavePassword(false);
   loadAuthenticatedUrl(previewURL);

@@ -1,0 +1,45 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.reader_activity_tags);
+  if (savedInstanceState != null) {
+    mTagsChanged=savedInstanceState.getBoolean(KEY_TAGS_CHANGED);
+    mLastAddedTag=savedInstanceState.getString(KEY_LAST_ADDED_TAG);
+    mAlreadyUpdatedTagList=savedInstanceState.getBoolean(KEY_TAG_LIST_UPDATED);
+    mIsShowingFollowedTags=savedInstanceState.getBoolean(KEY_SHOWING_FOLLOWED,true);
+  }
+  mTxtTitle=(TextView)findViewById(R.id.text_title);
+  mTxtTitle.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      toggleTags();
+    }
+  }
+);
+  mLayoutAddTag=(ViewGroup)findViewById(R.id.layout_add_topic);
+  mEditAddTag=(EditText)findViewById(R.id.edit_add);
+  mEditAddTag.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+    @Override public boolean onEditorAction(    TextView v,    int actionId,    KeyEvent event){
+      if (actionId == EditorInfo.IME_ACTION_DONE)       addCurrentTag();
+      return false;
+    }
+  }
+);
+  final ImageButton btnAddTag=(ImageButton)findViewById(R.id.btn_add);
+  btnAddTag.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      addCurrentTag();
+    }
+  }
+);
+  updateTitle();
+  getListView().setAdapter(getTagAdapter());
+  getTagAdapter().setTagType(mIsShowingFollowedTags ? ReaderTag.ReaderTagType.SUBSCRIBED : ReaderTag.ReaderTagType.RECOMMENDED);
+  final String tagName=getIntent().getStringExtra(ARG_TAG_NAME);
+  if (!TextUtils.isEmpty(tagName)) {
+    getIntent().removeExtra(ARG_TAG_NAME);
+    mEditAddTag.setText(tagName);
+  }
+  if (!mAlreadyUpdatedTagList) {
+    updateTagList();
+    mAlreadyUpdatedTagList=true;
+  }
+}

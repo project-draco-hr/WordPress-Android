@@ -1,0 +1,51 @@
+{
+  String xmlRpcUrl=null;
+  URI uri=URI.create(baseUrl);
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(uri,mHttpUsername,mHttpPassword);
+  try {
+    client.call("system.listMethods");
+    xmlRpcUrl=baseUrl;
+    mIsCustomUrl=true;
+    return xmlRpcUrl;
+  }
+ catch (  XMLRPCException e) {
+    AppLog.i(T.NUX,"system.listMethods failed on: " + baseUrl);
+    if (isHTTPAuthErrorMessage(e)) {
+      return null;
+    }
+  }
+catch (  IOException e) {
+    AppLog.i(T.NUX,"system.listMethods failed on: " + baseUrl);
+    if (isHTTPAuthErrorMessage(e)) {
+      return null;
+    }
+  }
+catch (  XmlPullParserException e) {
+    AppLog.i(T.NUX,"system.listMethods failed on: " + baseUrl);
+    if (isHTTPAuthErrorMessage(e)) {
+      return null;
+    }
+  }
+  String guessURL=baseUrl;
+  if (guessURL.substring(guessURL.length() - 1,guessURL.length()).equals("/")) {
+    guessURL=guessURL.substring(0,guessURL.length() - 1);
+  }
+  guessURL+="/xmlrpc.php";
+  uri=URI.create(guessURL);
+  client=XMLRPCFactory.instantiate(uri,mHttpUsername,mHttpPassword);
+  try {
+    client.call("system.listMethods");
+    xmlRpcUrl=guessURL;
+    return xmlRpcUrl;
+  }
+ catch (  XMLRPCException e) {
+    AppLog.e(T.NUX,"system.listMethods failed on: " + guessURL,e);
+  }
+catch (  IOException e) {
+    AppLog.e(T.NUX,"system.listMethods failed on: " + guessURL,e);
+  }
+catch (  XmlPullParserException e) {
+    AppLog.e(T.NUX,"system.listMethods failed on: " + guessURL,e);
+  }
+  return null;
+}

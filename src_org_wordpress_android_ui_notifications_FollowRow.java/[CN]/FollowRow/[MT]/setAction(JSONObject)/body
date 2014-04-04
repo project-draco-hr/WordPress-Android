@@ -1,6 +1,5 @@
 {
-  ImageButton followButton=getFollowButton();
-  View followDivider=getFollowDivider();
+  final TextView followButton=getFollowButton();
   getImageView().setDefaultImageResId(R.drawable.placeholder);
   try {
     if (actionJSON.has(TYPE_FIELD) && actionJSON.getString(TYPE_FIELD).equals(ACTION_TYPE)) {
@@ -8,26 +7,26 @@
       followButton.setVisibility(VISIBLE);
       followButton.setOnClickListener(new ClickListener());
       followButton.setOnLongClickListener(new LongClickListener());
-      followDivider.setVisibility(VISIBLE);
-      getSiteTextView().setText(getSiteDomain());
       setClickable(true);
     }
  else {
       mParams=null;
       followButton.setVisibility(GONE);
       followButton.setOnClickListener(null);
-      followDivider.setVisibility(GONE);
-      getSiteTextView().setText("");
       setClickable(false);
     }
-    if (hasParams())     setSiteUrl(mParams.optString(BLOG_URL_PARAM,null));
-    updateButton();
+    if (hasParams()) {
+      setSiteUrl(mParams.optString(BLOG_URL_PARAM,null));
+    }
+ else {
+      setSiteUrl(null);
+    }
+    updateFollowButton(isFollowing());
   }
  catch (  JSONException e) {
-    Log.e(TAG,String.format("Could not set action from %s",actionJSON),e);
-    getFollowButton().setVisibility(GONE);
-    getFollowDivider().setVisibility(GONE);
-    getSiteTextView().setText("");
+    AppLog.e(T.NOTIFS,String.format("Could not set action from %s",actionJSON),e);
+    followButton.setVisibility(GONE);
+    setSiteUrl(null);
     setClickable(false);
     mParams=null;
   }

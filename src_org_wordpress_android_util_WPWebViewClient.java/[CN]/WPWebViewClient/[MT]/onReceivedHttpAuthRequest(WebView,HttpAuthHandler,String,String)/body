@@ -1,0 +1,11 @@
+{
+  if (mBlog != null && mBlog.hasValidHTTPAuthCredentials()) {
+    String domainFromHttpAuthRequest=UrlUtils.getDomainFromUrl(UrlUtils.addHttpProcolIfNeeded(host,false));
+    String currentBlogDomain=UrlUtils.getDomainFromUrl(mBlog.getUrl());
+    if (domainFromHttpAuthRequest.equals(currentBlogDomain)) {
+      handler.proceed(mBlog.getHttpuser(),mBlog.getHttppassword());
+      return;
+    }
+  }
+  super.onReceivedHttpAuthRequest(view,handler,host,realm);
+}

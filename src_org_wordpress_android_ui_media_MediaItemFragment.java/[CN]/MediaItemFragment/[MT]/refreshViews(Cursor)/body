@@ -21,8 +21,12 @@
     mDescriptionView.setVisibility(View.VISIBLE);
   }
   String date=MediaUtils.getDate(cursor.getLong(cursor.getColumnIndex("date_created_gmt")));
-  if (mIsLocal)   mDateView.setText("Added on: " + date);
- else   mDateView.setText("Uploaded on: " + date);
+  if (mIsLocal) {
+    mDateView.setText("Added on: " + date);
+  }
+ else {
+    mDateView.setText("Uploaded on: " + date);
+  }
   String fileName=cursor.getString(cursor.getColumnIndex("fileName"));
   mFileNameView.setText("File name: " + fileName);
   String fileURL=cursor.getString(cursor.getColumnIndex("fileURL"));
@@ -70,7 +74,13 @@
       loadLocalImage(mImageView,filePath,width,height);
     }
  else {
-      ((NetworkImageView)mImageView).setImageUrl(imageUri + "?w=" + screenWidth,WordPress.imageLoader);
+      if (WordPress.getCurrentBlog() != null && WordPress.getCurrentBlog().isPhotonCapable()) {
+        String thumbnailURL=StringUtils.getPhotonUrl(imageUri,(int)screenWidth);
+        ((NetworkImageView)mImageView).setImageUrl(thumbnailURL,mImageLoader);
+      }
+ else {
+        ((NetworkImageView)mImageView).setImageUrl(imageUri + "?w=" + screenWidth,mImageLoader);
+      }
     }
     mImageView.setVisibility(View.VISIBLE);
     mImageView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,height));

@@ -10,24 +10,23 @@
     blog.setFullSizeImage(false);
     blog.setMaxImageWidth(DEFAULT_IMAGE_SIZE);
     blog.setMaxImageWidthId(0);
-    blog.setRunService(false);
-    blog.setBlogId(Integer.parseInt(blogId));
+    blog.setRemoteBlogId(Integer.parseInt(blogId));
     blog.setDotcomFlag(xmlRpcUrl.contains("wordpress.com"));
     blog.setWpVersion("");
     blog.setAdmin(isAdmin);
-    blog.save(null);
+    WordPress.wpDB.saveBlog(blog);
   }
  else {
-    int accountId=WordPress.wpDB.getAccountIdForBlogIdAndXmlRpcUrl(Integer.parseInt(blogId),xmlRpcUrl);
+    int localTableBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogIdAndXmlRpcUrl(Integer.parseInt(blogId),xmlRpcUrl);
     try {
-      blog=new Blog(accountId);
+      blog=WordPress.wpDB.instantiateBlogByLocalId(localTableBlogId);
       if (!blogName.equals(blog.getBlogName())) {
         blog.setBlogName(blogName);
-        blog.save();
+        WordPress.wpDB.saveBlog(blog);
       }
     }
  catch (    Exception e) {
-      Log.e(WordPress.TAG,"accountId: " + accountId + " not found");
+      AppLog.e(T.NUX,"localTableBlogId: " + localTableBlogId + " not found");
     }
   }
   return blog;

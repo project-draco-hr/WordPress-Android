@@ -1,0 +1,35 @@
+{
+  if (blog == null) {
+    return 0;
+  }
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
+  Map<String,Object> hPost=new HashMap<String,Object>();
+  hPost.put("status","trash");
+  Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),hPost};
+  int numDeleted=0;
+  try {
+    Object[] result=(Object[])client.call("wp.getComments",params);
+    if (result == null || result.length == 0) {
+      return 0;
+    }
+    Map<?,?> contentHash;
+    for (    Object aComment : result) {
+      contentHash=(Map<?,?>)aComment;
+      long commentId=Long.parseLong(contentHash.get("comment_id").toString());
+      if (CommentTable.deleteComment(blog.getLocalTableBlogId(),commentId))       numDeleted++;
+    }
+    if (numDeleted > 0) {
+      AppLog.d(T.COMMENTS,String.format("removed %d deleted comments",numDeleted));
+    }
+  }
+ catch (  XMLRPCException e) {
+    AppLog.e(T.COMMENTS,e);
+  }
+catch (  IOException e) {
+    AppLog.e(T.COMMENTS,e);
+  }
+catch (  XmlPullParserException e) {
+    AppLog.e(T.COMMENTS,e);
+  }
+  return numDeleted;
+}

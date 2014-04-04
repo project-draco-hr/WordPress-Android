@@ -1,4 +1,8 @@
 {
+  if (newStatus != null && newStatus.equals(CommentStatus.TRASH)) {
+    deleteComment(accountId,comment,actionListener);
+    return;
+  }
   final Blog blog=WordPress.getBlog(accountId);
   if (blog == null || comment == null || newStatus == null || newStatus == CommentStatus.UNKNOWN) {
     if (actionListener != null)     actionListener.onActionResult(false);
@@ -7,24 +11,32 @@
   final Handler handler=new Handler();
   new Thread(){
     @Override public void run(){
-      XMLRPCClient client=new XMLRPCClient(blog.getUrl(),blog.getHttpuser(),blog.getHttppassword());
+      XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
       Map<String,String> postHash=new HashMap<String,String>();
       postHash.put("status",CommentStatus.toString(newStatus));
-      postHash.put("content",comment.comment);
-      postHash.put("author",comment.name);
-      postHash.put("author_url",comment.authorURL);
-      postHash.put("author_email",comment.authorEmail);
-      Object[] params={blog.getBlogId(),blog.getUsername(),blog.getPassword(),comment.commentID,postHash};
+      postHash.put("content",comment.getCommentText());
+      postHash.put("author",comment.getAuthorName());
+      postHash.put("author_url",comment.getAuthorUrl());
+      postHash.put("author_email",comment.getAuthorEmail());
+      Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),Long.toString(comment.commentID),postHash};
       Object result;
       try {
         result=client.call("wp.editComment",params);
       }
- catch (      final XMLRPCException e) {
-        Log.e(WordPress.TAG,e.getMessage(),e);
+ catch (      XMLRPCException e) {
+        AppLog.e(T.COMMENTS,"Error while editing comment",e);
+        result=null;
+      }
+catch (      IOException e) {
+        AppLog.e(T.COMMENTS,"Error while editing comment",e);
+        result=null;
+      }
+catch (      XmlPullParserException e) {
+        AppLog.e(T.COMMENTS,"Error while editing comment",e);
         result=null;
       }
       final boolean success=(result != null && Boolean.parseBoolean(result.toString()));
-      if (success)       WordPress.wpDB.updateCommentStatus(blog.getId(),comment.commentID,CommentStatus.toString(newStatus));
+      if (success)       CommentTable.updateCommentStatus(blog.getLocalTableBlogId(),comment.commentID,CommentStatus.toString(newStatus));
       if (actionListener != null) {
         handler.post(new Runnable(){
           @Override public void run(){
