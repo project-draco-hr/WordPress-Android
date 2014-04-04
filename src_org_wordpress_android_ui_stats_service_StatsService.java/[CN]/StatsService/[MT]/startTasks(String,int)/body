@@ -1,37 +1,38 @@
 {
-  new Thread(){
+  orchestrator=new Thread(){
     @Override public void run(){
       updateUIExecutor=(ThreadPoolExecutor)Executors.newFixedThreadPool(1);
+      RestClientUtils restClientUtils=WordPress.getRestClientUtils();
       final String today=StatUtils.getCurrentDate();
       final String yesterday=StatUtils.getYesterdaysDate();
       AppLog.i(T.STATS,"update started");
       broadcastUpdate(true);
       String path=String.format("sites/%s/stats",blogId);
-      statsNetworkRequests.add(WordPress.getRestClientUtils().get(path,statsSummaryRestListener,restErrListener));
+      statsNetworkRequests.add(restClientUtils.get(path,statsSummaryRestListener,restErrListener));
       path=getBarChartPath(StatsBarChartUnit.WEEK,30);
-      statsNetworkRequests.add(WordPress.getRestClientUtils().get(path,new BarChartRestListener(StatsBarChartUnit.WEEK),restErrListener));
+      statsNetworkRequests.add(restClientUtils.get(path,new BarChartRestListener(StatsBarChartUnit.WEEK),restErrListener));
       path=getBarChartPath(StatsBarChartUnit.MONTH,30);
-      statsNetworkRequests.add(WordPress.getRestClientUtils().get(path,new BarChartRestListener(StatsBarChartUnit.MONTH),restErrListener));
+      statsNetworkRequests.add(restClientUtils.get(path,new BarChartRestListener(StatsBarChartUnit.MONTH),restErrListener));
       path=String.format("sites/%s/stats/top-posts?date=%s",mBlogId,today);
-      statsNetworkRequests.add(WordPress.getRestClientUtils().get(path,new TopPostAndPageRestListener(today),restErrListener));
+      statsNetworkRequests.add(restClientUtils.get(path,new TopPostAndPageRestListener(today),restErrListener));
       path=String.format("sites/%s/stats/top-posts?date=%s",mBlogId,yesterday);
-      statsNetworkRequests.add(WordPress.getRestClientUtils().get(path,new TopPostAndPageRestListener(yesterday),restErrListener));
+      statsNetworkRequests.add(restClientUtils.get(path,new TopPostAndPageRestListener(yesterday),restErrListener));
       path=String.format("sites/%s/stats/referrers?date=%s",mBlogId,today);
-      statsNetworkRequests.add(WordPress.getRestClientUtils().get(path,new ReferrersListener(today),restErrListener));
+      statsNetworkRequests.add(restClientUtils.get(path,new ReferrersListener(today),restErrListener));
       path=String.format("sites/%s/stats/referrers?date=%s",mBlogId,yesterday);
-      statsNetworkRequests.add(WordPress.getRestClientUtils().get(path,new ReferrersListener(yesterday),restErrListener));
+      statsNetworkRequests.add(restClientUtils.get(path,new ReferrersListener(yesterday),restErrListener));
       path=String.format("sites/%s/stats/clicks?date=%s",mBlogId,today);
-      statsNetworkRequests.add(WordPress.getRestClientUtils().get(path,new ClicksListener(today),restErrListener));
+      statsNetworkRequests.add(restClientUtils.get(path,new ClicksListener(today),restErrListener));
       path=String.format("sites/%s/stats/clicks?date=%s",mBlogId,yesterday);
-      statsNetworkRequests.add(WordPress.getRestClientUtils().get(path,new ClicksListener(yesterday),restErrListener));
+      statsNetworkRequests.add(restClientUtils.get(path,new ClicksListener(yesterday),restErrListener));
       path=String.format("sites/%s/stats/search-terms?date=%s",mBlogId,today);
-      statsNetworkRequests.add(WordPress.getRestClientUtils().get(path,new SearchEngineTermsListener(today),restErrListener));
+      statsNetworkRequests.add(restClientUtils.get(path,new SearchEngineTermsListener(today),restErrListener));
       path=String.format("sites/%s/stats/search-terms?date=%s",mBlogId,yesterday);
-      statsNetworkRequests.add(WordPress.getRestClientUtils().get(path,new SearchEngineTermsListener(yesterday),restErrListener));
+      statsNetworkRequests.add(restClientUtils.get(path,new SearchEngineTermsListener(yesterday),restErrListener));
       path=String.format("sites/%s/stats/country-views?date=%s",mBlogId,today);
-      statsNetworkRequests.add(WordPress.getRestClientUtils().get(path,new ViewsByCountryTask(today),restErrListener));
+      statsNetworkRequests.add(restClientUtils.get(path,new ViewsByCountryTask(today),restErrListener));
       path=String.format("sites/%s/stats/country-views?date=%s",mBlogId,yesterday);
-      statsNetworkRequests.add(WordPress.getRestClientUtils().get(path,new ViewsByCountryTask(yesterday),restErrListener));
+      statsNetworkRequests.add(restClientUtils.get(path,new ViewsByCountryTask(yesterday),restErrListener));
       numberOfNetworkCalls=statsNetworkRequests.size();
       while (!isDone()) {
         waitForResponse();
@@ -41,5 +42,6 @@
       stopSelf(startId);
     }
   }
-.start();
+;
+  orchestrator.start();
 }
