@@ -1,0 +1,25 @@
+{
+  final int DEFAULT_WIDTH=600;
+  int width;
+  if (targetWidth != 0) {
+    width=targetWidth;
+  }
+ else {
+    if (context == null) {
+      return DEFAULT_WIDTH;
+    }
+    WindowManager wm=(WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+    if (wm == null) {
+      return DEFAULT_WIDTH;
+    }
+    Display display=wm.getDefaultDisplay();
+    Point size=new Point();
+    display.getSize(size);
+    width=size.x;
+    int height=size.y;
+    if (height < width) {
+      width=height;
+    }
+  }
+  return width;
+}
