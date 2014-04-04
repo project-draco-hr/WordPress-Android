@@ -16,15 +16,15 @@
   CommentUtils.displayHtmlComment(holder.txtText,comment.getText(),mMaxImageSz);
   java.util.Date dtPublished=DateTimeUtils.iso8601ToJavaDate(comment.getPublished());
   holder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(dtPublished));
-  if (comment.hasAuthorUrl()) {
-    View.OnClickListener listener=new View.OnClickListener(){
+  if (comment.hasAuthorBlogId()) {
+    View.OnClickListener authorListener=new View.OnClickListener(){
       @Override public void onClick(      View view){
-        ReaderActivityLauncher.openUrl(view.getContext(),comment.getAuthorUrl());
+        ReaderActivityLauncher.showReaderBlogDetail(view.getContext(),comment.authorBlogId);
       }
     }
 ;
-    holder.imgAvatar.setOnClickListener(listener);
-    holder.txtAuthor.setOnClickListener(listener);
+    holder.imgAvatar.setOnClickListener(authorListener);
+    holder.txtAuthor.setOnClickListener(authorListener);
     holder.txtAuthor.setTextColor(mLinkColor);
   }
  else {
