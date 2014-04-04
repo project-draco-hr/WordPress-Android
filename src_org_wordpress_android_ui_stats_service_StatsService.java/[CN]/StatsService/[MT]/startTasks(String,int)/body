@@ -1,6 +1,7 @@
 {
   new Thread(){
     @Override public void run(){
+      updateUIExecutor=(ThreadPoolExecutor)Executors.newFixedThreadPool(1);
       final String today=StatUtils.getCurrentDate();
       final String yesterday=StatUtils.getYesterdaysDate();
       AppLog.i(T.STATS,"update started");
@@ -31,13 +32,12 @@
       statsNetworkRequests.add(WordPress.getRestClientUtils().get(path,new ViewsByCountryTask(today),restErrListener));
       path=String.format("sites/%s/stats/country-views?date=%s",mBlogId,yesterday);
       statsNetworkRequests.add(WordPress.getRestClientUtils().get(path,new ViewsByCountryTask(yesterday),restErrListener));
+      numberOfNetworkCalls=statsNetworkRequests.size();
       while (!isDone()) {
-        AppLog.w(T.STATS,"sto per andare a dormire");
         waitForResponse();
-        AppLog.w(T.STATS,"mi sono svegliato!");
       }
+      updateUIExecutor.shutdown();
       broadcastUpdate(false);
-      AppLog.w(T.STATS,"spegniamo tutto!");
       stopSelf(startId);
     }
   }
