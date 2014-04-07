@@ -9,18 +9,16 @@
     if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action) || EditPostContentFragment.NEW_MEDIA_GALLERY.equals(action)|| EditPostContentFragment.NEW_MEDIA_POST.equals(action)|| getIntent().hasExtra(EXTRA_IS_QUICKPRESS)|| (extras != null && extras.getInt("quick-media",-1) > -1)) {
       if (getIntent().hasExtra(EXTRA_QUICKPRESS_BLOG_ID)) {
         int blogId=getIntent().getIntExtra(EXTRA_QUICKPRESS_BLOG_ID,-1);
-        try {
-          Blog quickPressBlog=WordPress.wpDB.instantiateBlogByLocalId(blogId);
-          if (quickPressBlog.isHidden()) {
-            showErrorAndFinish(R.string.error_blog_hidden);
-            return;
-          }
-          WordPress.currentBlog=quickPressBlog;
-        }
- catch (        Exception e) {
+        Blog quickPressBlog=WordPress.wpDB.instantiateBlogByLocalId(blogId);
+        if (quickPressBlog == null) {
           showErrorAndFinish(R.string.blog_not_found);
           return;
         }
+        if (quickPressBlog.isHidden()) {
+          showErrorAndFinish(R.string.error_blog_hidden);
+          return;
+        }
+        WordPress.currentBlog=quickPressBlog;
       }
       mPost=new Post(WordPress.getCurrentLocalTableBlogId(),false);
       WordPress.wpDB.savePost(mPost);
