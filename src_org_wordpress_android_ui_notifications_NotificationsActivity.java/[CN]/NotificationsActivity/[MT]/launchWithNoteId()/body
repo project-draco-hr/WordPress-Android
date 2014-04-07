@@ -1,2 +1,26 @@
 {
+  Intent intent=getIntent();
+  if (intent.hasExtra(NOTE_ID_EXTRA)) {
+    String noteID=intent.getStringExtra(NOTE_ID_EXTRA);
+    Bucket<Note> notesBucket=WordPress.notesBucket;
+    try {
+      if (notesBucket != null) {
+        Note note=notesBucket.get(noteID);
+        if (note != null) {
+          openNote(note);
+        }
+      }
+    }
+ catch (    BucketObjectMissingException e) {
+      AppLog.e(T.NOTIFS,"Could not load notification from bucket.");
+    }
+  }
+ else {
+    String fragmentTag=mNotesList.getTag();
+    if (fragmentTag != null && fragmentTag.equals("tablet-view")) {
+      if (mNotesList.getListAdapter() != null && !mNotesList.getListAdapter().isEmpty()) {
+        openNote((Note)mNotesList.getListAdapter().getItem(0));
+      }
+    }
+  }
 }
