@@ -1,25 +1,19 @@
 {
   Bucket.ObjectCursor<Note> bucketCursor=(Bucket.ObjectCursor<Note>)cursor;
   Note note=bucketCursor.getObject();
-  TextView txtLabel=(TextView)view.findViewById(R.id.note_label);
-  TextView txtDetail=(TextView)view.findViewById(R.id.note_detail);
-  TextView unreadIndicator=(TextView)view.findViewById(R.id.unread_indicator);
-  TextView txtDate=(TextView)view.findViewById(R.id.text_date);
-  ProgressBar placeholderLoading=(ProgressBar)view.findViewById(R.id.placeholder_loading);
-  WPNetworkImageView imgAvatar=(WPNetworkImageView)view.findViewById(R.id.note_avatar);
-  ImageView imgNoteIcon=(ImageView)view.findViewById(R.id.note_icon);
-  txtLabel.setText(note.getSubject());
+  NoteViewHolder noteViewHolder=(NoteViewHolder)view.getTag();
+  noteViewHolder.txtLabel.setText(note.getSubject());
   if (note.isCommentType()) {
-    txtDetail.setText(note.getCommentPreview());
-    txtDetail.setVisibility(View.VISIBLE);
+    noteViewHolder.txtDetail.setText(note.getCommentPreview());
+    noteViewHolder.txtDetail.setVisibility(View.VISIBLE);
   }
  else {
-    txtDetail.setVisibility(View.GONE);
+    noteViewHolder.txtDetail.setVisibility(View.GONE);
   }
-  txtDate.setText(note.getTimeSpan());
+  noteViewHolder.txtDate.setText(note.getTimeSpan());
   String avatarUrl=PhotonUtils.fixAvatar(note.getIconURL(),mAvatarSz);
-  imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
-  imgNoteIcon.setImageDrawable(getDrawableForType(note.getType()));
-  unreadIndicator.setVisibility(note.isUnread() ? View.VISIBLE : View.INVISIBLE);
-  placeholderLoading.setVisibility(note.isPlaceholder() ? View.VISIBLE : View.GONE);
+  noteViewHolder.imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
+  noteViewHolder.imgNoteIcon.setImageDrawable(getDrawableForType(note.getType()));
+  noteViewHolder.unreadIndicator.setVisibility(note.isUnread() ? View.VISIBLE : View.INVISIBLE);
+  noteViewHolder.placeholderLoading.setVisibility(note.isPlaceholder() ? View.VISIBLE : View.GONE);
 }
