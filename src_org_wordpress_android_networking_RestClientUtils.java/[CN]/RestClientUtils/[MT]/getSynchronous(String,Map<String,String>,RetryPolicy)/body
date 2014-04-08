@@ -1,0 +1,12 @@
+{
+  RequestFuture<JSONObject> future=RequestFuture.newFuture();
+  RestRequest request=mRestClient.makeRequest(Method.GET,RestClient.getAbsoluteURL(path,params),null,future,future);
+  if (retryPolicy == null) {
+    retryPolicy=new DefaultRetryPolicy(REST_TIMEOUT_MS,REST_MAX_RETRIES_GET,REST_BACKOFF_MULT);
+  }
+  request.setRetryPolicy(retryPolicy);
+  AuthenticatorRequest authCheck=new AuthenticatorRequest(request,null,mRestClient,mAuthenticator);
+  authCheck.send();
+  JSONObject response=future.get();
+  return response;
+}

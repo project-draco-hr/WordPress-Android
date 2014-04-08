@@ -5,6 +5,8 @@
   BitmapFactory.decodeFile(path,bfo);
   bfo.inSampleSize=calculateInSampleSize(bfo,targetWidth,targetHeight);
   bfo.inJustDecodeBounds=false;
+  int bitmapWidth=0;
+  int bitmapHeight=0;
   try {
     File f=new File(path);
     ExifInterface exif=new ExifInterface(f.getPath());
@@ -24,15 +26,26 @@
     }
     Matrix mat=new Matrix();
     mat.postRotate(angle);
-    Bitmap bmp=BitmapFactory.decodeStream(new FileInputStream(f),null,bfo);
-    return Bitmap.createBitmap(bmp,0,0,bmp.getWidth(),bmp.getHeight(),mat,true);
+    try {
+      Bitmap bmp=BitmapFactory.decodeStream(new FileInputStream(f),null,bfo);
+      if (bmp == null) {
+        AppLog.e(T.UTILS,"can't decode bitmap: " + f.getPath());
+        return null;
+      }
+      bitmapWidth=bmp.getWidth();
+      bitmapHeight=bmp.getHeight();
+      return Bitmap.createBitmap(bmp,0,0,bmp.getWidth(),bmp.getHeight(),mat,true);
+    }
+ catch (    OutOfMemoryError oom) {
+      CrashlyticsUtils.setInt(ExtraKey.IMAGE_ANGLE,angle);
+      CrashlyticsUtils.setInt(ExtraKey.IMAGE_WIDTH,bitmapWidth);
+      CrashlyticsUtils.setInt(ExtraKey.IMAGE_HEIGHT,bitmapHeight);
+      CrashlyticsUtils.logException(oom,ExceptionType.SPECIFIC,T.UTILS);
+      AppLog.e(T.UTILS,"OutOfMemoryError Error in setting image: " + oom);
+    }
   }
  catch (  IOException e) {
     AppLog.e(T.UTILS,"Error in setting image",e);
-  }
-catch (  OutOfMemoryError oom) {
-    WPMobileStatsUtil.trackEventForSelfHostedAndWPCom(WPMobileStatsUtil.StatsEventMediaOutOfMemory);
-    AppLog.e(T.UTILS,"OutOfMemoryError Error in setting image: " + oom);
   }
   return null;
 }

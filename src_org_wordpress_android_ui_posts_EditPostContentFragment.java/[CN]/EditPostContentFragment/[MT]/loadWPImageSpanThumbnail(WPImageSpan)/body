@@ -30,12 +30,16 @@
         resizedBitmap=downloadedBitmap;
       }
  else {
+        int targetWidth=400;
         try {
           ImageHelper ih=new ImageHelper();
-          resizedBitmap=ih.getThumbnailForWPImageSpan(downloadedBitmap,400);
+          resizedBitmap=ih.getThumbnailForWPImageSpan(downloadedBitmap,targetWidth);
         }
  catch (        OutOfMemoryError er) {
-          WPMobileStatsUtil.trackEventForSelfHostedAndWPCom(WPMobileStatsUtil.StatsEventMediaOutOfMemory);
+          CrashlyticsUtils.setInt(ExtraKey.IMAGE_WIDTH,downloadedBitmap.getWidth());
+          CrashlyticsUtils.setInt(ExtraKey.IMAGE_HEIGHT,downloadedBitmap.getHeight());
+          CrashlyticsUtils.setFloat(ExtraKey.IMAGE_RESIZE_SCALE,((float)targetWidth) / downloadedBitmap.getWidth());
+          CrashlyticsUtils.logException(er,ExceptionType.SPECIFIC,T.POSTS);
           return;
         }
       }

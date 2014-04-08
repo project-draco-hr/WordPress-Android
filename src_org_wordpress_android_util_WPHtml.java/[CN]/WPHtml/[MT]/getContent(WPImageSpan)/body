@@ -38,19 +38,14 @@ String title=mediaFile.getTitle();
 String caption=mediaFile.getCaption();
 int width=mediaFile.getWidth();
 String inlineCSS=" ";
-try {
 String localBlogID=imageSpan.getMediaFile().getBlogId();
 Blog currentBlog=WordPress.wpDB.instantiateBlogByLocalId(Integer.parseInt(localBlogID));
-if (!mediaFile.getMimeType().equals("image/gif") && !currentBlog.getMaxImageWidth().equals("Original Size")) {
+if (currentBlog != null && !mediaFile.getMimeType().equals("image/gif") && !currentBlog.getMaxImageWidth().equals("Original Size")) {
 int maxImageWidth=Integer.parseInt(currentBlog.getMaxImageWidth());
 width=Math.min(width,maxImageWidth);
 if (!currentBlog.isDotcomFlag()) {
 inlineCSS=String.format(" style=\"width:%dpx;max-width:%dpx;\" ",width,width);
 }
-}
-}
- catch (Exception e) {
-AppLog.e(T.UTILS,"Error while loading blog resize settings",e);
 }
 content=content + "<a href=\"" + url+ "\"><img"+ inlineCSS+ "title=\""+ title+ "\" "+ alignmentCSS+ "alt=\"image\" src=\""+ url+ "?w="+ width+ "\" /></a>";
 if (!caption.equals("")) {
