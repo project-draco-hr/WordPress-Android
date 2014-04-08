@@ -1,0 +1,24 @@
+{
+  showLoadingProgress();
+  ReaderActions.RequestBlogInfoListener listener=new ReaderActions.RequestBlogInfoListener(){
+    @Override public void onResult(    ReaderBlogInfo blogInfo){
+      if (isFinishing()) {
+        return;
+      }
+      hideLoadingProgress();
+      if (blogInfo != null) {
+        showBlogInfo(blogInfo);
+      }
+ else       if (!mHasBlogInfo) {
+        handleBlogNotFound();
+      }
+    }
+  }
+;
+  if (!TextUtils.isEmpty(mBlogUrl)) {
+    ReaderBlogActions.updateBlogInfo(mBlogUrl,listener);
+  }
+ else {
+    ReaderBlogActions.updateBlogInfo(mBlogId,listener);
+  }
+}

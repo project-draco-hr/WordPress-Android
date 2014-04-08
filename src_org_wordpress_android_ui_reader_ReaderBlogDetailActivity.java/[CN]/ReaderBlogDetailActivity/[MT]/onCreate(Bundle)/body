@@ -2,6 +2,13 @@
   super.onCreate(savedInstanceState);
   setContentView(R.layout.reader_activity_blog_detail);
   mBlogHeaderView=findViewById(R.id.layout_blog_header);
-  String blogUrl=getIntent().getStringExtra(ARG_BLOG_URL);
-  requestBlogInfo(blogUrl);
+  if (getIntent().hasExtra(ARG_BLOG_ID)) {
+    mBlogId=getIntent().getLongExtra(ARG_BLOG_ID,0);
+    showBlogInfo(ReaderBlogTable.getBlogInfo(mBlogId));
+  }
+ else {
+    mBlogUrl=getIntent().getStringExtra(ARG_BLOG_URL);
+    showBlogInfo(ReaderBlogTable.getBlogInfo(mBlogUrl));
+  }
+  requestBlogInfo();
 }
