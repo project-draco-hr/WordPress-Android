@@ -35,6 +35,9 @@
   }
  catch (  XMLRPCFault xmlRpcFault) {
     AppLog.e(T.NUX,"XMLRPCFault received from XMLRPC call wp.getUsersBlogs",xmlRpcFault);
+    if (xmlRpcFault.getFaultCode() == 403) {
+      mIsInvalidUsernameOrPassword=true;
+    }
     if (xmlRpcFault.getFaultCode() == 425) {
       mIsWpcomAccountWith2FA=true;
       return false;
