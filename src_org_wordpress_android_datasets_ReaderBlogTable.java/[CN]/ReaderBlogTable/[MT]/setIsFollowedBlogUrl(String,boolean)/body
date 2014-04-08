@@ -1,12 +1,17 @@
 {
   if (TextUtils.isEmpty(url))   return;
-  SQLiteStatement stmt=ReaderDatabase.getWritableDb().compileStatement("INSERT OR REPLACE INTO tbl_blog_urls (blog_url, is_followed) VALUES (?1,?2)");
+  final String normUrl=UrlUtils.normalizeUrl(url);
+  SQLiteStatement stmt=ReaderDatabase.getWritableDb().compileStatement("INSERT OR REPLACE INTO tbl_followed_blogs (blog_url, is_following) VALUES (?1,?2)");
   try {
-    stmt.bindString(1,UrlUtils.normalizeUrl(url));
+    stmt.bindString(1,normUrl);
     stmt.bindLong(2,SqlUtils.boolToSql(isFollowed));
     stmt.execute();
   }
   finally {
     SqlUtils.closeStatement(stmt);
   }
+  ContentValues values=new ContentValues();
+  values.put("is_following",SqlUtils.boolToSql(isFollowed));
+  String[] args={UrlUtils.normalizeUrl(url)};
+  ReaderDatabase.getWritableDb().update("tbl_blog_info",values,"blog_url=?",args);
 }

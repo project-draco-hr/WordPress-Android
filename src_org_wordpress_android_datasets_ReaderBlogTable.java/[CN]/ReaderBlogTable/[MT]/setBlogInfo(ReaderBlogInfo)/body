@@ -1,0 +1,20 @@
+{
+  if (blog == null)   return;
+  String sql="INSERT OR REPLACE INTO tbl_blog_info" + "   (blog_id, blog_url, name, description, is_private, is_jetpack, is_following, num_followers)" + "   VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)";
+  SQLiteStatement stmt=ReaderDatabase.getWritableDb().compileStatement(sql);
+  try {
+    stmt.bindLong(1,blog.blogId);
+    stmt.bindString(2,blog.getUrl());
+    stmt.bindString(3,blog.getName());
+    stmt.bindString(4,blog.getDescription());
+    stmt.bindLong(5,SqlUtils.boolToSql(blog.isPrivate));
+    stmt.bindLong(6,SqlUtils.boolToSql(blog.isJetpack));
+    stmt.bindLong(7,SqlUtils.boolToSql(blog.isFollowing));
+    stmt.bindLong(8,blog.numSubscribers);
+    stmt.execute();
+    stmt.clearBindings();
+  }
+  finally {
+    SqlUtils.closeStatement(stmt);
+  }
+}

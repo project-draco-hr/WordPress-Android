@@ -1,4 +1,8 @@
 {
+  if (TextUtils.isEmpty(blogUrl)) {
+    if (actionListener != null)     actionListener.onActionResult(false);
+    return;
+  }
   RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       handleUpdateBlogInfoResponse(jsonObject,actionListener);
@@ -12,5 +16,6 @@
     }
   }
 ;
-  WordPress.getRestClientUtils().get("/sites/" + blogId,listener,errorListener);
+  final String domain=UrlUtils.removeProtocol(blogUrl);
+  WordPress.getRestClientUtils().get("/sites/" + domain,listener,errorListener);
 }
