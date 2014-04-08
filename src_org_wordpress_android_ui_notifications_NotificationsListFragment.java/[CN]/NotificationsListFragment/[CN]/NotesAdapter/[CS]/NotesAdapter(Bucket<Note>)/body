@@ -2,6 +2,9 @@
   super(getActivity(),R.layout.note_list_item,null,0x0);
   mBucket=bucket;
   mBucket.addListener(this);
+  if (getActivity() != null && !mBucket.hasChangeVersion()) {
+    getActivity().setProgressBarIndeterminateVisibility(true);
+  }
   mQuery=bucket.query().order(Note.Schema.TIMESTAMP_INDEX,Query.SortType.DESCENDING);
   mAvatarSz=DisplayUtils.dpToPx(getActivity(),48);
   refreshNotes();
