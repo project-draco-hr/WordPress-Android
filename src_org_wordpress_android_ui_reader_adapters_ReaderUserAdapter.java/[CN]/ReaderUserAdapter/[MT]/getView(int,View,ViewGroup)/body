@@ -13,12 +13,14 @@
   if (user.hasUrl()) {
     holder.txtUrl.setVisibility(View.VISIBLE);
     holder.txtUrl.setText(user.getUrlDomain());
-    convertView.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View v){
-        ReaderActivityLauncher.showReaderBlogDetail(v.getContext(),user.getUrl());
+    if (user.hasBlogId()) {
+      convertView.setOnClickListener(new View.OnClickListener(){
+        @Override public void onClick(        View v){
+          ReaderActivityLauncher.showReaderBlogDetail(v.getContext(),user.blogId);
+        }
       }
-    }
 );
+    }
     if (holder.txtFollow.isSelected() != user.isFollowed)     showFollowStatus(holder.txtFollow,user.isFollowed);
     holder.txtFollow.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
