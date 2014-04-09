@@ -1,0 +1,14 @@
+{
+  boolean isChanged=false;
+  final ReaderUrlList followedBlogUrls=ReaderBlogTable.getFollowedBlogUrls();
+  for (  ReaderPost post : mPosts) {
+    boolean isFollowing=post.hasBlogUrl() && followedBlogUrls.contains(post.getBlogUrl());
+    if (isFollowing != post.isFollowedByCurrentUser) {
+      post.isFollowedByCurrentUser=isFollowing;
+      isChanged=true;
+    }
+  }
+  if (isChanged) {
+    notifyDataSetChanged();
+  }
+}

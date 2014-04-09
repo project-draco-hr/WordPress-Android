@@ -4,18 +4,19 @@
   final boolean isAskingToFollow=(action == BlogAction.FOLLOW);
   if (isCurrentlyFollowing == isAskingToFollow)   return true;
   final String path;
+  final String domain=UrlUtils.getDomainFromUrl(blogUrl);
 switch (action) {
 case FOLLOW:
-    ReaderBlogTable.setIsFollowedBlogUrl(blogUrl,true);
-  path="/read/following/mine/new?url=" + UrlUtils.urlEncode(blogUrl);
-break;
+    path="/read/following/mine/new?url=" + domain;
+  break;
 case UNFOLLOW:
-ReaderBlogTable.setIsFollowedBlogUrl(blogUrl,false);
-path="/read/following/mine/delete?url=" + UrlUtils.urlEncode(blogUrl);
+path="/read/following/mine/delete?url=" + domain;
 break;
 default :
 return false;
 }
+ReaderBlogTable.setIsFollowedBlogUrl(blogUrl,isAskingToFollow);
+ReaderPostTable.setFollowStatusForPostsInBlog(blogId,isAskingToFollow);
 com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
 @Override public void onResponse(JSONObject jsonObject){
 AppLog.d(T.READER,"blog action " + action.name() + " succeeded");
@@ -27,6 +28,7 @@ RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
 AppLog.w(T.READER,"blog action " + action.name() + " failed");
 AppLog.e(T.READER,volleyError);
 ReaderBlogTable.setIsFollowedBlogUrl(blogUrl,isCurrentlyFollowing);
+ReaderPostTable.setFollowStatusForPostsInBlog(blogId,isCurrentlyFollowing);
 }
 }
 ;
