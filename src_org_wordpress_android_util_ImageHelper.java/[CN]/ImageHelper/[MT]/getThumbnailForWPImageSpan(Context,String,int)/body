@@ -1,0 +1,39 @@
+{
+  if (filePath == null) {
+    return null;
+  }
+  int width=getThumbnailWidth(context,targetWidth);
+  Uri curUri;
+  if (!filePath.contains("content://")) {
+    curUri=Uri.parse("content://media" + filePath);
+  }
+ else {
+    curUri=Uri.parse(filePath);
+  }
+  if (filePath.contains("video")) {
+    int videoId=0;
+    try {
+      videoId=Integer.parseInt(curUri.getLastPathSegment());
+    }
+ catch (    NumberFormatException e) {
+    }
+    ContentResolver crThumb=context.getContentResolver();
+    BitmapFactory.Options options=new BitmapFactory.Options();
+    options.inSampleSize=1;
+    return MediaStore.Video.Thumbnails.getThumbnail(crThumb,videoId,MediaStore.Video.Thumbnails.MINI_KIND,options);
+  }
+ else {
+    int[] dimensions=getImageSize(curUri,context);
+    float conversionFactor=0.40f;
+    if (dimensions[0] > dimensions[1])     conversionFactor=0.60f;
+    int resizedWidth=(int)(width * conversionFactor);
+    int rotation=getImageOrientation(context,filePath);
+    byte[] bytes=createThumbnailFromUri(context,curUri,resizedWidth,null,rotation);
+    if (bytes != null && bytes.length > 0) {
+      return BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+    }
+ else {
+      return null;
+    }
+  }
+}

@@ -20,6 +20,14 @@
  else {
     isModified|=currentBlog.bsetFeaturedImageCapable(false);
   }
+  Map<?,?> blogNameHash=(HashMap<?,?>)blogOptions.get("blog_title");
+  if (blogNameHash != null) {
+    String blogName=MapUtils.getMapStr(blogNameHash,"value");
+    if (blogName != null && !blogName.equals(currentBlog.getBlogName())) {
+      currentBlog.setBlogName(blogName);
+      isModified=true;
+    }
+  }
   if (isModified) {
     WordPress.wpDB.saveBlog(currentBlog);
   }

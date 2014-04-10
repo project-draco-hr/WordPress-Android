@@ -63,6 +63,13 @@ AppLog.e(T.API,"Response document received from the server: " + loggedInputStrea
 checkXMLRPCErrorMessage(e);
 throw e;
 }
+catch (NumberFormatException e) {
+AppLog.e(T.API,"Error while parsing the XML-RPC response document received from the server.",e);
+if (loggedInputStream != null) {
+AppLog.e(T.API,"Response document received from the server: " + loggedInputStream.getResponseDocument());
+}
+throw new XMLRPCException("The response received contains an invalid number. " + e.getMessage());
+}
 catch (XMLRPCException e) {
 if (loggedInputStream != null) {
 AppLog.e(T.API,"Response document received from the server: " + loggedInputStream.getResponseDocument());
