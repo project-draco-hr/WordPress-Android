@@ -1,5 +1,8 @@
 {
   final View container=getView();
+  if (container == null) {
+    return false;
+  }
   txtTitle=(TextView)container.findViewById(R.id.text_title);
   txtBlogName=(TextView)container.findViewById(R.id.text_blog_name);
   txtDate=(TextView)container.findViewById(R.id.text_date);
@@ -10,7 +13,9 @@
   imgBtnReblog=(ImageView)mLayoutIcons.findViewById(R.id.image_reblog_btn);
   imgBtnComment=(ImageView)mLayoutIcons.findViewById(R.id.image_comment_btn);
   mPost=ReaderPostTable.getPost(mBlogId,mPostId);
-  if (mPost == null)   return false;
+  if (mPost == null) {
+    return false;
+  }
   postHtml=getPostHtml();
   if (mPost.hasFeaturedImage() && !PhotonUtils.isMshotsUrl(mPost.getFeaturedImage())) {
     Uri uri=Uri.parse(mPost.getFeaturedImage());
