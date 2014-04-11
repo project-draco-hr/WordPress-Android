@@ -1,3 +1,36 @@
 {
-  System.out.println("Beginning Session for Mixpanel");
+  mMixpanel=MixpanelAPI.getInstance(WordPress.getContext(),Config.MIXPANEL_TOKEN);
+  SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
+  int sessionCount=preferences.getInt("sessionCount",0);
+  sessionCount++;
+  SharedPreferences.Editor editor=preferences.edit();
+  editor.putInt("sessionCount",sessionCount);
+  editor.commit();
+  boolean connected=WordPress.hasValidWPComCredentials(WordPress.getContext());
+  int numBlogs=WordPress.wpDB.getVisibleAccounts().size();
+  try {
+    JSONObject properties=new JSONObject();
+    properties.put("platform","Android");
+    properties.put("session_count",sessionCount);
+    properties.put("connected_to_dotcom",connected);
+    properties.put("number_of_blogs",numBlogs);
+    mMixpanel.registerSuperProperties(properties);
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.UTILS,e);
+  }
+  if (connected) {
+    String username=preferences.getString(WordPress.WPCOM_USERNAME_PREFERENCE,null);
+    mMixpanel.identify(username);
+    mMixpanel.getPeople().increment("Application Opened",1);
+    try {
+      JSONObject jsonObj=new JSONObject();
+      jsonObj.put("$username",username);
+      jsonObj.put("$first_name",username);
+      mMixpanel.getPeople().set(jsonObj);
+    }
+ catch (    JSONException e) {
+      AppLog.e(AppLog.T.UTILS,e);
+    }
+  }
 }
