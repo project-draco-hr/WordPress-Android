@@ -17,9 +17,15 @@
     }
   }
  else {
-    String errorMessage=mIsWpcomAccountWith2FA ? getString(R.string.account_two_step_auth_enabled) : getString(R.string.nux_cannot_log_in);
-    Toast.makeText(getBaseContext(),errorMessage,Toast.LENGTH_LONG).show();
-    mSignInButton.setEnabled(true);
+    if (mIsInvalidUsernameOrPassword) {
+      mUsernameEditText.setError(getString(R.string.username_or_password_incorrect));
+      mPasswordEditText.setError(getString(R.string.username_or_password_incorrect));
+    }
+ else {
+      String errorMessage=mIsWpcomAccountWith2FA ? getString(R.string.account_two_step_auth_enabled) : getString(R.string.nux_cannot_log_in);
+      Toast.makeText(getBaseContext(),errorMessage,Toast.LENGTH_LONG).show();
+    }
+    setEditTextAndButtonEnabled(true);
     mSignInButton.setText(R.string.sign_in);
   }
 }
