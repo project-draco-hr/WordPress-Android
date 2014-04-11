@@ -1,9 +1,10 @@
 {
-  Activity activity=getActivity();
-  if (activity == null)   return;
+  if (!hasActivity() || mNotesAdapter == null) {
+    return;
+  }
   getActivity().runOnUiThread(new Runnable(){
     @Override public void run(){
-      swapCursor(mQuery.execute());
+      mNotesAdapter.reloadNotes();
       updateLastSeenTime();
     }
   }
