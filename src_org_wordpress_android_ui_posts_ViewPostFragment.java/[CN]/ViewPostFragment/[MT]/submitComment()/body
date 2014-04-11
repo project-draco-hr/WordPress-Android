@@ -1,8 +1,11 @@
 {
-  if (!hasActivity() || mIsSubmittingComment)   return;
-  if (!NetworkUtils.checkConnection(getActivity()))   return;
+  if (!hasActivity() || mIsSubmittingComment || WordPress.currentPost == null || !NetworkUtils.checkConnection(getActivity())) {
+    return;
+  }
   final String commentText=EditTextUtils.getText(mEditComment);
-  if (TextUtils.isEmpty(commentText))   return;
+  if (TextUtils.isEmpty(commentText)) {
+    return;
+  }
   final ImageView imgPostComment=(ImageView)mLayoutCommentBox.findViewById(R.id.image_post_comment);
   final ProgressBar progress=(ProgressBar)mLayoutCommentBox.findViewById(R.id.progress_submit_comment);
   mEditComment.setEnabled(false);
