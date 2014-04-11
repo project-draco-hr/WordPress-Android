@@ -1,47 +1,59 @@
 {
-  final ThreadPoolExecutor executor=(ThreadPoolExecutor)Executors.newFixedThreadPool(getMaxConcurrentTasks());
-  new Thread(){
+  orchestrator=new Thread(){
     @Override public void run(){
+      updateUIExecutor=(ThreadPoolExecutor)Executors.newFixedThreadPool(1);
+      RestClientUtils restClientUtils=WordPress.getRestClientUtils();
       final String today=StatUtils.getCurrentDate();
       final String yesterday=StatUtils.getYesterdaysDate();
-      try {
-        executor.submit(new SummaryTask(blogId));
-        executor.submit(new BarChartTask(blogId,StatsBarChartUnit.WEEK,30));
-        executor.submit(new BarChartTask(blogId,StatsBarChartUnit.MONTH,30));
-        executor.submit(new TopPostsAndPagesTask(blogId,today));
-        executor.submit(new TopPostsAndPagesTask(blogId,yesterday));
-        executor.submit(new ViewsByCountryTask(blogId,today));
-        executor.submit(new ViewsByCountryTask(blogId,yesterday));
-        executor.submit(new ReferrersTask(blogId,today));
-        executor.submit(new ReferrersTask(blogId,yesterday));
-        executor.submit(new ClicksTask(blogId,today));
-        executor.submit(new ClicksTask(blogId,yesterday));
-        executor.submit(new SearchEngineTermsTask(blogId,today));
-        executor.submit(new SearchEngineTermsTask(blogId,yesterday));
-      }
- catch (      RejectedExecutionException e) {
-        AppLog.e(T.STATS,e);
-      }
       AppLog.i(T.STATS,"update started");
       broadcastUpdate(true);
-      try {
-        executor.shutdown();
-        if (!executor.awaitTermination(EXECUTOR_TIMEOUT_SECONDS,TimeUnit.SECONDS)) {
-          AppLog.w(T.STATS,"executor failed to terminate");
-          executor.shutdownNow();
-        }
+      String path=String.format("sites/%s/stats",blogId);
+      statsNetworkRequests.add(restClientUtils.get(path,statsSummaryRestListener,statsSummaryErrListener));
+      path=getBarChartPath(StatsBarChartUnit.WEEK,30);
+      BarChartListener barChartRestListener=new BarChartListener(StatsBarChartUnit.WEEK);
+      statsNetworkRequests.add(restClientUtils.get(path,barChartRestListener,barChartRestListener));
+      path=getBarChartPath(StatsBarChartUnit.MONTH,30);
+      barChartRestListener=new BarChartListener(StatsBarChartUnit.MONTH);
+      statsNetworkRequests.add(restClientUtils.get(path,barChartRestListener,barChartRestListener));
+      path=String.format("sites/%s/stats/top-posts?date=%s",mBlogId,today);
+      TopPostAndPageListener topPostAndPageRestListener=new TopPostAndPageListener(today);
+      statsNetworkRequests.add(restClientUtils.get(path,topPostAndPageRestListener,topPostAndPageRestListener));
+      path=String.format("sites/%s/stats/top-posts?date=%s",mBlogId,yesterday);
+      topPostAndPageRestListener=new TopPostAndPageListener(yesterday);
+      statsNetworkRequests.add(restClientUtils.get(path,new TopPostAndPageListener(yesterday),topPostAndPageRestListener));
+      path=String.format("sites/%s/stats/referrers?date=%s",mBlogId,today);
+      ReferrersListener referrersListener=new ReferrersListener(today);
+      statsNetworkRequests.add(restClientUtils.get(path,referrersListener,referrersListener));
+      path=String.format("sites/%s/stats/referrers?date=%s",mBlogId,yesterday);
+      referrersListener=new ReferrersListener(yesterday);
+      statsNetworkRequests.add(restClientUtils.get(path,referrersListener,referrersListener));
+      path=String.format("sites/%s/stats/clicks?date=%s",mBlogId,today);
+      ClicksListener clicksListener=new ClicksListener(today);
+      statsNetworkRequests.add(restClientUtils.get(path,clicksListener,clicksListener));
+      path=String.format("sites/%s/stats/clicks?date=%s",mBlogId,yesterday);
+      clicksListener=new ClicksListener(yesterday);
+      statsNetworkRequests.add(restClientUtils.get(path,clicksListener,clicksListener));
+      path=String.format("sites/%s/stats/search-terms?date=%s",mBlogId,today);
+      SearchEngineTermsListener searchEngineTermsListener=new SearchEngineTermsListener(today);
+      statsNetworkRequests.add(restClientUtils.get(path,searchEngineTermsListener,searchEngineTermsListener));
+      path=String.format("sites/%s/stats/search-terms?date=%s",mBlogId,yesterday);
+      searchEngineTermsListener=new SearchEngineTermsListener(yesterday);
+      statsNetworkRequests.add(restClientUtils.get(path,searchEngineTermsListener,searchEngineTermsListener));
+      path=String.format("sites/%s/stats/country-views?date=%s",mBlogId,today);
+      ViewsByCountryListener viewsByCountryListener=new ViewsByCountryListener(today);
+      statsNetworkRequests.add(restClientUtils.get(path,viewsByCountryListener,viewsByCountryListener));
+      path=String.format("sites/%s/stats/country-views?date=%s",mBlogId,yesterday);
+      viewsByCountryListener=new ViewsByCountryListener(yesterday);
+      statsNetworkRequests.add(restClientUtils.get(path,viewsByCountryListener,viewsByCountryListener));
+      numberOfNetworkCalls=statsNetworkRequests.size();
+      while (!isDone()) {
+        waitForResponse();
       }
- catch (      InterruptedException e) {
-        AppLog.w(T.STATS,"executor interrupted");
-        executor.shutdownNow();
-        Thread.currentThread().interrupt();
-      }
- finally {
-        AppLog.i(T.STATS,"update ended");
-        broadcastUpdate(false);
-        stopSelf(startId);
-      }
+      updateUIExecutor.shutdown();
+      broadcastUpdate(false);
+      stopSelf(startId);
     }
   }
-.start();
+;
+  orchestrator.start();
 }

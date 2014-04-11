@@ -1,0 +1,16 @@
+{
+  AppLog.d(T.STATS,this.getClass().getName() + " " + date+ " responded with Error");
+  updateUIExecutor.submit(new Thread(){
+    @Override public void run(){
+      numberOfFinishedNetworkCalls++;
+      if (volleyError != null) {
+        AppLog.e(T.STATS,"Error while reading Stats - " + volleyError.getMessage(),volleyError);
+      }
+      notifyResponseReceived();
+      if (shouldUpdateFragments(getStatsContentProviderUpdateURI())) {
+        getContentResolver().notifyChange(getStatsContentProviderUpdateURI(),null);
+      }
+    }
+  }
+);
+}
