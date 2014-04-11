@@ -9,7 +9,13 @@
   mPost=ReaderPostTable.getPost(mBlogId,mPostId);
 switch (action) {
 case TOGGLE_LIKE:
-    doPostChanged(mPost.isLikedByCurrentUser ? PostChangeType.LIKED : PostChangeType.UNLIKED);
+    if (mPost.isLikedByCurrentUser) {
+      WPStats.track(WPStats.Stat.READER_LIKED_ARTICLE);
+      doPostChanged(PostChangeType.LIKED);
+    }
+ else {
+      doPostChanged(PostChangeType.UNLIKED);
+    }
   break;
 case TOGGLE_FOLLOW:
 doPostChanged(mPost.isFollowedByCurrentUser ? PostChangeType.FOLLOWED : PostChangeType.UNFOLLOWED);
