@@ -5,7 +5,24 @@
   String eventName=instructions.getMixpanelEventName();
   if (eventName != null && !eventName.isEmpty()) {
     JSONObject savedPropertiesForStat=propertiesForStat(instructions.getStat());
+    if (savedPropertiesForStat == null) {
+      savedPropertiesForStat=new JSONObject();
+    }
+    if (properties != null) {
+      Iterator<String> iter=properties.keys();
+      while (iter.hasNext()) {
+        String key=iter.next();
+        try {
+          Object value=properties.get(key);
+          savedPropertiesForStat.put(key,value);
+        }
+ catch (        JSONException e) {
+          AppLog.e(AppLog.T.UTILS,e);
+        }
+      }
+    }
     mMixpanel.track(eventName,savedPropertiesForStat);
+    removePropertiesForStat(instructions.getStat());
   }
   if (instructions.getPeoplePropertyToIncrement() != null && !instructions.getPeoplePropertyToIncrement().isEmpty())   incrementPeopleProperty(instructions.getPeoplePropertyToIncrement());
   if (instructions.getSuperPropertyToIncrement() != null && !instructions.getSuperPropertyToIncrement().isEmpty())   incrementSuperProperty(instructions.getSuperPropertyToIncrement());
