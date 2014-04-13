@@ -1,6 +1,9 @@
 {
   if (WordPress.getCurrentBlog() == null)   return;
-  if (!(WPActionBarActivity.this instanceof CommentsActivity))   mShouldFinish=true;
+  if (!(WPActionBarActivity.this instanceof CommentsActivity)) {
+    mShouldFinish=true;
+    WPStats.track(WPStats.Stat.OPENED_COMMENTS);
+  }
   Intent intent=new Intent(WPActionBarActivity.this,CommentsActivity.class);
   intent.putExtra("id",WordPress.getCurrentBlog().getLocalTableBlogId());
   intent.putExtra("isNew",true);
