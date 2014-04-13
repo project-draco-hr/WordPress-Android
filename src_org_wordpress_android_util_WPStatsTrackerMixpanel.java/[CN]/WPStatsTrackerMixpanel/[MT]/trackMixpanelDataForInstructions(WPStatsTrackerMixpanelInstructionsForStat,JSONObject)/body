@@ -1,6 +1,14 @@
 {
+  if (instructions.getDisableForSelfHosted()) {
+    return;
+  }
   String eventName=instructions.getMixpanelEventName();
   if (eventName != null && !eventName.isEmpty()) {
-    mMixpanel.track(eventName,properties);
+    JSONObject savedPropertiesForStat=propertiesForStat(instructions.getStat());
+    mMixpanel.track(eventName,savedPropertiesForStat);
   }
+  if (instructions.getPeoplePropertyToIncrement() != null && !instructions.getPeoplePropertyToIncrement().isEmpty())   incrementPeopleProperty(instructions.getPeoplePropertyToIncrement());
+  if (instructions.getSuperPropertyToIncrement() != null && !instructions.getSuperPropertyToIncrement().isEmpty())   incrementSuperProperty(instructions.getSuperPropertyToIncrement());
+  if (instructions.getPropertyToIncrement() != null && !instructions.getPropertyToIncrement().isEmpty())   incrementProperty(instructions.getPropertyToIncrement(),instructions.getStatToAttachProperty());
+  if (instructions.getSuperPropertyToFlag() != null && !instructions.getSuperPropertyToFlag().isEmpty())   flagSuperProperty(instructions.getSuperPropertyToFlag());
 }
