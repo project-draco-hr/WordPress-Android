@@ -1,0 +1,27 @@
+{
+  AppLog.d(T.STATS,this.getClass().getName() + " " + date+ " responded OK");
+  updateUIExecutor.submit(new Thread(){
+    @Override public void run(){
+      numberOfFinishedNetworkCalls++;
+      if (response != null) {
+        try {
+          parseResponse(response);
+        }
+ catch (        JSONException e) {
+          AppLog.e(AppLog.T.STATS,e);
+        }
+catch (        RemoteException e) {
+          AppLog.e(AppLog.T.STATS,e);
+        }
+catch (        OperationApplicationException e) {
+          AppLog.e(AppLog.T.STATS,e);
+        }
+      }
+      notifyResponseReceived();
+      if (shouldUpdateFragments(getStatsContentProviderUpdateURI())) {
+        getContentResolver().notifyChange(getStatsContentProviderUpdateURI(),null);
+      }
+    }
+  }
+);
+}

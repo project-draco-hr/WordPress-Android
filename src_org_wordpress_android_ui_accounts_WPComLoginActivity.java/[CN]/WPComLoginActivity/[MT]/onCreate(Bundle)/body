@@ -1,0 +1,34 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.wp_dot_com_login_activity);
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+    setTitle(getString(R.string.wpcom_signin_dialog_title));
+  }
+ else {
+    getSupportActionBar().hide();
+  }
+  if (getIntent().hasExtra(JETPACK_AUTH_REQUEST)) {
+    mIsJetpackAuthRequest=true;
+  }
+  mSignInButton=(Button)findViewById(R.id.saveDotcom);
+  mSignInButton.setOnClickListener(new Button.OnClickListener(){
+    public void onClick(    View v){
+      signIn();
+    }
+  }
+);
+  TextView wpcomHelp=(TextView)findViewById(R.id.wpcomHelp);
+  wpcomHelp.setOnClickListener(new TextView.OnClickListener(){
+    public void onClick(    View v){
+      Intent intent=new Intent(Intent.ACTION_VIEW);
+      intent.setData(Uri.parse(NEED_HELP_URL));
+      startActivity(intent);
+    }
+  }
+);
+  mUsernameEditText=(EditText)findViewById(R.id.dotcomUsername);
+  mUsernameEditText.addTextChangedListener(this);
+  mPasswordEditText=(EditText)findViewById(R.id.dotcomPassword);
+  mPasswordEditText.addTextChangedListener(this);
+  initPasswordVisibilityButton((ImageView)findViewById(R.id.password_visibility),mPasswordEditText);
+}

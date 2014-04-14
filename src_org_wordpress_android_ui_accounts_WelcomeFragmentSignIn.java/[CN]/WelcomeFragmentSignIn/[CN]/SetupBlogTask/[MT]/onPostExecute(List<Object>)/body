@@ -8,36 +8,10 @@
     return;
   }
   if (userBlogList == null && mErrorMsgId != 0 && hasActivity()) {
-    FragmentTransaction ft=getFragmentManager().beginTransaction();
-    NUXDialogFragment nuxAlert;
-    if (mErrorMsgId == R.string.account_two_step_auth_enabled) {
-      nuxAlert=NUXDialogFragment.newInstance(getString(R.string.nux_cannot_log_in),getString(mErrorMsgId),getString(R.string.nux_tap_continue),R.drawable.nux_icon_alert,true,getString(R.string.visit_security_settings),NUXDialogFragment.ACTION_OPEN_URL,"https://wordpress.com/settings/security/?ssl=forced");
-    }
- else {
-      if (mErrorMsgId == R.string.username_or_password_incorrect) {
-        showUsernameError(mErrorMsgId);
-        showPasswordError(mErrorMsgId);
-        mErrorMsgId=0;
-        endProgress();
-        return;
-      }
- else       if (mErrorMsgId == R.string.invalid_url_message) {
-        showUrlError(mErrorMsgId);
-        mErrorMsgId=0;
-        endProgress();
-        return;
-      }
- else {
-        nuxAlert=NUXDialogFragment.newInstance(getString(R.string.nux_cannot_log_in),getString(mErrorMsgId),getString(R.string.nux_tap_continue),R.drawable.nux_icon_alert);
-      }
-    }
-    ft.add(nuxAlert,"alert");
-    ft.commitAllowingStateLoss();
-    mErrorMsgId=0;
-    endProgress();
+    signInError();
     return;
   }
-  if (mSetupBlog.getXmlrpcUrl().contains("wordpress.com")) {
+  if (mSetupBlog.getXmlrpcUrl() != null && mSetupBlog.getXmlrpcUrl().contains("wordpress.com")) {
     SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
     SharedPreferences.Editor editor=settings.edit();
     editor.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mSetupBlog.getUsername());
