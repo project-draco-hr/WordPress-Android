@@ -3,18 +3,19 @@
   super.onCreate(savedInstanceState);
   createMenuDrawer(R.layout.reader_activity_main);
   getSupportFragmentManager().addOnBackStackChangedListener(this);
-  final ReaderFragmentType fragmentType;
-  if (getIntent().hasExtra(ARG_READER_FRAGMENT)) {
-    fragmentType=(ReaderFragmentType)getIntent().getSerializableExtra(ARG_READER_FRAGMENT);
-  }
+  if (savedInstanceState == null) {
+    final ReaderFragmentType fragmentType;
+    if (getIntent().hasExtra(ARG_READER_FRAGMENT)) {
+      fragmentType=(ReaderFragmentType)getIntent().getSerializableExtra(ARG_READER_FRAGMENT);
+    }
  else {
-    fragmentType=ReaderFragmentType.POST_LIST;
-  }
+      fragmentType=ReaderFragmentType.POST_LIST;
+    }
 switch (fragmentType) {
 case POST_LIST:
-    String tagName=getIntent().getStringExtra(ReaderActivity.ARG_TAG_NAME);
-  if (TextUtils.isEmpty(tagName))   tagName=UserPrefs.getReaderTag();
-if (TextUtils.isEmpty(tagName) || !ReaderTagTable.tagExists(tagName)) tagName=ReaderTag.TAG_NAME_DEFAULT;
+      String tagName=getIntent().getStringExtra(ReaderActivity.ARG_TAG_NAME);
+    if (TextUtils.isEmpty(tagName))     tagName=UserPrefs.getReaderTag();
+  if (TextUtils.isEmpty(tagName) || !ReaderTagTable.tagExists(tagName))   tagName=ReaderTag.TAG_NAME_DEFAULT;
 showListFragment(tagName);
 break;
 case POST_DETAIL:
@@ -22,5 +23,6 @@ long blogId=getIntent().getLongExtra(ReaderActivity.ARG_BLOG_ID,0);
 long postId=getIntent().getLongExtra(ReaderActivity.ARG_POST_ID,0);
 showDetailFragment(blogId,postId);
 break;
+}
 }
 }
