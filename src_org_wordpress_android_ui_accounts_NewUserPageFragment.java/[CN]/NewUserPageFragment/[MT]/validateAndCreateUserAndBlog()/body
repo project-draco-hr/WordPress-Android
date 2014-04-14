@@ -3,15 +3,17 @@
     AlertUtil.showAlert(getActivity(),R.string.no_network_title,R.string.no_network_message);
     return;
   }
-  if (!isUserDataValid())   return;
+  if (!isUserDataValid()) {
+    return;
+  }
   if (View.VISIBLE == mProgressBarSignIn.getVisibility()) {
     return;
   }
   startProgress(getString(R.string.validating_user_data));
-  final String siteUrl=mSiteUrlTextField.getText().toString().trim();
-  final String email=mEmailTextField.getText().toString().trim();
-  final String password=mPasswordTextField.getText().toString().trim();
-  final String username=mUsernameTextField.getText().toString().trim();
+  final String siteUrl=EditTextUtils.getText(mSiteUrlTextField).trim();
+  final String email=EditTextUtils.getText(mEmailTextField).trim();
+  final String password=EditTextUtils.getText(mPasswordTextField).trim();
+  final String username=EditTextUtils.getText(mUsernameTextField).trim();
   final String siteName=siteUrlToSiteName(siteUrl);
   final String language=CreateUserAndBlog.getDeviceLanguage(getActivity().getResources());
   CreateUserAndBlog createUserAndBlog=new CreateUserAndBlog(email,username,password,siteUrl,siteName,language,getRestClientUtils(),getActivity(),new ErrorListener(),new CreateUserAndBlog.Callback(){
