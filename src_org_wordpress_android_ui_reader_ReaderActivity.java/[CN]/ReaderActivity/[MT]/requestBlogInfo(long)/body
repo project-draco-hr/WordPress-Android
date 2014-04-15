@@ -1,19 +1,17 @@
 {
-  showLoadingProgress();
+  final ProgressBar progressBar=(ProgressBar)findViewById(R.id.progress_blog_header);
   ReaderActions.RequestBlogInfoListener listener=new ReaderActions.RequestBlogInfoListener(){
     @Override public void onResult(    ReaderBlogInfo blogInfo){
       if (isFinishing()) {
         return;
       }
-      hideLoadingProgress();
+      progressBar.setVisibility(View.GONE);
       if (blogInfo != null) {
         showBlogInfo(blogInfo);
-      }
- else       if (!mHasBlogInfo) {
-        handleBlogNotFound();
       }
     }
   }
 ;
+  progressBar.setVisibility(View.VISIBLE);
   ReaderBlogActions.updateBlogInfo(blogId,listener);
 }
