@@ -1,19 +1,19 @@
 {
   mMixpanel=MixpanelAPI.getInstance(WordPress.getContext(),Config.MIXPANEL_TOKEN);
   SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
-  int sessionCount=preferences.getInt("sessionCount",0);
+  int sessionCount=preferences.getInt(SESSION_COUNT,0);
   sessionCount++;
   SharedPreferences.Editor editor=preferences.edit();
-  editor.putInt("sessionCount",sessionCount);
+  editor.putInt(SESSION_COUNT,sessionCount);
   editor.commit();
   boolean connected=WordPress.hasValidWPComCredentials(WordPress.getContext());
   int numBlogs=WordPress.wpDB.getVisibleAccounts().size();
   try {
     JSONObject properties=new JSONObject();
-    properties.put("platform","Android");
-    properties.put("session_count",sessionCount);
-    properties.put("connected_to_dotcom",connected);
-    properties.put("number_of_blogs",numBlogs);
+    properties.put(MIXPANEL_PLATFORM,"Android");
+    properties.put(MIXPANEL_SESSION_COUNT,sessionCount);
+    properties.put(MIXPANEL_CONNECTED_TO_DOTCOM,connected);
+    properties.put(MIXPANEL_NUMBER_OF_BLOGS,numBlogs);
     mMixpanel.registerSuperProperties(properties);
   }
  catch (  JSONException e) {
