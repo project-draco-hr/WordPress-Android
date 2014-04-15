@@ -9,7 +9,7 @@ case MediaGalleryActivity.REQUEST_CODE:
       }
     break;
 case MediaGalleryPickerActivity.REQUEST_CODE:
-  WPStats.track(WPStats.Stat.EDITOR_ADDED_PHOTO_VIA_WP_MEDIA_LIBRARY);
+  AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_ADDED_PHOTO_VIA_WP_MEDIA_LIBRARY);
 if (resultCode == Activity.RESULT_OK) {
   handleMediaGalleryPickerResult(data);
 }
@@ -17,7 +17,7 @@ break;
 case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_PICTURE_LIBRARY:
 Uri imageUri=data.getData();
 fetchMedia(imageUri);
-WPStats.track(WPStats.Stat.EDITOR_ADDED_PHOTO_VIA_LOCAL_LIBRARY);
+AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_ADDED_PHOTO_VIA_LOCAL_LIBRARY);
 break;
 case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO:
 if (resultCode == Activity.RESULT_OK) {
@@ -26,7 +26,7 @@ File f=new File(mMediaCapturePath);
 Uri capturedImageUri=Uri.fromFile(f);
 if (!addMedia(capturedImageUri,null)) Toast.makeText(getActivity(),getResources().getText(R.string.gallery_error),Toast.LENGTH_SHORT).show();
 getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,Uri.parse("file://" + Environment.getExternalStorageDirectory())));
-WPStats.track(WPStats.Stat.EDITOR_ADDED_PHOTO_VIA_LOCAL_LIBRARY);
+AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_ADDED_PHOTO_VIA_LOCAL_LIBRARY);
 }
  catch (RuntimeException e) {
 AppLog.e(T.POSTS,e);
