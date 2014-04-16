@@ -5,19 +5,23 @@
 switch (newStatus) {
 case APPROVED:
     dlgId=CommentDialogs.ID_COMMENT_DLG_APPROVING;
-  break;
+  AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_APPROVED);
+break;
 case UNAPPROVED:
 dlgId=CommentDialogs.ID_COMMENT_DLG_UNAPPROVING;
 break;
 case SPAM:
 dlgId=CommentDialogs.ID_COMMENT_DLG_SPAMMING;
+AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_FLAGGED_AS_SPAM);
 break;
 case TRASH:
 dlgId=CommentDialogs.ID_COMMENT_DLG_TRASHING;
+AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_TRASHED);
 break;
 default :
 return;
 }
+AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_PERFORMED_ACTION);
 getActivity().showDialog(dlgId);
 mLayoutButtons.setEnabled(false);
 mLayoutButtons.clearAnimation();

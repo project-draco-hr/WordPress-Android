@@ -1,0 +1,36 @@
+{
+  mMixpanel=MixpanelAPI.getInstance(WordPress.getContext(),Config.MIXPANEL_TOKEN);
+  SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
+  int sessionCount=preferences.getInt(SESSION_COUNT,0);
+  sessionCount++;
+  SharedPreferences.Editor editor=preferences.edit();
+  editor.putInt(SESSION_COUNT,sessionCount);
+  editor.commit();
+  boolean connected=WordPress.hasValidWPComCredentials(WordPress.getContext());
+  int numBlogs=WordPress.wpDB.getVisibleAccounts().size();
+  try {
+    JSONObject properties=new JSONObject();
+    properties.put(MIXPANEL_PLATFORM,"Android");
+    properties.put(MIXPANEL_SESSION_COUNT,sessionCount);
+    properties.put(MIXPANEL_CONNECTED_TO_DOTCOM,connected);
+    properties.put(MIXPANEL_NUMBER_OF_BLOGS,numBlogs);
+    mMixpanel.registerSuperProperties(properties);
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.UTILS,e);
+  }
+  if (connected) {
+    String username=preferences.getString(WordPress.WPCOM_USERNAME_PREFERENCE,null);
+    mMixpanel.identify(username);
+    mMixpanel.getPeople().identify(username);
+    try {
+      JSONObject jsonObj=new JSONObject();
+      jsonObj.put("$username",username);
+      jsonObj.put("$first_name",username);
+      mMixpanel.getPeople().set(jsonObj);
+    }
+ catch (    JSONException e) {
+      AppLog.e(AppLog.T.UTILS,e);
+    }
+  }
+}
