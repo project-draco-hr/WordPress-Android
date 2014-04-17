@@ -1,5 +1,7 @@
 {
-  if (context == null || imageUri == null)   return null;
+  if (context == null || imageUri == null) {
+    return null;
+  }
   File cacheDir;
   String mimeType=context.getContentResolver().getType(imageUri);
   boolean isVideo=(mimeType != null && mimeType.contains("video"));
@@ -8,19 +10,29 @@
     cacheDir=new File(android.os.Environment.getExternalStorageDirectory() + "/WordPress/" + mediaFolder);
   }
  else {
-    cacheDir=context.getApplicationContext().getCacheDir();
+    if (context.getApplicationContext() != null) {
+      cacheDir=context.getApplicationContext().getCacheDir();
+    }
   }
-  if (!cacheDir.exists())   cacheDir.mkdirs();
+  if (cacheDir != null && !cacheDir.exists()) {
+    cacheDir.mkdirs();
+  }
   try {
     InputStream input;
     if (imageUri.toString().startsWith("content://")) {
       input=context.getContentResolver().openInputStream(imageUri);
+      if (input == null) {
+        AppLog.e(T.UTILS,"openInputStream returned null");
+        return null;
+      }
     }
  else {
       input=new URL(imageUri.toString()).openStream();
     }
     String fileName="wp-" + System.currentTimeMillis();
-    if (isVideo)     fileName+="." + MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
+    if (isVideo) {
+      fileName+="." + MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
+    }
     File f=new File(cacheDir,fileName);
     OutputStream output=new FileOutputStream(f);
     byte data[]=new byte[1024];
