@@ -3,13 +3,7 @@
     ReaderFullScreenUtils.enableActionBarOverlay(this);
   }
   super.onCreate(savedInstanceState);
-  boolean isBlogDetail=getIntent().getBooleanExtra(ARG_IS_BLOG_DETAIL,false);
-  if (isBlogDetail) {
-    setContentView(R.layout.reader_activity_main);
-  }
- else {
-    createMenuDrawer(R.layout.reader_activity_main);
-  }
+  createMenuDrawer(R.layout.reader_activity_main);
   final View viewActionBarSpacer=findViewById(R.id.view_actionbar_spacer);
   if (isFullScreenSupported()) {
     int actionBarHeight=DisplayUtils.getActionBarHeight(this);
@@ -21,16 +15,7 @@
   }
   getSupportFragmentManager().addOnBackStackChangedListener(this);
   AnalyticsTracker.track(AnalyticsTracker.Stat.READER_ACCESSED);
-  if (isBlogDetail) {
-    setTitle(R.string.reader_title_blog_detail);
-    long blogId=getIntent().getLongExtra(ReaderActivity.ARG_BLOG_ID,0);
-    showBlogInfo(ReaderBlogTable.getBlogInfo(blogId));
-    requestBlogInfo(blogId);
-    if (savedInstanceState == null) {
-      showListFragmentForBlog(blogId);
-    }
-  }
- else   if (savedInstanceState == null) {
+  if (savedInstanceState == null) {
     final ReaderFragmentType fragmentType;
     if (getIntent().hasExtra(ARG_READER_FRAGMENT)) {
       fragmentType=(ReaderFragmentType)getIntent().getSerializableExtra(ARG_READER_FRAGMENT);

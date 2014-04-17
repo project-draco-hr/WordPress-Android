@@ -1,11 +1,10 @@
 {
-  final View blogHeaderView=findViewById(R.id.layout_blog_header);
-  final TextView txtBlogName=(TextView)blogHeaderView.findViewById(R.id.text_blog_name);
-  final TextView txtDescription=(TextView)blogHeaderView.findViewById(R.id.text_blog_description);
-  final TextView txtFollowCnt=(TextView)blogHeaderView.findViewById(R.id.text_follow_count);
-  final TextView txtFollowBtn=(TextView)blogHeaderView.findViewById(R.id.text_follow_blog);
-  final View divider=blogHeaderView.findViewById(R.id.divider_blog_header);
-  final WPNetworkImageView imgMshot=(WPNetworkImageView)blogHeaderView.findViewById(R.id.image_mshot);
+  final TextView txtBlogName=(TextView)findViewById(R.id.text_blog_name);
+  final TextView txtDescription=(TextView)findViewById(R.id.text_blog_description);
+  final TextView txtFollowCnt=(TextView)findViewById(R.id.text_follow_count);
+  final TextView txtFollowBtn=(TextView)findViewById(R.id.text_follow_blog);
+  final View divider=findViewById(R.id.divider);
+  final WPNetworkImageView imgMshot=(WPNetworkImageView)findViewById(R.id.image_mshot);
   if (blog != null) {
     txtBlogName.setText(blog.getName());
     txtDescription.setText(blog.getDescription());
@@ -22,8 +21,7 @@
       }
     }
 );
-    String mshotsUrl="http://s.wordpress.com/mshots/v1/" + UrlUtils.urlEncode(blog.getUrl());
-    imgMshot.setImageUrl(mshotsUrl,WPNetworkImageView.ImageType.PHOTO);
+    imgMshot.setImageUrl(getMshotsUrl(blog.getUrl()),WPNetworkImageView.ImageType.PHOTO);
   }
  else {
     txtBlogName.setText(null);
@@ -31,8 +29,5 @@
     txtFollowCnt.setText(null);
     txtFollowBtn.setVisibility(View.INVISIBLE);
     divider.setVisibility(View.INVISIBLE);
-  }
-  if (blogHeaderView.getVisibility() != View.VISIBLE) {
-    blogHeaderView.setVisibility(View.VISIBLE);
   }
 }
