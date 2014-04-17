@@ -1,0 +1,11 @@
+{
+  if (blogInfo == null || txtFollow == null) {
+    return;
+  }
+  AniUtils.zoomAction(txtFollow);
+  boolean isCurrentlyFollowing=ReaderBlogTable.isFollowedBlogUrl(blogInfo.getUrl());
+  ReaderBlogActions.BlogAction blogAction=(isCurrentlyFollowing ? ReaderBlogActions.BlogAction.UNFOLLOW : ReaderBlogActions.BlogAction.FOLLOW);
+  if (!ReaderBlogActions.performBlogAction(blogAction,blogInfo.blogId,blogInfo.getUrl()))   return;
+  boolean isNowFollowing=!isCurrentlyFollowing;
+  showBlogFollowStatus(txtFollow,isNowFollowing);
+}
