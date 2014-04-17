@@ -1,0 +1,28 @@
+{
+  mCurrentBlog=currentBlog;
+  mCtx=ctx;
+  Thread SSLContextInitializer=new Thread(){
+    @Override public void run(){
+      try {
+        TrustManager[] trustAllowedCerts=new TrustManager[]{new WPTrustManager(SelfSignedSSLCertsManager.getInstance(ctx).getLocalKeyStore())};
+        SSLContext context=SSLContext.getInstance("SSL");
+        context.init(null,trustAllowedCerts,new SecureRandom());
+        mSslSocketFactory=context.getSocketFactory();
+      }
+ catch (      NoSuchAlgorithmException e) {
+        AppLog.e(T.API,e);
+      }
+catch (      KeyManagementException e) {
+        AppLog.e(T.API,e);
+      }
+catch (      GeneralSecurityException e) {
+        AppLog.e(T.API,e);
+      }
+catch (      IOException e) {
+        AppLog.e(T.API,e);
+      }
+    }
+  }
+;
+  SSLContextInitializer.start();
+}
