@@ -1,0 +1,16 @@
+{
+  SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
+  int propertyCount=preferences.getInt(property,0);
+  propertyCount++;
+  SharedPreferences.Editor editor=preferences.edit();
+  editor.putInt(property,propertyCount);
+  editor.commit();
+  try {
+    JSONObject superProperty=new JSONObject();
+    superProperty.put(property,propertyCount);
+    mMixpanel.registerSuperProperties(superProperty);
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.UTILS,e);
+  }
+}
