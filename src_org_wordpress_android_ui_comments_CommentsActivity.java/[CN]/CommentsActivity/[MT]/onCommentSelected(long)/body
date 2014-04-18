@@ -1,7 +1,4 @@
 {
-  if (comment == null) {
-    return;
-  }
   FragmentManager fm=getSupportFragmentManager();
   fm.executePendingTransactions();
   CommentDetailFragment detailFragment=getDetailFragment();
@@ -10,15 +7,15 @@
     if (hasReaderFragment()) {
       fm.popBackStackImmediate();
     }
-    detailFragment.setComment(WordPress.getCurrentLocalTableBlogId(),comment.commentID);
+    detailFragment.setComment(WordPress.getCurrentLocalTableBlogId(),commentId);
     if (listFragment != null) {
-      listFragment.setHighlightedCommentId(comment.commentID);
+      listFragment.setHighlightedCommentId(commentId);
     }
   }
  else {
     FragmentTransaction ft=fm.beginTransaction();
     String tagForFragment=getString(R.string.fragment_tag_comment_detail);
-    detailFragment=CommentDetailFragment.newInstance(WordPress.getCurrentLocalTableBlogId(),comment.commentID);
+    detailFragment=CommentDetailFragment.newInstance(WordPress.getCurrentLocalTableBlogId(),commentId);
     ft.add(R.id.layout_fragment_container,detailFragment,tagForFragment).addToBackStack(tagForFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
     if (listFragment != null) {
       ft.hide(listFragment);
