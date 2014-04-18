@@ -1,0 +1,26 @@
+{
+  int action=event.getAction() & MotionEvent.ACTION_MASK;
+  final float y=event.getY();
+  final int yDiff=(int)(y - mLastMotionY);
+  mLastMotionY=y;
+switch (action) {
+case MotionEvent.ACTION_MOVE:
+    if (mIsMoving) {
+      float scaleStep=yDiff * 0.0015f;
+      if (yDiff < -MOVE_MIN_DIFF) {
+        scaleImage(scaleStep);
+      }
+ else       if (yDiff > MOVE_MIN_DIFF) {
+        scaleImage(scaleStep);
+      }
+    }
+ else {
+      mIsMoving=true;
+    }
+  break;
+default :
+mIsMoving=false;
+break;
+}
+return false;
+}

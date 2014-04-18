@@ -1,0 +1,20 @@
+{
+  mScaleFactor+=scale;
+  if (mScaleFactor <= 0) {
+    mScaleFactor=0;
+    mImageMshot.setVisibility(View.INVISIBLE);
+    return;
+  }
+ else   if (mScaleFactor >= 1.0f) {
+    mScaleFactor=1.0f;
+    return;
+  }
+  mImageMshot.setVisibility(View.VISIBLE);
+  Matrix matrix=mImageMshot.getImageMatrix();
+  RectF drawableRect=new RectF(0,0,mImageWidth,mImageHeight);
+  RectF viewRect=new RectF(0,0,mImageMshot.getWidth(),mImageMshot.getHeight());
+  matrix.setRectToRect(drawableRect,viewRect,Matrix.ScaleToFit.CENTER);
+  matrix.postScale(1.0f,mScaleFactor);
+  mImageMshot.setImageMatrix(matrix);
+  mImageMshot.invalidate();
+}
