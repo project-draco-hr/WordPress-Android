@@ -1,8 +1,12 @@
 {
   final Intent intent=getIntent();
-  if (intent.hasExtra(NOTE_ID_EXTRA)) {
-    int noteID=Integer.valueOf(intent.getStringExtra(NOTE_ID_EXTRA));
-    Note note=WordPress.wpDB.getNoteById(noteID);
+  if (noteId == -1) {
+    if (intent.hasExtra(NOTE_ID_EXTRA)) {
+      noteId=Integer.valueOf(intent.getStringExtra(NOTE_ID_EXTRA));
+    }
+  }
+  if (noteId != -1) {
+    Note note=WordPress.wpDB.getNoteById(noteId);
     if (note != null) {
       openNote(note);
     }
