@@ -14,17 +14,21 @@
   mNotesList.setOnNoteClickListener(new NoteClickListener());
   if (savedInstanceState != null) {
     int noteId=savedInstanceState.getInt(NOTE_ID_EXTRA,UNSPECIFIED_NOTE_ID);
-    loadNotes(noteId);
+    if (!mDualPane && noteId != UNSPECIFIED_NOTE_ID) {
+      Note note=WordPress.wpDB.getNoteById(noteId);
+      openNote(note);
+      loadNotes(false,UNSPECIFIED_NOTE_ID);
+    }
+ else {
+      loadNotes(true,noteId);
+    }
   }
  else {
-    loadNotes(UNSPECIFIED_NOTE_ID);
+    loadNotes(true,UNSPECIFIED_NOTE_ID);
   }
   GCMIntentService.activeNotificationsMap.clear();
   if (savedInstanceState != null) {
     mHasPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);
-  }
-  if (savedInstanceState != null) {
-    popNoteDetail();
   }
   if (mBroadcastReceiver == null) {
     createBroadcastReceiver();
