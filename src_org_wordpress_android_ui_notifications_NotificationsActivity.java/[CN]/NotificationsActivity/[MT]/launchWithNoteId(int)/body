@@ -1,18 +1,18 @@
 {
   final Intent intent=getIntent();
-  if (noteId == -1) {
+  if (noteId == UNSPECIFIED_NOTE_ID) {
     if (intent.hasExtra(NOTE_ID_EXTRA)) {
       noteId=Integer.valueOf(intent.getStringExtra(NOTE_ID_EXTRA));
     }
   }
-  if (noteId != -1) {
+  if (noteId != UNSPECIFIED_NOTE_ID) {
     Note note=WordPress.wpDB.getNoteById(noteId);
     if (note != null) {
       openNote(note);
     }
  else {
       Map<String,String> params=new HashMap<String,String>();
-      params.put("ids",intent.getStringExtra(NOTE_ID_EXTRA));
+      params.put("ids",Integer.toString(noteId));
       NotesResponseHandler handler=new NotesResponseHandler(){
         @Override public void onNotes(        List<Note> notes){
           if (!notes.isEmpty()) {
