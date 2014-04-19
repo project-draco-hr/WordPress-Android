@@ -3,7 +3,14 @@
     ReaderFullScreenUtils.enableActionBarOverlay(this);
   }
   super.onCreate(savedInstanceState);
-  createMenuDrawer(R.layout.reader_activity_main);
+  mIsBlogDetail=getIntent().getBooleanExtra(ARG_IS_BLOG_DETAIL,false);
+  if (mIsBlogDetail) {
+    setContentView(R.layout.reader_activity_main);
+    setTitle(R.string.reader_title_blog_detail);
+  }
+ else {
+    createMenuDrawer(R.layout.reader_activity_main);
+  }
   getSupportFragmentManager().addOnBackStackChangedListener(this);
   AnalyticsTracker.track(AnalyticsTracker.Stat.READER_ACCESSED);
   if (savedInstanceState == null) {
@@ -16,17 +23,23 @@
     }
 switch (fragmentType) {
 case POST_LIST:
-      String tagName=getIntent().getStringExtra(ReaderActivity.ARG_TAG_NAME);
-    if (TextUtils.isEmpty(tagName)) {
-      tagName=UserPrefs.getReaderTag();
-    }
-  if (TextUtils.isEmpty(tagName) || !ReaderTagTable.tagExists(tagName)) {
-    tagName=ReaderTag.TAG_NAME_DEFAULT;
-  }
-showListFragmentForTag(tagName);
-break;
+      if (mIsBlogDetail) {
+        long blogId=getIntent().getLongExtra(ReaderActivity.ARG_BLOG_ID,0);
+        showListFragmentForBlog(blogId);
+      }
+ else {
+        String tagName=getIntent().getStringExtra(ReaderActivity.ARG_TAG_NAME);
+        if (TextUtils.isEmpty(tagName)) {
+          tagName=UserPrefs.getReaderTag();
+        }
+        if (TextUtils.isEmpty(tagName) || !ReaderTagTable.tagExists(tagName)) {
+          tagName=ReaderTag.TAG_NAME_DEFAULT;
+        }
+        showListFragmentForTag(tagName);
+      }
+    break;
 case POST_DETAIL:
-long blogId=getIntent().getLongExtra(ReaderActivity.ARG_BLOG_ID,0);
+  long blogId=getIntent().getLongExtra(ReaderActivity.ARG_BLOG_ID,0);
 long postId=getIntent().getLongExtra(ReaderActivity.ARG_POST_ID,0);
 showDetailFragment(blogId,postId);
 break;

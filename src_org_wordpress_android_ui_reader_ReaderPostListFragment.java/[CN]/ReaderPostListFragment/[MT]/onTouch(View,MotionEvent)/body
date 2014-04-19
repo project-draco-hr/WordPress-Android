@@ -1,0 +1,22 @@
+{
+  int action=event.getAction() & MotionEvent.ACTION_MASK;
+  final float y=event.getY();
+  final int yDiff=(int)(y - mLastMotionY);
+  mLastMotionY=y;
+  if (getPostListType() == ReaderPostListType.BLOG) {
+switch (action) {
+case MotionEvent.ACTION_MOVE:
+      ListView listView=(ListView)view;
+    if (yDiff < 0) {
+      scaleMshotImage(y,false);
+    }
+ else     if (yDiff > 0 && ReaderFullScreenUtils.canScrollUp(listView)) {
+      scaleMshotImage(y,true);
+    }
+  break;
+default :
+break;
+}
+}
+return false;
+}
