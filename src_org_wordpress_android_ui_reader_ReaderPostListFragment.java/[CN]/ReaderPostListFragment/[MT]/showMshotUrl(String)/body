@@ -1,0 +1,20 @@
+{
+  WPNetworkImageView.ImageListener imageListener=new WPNetworkImageView.ImageListener(){
+    @Override public void onImageLoaded(    boolean succeeded){
+      if (!succeeded && hasActivity()) {
+        AppLog.d(T.READER,"retrying mshot request");
+        mImageMshot.setImageUrl(null,WPNetworkImageView.ImageType.MSHOT);
+        new Handler().postDelayed(new Runnable(){
+          @Override public void run(){
+            if (hasActivity()) {
+              mImageMshot.setImageUrl(imageUrl,WPNetworkImageView.ImageType.MSHOT);
+            }
+          }
+        }
+,2000);
+      }
+    }
+  }
+;
+  mImageMshot.setImageUrl(imageUrl,WPNetworkImageView.ImageType.MSHOT,imageListener);
+}
