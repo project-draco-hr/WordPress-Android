@@ -1,5 +1,11 @@
 {
   String path="sites/" + blogId + "/posts/"+ "/?meta=site,likes";
+  if (updateAction == ReaderActions.RequestDataAction.LOAD_OLDER) {
+    String dateOldest=ReaderPostTable.getOldestPubDateInBlog(blogId);
+    if (!TextUtils.isEmpty(dateOldest)) {
+      path+="&before=" + UrlUtils.urlEncode(dateOldest);
+    }
+  }
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       handleGetPostsResponse(jsonObject,actionListener);
