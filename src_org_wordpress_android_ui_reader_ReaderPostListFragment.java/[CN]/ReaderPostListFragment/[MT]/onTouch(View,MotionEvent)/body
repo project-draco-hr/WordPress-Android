@@ -1,20 +1,8 @@
 {
-  if (getPostListType() == ReaderPostListType.BLOG) {
-    int action=event.getAction() & MotionEvent.ACTION_MASK;
-switch (action) {
-case MotionEvent.ACTION_MOVE:
-      float yDiff=event.getY() - mLastMotionY;
-    if (yDiff < 0.0f && ReaderFullScreenUtils.canScrollDown(mListView)) {
-      scaleMshotImage();
-    }
- else     if (yDiff > 0.0f && ReaderFullScreenUtils.canScrollUp(mListView)) {
-      scaleMshotImage();
-    }
-  break;
-default :
-break;
-}
-}
-mLastMotionY=event.getY();
-return false;
+  if (mGestureDetector != null && getPostListType() == ReaderPostListType.BLOG) {
+    return mGestureDetector.onTouchEvent(event);
+  }
+ else {
+    return false;
+  }
 }
