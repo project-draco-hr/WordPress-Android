@@ -17,23 +17,21 @@
   }
 );
   if (hasTransparentActionBar) {
-    final int actionbarHeight=DisplayUtils.getActionBarHeight(context);
-    RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)mNewPostsBar.getLayoutParams();
-    params.topMargin=actionbarHeight;
+    ReaderFullScreenUtils.addTopMargin(context,mNewPostsBar);
   }
 switch (getPostListType()) {
 case BLOG:
     if (hasTransparentActionBar) {
+      ReaderFullScreenUtils.addTopMargin(context,mImageMshot);
     }
   mImageMshot.setVisibility(View.VISIBLE);
-mImageMshot.setScaleType(ImageView.ScaleType.MATRIX);
 ReaderBlogInfoHeader header=new ReaderBlogInfoHeader(context);
 mListView.addHeaderView(header);
 ReaderBlogInfoHeader.OnBlogInfoListener infoListener=new ReaderBlogInfoHeader.OnBlogInfoListener(){
 @Override public void onBlogInfoShown(ReaderBlogInfo blogInfo){
 if (hasActivity() && TextUtils.isEmpty(mImageMshot.getUrl())) {
-int width=DisplayUtils.getDisplayPixelWidth(getActivity());
-mImageMshot.setImageUrl(blogInfo.getMshotsUrl(width),WPNetworkImageView.ImageType.PHOTO);
+  int width=DisplayUtils.getDisplayPixelWidth(getActivity());
+  mImageMshot.setImageUrl(blogInfo.getMshotsUrl(width),WPNetworkImageView.ImageType.PHOTO);
 }
 }
 }
