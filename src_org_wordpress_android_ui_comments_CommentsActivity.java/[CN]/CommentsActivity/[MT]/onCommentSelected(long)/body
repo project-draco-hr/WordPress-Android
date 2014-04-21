@@ -1,5 +1,9 @@
 {
+  mSelectedCommentId=commentId;
   FragmentManager fm=getSupportFragmentManager();
+  if (fm == null) {
+    return;
+  }
   fm.executePendingTransactions();
   CommentDetailFragment detailFragment=getDetailFragment();
   CommentsListFragment listFragment=getListFragment();
@@ -18,6 +22,7 @@
     detailFragment=CommentDetailFragment.newInstance(WordPress.getCurrentLocalTableBlogId(),commentId);
     ft.add(R.id.layout_fragment_container,detailFragment,tagForFragment).addToBackStack(tagForFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
     if (listFragment != null) {
+      listFragment.setHighlightedCommentId(commentId);
       ft.hide(listFragment);
     }
     ft.commitAllowingStateLoss();
