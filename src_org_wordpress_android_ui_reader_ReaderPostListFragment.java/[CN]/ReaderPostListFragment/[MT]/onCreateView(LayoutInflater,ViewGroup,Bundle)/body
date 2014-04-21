@@ -22,18 +22,12 @@ case BLOG:
       ReaderFullScreenUtils.addTopMargin(context,mHeaderImage);
     }
   mHeaderImage.setVisibility(View.VISIBLE);
-ReaderBlogInfoHeader infoHeader=new ReaderBlogInfoHeader(context);
-mListView.addHeaderView(infoHeader);
-ReaderBlogInfoHeader.OnBlogInfoListener infoListener=new ReaderBlogInfoHeader.OnBlogInfoListener(){
-@Override public void onBlogInfoShown(ReaderBlogInfo blogInfo){
-if (hasActivity() && TextUtils.isEmpty(mHeaderImage.getUrl())) {
-  int width=DisplayUtils.getDisplayPixelWidth(getActivity());
-  showHeaderImage(blogInfo.getMshotsUrl(width));
-}
-}
-}
-;
-infoHeader.setBlogId(mCurrentBlogId,infoListener);
+int displayWidth=DisplayUtils.getDisplayPixelWidth(getActivity());
+int marginWidth=getResources().getDimensionPixelSize(R.dimen.reader_list_margin);
+mHeaderImageWidth=displayWidth - (marginWidth * 2);
+mBlogInfoHeader=new ReaderBlogInfoHeader(context);
+mListView.addHeaderView(mBlogInfoHeader);
+getBlogInfo();
 mListView.setOnScrollChangedListener(this);
 break;
 case TAG:
@@ -59,17 +53,22 @@ mPostSelectedListener.onPostSelected(post.blogId,post.postId);
 );
 mProgress=(ProgressBar)view.findViewById(R.id.progress_footer);
 mProgress.setVisibility(View.GONE);
-if (getPostListType() == ReaderPostListType.TAG) {
 mPullToRefreshHelper=new PullToRefreshHelper(getActivity(),(PullToRefreshLayout)view.findViewById(R.id.ptr_layout),new RefreshListener(){
 @Override public void onRefreshStarted(View view){
 if (getActivity() == null || !NetworkUtils.checkConnection(getActivity())) {
 mPullToRefreshHelper.setRefreshing(false);
 return;
 }
+switch (getPostListType()) {
+case TAG:
 updatePostsWithCurrentTag(RequestDataAction.LOAD_NEWER);
+break;
+case BLOG:
+updatePostsInCurrentBlog(RequestDataAction.LOAD_NEWER);
+break;
+}
 }
 }
 );
-}
 return view;
 }
