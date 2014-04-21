@@ -24,8 +24,16 @@
   }
   ImageLoader.ImageContainer newContainer=WordPress.imageLoader.get(mUrl,new ImageLoader.ImageListener(){
     @Override public void onErrorResponse(    VolleyError error){
-      showErrorImage(mImageType);
-      if (mImageListener != null)       mImageListener.onImageLoaded(false);
+      if (mImageType == ImageType.MSHOT && mRetryCnt < MAX_RETRIES && VolleyUtils.statusCodeFromVolleyError(error) == 307) {
+        mRetryCnt++;
+        retry(isInLayoutPass);
+      }
+ else {
+        showErrorImage(mImageType);
+        if (mImageListener != null) {
+          mImageListener.onImageLoaded(false);
+        }
+      }
     }
     @Override public void onResponse(    final ImageLoader.ImageContainer response,    boolean isImmediate){
       if (isImmediate && isInLayoutPass) {
