@@ -8,21 +8,5 @@
   setTitle(getString(R.string.tab_comments));
   FragmentManager fm=getSupportFragmentManager();
   fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
-  if (savedInstanceState != null) {
-    long commentId=savedInstanceState.getLong(KEY_HIGHLIGHTED_COMMENT_ID);
-    if (commentId != 0) {
-      if (hasListFragment()) {
-        getListFragment().setHighlightedCommentId(commentId);
-      }
-      if (mDualPane) {
-        onCommentSelected(commentId);
-      }
-    }
-    if (!mDualPane) {
-      commentId=savedInstanceState.getLong(KEY_SELECTED_COMMENT_ID);
-      if (commentId != 0) {
-        onCommentSelected(commentId);
-      }
-    }
-  }
+  restoreSavedInstance(savedInstanceState);
 }
