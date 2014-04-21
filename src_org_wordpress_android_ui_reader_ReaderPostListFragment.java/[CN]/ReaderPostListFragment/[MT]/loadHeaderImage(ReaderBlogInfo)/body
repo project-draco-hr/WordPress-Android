@@ -1,12 +1,16 @@
 {
+  if (blogInfo == null || blogInfo.isPrivate) {
+    return;
+  }
   WPNetworkImageView.ImageListener imageListener=new WPNetworkImageView.ImageListener(){
     @Override public void onImageLoaded(    boolean succeeded){
       if (hasActivity() && succeeded) {
-        mHasLoadedHeaderImage=true;
         scaleHeaderImage();
+        mHasLoadedHeaderImage=true;
       }
     }
   }
 ;
+  final String imageUrl=blogInfo.getMshotsUrl(mHeaderImageWidth);
   mHeaderImage.setImageUrl(imageUrl,WPNetworkImageView.ImageType.MSHOT,imageListener);
 }
