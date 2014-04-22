@@ -1,6 +1,12 @@
 {
   final ReaderTag tag=(ReaderTag)getActionBarAdapter().getItem(itemPosition);
   if (tag == null)   return false;
+  Map<String,String> properties=new HashMap<String,String>();
+  properties.put("tag",tag.getTagName());
+  AnalyticsTracker.track(AnalyticsTracker.Stat.READER_LOADED_TAG,properties);
+  if (tag.getTagName().equals(ReaderTag.TAG_NAME_FRESHLY_PRESSED)) {
+    AnalyticsTracker.track(AnalyticsTracker.Stat.READER_LOADED_FRESHLY_PRESSED);
+  }
   setCurrentTag(tag.getTagName());
   AppLog.d(T.READER,"reader post list > tag chosen from actionbar: " + tag.getTagName());
   return true;

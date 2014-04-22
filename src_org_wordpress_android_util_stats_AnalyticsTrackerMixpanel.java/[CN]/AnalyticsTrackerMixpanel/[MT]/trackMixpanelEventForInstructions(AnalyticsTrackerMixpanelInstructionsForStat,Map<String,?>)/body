@@ -1,0 +1,25 @@
+{
+  String eventName=instructions.getMixpanelEventName();
+  if (eventName != null && !eventName.isEmpty()) {
+    JSONObject savedPropertiesForStat=propertiesForStat(instructions.getStat());
+    if (savedPropertiesForStat == null) {
+      savedPropertiesForStat=new JSONObject();
+    }
+    if (properties != null) {
+      Iterator iter=properties.entrySet().iterator();
+      while (iter.hasNext()) {
+        Map.Entry pairs=(Map.Entry)iter.next();
+        String key=(String)pairs.getKey();
+        try {
+          Object value=pairs.getValue();
+          savedPropertiesForStat.put(key,value);
+        }
+ catch (        JSONException e) {
+          AppLog.e(AppLog.T.UTILS,e);
+        }
+      }
+    }
+    mMixpanel.track(eventName,savedPropertiesForStat);
+    removePropertiesForStat(instructions.getStat());
+  }
+}
