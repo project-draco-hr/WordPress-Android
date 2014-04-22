@@ -1,9 +1,10 @@
 {
   AniUtils.zoomAction(holder.imgBtnLike);
-  if (!ReaderPostActions.performPostAction(ReaderPostActions.PostAction.TOGGLE_LIKE,post,null)) {
+  boolean isAskingToLike=!post.isLikedByCurrentUser;
+  if (!ReaderPostActions.performLikeAction(post,isAskingToLike)) {
     return;
   }
-  if (!post.isLikedByCurrentUser) {
+  if (isAskingToLike) {
     AnalyticsTracker.track(AnalyticsTracker.Stat.READER_LIKED_ARTICLE);
   }
   ReaderPost updatedPost=ReaderPostTable.getPost(post.blogId,post.postId);

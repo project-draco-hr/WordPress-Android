@@ -1,0 +1,47 @@
+{
+  if (TextUtils.isEmpty(blogUrl)) {
+    return false;
+  }
+  final boolean isCurrentlyFollowing=ReaderBlogTable.isFollowedBlogUrl(blogUrl);
+  if (isCurrentlyFollowing == isAskingToFollow) {
+    return true;
+  }
+  final String path;
+  final String actionName=(isAskingToFollow ? "follow" : "unfollow");
+  final String domain=UrlUtils.getDomainFromUrl(blogUrl);
+  if (isAskingToFollow) {
+    if (blogId != 0) {
+      path="/sites/" + blogId + "/follows/new";
+    }
+ else {
+      path="/read/following/mine/new?url=" + domain;
+    }
+  }
+ else {
+    if (blogId != 0) {
+      path="/sites/" + blogId + "/follows/mine/delete";
+    }
+ else {
+      path="/read/following/mine/delete?url=" + domain;
+    }
+  }
+  ReaderBlogTable.setIsFollowedBlogUrl(blogUrl,isAskingToFollow);
+  ReaderPostTable.setFollowStatusForPostsInBlog(blogId,isAskingToFollow);
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      AppLog.d(T.READER,"blog " + actionName + " succeeded");
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.w(T.READER,"blog " + actionName + " failed");
+      AppLog.e(T.READER,volleyError);
+      ReaderBlogTable.setIsFollowedBlogUrl(blogUrl,isCurrentlyFollowing);
+      ReaderPostTable.setFollowStatusForPostsInBlog(blogId,isCurrentlyFollowing);
+    }
+  }
+;
+  WordPress.getRestClientUtils().post(path,listener,errorListener);
+  return true;
+}
