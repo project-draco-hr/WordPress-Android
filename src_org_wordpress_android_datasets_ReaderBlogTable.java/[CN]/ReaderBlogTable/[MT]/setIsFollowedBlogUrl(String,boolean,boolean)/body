@@ -1,0 +1,22 @@
+{
+  if (TextUtils.isEmpty(url)) {
+    return;
+  }
+  String normUrl=UrlUtils.normalizeUrl(url);
+  long sqlIsFollowed=SqlUtils.boolToSql(isFollowed);
+  SQLiteStatement stmt=ReaderDatabase.getWritableDb().compileStatement("INSERT OR REPLACE INTO tbl_followed_blogs (blog_url, is_following) VALUES (?1,?2)");
+  try {
+    stmt.bindString(1,normUrl);
+    stmt.bindLong(2,sqlIsFollowed);
+    stmt.execute();
+  }
+  finally {
+    SqlUtils.closeStatement(stmt);
+  }
+  if (updateBlogInfoTable) {
+    ContentValues values=new ContentValues();
+    values.put("is_following",sqlIsFollowed);
+    String[] args={normUrl};
+    ReaderDatabase.getWritableDb().update("tbl_blog_info",values,"blog_url=?",args);
+  }
+}

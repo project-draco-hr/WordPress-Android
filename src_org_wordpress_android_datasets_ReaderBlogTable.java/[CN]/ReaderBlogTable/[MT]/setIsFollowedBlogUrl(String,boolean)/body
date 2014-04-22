@@ -1,25 +1,3 @@
 {
-  if (TextUtils.isEmpty(url))   return;
-  SQLiteDatabase db=ReaderDatabase.getWritableDb();
-  db.beginTransaction();
-  try {
-    final String normUrl=UrlUtils.normalizeUrl(url);
-    SQLiteStatement stmt=db.compileStatement("INSERT OR REPLACE INTO tbl_followed_blogs (blog_url, is_following) VALUES (?1,?2)");
-    try {
-      stmt.bindString(1,normUrl);
-      stmt.bindLong(2,SqlUtils.boolToSql(isFollowed));
-      stmt.execute();
-    }
-  finally {
-      SqlUtils.closeStatement(stmt);
-    }
-    ContentValues values=new ContentValues();
-    values.put("is_following",SqlUtils.boolToSql(isFollowed));
-    String[] args={normUrl};
-    db.update("tbl_blog_info",values,"blog_url=?",args);
-    db.setTransactionSuccessful();
-  }
-  finally {
-    db.endTransaction();
-  }
+  setIsFollowedBlogUrl(url,isFollowed,true);
 }

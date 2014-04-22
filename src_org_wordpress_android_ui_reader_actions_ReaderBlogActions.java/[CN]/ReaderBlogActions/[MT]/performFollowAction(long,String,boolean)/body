@@ -1,32 +1,41 @@
 {
-  if (TextUtils.isEmpty(blogUrl)) {
+  final boolean hasBlogId=(blogId != 0);
+  final boolean hasBlogUrl=!TextUtils.isEmpty(blogUrl);
+  if (!hasBlogId && !hasBlogUrl) {
     return false;
   }
-  final boolean isCurrentlyFollowing=ReaderBlogTable.isFollowedBlogUrl(blogUrl);
-  if (isCurrentlyFollowing == isAskingToFollow) {
-    return true;
+  if (hasBlogUrl) {
+    boolean isCurrentlyFollowing=ReaderBlogTable.isFollowedBlogUrl(blogUrl);
+    if (isCurrentlyFollowing == isAskingToFollow) {
+      return true;
+    }
   }
   final String path;
   final String actionName=(isAskingToFollow ? "follow" : "unfollow");
-  final String domain=UrlUtils.getDomainFromUrl(blogUrl);
   if (isAskingToFollow) {
-    if (blogId != 0) {
+    if (hasBlogId) {
       path="/sites/" + blogId + "/follows/new";
     }
  else {
-      path="/read/following/mine/new?url=" + domain;
+      path="/read/following/mine/new?url=" + UrlUtils.getDomainFromUrl(blogUrl);
+      AppLog.w(T.READER,"following blog by url rather than id");
     }
   }
  else {
-    if (blogId != 0) {
+    if (hasBlogId) {
       path="/sites/" + blogId + "/follows/mine/delete";
     }
  else {
-      path="/read/following/mine/delete?url=" + domain;
+      path="/read/following/mine/delete?url=" + UrlUtils.getDomainFromUrl(blogUrl);
+      AppLog.w(T.READER,"unfollowing blog by url rather than id");
     }
   }
-  ReaderBlogTable.setIsFollowedBlogUrl(blogUrl,isAskingToFollow);
-  ReaderPostTable.setFollowStatusForPostsInBlog(blogId,isAskingToFollow);
+  if (hasBlogUrl) {
+    ReaderBlogTable.setIsFollowedBlogUrl(blogUrl,isAskingToFollow);
+  }
+  if (hasBlogId) {
+    ReaderPostTable.setFollowStatusForPostsInBlog(blogId,isAskingToFollow);
+  }
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       AppLog.d(T.READER,"blog " + actionName + " succeeded");
@@ -37,8 +46,12 @@
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.w(T.READER,"blog " + actionName + " failed");
       AppLog.e(T.READER,volleyError);
-      ReaderBlogTable.setIsFollowedBlogUrl(blogUrl,isCurrentlyFollowing);
-      ReaderPostTable.setFollowStatusForPostsInBlog(blogId,isCurrentlyFollowing);
+      if (hasBlogUrl) {
+        ReaderBlogTable.setIsFollowedBlogUrl(blogUrl,!isAskingToFollow);
+      }
+      if (hasBlogId) {
+        ReaderPostTable.setFollowStatusForPostsInBlog(blogId,!isAskingToFollow);
+      }
     }
   }
 ;
