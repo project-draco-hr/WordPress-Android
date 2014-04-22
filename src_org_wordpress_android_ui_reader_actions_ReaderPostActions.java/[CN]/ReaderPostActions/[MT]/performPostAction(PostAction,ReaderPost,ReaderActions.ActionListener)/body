@@ -33,16 +33,22 @@ path+="new";
  else {
 path+="mine/delete";
 }
-if (post.hasBlogUrl()) ReaderBlogTable.setIsFollowedBlogUrl(post.getBlogUrl(),isAskingToFollow);
+if (post.hasBlogUrl()) {
+ReaderBlogTable.setIsFollowedBlogUrl(post.getBlogUrl(),isAskingToFollow);
+}
 break;
 default :
-if (actionListener != null) actionListener.onActionResult(false);
+if (actionListener != null) {
+actionListener.onActionResult(false);
+}
 return false;
 }
 com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
 @Override public void onResponse(JSONObject jsonObject){
 AppLog.d(T.READER,"post action " + action.name() + " succeeded");
-if (actionListener != null) actionListener.onActionResult(true);
+if (actionListener != null) {
+actionListener.onActionResult(true);
+}
 }
 }
 ;
@@ -64,11 +70,15 @@ ReaderLikeTable.setCurrentUserLikesPost(post,originalPost.isLikedByCurrentUser);
 break;
 case TOGGLE_FOLLOW:
 ReaderPostTable.setFollowStatusForPostsInBlog(originalPost.blogId,originalPost.isFollowedByCurrentUser);
-if (originalPost.hasBlogUrl()) ReaderBlogTable.setIsFollowedBlogUrl(post.getBlogUrl(),originalPost.isFollowedByCurrentUser);
+if (originalPost.hasBlogUrl()) {
+ReaderBlogTable.setIsFollowedBlogUrl(post.getBlogUrl(),originalPost.isFollowedByCurrentUser);
+}
 break;
 }
 }
-if (actionListener != null) actionListener.onActionResult(false);
+if (actionListener != null) {
+actionListener.onActionResult(false);
+}
 }
 }
 ;
