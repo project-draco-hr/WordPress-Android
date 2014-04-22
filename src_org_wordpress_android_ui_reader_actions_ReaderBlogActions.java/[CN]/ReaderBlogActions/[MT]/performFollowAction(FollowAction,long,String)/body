@@ -11,10 +11,20 @@
   final String domain=UrlUtils.getDomainFromUrl(blogUrl);
 switch (action) {
 case FOLLOW:
-    path="/read/following/mine/new?url=" + domain;
+    if (blogId != 0) {
+      path="/sites/" + blogId + "/follows/new";
+    }
+ else {
+      path="/read/following/mine/new?url=" + domain;
+    }
   break;
 case UNFOLLOW:
-path="/read/following/mine/delete?url=" + domain;
+if (blogId != 0) {
+  path="/sites/" + blogId + "/follows/mine/delete";
+}
+ else {
+  path="/read/following/mine/delete?url=" + domain;
+}
 break;
 default :
 return false;
