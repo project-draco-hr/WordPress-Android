@@ -1,13 +1,10 @@
 {
-  if (!NetworkUtils.isNetworkAvailable(mContext))   return false;
   if (isInBackground == false)   return false;
   isInBackground=false;
+  if (!NetworkUtils.isNetworkAvailable(mContext))   return false;
   if (lastPingDate == null)   return false;
   Date now=new Date();
-  long nowInMilliseconds=now.getTime();
-  long lastPingDateInMilliseconds=lastPingDate.getTime();
-  int secondsPassed=(int)(nowInMilliseconds - lastPingDateInMilliseconds) / (1000);
-  if (secondsPassed >= DEFAULT_TIMEOUT) {
+  if (DateTimeUtils.secondsBetween(now,lastPingDate) >= DEFAULT_TIMEOUT) {
     lastPingDate=now;
     return true;
   }
