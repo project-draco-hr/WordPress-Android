@@ -1,5 +1,5 @@
 {
-  AppLog.d(T.STATS,this.getClass().getName() + " responded with Error");
+  AppLog.d(T.STATS,this.getClass().getName() + " " + date+ " responded with Error");
   if (!updateUIExecutor.isShutdown() && !updateUIExecutor.isTerminated() && !updateUIExecutor.isTerminating())   updateUIExecutor.submit(new Thread(){
     @Override public void run(){
       numberOfFinishedNetworkCalls++;
@@ -7,7 +7,9 @@
         AppLog.e(T.STATS,"Error while reading Stats - " + volleyError.getMessage(),volleyError);
       }
       notifyResponseReceived();
-      getContentResolver().notifyChange(getStatsContentProviderUpdateURI(),null);
+      if (shouldUpdateFragments(getStatsContentProviderUpdateURI())) {
+        getContentResolver().notifyChange(getStatsContentProviderUpdateURI(),null);
+      }
     }
   }
 );

@@ -1,5 +1,5 @@
 {
-  AppLog.d(T.STATS,this.getClass().getName() + " responded OK");
+  AppLog.d(T.STATS,this.getClass().getName() + " " + date+ " responded OK");
   if (!updateUIExecutor.isShutdown() && !updateUIExecutor.isTerminated() && !updateUIExecutor.isTerminating())   updateUIExecutor.submit(new Thread(){
     @Override public void run(){
       numberOfFinishedNetworkCalls++;
@@ -18,7 +18,9 @@ catch (        OperationApplicationException e) {
         }
       }
       notifyResponseReceived();
-      getContentResolver().notifyChange(getStatsContentProviderUpdateURI(),null);
+      if (shouldUpdateFragments(getStatsContentProviderUpdateURI())) {
+        getContentResolver().notifyChange(getStatsContentProviderUpdateURI(),null);
+      }
     }
   }
 );
