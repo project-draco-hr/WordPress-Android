@@ -1,8 +1,8 @@
 {
-  if (statsLastPingDate != null) {
+  if (!alwaysUpdate && mStatsLastPingDate != null) {
     Date now=new Date();
     long nowInMilliseconds=now.getTime();
-    long lastPingDateInMilliseconds=statsLastPingDate.getTime();
+    long lastPingDateInMilliseconds=mStatsLastPingDate.getTime();
     int secondsPassed=(int)(nowInMilliseconds - lastPingDateInMilliseconds) / (1000);
     if (secondsPassed < 30 * 60) {
       return;
@@ -21,7 +21,7 @@
       Intent intent=new Intent(mContext,StatsService.class);
       intent.putExtra(StatsService.ARG_BLOG_ID,blogID);
       mContext.startService(intent);
-      statsLastPingDate=new Date();
+      mStatsLastPingDate=new Date();
     }
   }
 }
