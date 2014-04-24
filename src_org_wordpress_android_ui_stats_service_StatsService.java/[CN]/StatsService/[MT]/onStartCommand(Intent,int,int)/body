@@ -1,6 +1,15 @@
 {
   final String blogId=StringUtils.notNullStr(intent.getStringExtra(ARG_BLOG_ID));
+  if (mBlogId == null) {
+    startTasks(blogId,startId);
+  }
+ else   if (blogId.equals(mBlogId)) {
+    AppLog.i(T.STATS,"StatsService is already running on this blogID - " + mBlogId);
+  }
+ else {
+    stopRefresh();
+    startTasks(blogId,startId);
+  }
   this.mBlogId=blogId;
-  startTasks(blogId,startId);
   return START_NOT_STICKY;
 }

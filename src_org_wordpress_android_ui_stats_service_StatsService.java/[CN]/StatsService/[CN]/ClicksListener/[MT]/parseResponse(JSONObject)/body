@@ -1,30 +1,4 @@
 {
-  String date=response.getString("date");
-  long dateMs=StatUtils.toMs(date);
-  ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
-  ContentProviderOperation delete_group=ContentProviderOperation.newDelete(StatsContentProvider.STATS_CLICK_GROUP_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mBlogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
-  ContentProviderOperation delete_child=ContentProviderOperation.newDelete(StatsContentProvider.STATS_CLICKS_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mBlogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
-  operations.add(delete_group);
-  operations.add(delete_child);
-  JSONArray groups=response.getJSONArray("clicks");
-  int groupsCount=Math.min(groups.length(),StatsActivity.STATS_GROUP_MAX_ITEMS);
-  for (int i=0; i < groupsCount; i++) {
-    JSONObject group=groups.getJSONObject(i);
-    StatsClickGroup statGroup=new StatsClickGroup(mBlogId,date,group);
-    ContentValues values=StatsClickGroupsTable.getContentValues(statGroup);
-    ContentProviderOperation insert_group=ContentProviderOperation.newInsert(StatsContentProvider.STATS_CLICK_GROUP_URI).withValues(values).build();
-    operations.add(insert_group);
-    JSONArray clicks=group.getJSONArray("results");
-    int childCount=Math.min(clicks.length(),StatsActivity.STATS_CHILD_MAX_ITEMS);
-    if (childCount > 1) {
-      for (int j=0; j < childCount; j++) {
-        StatsClick stat=new StatsClick(mBlogId,date,statGroup.getGroupId(),clicks.getJSONArray(j));
-        ContentValues v=StatsClicksTable.getContentValues(stat);
-        ContentProviderOperation insert_child=ContentProviderOperation.newInsert(StatsContentProvider.STATS_CLICKS_URI).withValues(v).build();
-        operations.add(insert_child);
-      }
-    }
-  }
-  getContentResolver().applyBatch(BuildConfig.STATS_PROVIDER_AUTHORITY,operations);
+  super.parseResponse(response);
   getContentResolver().notifyChange(StatsContentProvider.STATS_CLICKS_URI,null);
 }
