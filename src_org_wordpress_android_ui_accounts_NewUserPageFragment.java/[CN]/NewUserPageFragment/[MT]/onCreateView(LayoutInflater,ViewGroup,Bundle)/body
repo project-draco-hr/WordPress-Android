@@ -24,13 +24,16 @@
   mPasswordTextField.addTextChangedListener(this);
   mUsernameTextField.addTextChangedListener(this);
   mSiteUrlTextField.addTextChangedListener(this);
+  mSiteUrlTextField.setOnKeyListener(mSiteUrlKeyListener);
   mSiteUrlTextField.setOnEditorActionListener(mEditorAction);
   mUsernameTextField.addTextChangedListener(new TextWatcher(){
     @Override public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
     }
     @Override public void onTextChanged(    CharSequence s,    int start,    int before,    int count){
       mSiteUrlTextField.setError(null);
-      mSiteUrlTextField.setText(EditTextUtils.getText(mUsernameTextField));
+      if (mAutoCompleteUrl) {
+        mSiteUrlTextField.setText(EditTextUtils.getText(mUsernameTextField));
+      }
     }
     @Override public void afterTextChanged(    Editable s){
     }
