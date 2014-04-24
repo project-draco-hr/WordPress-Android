@@ -5,7 +5,7 @@
       RestClientUtils restClientUtils=WordPress.getRestClientUtils();
       final String today=StatUtils.getCurrentDate();
       final String yesterday=StatUtils.getYesterdaysDate();
-      AppLog.i(T.STATS,"update started");
+      AppLog.i(T.STATS,"update started for blogID - " + blogId);
       broadcastUpdate(true);
       String path=String.format("sites/%s/stats",blogId);
       statsNetworkRequests.add(restClientUtils.get(path,statsSummaryRestListener,statsSummaryErrListener));
@@ -50,6 +50,7 @@
         waitForResponse();
       }
       updateUIExecutor.shutdown();
+      mBlogId=null;
       broadcastUpdate(false);
       stopSelf(startId);
     }
