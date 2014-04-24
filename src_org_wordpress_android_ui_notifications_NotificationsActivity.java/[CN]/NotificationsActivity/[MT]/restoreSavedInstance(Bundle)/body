@@ -1,0 +1,30 @@
+{
+  if (savedInstanceState != null) {
+    mHasPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);
+    int noteId=savedInstanceState.getInt(NOTE_ID_EXTRA,UNSPECIFIED_NOTE_ID);
+    LoadNotesCallback notesLoadedCallback=new LoadNotesCallback(){
+      @Override public void notesLoaded(){
+        PostPairId selectedPostId=(PostPairId)savedInstanceState.get(KEY_SELECTED_POST_ID);
+        if (selectedPostId != null) {
+          onPostClicked(null,(int)selectedPostId.mRemoteBlogId,(int)selectedPostId.mId);
+        }
+        PostPairId selectedCommentId=(PostPairId)savedInstanceState.get(KEY_SELECTED_COMMENT_ID);
+        if (selectedCommentId != null) {
+          onCommentClicked(null,(int)selectedCommentId.mRemoteBlogId,selectedCommentId.mId);
+        }
+      }
+    }
+;
+    if (!mDualPane && noteId != UNSPECIFIED_NOTE_ID) {
+      Note note=WordPress.wpDB.getNoteById(noteId);
+      openNote(note);
+      loadNotes(false,UNSPECIFIED_NOTE_ID,notesLoadedCallback);
+    }
+ else {
+      loadNotes(true,noteId,notesLoadedCallback);
+    }
+  }
+ else {
+    loadNotes(true,UNSPECIFIED_NOTE_ID,null);
+  }
+}

@@ -12,21 +12,7 @@
   mNotesList=(NotificationsListFragment)fm.findFragmentById(R.id.fragment_notes_list);
   mNotesList.setNoteProvider(new NoteProvider());
   mNotesList.setOnNoteClickListener(new NoteClickListener());
-  if (savedInstanceState != null) {
-    int noteId=savedInstanceState.getInt(NOTE_ID_EXTRA,UNSPECIFIED_NOTE_ID);
-    if (!mDualPane && noteId != UNSPECIFIED_NOTE_ID) {
-      Note note=WordPress.wpDB.getNoteById(noteId);
-      openNote(note);
-      loadNotes(false,UNSPECIFIED_NOTE_ID);
-    }
- else {
-      loadNotes(true,noteId);
-    }
-    mHasPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);
-  }
- else {
-    loadNotes(true,UNSPECIFIED_NOTE_ID);
-  }
+  restoreSavedInstance(savedInstanceState);
   GCMIntentService.activeNotificationsMap.clear();
   if (mBroadcastReceiver == null) {
     createBroadcastReceiver();
