@@ -1,0 +1,13 @@
+{
+  for (  Request<JSONObject> req : statsNetworkRequests) {
+    if (req != null && !req.hasHadResponseDelivered() && !req.isCanceled()) {
+      req.cancel();
+    }
+  }
+  statsNetworkRequests.clear();
+  if (orchestrator != null) {
+    orchestrator.interrupt();
+  }
+  orchestrator=null;
+  this.mBlogId=null;
+}
