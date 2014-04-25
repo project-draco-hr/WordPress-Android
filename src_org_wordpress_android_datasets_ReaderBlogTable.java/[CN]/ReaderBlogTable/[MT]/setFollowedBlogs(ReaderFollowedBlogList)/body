@@ -1,0 +1,16 @@
+{
+  SQLiteDatabase db=ReaderDatabase.getWritableDb();
+  db.beginTransaction();
+  try {
+    db.execSQL("UPDATE tbl_blog_info SET is_following=0");
+    if (followedBlogs != null) {
+      for (      ReaderFollowedBlog blog : followedBlogs) {
+        setIsFollowedBlogUrl(blog.blogId,blog.getUrl(),true);
+      }
+    }
+    db.setTransactionSuccessful();
+  }
+  finally {
+    db.endTransaction();
+  }
+}

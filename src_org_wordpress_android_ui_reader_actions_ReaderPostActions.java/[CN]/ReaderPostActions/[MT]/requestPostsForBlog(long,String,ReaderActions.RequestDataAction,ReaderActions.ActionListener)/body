@@ -1,5 +1,12 @@
 {
-  String path="sites/" + blogId + "/posts/?meta=site,likes";
+  String path;
+  if (blogId == 0) {
+    path="sites/" + UrlUtils.getDomainFromUrl(blogUrl);
+  }
+ else {
+    path="sites/" + blogId;
+  }
+  path+="/posts/?meta=site,likes";
   if (updateAction == ReaderActions.RequestDataAction.LOAD_OLDER) {
     String dateOldest=ReaderPostTable.getOldestPubDateInBlog(blogId);
     if (!TextUtils.isEmpty(dateOldest)) {
