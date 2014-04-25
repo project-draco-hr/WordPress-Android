@@ -1,0 +1,28 @@
+{
+  new Thread(){
+    @Override public void run(){
+      final List<Note> notes=WordPress.wpDB.getLatestNotes();
+      NotificationsActivity.this.runOnUiThread(new Runnable(){
+        @Override public void run(){
+          refreshNotificationsListFragment(notes);
+          if (launchWithNoteId) {
+            launchWithNoteId(noteId);
+          }
+ else {
+            if (noteId != UNSPECIFIED_NOTE_ID) {
+              Note note=WordPress.wpDB.getNoteById(noteId);
+              if (note != null) {
+                mNotesList.setNoteSelected(note,true);
+              }
+            }
+          }
+          if (callback != null) {
+            callback.notesLoaded();
+          }
+        }
+      }
+);
+    }
+  }
+.start();
+}

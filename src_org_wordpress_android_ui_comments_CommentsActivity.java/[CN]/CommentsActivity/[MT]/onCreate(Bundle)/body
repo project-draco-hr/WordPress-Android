@@ -1,15 +1,12 @@
 {
-  super.onCreate(savedInstanceState);
+  super.onCreate(null);
   createMenuDrawer(R.layout.comment_activity);
+  View detailView=findViewById(R.id.fragment_comment_detail);
+  mDualPane=detailView != null && detailView.getVisibility() == View.VISIBLE;
   ActionBar actionBar=getSupportActionBar();
   actionBar.setDisplayShowTitleEnabled(true);
   setTitle(getString(R.string.tab_comments));
   FragmentManager fm=getSupportFragmentManager();
   fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
-  if (savedInstanceState != null) {
-    long commentId=savedInstanceState.getLong(KEY_HIGHLIGHTED_COMMENT_ID);
-    if (commentId != 0) {
-      if (hasListFragment())       getListFragment().setHighlightedCommentId(commentId);
-    }
-  }
+  restoreSavedInstance(savedInstanceState);
 }

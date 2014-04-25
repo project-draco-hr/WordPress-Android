@@ -1,0 +1,23 @@
+{
+  if (savedInstanceState != null) {
+    long commentId=savedInstanceState.getLong(KEY_HIGHLIGHTED_COMMENT_ID);
+    if (commentId != 0) {
+      if (hasListFragment()) {
+        getListFragment().setHighlightedCommentId(commentId);
+      }
+      if (mDualPane) {
+        onCommentSelected(commentId);
+      }
+    }
+    if (!mDualPane) {
+      commentId=savedInstanceState.getLong(KEY_SELECTED_COMMENT_ID);
+      if (commentId != 0) {
+        onCommentSelected(commentId);
+      }
+    }
+    BlogPairId selectedPostId=(BlogPairId)savedInstanceState.get(KEY_SELECTED_POST_ID);
+    if (selectedPostId != null) {
+      showReaderFragment(selectedPostId.getRemoteBlogId(),selectedPostId.getId());
+    }
+  }
+}
