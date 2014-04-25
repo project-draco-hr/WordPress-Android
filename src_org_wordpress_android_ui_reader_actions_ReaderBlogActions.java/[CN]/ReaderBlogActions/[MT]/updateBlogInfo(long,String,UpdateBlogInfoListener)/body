@@ -14,5 +14,12 @@
     }
   }
 ;
-  WordPress.getRestClientUtils().get("/sites/" + blogId,listener,errorListener);
+  final String path;
+  if (TextUtils.isEmpty(blogUrl)) {
+    path="/sites/" + blogId;
+  }
+ else {
+    path="/sites/" + UrlUtils.getDomainFromUrl(blogUrl);
+  }
+  WordPress.getRestClientUtils().get(path,listener,errorListener);
 }
