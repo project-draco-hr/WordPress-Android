@@ -1,0 +1,34 @@
+{
+  final Intent intent=getIntent();
+  if (noteId == UNSPECIFIED_NOTE_ID) {
+    if (intent.hasExtra(NOTE_ID_EXTRA)) {
+      noteId=Integer.valueOf(intent.getStringExtra(NOTE_ID_EXTRA));
+    }
+  }
+  if (noteId != UNSPECIFIED_NOTE_ID) {
+    Note note=WordPress.wpDB.getNoteById(noteId);
+    if (note != null) {
+      openNote(note,true);
+    }
+ else {
+      Map<String,String> params=new HashMap<String,String>();
+      params.put("ids",Integer.toString(noteId));
+      NotesResponseHandler handler=new NotesResponseHandler(){
+        @Override public void onNotes(        List<Note> notes){
+          if (!notes.isEmpty()) {
+            openNote(notes.get(0),true);
+          }
+        }
+      }
+;
+      getRestClientUtils().getNotifications(params,handler,handler);
+    }
+  }
+ else {
+    if (mDualPane && mNotesList.hasAdapter() && !mNotesList.getNotesAdapter().isEmpty()) {
+      openNote(mNotesList.getNotesAdapter().getItem(0),false);
+    }
+    mNotesList.animateRefresh(true);
+    refreshNotes();
+  }
+}

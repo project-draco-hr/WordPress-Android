@@ -1,23 +1,12 @@
 {
-  if (!response.has("data")) {
-    return;
+  if (response.has(mTodayAPICallPath)) {
+    JSONObject todayJsonObject=response.getJSONObject(mTodayAPICallPath);
+    mCurrentBarChartUnit=mTodayBarChartUnit;
+    parseSingleDayResponse(todayJsonObject);
   }
-  Uri uri=StatsContentProvider.STATS_BAR_CHART_DATA_URI;
-  JSONArray results=response.getJSONArray("data");
-  int count=results.length();
-  ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
-  if (count > 0) {
-    ContentProviderOperation op=ContentProviderOperation.newDelete(uri).withSelection("blogId=? AND unit=?",new String[]{mBlogId,mBarChartUnit.name()}).build();
-    operations.add(op);
+  if (response.has(mYesterdayAPICallPath)) {
+    JSONObject yesterdayJsonObject=response.getJSONObject(mYesterdayAPICallPath);
+    mCurrentBarChartUnit=mYesterdayBarChartUnit;
+    parseSingleDayResponse(yesterdayJsonObject);
   }
-  for (int i=0; i < count; i++) {
-    JSONArray result=results.getJSONArray(i);
-    StatsBarChartData stat=new StatsBarChartData(mBlogId,mBarChartUnit,result);
-    ContentValues values=StatsBarChartDataTable.getContentValues(stat);
-    if (values != null && uri != null) {
-      ContentProviderOperation op=ContentProviderOperation.newInsert(uri).withValues(values).build();
-      operations.add(op);
-    }
-  }
-  getContentResolver().applyBatch(BuildConfig.STATS_PROVIDER_AUTHORITY,operations);
 }
