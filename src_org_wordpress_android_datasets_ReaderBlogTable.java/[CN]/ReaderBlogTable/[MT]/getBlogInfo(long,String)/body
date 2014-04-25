@@ -1,0 +1,23 @@
+{
+  final Cursor cursor;
+  if (blogId != 0) {
+    String[] args={Long.toString(blogId)};
+    cursor=ReaderDatabase.getReadableDb().rawQuery("SELECT * FROM tbl_blog_info WHERE blog_id=?",args);
+  }
+ else   if (!TextUtils.isEmpty(blogUrl)) {
+    String[] args={UrlUtils.normalizeUrl(blogUrl)};
+    cursor=ReaderDatabase.getReadableDb().rawQuery("SELECT * FROM tbl_blog_info WHERE blog_url=?",args);
+  }
+ else {
+    return null;
+  }
+  try {
+    if (!cursor.moveToFirst()) {
+      return null;
+    }
+    return getBlogInfoFromCursor(cursor);
+  }
+  finally {
+    SqlUtils.closeCursor(cursor);
+  }
+}
