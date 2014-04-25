@@ -6,7 +6,7 @@
   mFetchingThemes=true;
   WordPress.getRestClientUtils().getThemes(siteId,0,0,new Listener(){
     @Override public void onResponse(    JSONObject response){
-      new FetchThemesTask().execute(response);
+      new FetchThemesTask(page).execute(response);
     }
   }
 ,new ErrorListener(){
@@ -27,7 +27,7 @@
         AppLog.d(T.THEMES,"Failed to fetch themes: " + response.toString());
       }
       mFetchingThemes=false;
-      setRefreshing(false);
+      setRefreshing(false,page);
     }
   }
 );

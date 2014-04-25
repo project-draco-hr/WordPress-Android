@@ -6,6 +6,7 @@
   final String newThemeId=themeId;
   final WeakReference<ThemeBrowserActivity> ref=new WeakReference<ThemeBrowserActivity>(this);
   mIsActivatingTheme=true;
+  final int page=mViewPager.getCurrentItem();
   WordPress.getRestClientUtils().setTheme(siteId,themeId,new Listener(){
     @Override public void onResponse(    JSONObject arg0){
       mIsActivatingTheme=false;
@@ -14,7 +15,7 @@
       if (mDetailsFragment != null) {
         mDetailsFragment.onThemeActivated(true);
       }
-      setRefreshing(false);
+      setRefreshing(false,page);
       if (ref.get() != null && mIsRunning && fragment instanceof ThemePreviewFragment) {
         FragmentManager fm=ref.get().getSupportFragmentManager();
         if (fm.getBackStackEntryCount() > 0) {
