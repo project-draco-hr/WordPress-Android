@@ -3,6 +3,7 @@
   final TextView txtPostTitle=(TextView)getView().findViewById(R.id.text_post_title);
   boolean postExists=ReaderPostTable.postExists(blogId,postId);
   boolean isDotComOrJetpack=WordPress.wpDB.isRemoteBlogIdDotComOrJetpack(mRemoteBlogId);
+  boolean canRequestPost=isDotComOrJetpack && WordPress.hasValidWPComCredentials(getActivity());
   final String title;
   final boolean hasTitle;
   if (mComment.hasPostTitle()) {
@@ -18,12 +19,12 @@
     hasTitle=false;
   }
   if (hasTitle) {
-    setPostTitle(txtPostTitle,title,isDotComOrJetpack);
+    setPostTitle(txtPostTitle,title,canRequestPost);
   }
  else {
     txtPostTitle.setText(postExists ? R.string.untitled : R.string.loading);
   }
-  if (isDotComOrJetpack) {
+  if (canRequestPost) {
     if (!postExists) {
       AppLog.d(T.COMMENTS,"comment detail > retrieving post");
       ReaderPostActions.requestPost(blogId,postId,new ReaderActions.ActionListener(){
