@@ -1,11 +1,17 @@
 {
   if (jsonObject == null) {
+    if (resultListener != null) {
+      resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED);
+    }
     return;
   }
   new Thread(){
     @Override public void run(){
       ReaderFollowedBlogList blogs=ReaderFollowedBlogList.fromJson(jsonObject);
       ReaderBlogTable.setFollowedBlogs(blogs);
+      if (resultListener != null) {
+        resultListener.onUpdateResult(ReaderActions.UpdateResult.CHANGED);
+      }
     }
   }
 .start();
