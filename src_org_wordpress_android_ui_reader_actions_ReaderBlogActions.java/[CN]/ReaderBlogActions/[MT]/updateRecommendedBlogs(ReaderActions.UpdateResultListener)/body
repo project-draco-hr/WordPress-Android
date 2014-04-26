@@ -1,0 +1,18 @@
+{
+  RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      handleRecommendedBlogsResponse(jsonObject,resultListener);
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.READER,volleyError);
+      if (resultListener != null) {
+        resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED);
+      }
+    }
+  }
+;
+  WordPress.getRestClientUtils().get("/read/recommendations/mine",listener,errorListener);
+}
