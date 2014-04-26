@@ -1,0 +1,46 @@
+{
+  final BlogViewHolder holder;
+  if (convertView == null) {
+    convertView=mInflater.inflate(R.layout.reader_listitem_blog,parent,false);
+    holder=new BlogViewHolder(convertView);
+    convertView.setTag(holder);
+  }
+ else {
+    holder=(BlogViewHolder)convertView.getTag();
+  }
+  final boolean isFollowing;
+  final long blogId;
+  final String blogUrl;
+switch (getBlogType()) {
+case RECOMMENDED:
+    final ReaderRecommendedBlog blog=(ReaderRecommendedBlog)getItem(position);
+  blogId=blog.blogId;
+blogUrl=blog.getBlogUrl();
+isFollowing=ReaderBlogTable.isFollowedBlogUrl(blogUrl);
+holder.txtTitle.setText(blog.getTitle());
+holder.txtUrl.setText(UrlUtils.getDomainFromUrl(blogUrl));
+holder.imgBlog.setImageUrl(blog.getImageUrl(),WPNetworkImageView.ImageType.AVATAR);
+break;
+default :
+isFollowing=false;
+blogId=0;
+blogUrl=null;
+break;
+}
+showFollowStatus(holder.txtFollow,isFollowing);
+holder.txtFollow.setOnClickListener(new View.OnClickListener(){
+@Override public void onClick(View v){
+changeFollowStatus(holder.txtFollow,blogId,blogUrl,!isFollowing);
+}
+}
+);
+convertView.setOnClickListener(new View.OnClickListener(){
+@Override public void onClick(View v){
+if (!TextUtils.isEmpty(blogUrl)) {
+ReaderActivityLauncher.openUrl(parent.getContext(),blogUrl);
+}
+}
+}
+);
+return convertView;
+}
