@@ -1,0 +1,18 @@
+{
+  if (!mHasBlogInfo) {
+    showProgress();
+  }
+  ReaderActions.UpdateBlogInfoListener listener=new ReaderActions.UpdateBlogInfoListener(){
+    @Override public void onResult(    ReaderBlogInfo blogInfo){
+      hideProgress();
+      if (blogInfo != null) {
+        showBlogInfo(blogInfo);
+      }
+ else       if (!mHasBlogInfo) {
+        ToastUtils.showToast(getContext(),R.string.reader_toast_err_get_blog);
+      }
+    }
+  }
+;
+  ReaderBlogActions.updateBlogInfo(blogId,blogUrl,listener);
+}

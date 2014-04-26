@@ -1,0 +1,13 @@
+{
+  boolean isSelected=followButton.isSelected();
+  followButton.setSelected(!isSelected);
+  AniUtils.zoomAction(followButton);
+  boolean isAskingToFollow=!post.isFollowedByCurrentUser;
+  if (!ReaderBlogActions.performFollowAction(post,isAskingToFollow)) {
+    followButton.setSelected(isSelected);
+    return;
+  }
+  mPost=ReaderPostTable.getPost(mBlogId,mPostId);
+  doPostChanged(isAskingToFollow ? PostChangeType.FOLLOWED : PostChangeType.UNFOLLOWED);
+  refreshFollowed();
+}

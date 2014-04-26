@@ -1,11 +1,25 @@
 {
-  tmpPosts=ReaderPostTable.getPostsWithTag(mCurrentTag,Constants.READER_MAX_POSTS_TO_DISPLAY);
-  if (mPosts.isSameList(tmpPosts))   return false;
-  mCanRequestMorePosts=(ReaderPostTable.getNumPostsWithTag(mCurrentTag) < Constants.READER_MAX_POSTS_TO_DISPLAY);
-  for (  ReaderPost post : tmpPosts) {
-    post.getPostAvatarForDisplay(mAvatarSz);
-    post.getFeaturedImageForDisplay(mPhotonWidth,mPhotonHeight);
-    post.getDatePublished();
-  }
-  return true;
+  final int numExisting;
+switch (getPostListType()) {
+case TAG:
+    tmpPosts=ReaderPostTable.getPostsWithTag(mCurrentTag,Constants.READER_MAX_POSTS_TO_DISPLAY);
+  numExisting=ReaderPostTable.getNumPostsWithTag(mCurrentTag);
+break;
+case BLOG:
+tmpPosts=ReaderPostTable.getPostsInBlog(mCurrentBlogId,Constants.READER_MAX_POSTS_TO_DISPLAY);
+numExisting=ReaderPostTable.getNumPostsInBlog(mCurrentBlogId);
+break;
+default :
+return false;
+}
+if (mPosts.isSameList(tmpPosts)) {
+return false;
+}
+mCanRequestMorePosts=(numExisting < Constants.READER_MAX_POSTS_TO_DISPLAY);
+for (ReaderPost post : tmpPosts) {
+post.getPostAvatarForDisplay(mAvatarSz);
+post.getFeaturedImageForDisplay(mPhotonWidth,mPhotonHeight);
+post.getDatePublished();
+}
+return true;
 }

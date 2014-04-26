@@ -1,0 +1,20 @@
+{
+  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+    AppLog.i(T.READER,"reader post list > network unavailable, canceled blog update");
+    return;
+  }
+  setIsUpdating(true,updateAction);
+  ReaderActions.ActionListener listener=new ReaderActions.ActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      if (!hasActivity()) {
+        return;
+      }
+      setIsUpdating(false,updateAction);
+      if (succeeded) {
+        refreshPosts();
+      }
+    }
+  }
+;
+  ReaderPostActions.requestPostsForBlog(mCurrentBlogId,mCurrentBlogUrl,updateAction,listener);
+}

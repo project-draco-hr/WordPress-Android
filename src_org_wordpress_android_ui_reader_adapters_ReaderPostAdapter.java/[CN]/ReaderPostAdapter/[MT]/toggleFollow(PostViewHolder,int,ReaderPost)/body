@@ -1,8 +1,11 @@
 {
   AniUtils.zoomAction(holder.txtFollow);
-  if (!ReaderPostActions.performPostAction(ReaderPostActions.PostAction.TOGGLE_FOLLOW,post,null))   return;
+  boolean isAskingToFollow=!post.isFollowedByCurrentUser;
+  if (!ReaderBlogActions.performFollowAction(post,isAskingToFollow)) {
+    return;
+  }
   ReaderPost updatedPost=ReaderPostTable.getPost(post.blogId,post.postId);
   mPosts.set(position,updatedPost);
-  showFollowStatus(holder.txtFollow,updatedPost.isFollowedByCurrentUser);
-  updateFollowStatusOnPostsForBlog(post.blogId,updatedPost.isFollowedByCurrentUser);
+  showFollowStatus(holder.txtFollow,isAskingToFollow);
+  updateFollowStatusOnPostsForBlog(post.blogId,isAskingToFollow);
 }

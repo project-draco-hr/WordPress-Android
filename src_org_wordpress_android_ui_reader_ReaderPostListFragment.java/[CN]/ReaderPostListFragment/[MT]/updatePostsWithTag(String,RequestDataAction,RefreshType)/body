@@ -1,0 +1,39 @@
+{
+  if (TextUtils.isEmpty(tagName)) {
+    return;
+  }
+  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+    AppLog.i(T.READER,"reader post list > network unavailable, canceled tag update");
+    return;
+  }
+  if (ReaderTagTable.isEmpty()) {
+    AppLog.w(T.READER,"reader post list > tag table is empty, canceled tag update");
+    return;
+  }
+  setIsUpdating(true,updateAction);
+  setEmptyTitleAndDescriptionForCurrentTag();
+  if (refreshType == RefreshType.MANUAL && isCurrentTag(tagName)) {
+    if (tagName.equals(ReaderTag.TAG_NAME_LIKED) || tagName.equals(ReaderTag.TAG_NAME_FOLLOWING))     refreshPosts();
+  }
+  ReaderPostActions.updatePostsWithTag(tagName,updateAction,new ReaderActions.UpdateResultAndCountListener(){
+    @Override public void onUpdateResult(    ReaderActions.UpdateResult result,    int numNewPosts){
+      if (!hasActivity()) {
+        AppLog.w(T.READER,"reader post list > volley response when fragment has no activity");
+        return;
+      }
+      setIsUpdating(false,updateAction);
+      if (result == ReaderActions.UpdateResult.CHANGED && numNewPosts > 0 && isCurrentTag(tagName)) {
+        if (!isEmpty() && updateAction == RequestDataAction.LOAD_NEWER) {
+          showNewPostsBar(numNewPosts);
+        }
+ else {
+          refreshPosts();
+        }
+      }
+ else {
+        setEmptyTitleAndDescriptionForCurrentTag();
+      }
+    }
+  }
+);
+}

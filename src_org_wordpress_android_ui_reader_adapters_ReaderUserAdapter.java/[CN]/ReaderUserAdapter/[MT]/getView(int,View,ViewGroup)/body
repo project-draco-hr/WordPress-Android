@@ -15,11 +15,15 @@
     holder.txtUrl.setText(user.getUrlDomain());
     convertView.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
-        ReaderActivityLauncher.openUrl(v.getContext(),user.getUrl());
+        if (user.hasBlogId()) {
+          ReaderActivityLauncher.showReaderBlogDetail(v.getContext(),user.blogId,user.getUrl());
+        }
       }
     }
 );
-    if (holder.txtFollow.isSelected() != user.isFollowed)     showFollowStatus(holder.txtFollow,user.isFollowed);
+    if (holder.txtFollow.isSelected() != user.isFollowed) {
+      showFollowStatus(holder.txtFollow,user.isFollowed);
+    }
     holder.txtFollow.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
         AniUtils.zoomAction(holder.txtFollow);

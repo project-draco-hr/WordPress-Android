@@ -1,0 +1,38 @@
+{
+  final boolean hasBlogId=(blogId != 0);
+  final boolean hasBlogUrl=!TextUtils.isEmpty(blogUrl);
+  if (!hasBlogId && !hasBlogUrl) {
+    AppLog.w(T.READER,"cannot get blog info without either id or url");
+    if (infoListener != null) {
+      infoListener.onResult(null);
+    }
+    return;
+  }
+  RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      handleUpdateBlogInfoResponse(jsonObject,infoListener);
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      if (hasBlogId && hasBlogUrl) {
+        AppLog.w(T.READER,"failed to get blog info by id, retrying with url");
+        updateBlogInfo(0,blogUrl,infoListener);
+      }
+ else {
+        AppLog.e(T.READER,volleyError);
+        if (infoListener != null) {
+          infoListener.onResult(null);
+        }
+      }
+    }
+  }
+;
+  if (hasBlogId) {
+    WordPress.getRestClientUtils().get("/sites/" + blogId,listener,errorListener);
+  }
+ else {
+    WordPress.getRestClientUtils().get("/sites/" + UrlUtils.getDomainFromUrl(blogUrl),listener,errorListener);
+  }
+}

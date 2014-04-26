@@ -1,0 +1,31 @@
+{
+  String path;
+  if (blogId == 0) {
+    path="sites/" + UrlUtils.getDomainFromUrl(blogUrl);
+  }
+ else {
+    path="sites/" + blogId;
+  }
+  path+="/posts/?meta=site,likes";
+  if (updateAction == ReaderActions.RequestDataAction.LOAD_OLDER) {
+    String dateOldest=ReaderPostTable.getOldestPubDateInBlog(blogId);
+    if (!TextUtils.isEmpty(dateOldest)) {
+      path+="&before=" + UrlUtils.urlEncode(dateOldest);
+    }
+  }
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      handleGetPostsResponse(jsonObject,actionListener);
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.READER,volleyError);
+      if (actionListener != null)       actionListener.onActionResult(false);
+    }
+  }
+;
+  AppLog.d(T.READER,"updating posts in blog " + blogId);
+  WordPress.getRestClientUtils().get(path,null,null,listener,errorListener);
+}

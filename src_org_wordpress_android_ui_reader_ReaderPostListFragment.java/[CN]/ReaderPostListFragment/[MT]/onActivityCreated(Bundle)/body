@@ -1,10 +1,21 @@
 {
   super.onActivityCreated(savedInstanceState);
-  if (savedInstanceState != null) {
-    AppLog.d(T.READER,"reader post list > restoring instance state");
-    mCurrentTag=savedInstanceState.getString(KEY_TAG_NAME);
-    mListState=savedInstanceState.getParcelable(KEY_LIST_STATE);
-  }
   setHasOptionsMenu(true);
   checkActionBar();
+  boolean adapterAlreadyExists=hasPostAdapter();
+  mListView.setAdapter(getPostAdapter());
+  if (!adapterAlreadyExists) {
+switch (getPostListType()) {
+case TAG:
+      getPostAdapter().setCurrentTag(mCurrentTag);
+    if (ReaderTagTable.shouldAutoUpdateTag(mCurrentTag)) {
+      updatePostsWithCurrentTag(RequestDataAction.LOAD_NEWER);
+    }
+  break;
+case BLOG:
+getPostAdapter().setCurrentBlog(mCurrentBlogId);
+updatePostsInCurrentBlog(RequestDataAction.LOAD_NEWER);
+break;
+}
+}
 }
