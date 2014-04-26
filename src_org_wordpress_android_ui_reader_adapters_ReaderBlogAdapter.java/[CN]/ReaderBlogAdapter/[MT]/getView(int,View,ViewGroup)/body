@@ -1,6 +1,6 @@
 {
   final BlogViewHolder holder;
-  if (convertView == null) {
+  if (convertView == null || !(convertView.getTag() instanceof BlogViewHolder)) {
     convertView=mInflater.inflate(R.layout.reader_listitem_blog,parent,false);
     holder=new BlogViewHolder(convertView);
     convertView.setTag(holder);
@@ -34,15 +34,9 @@ holder.txtTitle.setVisibility(View.VISIBLE);
  else {
 holder.txtTitle.setVisibility(View.GONE);
 }
-if (blogInfo.hasDescription()) {
-holder.txtDescription.setText(blogInfo.getDescription());
-holder.txtDescription.setVisibility(View.VISIBLE);
-}
- else {
-holder.txtDescription.setVisibility(View.GONE);
-}
 holder.txtUrl.setText(UrlUtils.getDomainFromUrl(blogUrl));
 holder.imgBlog.setVisibility(View.GONE);
+holder.txtDescription.setVisibility(View.GONE);
 break;
 default :
 blogId=0;
