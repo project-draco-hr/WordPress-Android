@@ -1,0 +1,30 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.reader_activity_tag_pager);
+  if (savedInstanceState != null) {
+    mTagsChanged=savedInstanceState.getBoolean(KEY_TAGS_CHANGED);
+    mLastAddedTag=savedInstanceState.getString(KEY_LAST_ADDED_TAG);
+    mAlreadyUpdatedTagList=savedInstanceState.getBoolean(KEY_TAG_LIST_UPDATED);
+  }
+  mViewPager=(ViewPager)findViewById(R.id.viewpager);
+  mViewPager.setAdapter(getPageAdapter());
+  mEditAddTag=(EditText)findViewById(R.id.edit_add);
+  mEditAddTag.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+    @Override public boolean onEditorAction(    TextView v,    int actionId,    KeyEvent event){
+      if (actionId == EditorInfo.IME_ACTION_DONE)       addCurrentTag();
+      return false;
+    }
+  }
+);
+  final ImageButton btnAddTag=(ImageButton)findViewById(R.id.btn_add);
+  btnAddTag.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      addCurrentTag();
+    }
+  }
+);
+  if (!mAlreadyUpdatedTagList) {
+    updateTagList();
+    mAlreadyUpdatedTagList=true;
+  }
+}
