@@ -10,6 +10,11 @@ case Constants.INTENT_READER_TAGS:
         String lastAddedTag=data.getStringExtra(ReaderSubsActivity.KEY_LAST_ADDED_TAG);
         listFragment.doTagsChanged(lastAddedTag);
       }
+ else       if (data.getBooleanExtra(ReaderSubsActivity.KEY_BLOGS_CHANGED,false)) {
+        if (listFragment.getPostListType() == ReaderPostListType.TAG && ReaderTag.TAG_NAME_FOLLOWING.equals(listFragment.getCurrentTag())) {
+          listFragment.updatePostsWithCurrentTag(RequestDataAction.LOAD_NEWER);
+        }
+      }
     }
   break;
 case Constants.INTENT_READER_REBLOG:
