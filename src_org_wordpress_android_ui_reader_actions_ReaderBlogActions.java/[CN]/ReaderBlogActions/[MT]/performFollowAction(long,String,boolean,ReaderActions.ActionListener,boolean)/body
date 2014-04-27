@@ -1,0 +1,79 @@
+{
+  final boolean hasBlogId=(blogId != 0);
+  final boolean hasBlogUrl=!TextUtils.isEmpty(blogUrl);
+  if (!hasBlogId && !hasBlogUrl) {
+    AppLog.w(T.READER,"follow action performed without blogId or blogUrl");
+    if (actionListener != null) {
+      actionListener.onActionResult(false);
+    }
+    return false;
+  }
+  if (hasBlogUrl) {
+    ReaderBlogTable.setIsFollowedBlogUrl(blogId,blogUrl,isAskingToFollow);
+  }
+  if (hasBlogId) {
+    ReaderPostTable.setFollowStatusForPostsInBlog(blogId,isAskingToFollow);
+  }
+  if (!hasBlogId && hasBlogUrl && canLookupBlogInfo) {
+    ReaderActions.UpdateBlogInfoListener infoListener=new ReaderActions.UpdateBlogInfoListener(){
+      @Override public void onResult(      ReaderBlogInfo blogInfo){
+        if (blogInfo != null) {
+          performFollowAction(blogInfo.blogId,blogInfo.getUrl(),isAskingToFollow,actionListener,false);
+        }
+ else {
+          performFollowAction(0,blogUrl,isAskingToFollow,actionListener,false);
+        }
+      }
+    }
+;
+    ReaderBlogActions.updateBlogInfoByUrl(blogUrl,infoListener);
+    return true;
+  }
+  final String path;
+  final String actionName=(isAskingToFollow ? "follow" : "unfollow");
+  if (isAskingToFollow) {
+    if (hasBlogId) {
+      path="/sites/" + blogId + "/follows/new";
+    }
+ else {
+      path="/read/following/mine/new?url=" + UrlUtils.getDomainFromUrl(blogUrl);
+      AppLog.w(T.READER,"following blog by url rather than id");
+    }
+  }
+ else {
+    if (hasBlogId) {
+      path="/sites/" + blogId + "/follows/mine/delete";
+    }
+ else {
+      path="/read/following/mine/delete?url=" + UrlUtils.getDomainFromUrl(blogUrl);
+      AppLog.w(T.READER,"unfollowing blog by url rather than id");
+    }
+  }
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      AppLog.d(T.READER,"blog " + actionName + " succeeded");
+      if (actionListener != null) {
+        actionListener.onActionResult(true);
+      }
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.w(T.READER,"blog " + actionName + " failed");
+      AppLog.e(T.READER,volleyError);
+      if (hasBlogUrl) {
+        ReaderBlogTable.setIsFollowedBlogUrl(blogId,blogUrl,!isAskingToFollow);
+      }
+      if (hasBlogId) {
+        ReaderPostTable.setFollowStatusForPostsInBlog(blogId,!isAskingToFollow);
+      }
+      if (actionListener != null) {
+        actionListener.onActionResult(false);
+      }
+    }
+  }
+;
+  WordPress.getRestClientUtils().post(path,listener,errorListener);
+  return true;
+}
