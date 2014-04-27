@@ -14,37 +14,5 @@
     return;
   }
   showAddUrlProgress();
-  final ReaderActions.ActionListener followActionListener=new ReaderActions.ActionListener(){
-    @Override public void onActionResult(    boolean succeeded){
-      if (isFinishing()) {
-        return;
-      }
-      hideAddUrlProgress();
-      if (succeeded) {
-        mEditAdd.setText(null);
-        EditTextUtils.hideSoftInput(mEditAdd);
-        onFollowBlogChanged(0,normUrl,true);
-      }
- else {
-        ToastUtils.showToast(ReaderSubsActivity.this,R.string.reader_toast_err_follow_blog);
-      }
-    }
-  }
-;
-  ReaderActions.ActionListener urlActionListener=new ReaderActions.ActionListener(){
-    @Override public void onActionResult(    boolean succeeded){
-      if (isFinishing()) {
-        return;
-      }
-      if (succeeded) {
-        ReaderBlogActions.performFollowAction(0,normUrl,true,followActionListener);
-      }
- else {
-        hideAddUrlProgress();
-        ToastUtils.showToast(ReaderSubsActivity.this,R.string.reader_toast_err_follow_blog);
-      }
-    }
-  }
-;
-  ReaderBlogActions.testBlogUrlReachable(normUrl,urlActionListener);
+  addAsUrlTestReachable(normUrl);
 }
