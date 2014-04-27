@@ -13,18 +13,13 @@
     ToastUtils.showToast(this,R.string.reader_toast_err_already_follow_blog);
     return;
   }
-  final ProgressBar progress=(ProgressBar)findViewById(R.id.progress_follow);
-  progress.setVisibility(View.VISIBLE);
-  mEditAdd.setEnabled(false);
-  mBtnAdd.setEnabled(false);
-  ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
+  showAddUrlProgress();
+  final ReaderActions.ActionListener followActionListener=new ReaderActions.ActionListener(){
     @Override public void onActionResult(    boolean succeeded){
       if (isFinishing()) {
         return;
       }
-      progress.setVisibility(View.GONE);
-      mEditAdd.setEnabled(true);
-      mBtnAdd.setEnabled(true);
+      hideAddUrlProgress();
       if (succeeded) {
         mEditAdd.setText(null);
         EditTextUtils.hideSoftInput(mEditAdd);
@@ -36,5 +31,20 @@
     }
   }
 ;
-  ReaderBlogActions.performFollowAction(0,normUrl,true,actionListener);
+  ReaderActions.ActionListener urlActionListener=new ReaderActions.ActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      if (isFinishing()) {
+        return;
+      }
+      if (succeeded) {
+        ReaderBlogActions.performFollowAction(0,normUrl,true,followActionListener);
+      }
+ else {
+        hideAddUrlProgress();
+        ToastUtils.showToast(ReaderSubsActivity.this,R.string.reader_toast_err_follow_blog);
+      }
+    }
+  }
+;
+  ReaderBlogActions.testBlogUrlReachable(normUrl,urlActionListener);
 }
