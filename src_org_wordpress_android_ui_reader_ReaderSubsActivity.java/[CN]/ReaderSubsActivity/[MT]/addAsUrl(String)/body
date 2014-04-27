@@ -1,0 +1,40 @@
+{
+  if (TextUtils.isEmpty(url)) {
+    return;
+  }
+  final String normUrl;
+  if (!url.contains("://")) {
+    normUrl=UrlUtils.normalizeUrl("http://" + url);
+  }
+ else {
+    normUrl=UrlUtils.normalizeUrl(url);
+  }
+  if (ReaderBlogTable.isFollowedBlogUrl(normUrl)) {
+    ToastUtils.showToast(this,R.string.reader_toast_err_already_follow_blog);
+    return;
+  }
+  final ProgressBar progress=(ProgressBar)findViewById(R.id.progress_follow);
+  progress.setVisibility(View.VISIBLE);
+  mEditAdd.setEnabled(false);
+  mBtnAdd.setEnabled(false);
+  ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      if (isFinishing()) {
+        return;
+      }
+      progress.setVisibility(View.GONE);
+      mEditAdd.setEnabled(true);
+      mBtnAdd.setEnabled(true);
+      if (succeeded) {
+        mEditAdd.setText(null);
+        EditTextUtils.hideSoftInput(mEditAdd);
+        onFollowBlogChanged(0,normUrl,true);
+      }
+ else {
+        ToastUtils.showToast(ReaderSubsActivity.this,R.string.reader_toast_err_follow_blog);
+      }
+    }
+  }
+;
+  ReaderBlogActions.performFollowAction(0,normUrl,true,actionListener);
+}

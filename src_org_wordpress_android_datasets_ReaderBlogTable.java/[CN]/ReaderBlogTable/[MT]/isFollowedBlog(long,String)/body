@@ -1,6 +1,9 @@
 {
   boolean hasBlogId=(blogId != 0);
   boolean hasBlogUrl=!TextUtils.isEmpty(blogUrl);
+  if (!hasBlogId && !hasBlogUrl) {
+    return false;
+  }
   if (hasBlogId && hasBlogUrl) {
     String sql="SELECT 1 FROM tbl_blog_info WHERE is_following!=0 AND (blog_id=? OR blog_url=?)";
     String[] args={Long.toString(blogId),UrlUtils.normalizeUrl(blogUrl)};
@@ -11,12 +14,20 @@
     String[] args={Long.toString(blogId)};
     return SqlUtils.boolForQuery(ReaderDatabase.getReadableDb(),sql,args);
   }
- else   if (hasBlogUrl) {
+ else {
     String sql="SELECT 1 FROM tbl_blog_info WHERE is_following!=0 AND blog_url=?";
     String[] args={UrlUtils.normalizeUrl(blogUrl)};
-    return SqlUtils.boolForQuery(ReaderDatabase.getReadableDb(),sql,args);
-  }
+    if (SqlUtils.boolForQuery(ReaderDatabase.getReadableDb(),sql,args)) {
+      return true;
+    }
+    final String blogUrl2;
+    if (blogUrl.contains("://www.")) {
+      blogUrl2=blogUrl.replace("://www.","://");
+    }
  else {
-    return false;
+      blogUrl2=blogUrl.replace("://","://www.");
+    }
+    String[] args2={UrlUtils.normalizeUrl(blogUrl2)};
+    return SqlUtils.boolForQuery(ReaderDatabase.getReadableDb(),sql,args2);
   }
 }

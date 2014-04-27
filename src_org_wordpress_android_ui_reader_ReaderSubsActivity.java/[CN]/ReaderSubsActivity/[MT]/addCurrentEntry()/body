@@ -1,20 +1,25 @@
 {
-  String tagName=EditTextUtils.getText(mEditAdd);
-  if (TextUtils.isEmpty(tagName)) {
+  String entry=EditTextUtils.getText(mEditAdd);
+  if (TextUtils.isEmpty(entry)) {
     return;
   }
   if (!NetworkUtils.checkConnection(this)) {
     return;
   }
-  if (ReaderTagTable.tagExists(tagName)) {
+  boolean isUrl=(entry.contains(".") && !entry.contains(" "));
+  if (isUrl) {
+    addAsUrl(entry);
+    return;
+  }
+  if (ReaderTagTable.tagExists(entry)) {
     ToastUtils.showToast(this,R.string.reader_toast_err_tag_exists,ToastUtils.Duration.LONG);
     return;
   }
-  if (!ReaderTag.isValidTagName(tagName)) {
+  if (!ReaderTag.isValidTagName(entry)) {
     ToastUtils.showToast(this,R.string.reader_toast_err_tag_invalid,ToastUtils.Duration.LONG);
     return;
   }
   mEditAdd.setText(null);
   EditTextUtils.hideSoftInput(mEditAdd);
-  onTagAction(TagAction.ADD,tagName);
+  onTagAction(TagAction.ADD,entry);
 }
