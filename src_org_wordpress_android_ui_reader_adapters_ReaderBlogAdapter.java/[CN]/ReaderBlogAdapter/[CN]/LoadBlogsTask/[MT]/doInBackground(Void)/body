@@ -2,10 +2,11 @@
 switch (getBlogType()) {
 case RECOMMENDED:
     int limit=ReaderConstants.READER_MAX_RECOMMENDED_TO_DISPLAY;
-  tmpRecommendedBlogs=ReaderBlogTable.getRecommendedBlogs(limit,mRecommendedOffset);
-if (tmpRecommendedBlogs.size() == 0 && mRecommendedOffset > 0) {
-  mRecommendedOffset=0;
-  tmpRecommendedBlogs=ReaderBlogTable.getRecommendedBlogs(limit,mRecommendedOffset);
+  int offset=UserPrefs.getReaderRecommendedBlogOffset();
+tmpRecommendedBlogs=ReaderBlogTable.getRecommendedBlogs(limit,offset);
+if (tmpRecommendedBlogs.size() == 0 && offset > 0) {
+UserPrefs.setReaderRecommendedBlogOffset(0);
+tmpRecommendedBlogs=ReaderBlogTable.getRecommendedBlogs(limit,0);
 }
 return !mRecommendedBlogs.isSameList(tmpRecommendedBlogs);
 case FOLLOWED:
