@@ -1,0 +1,14 @@
+{
+  SQLiteDatabase db=ReaderDatabase.getWritableDb();
+  db.beginTransaction();
+  try {
+    db.delete("tbl_recommended_blogs","blog_id=?",new String[]{Long.toString(blogId)});
+    ContentValues values=new ContentValues();
+    values.put("blog_id",blogId);
+    db.insert("tbl_ignored_recommendations",null,values);
+    db.setTransactionSuccessful();
+  }
+  finally {
+    db.endTransaction();
+  }
+}
