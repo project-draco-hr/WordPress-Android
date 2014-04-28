@@ -8,9 +8,7 @@
     }
     return false;
   }
-  if (hasBlogUrl) {
-    ReaderBlogTable.setIsFollowedBlogUrl(blogId,blogUrl,isAskingToFollow);
-  }
+  ReaderBlogTable.setIsFollowedBlog(blogId,blogUrl,isAskingToFollow);
   if (hasBlogId) {
     ReaderPostTable.setFollowStatusForPostsInBlog(blogId,isAskingToFollow);
   }
@@ -26,6 +24,7 @@
       }
     }
 ;
+    AppLog.d(T.READER,"looking up blogId for follow by url");
     ReaderBlogActions.updateBlogInfoByUrl(blogUrl,infoListener);
     return true;
   }
@@ -62,9 +61,7 @@
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.w(T.READER,"blog " + actionName + " failed");
       AppLog.e(T.READER,volleyError);
-      if (hasBlogUrl) {
-        ReaderBlogTable.setIsFollowedBlogUrl(blogId,blogUrl,!isAskingToFollow);
-      }
+      ReaderBlogTable.setIsFollowedBlog(blogId,blogUrl,!isAskingToFollow);
       if (hasBlogId) {
         ReaderPostTable.setFollowStatusForPostsInBlog(blogId,!isAskingToFollow);
       }
