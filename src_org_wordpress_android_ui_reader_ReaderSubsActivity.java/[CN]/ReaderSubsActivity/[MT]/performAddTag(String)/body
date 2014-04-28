@@ -12,8 +12,11 @@
     }
   }
 ;
-  if (ReaderTagActions.performTagAction(TagAction.ADD,tagName,actionListener)) {
-    getPageAdapter().refreshTagFragments(null,tagName);
-    onTagAction(TagAction.ADD,tagName);
+  if (!ReaderTagActions.performTagAction(TagAction.ADD,tagName,actionListener)) {
+    return;
   }
+  String msgText=getString(R.string.reader_label_added_tag,tagName);
+  MessageBarUtils.showMessageBar(this,msgText,MessageBarType.INFO,null);
+  getPageAdapter().refreshTagFragments(null,tagName);
+  onTagAction(TagAction.ADD,tagName);
 }
