@@ -5,13 +5,15 @@
     return null;
   }
   final Cursor cursor;
+  SQLiteDatabase db=ReaderDatabase.getReadableDb();
   if (hasBlogId) {
     String[] args={Long.toString(blogId)};
-    cursor=ReaderDatabase.getReadableDb().rawQuery("SELECT * FROM tbl_blog_info WHERE blog_id=?",args);
+    cursor=db.rawQuery("SELECT * FROM tbl_blog_info WHERE blog_id=?",args);
   }
  else {
-    String[] args={UrlUtils.normalizeUrl(blogUrl)};
-    cursor=ReaderDatabase.getReadableDb().rawQuery("SELECT * FROM tbl_blog_info WHERE blog_url=?",args);
+    String normUrl=UrlUtils.normalizeUrl(blogUrl);
+    String[] args={normUrl,reverseWww(normUrl)};
+    cursor=db.rawQuery("SELECT * FROM tbl_blog_info WHERE blog_url=? OR blog_url=?",args);
   }
   try {
     if (!cursor.moveToFirst()) {

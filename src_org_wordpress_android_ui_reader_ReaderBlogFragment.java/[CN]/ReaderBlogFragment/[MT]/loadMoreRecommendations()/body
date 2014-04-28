@@ -1,7 +1,12 @@
 {
-  int offset=UserPrefs.getReaderRecommendedBlogOffset();
-  UserPrefs.setReaderRecommendedBlogOffset(offset + ReaderConstants.READER_MAX_RECOMMENDED_TO_DISPLAY);
-  if (hasBlogAdapter()) {
-    getBlogAdapter().refresh();
+  if (!hasBlogAdapter() || getBlogAdapter().isEmpty()) {
+    return;
   }
+  int currentOffset=UserPrefs.getReaderRecommendedBlogOffset();
+  int newOffset=currentOffset + ReaderConstants.READER_MAX_RECOMMENDED_TO_DISPLAY;
+  if (newOffset >= ReaderConstants.READER_MAX_RECOMMENDED_TO_REQUEST) {
+    newOffset=0;
+  }
+  UserPrefs.setReaderRecommendedBlogOffset(newOffset);
+  getBlogAdapter().refresh();
 }
