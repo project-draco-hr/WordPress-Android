@@ -1,0 +1,34 @@
+{
+  if (note == null || isFinishing()) {
+    return;
+  }
+  mSelectedNoteId=StringUtils.stringToInt(note.getId());
+  mNotesList.setNoteSelected(note,scrollToNote);
+  if (note.isUnread()) {
+    markNoteAsRead(note);
+  }
+  FragmentManager fm=getSupportFragmentManager();
+  if (fm.getBackStackEntryCount() > 0) {
+    fm.popBackStack();
+  }
+  Fragment detailFragment=getDetailFragmentForNote(note);
+  if (detailFragment == null) {
+    AppLog.d(T.NOTIFS,String.format("No fragment found for %s",note.toJSONObject()));
+    return;
+  }
+  if (detailFragment instanceof NotificationFragment) {
+    ((NotificationFragment)detailFragment).setNote(note);
+  }
+  FragmentTransaction ft=fm.beginTransaction();
+  ft.replace(R.id.layout_fragment_container,detailFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+  AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATIONS_OPENED_NOTIFICATION_DETAILS);
+  View container=findViewById(R.id.layout_fragment_container);
+  if (container.findViewById(R.id.fragment_notes_list) != null) {
+    mMenuDrawer.setDrawerIndicatorEnabled(false);
+    ft.addToBackStack(null);
+    if (mNotesList != null) {
+      ft.hide(mNotesList);
+    }
+  }
+  ft.commitAllowingStateLoss();
+}
