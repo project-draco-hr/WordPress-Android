@@ -1,2 +1,62 @@
 {
+  final BlogViewHolder holder;
+  if (convertView == null || !(convertView.getTag() instanceof BlogViewHolder)) {
+    convertView=mInflater.inflate(R.layout.reader_listitem_blog,parent,false);
+    holder=new BlogViewHolder(convertView);
+    convertView.setTag(holder);
+  }
+ else {
+    holder=(BlogViewHolder)convertView.getTag();
+  }
+  final long blogId;
+  final String blogUrl;
+  final boolean isFollowing;
+switch (getBlogType()) {
+case RECOMMENDED:
+    final ReaderRecommendedBlog blog=(ReaderRecommendedBlog)getItem(position);
+  blogId=blog.blogId;
+blogUrl=blog.getBlogUrl();
+isFollowing=ReaderBlogTable.isFollowedBlog(blogId,blogUrl);
+holder.txtTitle.setText(blog.getTitle());
+holder.txtDescription.setText(blog.getReason());
+holder.txtUrl.setText(UrlUtils.getDomainFromUrl(blogUrl));
+holder.imgBlog.setImageUrl(blog.getImageUrl(),WPNetworkImageView.ImageType.AVATAR);
+break;
+case FOLLOWED:
+final ReaderBlogInfo blogInfo=(ReaderBlogInfo)getItem(position);
+blogId=blogInfo.blogId;
+blogUrl=blogInfo.getUrl();
+isFollowing=blogInfo.isFollowing;
+if (blogInfo.hasName()) {
+holder.txtTitle.setText(blogInfo.getName());
+holder.txtTitle.setVisibility(View.VISIBLE);
+}
+ else {
+holder.txtTitle.setVisibility(View.GONE);
+}
+holder.txtUrl.setText(UrlUtils.getDomainFromUrl(blogUrl));
+break;
+default :
+blogId=0;
+blogUrl=null;
+isFollowing=false;
+break;
+}
+showFollowStatus(holder.txtFollow,isFollowing);
+holder.txtFollow.setOnClickListener(new View.OnClickListener(){
+@Override public void onClick(View v){
+AniUtils.zoomAction(holder.txtFollow);
+changeFollowStatus(holder.txtFollow,blogId,blogUrl,!isFollowing);
+}
+}
+);
+convertView.setOnClickListener(new View.OnClickListener(){
+@Override public void onClick(View v){
+if (blogId != 0 || !TextUtils.isEmpty(blogUrl)) {
+ReaderActivityLauncher.showReaderBlogDetail(parent.getContext(),blogId,blogUrl);
+}
+}
+}
+);
+return convertView;
 }

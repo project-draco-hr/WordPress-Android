@@ -1,8 +1,13 @@
 {
 switch (getBlogType()) {
 case RECOMMENDED:
-    tmpRecommendedBlogs=ReaderBlogTable.getRecommendedBlogs();
-  return !mRecommendedBlogs.isSameList(tmpRecommendedBlogs);
+    int limit=ReaderConstants.READER_MAX_RECOMMENDED_TO_DISPLAY;
+  tmpRecommendedBlogs=ReaderBlogTable.getRecommendedBlogs(limit,mRecommendedOffset);
+if (tmpRecommendedBlogs.size() == 0 && mRecommendedOffset > 0) {
+  mRecommendedOffset=0;
+  tmpRecommendedBlogs=ReaderBlogTable.getRecommendedBlogs(limit,mRecommendedOffset);
+}
+return !mRecommendedBlogs.isSameList(tmpRecommendedBlogs);
 case FOLLOWED:
 tmpFollowedBlogs=ReaderBlogTable.getAllFollowedBlogInfo();
 return !mFollowedBlogs.isSameList(tmpFollowedBlogs);
