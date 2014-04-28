@@ -1,0 +1,35 @@
+{
+  final boolean animateRemoval;
+switch (action) {
+case ADD:
+    animateRemoval=(getTagType() == ReaderTagType.RECOMMENDED);
+  break;
+case DELETE:
+animateRemoval=(getTagType() == ReaderTagType.SUBSCRIBED);
+break;
+default :
+animateRemoval=false;
+break;
+}
+int index=getTagAdapter().indexOfTagName(tagName);
+if (animateRemoval && index > -1) {
+Animation.AnimationListener aniListener=new Animation.AnimationListener(){
+@Override public void onAnimationStart(Animation animation){
+}
+@Override public void onAnimationRepeat(Animation animation){
+}
+@Override public void onAnimationEnd(Animation animation){
+refresh();
+}
+}
+;
+int aniResId=(action == TagAction.ADD ? R.anim.reader_tag_add : R.anim.reader_tag_delete);
+AniUtils.removeListItem(mListView,index,aniListener,aniResId);
+}
+ else {
+refresh();
+}
+if (getActivity() instanceof TagActionListener) {
+((TagActionListener)getActivity()).onTagAction(action,tagName);
+}
+}

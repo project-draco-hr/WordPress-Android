@@ -1,10 +1,5 @@
 {
-  if (TextUtils.isEmpty(tagName)) {
-    return;
-  }
-  if (!NetworkUtils.checkConnection(this)) {
-    return;
-  }
+  mTagsChanged=true;
   final String messageBarText;
   final MessageBarUtils.MessageBarType messageBarType;
 switch (action) {
@@ -12,49 +7,26 @@ case ADD:
     AnalyticsTracker.track(AnalyticsTracker.Stat.READER_FOLLOWED_READER_TAG);
   messageBarText=getString(R.string.reader_label_added_tag,tagName);
 messageBarType=MessageBarUtils.MessageBarType.INFO;
+mLastAddedTag=tagName;
 break;
 case DELETE:
 AnalyticsTracker.track(AnalyticsTracker.Stat.READER_UNFOLLOWED_READER_TAG);
 messageBarText=getString(R.string.reader_label_removed_tag,tagName);
 messageBarType=MessageBarUtils.MessageBarType.ALERT;
+if (mLastAddedTag != null && mLastAddedTag.equals(tagName)) {
+mLastAddedTag=null;
+}
 break;
 default :
 return;
 }
 MessageBarUtils.showMessageBar(this,messageBarText,messageBarType,null);
-ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
-@Override public void onActionResult(boolean succeeded){
-if (!succeeded && !isFinishing()) {
-getPageAdapter().refreshTags();
 switch (action) {
 case ADD:
-ToastUtils.showToast(ReaderSubsActivity.this,R.string.reader_toast_err_add_tag);
-mLastAddedTag=null;
+getPageAdapter().refreshTagFragments(ReaderTagType.SUBSCRIBED);
 break;
 case DELETE:
-ToastUtils.showToast(ReaderSubsActivity.this,R.string.reader_toast_err_remove_tag);
-break;
-}
-}
-}
-}
-;
-switch (action) {
-case ADD:
-if (ReaderTagActions.performTagAction(TagAction.ADD,tagName,actionListener)) {
-getPageAdapter().refreshTags(tagName);
-mTagsChanged=true;
-mLastAddedTag=tagName;
-}
-break;
-case DELETE:
-if (ReaderTagActions.performTagAction(TagAction.DELETE,tagName,actionListener)) {
-getPageAdapter().refreshTags();
-if (mLastAddedTag != null && mLastAddedTag.equals(tagName)) {
-mLastAddedTag=null;
-}
-mTagsChanged=true;
-}
+getPageAdapter().refreshTagFragments(ReaderTagType.RECOMMENDED);
 break;
 }
 }
