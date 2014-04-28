@@ -1,4 +1,5 @@
 {
+  ProfilingUtils.start("WordPress.onCreate");
   AppLog.enableRecording(true);
   if (!Utils.isDebugBuild()) {
     Crashlytics.start(this);
@@ -25,8 +26,9 @@
   AnalyticsTracker.track(AnalyticsTracker.Stat.APPLICATION_OPENED);
   super.onCreate();
   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-    PushNotificationsBackendMonitor pnBackendMponitor=new PushNotificationsBackendMonitor();
+    ApplicationLifecycleMonitor pnBackendMponitor=new ApplicationLifecycleMonitor();
     registerComponentCallbacks(pnBackendMponitor);
     registerActivityLifecycleCallbacks(pnBackendMponitor);
   }
+  updateCurrentBlogStatsInBackground(false);
 }

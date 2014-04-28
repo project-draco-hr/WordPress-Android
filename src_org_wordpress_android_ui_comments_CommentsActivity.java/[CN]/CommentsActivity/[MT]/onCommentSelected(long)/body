@@ -1,0 +1,32 @@
+{
+  mSelectedCommentId=commentId;
+  FragmentManager fm=getSupportFragmentManager();
+  if (fm == null) {
+    return;
+  }
+  fm.executePendingTransactions();
+  mCommentSelected=true;
+  CommentDetailFragment detailFragment=getDetailFragment();
+  CommentsListFragment listFragment=getListFragment();
+  if (mDualPane) {
+    if (hasReaderFragment()) {
+      fm.popBackStackImmediate();
+    }
+    detailFragment.setComment(WordPress.getCurrentLocalTableBlogId(),commentId);
+    if (listFragment != null) {
+      listFragment.setHighlightedCommentId(commentId);
+    }
+  }
+ else {
+    FragmentTransaction ft=fm.beginTransaction();
+    String tagForFragment=getString(R.string.fragment_tag_comment_detail);
+    detailFragment=CommentDetailFragment.newInstance(WordPress.getCurrentLocalTableBlogId(),commentId);
+    ft.add(R.id.layout_fragment_container,detailFragment,tagForFragment).addToBackStack(tagForFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+    if (listFragment != null) {
+      listFragment.setHighlightedCommentId(commentId);
+      ft.hide(listFragment);
+    }
+    ft.commitAllowingStateLoss();
+    mMenuDrawer.setDrawerIndicatorEnabled(false);
+  }
+}
