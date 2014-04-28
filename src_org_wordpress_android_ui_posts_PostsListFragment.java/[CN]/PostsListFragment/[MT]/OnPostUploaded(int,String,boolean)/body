@@ -1,19 +1,26 @@
 {
-  if (!hasActivity())   return;
+  if (!hasActivity()) {
+    return;
+  }
+  boolean sameBlogId=true;
+  if (WordPress.getCurrentBlog() == null || WordPress.getCurrentBlog().getLocalTableBlogId() != localBlogId) {
+    sameBlogId=false;
+  }
   if (!NetworkUtils.checkConnection(getActivity())) {
     mPullToRefreshHelper.setRefreshing(false);
     return;
   }
   if (!TextUtils.isEmpty(postId)) {
+    final boolean reloadPosts=sameBlogId;
     List<Object> apiArgs=new Vector<Object>();
-    apiArgs.add(WordPress.getCurrentBlog());
+    apiArgs.add(WordPress.wpDB.instantiateBlogByLocalId(localBlogId));
     apiArgs.add(postId);
-    apiArgs.add(mIsPage);
+    apiArgs.add(isPage);
     mCurrentFetchSinglePostTask=new ApiHelper.FetchSinglePostTask(new ApiHelper.FetchSinglePostTask.Callback(){
       @Override public void onSuccess(){
         mCurrentFetchSinglePostTask=null;
         mIsFetchingPosts=false;
-        if (!hasActivity()) {
+        if (!hasActivity() || !reloadPosts) {
           return;
         }
         mPullToRefreshHelper.setRefreshing(false);
@@ -23,7 +30,7 @@
       @Override public void onFailure(      ApiHelper.ErrorType errorType,      String errorMessage,      Throwable throwable){
         mCurrentFetchSinglePostTask=null;
         mIsFetchingPosts=false;
-        if (!hasActivity()) {
+        if (!hasActivity() || !reloadPosts) {
           return;
         }
         if (errorType != ErrorType.TASK_CANCELLED) {
