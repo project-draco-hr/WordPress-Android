@@ -1,5 +1,6 @@
 {
-  Cursor c=ReaderDatabase.getReadableDb().rawQuery("SELECT * FROM tbl_recommended_blogs ORDER BY title",null);
+  String sql=" SELECT * FROM tbl_recommended_blogs" + " WHERE blog_id NOT IN (SELECT blog_id FROM tbl_ignored_recommendations)" + " ORDER BY title";
+  Cursor c=ReaderDatabase.getReadableDb().rawQuery(sql,null);
   try {
     ReaderRecommendBlogList blogs=new ReaderRecommendBlogList();
     if (c.moveToFirst()) {
