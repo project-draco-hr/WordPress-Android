@@ -1,5 +1,6 @@
 {
-  final int maxPictureWidthForContentEditor=400;
+  final int widthOfContentEditor=DisplayUtils.isLandscape(mActivity) ? mContentEditText.getHeight() : mContentEditText.getWidth();
+  final int maxPictureWidthForContentEditor=400 > (widthOfContentEditor - 50) ? widthOfContentEditor - 50 : 400;
   final int minPictureWidthForContentEditor=200;
   MediaFile mediaFile=imageSpan.getMediaFile();
   if (mediaFile == null)   return;
@@ -30,7 +31,7 @@
         resizedBitmap=downloadedBitmap;
       }
  else {
-        int targetWidth=400;
+        int targetWidth=maxPictureWidthForContentEditor;
         try {
           ImageHelper ih=new ImageHelper();
           resizedBitmap=ih.getThumbnailForWPImageSpan(downloadedBitmap,targetWidth);
