@@ -4,8 +4,29 @@
   }
   ReaderBlogInfoHeader.OnBlogInfoListener infoListener=new ReaderBlogInfoHeader.OnBlogInfoListener(){
     @Override public void onBlogInfoShown(    ReaderBlogInfo blogInfo){
-      if (hasActivity() && TextUtils.isEmpty(mHeaderImage.getUrl())) {
-        loadHeaderImage(blogInfo);
+      if (hasActivity() && blogInfo != null) {
+        if (blogInfo.hasName()) {
+          getActivity().setTitle(blogInfo.getName());
+        }
+ else {
+          getActivity().setTitle(R.string.reader_untitled_post);
+        }
+        if (TextUtils.isEmpty(mHeaderImage.getUrl())) {
+          loadHeaderImage(blogInfo);
+        }
+      }
+    }
+    @Override public void onBlogInfoFailed(){
+      if (hasActivity()) {
+        ToastUtils.showToast(getActivity(),R.string.reader_toast_err_get_blog);
+        new Handler().postDelayed(new Runnable(){
+          @Override public void run(){
+            if (hasActivity()) {
+              getActivity().onBackPressed();
+            }
+          }
+        }
+,1000);
       }
     }
   }

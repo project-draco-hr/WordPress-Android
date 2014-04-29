@@ -5,11 +5,21 @@
   final TextView txtFollowBtn=(TextView)findViewById(R.id.text_follow_blog);
   final View divider=findViewById(R.id.divider);
   final View spacer=findViewById(R.id.view_header_image_spacer);
-  mHasBlogInfo=(blogInfo != null && blogInfo.isComplete());
+  mHasBlogInfo=(blogInfo != null);
   if (mHasBlogInfo) {
-    txtBlogName.setText(blogInfo.getName());
-    txtDescription.setText(blogInfo.getDescription());
-    txtDescription.setVisibility(blogInfo.hasDescription() ? View.VISIBLE : View.GONE);
+    if (blogInfo.hasName()) {
+      txtBlogName.setText(blogInfo.getName());
+    }
+ else {
+      txtBlogName.setText(R.string.reader_untitled_post);
+    }
+    if (blogInfo.hasDescription()) {
+      txtDescription.setText(blogInfo.getDescription());
+      txtDescription.setVisibility(View.VISIBLE);
+    }
+ else {
+      txtDescription.setVisibility(View.GONE);
+    }
     if (blogInfo.numSubscribers > 0) {
       String numFollowers=getResources().getString(R.string.reader_label_followers,FormatUtils.formatInt(blogInfo.numSubscribers));
       txtFollowCnt.setText(numFollowers);
@@ -35,8 +45,8 @@
       }
     }
 );
-    if (mListener != null) {
-      mListener.onBlogInfoShown(blogInfo);
+    if (mInfoListener != null) {
+      mInfoListener.onBlogInfoShown(blogInfo);
     }
   }
  else {
