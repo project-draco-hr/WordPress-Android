@@ -1,6 +1,8 @@
 {
   if (post == null) {
-    if (actionListener != null)     actionListener.onActionResult(false);
+    if (actionListener != null) {
+      actionListener.onActionResult(false);
+    }
     return;
   }
   Map<String,String> params=new HashMap<String,String>();
@@ -12,15 +14,21 @@
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       boolean isReblogged=(jsonObject != null ? JSONUtil.getBool(jsonObject,"is_reblogged") : false);
-      if (isReblogged)       ReaderPostTable.setPostReblogged(post,true);
-      if (actionListener != null)       actionListener.onActionResult(isReblogged);
+      if (isReblogged) {
+        ReaderPostTable.setPostReblogged(post,true);
+      }
+      if (actionListener != null) {
+        actionListener.onActionResult(isReblogged);
+      }
     }
   }
 ;
   RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.e(T.READER,volleyError);
-      if (actionListener != null)       actionListener.onActionResult(false);
+      if (actionListener != null) {
+        actionListener.onActionResult(false);
+      }
     }
   }
 ;

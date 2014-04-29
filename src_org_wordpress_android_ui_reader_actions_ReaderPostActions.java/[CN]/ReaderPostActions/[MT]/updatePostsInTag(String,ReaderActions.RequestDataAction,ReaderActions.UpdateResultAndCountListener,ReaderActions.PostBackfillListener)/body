@@ -1,7 +1,9 @@
 {
   final ReaderTag topic=ReaderTagTable.getTag(tagName);
   if (topic == null) {
-    if (resultListener != null)     resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED,-1);
+    if (resultListener != null) {
+      resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED,-1);
+    }
     return;
   }
   StringBuilder sb=new StringBuilder(topic.getEndpoint());
@@ -18,7 +20,9 @@ case LOAD_NEWER:
   break;
 case LOAD_OLDER:
 String dateOldest=ReaderTagTable.getTagOldestDate(tagName);
-if (TextUtils.isEmpty(dateOldest)) dateOldest=ReaderPostTable.getOldestPubDateWithTag(tagName);
+if (TextUtils.isEmpty(dateOldest)) {
+dateOldest=ReaderPostTable.getOldestPubDateWithTag(tagName);
+}
 if (!TextUtils.isEmpty(dateOldest)) {
 sb.append("&before=").append(UrlUtils.urlEncode(dateOldest));
 AppLog.d(T.READER,String.format("requesting older posts in topic %s (%s)",tagName,dateOldest));
@@ -39,7 +43,9 @@ handleUpdatePostsWithTagResponse(tagName,updateAction,jsonObject,resultListener,
 RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
 @Override public void onErrorResponse(VolleyError volleyError){
 AppLog.e(T.READER,volleyError);
-if (resultListener != null) resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED,-1);
+if (resultListener != null) {
+resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED,-1);
+}
 }
 }
 ;
