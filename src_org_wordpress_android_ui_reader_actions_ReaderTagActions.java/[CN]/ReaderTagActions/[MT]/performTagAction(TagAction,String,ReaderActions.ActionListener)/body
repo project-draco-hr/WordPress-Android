@@ -6,8 +6,7 @@
 switch (action) {
 case DELETE:
     originalTopic=ReaderTagTable.getTag(tagName);
-  if (originalTopic == null)   return false;
-ReaderTagTable.deleteTag(tagName);
+  ReaderTagTable.deleteTag(tagName);
 ReaderPostTable.deletePostsWithTag(tagName);
 path="read/tags/" + tagNameForApi + "/mine/delete";
 break;
@@ -41,7 +40,9 @@ AppLog.w(T.READER,"tag action " + action.name() + " failed");
 AppLog.e(T.READER,volleyError);
 switch (action) {
 case DELETE:
+if (originalTopic != null) {
 ReaderTagTable.addOrUpdateTag(originalTopic);
+}
 break;
 case ADD:
 ReaderTagTable.deleteTag(tagName);

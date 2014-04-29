@@ -5,12 +5,15 @@
   super.onCreate(savedInstanceState);
   getSupportFragmentManager().addOnBackStackChangedListener(this);
   mIsBlogDetail=getIntent().getBooleanExtra(ARG_IS_BLOG_DETAIL,false);
-  if (mIsBlogDetail) {
+  mIsTagPreview=getIntent().getBooleanExtra(ARG_IS_TAG_PREVIEW,false);
+  if (mIsBlogDetail || mIsTagPreview) {
     setContentView(R.layout.reader_activity_main);
-    setTitle(R.string.reader_title_blog_detail);
   }
  else {
     createMenuDrawer(R.layout.reader_activity_main);
+  }
+  if (mIsBlogDetail) {
+    setTitle(R.string.reader_title_blog_detail);
   }
   if (savedInstanceState == null) {
     AnalyticsTracker.track(AnalyticsTracker.Stat.READER_ACCESSED);
@@ -33,7 +36,7 @@ case POST_LIST:
         if (TextUtils.isEmpty(tagName)) {
           tagName=UserPrefs.getReaderTag();
         }
-        if (TextUtils.isEmpty(tagName) || !ReaderTagTable.tagExists(tagName)) {
+        if (!mIsTagPreview && !ReaderTagTable.tagExists(tagName)) {
           tagName=ReaderTag.TAG_NAME_DEFAULT;
         }
         showListFragmentForTag(tagName);

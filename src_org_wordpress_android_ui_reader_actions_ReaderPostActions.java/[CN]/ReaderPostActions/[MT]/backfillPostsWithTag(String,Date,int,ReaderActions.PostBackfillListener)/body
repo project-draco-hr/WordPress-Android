@@ -1,8 +1,4 @@
 {
-  final ReaderTag topic=ReaderTagTable.getTag(tagName);
-  if (topic == null) {
-    return;
-  }
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       handleBackfillResponse(jsonObject,tagName,recursionCounter,backfillListener);
@@ -16,7 +12,7 @@
   }
 ;
   String strDateBefore=DateTimeUtils.javaDateToIso8601(dateBefore);
-  String path=topic.getEndpoint() + "?number=" + ReaderConstants.READER_MAX_POSTS_TO_REQUEST+ "&order=DESC"+ "&before="+ UrlUtils.urlEncode(strDateBefore);
+  String path=getEndpointForTag(tagName) + "?number=" + ReaderConstants.READER_MAX_POSTS_TO_REQUEST+ "&order=DESC"+ "&before="+ UrlUtils.urlEncode(strDateBefore);
   AppLog.i(T.READER,String.format("backfilling tag %s, recursion %d",tagName,recursionCounter));
   WordPress.getRestClientUtils().get(path,null,null,listener,errorListener);
 }

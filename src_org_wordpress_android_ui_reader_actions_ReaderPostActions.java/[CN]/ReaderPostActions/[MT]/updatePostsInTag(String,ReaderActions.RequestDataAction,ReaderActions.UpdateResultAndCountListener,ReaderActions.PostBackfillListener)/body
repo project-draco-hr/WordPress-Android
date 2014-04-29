@@ -1,12 +1,5 @@
 {
-  final ReaderTag topic=ReaderTagTable.getTag(tagName);
-  if (topic == null) {
-    if (resultListener != null) {
-      resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED,-1);
-    }
-    return;
-  }
-  StringBuilder sb=new StringBuilder(topic.getEndpoint());
+  StringBuilder sb=new StringBuilder(getEndpointForTag(tagName));
   sb.append("?number=").append(ReaderConstants.READER_MAX_POSTS_TO_REQUEST);
   sb.append("&order=DESC");
   if (ReaderPostTable.hasPostsWithTag(tagName)) {
@@ -33,7 +26,6 @@ break;
  else {
 AppLog.d(T.READER,String.format("requesting posts in empty topic %s",tagName));
 }
-String endpoint=sb.toString();
 com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
 @Override public void onResponse(JSONObject jsonObject){
 handleUpdatePostsWithTagResponse(tagName,updateAction,jsonObject,resultListener,backfillListener);
@@ -49,5 +41,5 @@ resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED,-1);
 }
 }
 ;
-WordPress.getRestClientUtils().get(endpoint,null,null,listener,errorListener);
+WordPress.getRestClientUtils().get(sb.toString(),null,null,listener,errorListener);
 }
