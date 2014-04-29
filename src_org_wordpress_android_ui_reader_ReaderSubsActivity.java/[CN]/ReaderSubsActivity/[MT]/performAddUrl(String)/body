@@ -1,0 +1,40 @@
+{
+  if (!NetworkUtils.checkConnection(this)) {
+    return;
+  }
+  showAddUrlProgress();
+  final ReaderActions.ActionListener followListener=new ReaderActions.ActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      if (!isFinishing()) {
+        hideAddUrlProgress();
+        if (succeeded) {
+          mEditAdd.setText(null);
+          EditTextUtils.hideSoftInput(mEditAdd);
+          String msgText=getString(R.string.reader_label_followed_blog);
+          MessageBarUtils.showMessageBar(ReaderSubsActivity.this,msgText,MessageBarType.INFO,null);
+          long blogId=ReaderBlogTable.getBlogIdFromUrl(normUrl);
+          onFollowBlogChanged(blogId,normUrl,true);
+        }
+ else {
+          ToastUtils.showToast(ReaderSubsActivity.this,R.string.reader_toast_err_follow_blog);
+        }
+      }
+    }
+  }
+;
+  ReaderActions.ActionListener urlActionListener=new ReaderActions.ActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      if (!isFinishing()) {
+        if (succeeded) {
+          ReaderBlogActions.performFollowAction(0,normUrl,true,followListener);
+        }
+ else {
+          hideAddUrlProgress();
+          ToastUtils.showToast(ReaderSubsActivity.this,R.string.reader_toast_err_follow_blog);
+        }
+      }
+    }
+  }
+;
+  ReaderBlogActions.testBlogUrlReachable(normUrl,urlActionListener);
+}

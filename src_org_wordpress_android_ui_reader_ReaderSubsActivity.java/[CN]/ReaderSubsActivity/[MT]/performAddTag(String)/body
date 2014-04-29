@@ -12,11 +12,10 @@
     }
   }
 ;
-  if (!ReaderTagActions.performTagAction(TagAction.ADD,tagName,actionListener)) {
-    return;
+  if (ReaderTagActions.performTagAction(TagAction.ADD,tagName,actionListener)) {
+    String msgText=getString(R.string.reader_label_added_tag,tagName);
+    MessageBarUtils.showMessageBar(this,msgText,MessageBarType.INFO,null);
+    getPageAdapter().refreshTagFragments(null,tagName);
+    onTagAction(TagAction.ADD,tagName);
   }
-  String msgText=getString(R.string.reader_label_added_tag,tagName);
-  MessageBarUtils.showMessageBar(this,msgText,MessageBarType.INFO,null);
-  getPageAdapter().refreshTagFragments(null,tagName);
-  onTagAction(TagAction.ADD,tagName);
 }

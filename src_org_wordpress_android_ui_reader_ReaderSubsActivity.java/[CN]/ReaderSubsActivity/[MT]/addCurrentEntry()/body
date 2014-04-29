@@ -3,23 +3,11 @@
   if (TextUtils.isEmpty(entry)) {
     return;
   }
-  if (!NetworkUtils.checkConnection(this)) {
-    return;
-  }
-  boolean isUrl=(entry.contains(".") && !entry.contains(" "));
+  boolean isUrl=!entry.contains(" ") && (entry.contains(".") || entry.contains("://"));
   if (isUrl) {
     addAsUrl(entry);
-    return;
   }
-  if (ReaderTagTable.tagExists(entry)) {
-    ToastUtils.showToast(this,R.string.reader_toast_err_tag_exists,ToastUtils.Duration.LONG);
-    return;
+ else {
+    addAsTag(entry);
   }
-  if (!ReaderTag.isValidTagName(entry)) {
-    ToastUtils.showToast(this,R.string.reader_toast_err_tag_invalid,ToastUtils.Duration.LONG);
-    return;
-  }
-  mEditAdd.setText(null);
-  EditTextUtils.hideSoftInput(mEditAdd);
-  performAddTag(entry);
 }

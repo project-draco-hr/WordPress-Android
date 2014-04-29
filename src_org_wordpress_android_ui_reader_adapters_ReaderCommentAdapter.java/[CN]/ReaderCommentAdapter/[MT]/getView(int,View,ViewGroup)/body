@@ -1,15 +1,13 @@
 {
   final ReaderComment comment=mComments.get(position);
-  CommentViewHolder holder;
+  final CommentHolder holder;
   if (convertView == null) {
     convertView=mInflater.inflate(R.layout.reader_listitem_comment,parent,false);
-    holder=new CommentViewHolder(convertView);
+    holder=new CommentHolder(convertView);
     convertView.setTag(holder);
-    holder.txtText.setLinksClickable(true);
-    holder.txtText.setMovementMethod(WPLinkMovementMethod.getInstance());
   }
  else {
-    holder=(CommentViewHolder)convertView.getTag();
+    holder=(CommentHolder)convertView.getTag();
   }
   holder.txtAuthor.setText(comment.getAuthorName());
   holder.imgAvatar.setImageUrl(PhotonUtils.fixAvatar(comment.getAuthorAvatar(),mAvatarSz),WPNetworkImageView.ImageType.AVATAR);
@@ -54,7 +52,9 @@
     }
 );
   }
-  if (mMoreCommentsExist && mDataRequestedListener != null && (position >= getCount() - 1))   mDataRequestedListener.onRequestData(ReaderActions.RequestDataAction.LOAD_NEWER);
+  if (mMoreCommentsExist && mDataRequestedListener != null && (position >= getCount() - 1)) {
+    mDataRequestedListener.onRequestData(ReaderActions.RequestDataAction.LOAD_NEWER);
+  }
   holder.divider.setVisibility(position < getCount() - 1 ? View.VISIBLE : View.INVISIBLE);
   return convertView;
 }
