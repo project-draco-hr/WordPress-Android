@@ -1,5 +1,7 @@
 {
-  if (mNewPostsBar == null || mNewPostsBar.getVisibility() != View.VISIBLE)   return;
+  if (!hasActivity() || !isNewPostsBarShowing()) {
+    return;
+  }
   Animation.AnimationListener listener=new Animation.AnimationListener(){
     @Override public void onAnimationStart(    Animation animation){
     }
@@ -11,7 +13,5 @@
   }
 ;
   AniUtils.startAnimation(mNewPostsBar,R.anim.reader_top_bar_out,listener);
-  if (hasPullToRefresh()) {
-    mPullToRefreshHelper.showTip(true);
-  }
+  mPullToRefreshHelper.showTip(true);
 }

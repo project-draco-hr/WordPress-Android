@@ -6,13 +6,24 @@
   final Handler handler=new Handler();
   new Thread(){
     @Override public void run(){
-      ReaderPostList serverPosts=ReaderPostList.fromJson(jsonObject);
-      final boolean responseHasPosts=(serverPosts.size() > 0);
+      final ReaderPostList serverPosts=ReaderPostList.fromJson(jsonObject);
       if (updateAction == ReaderActions.RequestDataAction.LOAD_NEWER) {
         ReaderTagTable.setTagLastUpdated(tagName,DateTimeUtils.javaDateToIso8601(new Date()));
       }
+      if (serverPosts.size() == 0) {
+        AppLog.d(T.READER,String.format("no new posts in topic %s",tagName));
+        if (resultListener != null) {
+          handler.post(new Runnable(){
+            public void run(){
+              resultListener.onUpdateResult(ReaderActions.UpdateResult.UNCHANGED,0);
+            }
+          }
+);
+        }
+        return;
+      }
       JSONObject jsonDateRange=jsonObject.optJSONObject("date_range");
-      if (responseHasPosts && jsonDateRange != null) {
+      if (jsonDateRange != null) {
 switch (updateAction) {
 case LOAD_NEWER:
           String newest=jsonDateRange.has("before") ? JSONUtil.getString(jsonDateRange,"before") : JSONUtil.getString(jsonDateRange,"newest");
@@ -24,29 +35,31 @@ case LOAD_OLDER:
 break;
 }
 }
-if (!responseHasPosts) {
-AppLog.d(T.READER,String.format("no new posts in topic %s",tagName));
-if (resultListener != null) {
-handler.post(new Runnable(){
-public void run(){
-  resultListener.onUpdateResult(ReaderActions.UpdateResult.UNCHANGED,0);
+final boolean hasExistingPostsWithTag=ReaderPostTable.hasPostsWithTag(tagName);
+final int numNewPosts;
+if (hasExistingPostsWithTag) {
+numNewPosts=ReaderPostTable.getNumNewPostsWithTag(tagName,serverPosts);
 }
+ else {
+numNewPosts=serverPosts.size();
 }
-);
-}
-return;
-}
-final int numNewPosts=ReaderPostTable.getNumNewPostsWithTag(tagName,serverPosts);
 ReaderPostTable.addOrUpdatePosts(tagName,serverPosts);
 AppLog.d(T.READER,String.format("retrieved %d posts (%d new) in topic %s",serverPosts.size(),numNewPosts,tagName));
-if (resultListener != null) {
 handler.post(new Runnable(){
 public void run(){
+if (resultListener != null) {
 resultListener.onUpdateResult(ReaderActions.UpdateResult.CHANGED,numNewPosts);
+}
+if (backfillListener != null && hasExistingPostsWithTag) {
+boolean areAllPostsNew=(numNewPosts == ReaderConstants.READER_MAX_POSTS_TO_REQUEST);
+if (areAllPostsNew) {
+  Date dtOldestServerPost=serverPosts.getOldestPubDate();
+  backfillPostsWithTag(tagName,dtOldestServerPost,0,backfillListener);
+}
+}
 }
 }
 );
-}
 }
 }
 .start();
