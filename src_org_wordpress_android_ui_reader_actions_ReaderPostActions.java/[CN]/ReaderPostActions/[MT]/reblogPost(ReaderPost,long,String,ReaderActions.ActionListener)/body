@@ -10,7 +10,6 @@
   if (!TextUtils.isEmpty(optionalComment)) {
     params.put("note",optionalComment);
   }
-  StringBuilder sb=new StringBuilder("/sites/").append(post.blogId).append("/posts/").append(post.postId).append("/reblogs/new");
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       boolean isReblogged=(jsonObject != null ? JSONUtil.getBool(jsonObject,"is_reblogged") : false);
@@ -32,5 +31,6 @@
     }
   }
 ;
-  WordPress.getRestClientUtils().post(sb.toString(),params,null,listener,errorListener);
+  String path="/sites/" + post.blogId + "/posts/"+ post.postId+ "/reblogs/new";
+  WordPress.getRestClientUtils().post(path,params,null,listener,errorListener);
 }

@@ -1,8 +1,14 @@
 {
-  ReaderTag tag=mTags.get(position);
-  view=mInflater.inflate(R.layout.reader_actionbar_item,null);
-  TextView txtName=(TextView)view.findViewById(R.id.text);
-  txtName.setText(tag.getCapitalizedTagName());
-  if (mIsStaticMenuDrawer)   txtName.setPadding(mPaddingForStaticDrawer,0,0,0);
-  return view;
+  final ReaderTag tag=mTags.get(position);
+  final TagHolder holder;
+  if (convertView == null) {
+    convertView=mInflater.inflate(R.layout.reader_actionbar_item,parent,false);
+    holder=new TagHolder(convertView,false);
+    convertView.setTag(holder);
+  }
+ else {
+    holder=(TagHolder)convertView.getTag();
+  }
+  holder.textView.setText(tag.getCapitalizedTagName());
+  return convertView;
 }
