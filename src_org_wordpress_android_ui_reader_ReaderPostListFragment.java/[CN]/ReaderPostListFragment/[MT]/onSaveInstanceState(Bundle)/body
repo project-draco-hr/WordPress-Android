@@ -1,20 +1,12 @@
 {
   super.onSaveInstanceState(outState);
   AppLog.d(T.READER,"reader post list > saving instance state");
-switch (getPostListType()) {
-case TAG:
-    outState.putString(ReaderActivity.ARG_TAG_NAME,mCurrentTag);
-  if (mTagListType != null) {
-    outState.putSerializable(ReaderActivity.ARG_TAG_LIST_TYPE,mTagListType);
+  outState.putString(ReaderActivity.ARG_TAG_NAME,mCurrentTag);
+  outState.putLong(ReaderActivity.ARG_BLOG_ID,mCurrentBlogId);
+  outState.putString(ReaderActivity.ARG_BLOG_URL,mCurrentBlogUrl);
+  outState.putBoolean(ReaderActivity.KEY_WAS_PAUSED,mWasPaused);
+  outState.putSerializable(ReaderActivity.ARG_POST_LIST_TYPE,getPostListType());
+  if (mListView != null && mListView.getFirstVisiblePosition() > 0) {
+    outState.putParcelable(ReaderActivity.KEY_LIST_STATE,mListView.onSaveInstanceState());
   }
-break;
-case BLOG:
-outState.putLong(ReaderActivity.ARG_BLOG_ID,mCurrentBlogId);
-outState.putString(ReaderActivity.ARG_BLOG_URL,mCurrentBlogUrl);
-break;
-}
-outState.putBoolean(ReaderActivity.KEY_WAS_PAUSED,mWasPaused);
-if (mListView != null && mListView.getFirstVisiblePosition() > 0) {
-outState.putParcelable(ReaderActivity.KEY_LIST_STATE,mListView.onSaveInstanceState());
-}
 }

@@ -4,29 +4,33 @@
   }
   super.onCreate(savedInstanceState);
   getSupportFragmentManager().addOnBackStackChangedListener(this);
-  mIsBlogDetail=getIntent().getBooleanExtra(ARG_IS_BLOG_DETAIL,false);
-  mIsTagPreview=getIntent().getBooleanExtra(ARG_IS_TAG_PREVIEW,false);
-  if (mIsBlogDetail || mIsTagPreview) {
+  if (getIntent().hasExtra(ARG_POST_LIST_TYPE)) {
+    mPostListType=(ReaderPostListType)getIntent().getSerializableExtra(ARG_POST_LIST_TYPE);
+  }
+ else {
+    mPostListType=ReaderPostListType.getDefaultType();
+  }
+  if (mPostListType == ReaderPostListType.BLOG || mPostListType == ReaderPostListType.TAG_PREVIEW) {
     setContentView(R.layout.reader_activity_main);
   }
  else {
     createMenuDrawer(R.layout.reader_activity_main);
   }
-  if (mIsBlogDetail) {
+  if (mPostListType == ReaderPostListType.BLOG) {
     setTitle(R.string.reader_title_blog_detail);
   }
   if (savedInstanceState == null) {
     AnalyticsTracker.track(AnalyticsTracker.Stat.READER_ACCESSED);
     final ReaderFragmentType fragmentType;
-    if (getIntent().hasExtra(ARG_READER_FRAGMENT)) {
-      fragmentType=(ReaderFragmentType)getIntent().getSerializableExtra(ARG_READER_FRAGMENT);
+    if (getIntent().hasExtra(ARG_READER_FRAGMENT_TYPE)) {
+      fragmentType=(ReaderFragmentType)getIntent().getSerializableExtra(ARG_READER_FRAGMENT_TYPE);
     }
  else {
       fragmentType=ReaderFragmentType.POST_LIST;
     }
 switch (fragmentType) {
 case POST_LIST:
-      if (mIsBlogDetail) {
+      if (mPostListType == ReaderPostListType.BLOG) {
         long blogId=getIntent().getLongExtra(ReaderActivity.ARG_BLOG_ID,0);
         String blogUrl=getIntent().getStringExtra(ReaderActivity.ARG_BLOG_URL);
         showListFragmentForBlog(blogId,blogUrl);
@@ -36,13 +40,13 @@ case POST_LIST:
         if (TextUtils.isEmpty(tagName)) {
           tagName=UserPrefs.getReaderTag();
         }
-        if (mIsTagPreview) {
+        if (mPostListType == ReaderPostListType.TAG_PREVIEW) {
           setTitle(tagName);
         }
  else         if (!ReaderTagTable.tagExists(tagName)) {
           tagName=ReaderTag.TAG_NAME_DEFAULT;
         }
-        showListFragmentForTag(tagName);
+        showListFragmentForTag(tagName,mPostListType);
       }
     break;
 case POST_DETAIL:
