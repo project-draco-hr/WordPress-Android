@@ -1,0 +1,30 @@
+{
+  if (jsonTags == null) {
+    return;
+  }
+  StringBuilder sbAllTags=new StringBuilder();
+  String mostPopularTag=null;
+  int popularCount=0;
+  Iterator<String> it=jsonTags.keys();
+  boolean isFirst=true;
+  while (it.hasNext()) {
+    JSONObject jsonThisTag=jsonTags.optJSONObject(it.next());
+    String tagName=JSONUtil.getString(jsonThisTag,"name");
+    int postCount=jsonThisTag.optInt("post_count");
+    if (postCount > popularCount) {
+      mostPopularTag=tagName;
+      popularCount=postCount;
+    }
+    if (isFirst) {
+      isFirst=false;
+    }
+ else {
+      sbAllTags.append(",");
+    }
+    sbAllTags.append(tagName);
+  }
+  if (!post.hasPrimaryTag()) {
+    post.setPrimaryTag(mostPopularTag);
+  }
+  post.setTags(sbAllTags.toString());
+}

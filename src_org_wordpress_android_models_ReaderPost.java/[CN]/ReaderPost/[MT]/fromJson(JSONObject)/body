@@ -36,6 +36,7 @@
     post.blogId=jsonEditorial.optLong("blog_id");
     post.blogName=JSONUtil.getStringDecoded(jsonEditorial,"blog_name");
     post.featuredImage=getImageUrlFromFeaturedImageUrl(JSONUtil.getString(jsonEditorial,"image"));
+    post.primaryTag=JSONUtil.getString(jsonEditorial,"highlight_topic");
     post.published=JSONUtil.getString(jsonEditorial,"displayed_on");
   }
  else {
@@ -86,23 +87,10 @@
     }
     if (!post.hasFeaturedImage())     post.featuredImage=findFeaturedImage(post.text);
   }
-  if (!post.hasTitle() && post.hasExcerpt())   post.title=extractTitle(post.excerpt,50);
-  JSONObject jsonTags=json.optJSONObject("tags");
-  if (jsonTags != null) {
-    StringBuilder sbTags=new StringBuilder();
-    Iterator<String> it=jsonTags.keys();
-    boolean isFirst=true;
-    while (it.hasNext()) {
-      if (isFirst) {
-        isFirst=false;
-      }
- else {
-        sbTags.append(",");
-      }
-      sbTags.append(it.next());
-    }
-    post.setTags(sbTags.toString());
+  if (!post.hasTitle() && post.hasExcerpt()) {
+    post.title=extractTitle(post.excerpt,50);
   }
+  assignTagsFromJson(post,json.optJSONObject("tags"));
   if (post.blogId == 0) {
     JSONObject jsonSite=JSONUtil.getJSONChild(json,"meta/data/site");
     if (jsonSite != null) {

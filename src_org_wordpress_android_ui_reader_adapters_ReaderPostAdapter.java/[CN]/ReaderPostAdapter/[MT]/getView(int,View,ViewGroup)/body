@@ -57,27 +57,20 @@
  else {
     holder.imgFeatured.setVisibility(View.GONE);
   }
-  if (isTagPreview() || post.isPrivate) {
+  if (isTagPreview() || post.isPrivate || !post.hasPrimaryTag()) {
     holder.txtTag.setVisibility(View.GONE);
   }
  else {
-    final String firstTag=post.getFirstTag();
-    if (!TextUtils.isEmpty(firstTag)) {
-      holder.txtTag.setVisibility(View.VISIBLE);
-      holder.txtTag.setText(firstTag);
-      holder.txtTag.setOnClickListener(new View.OnClickListener(){
-        @Override public void onClick(        View v){
-          if (mOnTagSelectedListener != null) {
-            mOnTagSelectedListener.onTagSelected(firstTag);
-          }
+    holder.txtTag.setText(post.getPrimaryTag());
+    holder.txtTag.setVisibility(View.VISIBLE);
+    holder.txtTag.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        if (mOnTagSelectedListener != null) {
+          mOnTagSelectedListener.onTagSelected(post.getPrimaryTag());
         }
       }
+    }
 );
-    }
- else {
-      holder.txtTag.setVisibility(View.GONE);
-      holder.txtTag.setOnClickListener(null);
-    }
   }
   if (post.isWP()) {
     showLikeStatus(holder.imgBtnLike,post.isLikedByCurrentUser);
