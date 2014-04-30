@@ -4,7 +4,7 @@
   final ReaderPostListFragment listFragment=getListFragment();
   final ReaderPostDetailFragment detailFragment=getDetailFragment();
 switch (requestCode) {
-case Constants.INTENT_READER_TAGS:
+case Constants.INTENT_READER_SUBS:
     if (isResultOK && listFragment != null && data != null) {
       if (data.getBooleanExtra(ReaderSubsActivity.KEY_TAGS_CHANGED,false)) {
         String lastAddedTag=data.getStringExtra(ReaderSubsActivity.KEY_LAST_ADDED_TAG);
@@ -23,6 +23,11 @@ if (isResultOK && data != null) {
   long postId=data.getLongExtra(ARG_POST_ID,0);
   if (listFragment != null)   listFragment.reloadPost(ReaderPostTable.getPost(blogId,postId));
   if (detailFragment != null)   detailFragment.reloadPost();
+}
+break;
+case Constants.INTENT_READER_TAG_PREVIEW:
+if (hasListFragment() && getListFragment().getPostListType() == ReaderPostListType.TAG_FOLLOWED) {
+getListFragment().refreshTags();
 }
 break;
 }
