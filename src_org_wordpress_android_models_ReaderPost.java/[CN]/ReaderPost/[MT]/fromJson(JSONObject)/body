@@ -1,5 +1,7 @@
 {
-  if (json == null)   throw new IllegalArgumentException("null json post");
+  if (json == null) {
+    throw new IllegalArgumentException("null json post");
+  }
   ReaderPost post=new ReaderPost();
   post.postId=json.optLong("ID");
   post.blogId=json.optLong("site_ID");
@@ -22,15 +24,7 @@
   post.isCommentsOpen=JSONUtil.getBool(json,"comments_open");
   post.isExternal=JSONUtil.getBool(json,"is_external");
   post.isPrivate=JSONUtil.getBool(json,"site_is_private");
-  JSONObject jsonAuthor=json.optJSONObject("author");
-  if (jsonAuthor != null) {
-    post.authorName=JSONUtil.getString(jsonAuthor,"name");
-    post.postAvatar=JSONUtil.getString(jsonAuthor,"avatar_URL");
-    post.authorId=jsonAuthor.optLong("ID");
-    if (TextUtils.isEmpty(post.blogUrl)) {
-      post.blogUrl=JSONUtil.getString(jsonAuthor,"URL");
-    }
-  }
+  assignAuthorFromJson(post,json.optJSONObject("author"));
   JSONObject jsonEditorial=json.optJSONObject("editorial");
   if (jsonEditorial != null) {
     post.blogId=jsonEditorial.optLong("blog_id");
@@ -51,25 +45,7 @@
  else {
     post.timestamp=DateTimeUtils.iso8601ToTimestamp(post.published);
   }
-  JSONObject jsonAttachments=json.optJSONObject("attachments");
-  if (jsonAttachments != null) {
-    Iterator<String> it=jsonAttachments.keys();
-    if (it != null && it.hasNext()) {
-      JSONObject jsonFirstAttachment=jsonAttachments.optJSONObject(it.next());
-      if (jsonFirstAttachment != null) {
-        String thumbnail=JSONUtil.getString(jsonFirstAttachment,"videopress_thumbnail");
-        if (!TextUtils.isEmpty(thumbnail))         post.featuredImage=thumbnail;
-        JSONObject jsonVideoPress=jsonFirstAttachment.optJSONObject("videopress_files");
-        if (jsonVideoPress != null) {
-          JSONObject jsonStdVideo=jsonVideoPress.optJSONObject("std");
-          if (jsonStdVideo != null) {
-            post.featuredVideo=JSONUtil.getString(jsonStdVideo,"url");
-            post.isVideoPress=true;
-          }
-        }
-      }
-    }
-  }
+  assignAttachmentsFromJson(post,json.optJSONObject("attachments"));
   if (!post.hasFeaturedImage()) {
     JSONObject jsonMedia=json.optJSONObject("featured_media");
     if (jsonMedia != null) {
@@ -85,7 +61,9 @@
         }
       }
     }
-    if (!post.hasFeaturedImage())     post.featuredImage=findFeaturedImage(post.text);
+    if (!post.hasFeaturedImage()) {
+      post.featuredImage=findFeaturedImage(post.text);
+    }
   }
   if (!post.hasTitle() && post.hasExcerpt()) {
     post.title=extractTitle(post.excerpt,50);
