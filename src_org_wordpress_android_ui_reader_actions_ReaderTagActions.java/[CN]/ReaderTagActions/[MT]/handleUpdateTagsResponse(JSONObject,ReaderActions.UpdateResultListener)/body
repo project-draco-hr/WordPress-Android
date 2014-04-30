@@ -8,10 +8,10 @@
     @Override public void run(){
       ReaderTagList serverTopics=new ReaderTagList();
       serverTopics.addAll(parseTags(jsonObject,"default",ReaderTag.ReaderTagType.DEFAULT));
-      serverTopics.addAll(parseTags(jsonObject,"subscribed",ReaderTag.ReaderTagType.SUBSCRIBED));
+      serverTopics.addAll(parseTags(jsonObject,"subscribed",ReaderTag.ReaderTagType.FOLLOWED));
       ReaderTagList localTopics=new ReaderTagList();
       localTopics.addAll(ReaderTagTable.getDefaultTags());
-      localTopics.addAll(ReaderTagTable.getSubscribedTags());
+      localTopics.addAll(ReaderTagTable.getFollowedTags());
       final boolean hasChanges=!localTopics.isSameList(serverTopics);
       if (hasChanges) {
         deleteTags(localTopics.getDeletions(serverTopics));
