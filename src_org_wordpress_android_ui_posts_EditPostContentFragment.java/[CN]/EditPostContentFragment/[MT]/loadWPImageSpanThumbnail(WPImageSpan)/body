@@ -1,5 +1,6 @@
 {
-  final int maxPictureWidthForContentEditor=400;
+  final int widthOfContentEditor=DisplayUtils.isLandscape(mActivity) ? mContentEditText.getHeight() : mContentEditText.getWidth();
+  final int maxPictureWidthForContentEditor=400 > (widthOfContentEditor - 50) ? widthOfContentEditor - 50 : 400;
   final int minPictureWidthForContentEditor=200;
   MediaFile mediaFile=imageSpan.getMediaFile();
   if (mediaFile == null)   return;
@@ -18,6 +19,9 @@
     @Override public void onErrorResponse(    VolleyError arg0){
     }
     @Override public void onResponse(    ImageLoader.ImageContainer container,    boolean arg1){
+      if (!hasActivity()) {
+        return;
+      }
       Bitmap downloadedBitmap=container.getBitmap();
       if (downloadedBitmap == null) {
         return;
@@ -30,12 +34,16 @@
         resizedBitmap=downloadedBitmap;
       }
  else {
+        int targetWidth=maxPictureWidthForContentEditor;
         try {
           ImageHelper ih=new ImageHelper();
-          resizedBitmap=ih.getThumbnailForWPImageSpan(downloadedBitmap,400);
+          resizedBitmap=ih.getThumbnailForWPImageSpan(downloadedBitmap,targetWidth);
         }
  catch (        OutOfMemoryError er) {
-          WPMobileStatsUtil.trackEventForSelfHostedAndWPCom(WPMobileStatsUtil.StatsEventMediaOutOfMemory);
+          CrashlyticsUtils.setInt(ExtraKey.IMAGE_WIDTH,downloadedBitmap.getWidth());
+          CrashlyticsUtils.setInt(ExtraKey.IMAGE_HEIGHT,downloadedBitmap.getHeight());
+          CrashlyticsUtils.setFloat(ExtraKey.IMAGE_RESIZE_SCALE,((float)targetWidth) / downloadedBitmap.getWidth());
+          CrashlyticsUtils.logException(er,ExceptionType.SPECIFIC,T.POSTS);
           return;
         }
       }

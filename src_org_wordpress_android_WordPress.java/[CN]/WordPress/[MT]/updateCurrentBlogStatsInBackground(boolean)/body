@@ -1,0 +1,23 @@
+{
+  if (!alwaysUpdate && mStatsLastPingDate != null) {
+    if (DateTimeUtils.minutesBetween(new Date(),mStatsLastPingDate) < 30) {
+      return;
+    }
+  }
+  Blog currentBlog=WordPress.getCurrentBlog();
+  if (currentBlog != null) {
+    String blogID=null;
+    if (currentBlog.isDotcomFlag()) {
+      blogID=String.valueOf(currentBlog.getRemoteBlogId());
+    }
+ else     if (currentBlog.isJetpackPowered() && currentBlog.hasValidJetpackCredentials()) {
+      blogID=currentBlog.getApi_blogid();
+    }
+    if (blogID != null) {
+      Intent intent=new Intent(mContext,StatsService.class);
+      intent.putExtra(StatsService.ARG_BLOG_ID,blogID);
+      mContext.startService(intent);
+      mStatsLastPingDate=new Date();
+    }
+  }
+}

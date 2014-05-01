@@ -1,6 +1,11 @@
 {
-  super.onCreate(savedInstanceState);
+  super.onCreate(null);
+  if (savedInstanceState == null) {
+    AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATIONS_ACCESSED);
+  }
   createMenuDrawer(R.layout.notifications);
+  View fragmentContainer=findViewById(R.id.layout_fragment_container);
+  mDualPane=fragmentContainer != null && getString(R.string.dual_pane_mode).equals(fragmentContainer.getTag());
   ActionBar actionBar=getSupportActionBar();
   actionBar.setDisplayShowTitleEnabled(true);
   setTitle(getResources().getString(R.string.notifications));
@@ -9,15 +14,8 @@
   mNotesList=(NotificationsListFragment)fm.findFragmentById(R.id.fragment_notes_list);
   mNotesList.setNoteProvider(new NoteProvider());
   mNotesList.setOnNoteClickListener(new NoteClickListener());
-  boolean launchWithNoteId=(savedInstanceState == null);
-  loadNotes(launchWithNoteId);
+  restoreSavedInstance(savedInstanceState);
   GCMIntentService.activeNotificationsMap.clear();
-  if (savedInstanceState != null) {
-    mHasPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);
-  }
-  if (savedInstanceState != null) {
-    popNoteDetail();
-  }
   if (mBroadcastReceiver == null) {
     createBroadcastReceiver();
   }

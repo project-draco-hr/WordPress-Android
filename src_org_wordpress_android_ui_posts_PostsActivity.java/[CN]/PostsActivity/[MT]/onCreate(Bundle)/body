@@ -1,5 +1,7 @@
 {
   super.onCreate(savedInstanceState);
+  ProfilingUtils.split("PostsActivity.onCreate");
+  ProfilingUtils.dump();
   if (WordPress.wpDB == null) {
     Toast.makeText(this,R.string.fatal_db_error,Toast.LENGTH_LONG).show();
     finish();
@@ -11,7 +13,7 @@
     return;
   }
   if (WordPress.shouldRestoreSelectedActivity && WordPress.getCurrentBlog() != null && !(this instanceof PagesActivity)) {
-    new ApiHelper.RefreshBlogContentTask(this,WordPress.getCurrentBlog(),new RefreshBlogContentCallback()).execute(false);
+    refreshBlogContent();
     WordPress.shouldRestoreSelectedActivity=false;
     SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
     int lastActivitySelection=settings.getInt(LAST_ACTIVITY_PREFERENCE,-1);
@@ -43,5 +45,4 @@
   WordPress.currentPost=null;
   if (savedInstanceState != null)   popPostDetail();
   attemptToSelectPost();
-  WPMobileStatsUtil.trackEventForWPCom(statEventForViewOpening());
 }

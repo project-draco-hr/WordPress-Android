@@ -4,7 +4,6 @@
     return;
   }
   if (action == POST_DELETE) {
-    WPMobileStatsUtil.flagProperty(statEventForViewClosing(),WPMobileStatsUtil.StatsPropertyPostDetailClickedDelete);
     if (post.isLocalDraft()) {
       AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(PostsActivity.this);
       dialogBuilder.setTitle(getResources().getText(R.string.delete_draft));
@@ -61,7 +60,6 @@
     share.putExtra(Intent.EXTRA_TEXT,shortlink != null ? shortlink : post.getPermaLink());
     startActivity(Intent.createChooser(share,getResources().getText(R.string.share_url)));
     AppLockManager.getInstance().setExtendedTimeout();
-    WPMobileStatsUtil.flagProperty(statEventForViewClosing(),WPMobileStatsUtil.StatsPropertyPostDetailClickedShare);
   }
  else   if (action == POST_CLEAR) {
     FragmentManager fm=getSupportFragmentManager();
@@ -69,11 +67,5 @@
     if (f != null) {
       f.clearContent();
     }
-  }
- else   if (action == POST_EDIT) {
-    WPMobileStatsUtil.flagProperty(statEventForViewClosing(),WPMobileStatsUtil.StatsPropertyPostDetailClickedEdit);
-  }
- else   if (action == POST_VIEW) {
-    WPMobileStatsUtil.flagProperty(statEventForViewClosing(),WPMobileStatsUtil.StatsPropertyPostDetailClickedPreview);
   }
 }

@@ -30,14 +30,6 @@
       mIsNewPost=extras.getBoolean(EXTRA_IS_NEW_POST);
       mPost=WordPress.wpDB.getPostForLocalTablePostId(localTablePostId);
       mOriginalPost=WordPress.wpDB.getPostForLocalTablePostId(localTablePostId);
-      if (isPage) {
-        WPMobileStatsUtil.trackEventForWPCom(WPMobileStatsUtil.StatsEventPageDetailOpenedEditor);
-        mStatEventEditorClosed=WPMobileStatsUtil.StatsEventPageDetailClosedEditor;
-      }
- else {
-        WPMobileStatsUtil.trackEventForWPCom(WPMobileStatsUtil.StatsEventPostDetailOpenedEditor);
-        mStatEventEditorClosed=WPMobileStatsUtil.StatsEventPostDetailClosedEditor;
-      }
     }
  else {
       showErrorAndFinish(R.string.post_not_found);
@@ -61,7 +53,7 @@
     showErrorAndFinish(R.string.post_not_found);
     return;
   }
-  setTitle(WordPress.getCurrentBlog().getBlogName());
+  setTitle(StringUtils.unescapeHTML(WordPress.getCurrentBlog().getBlogName()));
   mSectionsPagerAdapter=new SectionsPagerAdapter(getSupportFragmentManager());
   mViewPager=(WPViewPager)findViewById(R.id.pager);
   mViewPager.setAdapter(mSectionsPagerAdapter);

@@ -5,14 +5,8 @@
   }
  catch (  RuntimeException runtimeException) {
     html=(SpannableStringBuilder)Html.fromHtml(source,null,null);
-    try {
-      JSONObject additionalData=new JSONObject();
-      additionalData.put("input_text",source);
-      WPMobileStatsUtil.trackException(runtimeException,WPMobileStatsUtil.StatsPropertyExceptionNoteParsing,additionalData);
-    }
- catch (    JSONException jsonException) {
-      AppLog.e(T.UTILS,jsonException);
-    }
+    CrashlyticsUtils.setString(ExtraKey.NOTE_HTMLDATA,source);
+    CrashlyticsUtils.logException(runtimeException,ExceptionType.SPECIFIC,T.NOTIFS);
   }
   Emoticons.replaceEmoticonsWithEmoji(html);
   QuoteSpan spans[]=html.getSpans(0,html.length(),QuoteSpan.class);

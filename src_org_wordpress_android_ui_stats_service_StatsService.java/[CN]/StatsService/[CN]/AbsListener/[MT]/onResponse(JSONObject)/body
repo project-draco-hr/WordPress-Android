@@ -1,0 +1,25 @@
+{
+  AppLog.d(T.STATS,this.getClass().getName() + " responded OK");
+  if (!updateUIExecutor.isShutdown() && !updateUIExecutor.isTerminated() && !updateUIExecutor.isTerminating())   updateUIExecutor.submit(new Thread(){
+    @Override public void run(){
+      numberOfFinishedNetworkCalls++;
+      if (response != null) {
+        try {
+          parseResponse(response);
+        }
+ catch (        JSONException e) {
+          AppLog.e(AppLog.T.STATS,e);
+        }
+catch (        RemoteException e) {
+          AppLog.e(AppLog.T.STATS,e);
+        }
+catch (        OperationApplicationException e) {
+          AppLog.e(AppLog.T.STATS,e);
+        }
+      }
+      notifyResponseReceived();
+      getContentResolver().notifyChange(getStatsContentProviderUpdateURI(),null);
+    }
+  }
+);
+}

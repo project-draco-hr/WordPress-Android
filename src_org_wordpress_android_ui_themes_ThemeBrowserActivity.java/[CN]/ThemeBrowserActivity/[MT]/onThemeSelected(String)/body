@@ -2,7 +2,9 @@
   FragmentManager fm=getSupportFragmentManager();
   if (!Utils.isXLarge(ThemeBrowserActivity.this)) {
     FragmentTransaction ft=fm.beginTransaction();
-    if (mSearchFragment != null && mSearchFragment.isVisible())     fm.popBackStack();
+    if (mSearchFragment != null && mSearchFragment.isVisible()) {
+      fm.popBackStack();
+    }
     setupBaseLayout();
     mDetailsFragment=ThemeDetailsFragment.newInstance(themeId);
     ft.add(R.id.theme_browser_container,mDetailsFragment,ThemeDetailsFragment.TAG);
@@ -14,10 +16,9 @@
     mDetailsFragment=ThemeDetailsFragment.newInstance(themeId);
     mDetailsFragment.show(getSupportFragmentManager(),ThemeDetailsFragment.TAG);
     getSupportFragmentManager().executePendingTransactions();
-    Display display=getWindowManager().getDefaultDisplay();
     int minWidth=getResources().getDimensionPixelSize(R.dimen.theme_details_dialog_min_width);
     int height=getResources().getDimensionPixelSize(R.dimen.theme_details_dialog_height);
-    int width=Math.max((int)(display.getWidth() * 0.6),minWidth);
+    int width=Math.max((int)(DisplayUtils.getDisplayPixelWidth(this) * 0.6),minWidth);
     mDetailsFragment.getDialog().getWindow().setLayout(width,height);
   }
 }

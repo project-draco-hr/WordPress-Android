@@ -23,14 +23,7 @@
       sendUpdateBroadcast(mediaId,getString(R.string.upload_failed));
       mHandler.post(mFetchQueueTask);
       if (errorType != ErrorType.NETWORK_XMLRPC) {
-        JSONObject properties=new JSONObject();
-        try {
-          properties.put("error_message",errorType.name() + "-" + errorMessage);
-        }
- catch (        JSONException e) {
-          AppLog.e(T.MEDIA,"Can't serialize message to JSON: " + errorMessage);
-        }
-        WPMobileStatsUtil.trackException(throwable,WPMobileStatsUtil.StatsPropertyExceptionUploadMedia,properties);
+        CrashlyticsUtils.logException(throwable,ExceptionType.SPECIFIC,T.MEDIA,errorMessage);
       }
     }
   }
