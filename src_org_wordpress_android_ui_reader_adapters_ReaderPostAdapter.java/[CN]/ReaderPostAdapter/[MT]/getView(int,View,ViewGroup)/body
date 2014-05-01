@@ -57,12 +57,16 @@
  else {
     holder.imgFeatured.setVisibility(View.GONE);
   }
-  if (isTagPreview() || post.isPrivate || !post.hasPrimaryTag()) {
-    holder.txtTag.setVisibility(View.GONE);
+  final boolean showPrimaryTag;
+  if (isTagPreview() || post.isPrivate) {
+    showPrimaryTag=false;
   }
  else {
+    showPrimaryTag=post.hasPrimaryTag() && !post.getPrimaryTag().equalsIgnoreCase(getCurrentTag());
+  }
+  holder.txtTag.setVisibility(showPrimaryTag ? View.VISIBLE : View.GONE);
+  if (showPrimaryTag) {
     holder.txtTag.setText(post.getPrimaryTag());
-    holder.txtTag.setVisibility(View.VISIBLE);
     holder.txtTag.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
         if (mOnTagSelectedListener != null) {
