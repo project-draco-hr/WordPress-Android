@@ -1,0 +1,17 @@
+{
+  String[] args={Integer.toString(tagType.toInt())};
+  Cursor c=ReaderDatabase.getReadableDb().rawQuery("SELECT * FROM tbl_tags WHERE topic_type=? ORDER BY tag_name",args);
+  try {
+    ReaderTagList topics=new ReaderTagList();
+    if (c.moveToFirst()) {
+      do {
+        topics.add(getTagFromCursor(c));
+      }
+ while (c.moveToNext());
+    }
+    return topics;
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+}

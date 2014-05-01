@@ -2,7 +2,8 @@
   if (TextUtils.isEmpty(tagName)) {
     return null;
   }
-  Cursor c=ReaderDatabase.getReadableDb().rawQuery("SELECT * FROM tbl_tags WHERE tag_name=? LIMIT 1",new String[]{tagName});
+  String[] args={tagName,Integer.toString(tagType.toInt())};
+  Cursor c=ReaderDatabase.getReadableDb().rawQuery("SELECT * FROM tbl_tags WHERE tag_name=? AND topic_type=? LIMIT 1",args);
   try {
     if (!c.moveToFirst()) {
       return null;

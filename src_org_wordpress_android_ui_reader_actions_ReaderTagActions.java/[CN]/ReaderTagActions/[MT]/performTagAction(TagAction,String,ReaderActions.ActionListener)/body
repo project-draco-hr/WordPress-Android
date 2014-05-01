@@ -1,11 +1,19 @@
 {
-  if (TextUtils.isEmpty(tagName))   return false;
+  if (TextUtils.isEmpty(tagName)) {
+    return false;
+  }
+  if (ReaderTagTable.isDefaultTag(tagName)) {
+    if (actionListener != null) {
+      actionListener.onActionResult(false);
+    }
+    return false;
+  }
   final ReaderTag originalTopic;
   final String path;
   final String tagNameForApi=sanitizeTitle(tagName);
 switch (action) {
 case DELETE:
-    originalTopic=ReaderTagTable.getTag(tagName);
+    originalTopic=ReaderTagTable.getTag(tagName,ReaderTagType.FOLLOWED);
   ReaderTagTable.deleteTag(tagName);
 ReaderPostTable.deletePostsWithTag(tagName);
 path="read/tags/" + tagNameForApi + "/mine/delete";
@@ -23,7 +31,9 @@ return false;
 com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
 @Override public void onResponse(JSONObject jsonObject){
 AppLog.i(T.READER,"tag action " + action.name() + " succeeded");
-if (actionListener != null) actionListener.onActionResult(true);
+if (actionListener != null) {
+actionListener.onActionResult(true);
+}
 }
 }
 ;
@@ -33,7 +43,9 @@ String error=VolleyUtils.errStringFromVolleyError(volleyError);
 boolean isSuccess=(action == TagAction.ADD && error.equals("already_subscribed")) || (action == TagAction.DELETE && error.equals("not_subscribed"));
 if (isSuccess) {
 AppLog.w(T.READER,"tag action " + action.name() + " succeeded with error "+ error);
-if (actionListener != null) actionListener.onActionResult(true);
+if (actionListener != null) {
+actionListener.onActionResult(true);
+}
 return;
 }
 AppLog.w(T.READER,"tag action " + action.name() + " failed");
@@ -48,7 +60,9 @@ case ADD:
 ReaderTagTable.deleteTag(tagName);
 break;
 }
-if (actionListener != null) actionListener.onActionResult(false);
+if (actionListener != null) {
+actionListener.onActionResult(false);
+}
 }
 }
 ;

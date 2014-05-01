@@ -2,6 +2,9 @@
   if (TextUtils.isEmpty(tagName)) {
     return false;
   }
-  String[] args={tagName,Integer.toString(ReaderTagType.FOLLOWED.toInt())};
+  if (tagType == null) {
+    return tagExists(tagName);
+  }
+  String[] args={tagName,Integer.toString(tagType.toInt())};
   return SqlUtils.boolForQuery(ReaderDatabase.getReadableDb(),"SELECT 1 FROM tbl_tags WHERE tag_name=?1 AND topic_type=?2",args);
 }
