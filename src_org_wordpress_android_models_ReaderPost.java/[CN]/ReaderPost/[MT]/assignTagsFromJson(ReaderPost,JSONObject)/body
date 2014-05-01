@@ -4,14 +4,19 @@
   }
   StringBuilder sbAllTags=new StringBuilder();
   String mostPopularTag=null;
+  String nextMostPopularTag=null;
   int popularCount=0;
   Iterator<String> it=jsonTags.keys();
+  if (!it.hasNext()) {
+    return;
+  }
   boolean isFirst=true;
   while (it.hasNext()) {
     JSONObject jsonThisTag=jsonTags.optJSONObject(it.next());
     String tagName=JSONUtil.getString(jsonThisTag,"name");
     int postCount=jsonThisTag.optInt("post_count");
     if (postCount > popularCount) {
+      nextMostPopularTag=mostPopularTag;
       mostPopularTag=tagName;
       popularCount=postCount;
     }
@@ -26,5 +31,6 @@
   if (!post.hasPrimaryTag()) {
     post.setPrimaryTag(mostPopularTag);
   }
+  post.setSecondaryTag(nextMostPopularTag);
   post.setTags(sbAllTags.toString());
 }

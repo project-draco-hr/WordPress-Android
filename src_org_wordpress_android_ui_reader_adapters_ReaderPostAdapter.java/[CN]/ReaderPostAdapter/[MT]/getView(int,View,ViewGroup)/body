@@ -57,16 +57,19 @@
  else {
     holder.imgFeatured.setVisibility(View.GONE);
   }
-  final boolean showPrimaryTag;
-  if (post.isPrivate) {
-    showPrimaryTag=false;
+  final String tagToDisplay;
+  if (post.isPrivate || !post.hasPrimaryTag()) {
+    tagToDisplay=null;
+  }
+ else   if (!post.getPrimaryTag().equalsIgnoreCase(getCurrentTag())) {
+    tagToDisplay=post.getPrimaryTag();
   }
  else {
-    showPrimaryTag=post.hasPrimaryTag() && !post.getPrimaryTag().equalsIgnoreCase(getCurrentTag());
+    tagToDisplay=post.getSecondaryTag();
   }
-  holder.txtTag.setVisibility(showPrimaryTag ? View.VISIBLE : View.GONE);
-  if (showPrimaryTag) {
-    holder.txtTag.setText(post.getPrimaryTag());
+  if (!TextUtils.isEmpty(tagToDisplay)) {
+    holder.txtTag.setText(tagToDisplay);
+    holder.txtTag.setVisibility(View.VISIBLE);
     holder.txtTag.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
         if (mOnTagSelectedListener != null) {
@@ -75,6 +78,9 @@
       }
     }
 );
+  }
+ else {
+    holder.txtTag.setVisibility(View.GONE);
   }
   if (post.isWP()) {
     showLikeStatus(holder.imgBtnLike,post.isLikedByCurrentUser);
