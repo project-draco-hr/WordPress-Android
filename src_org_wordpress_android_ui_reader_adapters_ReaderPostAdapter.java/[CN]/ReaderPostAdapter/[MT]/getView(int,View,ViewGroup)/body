@@ -3,7 +3,7 @@
   final PostViewHolder holder;
   if (convertView == null) {
     convertView=mInflater.inflate(R.layout.reader_listitem_post_excerpt,parent,false);
-    holder=new PostViewHolder(convertView);
+    holder=new PostViewHolder(convertView,getPostListType());
     convertView.setTag(holder);
   }
  else {
@@ -29,14 +29,19 @@
       }
     }
 );
-    holder.imgAvatar.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View v){
-        if (!post.isExternal) {
+    if (!post.isExternal) {
+      holder.layoutPostHeader.setEnabled(true);
+      holder.layoutPostHeader.setOnClickListener(new View.OnClickListener(){
+        @Override public void onClick(        View v){
           ReaderActivityLauncher.showReaderBlogPreview(getContext(),post.blogId,post.getBlogUrl());
         }
       }
-    }
 );
+    }
+ else {
+      holder.layoutPostHeader.setOnClickListener(null);
+      holder.layoutPostHeader.setEnabled(false);
+    }
   }
   if (post.hasExcerpt()) {
     holder.txtText.setVisibility(View.VISIBLE);
