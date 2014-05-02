@@ -62,18 +62,7 @@
  else {
     holder.imgFeatured.setVisibility(View.GONE);
   }
-  final String tagToDisplay;
-  if (!post.isPrivate && post.hasPrimaryTag()) {
-    if (post.getPrimaryTag().equalsIgnoreCase(getCurrentTag())) {
-      tagToDisplay=post.getSecondaryTag();
-    }
- else {
-      tagToDisplay=post.getPrimaryTag();
-    }
-  }
- else {
-    tagToDisplay=null;
-  }
+  final String tagToDisplay=post.getTagForDisplay(mCurrentTag);
   if (!TextUtils.isEmpty(tagToDisplay)) {
     holder.txtTag.setText(tagToDisplay);
     holder.txtTag.setVisibility(View.VISIBLE);
@@ -112,7 +101,9 @@
       holder.imgBtnReblog.setOnClickListener(new View.OnClickListener(){
         @Override public void onClick(        View v){
           AniUtils.zoomAction(holder.imgBtnReblog);
-          if (mReblogListener != null)           mReblogListener.onRequestReblog(post);
+          if (mReblogListener != null) {
+            mReblogListener.onRequestReblog(post);
+          }
         }
       }
 );
