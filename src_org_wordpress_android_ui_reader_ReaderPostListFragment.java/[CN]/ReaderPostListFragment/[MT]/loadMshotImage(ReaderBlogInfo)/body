@@ -1,0 +1,16 @@
+{
+  if (blogInfo == null || blogInfo.isPrivate || mImageMshot == null) {
+    return;
+  }
+  WPNetworkImageView.ImageListener imageListener=new WPNetworkImageView.ImageListener(){
+    @Override public void onImageLoaded(    boolean succeeded){
+      if (succeeded && hasActivity()) {
+        scaleMshotImage();
+        mHasLoadedMshot=true;
+      }
+    }
+  }
+;
+  final String imageUrl=blogInfo.getMshotsUrl(mMshotWidth);
+  mImageMshot.setImageUrl(imageUrl,WPNetworkImageView.ImageType.MSHOT,imageListener);
+}
