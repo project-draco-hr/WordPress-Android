@@ -4,7 +4,12 @@
   }
   WPNetworkImageView.ImageListener imageListener=new WPNetworkImageView.ImageListener(){
     @Override public void onImageLoaded(    boolean succeeded){
-      if (succeeded && hasActivity()) {
+      if (!hasActivity()) {
+        return;
+      }
+      final ProgressBar progress=(ProgressBar)getView().findViewById(R.id.progress_mshot);
+      progress.setVisibility(View.GONE);
+      if (succeeded) {
         scaleMshotImage();
         mHasLoadedMshot=true;
       }

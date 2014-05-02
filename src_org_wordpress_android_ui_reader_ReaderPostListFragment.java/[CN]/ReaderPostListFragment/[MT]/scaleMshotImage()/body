@@ -3,20 +3,13 @@
     return;
   }
   int listTop=-mListView.getVerticalScrollOffset();
-  float scale=Math.min(0.9f + (listTop * 0.005f),1.0f);
+  float scale=Math.max(0f,0.9f + (listTop * 0.005f));
   if (scale == mPreviousMshotScale) {
     return;
   }
-  if (scale <= 0) {
-    scale=0;
-    mImageMshot.setVisibility(View.GONE);
-  }
- else {
-    mImageMshot.setVisibility(View.VISIBLE);
-    float centerX=mMshotWidth * 0.5f;
-    Matrix matrix=new Matrix();
-    matrix.setScale(scale,scale,centerX,0);
-    mImageMshot.setImageMatrix(matrix);
-  }
+  float centerX=mMshotWidth * 0.5f;
+  Matrix matrix=new Matrix();
+  matrix.setScale(scale,scale,centerX,0);
+  mImageMshot.setImageMatrix(matrix);
   mPreviousMshotScale=scale;
 }
