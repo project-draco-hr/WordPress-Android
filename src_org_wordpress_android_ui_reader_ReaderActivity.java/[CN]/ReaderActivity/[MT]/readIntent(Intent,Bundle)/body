@@ -1,0 +1,62 @@
+{
+  if (intent == null) {
+    return;
+  }
+  mDisableExitAnimation=intent.getBooleanExtra(ARG_NO_EXIT_ANIM,false);
+  if (intent.hasExtra(ARG_POST_LIST_TYPE)) {
+    mPostListType=(ReaderPostListType)intent.getSerializableExtra(ARG_POST_LIST_TYPE);
+  }
+ else {
+    mPostListType=ReaderPostListType.getDefaultType();
+  }
+  if (mPostListType == ReaderPostListType.BLOG_PREVIEW || mPostListType == ReaderPostListType.TAG_PREVIEW) {
+    setContentView(R.layout.reader_activity_main);
+  }
+ else {
+    createMenuDrawer(R.layout.reader_activity_main);
+  }
+switch (mPostListType) {
+case TAG_PREVIEW:
+    setTitle(R.string.reader_title_tag_preview);
+  break;
+case BLOG_PREVIEW:
+setTitle(R.string.reader_title_blog_preview);
+break;
+default :
+break;
+}
+if (savedInstanceState == null) {
+AnalyticsTracker.track(AnalyticsTracker.Stat.READER_ACCESSED);
+final ReaderFragmentType fragmentType;
+if (intent.hasExtra(ARG_READER_FRAGMENT_TYPE)) {
+fragmentType=(ReaderFragmentType)intent.getSerializableExtra(ARG_READER_FRAGMENT_TYPE);
+}
+ else {
+fragmentType=ReaderFragmentType.POST_LIST;
+}
+switch (fragmentType) {
+case POST_LIST:
+if (mPostListType == ReaderPostListType.BLOG_PREVIEW) {
+long blogId=intent.getLongExtra(ReaderActivity.ARG_BLOG_ID,0);
+String blogUrl=intent.getStringExtra(ReaderActivity.ARG_BLOG_URL);
+showListFragmentForBlog(blogId,blogUrl);
+}
+ else {
+String tagName=intent.getStringExtra(ReaderActivity.ARG_TAG_NAME);
+if (TextUtils.isEmpty(tagName)) {
+tagName=UserPrefs.getReaderTag();
+}
+if (mPostListType == ReaderPostListType.TAG_FOLLOWED && !ReaderTagTable.tagExists(tagName)) {
+tagName=ReaderTag.TAG_NAME_DEFAULT;
+}
+showListFragmentForTag(tagName,mPostListType);
+}
+break;
+case POST_DETAIL:
+long blogId=intent.getLongExtra(ReaderActivity.ARG_BLOG_ID,0);
+long postId=intent.getLongExtra(ReaderActivity.ARG_POST_ID,0);
+showDetailFragment(blogId,postId);
+break;
+}
+}
+}

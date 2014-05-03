@@ -1,0 +1,15 @@
+{
+  boolean isContextReaderPreview=(context instanceof ReaderActivity) && ((ReaderActivity)context).getPostListType().isPreviewType();
+  if (isContextReaderPreview) {
+    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+    intent.putExtra(ReaderActivity.ARG_NO_EXIT_ANIM,true);
+    context.startActivity(intent);
+  }
+ else   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+    ActivityOptionsCompat options=ActivityOptionsCompat.makeCustomAnimation(context,R.anim.reader_preview_enter,R.anim.do_nothing);
+    context.startActivity(intent,options.toBundle());
+  }
+ else {
+    context.startActivity(intent);
+  }
+}
