@@ -1,0 +1,19 @@
+{
+  ReaderBlogInfoList incompleteBlogs=ReaderBlogTable.getAllFollowedBlogInfo().getIncompleteList();
+  if (incompleteBlogs.size() == 0) {
+    return;
+  }
+  ReaderUrlList requestUrls=new ReaderUrlList();
+  for (  ReaderBlogInfo info : incompleteBlogs) {
+    if (info.hasBlogId()) {
+      requestUrls.add("/sites/" + info.blogId);
+      if (requestUrls.size() >= MAX_BATCH_URLS) {
+        batchUpdateIncompleteBlogInfo(requestUrls);
+        requestUrls.clear();
+      }
+    }
+  }
+  if (requestUrls.size() > 0) {
+    batchUpdateIncompleteBlogInfo(requestUrls);
+  }
+}

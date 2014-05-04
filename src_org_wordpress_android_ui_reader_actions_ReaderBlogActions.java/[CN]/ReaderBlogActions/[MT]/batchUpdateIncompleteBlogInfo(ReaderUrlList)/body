@@ -1,16 +1,10 @@
 {
   if (requestUrls == null || requestUrls.size() == 0) {
-    if (resultListener != null) {
-      resultListener.onUpdateResult(UpdateResult.UNCHANGED);
-    }
     return;
   }
   RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       if (jsonObject == null) {
-        if (resultListener != null) {
-          resultListener.onUpdateResult(UpdateResult.FAILED);
-        }
         return;
       }
       SQLiteDatabase db=ReaderDatabase.getWritableDb();
@@ -27,10 +21,6 @@
         }
         AppLog.d(T.READER,String.format("updated info for %d incomplete blogs",numUpdated));
         db.setTransactionSuccessful();
-        if (resultListener != null) {
-          UpdateResult result=(numUpdated > 0 ? UpdateResult.CHANGED : UpdateResult.UNCHANGED);
-          resultListener.onUpdateResult(result);
-        }
       }
   finally {
         db.endTransaction();
@@ -41,9 +31,6 @@
   RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.e(T.READER,volleyError);
-      if (resultListener != null) {
-        resultListener.onUpdateResult(UpdateResult.FAILED);
-      }
     }
   }
 ;
