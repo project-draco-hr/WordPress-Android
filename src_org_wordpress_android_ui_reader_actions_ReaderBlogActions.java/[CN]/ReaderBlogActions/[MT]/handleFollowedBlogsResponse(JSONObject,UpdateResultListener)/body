@@ -1,7 +1,7 @@
 {
   if (jsonObject == null) {
     if (resultListener != null) {
-      resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED);
+      resultListener.onUpdateResult(UpdateResult.FAILED);
     }
     return;
   }
@@ -13,12 +13,12 @@
       final boolean hasChanges=!localBlogs.isSameList(serverBlogs);
       if (hasChanges) {
         ReaderBlogTable.setFollowedBlogs(serverBlogs);
-        updateIncompleteBlogInfo();
+        updateIncompleteBlogInfo(null);
       }
       if (resultListener != null) {
         handler.post(new Runnable(){
           public void run(){
-            ReaderActions.UpdateResult result=(hasChanges ? ReaderActions.UpdateResult.CHANGED : ReaderActions.UpdateResult.UNCHANGED);
+            ReaderActions.UpdateResult result=(hasChanges ? UpdateResult.CHANGED : UpdateResult.UNCHANGED);
             resultListener.onUpdateResult(result);
           }
         }
