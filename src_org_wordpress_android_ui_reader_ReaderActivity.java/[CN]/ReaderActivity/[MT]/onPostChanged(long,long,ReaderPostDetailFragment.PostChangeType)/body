@@ -1,13 +1,17 @@
 {
   ReaderPostListFragment listFragment=getListFragment();
   if (listFragment == null)   return;
+  final ReaderPost updatedPost=ReaderPostTable.getPost(blogId,postId);
+  if (updatedPost == null) {
+    return;
+  }
 switch (changeType) {
 case FOLLOWED:
 case UNFOLLOWED:
-    listFragment.updateFollowStatusOnPostsForBlog(blogId,changeType == ReaderPostDetailFragment.PostChangeType.FOLLOWED);
-  break;
+    boolean followStatus=(changeType == ReaderPostDetailFragment.PostChangeType.FOLLOWED);
+  listFragment.updateFollowStatusOnPostsForBlog(blogId,updatedPost.getBlogUrl(),followStatus);
+break;
 default :
-final ReaderPost updatedPost=ReaderPostTable.getPost(blogId,postId);
 listFragment.reloadPost(updatedPost);
 }
 }
