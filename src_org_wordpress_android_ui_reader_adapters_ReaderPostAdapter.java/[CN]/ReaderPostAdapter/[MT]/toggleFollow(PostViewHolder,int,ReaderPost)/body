@@ -1,7 +1,17 @@
 {
   AniUtils.zoomAction(holder.txtFollow);
-  boolean isAskingToFollow=!post.isFollowedByCurrentUser;
-  if (!ReaderBlogActions.performFollowAction(post,isAskingToFollow)) {
+  final boolean isAskingToFollow=!post.isFollowedByCurrentUser;
+  ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      if (!succeeded && getContext() != null) {
+        int resId=(isAskingToFollow ? R.string.reader_toast_err_follow_blog : R.string.reader_toast_err_unfollow_blog);
+        ToastUtils.showToast(getContext(),resId);
+        ReaderUtils.showFollowStatus(holder.txtFollow,!isAskingToFollow);
+      }
+    }
+  }
+;
+  if (!ReaderBlogActions.performFollowAction(post,isAskingToFollow,actionListener)) {
     return;
   }
   ReaderPost updatedPost=ReaderPostTable.getPost(post.blogId,post.postId);

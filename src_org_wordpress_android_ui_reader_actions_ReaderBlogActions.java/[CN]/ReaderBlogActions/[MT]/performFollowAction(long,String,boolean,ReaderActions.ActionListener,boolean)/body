@@ -20,9 +20,16 @@
   final String actionName=(isAskingToFollow ? "follow" : "unfollow");
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
-      AppLog.d(T.READER,"blog " + actionName + " succeeded");
+      boolean success=isFollowActionSuccessful(jsonObject,isAskingToFollow);
+      if (success) {
+        AppLog.d(T.READER,"blog " + actionName + " succeeded");
+      }
+ else {
+        AppLog.w(T.READER,"blog " + actionName + " failed");
+        localRevertFollowAction(blogId,blogUrl,isAskingToFollow);
+      }
       if (actionListener != null) {
-        actionListener.onActionResult(true);
+        actionListener.onActionResult(success);
       }
     }
   }
@@ -31,10 +38,7 @@
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.w(T.READER,"blog " + actionName + " failed");
       AppLog.e(T.READER,volleyError);
-      ReaderBlogTable.setIsFollowedBlog(blogId,blogUrl,!isAskingToFollow);
-      if (hasBlogId) {
-        ReaderPostTable.setFollowStatusForPostsInBlog(blogId,!isAskingToFollow);
-      }
+      localRevertFollowAction(blogId,blogUrl,isAskingToFollow);
       if (actionListener != null) {
         actionListener.onActionResult(false);
       }

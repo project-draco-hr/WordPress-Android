@@ -1,0 +1,42 @@
+{
+  if (!isPositionValid(position)) {
+    return;
+  }
+  final long blogId;
+  final String blogUrl;
+switch (getBlogType()) {
+case RECOMMENDED:
+    ReaderRecommendedBlog blog=mRecommendedBlogs.get(position);
+  blogId=blog.blogId;
+blogUrl=blog.getBlogUrl();
+break;
+case FOLLOWED:
+ReaderBlogInfo info=mFollowedBlogs.get(position);
+blogId=info.blogId;
+blogUrl=info.getUrl();
+break;
+default :
+return;
+}
+ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
+@Override public void onActionResult(boolean succeeded){
+if (!succeeded && getContext() != null) {
+int resId=(isAskingToFollow ? R.string.reader_toast_err_follow_blog : R.string.reader_toast_err_unfollow_blog);
+ToastUtils.showToast(getContext(),resId);
+ReaderUtils.showFollowStatus(txtFollow,!isAskingToFollow);
+checkFollowStatus();
+}
+}
+}
+;
+if (ReaderBlogActions.performFollowAction(blogId,blogUrl,isAskingToFollow,actionListener)) {
+ReaderUtils.showFollowStatus(txtFollow,isAskingToFollow);
+if (getBlogType() == ReaderBlogType.FOLLOWED) {
+mFollowedBlogs.get(position).isFollowing=isAskingToFollow;
+}
+notifyDataSetChanged();
+if (mFollowListener != null) {
+mFollowListener.onFollowBlogChanged(blogId,blogUrl,isAskingToFollow);
+}
+}
+}
