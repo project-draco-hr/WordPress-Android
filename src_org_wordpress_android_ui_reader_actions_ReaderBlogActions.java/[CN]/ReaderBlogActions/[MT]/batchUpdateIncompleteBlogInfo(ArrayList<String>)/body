@@ -2,6 +2,7 @@
   if (requestUrls == null || requestUrls.size() == 0) {
     return;
   }
+  final ArrayList<String> copyOfUrls=(ArrayList<String>)requestUrls.clone();
   RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       if (jsonObject == null) {
@@ -11,7 +12,7 @@
       db.beginTransaction();
       try {
         int numUpdated=0;
-        for (        String url : requestUrls) {
+        for (        String url : copyOfUrls) {
           JSONObject jsonSite=jsonObject.optJSONObject(url);
           ReaderBlogInfo blogInfo=ReaderBlogInfo.fromJson(jsonSite);
           if (!blogInfo.isIncomplete()) {
@@ -34,7 +35,7 @@
     }
   }
 ;
-  AppLog.d(T.READER,String.format("requesting info for %d incomplete blogs",requestUrls.size()));
-  String path=ReaderUtils.getBatchEndpointForRequests(requestUrls);
+  AppLog.d(T.READER,String.format("requesting info for %d incomplete blogs",copyOfUrls.size()));
+  String path=ReaderUtils.getBatchEndpointForRequests(copyOfUrls);
   WordPress.getRestClientUtils().get(path,listener,errorListener);
 }
