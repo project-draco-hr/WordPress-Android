@@ -11,7 +11,7 @@
     }
  else {
       String sql="UPDATE tbl_posts SET is_followed=" + SqlUtils.boolToSql(isFollowed) + " WHERE blog_url=?";
-      db.execSQL(sql,new String[]{blogUrl});
+      db.execSQL(sql,new String[]{UrlUtils.normalizeUrl(blogUrl)});
     }
     if (!isFollowed && blogId != 0) {
       db.delete("tbl_post_tags","blog_id=? AND tag_name=?",new String[]{Long.toString(blogId),ReaderTag.TAG_NAME_FOLLOWING});
