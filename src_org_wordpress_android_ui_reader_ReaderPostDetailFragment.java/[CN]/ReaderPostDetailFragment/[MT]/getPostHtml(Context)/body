@@ -1,5 +1,7 @@
 {
-  if (mPost == null)   return "";
+  if (mPost == null || context == null) {
+    return "";
+  }
   String content;
   if (mPost.hasText()) {
     content=mPost.getText().replace("src=\"//","src=\"http://");
@@ -11,11 +13,10 @@
  else {
     content="";
   }
-  int marginLarge=getResources().getDimensionPixelSize(R.dimen.margin_large);
-  int marginSmall=getResources().getDimensionPixelSize(R.dimen.margin_small);
-  int marginExtraSmall=getResources().getDimensionPixelSize(R.dimen.margin_extra_small);
+  int marginLarge=context.getResources().getDimensionPixelSize(R.dimen.margin_large);
+  int marginSmall=context.getResources().getDimensionPixelSize(R.dimen.margin_small);
+  int marginExtraSmall=context.getResources().getDimensionPixelSize(R.dimen.margin_extra_small);
   int fullSizeImageWidth=getFullSizeImageWidth();
-  final Context context=WordPress.getContext();
   final String linkColor=HtmlUtils.colorResToHtmlColor(context,R.color.reader_hyperlink);
   final String greyLight=HtmlUtils.colorResToHtmlColor(context,R.color.grey_light);
   final String greyExtraLight=HtmlUtils.colorResToHtmlColor(context,R.color.grey_extra_light);
@@ -28,7 +29,7 @@
   sbHtml.append("  pre { overflow-x: scroll;").append("        border: 1px solid ").append(greyLight).append("; ").append("        background-color: ").append(greyExtraLight).append("; ").append("        padding: ").append(marginSmall).append("px; }");
   sbHtml.append("  a { word-wrap: break-word; text-decoration: none; color: ").append(linkColor).append("; }");
   if (hasEmbedsOrIframes()) {
-    int videoWidth=DisplayUtils.pxToDp(getActivity(),fullSizeImageWidth - (marginLarge * 2));
+    int videoWidth=DisplayUtils.pxToDp(context,fullSizeImageWidth - (marginLarge * 2));
     int videoHeight=(int)(videoWidth * 0.5625f);
     sbHtml.append("  iframe, embed { width: ").append(videoWidth).append("px !important;").append("                  height: ").append(videoHeight).append("px !important; }");
   }
