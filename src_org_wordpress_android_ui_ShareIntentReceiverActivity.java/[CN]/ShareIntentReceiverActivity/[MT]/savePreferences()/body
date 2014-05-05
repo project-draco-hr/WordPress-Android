@@ -2,8 +2,10 @@
   if (WordPress.currentBlog == null) {
     return;
   }
+  SharedPreferences.Editor editor=PreferenceManager.getDefaultSharedPreferences(this).edit();
+  editor.putInt(SHARE_LAST_USED_BLOG_ID_KEY,WordPress.currentBlog.getLocalTableBlogId());
+  editor.putInt(SHARE_LAST_USED_ADDTO_KEY,mActionIndex);
   if (mAlwaysUseCheckBox.isChecked()) {
-    SharedPreferences.Editor editor=PreferenceManager.getDefaultSharedPreferences(this).edit();
     if (isSharingText()) {
       editor.putInt(SHARE_TEXT_BLOG_ID_KEY,WordPress.currentBlog.getLocalTableBlogId());
     }
@@ -11,6 +13,6 @@
       editor.putInt(SHARE_IMAGE_BLOG_ID_KEY,WordPress.currentBlog.getLocalTableBlogId());
       editor.putInt(SHARE_IMAGE_ADDTO_KEY,mActionIndex);
     }
-    editor.commit();
   }
+  editor.commit();
 }
