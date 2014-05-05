@@ -2,15 +2,16 @@
   super.onCreate(savedInstanceState);
   setContentView(R.layout.reader_activity_subs);
   restoreState(savedInstanceState);
-  ActionBar actionBar=getSupportActionBar();
-  if (actionBar != null) {
-    actionBar.setDisplayShowTitleEnabled(true);
-    actionBar.setDisplayHomeAsUpEnabled(true);
-  }
   mViewPager=(ViewPager)findViewById(R.id.viewpager);
   mViewPager.setAdapter(getPageAdapter());
-  PagerTabStrip pagerTabStrip=(PagerTabStrip)findViewById(R.id.pager_tab_strip);
-  pagerTabStrip.setTabIndicatorColorResource(R.color.blue_light);
+  ActionBar actionBar=getSupportActionBar();
+  actionBar.setDisplayShowTitleEnabled(true);
+  actionBar.setDisplayHomeAsUpEnabled(true);
+  actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+  actionBar.addTab(actionBar.newTab().setText(R.string.reader_title_followed_tags).setTabListener(this));
+  actionBar.addTab(actionBar.newTab().setText(R.string.reader_title_popular_tags).setTabListener(this));
+  actionBar.addTab(actionBar.newTab().setText(R.string.reader_title_followed_blogs).setTabListener(this));
+  actionBar.addTab(actionBar.newTab().setText(R.string.reader_title_recommended_blogs).setTabListener(this));
   mEditAdd=(EditText)findViewById(R.id.edit_add);
   mEditAdd.setOnEditorActionListener(new TextView.OnEditorActionListener(){
     @Override public boolean onEditorAction(    TextView v,    int actionId,    KeyEvent event){
@@ -39,6 +40,7 @@
   }
   mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
     @Override public void onPageSelected(    int position){
+      getSupportActionBar().setSelectedNavigationItem(position);
       String pageTitle=(String)getPageAdapter().getPageTitle(position);
       UserPrefs.setReaderSubsPageTitle(pageTitle);
     }
