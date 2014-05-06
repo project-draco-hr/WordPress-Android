@@ -2,15 +2,15 @@
   String date=response.getString("date");
   long dateMs=StatUtils.toMs(date);
   ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
-  ContentProviderOperation delete_group_op=ContentProviderOperation.newDelete(StatsContentProvider.STATS_REFERRER_GROUP_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mBlogID,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
+  ContentProviderOperation delete_group_op=ContentProviderOperation.newDelete(StatsContentProvider.STATS_REFERRER_GROUP_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mRequestBlogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
   operations.add(delete_group_op);
-  ContentProviderOperation delete_op=ContentProviderOperation.newDelete(StatsContentProvider.STATS_REFERRERS_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mBlogID,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
+  ContentProviderOperation delete_op=ContentProviderOperation.newDelete(StatsContentProvider.STATS_REFERRERS_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mRequestBlogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
   operations.add(delete_op);
   JSONArray groups=response.getJSONArray("referrers");
   int groupsCount=Math.min(groups.length(),StatsActivity.STATS_GROUP_MAX_ITEMS);
   for (int i=0; i < groupsCount; i++) {
     JSONObject group=groups.getJSONObject(i);
-    StatsReferrerGroup statGroup=new StatsReferrerGroup(mBlogID,date,group);
+    StatsReferrerGroup statGroup=new StatsReferrerGroup(mRequestBlogId,date,group);
     ContentValues values=StatsReferrerGroupsTable.getContentValues(statGroup);
     ContentProviderOperation insert_group_op=ContentProviderOperation.newInsert(StatsContentProvider.STATS_REFERRER_GROUP_URI).withValues(values).build();
     operations.add(insert_group_op);
@@ -18,7 +18,7 @@
     int childCount=Math.min(referrers.length(),StatsActivity.STATS_CHILD_MAX_ITEMS);
     if (childCount > 1) {
       for (int j=0; j < childCount; j++) {
-        StatsReferrer stat=new StatsReferrer(mBlogID,date,statGroup.getGroupId(),referrers.getJSONArray(j));
+        StatsReferrer stat=new StatsReferrer(mRequestBlogId,date,statGroup.getGroupId(),referrers.getJSONArray(j));
         ContentValues v=StatsReferrersTable.getContentValues(stat);
         ContentProviderOperation insert_child_op=ContentProviderOperation.newInsert(StatsContentProvider.STATS_REFERRERS_URI).withValues(v).build();
         operations.add(insert_child_op);

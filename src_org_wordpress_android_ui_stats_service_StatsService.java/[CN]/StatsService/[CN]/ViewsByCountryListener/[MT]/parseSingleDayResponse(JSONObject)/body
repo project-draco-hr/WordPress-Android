@@ -8,12 +8,12 @@
   long dateMs=StatUtils.toMs(date);
   ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
   if (count > 0) {
-    ContentProviderOperation delete_op=ContentProviderOperation.newDelete(StatsContentProvider.STATS_GEOVIEWS_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mBlogID,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
+    ContentProviderOperation delete_op=ContentProviderOperation.newDelete(StatsContentProvider.STATS_GEOVIEWS_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mRequestBlogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
     operations.add(delete_op);
   }
   for (int i=0; i < count; i++) {
     JSONObject result=results.getJSONObject(i);
-    StatsGeoview stat=new StatsGeoview(mBlogID,result);
+    StatsGeoview stat=new StatsGeoview(mRequestBlogId,result);
     ContentValues values=StatsGeoviewsTable.getContentValues(stat);
     ContentProviderOperation op=ContentProviderOperation.newInsert(StatsContentProvider.STATS_GEOVIEWS_URI).withValues(values).build();
     operations.add(op);

@@ -7,11 +7,11 @@
   String date=response.getString("date");
   long dateMs=StatUtils.toMs(date);
   ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
-  ContentProviderOperation delete_op=ContentProviderOperation.newDelete(StatsContentProvider.STATS_TOP_POSTS_AND_PAGES_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mBlogID,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
+  ContentProviderOperation delete_op=ContentProviderOperation.newDelete(StatsContentProvider.STATS_TOP_POSTS_AND_PAGES_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mRequestBlogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
   operations.add(delete_op);
   for (int i=0; i < count; i++) {
     JSONObject result=results.getJSONObject(i);
-    StatsTopPostsAndPages stat=new StatsTopPostsAndPages(mBlogID,result);
+    StatsTopPostsAndPages stat=new StatsTopPostsAndPages(mRequestBlogId,result);
     ContentValues values=StatsTopPostsAndPagesTable.getContentValues(stat);
     ContentProviderOperation op=ContentProviderOperation.newInsert(StatsContentProvider.STATS_TOP_POSTS_AND_PAGES_URI).withValues(values).build();
     operations.add(op);

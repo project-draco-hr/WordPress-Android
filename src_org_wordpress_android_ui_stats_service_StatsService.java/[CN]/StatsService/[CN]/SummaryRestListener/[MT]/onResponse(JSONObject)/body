@@ -1,12 +1,12 @@
 {
   if (!updateUIExecutor.isShutdown() && !updateUIExecutor.isTerminated() && !updateUIExecutor.isTerminating())   updateUIExecutor.submit(new Thread(){
     @Override public void run(){
-      AppLog.d(T.STATS,"Stats Summary Call responded for blogID " + mBlogID);
+      AppLog.d(T.STATS,"Stats Summary Call responded for blogID " + mRequestBlogId);
       numberOfFinishedNetworkCalls++;
       try {
         if (jsonObject == null)         return;
-        StatUtils.saveSummary(mBlogID,jsonObject);
-        StatsSummary stats=StatUtils.getSummary(mBlogID);
+        StatUtils.saveSummary(mRequestBlogId,jsonObject);
+        StatsSummary stats=StatUtils.getSummary(mRequestBlogId);
         if (stats != null) {
           LocalBroadcastManager lbm=LocalBroadcastManager.getInstance(WordPress.getContext());
           Intent intent=new Intent(StatsService.ACTION_STATS_SUMMARY_UPDATED);
