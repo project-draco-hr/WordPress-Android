@@ -6,6 +6,14 @@
     @Override public void run(){
       mNotesAdapter.reloadNotes();
       updateLastSeenTime();
+      if (mShouldLoadFirstNote && mNotesAdapter.getCount() > 0) {
+        mShouldLoadFirstNote=false;
+        Note note=mNotesAdapter.getNote(0);
+        if (note != null && mNoteClickListener != null) {
+          mNoteClickListener.onClickNote(note);
+          getListView().setItemChecked(0,true);
+        }
+      }
     }
   }
 );
