@@ -1,0 +1,24 @@
+{
+  Intent data=new Intent();
+  boolean currentBlogChanged=false;
+  if (mCurrentBlogOnCreate != null) {
+    if (mCurrentBlogOnCreate.isDotcomFlag()) {
+      if (!WordPress.wpDB.isDotComAccountVisible(mCurrentBlogOnCreate.getRemoteBlogId())) {
+        currentBlogChanged=true;
+      }
+    }
+ else {
+      if (!WordPress.wpDB.isBlogInDatabase(mCurrentBlogOnCreate.getRemoteBlogId(),mCurrentBlogOnCreate.getUrl())) {
+        currentBlogChanged=true;
+      }
+    }
+  }
+ else {
+    if (WordPress.wpDB.getNumVisibleAccounts() != 0) {
+      currentBlogChanged=true;
+    }
+  }
+  data.putExtra(CURRENT_BLOG_CHANGED,currentBlogChanged);
+  setResult(RESULT_OK,data);
+  super.finish();
+}
