@@ -14,6 +14,9 @@
     lookupBlogIdAndRetryFollow(blogUrl,isAskingToFollow,actionListener);
     return true;
   }
+  if (isAskingToFollow) {
+    AnalyticsTracker.track(AnalyticsTracker.Stat.READER_FOLLOWED_SITE);
+  }
   final String path=getFollowEndpoint(blogId,blogUrl,isAskingToFollow);
   final String actionName=(isAskingToFollow ? "follow" : "unfollow");
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
