@@ -30,32 +30,22 @@ layoutHeader.addView(mTagPreviewHeader);
 layoutHeader.setVisibility(View.VISIBLE);
 break;
 case BLOG_PREVIEW:
-int displayWidth=DisplayUtils.getDisplayPixelWidth(context);
-int marginWidth=resources.getDimensionPixelSize(R.dimen.reader_list_margin);
-mMshotWidth=displayWidth - (marginWidth * 2);
-mMshotHeight=resources.getDimensionPixelSize(R.dimen.reader_mshot_image_height);
-ViewGroup mshotContainer=(ViewGroup)inflater.inflate(R.layout.reader_mshot,container,false);
-mImageMshot=(WPNetworkImageView)mshotContainer.findViewById(R.id.image_mshot);
-mImageMshot.setImageType(WPNetworkImageView.ImageType.MSHOT);
-layoutHeader.addView(mshotContainer);
-mMshotSpacer=ReaderFullScreenUtils.addListViewHeader(context,mListView,mMshotHeight);
+layoutHeader.setVisibility(View.VISIBLE);
 mListView.setHeaderDividersEnabled(false);
-((ViewGroup)mListView.getParent()).bringToFront();
+mMshotHeight=resources.getDimensionPixelSize(R.dimen.reader_mshot_image_height);
+mMshotSpacerView=ReaderFullScreenUtils.addListViewHeader(context,mListView,mMshotHeight);
 mBlogInfoView=new ReaderBlogInfoHeader(context);
 view.addView(mBlogInfoView);
 mBlogInfoView.bringToFront();
 mBlogInfoView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
 @Override public void onGlobalLayout(){
-int spacerHeight=mMshotHeight + mBlogInfoView.getHeight();
-mMshotSpacer.getLayoutParams().height=spacerHeight;
-positionBlogInfo();
-AppLog.d(T.READER,"blogInfo layout");
+mMshotSpacerView.getLayoutParams().height=mMshotHeight + mBlogInfoView.getInfoHeight();
+updateBlogInfoView();
 mBlogInfoView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
 }
 }
 );
 mListView.setOnScrollChangedListener(this);
-layoutHeader.setVisibility(View.VISIBLE);
 break;
 }
 mEmptyView=view.findViewById(R.id.empty_view);
