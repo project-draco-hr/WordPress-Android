@@ -1,0 +1,23 @@
+{
+  if (!updateUIExecutor.isShutdown() && !updateUIExecutor.isTerminated() && !updateUIExecutor.isTerminating())   updateUIExecutor.submit(new Thread(){
+    @Override public void run(){
+      AppLog.d(T.STATS,"Stats Summary Call responded for blogID " + mRequestBlogId);
+      numberOfFinishedNetworkCalls++;
+      try {
+        if (jsonObject == null)         return;
+        StatUtils.saveSummary(mRequestBlogId,jsonObject);
+        StatsSummary stats=StatUtils.getSummary(mRequestBlogId);
+        if (stats != null) {
+          LocalBroadcastManager lbm=LocalBroadcastManager.getInstance(WordPress.getContext());
+          Intent intent=new Intent(StatsService.ACTION_STATS_SUMMARY_UPDATED);
+          intent.putExtra(StatsService.STATS_SUMMARY_UPDATED_EXTRA,stats);
+          lbm.sendBroadcast(intent);
+        }
+      }
+  finally {
+        notifyResponseReceived();
+      }
+    }
+  }
+);
+}
