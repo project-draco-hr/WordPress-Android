@@ -1,5 +1,10 @@
 {
-  if (mBlogInfoView == null) {
+  if (mBlogInfoView == null || scrollPos == mLastPostListScrollPos) {
+    return;
+  }
+  if (mBlogInfoView.getHeight() == 0) {
+    AppLog.w(AppLog.T.READER,"blogInfo height = 0");
+    mBlogInfoView.requestLayout();
     return;
   }
   mBlogInfoView.scaleMshotImageBasedOnScrollPos(scrollPos);
@@ -12,4 +17,5 @@
   }
   int infoTop=(mshotBottom < mActionBarHeight ? mActionBarHeight : mshotBottom);
   mBlogInfoView.setInfoContainerTop(infoTop);
+  mLastPostListScrollPos=scrollPos;
 }
