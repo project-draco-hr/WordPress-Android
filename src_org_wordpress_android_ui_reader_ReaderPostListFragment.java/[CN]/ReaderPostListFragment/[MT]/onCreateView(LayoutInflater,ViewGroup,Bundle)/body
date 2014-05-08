@@ -3,8 +3,8 @@
   final Resources resources=context.getResources();
   final ViewGroup view=(ViewGroup)inflater.inflate(R.layout.reader_fragment_post_list,container,false);
   boolean hasTransparentActionBar=isFullScreenSupported();
+  mActionBarHeight=DisplayUtils.getActionBarHeight(context);
   mListView=(WPListView)view.findViewById(android.R.id.list);
-  final ViewGroup layoutHeader=(ViewGroup)view.findViewById(R.id.layout_header);
   mNewPostsBar=(TextView)view.findViewById(R.id.text_new_posts);
   mNewPostsBar.setVisibility(View.GONE);
   mNewPostsBar.setOnClickListener(new View.OnClickListener(){
@@ -15,33 +15,34 @@
   }
 );
   if (hasTransparentActionBar) {
-    ReaderFullScreenUtils.addTopMargin(context,layoutHeader);
-    ReaderFullScreenUtils.addTopMargin(context,mNewPostsBar);
+    ReaderUtils.setTopMargin(mNewPostsBar,mActionBarHeight);
   }
 switch (getPostListType()) {
 case TAG_FOLLOWED:
     if (hasTransparentActionBar) {
-      ReaderFullScreenUtils.addListViewHeader(context,mListView);
+      ReaderUtils.addListViewHeader(mListView,mActionBarHeight);
     }
   break;
 case TAG_PREVIEW:
-mTagPreviewHeader=(ViewGroup)inflater.inflate(R.layout.reader_tag_preview_header,container,false);
-layoutHeader.addView(mTagPreviewHeader);
-layoutHeader.setVisibility(View.VISIBLE);
+final ViewGroup previewContainer=(ViewGroup)view.findViewById(R.id.layout_preview_container);
+if (hasTransparentActionBar) {
+ReaderUtils.setTopMargin(previewContainer,mActionBarHeight);
+}
+mTagInfoView=(ViewGroup)inflater.inflate(R.layout.reader_tag_preview_header,container,false);
+previewContainer.addView(mTagInfoView);
+previewContainer.setVisibility(View.VISIBLE);
 break;
 case BLOG_PREVIEW:
-layoutHeader.setVisibility(View.VISIBLE);
 mListView.setHeaderDividersEnabled(false);
-mMshotHeight=resources.getDimensionPixelSize(R.dimen.reader_mshot_image_height);
-mMshotSpacerView=ReaderFullScreenUtils.addListViewHeader(context,mListView,mMshotHeight);
 mBlogInfoView=new ReaderBlogInfoHeader(context);
 view.addView(mBlogInfoView);
 mBlogInfoView.bringToFront();
+mMshotSpacerView=ReaderUtils.addListViewHeader(mListView,mBlogInfoView.getMshotHeight());
 mBlogInfoView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
 @Override public void onGlobalLayout(){
-mMshotSpacerView.getLayoutParams().height=mMshotHeight + mBlogInfoView.getInfoHeight();
-updateBlogInfoView();
 mBlogInfoView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+mMshotSpacerView.getLayoutParams().height=mBlogInfoView.getMshotHeight() + mBlogInfoView.getInfoContainerHeight();
+updateBlogInfoView();
 }
 }
 );
