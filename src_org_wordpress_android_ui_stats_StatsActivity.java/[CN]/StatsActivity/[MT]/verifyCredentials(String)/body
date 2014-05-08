@@ -13,7 +13,10 @@
       stopStatsService();
       if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
         SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(StatsActivity.this);
-        String username=settings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,"");
+        String username=StringUtils.notNullStr(WordPress.getCurrentBlog().getDotcom_username());
+        if (username.equals("")) {
+          username=settings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,"");
+        }
         AlertDialog.Builder builder=new AlertDialog.Builder(StatsActivity.this);
         builder.setTitle(getString(R.string.jetpack_stats_unauthorized)).setMessage(getString(R.string.jetpack_stats_switch_user,username));
         builder.setPositiveButton(R.string.yes,new DialogInterface.OnClickListener(){
