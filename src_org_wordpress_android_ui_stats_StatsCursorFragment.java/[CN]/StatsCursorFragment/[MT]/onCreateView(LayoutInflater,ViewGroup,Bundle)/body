@@ -5,12 +5,18 @@
   TextView totalsLabel=(TextView)view.findViewById(R.id.stats_list_totals_label);
   totalsLabel.setText(getTotalsLabelResId());
   mEmptyLabel=(TextView)view.findViewById(R.id.stats_list_empty_text);
-  String empty=getString(getEmptyLabelResId());
-  if (empty != null && empty.contains("<")) {
-    mEmptyLabel.setText(Html.fromHtml(empty));
+  String label;
+  if (getEmptyLabelDescResId() == NO_STRING_ID) {
+    label="<b>" + getString(getEmptyLabelTitleResId()) + "</b>";
   }
  else {
-    mEmptyLabel.setText(empty);
+    label="<b>" + getString(getEmptyLabelTitleResId()) + "</b> "+ getString(getEmptyLabelDescResId());
+  }
+  if (label.contains("<")) {
+    mEmptyLabel.setText(Html.fromHtml(label));
+  }
+ else {
+    mEmptyLabel.setText(label);
   }
   configureEmptyLabel();
   mLinearLayout=(LinearLayout)view.findViewById(R.id.stats_list_linearlayout);
