@@ -1,6 +1,6 @@
 {
   if (mActivity == null)   return;
-  ActionBar actionBar=mActivity.getSupportActionBar();
+  ActionBar actionBar=mActivity.getActionBar();
   if (isVisible) {
     Animation fadeAnimation=new AlphaAnimation(1,0);
     fadeAnimation.setDuration(CONTENT_ANIMATION_DURATION);
@@ -17,7 +17,9 @@
     }
 );
     mPostContentLinearLayout.startAnimation(fadeAnimation);
-    actionBar.hide();
+    if (actionBar != null) {
+      actionBar.hide();
+    }
   }
  else {
     mTitleEditText.setVisibility(View.VISIBLE);
@@ -35,7 +37,9 @@
     }
 );
     mPostContentLinearLayout.startAnimation(fadeAnimation);
-    mActivity.supportInvalidateOptionsMenu();
-    actionBar.show();
+    mActivity.invalidateOptionsMenu();
+    if (actionBar != null) {
+      actionBar.show();
+    }
   }
 }
