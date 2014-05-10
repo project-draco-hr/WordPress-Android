@@ -6,10 +6,12 @@
   createMenuDrawer(R.layout.notifications);
   View fragmentContainer=findViewById(R.id.layout_fragment_container);
   mDualPane=fragmentContainer != null && getString(R.string.dual_pane_mode).equals(fragmentContainer.getTag());
-  ActionBar actionBar=getSupportActionBar();
-  actionBar.setDisplayShowTitleEnabled(true);
+  ActionBar actionBar=getActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayShowTitleEnabled(true);
+  }
   setTitle(getResources().getString(R.string.notifications));
-  FragmentManager fm=getSupportFragmentManager();
+  FragmentManager fm=getFragmentManager();
   fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
   mNotesList=(NotificationsListFragment)fm.findFragmentById(R.id.fragment_notes_list);
   mNotesList.setNoteProvider(new NoteProvider());

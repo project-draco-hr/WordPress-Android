@@ -10,10 +10,12 @@
   }
   setTitle(R.string.themes);
   createMenuDrawer(R.layout.theme_browser_activity);
-  mThemePagerAdapter=new ThemePagerAdapter(getSupportFragmentManager());
-  final ActionBar actionBar=getSupportActionBar();
-  actionBar.setDisplayShowTitleEnabled(true);
-  actionBar.setHomeButtonEnabled(true);
+  mThemePagerAdapter=new ThemePagerAdapter(getFragmentManager());
+  final ActionBar actionBar=getActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayShowTitleEnabled(true);
+    actionBar.setHomeButtonEnabled(true);
+  }
   mViewPager=(ViewPager)findViewById(R.id.theme_browser_pager);
   mViewPager.setAdapter(mThemePagerAdapter);
   mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
@@ -30,7 +32,7 @@
     mTabView.addTab(mTabView.newTab().setText(title));
   }
   mTabView.setSelectedTab(0);
-  FragmentManager fm=getSupportFragmentManager();
+  FragmentManager fm=getFragmentManager();
   fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
   setupBaseLayout();
   mPreviewFragment=(ThemePreviewFragment)fm.findFragmentByTag(ThemePreviewFragment.TAG);

@@ -1,8 +1,10 @@
 {
   super.onCreate(savedInstanceState);
   setContentView(R.layout.activity_new_edit_post);
-  final ActionBar actionBar=getSupportActionBar();
-  actionBar.setDisplayHomeAsUpEnabled(true);
+  final ActionBar actionBar=getActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
   Bundle extras=getIntent().getExtras();
   String action=getIntent().getAction();
   if (savedInstanceState == null) {
@@ -54,14 +56,14 @@
     return;
   }
   setTitle(StringUtils.unescapeHTML(WordPress.getCurrentBlog().getBlogName()));
-  mSectionsPagerAdapter=new SectionsPagerAdapter(getSupportFragmentManager());
+  mSectionsPagerAdapter=new SectionsPagerAdapter(getFragmentManager());
   mViewPager=(WPViewPager)findViewById(R.id.pager);
   mViewPager.setAdapter(mSectionsPagerAdapter);
   mViewPager.setOffscreenPageLimit(2);
   mViewPager.setPagingEnabled(false);
   mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
     @Override public void onPageSelected(    int position){
-      supportInvalidateOptionsMenu();
+      invalidateOptionsMenu();
       if (position == PAGE_CONTENT) {
         setTitle(WordPress.getCurrentBlog().getBlogName());
       }
