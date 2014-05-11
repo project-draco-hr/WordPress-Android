@@ -1,4 +1,7 @@
 {
+  if (mImageType == ImageType.NONE) {
+    return;
+  }
   int width=getWidth();
   int height=getHeight();
   boolean isFullyWrapContent=getLayoutParams() != null && getLayoutParams().height == LayoutParams.WRAP_CONTENT && getLayoutParams().width == LayoutParams.WRAP_CONTENT;
@@ -10,7 +13,7 @@
       mImageContainer.cancelRequest();
       mImageContainer=null;
     }
-    showErrorImage(mImageType);
+    showErrorImage();
     return;
   }
   if (mImageContainer != null && mImageContainer.getRequestUrl() != null) {
@@ -19,7 +22,7 @@
     }
  else {
       mImageContainer.cancelRequest();
-      showDefaultImage(mImageType);
+      showDefaultImage();
     }
   }
   ImageLoader.ImageContainer newContainer=WordPress.imageLoader.get(mUrl,new ImageLoader.ImageListener(){
@@ -29,7 +32,7 @@
         retry(isInLayoutPass);
       }
  else {
-        showErrorImage(mImageType);
+        showErrorImage();
         if (mImageListener != null) {
           mImageListener.onImageLoaded(false);
         }
