@@ -3,11 +3,9 @@
   final TextView txtDescription=(TextView)findViewById(R.id.text_blog_description);
   final TextView txtFollowCnt=(TextView)findViewById(R.id.text_follow_count);
   final TextView txtFollowBtn=(TextView)findViewById(R.id.text_follow_blog);
-  if (blogInfo != null) {
-    mHasLoadedInfo=true;
-  }
+  final ViewGroup layoutInner=(ViewGroup)findViewById(R.id.layout_bloginfo_container_inner);
   if ((blogInfo != null && !blogInfo.isIncomplete())) {
-    mInfoContainerView.setVisibility(View.VISIBLE);
+    layoutInner.setVisibility(View.VISIBLE);
     if (blogInfo.hasName()) {
       txtBlogName.setText(blogInfo.getName());
       txtBlogName.setOnClickListener(new View.OnClickListener(){
@@ -43,8 +41,14 @@
     if (!mHasLoadedMshot) {
       loadMshotImage(blogInfo);
     }
+    if (!mHasLoadedInfo) {
+      mHasLoadedInfo=true;
+      if (mBlogInfoListener != null) {
+        mBlogInfoListener.onBlogInfoLoaded();
+      }
+    }
   }
  else {
-    mInfoContainerView.setVisibility(View.INVISIBLE);
+    layoutInner.setVisibility(View.INVISIBLE);
   }
 }
