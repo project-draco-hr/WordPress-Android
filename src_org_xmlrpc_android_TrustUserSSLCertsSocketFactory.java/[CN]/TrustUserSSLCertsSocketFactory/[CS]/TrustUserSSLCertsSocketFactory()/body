@@ -1,12 +1,12 @@
 {
   super(null);
+  mFactory=(SSLCertificateSocketFactory)SSLCertificateSocketFactory.getDefault(0);
+  TrustManager[] trustAllowedCerts;
   try {
-    SSLContext sslcontext=SSLContext.getInstance("TLS");
-    TrustManager[] trustAllowedCerts=new TrustManager[]{new WPTrustManager(SelfSignedSSLCertsManager.getInstance(null).getLocalKeyStore())};
-    sslcontext.init(null,trustAllowedCerts,null);
-    factory=sslcontext.getSocketFactory();
-    setHostnameVerifier(new AllowAllHostnameVerifier());
+    trustAllowedCerts=new TrustManager[]{new WPTrustManager(SelfSignedSSLCertsManager.getInstance(null).getLocalKeyStore())};
+    mFactory.setTrustManagers(trustAllowedCerts);
   }
- catch (  Exception ex) {
+ catch (  GeneralSecurityException e1) {
+    AppLog.e(T.API,"Cannot set TrustAllSSLSocketFactory on our factory. Proceding without it...",e1);
   }
 }
