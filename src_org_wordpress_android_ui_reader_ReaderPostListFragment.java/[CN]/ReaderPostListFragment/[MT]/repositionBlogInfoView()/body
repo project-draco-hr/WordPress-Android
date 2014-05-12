@@ -4,13 +4,15 @@
     return;
   }
   mBlogInfoView.scaleMshotImageBasedOnScrollPos(scrollPos);
-  final int mshotBottom;
-  if (mMshotSpacerView.getHeight() > 0) {
-    mshotBottom=Math.max(0,mMshotSpacerView.getTop() + mBlogInfoView.getMshotHeight());
+  View firstChild=mListView.getChildAt(0);
+  boolean isSpacer=(firstChild != null && MSHOT_SPACER_TAG.equals(firstChild.getTag()));
+  final int infoTop;
+  if (isSpacer) {
+    infoTop=Math.max(0,firstChild.getTop() + mBlogInfoView.getMshotHeight());
   }
  else {
-    mshotBottom=0;
+    infoTop=0;
   }
-  mBlogInfoView.moveInfoContainer(mshotBottom);
+  mBlogInfoView.moveInfoContainer(infoTop);
   mLastPostListScrollPos=scrollPos;
 }
