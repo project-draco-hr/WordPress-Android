@@ -2,7 +2,9 @@
   if (!cursor.moveToFirst())   return;
   String state=cursor.getString(cursor.getColumnIndex("uploadState"));
   mIsLocal=MediaUtils.isLocalFile(state);
-  if (mIsLocal)   getSherlockActivity().invalidateOptionsMenu();
+  if (mIsLocal && getActivity() != null) {
+    getActivity().invalidateOptionsMenu();
+  }
   mTitleView.setText(cursor.getString(cursor.getColumnIndex("title")));
   String caption=cursor.getString(cursor.getColumnIndex("caption"));
   if (caption == null || caption.length() == 0) {

@@ -6,7 +6,7 @@
   if (note.isUnread()) {
     note.markAsRead();
   }
-  FragmentManager fm=getSupportFragmentManager();
+  FragmentManager fm=getFragmentManager();
   if (fm.getBackStackEntryCount() > 0) {
     fm.popBackStack();
   }
@@ -19,7 +19,7 @@
     ((NotificationFragment)detailFragment).setNote(note);
   }
   FragmentTransaction ft=fm.beginTransaction();
-  ft.replace(R.id.layout_fragment_container,detailFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+  ft.add(R.id.layout_fragment_container,detailFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
   AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATIONS_OPENED_NOTIFICATION_DETAILS);
   View container=findViewById(R.id.layout_fragment_container);
   if (container.findViewById(R.id.fragment_notes_list) != null) {

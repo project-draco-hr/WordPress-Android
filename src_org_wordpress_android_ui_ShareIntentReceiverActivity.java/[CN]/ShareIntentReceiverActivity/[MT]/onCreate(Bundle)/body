@@ -1,9 +1,14 @@
 {
   super.onCreate(savedInstanceState);
   setContentView(R.layout.share_intent_receiver_dialog);
-  Context themedContext=getSupportActionBar().getThemedContext();
+  ActionBar actionBar=getActionBar();
+  if (actionBar == null) {
+    AppLog.e(T.UTILS,"Theme applied to ShareIntentReceiverActivity must have an action bar");
+    return;
+  }
+  Context themedContext=getActionBar().getThemedContext();
   mBlogSpinnerTitle=(TextView)findViewById(R.id.blog_spinner_title);
-  mBlogSpinner=(IcsSpinner)findViewById(R.id.blog_spinner);
+  mBlogSpinner=(Spinner)findViewById(R.id.blog_spinner);
   mAlwaysUseCheckBox=(CheckedTextView)findViewById(R.id.always_use_checkbox);
   mAlwaysUseCheckBox.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
@@ -24,11 +29,11 @@
     mBlogSpinnerTitle.setVisibility(View.GONE);
   }
  else {
-    ArrayAdapter<String> adapter=new ArrayAdapter<String>(themedContext,R.layout.sherlock_spinner_dropdown_item,blogNames);
+    ArrayAdapter<String> adapter=new ArrayAdapter<String>(themedContext,R.layout.spinner_menu_dropdown_item,blogNames);
     mBlogSpinner.setAdapter(adapter);
     mBlogSpinner.setOnItemSelectedListener(this);
   }
-  mActionSpinner=(IcsSpinner)findViewById(R.id.action_spinner);
+  mActionSpinner=(Spinner)findViewById(R.id.action_spinner);
   if (isSharingText()) {
     mActionSpinner.setVisibility(View.GONE);
     findViewById(R.id.action_spinner_title).setVisibility(View.GONE);
@@ -38,10 +43,9 @@
   }
  else {
     String[] actions=new String[]{getString(R.string.share_action_post),getString(R.string.share_action_media)};
-    ArrayAdapter<String> actionAdapter=new ArrayAdapter<String>(themedContext,R.layout.sherlock_spinner_dropdown_item,actions);
+    ArrayAdapter<String> actionAdapter=new ArrayAdapter<String>(themedContext,R.layout.spinner_menu_dropdown_item,actions);
     mActionSpinner.setAdapter(actionAdapter);
     mActionSpinner.setOnItemSelectedListener(this);
   }
   loadLastUsed();
-  getSupportActionBar().hide();
 }
