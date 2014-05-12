@@ -5,6 +5,19 @@
       @Override public void onBlogInfoLoaded(){
         checkBlogInfoSize();
       }
+      @Override public void onBlogInfoFailed(){
+        if (hasActivity()) {
+          ToastUtils.showToast(getActivity(),R.string.reader_toast_err_get_blog_info);
+          new Handler().postDelayed(new Runnable(){
+            @Override public void run(){
+              if (hasActivity()) {
+                getActivity().onBackPressed();
+              }
+            }
+          }
+,1000);
+        }
+      }
     }
 );
   }
