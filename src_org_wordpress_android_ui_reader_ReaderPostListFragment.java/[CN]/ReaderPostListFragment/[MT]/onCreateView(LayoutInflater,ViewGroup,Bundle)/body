@@ -33,14 +33,17 @@ mBlogInfoView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.Lay
 ReaderUtils.layoutBelow(rootView,mBlogInfoView.getId(),R.id.view_actionbar_spacer);
 mMshotSpacerView=ReaderUtils.addListViewHeader(mListView,mBlogInfoView.getMshotHeight());
 mMshotSpacerView.setTag(MSHOT_SPACER_TAG);
+mBlogInfoView.bringToFront();
 mBlogInfoView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
 @Override public void onGlobalLayout(){
-mBlogInfoView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-checkBlogInfoSize();
+int currentHeight=mMshotSpacerView.getLayoutParams().height;
+int newHeight=mBlogInfoView.getInfoContainerHeight() + mBlogInfoView.getMshotHeight();
+if (currentHeight != newHeight) {
+mMshotSpacerView.getLayoutParams().height=newHeight;
+}
 }
 }
 );
-mBlogInfoView.bringToFront();
 break;
 }
 mEmptyView=rootView.findViewById(R.id.empty_view);

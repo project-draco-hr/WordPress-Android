@@ -1,10 +1,13 @@
 {
   final ViewGroup layoutInner=(ViewGroup)findViewById(R.id.layout_bloginfo_container_inner);
-  if (blogInfo == null) {
+  if (blogInfo == null || blogInfo.isIncomplete()) {
     layoutInner.setVisibility(View.INVISIBLE);
     return;
   }
-  mIsBlogInfoLoaded=true;
+  if (mBlogInfo != null && mBlogInfo.isSameAs(blogInfo)) {
+    return;
+  }
+  mBlogInfo=blogInfo;
   layoutInner.setVisibility(View.VISIBLE);
   final TextView txtBlogName=(TextView)findViewById(R.id.text_blog_name);
   final TextView txtDescription=(TextView)findViewById(R.id.text_blog_description);
@@ -25,6 +28,10 @@
   }
   if (blogInfo.hasDescription()) {
     txtDescription.setText(blogInfo.getDescription());
+    txtDescription.setVisibility(View.VISIBLE);
+  }
+ else   if (blogInfo.hasUrl()) {
+    txtDescription.setText(UrlUtils.getDomainFromUrl(blogInfo.getUrl()));
     txtDescription.setVisibility(View.VISIBLE);
   }
  else {
