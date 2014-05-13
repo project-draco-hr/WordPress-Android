@@ -23,43 +23,28 @@
     Spinner postFormatSpinner=(Spinner)getActivity().findViewById(R.id.postFormat);
     postFormat=mPostFormats[postFormatSpinner.getSelectedItemPosition()];
   }
-  int selectedStatus=mStatusSpinner.getSelectedItemPosition();
-  String status="";
-switch (selectedStatus) {
-case 0:
-    status=PostStatus.toString(PostStatus.PUBLISHED);
-  break;
-case 1:
-status=PostStatus.toString(PostStatus.DRAFT);
-break;
-case 2:
-status=PostStatus.toString(PostStatus.PENDING);
-break;
-case 3:
-status=PostStatus.toString(PostStatus.PRIVATE);
-break;
-}
-if (post.isUploaded() && post.getPostStatus().equals(PostStatus.toString(PostStatus.DRAFT)) && status.equals(PostStatus.toString(PostStatus.PUBLISHED))) {
-post.setChangedFromLocalDraftToPublished(true);
-}
-double latitude=0.0;
-double longitude=0.0;
-if (mCurrentLocation == null) {
-latitude=post.getLatitude();
-longitude=post.getLongitude();
-}
- else if (WordPress.getCurrentBlog().isLocation() && !mActivity.getPost().isPage()) {
-latitude=mCurrentLocation.getLatitude();
-longitude=mCurrentLocation.getLongitude();
-}
-post.setPostExcerpt(excerpt);
-post.setDate_created_gmt(pubDateTimestamp);
-post.setJSONCategories(new JSONArray(mCategories));
-post.setKeywords(tags);
-post.setPostStatus(status);
-post.setPassword(password);
-post.setLatitude(latitude);
-post.setLongitude(longitude);
-post.setPostFormat(postFormat);
-WordPress.wpDB.updatePost(post);
+  String status=getPostStatusForSpinnerPosition(mStatusSpinner.getSelectedItemPosition());
+  if (post.isUploaded() && post.getPostStatus().equals(PostStatus.toString(PostStatus.DRAFT)) && status.equals(PostStatus.toString(PostStatus.PUBLISHED))) {
+    post.setChangedFromLocalDraftToPublished(true);
+  }
+  double latitude=0.0;
+  double longitude=0.0;
+  if (mCurrentLocation == null) {
+    latitude=post.getLatitude();
+    longitude=post.getLongitude();
+  }
+ else   if (WordPress.getCurrentBlog().isLocation() && !mActivity.getPost().isPage()) {
+    latitude=mCurrentLocation.getLatitude();
+    longitude=mCurrentLocation.getLongitude();
+  }
+  post.setPostExcerpt(excerpt);
+  post.setDate_created_gmt(pubDateTimestamp);
+  post.setJSONCategories(new JSONArray(mCategories));
+  post.setKeywords(tags);
+  post.setPostStatus(status);
+  post.setPassword(password);
+  post.setLatitude(latitude);
+  post.setLongitude(longitude);
+  post.setPostFormat(postFormat);
+  WordPress.wpDB.updatePost(post);
 }
