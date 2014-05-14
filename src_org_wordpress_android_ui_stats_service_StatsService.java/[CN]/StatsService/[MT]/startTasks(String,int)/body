@@ -1,50 +1,33 @@
 {
-  orchestrator=new Thread(){
+  this.mServiceBlogId=blogId;
+  this.mServiceStartId=startId;
+  this.mErrorObject=null;
+  new Thread(){
     @Override public void run(){
-      updateUIExecutor=(ThreadPoolExecutor)Executors.newFixedThreadPool(1);
-      RestClientUtils restClientUtils=WordPress.getRestClientUtils();
+      final RestClientUtils restClientUtils=WordPress.getRestClientUtils();
       final String today=StatUtils.getCurrentDate();
       final String yesterday=StatUtils.getYesterdaysDate();
-      AppLog.i(T.STATS,"update started for blogID - " + blogId);
+      AppLog.i(T.STATS,"Update started for blogID - " + blogId);
       broadcastUpdate(true);
-      String path=String.format("sites/%s/stats",blogId);
-      SummaryListener summaryListener=new SummaryListener(blogId);
-      statsNetworkRequests.add(restClientUtils.get(path,summaryListener,summaryListener));
+      final String summaryPath=String.format("/sites/%s/stats",blogId);
+      final String barChartWeekPath=getBarChartPath(blogId,StatsBarChartUnit.WEEK,30);
+      final String barChartMonthPath=getBarChartPath(blogId,StatsBarChartUnit.MONTH,30);
+      final String topPostsAndPagesTodayPath=String.format("/sites/%s/stats/top-posts?date=%s",blogId,today);
+      final String topPostsAndPagesYesterdayPath=String.format("/sites/%s/stats/top-posts?date=%s",blogId,yesterday);
+      final String referrersTodayPath=String.format("/sites/%s/stats/referrers?date=%s",blogId,today);
+      final String referrersYesterdayPath=String.format("/sites/%s/stats/referrers?date=%s",blogId,yesterday);
+      final String clicksTodayPath=String.format("/sites/%s/stats/clicks?date=%s",blogId,today);
+      final String clicksYesterdayPath=String.format("/sites/%s/stats/clicks?date=%s",blogId,yesterday);
+      final String searchEngineTermsTodayPath=String.format("/sites/%s/stats/search-terms?date=%s",blogId,today);
+      final String searchEngineTermsYesterdayPath=String.format("/sites/%s/stats/search-terms?date=%s",blogId,yesterday);
+      final String viewByCountryTodayPath=String.format("/sites/%s/stats/country-views?date=%s",blogId,today);
+      final String viewByCountryYesterdayPath=String.format("/sites/%s/stats/country-views?date=%s",blogId,yesterday);
+      final String parametersSepator="&urls%5B%5D=";
+      String path=new StringBuilder("batch/?urls%5B%5D=").append(Uri.encode(summaryPath)).append(parametersSepator).append(Uri.encode(barChartWeekPath)).append(parametersSepator).append(Uri.encode(barChartMonthPath)).append(parametersSepator).append(Uri.encode(topPostsAndPagesTodayPath)).append(parametersSepator).append(Uri.encode(topPostsAndPagesYesterdayPath)).append(parametersSepator).append(Uri.encode(referrersTodayPath)).append(parametersSepator).append(Uri.encode(referrersYesterdayPath)).append(parametersSepator).append(Uri.encode(clicksTodayPath)).append(parametersSepator).append(Uri.encode(clicksYesterdayPath)).append(parametersSepator).append(Uri.encode(searchEngineTermsTodayPath)).append(parametersSepator).append(Uri.encode(searchEngineTermsYesterdayPath)).append(parametersSepator).append(Uri.encode(viewByCountryTodayPath)).append(parametersSepator).append(Uri.encode(viewByCountryYesterdayPath)).toString();
+      RestBatchCallListener restAPIListener=new RestBatchCallListener(blogId,summaryPath,barChartWeekPath,barChartMonthPath,topPostsAndPagesTodayPath,topPostsAndPagesYesterdayPath,referrersTodayPath,referrersYesterdayPath,clicksTodayPath,clicksYesterdayPath,searchEngineTermsTodayPath,searchEngineTermsYesterdayPath,viewByCountryTodayPath,viewByCountryYesterdayPath);
       AppLog.i(T.STATS,"Enqueuing the following Stats request " + path);
-      path="batch/?urls%5B%5D=" + Uri.encode(getBarChartPath(blogId,StatsBarChartUnit.WEEK,30)) + "&urls%5B%5D="+ Uri.encode(getBarChartPath(blogId,StatsBarChartUnit.MONTH,30));
-      BarChartListener barChartRestListener=new BarChartListener(blogId,getBarChartPath(blogId,StatsBarChartUnit.WEEK,30),StatsBarChartUnit.WEEK,getBarChartPath(blogId,StatsBarChartUnit.MONTH,30),StatsBarChartUnit.MONTH);
-      statsNetworkRequests.add(restClientUtils.get(path,barChartRestListener,barChartRestListener));
-      AppLog.i(T.STATS,"Enqueuing the following Stats request " + path);
-      path="batch/?urls%5B%5D=" + Uri.encode(String.format("/sites/%s/stats/top-posts?date=%s",blogId,today)) + "&urls%5B%5D="+ Uri.encode(String.format("/sites/%s/stats/top-posts?date=%s",blogId,yesterday));
-      TopPostAndPageListener topPostAndPageRestListener=new TopPostAndPageListener(blogId,String.format("/sites/%s/stats/top-posts?date=%s",blogId,today),String.format("/sites/%s/stats/top-posts?date=%s",blogId,yesterday));
-      statsNetworkRequests.add(restClientUtils.get(path,topPostAndPageRestListener,topPostAndPageRestListener));
-      AppLog.i(T.STATS,"Enqueuing the following Stats request " + path);
-      path="batch/?urls%5B%5D=" + Uri.encode(String.format("/sites/%s/stats/referrers?date=%s",blogId,today)) + "&urls%5B%5D="+ Uri.encode(String.format("/sites/%s/stats/referrers?date=%s",blogId,yesterday));
-      ReferrersListener referrersListener=new ReferrersListener(blogId,String.format("/sites/%s/stats/referrers?date=%s",blogId,today),String.format("/sites/%s/stats/referrers?date=%s",blogId,yesterday));
-      statsNetworkRequests.add(restClientUtils.get(path,referrersListener,referrersListener));
-      AppLog.i(T.STATS,"Enqueuing the following Stats request " + path);
-      path="batch/?urls%5B%5D=" + Uri.encode(String.format("/sites/%s/stats/clicks?date=%s",blogId,today)) + "&urls%5B%5D="+ Uri.encode(String.format("/sites/%s/stats/clicks?date=%s",blogId,yesterday));
-      ClicksListener clicksListener=new ClicksListener(blogId,String.format("/sites/%s/stats/clicks?date=%s",blogId,today),String.format("/sites/%s/stats/clicks?date=%s",blogId,yesterday));
-      statsNetworkRequests.add(restClientUtils.get(path,clicksListener,clicksListener));
-      AppLog.i(T.STATS,"Enqueuing the following Stats request " + path);
-      path="batch/?urls%5B%5D=" + Uri.encode(String.format("/sites/%s/stats/search-terms?date=%s",blogId,today)) + "&urls%5B%5D="+ Uri.encode(String.format("/sites/%s/stats/search-terms?date=%s",blogId,yesterday));
-      SearchEngineTermsListener searchEngineTermsListener=new SearchEngineTermsListener(blogId,String.format("/sites/%s/stats/search-terms?date=%s",blogId,today),String.format("/sites/%s/stats/search-terms?date=%s",blogId,yesterday));
-      statsNetworkRequests.add(restClientUtils.get(path,searchEngineTermsListener,searchEngineTermsListener));
-      AppLog.i(T.STATS,"Enqueuing the following Stats request " + path);
-      path="batch/?urls%5B%5D=" + Uri.encode(String.format("/sites/%s/stats/country-views?date=%s",blogId,today)) + "&urls%5B%5D="+ Uri.encode(String.format("/sites/%s/stats/country-views?date=%s",blogId,yesterday));
-      ViewsByCountryListener viewsByCountryListener=new ViewsByCountryListener(blogId,String.format("/sites/%s/stats/country-views?date=%s",blogId,today),String.format("/sites/%s/stats/country-views?date=%s",blogId,yesterday));
-      statsNetworkRequests.add(restClientUtils.get(path,viewsByCountryListener,viewsByCountryListener));
-      AppLog.i(T.STATS,"Enqueuing the following Stats request " + path);
-      numberOfNetworkCalls=statsNetworkRequests.size();
-      while (!isDone()) {
-        waitForResponse();
-      }
-      updateUIExecutor.shutdown();
-      mServiceBlogId=null;
-      broadcastUpdate(false);
-      stopSelf(startId);
+      restClientUtils.get(path,restAPIListener,restAPIListener);
     }
   }
-;
-  orchestrator.start();
+.start();
 }
