@@ -1,0 +1,18 @@
+{
+  ThreadPoolExecutor parseResponseExecutor=(ThreadPoolExecutor)Executors.newFixedThreadPool(1);
+  parseResponseExecutor.submit(new Thread(){
+    @Override public void run(){
+      parseSummaryResponse(response);
+      parseBarChartResponse(response);
+      parseTopPostsAndPagesResponse(response);
+      parseReferrersResponse(response);
+      parseClicksResponse(response);
+      parseSearchEngineTermsResponse(response);
+      parseViewsByCountryResponse(response);
+      if (mServiceBlogId == null || mServiceBlogId.equals(mRequestBlogId)) {
+        stopService();
+      }
+    }
+  }
+);
+}

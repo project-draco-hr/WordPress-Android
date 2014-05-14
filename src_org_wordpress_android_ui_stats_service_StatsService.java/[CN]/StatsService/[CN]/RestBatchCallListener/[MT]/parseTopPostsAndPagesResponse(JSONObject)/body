@@ -1,0 +1,43 @@
+{
+  if (mServiceBlogId == null || !mServiceBlogId.equals(mRequestBlogId)) {
+    return;
+  }
+  String[] topPostsAndPagesPaths={mTopPostsAndPagesTodayPath,mTopPostsAndPagesYesterdayPath};
+  for (  String currentTopPostsAndPagesPath : topPostsAndPagesPaths) {
+    if (response.has(currentTopPostsAndPagesPath)) {
+      try {
+        final JSONObject currentTopPostsAndPagesJsonObject=response.getJSONObject(currentTopPostsAndPagesPath);
+        if (!isSingleCallResponseError(currentTopPostsAndPagesPath,currentTopPostsAndPagesJsonObject)) {
+          if (!currentTopPostsAndPagesJsonObject.has("top-posts")) {
+            return;
+          }
+          JSONArray results=currentTopPostsAndPagesJsonObject.getJSONArray("top-posts");
+          int count=Math.min(results.length(),StatsActivity.STATS_GROUP_MAX_ITEMS);
+          String date=currentTopPostsAndPagesJsonObject.getString("date");
+          long dateMs=StatUtils.toMs(date);
+          ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
+          ContentProviderOperation deleteOp=ContentProviderOperation.newDelete(StatsContentProvider.STATS_TOP_POSTS_AND_PAGES_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mRequestBlogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
+          operations.add(deleteOp);
+          for (int i=0; i < count; i++) {
+            JSONObject result=results.getJSONObject(i);
+            StatsTopPostsAndPages stat=new StatsTopPostsAndPages(mRequestBlogId,result);
+            ContentValues values=StatsTopPostsAndPagesTable.getContentValues(stat);
+            ContentProviderOperation op=ContentProviderOperation.newInsert(StatsContentProvider.STATS_TOP_POSTS_AND_PAGES_URI).withValues(values).build();
+            operations.add(op);
+          }
+          getContentResolver().applyBatch(BuildConfig.STATS_PROVIDER_AUTHORITY,operations);
+        }
+      }
+ catch (      RemoteException e) {
+        logSingleCallError(currentTopPostsAndPagesPath,e);
+      }
+catch (      OperationApplicationException e) {
+        logSingleCallError(currentTopPostsAndPagesPath,e);
+      }
+catch (      JSONException e) {
+        logSingleCallError(currentTopPostsAndPagesPath,e);
+      }
+    }
+  }
+  getContentResolver().notifyChange(StatsContentProvider.STATS_TOP_POSTS_AND_PAGES_URI,null);
+}
