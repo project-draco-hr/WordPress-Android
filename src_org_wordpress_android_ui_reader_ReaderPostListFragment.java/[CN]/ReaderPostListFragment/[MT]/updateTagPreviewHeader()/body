@@ -1,0 +1,23 @@
+{
+  if (mTagInfoView == null) {
+    return;
+  }
+  final TextView txtTagName=(TextView)mTagInfoView.findViewById(R.id.text_tag_name);
+  String color=HtmlUtils.colorResToHtmlColor(getActivity(),R.color.grey_extra_dark);
+  String htmlTag="<font color=" + color + ">"+ getCurrentTag()+ "</font>";
+  String htmlLabel=getString(R.string.reader_label_tag_preview,htmlTag);
+  txtTagName.setText(Html.fromHtml(htmlLabel));
+  final TextView txtFollow=(TextView)mTagInfoView.findViewById(R.id.text_follow_blog);
+  ReaderUtils.showFollowStatus(txtFollow,ReaderTagTable.isFollowedTag(getCurrentTag()));
+  txtFollow.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      AniUtils.zoomAction(txtFollow);
+      boolean isAskingToFollow=!ReaderTagTable.isFollowedTag(getCurrentTag());
+      TagAction action=(isAskingToFollow ? TagAction.ADD : TagAction.DELETE);
+      if (ReaderTagActions.performTagAction(action,getCurrentTag(),null)) {
+        ReaderUtils.showFollowStatus(txtFollow,isAskingToFollow);
+      }
+    }
+  }
+);
+}

@@ -1,5 +1,6 @@
 {
   if (mActionBarAdapter == null) {
+    AppLog.d(T.READER,"reader post list > creating ActionBar adapter");
     ReaderActions.DataLoadedListener dataListener=new ReaderActions.DataLoadedListener(){
       @Override public void onDataLoaded(      boolean isEmpty){
         if (!hasActivity())         return;
@@ -8,14 +9,7 @@
       }
     }
 ;
-    boolean isStaticMenuDrawer;
-    if (getActivity() instanceof WPActionBarActivity) {
-      isStaticMenuDrawer=((WPActionBarActivity)getActivity()).isStaticMenuDrawer();
-    }
- else {
-      isStaticMenuDrawer=false;
-    }
-    mActionBarAdapter=new ReaderActionBarTagAdapter(getActivity(),isStaticMenuDrawer,dataListener);
+    mActionBarAdapter=new ReaderActionBarTagAdapter(getActivity(),hasStaticMenuDrawer(),dataListener);
   }
   return mActionBarAdapter;
 }

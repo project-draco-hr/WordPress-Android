@@ -1,0 +1,20 @@
+{
+switch (getBlogType()) {
+case RECOMMENDED:
+    int limit=ReaderConstants.READER_MAX_RECOMMENDED_TO_DISPLAY;
+  int offset=UserPrefs.getReaderRecommendedBlogOffset();
+tmpRecommendedBlogs=ReaderBlogTable.getRecommendedBlogs(limit,offset);
+if (tmpRecommendedBlogs.size() == 0 && offset > 0) {
+UserPrefs.setReaderRecommendedBlogOffset(0);
+tmpRecommendedBlogs=ReaderBlogTable.getRecommendedBlogs(limit,0);
+}
+return !mRecommendedBlogs.isSameList(tmpRecommendedBlogs);
+case FOLLOWED:
+tmpFollowedBlogs=ReaderBlogTable.getAllFollowedBlogInfo();
+tmpFollowedBlogs.removeIncomplete();
+tmpFollowedBlogs.removeExternal();
+return !mFollowedBlogs.isSameList(tmpFollowedBlogs);
+default :
+return false;
+}
+}

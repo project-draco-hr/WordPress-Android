@@ -1,0 +1,18 @@
+{
+  int scrollPos=mListView.getVerticalScrollOffset();
+  if (mBlogInfoView == null || scrollPos == mLastPostListScrollPos) {
+    return;
+  }
+  mBlogInfoView.scaleMshotImageBasedOnScrollPos(scrollPos);
+  View firstChild=mListView.getChildAt(0);
+  boolean isSpacer=(firstChild != null && MSHOT_SPACER_TAG.equals(firstChild.getTag()));
+  final int infoTop;
+  if (isSpacer) {
+    infoTop=Math.max(0,firstChild.getTop() + mBlogInfoView.getMshotHeight());
+  }
+ else {
+    infoTop=0;
+  }
+  mBlogInfoView.moveInfoContainer(infoTop);
+  mLastPostListScrollPos=scrollPos;
+}

@@ -1,0 +1,23 @@
+{
+  if (jsonAttachments == null) {
+    return;
+  }
+  Iterator<String> it=jsonAttachments.keys();
+  if (it != null && it.hasNext()) {
+    JSONObject jsonFirstAttachment=jsonAttachments.optJSONObject(it.next());
+    if (jsonFirstAttachment != null) {
+      String thumbnail=JSONUtil.getString(jsonFirstAttachment,"videopress_thumbnail");
+      if (!TextUtils.isEmpty(thumbnail)) {
+        post.featuredImage=thumbnail;
+      }
+      JSONObject jsonVideoPress=jsonFirstAttachment.optJSONObject("videopress_files");
+      if (jsonVideoPress != null) {
+        JSONObject jsonStdVideo=jsonVideoPress.optJSONObject("std");
+        if (jsonStdVideo != null) {
+          post.featuredVideo=JSONUtil.getString(jsonStdVideo,"url");
+          post.isVideoPress=true;
+        }
+      }
+    }
+  }
+}

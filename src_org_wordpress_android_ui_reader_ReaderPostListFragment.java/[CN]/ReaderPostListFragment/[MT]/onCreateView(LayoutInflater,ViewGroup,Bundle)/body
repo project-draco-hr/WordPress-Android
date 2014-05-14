@@ -1,7 +1,8 @@
 {
-  final View view=inflater.inflate(R.layout.reader_fragment_post_list,container,false);
-  mListView=(ListView)view.findViewById(android.R.id.list);
-  mNewPostsBar=(TextView)view.findViewById(R.id.text_new_posts);
+  final ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.reader_fragment_post_list,container,false);
+  boolean hasTransparentActionBar=isFullScreenSupported();
+  mListView=(WPListView)rootView.findViewById(android.R.id.list);
+  mNewPostsBar=(TextView)rootView.findViewById(R.id.text_new_posts);
   mNewPostsBar.setVisibility(View.GONE);
   mNewPostsBar.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View view){
@@ -10,35 +11,75 @@
     }
   }
 );
-  if (isFullScreenSupported()) {
-    Context context=container.getContext();
-    ReaderFullScreenUtils.addListViewHeader(context,mListView);
-    final int actionbarHeight=DisplayUtils.getActionBarHeight(context);
-    RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)mNewPostsBar.getLayoutParams();
-    params.topMargin=actionbarHeight;
+  if (hasTransparentActionBar) {
+    View actionBarSpacer=rootView.findViewById(R.id.view_actionbar_spacer);
+    actionBarSpacer.setVisibility(View.VISIBLE);
   }
-  mEmptyView=view.findViewById(R.id.empty_view);
-  mListView.setOnScrollListener(this);
-  mListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-    @Override public void onItemClick(    AdapterView<?> adapterView,    View view,    int position,    long id){
-      position-=mListView.getHeaderViewsCount();
-      ReaderPost post=(ReaderPost)getPostAdapter().getItem(position);
-      if (post != null && mPostSelectedListener != null)       mPostSelectedListener.onPostSelected(post.blogId,post.postId);
-    }
-  }
+switch (getPostListType()) {
+case TAG_FOLLOWED:
+    ReaderUtils.layoutBelow(rootView,R.id.ptr_layout,R.id.view_actionbar_spacer);
+  break;
+case TAG_PREVIEW:
+mTagInfoView=(ViewGroup)inflater.inflate(R.layout.reader_tag_info_view,container,false);
+rootView.addView(mTagInfoView);
+ReaderUtils.layoutBelow(rootView,mTagInfoView.getId(),R.id.view_actionbar_spacer);
+ReaderUtils.layoutBelow(rootView,R.id.ptr_layout,mTagInfoView.getId());
+break;
+case BLOG_PREVIEW:
+ReaderUtils.layoutBelow(rootView,R.id.ptr_layout,R.id.view_actionbar_spacer);
+mBlogInfoView=new ReaderBlogInfoView(container.getContext());
+rootView.addView(mBlogInfoView);
+mBlogInfoView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT));
+ReaderUtils.layoutBelow(rootView,mBlogInfoView.getId(),R.id.view_actionbar_spacer);
+int spacerHeight=mBlogInfoView.getMshotHeight() + DisplayUtils.dpToPx(container.getContext(),86);
+mMshotSpacerView=ReaderUtils.addListViewHeader(mListView,spacerHeight);
+mMshotSpacerView.setTag(MSHOT_SPACER_TAG);
+mBlogInfoView.bringToFront();
+mBlogInfoView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
+@Override public void onGlobalLayout(){
+int currentHeight=mMshotSpacerView.getLayoutParams().height;
+int newHeight=mBlogInfoView.getInfoContainerHeight() + mBlogInfoView.getMshotHeight();
+if (currentHeight != newHeight) {
+mMshotSpacerView.getLayoutParams().height=newHeight;
+}
+}
+}
 );
-  mProgress=(ProgressBar)view.findViewById(R.id.progress_footer);
-  mProgress.setVisibility(View.GONE);
-  mPullToRefreshHelper=new PullToRefreshHelper(getActivity(),(PullToRefreshLayout)view.findViewById(R.id.ptr_layout),new RefreshListener(){
-    @Override public void onRefreshStarted(    View view){
-      if (getActivity() == null || !NetworkUtils.checkConnection(getActivity())) {
-        mPullToRefreshHelper.setRefreshing(false);
-        return;
-      }
-      updatePostsWithCurrentTag(ReaderActions.RequestDataAction.LOAD_NEWER,RefreshType.MANUAL);
-    }
-  }
+break;
+}
+mEmptyView=rootView.findViewById(R.id.empty_view);
+mListView.setOnScrollListener(this);
+mListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+@Override public void onItemClick(AdapterView<?> adapterView,View view,int position,long id){
+position-=mListView.getHeaderViewsCount();
+if (position >= 0 && mPostSelectedListener != null) {
+ReaderPost post=(ReaderPost)getPostAdapter().getItem(position);
+if (post != null) {
+mPostSelectedListener.onPostSelected(post.blogId,post.postId);
+}
+}
+}
+}
 );
-  mListView.setAdapter(getPostAdapter());
-  return view;
+mProgress=(ProgressBar)rootView.findViewById(R.id.progress_footer);
+mProgress.setVisibility(View.GONE);
+mPullToRefreshHelper=new PullToRefreshHelper(getActivity(),(PullToRefreshLayout)rootView.findViewById(R.id.ptr_layout),new RefreshListener(){
+@Override public void onRefreshStarted(View view){
+if (getActivity() == null || !NetworkUtils.checkConnection(getActivity())) {
+mPullToRefreshHelper.setRefreshing(false);
+return;
+}
+switch (getPostListType()) {
+case TAG_FOLLOWED:
+case TAG_PREVIEW:
+updatePostsWithTag(getCurrentTag(),RequestDataAction.LOAD_NEWER,RefreshType.MANUAL);
+break;
+case BLOG_PREVIEW:
+updatePostsInCurrentBlog(RequestDataAction.LOAD_NEWER);
+break;
+}
+}
+}
+);
+return rootView;
 }
