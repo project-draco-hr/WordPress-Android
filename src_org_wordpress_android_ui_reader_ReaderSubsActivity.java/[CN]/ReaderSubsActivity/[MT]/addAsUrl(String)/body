@@ -1,0 +1,21 @@
+{
+  if (TextUtils.isEmpty(entry)) {
+    return;
+  }
+  final String normUrl;
+  if (!entry.contains("://")) {
+    normUrl=UrlUtils.normalizeUrl("http://" + entry);
+  }
+ else {
+    normUrl=UrlUtils.normalizeUrl(entry);
+  }
+  if (!URLUtil.isNetworkUrl(normUrl)) {
+    addAsTag(entry);
+    return;
+  }
+  if (ReaderBlogTable.isFollowedBlogUrl(normUrl)) {
+    ToastUtils.showToast(this,R.string.reader_toast_err_already_follow_blog);
+    return;
+  }
+  performAddUrl(normUrl);
+}
