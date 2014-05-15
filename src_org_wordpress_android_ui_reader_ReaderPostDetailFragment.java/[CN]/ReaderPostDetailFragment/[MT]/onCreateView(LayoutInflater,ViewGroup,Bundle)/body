@@ -21,21 +21,6 @@
   mListView.setVisibility(View.INVISIBLE);
   mWebView.setVisibility(View.INVISIBLE);
   mLayoutIcons.setVisibility(View.GONE);
-  mWebView.setOnTouchListener(new View.OnTouchListener(){
-    public boolean onTouch(    View v,    MotionEvent event){
-      if (event.getAction() == MotionEvent.ACTION_UP) {
-        HitTestResult hr=((WebView)v).getHitTestResult();
-        if (hr != null && (hr.getType() == HitTestResult.IMAGE_TYPE || hr.getType() == HitTestResult.SRC_IMAGE_ANCHOR_TYPE)) {
-          String imageUrl=hr.getExtra();
-          if (imageUrl == null)           return false;
-          if (imageUrl.startsWith("file:"))           return false;
-          showPhotoViewer(imageUrl);
-          return true;
-        }
-      }
-      return false;
-    }
-  }
-);
+  mWebView.setOnTouchListener(mWebViewTouchListener);
   return view;
 }
