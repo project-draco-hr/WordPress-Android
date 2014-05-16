@@ -1,0 +1,20 @@
+{
+  if (TextUtils.isEmpty(mImageUrl)) {
+    handleImageLoadFailure();
+    return;
+  }
+  final ProgressBar progress=(ProgressBar)findViewById(R.id.progress);
+  progress.setVisibility(View.VISIBLE);
+  mImageView.setImageUrl(mImageUrl,ImageType.PHOTO_FULL,new ImageListener(){
+    @Override public void onImageLoaded(    boolean succeeded){
+      progress.setVisibility(View.GONE);
+      if (succeeded) {
+        createAttacher();
+      }
+ else {
+        handleImageLoadFailure();
+      }
+    }
+  }
+);
+}
