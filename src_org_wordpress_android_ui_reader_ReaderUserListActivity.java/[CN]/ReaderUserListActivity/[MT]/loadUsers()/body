@@ -1,6 +1,19 @@
 {
-  if (mIsTaskRunning) {
-    AppLog.w(AppLog.T.READER,"user task already running");
+  new Thread(){
+    @Override public void run(){
+      final String title=getTitleString();
+      final ReaderUserList users=ReaderUserTable.getUsersWhoLikePost(mPost,ReaderConstants.READER_MAX_USERS_TO_DISPLAY);
+      final TextView txtTitle=(TextView)findViewById(R.id.text_title);
+      runOnUiThread(new Runnable(){
+        @Override public void run(){
+          if (!isFinishing()) {
+            getAdapter().setUsers(users);
+            txtTitle.setText(title);
+          }
+        }
+      }
+);
+    }
   }
-  new LoadUsersTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+.start();
 }
