@@ -1,0 +1,21 @@
+{
+  new Thread(){
+    @Override public void run(){
+      int numLikes=ReaderPostTable.getNumLikesForPost(blogId,postId);
+      boolean isLikedByCurrentUser=ReaderPostTable.isPostLikedByCurrentUser(blogId,postId);
+      final String title=getTitleString(numLikes,isLikedByCurrentUser);
+      final TextView txtTitle=(TextView)findViewById(R.id.text_title);
+      final ReaderUserList users=ReaderUserTable.getUsersWhoLikePost(blogId,postId,ReaderConstants.READER_MAX_USERS_TO_DISPLAY);
+      runOnUiThread(new Runnable(){
+        @Override public void run(){
+          if (!isFinishing()) {
+            getAdapter().setUsers(users);
+            txtTitle.setText(title);
+          }
+        }
+      }
+);
+    }
+  }
+.start();
+}
