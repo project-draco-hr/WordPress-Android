@@ -1,17 +1,11 @@
 {
   super.onCreate(savedInstanceState);
   setContentView(R.layout.reader_activity_photo_viewer);
-  mImageView=(WPNetworkImageView)findViewById(R.id.image_photo);
   if (savedInstanceState != null && savedInstanceState.containsKey(ARG_IMAGE_URL)) {
     mImageUrl=savedInstanceState.getString(ARG_IMAGE_URL);
   }
  else   if (getIntent().hasExtra(ARG_IMAGE_URL)) {
     mImageUrl=getIntent().getStringExtra(ARG_IMAGE_URL);
-    if (!UrlUtils.isHttps(mImageUrl)) {
-      Point pt=DisplayUtils.getDisplayPixelSize(this);
-      int maxWidth=Math.max(pt.x,pt.y);
-      mImageUrl=PhotonUtils.getPhotonImageUrl(mImageUrl,maxWidth,0);
-    }
   }
-  loadImage();
+  loadImage(mImageUrl);
 }
