@@ -1,18 +1,38 @@
 {
   super.onCreate(savedInstanceState);
-  createMenuDrawer(R.layout.reader_activity_post_pager);
+  setContentView(R.layout.reader_activity_post_pager);
   mViewPager=(ViewPager)findViewById(R.id.viewpager);
-  final ReaderBlogIdPostIdList idList;
+  ActionBar actionBar=getActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayShowTitleEnabled(true);
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
   final int position;
-  if (getIntent().hasExtra(ARG_BLOG_POST_ID_LIST)) {
-    position=getIntent().getIntExtra(ARG_POSITION,0);
-    ArrayList<ReaderBlogIdPostId> list=(ArrayList<ReaderBlogIdPostId>)getIntent().getSerializableExtra(ARG_BLOG_POST_ID_LIST);
-    idList=new ReaderBlogIdPostIdList(list);
+  final String title;
+  final Serializable serializable;
+  if (savedInstanceState != null) {
+    position=savedInstanceState.getInt(ARG_POSITION,0);
+    title=savedInstanceState.getString(ARG_TITLE);
+    serializable=savedInstanceState.getSerializable(ARG_BLOG_POST_ID_LIST);
   }
  else {
-    position=0;
+    position=getIntent().getIntExtra(ARG_POSITION,0);
+    title=getIntent().getStringExtra(ARG_TITLE);
+    serializable=getIntent().getSerializableExtra(ARG_BLOG_POST_ID_LIST);
+  }
+  if (!TextUtils.isEmpty(title)) {
+    this.setTitle(title);
+  }
+  final ReaderBlogIdPostIdList idList;
+  if (serializable != null) {
+    idList=new ReaderBlogIdPostIdList((ArrayList<ReaderBlogIdPostId>)serializable);
+  }
+ else {
     idList=new ReaderBlogIdPostIdList();
   }
   mPageAdapter=new PostPagerAdapter(getFragmentManager(),idList);
   mViewPager.setAdapter(mPageAdapter);
+  if (position >= 0 || position < mPageAdapter.getCount()) {
+    mViewPager.setCurrentItem(position);
+  }
 }
