@@ -1,0 +1,15 @@
+{
+  if (TextUtils.isEmpty(imageUrl)) {
+    return;
+  }
+  Intent intent=new Intent(activity,ReaderPhotoViewerActivity.class);
+  intent.putExtra(ReaderConstants.ARG_IMAGE_URL,imageUrl);
+  if (source != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+    ActivityOptionsCompat options=ActivityOptionsCompat.makeScaleUpAnimation(source,startX,startY,0,0);
+    ActivityCompat.startActivity(activity,intent,options.toBundle());
+  }
+ else {
+    activity.startActivity(intent);
+    activity.overridePendingTransition(R.anim.reader_photo_in,0);
+  }
+}
