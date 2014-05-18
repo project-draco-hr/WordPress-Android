@@ -10,12 +10,7 @@
     }
     return;
   }
-  final String postTitle=mPost.hasTitle() ? mPost.getTitle() : getString(R.string.reader_untitled_post);
-  if (hostIsReaderActivity()) {
-    getActivity().setTitle(postTitle);
-  }
-  txtTitle.setText(postTitle);
-  txtDate.setText(DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished()));
+  txtTitle.setText(mPost.hasTitle() ? mPost.getTitle() : getString(R.string.reader_untitled_post));
   ReaderUtils.showFollowStatus(txtFollow,mPost.isFollowedByCurrentUser);
   txtFollow.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View view){
@@ -23,20 +18,22 @@
     }
   }
 );
-  if (mPost.numLikes > 0 && mLayoutLikes.getVisibility() == View.GONE)   mLayoutLikes.setVisibility(View.INVISIBLE);
   if (mPost.hasBlogName()) {
     txtBlogName.setText(mPost.getBlogName());
+    txtBlogName.setVisibility(View.VISIBLE);
+  }
+ else   if (mPost.hasBlogUrl()) {
+    txtBlogName.setText(UrlUtils.getDomainFromUrl(mPost.getBlogUrl()));
     txtBlogName.setVisibility(View.VISIBLE);
   }
  else {
     txtBlogName.setVisibility(View.GONE);
   }
   if (mPost.hasAuthorName() && !mPost.getAuthorName().equals(mPost.getBlogName())) {
-    txtAuthorName.setText(mPost.getAuthorName());
-    txtAuthorName.setVisibility(View.VISIBLE);
+    txtDateAndAuthor.setText(DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished()) + " / " + mPost.getAuthorName());
   }
  else {
-    txtAuthorName.setVisibility(View.GONE);
+    txtDateAndAuthor.setText(DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished()));
   }
   if (mPost.hasPostAvatar()) {
     int avatarSz=getResources().getDimensionPixelSize(R.dimen.avatar_sz_medium);
@@ -80,6 +77,9 @@
   }
  else {
     imgBtnComment.setVisibility(View.GONE);
+  }
+  if (mPost.numLikes > 0 && mLayoutLikes.getVisibility() == View.GONE) {
+    mLayoutLikes.setVisibility(View.INVISIBLE);
   }
   mLayoutIcons.setVisibility(mPost.isExternal ? View.GONE : View.VISIBLE);
   mWebView.getSettings().setJavaScriptEnabled(hasEmbedsOrIframes());
