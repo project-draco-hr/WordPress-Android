@@ -1,0 +1,18 @@
+{
+  super.onCreate(savedInstanceState);
+  createMenuDrawer(R.layout.reader_activity_post_pager);
+  mViewPager=(ViewPager)findViewById(R.id.viewpager);
+  final ReaderBlogIdPostIdList idList;
+  final int position;
+  if (getIntent().hasExtra(ARG_BLOG_POST_ID_LIST)) {
+    position=getIntent().getIntExtra(ARG_POSITION,0);
+    ArrayList<ReaderBlogIdPostId> list=(ArrayList<ReaderBlogIdPostId>)getIntent().getSerializableExtra(ARG_BLOG_POST_ID_LIST);
+    idList=new ReaderBlogIdPostIdList(list);
+  }
+ else {
+    position=0;
+    idList=new ReaderBlogIdPostIdList();
+  }
+  mPageAdapter=new PostPagerAdapter(getFragmentManager(),idList);
+  mViewPager.setAdapter(mPageAdapter);
+}
