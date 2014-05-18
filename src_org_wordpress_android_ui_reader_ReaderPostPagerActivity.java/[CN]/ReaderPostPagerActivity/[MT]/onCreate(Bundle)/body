@@ -4,7 +4,7 @@
   }
   super.onCreate(savedInstanceState);
   setContentView(R.layout.reader_activity_post_pager);
-  mViewPager=(ViewPager)findViewById(R.id.viewpager);
+  getWindow().setBackgroundDrawable(null);
   getActionBar().setDisplayShowTitleEnabled(true);
   getActionBar().setDisplayHomeAsUpEnabled(true);
   final int position;
@@ -23,14 +23,8 @@
   if (!TextUtils.isEmpty(title)) {
     this.setTitle(title);
   }
-  final ReaderBlogIdPostIdList idList;
-  if (serializedList != null) {
-    idList=new ReaderBlogIdPostIdList((ArrayList<ReaderBlogIdPostId>)serializedList);
-  }
- else {
-    idList=new ReaderBlogIdPostIdList();
-  }
-  mPageAdapter=new PostPagerAdapter(getFragmentManager(),idList);
+  mViewPager=(ViewPager)findViewById(R.id.viewpager);
+  mPageAdapter=new PostPagerAdapter(getFragmentManager(),new ReaderBlogIdPostIdList(serializedList));
   mViewPager.setAdapter(mPageAdapter);
   if (position >= 0 || position < mPageAdapter.getCount()) {
     mViewPager.setCurrentItem(position);

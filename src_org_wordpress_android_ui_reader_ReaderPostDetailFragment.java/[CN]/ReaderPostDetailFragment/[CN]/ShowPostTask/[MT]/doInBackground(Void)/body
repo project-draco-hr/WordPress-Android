@@ -3,6 +3,10 @@
   if (container == null) {
     return false;
   }
+  mPost=ReaderPostTable.getPost(mBlogId,mPostId);
+  if (mPost == null) {
+    return false;
+  }
   txtTitle=(TextView)container.findViewById(R.id.text_title);
   txtBlogName=(TextView)container.findViewById(R.id.text_blog_name);
   txtFollow=(TextView)container.findViewById(R.id.text_follow);
@@ -11,10 +15,6 @@
   imgFeatured=(WPNetworkImageView)container.findViewById(R.id.image_featured);
   imgBtnReblog=(ImageView)mLayoutIcons.findViewById(R.id.image_reblog_btn);
   imgBtnComment=(ImageView)mLayoutIcons.findViewById(R.id.image_comment_btn);
-  mPost=ReaderPostTable.getPost(mBlogId,mPostId);
-  if (mPost == null) {
-    return false;
-  }
   postHtml=getPostHtml(container.getContext());
   if (mPost.hasFeaturedImage() && !PhotonUtils.isMshotsUrl(mPost.getFeaturedImage())) {
     Uri uri=Uri.parse(mPost.getFeaturedImage());
