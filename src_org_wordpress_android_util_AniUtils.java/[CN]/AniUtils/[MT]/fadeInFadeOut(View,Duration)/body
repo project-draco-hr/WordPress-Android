@@ -1,0 +1,20 @@
+{
+  if (target == null || duration == null) {
+    return;
+  }
+  ObjectAnimator alpha=ObjectAnimator.ofFloat(target,View.ALPHA,0.0f,1.0f);
+  alpha.setRepeatCount(1);
+  alpha.setRepeatMode(ValueAnimator.REVERSE);
+  alpha.setDuration(duration.toMillis(target.getContext()));
+  alpha.setInterpolator(new AccelerateDecelerateInterpolator());
+  alpha.addListener(new AnimatorListenerAdapter(){
+    @Override public void onAnimationStart(    Animator animation){
+      target.setVisibility(View.VISIBLE);
+    }
+    @Override public void onAnimationEnd(    Animator animation){
+      target.setVisibility(View.GONE);
+    }
+  }
+);
+  alpha.start();
+}
