@@ -6,10 +6,15 @@
   final boolean isPostTableEmpty=ReaderPostTable.isEmpty();
   ReaderActions.UpdateResultListener listener=new ReaderActions.UpdateResultListener(){
     @Override public void onUpdateResult(    UpdateResult result){
-      mHasPerformedInitialUpdate=true;
+      if (result != UpdateResult.FAILED) {
+        mHasPerformedInitialUpdate=true;
+      }
       if (result == UpdateResult.CHANGED) {
         ReaderPostListFragment listFragment=getListFragment();
-        if (listFragment != null && listFragment.getPostListType() == ReaderPostListType.TAG_FOLLOWED) {
+        if (listFragment == null) {
+          showListFragmentForTag(ReaderTag.TAG_NAME_DEFAULT,ReaderPostListType.TAG_FOLLOWED);
+        }
+ else         if (listFragment.getPostListType() == ReaderPostListType.TAG_FOLLOWED) {
           listFragment.refreshTags();
           if (isTagTableEmpty && isPostTableEmpty) {
             listFragment.updatePostsWithTag(listFragment.getCurrentTag(),RequestDataAction.LOAD_NEWER,ReaderPostListFragment.RefreshType.AUTOMATIC);
