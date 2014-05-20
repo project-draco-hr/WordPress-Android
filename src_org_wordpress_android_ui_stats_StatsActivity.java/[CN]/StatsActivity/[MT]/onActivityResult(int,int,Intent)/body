@@ -4,6 +4,7 @@
     mResultCode=resultCode;
     if (resultCode == RESULT_OK && !WordPress.getCurrentBlog().isDotcomFlag()) {
       if (getBlogId() == null) {
+        final Handler handler=new Handler();
         final Blog currentBlog=WordPress.getCurrentBlog();
         XMLRPCClientInterface xmlrpcClient=XMLRPCFactory.instantiate(currentBlog.getUri(),"","");
         Map<String,String> args=ApiHelper.blogOptionsXMLRPCParameters;
@@ -22,13 +23,22 @@
             }
           }
           @Override public void onFailure(          long id,          Exception error){
-            AppLog.e(T.STATS,"Cannot load blog options (wp.getOptions failed " + "and no jetpack_client_id is then available",error);
+            AppLog.e(T.STATS,"Cannot load blog options (wp.getOptions failed) " + "and no jetpack_client_id is then available",error);
+            handler.post(new Runnable(){
+              @Override public void run(){
+                mPullToRefreshHelper.setRefreshing(false);
+                ToastUtils.showToast(StatsActivity.this,StatsActivity.this.getString(R.string.error_refresh_stats),Duration.LONG);
+              }
+            }
+);
           }
         }
 ,"wp.getOptions",params);
       }
+ else {
+        refreshStats();
+      }
       mPullToRefreshHelper.setRefreshing(true);
-      refreshStats();
     }
   }
 }
