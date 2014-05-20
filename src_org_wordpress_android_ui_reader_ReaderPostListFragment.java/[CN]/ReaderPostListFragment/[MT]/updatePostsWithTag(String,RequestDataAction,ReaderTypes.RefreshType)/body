@@ -8,11 +8,11 @@
   }
   setIsUpdating(true,updateAction);
   setEmptyTitleAndDescriptionForCurrentTag();
-  if (getPostListType() == ReaderPostListType.TAG_FOLLOWED && ReaderTagTable.isEmpty()) {
+  if (getPostListType() == ReaderTypes.ReaderPostListType.TAG_FOLLOWED && ReaderTagTable.isEmpty()) {
     AppLog.d(T.READER,"reader post list > empty followed tags, canceled update");
     return;
   }
-  if (refreshType == RefreshType.MANUAL && isCurrentTag(tagName)) {
+  if (refreshType == ReaderTypes.RefreshType.MANUAL && isCurrentTag(tagName)) {
     if (tagName.equals(ReaderTag.TAG_NAME_LIKED) || tagName.equals(ReaderTag.TAG_NAME_FOLLOWING))     refreshPosts();
   }
   ReaderActions.UpdateResultAndCountListener resultListener=new ReaderActions.UpdateResultAndCountListener(){
@@ -27,7 +27,7 @@
         return;
       }
       if (result == ReaderActions.UpdateResult.CHANGED && numNewPosts > 0) {
-        if (!isPostAdapterEmpty() && getPostListType().equals(ReaderPostListType.TAG_FOLLOWED) && updateAction == RequestDataAction.LOAD_NEWER && !isListScrolledToTop()) {
+        if (!isPostAdapterEmpty() && getPostListType().equals(ReaderTypes.ReaderPostListType.TAG_FOLLOWED) && updateAction == RequestDataAction.LOAD_NEWER && !isListScrolledToTop()) {
           showNewPostsBar();
         }
  else {
