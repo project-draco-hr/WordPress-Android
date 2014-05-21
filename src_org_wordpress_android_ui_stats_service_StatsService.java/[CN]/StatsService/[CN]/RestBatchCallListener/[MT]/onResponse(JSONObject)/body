@@ -9,8 +9,10 @@
       parseClicksResponse(response);
       parseSearchEngineTermsResponse(response);
       parseViewsByCountryResponse(response);
-      if (mServiceBlogId == null || mServiceBlogId.equals(mRequestBlogId)) {
-        stopService();
+synchronized (mServiceBlogIdMonitor) {
+        if (mServiceBlogId == null || mServiceBlogId.equals(mRequestBlogId)) {
+          stopService();
+        }
       }
     }
   }

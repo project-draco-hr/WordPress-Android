@@ -1,14 +1,16 @@
 {
   final String blogId=StringUtils.notNullStr(intent.getStringExtra(ARG_BLOG_ID));
-  if (mServiceBlogId == null) {
-    startTasks(blogId,startId);
-  }
- else   if (blogId.equals(mServiceBlogId)) {
-    AppLog.i(T.STATS,"StatsService is already running on this blogID - " + mServiceBlogId);
-  }
+synchronized (mServiceBlogIdMonitor) {
+    if (mServiceBlogId == null) {
+      startTasks(blogId,startId);
+    }
+ else     if (blogId.equals(mServiceBlogId)) {
+      AppLog.i(T.STATS,"StatsService is already running on this blogID - " + mServiceBlogId);
+    }
  else {
-    stopRefresh();
-    startTasks(blogId,startId);
+      stopRefresh();
+      startTasks(blogId,startId);
+    }
   }
   this.mServiceStartId=startId;
   return START_NOT_STICKY;
