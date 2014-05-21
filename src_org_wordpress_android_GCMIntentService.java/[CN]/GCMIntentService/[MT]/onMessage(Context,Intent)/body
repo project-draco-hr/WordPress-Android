@@ -22,26 +22,6 @@
   if (title == null)   title="WordPress";
   String message=StringEscapeUtils.unescapeHtml(extras.getString("msg"));
   String note_id=extras.getString("note_id");
-  Note note=null;
-  if (extras.getString("note_full_data") != null) {
-    byte[] decode=Base64.decode(intent.getStringExtra("note_full_data"),Base64.DEFAULT);
-    String unzippedString=NotificationUtils.unzipString(decode);
-    JSONObject jsonObject=null;
-    try {
-      jsonObject=new JSONObject(unzippedString);
-      JSONArray notesJSON=jsonObject.getJSONArray("notes");
-      note=new Note(notesJSON.getJSONObject(0));
-      WordPress.wpDB.addNote(note,false);
-    }
- catch (    JSONException e) {
-      AppLog.e(T.NOTIFS,"Can't parse restRequest JSON response, notifications: ",e);
-    }
-  }
- else {
-    note=new Note(extras);
-    WordPress.wpDB.addNote(note,true);
-    refreshNotes();
-  }
   long thisTime=System.currentTimeMillis();
   if (mPreviousNoteId != null && mPreviousNoteId.equals(note_id)) {
     long seconds=TimeUnit.MILLISECONDS.toSeconds(thisTime - mPreviousNoteTime);
@@ -74,14 +54,14 @@
   sound=prefs.getBoolean("wp_pref_notification_sound",false);
   vibrate=prefs.getBoolean("wp_pref_notification_vibrate",false);
   light=prefs.getBoolean("wp_pref_notification_light",false);
-  Notification.Builder mBuilder;
+  NotificationCompat.Builder mBuilder;
   Intent resultIntent=new Intent(this,PostsActivity.class);
   resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
   resultIntent.setAction("android.intent.action.MAIN");
   resultIntent.addCategory("android.intent.category.LAUNCHER");
   resultIntent.putExtra(NotificationsActivity.FROM_NOTIFICATION_EXTRA,true);
   if (activeNotificationsMap.size() <= 1) {
-    mBuilder=new Notification.Builder(this).setSmallIcon(R.drawable.notification_icon).setContentTitle(title).setContentText(message).setTicker(message).setAutoCancel(true).setStyle(new Notification.BigTextStyle().bigText(message));
+    mBuilder=new NotificationCompat.Builder(this).setSmallIcon(R.drawable.notification_icon).setContentTitle(title).setContentText(message).setTicker(message).setAutoCancel(true).setStyle(new NotificationCompat.BigTextStyle().bigText(message));
     if (note_id != null) {
       resultIntent.putExtra(NotificationsActivity.NOTE_ID_EXTRA,note_id);
     }
@@ -103,7 +83,7 @@
     }
   }
  else {
-    Notification.InboxStyle inboxStyle=new Notification.InboxStyle();
+    NotificationCompat.InboxStyle inboxStyle=new NotificationCompat.InboxStyle();
     int noteCtr=1;
     for (    Bundle wpPN : activeNotificationsMap.values()) {
       if (noteCtr > 5)       break;
@@ -121,7 +101,7 @@
     }
     if (activeNotificationsMap.size() > 5)     inboxStyle.setSummaryText(String.format(getString(R.string.more_notifications),activeNotificationsMap.size() - 5));
     String subject=String.format(getString(R.string.new_notifications),activeNotificationsMap.size());
-    mBuilder=new Notification.Builder(this).setLargeIcon(BitmapFactory.decodeResource(getResources(),R.drawable.notification_multi)).setSmallIcon(R.drawable.notification_icon).setContentTitle("WordPress").setContentText(subject).setTicker(message).setAutoCancel(true).setStyle(inboxStyle);
+    mBuilder=new NotificationCompat.Builder(this).setLargeIcon(BitmapFactory.decodeResource(getResources(),R.drawable.notification_multi)).setSmallIcon(R.drawable.notification_icon).setContentTitle("WordPress").setContentText(subject).setTicker(message).setAutoCancel(true).setStyle(inboxStyle);
   }
   if (sound)   mBuilder.setSound(Uri.parse("android.resource://" + getPackageName() + "/"+ R.raw.notification));
   if (vibrate)   mBuilder.setVibrate(new long[]{500,500,500});
@@ -129,6 +109,6 @@
   PendingIntent pendingIntent=PendingIntent.getActivity(context,0,resultIntent,PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_UPDATE_CURRENT);
   mBuilder.setContentIntent(pendingIntent);
   NotificationManager mNotificationManager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-  mNotificationManager.notify(notificationId,mBuilder.build());
-  broadcastNewNotification();
+  mNotificationManager.notify(PUSH_NOTIFICATION_ID,mBuilder.build());
+  broadcastNewNotification(context);
 }

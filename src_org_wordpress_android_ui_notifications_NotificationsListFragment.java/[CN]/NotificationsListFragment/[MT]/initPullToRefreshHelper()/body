@@ -1,14 +1,15 @@
 {
-  mPullToRefreshHelper=new PullToRefreshHelper(getActivity(),(PullToRefreshLayout)getActivity().findViewById(R.id.ptr_layout),new RefreshListener(){
+  mFauxPullToRefreshHelper=new PullToRefreshHelper(getActivity(),(PullToRefreshLayout)getActivity().findViewById(R.id.ptr_layout),new PullToRefreshHelper.RefreshListener(){
     @Override public void onRefreshStarted(    View view){
-      if (getActivity() == null || !NetworkUtils.checkConnection(getActivity())) {
-        mPullToRefreshHelper.setRefreshing(false);
-        return;
+      new Handler().postDelayed(new Runnable(){
+        @Override public void run(){
+          if (hasActivity()) {
+            mFauxPullToRefreshHelper.setRefreshing(false);
+          }
+        }
       }
-      if (getActivity() instanceof NotificationsActivity) {
-        ((NotificationsActivity)getActivity()).refreshNotes();
-      }
+,2000);
     }
   }
-,TextView.class);
+,LinearLayout.class);
 }

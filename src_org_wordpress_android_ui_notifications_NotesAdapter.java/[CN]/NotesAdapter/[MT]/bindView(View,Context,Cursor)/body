@@ -1,0 +1,19 @@
+{
+  if (cursor.isClosed())   return;
+  Bucket.ObjectCursor<Note> bucketCursor=(Bucket.ObjectCursor<Note>)cursor;
+  Note note=bucketCursor.getObject();
+  NoteViewHolder noteViewHolder=(NoteViewHolder)view.getTag();
+  noteViewHolder.txtLabel.setText(note.getSubject());
+  if (note.isCommentType()) {
+    noteViewHolder.txtDetail.setText(note.getCommentPreview());
+    noteViewHolder.txtDetail.setVisibility(View.VISIBLE);
+  }
+ else {
+    noteViewHolder.txtDetail.setVisibility(View.GONE);
+  }
+  noteViewHolder.txtDate.setText(note.getTimeSpan());
+  String avatarUrl=PhotonUtils.fixAvatar(note.getIconURL(),mAvatarSz);
+  noteViewHolder.imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
+  noteViewHolder.imgNoteIcon.setImageDrawable(getDrawableForType(note.getType()));
+  noteViewHolder.unreadIndicator.setVisibility(note.isUnread() ? View.VISIBLE : View.INVISIBLE);
+}
