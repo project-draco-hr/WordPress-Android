@@ -1,0 +1,20 @@
+{
+  savePost(true);
+  if (mEditPostContentFragment != null && mEditPostContentFragment.hasEmptyContentFields()) {
+    if (mIsNewPost) {
+      WordPress.wpDB.deletePost(mPost);
+    }
+  }
+ else   if (mOriginalPost != null && !mPost.hasChanges(mOriginalPost)) {
+    WordPress.wpDB.updatePost(mOriginalPost);
+    WordPress.currentPost=mOriginalPost;
+  }
+ else {
+    savePost(false);
+    WordPress.currentPost=mPost;
+    Intent i=new Intent();
+    i.putExtra("shouldRefresh",true);
+    setResult(RESULT_OK,i);
+  }
+  finish();
+}

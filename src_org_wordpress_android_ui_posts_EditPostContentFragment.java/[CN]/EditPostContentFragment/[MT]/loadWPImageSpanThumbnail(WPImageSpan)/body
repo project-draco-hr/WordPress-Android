@@ -1,7 +1,4 @@
 {
-  final int widthOfContentEditor=DisplayUtils.isLandscape(mActivity) ? mContentEditText.getHeight() : mContentEditText.getWidth();
-  final int maxPictureWidthForContentEditor=400 > (widthOfContentEditor - 50) ? widthOfContentEditor - 50 : 400;
-  final int minPictureWidthForContentEditor=200;
   MediaFile mediaFile=imageSpan.getMediaFile();
   if (mediaFile == null)   return;
   final String mediaId=mediaFile.getMediaId();
@@ -9,7 +6,7 @@
   String imageURL;
   if (WordPress.getCurrentBlog() != null && WordPress.getCurrentBlog().isPhotonCapable()) {
     String photonUrl=imageSpan.getImageSource().toString();
-    imageURL=StringUtils.getPhotonUrl(photonUrl,maxPictureWidthForContentEditor);
+    imageURL=StringUtils.getPhotonUrl(photonUrl,getMaximumThumbnailWidth());
   }
  else {
     imageURL=mediaFile.getFileURL() != null ? mediaFile.getFileURL() : mediaFile.getThumbnailURL();
@@ -26,15 +23,15 @@
       if (downloadedBitmap == null) {
         return;
       }
-      if (downloadedBitmap.getWidth() < minPictureWidthForContentEditor) {
+      if (downloadedBitmap.getWidth() < MIN_THUMBNAIL_WIDTH) {
         return;
       }
       Bitmap resizedBitmap;
-      if (downloadedBitmap.getWidth() <= maxPictureWidthForContentEditor) {
+      if (downloadedBitmap.getWidth() <= getMaximumThumbnailWidth()) {
         resizedBitmap=downloadedBitmap;
       }
  else {
-        int targetWidth=maxPictureWidthForContentEditor;
+        int targetWidth=getMaximumThumbnailWidth();
         try {
           ImageHelper ih=new ImageHelper();
           resizedBitmap=ih.getThumbnailForWPImageSpan(downloadedBitmap,targetWidth);
