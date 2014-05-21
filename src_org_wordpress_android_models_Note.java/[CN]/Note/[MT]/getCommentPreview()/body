@@ -1,4 +1,9 @@
 {
-  if (mCommentPreview == null)   mCommentPreview=getCommentBody().toString().replaceAll("\uFFFC","").replace("\n"," ").replaceAll("[\\s]{2,}"," ").trim();
+  if (mCommentPreview == null) {
+    mCommentPreview=HtmlUtils.fastStripHtml(getCommentText());
+    if (mCommentPreview.length() > MAX_COMMENT_PREVIEW_LENGTH) {
+      mCommentPreview=mCommentPreview.substring(0,MAX_COMMENT_PREVIEW_LENGTH - 1);
+    }
+  }
   return mCommentPreview;
 }
