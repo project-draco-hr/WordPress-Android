@@ -9,12 +9,25 @@
   if (mPost != null) {
     MenuItem saveMenuItem=menu.findItem(R.id.menu_save_post);
 switch (mPost.getStatusEnum()) {
+case SCHEDULED:
+      saveMenuItem.setTitle(getString(R.string.schedule_verb));
+    break;
 case PUBLISHED:
 case UNKNOWN:
-      saveMenuItem.setTitle(R.string.publish_post);
-    break;
+  if (mPost.isLocalDraft()) {
+    saveMenuItem.setTitle(R.string.publish_post);
+  }
+ else {
+    saveMenuItem.setTitle(R.string.update_verb);
+  }
+break;
 default :
-  saveMenuItem.setTitle(R.string.save);
+if (mPost.isLocalDraft()) {
+saveMenuItem.setTitle(R.string.save);
+}
+ else {
+saveMenuItem.setTitle(R.string.update_verb);
+}
 }
 }
 return super.onPrepareOptionsMenu(menu);
