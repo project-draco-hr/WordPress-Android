@@ -7,25 +7,24 @@
 switch (result) {
 case CHANGED:
         mPost=ReaderPostTable.getPost(mBlogId,mPostId);
-      doPostChanged(ReaderTypes.PostChangeType.CONTENT);
-    break;
+      break;
 case FAILED:
-  return;
+    return;
 default :
-break;
+  break;
 }
 if (origNumLikes > 0 || mPost.numLikes > 0) refreshLikes(false);
 new Thread(){
 @Override public void run(){
-final boolean isCommentsChanged=(mPost.numReplies != origNumReplies || mPost.numReplies != ReaderCommentTable.getNumCommentsForPost(mPost));
-if (isCommentsChanged) {
-  mHandler.post(new Runnable(){
-    public void run(){
-      updateComments();
+  final boolean isCommentsChanged=(mPost.numReplies != origNumReplies || mPost.numReplies != ReaderCommentTable.getNumCommentsForPost(mPost));
+  if (isCommentsChanged) {
+    mHandler.post(new Runnable(){
+      public void run(){
+        updateComments();
+      }
     }
-  }
 );
-}
+  }
 }
 }
 .start();
