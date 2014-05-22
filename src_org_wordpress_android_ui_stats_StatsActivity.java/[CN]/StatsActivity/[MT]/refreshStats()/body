@@ -12,16 +12,44 @@
     AppLog.w(T.STATS,"stats are already updating, refresh cancelled");
     return;
   }
-  final String blogId;
-  if (WordPress.getCurrentBlog().isDotcomFlag() && dotComCredentialsMatch()) {
-    blogId=String.valueOf(WordPress.getCurrentBlog().getRemoteBlogId());
+  final Blog currentBlog=WordPress.getCurrentBlog();
+  if (currentBlog == null) {
+    mPullToRefreshHelper.setRefreshing(false);
+    AppLog.w(T.STATS,"Current blog is null. This should nevver happen here.");
+    return;
+  }
+  final String blogId=getBlogId();
+  if (blogId != null) {
+    if (!WordPress.getCurrentBlog().isDotcomFlag() && !WordPress.getCurrentBlog().hasValidJetpackCredentials() && mResultCode != RESULT_CANCELED) {
+      if (WordPress.hasValidWPComCredentials(this)) {
+        SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
+        String username=settings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,null);
+        String password=WordPressDB.decryptPassword(settings.getString(WordPress.WPCOM_PASSWORD_PREFERENCE,null));
+        WordPress.getCurrentBlog().setDotcom_username(username);
+        WordPress.getCurrentBlog().setDotcom_password(password);
+        WordPress.wpDB.saveBlog(WordPress.getCurrentBlog());
+        mPullToRefreshHelper.setRefreshing(true);
+      }
+ else {
+        startWPComLoginActivity();
+        return;
+      }
+    }
   }
  else {
-    blogId=getBlogId();
-    if (blogId == null) {
-      new ApiHelper.RefreshBlogContentTask(this,WordPress.getCurrentBlog(),new VerifyJetpackSettingsCallback(StatsActivity.this)).execute(false);
-      return;
+    if (!currentBlog.isDotcomFlag()) {
+      new ApiHelper.RefreshBlogContentTask(this,currentBlog,new VerifyJetpackSettingsCallback(StatsActivity.this)).execute(false);
     }
+ else {
+      Toast.makeText(this,R.string.error_refresh_stats,Toast.LENGTH_LONG).show();
+      AppLog.e(T.STATS,"blogID is null for a wpcom blog!! " + currentBlog.getHomeURL());
+    }
+    return;
+  }
+  if (!currentBlog.isDotcomFlag() && !currentBlog.hasValidJetpackCredentials() && !WordPress.hasValidWPComCredentials(this)) {
+    mPullToRefreshHelper.setRefreshing(false);
+    AppLog.w(T.STATS,"Jetpack blog with no wpcom credentials");
+    return;
   }
   Intent intent=new Intent(this,StatsService.class);
   intent.putExtra(StatsService.ARG_BLOG_ID,blogId);
