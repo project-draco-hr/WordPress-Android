@@ -14,9 +14,10 @@
  else {
       txtExcerpt.setVisibility(View.GONE);
     }
-    int avatarSz=getResources().getDimensionPixelSize(R.dimen.avatar_sz_small);
+    int avatarSz=getResources().getDimensionPixelSize(R.dimen.avatar_sz_medium);
     imgAvatar.setImageUrl(mPost.getPostAvatarForDisplay(avatarSz),WPNetworkImageView.ImageType.AVATAR);
-    if (mPost.hasFeaturedImage()) {
+    boolean isLandscape=DisplayUtils.isLandscape(ReaderReblogActivity.this);
+    if (!isLandscape && mPost.hasFeaturedImage()) {
       int displayWidth=DisplayUtils.getDisplayPixelWidth(ReaderReblogActivity.this);
       int listMargin=getResources().getDimensionPixelSize(R.dimen.reader_list_margin);
       int photonWidth=displayWidth - (listMargin * 2);
@@ -24,7 +25,7 @@
       final String imageUrl=mPost.getFeaturedImageForDisplay(photonWidth,photonHeight);
       imgFeatured.setImageUrl(imageUrl,WPNetworkImageView.ImageType.PHOTO);
     }
- else     if (mPost.hasFeaturedVideo()) {
+ else     if (!isLandscape && mPost.hasFeaturedVideo()) {
       imgFeatured.setVideoUrl(mPost.postId,mPost.getFeaturedVideo());
     }
  else {
