@@ -17,23 +17,14 @@
   mBlogId=getIntent().getLongExtra(ReaderActivity.ARG_BLOG_ID,0);
   mPostId=getIntent().getLongExtra(ReaderActivity.ARG_POST_ID,0);
   mEditComment=(EditText)findViewById(R.id.edit_comment);
-  loadPost();
   if (savedInstanceState == null) {
     mEditComment.setVisibility(View.INVISIBLE);
     new Handler().postDelayed(new Runnable(){
       @Override public void run(){
-        ObjectAnimator rotateComment=ObjectAnimator.ofFloat(mEditComment,View.ROTATION_X,45f,0f);
-        rotateComment.setInterpolator(new AccelerateDecelerateInterpolator());
-        rotateComment.setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
-        rotateComment.addListener(new AnimatorListenerAdapter(){
-          @Override public void onAnimationStart(          Animator animation){
-            mEditComment.setVisibility(View.VISIBLE);
-          }
-        }
-);
-        rotateComment.start();
+        animateCommentView();
       }
     }
-,300);
+,250);
   }
+  loadPost();
 }
