@@ -1,7 +1,13 @@
 {
-  final ProgressBar progress=(ProgressBar)findViewById(R.id.progress);
-  final ViewGroup layoutContent=(ViewGroup)findViewById(R.id.layout_content);
-  mEditComment.setEnabled(false);
-  progress.setVisibility(View.VISIBLE);
-  layoutContent.setAlpha(0.25f);
+  final ViewGroup layoutProgress=(ViewGroup)findViewById(R.id.layout_progress);
+  ObjectAnimator anim=ObjectAnimator.ofFloat(layoutProgress,View.ALPHA,0f,1f);
+  anim.addListener(new AnimatorListenerAdapter(){
+    @Override public void onAnimationStart(    Animator animation){
+      super.onAnimationStart(animation);
+      layoutProgress.setVisibility(View.VISIBLE);
+    }
+  }
+);
+  anim.setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime));
+  anim.start();
 }
