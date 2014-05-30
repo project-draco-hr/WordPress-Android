@@ -53,22 +53,17 @@
   final int titleMargin;
   if (post.hasFeaturedImage()) {
     final String imageUrl=post.getFeaturedImageForDisplay(mPhotonWidth,mPhotonHeight);
-    if (!ReaderUtils.viewHasTag(holder.imgFeatured,imageUrl)) {
-      holder.imgFeatured.setImageUrl(imageUrl,WPNetworkImageView.ImageType.PHOTO);
-      holder.imgFeatured.setTag(imageUrl);
-    }
+    holder.imgFeatured.setImageUrl(imageUrl,WPNetworkImageView.ImageType.PHOTO);
     holder.imgFeatured.setVisibility(View.VISIBLE);
     titleMargin=mMarginLarge;
   }
  else   if (post.hasFeaturedVideo()) {
     holder.imgFeatured.setVideoUrl(post.postId,post.getFeaturedVideo());
     holder.imgFeatured.setVisibility(View.VISIBLE);
-    holder.imgFeatured.setTag(null);
     titleMargin=mMarginLarge;
   }
  else {
     holder.imgFeatured.setVisibility(View.GONE);
-    holder.imgFeatured.setTag(null);
     titleMargin=(holder.layoutPostHeader.getVisibility() == View.VISIBLE ? 0 : mMarginLarge);
   }
   RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)holder.txtTitle.getLayoutParams();
@@ -111,7 +106,7 @@
     if (!post.isRebloggedByCurrentUser && post.isWP()) {
       holder.imgBtnReblog.setOnClickListener(new View.OnClickListener(){
         @Override public void onClick(        View v){
-          AniUtils.zoomAction(holder.imgBtnReblog);
+          ReaderAnim.zoomAction(holder.imgBtnReblog);
           if (mReblogListener != null) {
             mReblogListener.onRequestReblog(post);
           }
