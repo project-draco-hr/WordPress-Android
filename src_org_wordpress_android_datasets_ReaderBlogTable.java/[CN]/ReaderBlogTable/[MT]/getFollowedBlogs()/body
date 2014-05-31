@@ -1,11 +1,17 @@
 {
-  ReaderFollowedBlogList followedBlogs=new ReaderFollowedBlogList();
-  ReaderBlogInfoList blogInfoList=getAllFollowedBlogInfo();
-  for (  ReaderBlogInfo blogInfo : blogInfoList) {
-    ReaderFollowedBlog blog=new ReaderFollowedBlog();
-    blog.blogId=blogInfo.blogId;
-    blog.setUrl(blogInfo.getUrl());
-    followedBlogs.add(blog);
+  Cursor c=ReaderDatabase.getReadableDb().rawQuery("SELECT * FROM tbl_blog_info WHERE is_following!=0 ORDER BY name COLLATE NOCASE, blog_url",null);
+  try {
+    ReaderBlogList blogs=new ReaderBlogList();
+    if (c.moveToFirst()) {
+      do {
+        ReaderBlog blogInfo=getBlogInfoFromCursor(c);
+        blogs.add(blogInfo);
+      }
+ while (c.moveToNext());
+    }
+    return blogs;
   }
-  return followedBlogs;
+  finally {
+    SqlUtils.closeCursor(c);
+  }
 }
