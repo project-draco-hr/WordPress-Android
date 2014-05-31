@@ -4,12 +4,10 @@
   if (!hasBlogId && !hasBlogUrl) {
     return false;
   }
-  String normUrl=UrlUtils.normalizeUrl(blogUrl);
-  String reverseUrl=reverseWww(normUrl);
   String sql;
   if (hasBlogId && hasBlogUrl) {
-    sql="SELECT 1 FROM tbl_blog_info WHERE is_following!=0 AND (blog_id=? OR blog_url=? OR blog_url=?)";
-    String[] args={Long.toString(blogId),normUrl,reverseUrl};
+    sql="SELECT 1 FROM tbl_blog_info WHERE is_following!=0 AND (blog_id=? OR blog_url=?)";
+    String[] args={Long.toString(blogId),blogUrl};
     return SqlUtils.boolForQuery(ReaderDatabase.getReadableDb(),sql,args);
   }
  else   if (hasBlogId) {
@@ -18,8 +16,8 @@
     return SqlUtils.boolForQuery(ReaderDatabase.getReadableDb(),sql,args);
   }
  else {
-    sql="SELECT 1 FROM tbl_blog_info WHERE is_following!=0 AND (blog_url=? OR blog_url=?)";
-    String[] args={normUrl,reverseUrl};
+    sql="SELECT 1 FROM tbl_blog_info WHERE is_following!=0 AND blog_url=?";
+    String[] args={blogUrl};
     return SqlUtils.boolForQuery(ReaderDatabase.getReadableDb(),sql,args);
   }
 }

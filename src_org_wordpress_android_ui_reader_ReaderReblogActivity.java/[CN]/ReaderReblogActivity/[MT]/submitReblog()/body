@@ -3,17 +3,28 @@
     ToastUtils.showToast(this,R.string.reader_toast_err_reblog_requires_blog);
     return;
   }
+  if (!NetworkUtils.checkConnection(this)) {
+    return;
+  }
+  if (mIsSubmittingReblog) {
+    return;
+  }
   String commentText=EditTextUtils.getText(mEditComment);
-  setIsSubmittingReblog(true);
+  mIsSubmittingReblog=true;
+  EditTextUtils.hideSoftInput(mEditComment);
+  showProgress();
   final ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
     @Override public void onActionResult(    boolean succeeded){
-      setIsSubmittingReblog(false);
-      if (succeeded) {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.READER_REBLOGGED_ARTICLE);
-        reblogSucceeded();
-      }
+      mIsSubmittingReblog=false;
+      if (!isFinishing()) {
+        hideProgress();
+        if (succeeded) {
+          AnalyticsTracker.track(AnalyticsTracker.Stat.READER_REBLOGGED_ARTICLE);
+          reblogSucceeded();
+        }
  else {
-        ToastUtils.showToast(ReaderReblogActivity.this,R.string.reader_toast_err_reblog_failed);
+          ToastUtils.showToast(ReaderReblogActivity.this,R.string.reader_toast_err_reblog_failed);
+        }
       }
     }
   }

@@ -2,7 +2,6 @@
   Post post=mActivity.getPost();
   if (post == null || mContentEditText.getText() == null)   return;
   String title=(mTitleEditText.getText() != null) ? mTitleEditText.getText().toString() : "";
-  String content;
   Editable postContentEditable;
   try {
     postContentEditable=new SpannableStringBuilder(mContentEditText.getText());
@@ -11,6 +10,7 @@
     postContentEditable=mContentEditText.getText();
   }
   if (postContentEditable == null)   return;
+  String content;
   if (post.isLocalDraft()) {
     CharacterStyle[] characterStyles=postContentEditable.getSpans(0,postContentEditable.length(),CharacterStyle.class);
     for (    CharacterStyle characterStyle : characterStyles) {
@@ -25,6 +25,14 @@
     content=content.replace("</strong><strong>","").replace("</em><em>","").replace("</u><u>","").replace("</strike><strike>","").replace("</blockquote><blockquote>","");
   }
  else {
+    if (!isAutoSave) {
+      MediaGalleryImageSpan[] gallerySpans=postContentEditable.getSpans(0,postContentEditable.length(),MediaGalleryImageSpan.class);
+      for (      MediaGalleryImageSpan gallerySpan : gallerySpans) {
+        int start=postContentEditable.getSpanStart(gallerySpan);
+        postContentEditable.removeSpan(gallerySpan);
+        postContentEditable.insert(start,WPHtml.getGalleryShortcode(gallerySpan));
+      }
+    }
     WPImageSpan[] imageSpans=postContentEditable.getSpans(0,postContentEditable.length(),WPImageSpan.class);
     if (imageSpans.length != 0) {
       for (      WPImageSpan wpIS : imageSpans) {
@@ -51,14 +59,6 @@
       }
     }
     content=postContentEditable.toString();
-  }
-  if (!isAutoSave) {
-    MediaGalleryImageSpan[] gallerySpans=postContentEditable.getSpans(0,postContentEditable.length(),MediaGalleryImageSpan.class);
-    for (    MediaGalleryImageSpan gallerySpan : gallerySpans) {
-      int start=postContentEditable.getSpanStart(gallerySpan);
-      postContentEditable.removeSpan(gallerySpan);
-      postContentEditable.insert(start,WPHtml.getGalleryShortcode(gallerySpan));
-    }
   }
   String moreTag="<!--more-->";
   post.setTitle(title);
