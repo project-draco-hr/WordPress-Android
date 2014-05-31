@@ -1,6 +1,7 @@
 {
-  if (!hasActivity())   return;
-  if (!hasPost() || !mPost.isWP())   return;
+  if (!hasActivity() || !hasPost() || !mPost.isWP()) {
+    return;
+  }
   new Thread(){
     @Override public void run(){
       if (getView() == null) {
@@ -19,7 +20,9 @@
       final ArrayList<String> avatars=ReaderUserTable.getAvatarUrls(avatarIds,maxAvatars,likeAvatarSize);
       mHandler.post(new Runnable(){
         public void run(){
-          if (!hasActivity())           return;
+          if (!hasActivity()) {
+            return;
+          }
           imgBtnLike.setSelected(mPost.isLikedByCurrentUser);
           imgBtnLike.setOnClickListener(new View.OnClickListener(){
             @Override public void onClick(            View view){
@@ -48,7 +51,8 @@
             }
           }
 );
-          showLikingAvatars(avatars,maxAvatars,forceReload);
+          mLayoutLikes.setVisibility(View.VISIBLE);
+          showLikingAvatars(avatars);
         }
       }
 );
