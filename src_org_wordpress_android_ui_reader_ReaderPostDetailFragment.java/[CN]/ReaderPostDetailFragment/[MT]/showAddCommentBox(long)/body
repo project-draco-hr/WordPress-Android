@@ -1,18 +1,23 @@
 {
   if (!hasActivity())   return;
-  if (mIsAddCommentBoxShowing)   return;
-  if (mIsSubmittingComment)   return;
+  if (mIsAddCommentBoxShowing || mIsSubmittingComment) {
+    return;
+  }
   final ViewGroup layoutCommentBox=(ViewGroup)getView().findViewById(R.id.layout_comment_box);
   final EditText editComment=(EditText)layoutCommentBox.findViewById(R.id.edit_comment);
   final ImageView imgBtnComment=(ImageView)getView().findViewById(R.id.image_comment_btn);
-  if (isFullScreen())   setIsFullScreen(false);
+  if (isFullScreen()) {
+    setIsFullScreen(false);
+  }
   editComment.setHint(replyToCommentId == 0 ? R.string.reader_hint_comment_on_post : R.string.reader_hint_comment_on_comment);
   imgBtnComment.setSelected(true);
   AniUtils.flyIn(layoutCommentBox);
   editComment.requestFocus();
   editComment.setOnEditorActionListener(new TextView.OnEditorActionListener(){
     @Override public boolean onEditorAction(    TextView v,    int actionId,    KeyEvent event){
-      if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEND)       submitComment(replyToCommentId);
+      if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEND) {
+        submitComment(replyToCommentId);
+      }
       return false;
     }
   }
