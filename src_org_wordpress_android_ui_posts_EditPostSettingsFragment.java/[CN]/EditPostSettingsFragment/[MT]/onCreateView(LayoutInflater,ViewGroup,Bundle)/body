@@ -142,11 +142,10 @@ if (!post.isPage()) {
 if (post.getJSONCategories() != null) {
 mCategories=JSONUtil.fromJSONArrayToStringList(post.getJSONCategories());
 }
-Double latitude=post.getLatitude();
-Double longitude=post.getLongitude();
-if (latitude != 0.0) {
+if (post.hasLocation()) {
+PostLocation location=post.getLocation();
 setLocationStatus(LocationStatus.SEARCHING);
-new GetAddressTask().execute(latitude,longitude);
+new GetAddressTask().execute(location.getLatitude(),location.getLongitude());
 }
 }
 String tags=post.getKeywords();

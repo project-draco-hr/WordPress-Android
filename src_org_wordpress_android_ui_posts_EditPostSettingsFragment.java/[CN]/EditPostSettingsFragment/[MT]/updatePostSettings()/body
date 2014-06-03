@@ -28,15 +28,12 @@
   if (post.isUploaded() && post.getPostStatus().equals(PostStatus.toString(PostStatus.DRAFT)) && status.equals(PostStatus.toString(PostStatus.PUBLISHED))) {
     post.setChangedFromLocalDraftToPublished(true);
   }
-  double latitude=0.0;
-  double longitude=0.0;
+  PostLocation location=null;
   if (mCurrentLocation == null) {
-    latitude=post.getLatitude();
-    longitude=post.getLongitude();
+    location=post.getLocation();
   }
  else   if (WordPress.getCurrentBlog().isLocation() && !mActivity.getPost().isPage()) {
-    latitude=mCurrentLocation.getLatitude();
-    longitude=mCurrentLocation.getLongitude();
+    location=new PostLocation(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude());
   }
   post.setPostExcerpt(excerpt);
   post.setDate_created_gmt(pubDateTimestamp);
@@ -44,7 +41,6 @@
   post.setKeywords(tags);
   post.setPostStatus(status);
   post.setPassword(password);
-  post.setLatitude(latitude);
-  post.setLongitude(longitude);
+  post.setLocation(location);
   post.setPostFormat(postFormat);
 }
