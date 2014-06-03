@@ -25,6 +25,8 @@
       showDefaultImage();
     }
   }
+  Point pt=DisplayUtils.getDisplayPixelSize(this.getContext());
+  int maxSize=Math.max(pt.x,pt.y);
   ImageLoader.ImageContainer newContainer=WordPress.imageLoader.get(mUrl,new ImageLoader.ImageListener(){
     @Override public void onErrorResponse(    VolleyError error){
       if (mImageType == ImageType.MSHOT && mRetryCnt < MAX_RETRIES && VolleyUtils.statusCodeFromVolleyError(error) == 307) {
@@ -52,6 +54,6 @@
       }
     }
   }
-);
+,maxSize,maxSize);
   mImageContainer=newContainer;
 }
