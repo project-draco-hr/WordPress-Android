@@ -31,10 +31,16 @@
     int rotation=getImageOrientation(context,filePath);
     byte[] bytes=createThumbnailFromUri(context,curUri,targetWidth,null,rotation);
     if (bytes != null && bytes.length > 0) {
-      return BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-    }
- else {
-      return null;
+      try {
+        Bitmap resizedBitmap=BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+        if (resizedBitmap != null) {
+          return getScaledBitmapAtLongestSide(resizedBitmap,targetWidth);
+        }
+      }
+ catch (      OutOfMemoryError e) {
+        return null;
+      }
     }
   }
+  return null;
 }
