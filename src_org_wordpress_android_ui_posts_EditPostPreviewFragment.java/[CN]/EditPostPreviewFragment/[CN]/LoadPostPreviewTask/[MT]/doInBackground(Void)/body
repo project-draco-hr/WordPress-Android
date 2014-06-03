@@ -1,17 +1,18 @@
 {
-  if (post == null)   return;
+  Spanned contentSpannable;
+  if (mActivity == null || mActivity.getPost() == null) {
+    return null;
+  }
+  Post post=mActivity.getPost();
   String postTitle="<h1>" + post.getTitle() + "</h1>";
   String postContent=postTitle + post.getDescription() + "\n\n"+ post.getMoreText();
   if (post.isLocalDraft()) {
-    mTextView.setVisibility(View.VISIBLE);
-    mWebView.setVisibility(View.GONE);
-    mTextView.setText(WPHtml.fromHtml(postContent.replaceAll("\uFFFC",""),getActivity(),post,mTextView.getWidth()));
+    contentSpannable=WPHtml.fromHtml(postContent.replaceAll("\uFFFC",""),getActivity(),post,Math.min(mTextView.getWidth(),mTextView.getHeight()));
   }
  else {
-    mTextView.setVisibility(View.GONE);
-    mWebView.setVisibility(View.VISIBLE);
     String htmlText="<?xml version=\"1.0\" encoding=\"UTF-8\" ?><html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"webview.css\" /></head><body><div id=\"container\">%s</div></body></html>";
     htmlText=String.format(htmlText,StringUtils.addPTags(postContent));
-    mWebView.loadDataWithBaseURL("file:///android_asset/",htmlText,"text/html","utf-8",null);
+    contentSpannable=new SpannableString(htmlText);
   }
+  return contentSpannable;
 }

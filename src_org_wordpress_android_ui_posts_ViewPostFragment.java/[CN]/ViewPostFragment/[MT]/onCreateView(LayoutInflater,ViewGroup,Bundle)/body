@@ -1,5 +1,12 @@
 {
-  View v=inflater.inflate(R.layout.viewpost,container,false);
+  final View v=inflater.inflate(R.layout.viewpost,container,false);
+  v.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
+    @Override public void onGlobalLayout(){
+      loadPost(WordPress.currentPost);
+      v.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+    }
+  }
+);
   mTitleTextView=(TextView)v.findViewById(R.id.postTitle);
   mContentTextView=(TextView)v.findViewById(R.id.viewPostTextView);
   mShareUrlButton=(ImageButton)v.findViewById(R.id.sharePostLink);
@@ -7,13 +14,6 @@
   mLayoutCommentBox=(ViewGroup)v.findViewById(R.id.layout_comment_box);
   mEditComment=(EditText)mLayoutCommentBox.findViewById(R.id.edit_comment);
   mEditComment.setHint(R.string.reader_hint_comment_on_post);
-  mContentTextView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
-    @Override public void onGlobalLayout(){
-      loadPost(WordPress.currentPost);
-      mContentTextView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-    }
-  }
-);
   ImageButton editPostButton=(ImageButton)v.findViewById(R.id.editPost);
   editPostButton.setOnClickListener(new ImageButton.OnClickListener(){
     public void onClick(    View v){
