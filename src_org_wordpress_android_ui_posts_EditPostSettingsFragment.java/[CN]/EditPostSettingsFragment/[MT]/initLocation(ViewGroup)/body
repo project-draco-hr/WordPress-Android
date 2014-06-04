@@ -1,4 +1,5 @@
 {
+  Post post=mActivity.getPost();
   boolean hasLocationProvider=false;
   LocationManager locationManager=(LocationManager)getActivity().getSystemService(Activity.LOCATION_SERVICE);
   List<String> providers=locationManager.getProviders(true);
@@ -9,18 +10,33 @@
       }
     }
   }
-  if (hasLocationProvider && WordPress.getCurrentBlog().isLocation() && mActivity.getPost().supportsLocation()) {
+  if (hasLocationProvider && WordPress.getCurrentBlog().isLocation() && post.supportsLocation()) {
     View locationRootView=((ViewStub)rootView.findViewById(R.id.stub_post_location_settings)).inflate();
     ((TextView)locationRootView.findViewById(R.id.locationLabel)).setText(getResources().getString(R.string.location).toUpperCase());
     mLocationText=(TextView)locationRootView.findViewById(R.id.locationText);
+    mLocationAddSection=locationRootView.findViewById(R.id.sectionLocationAdd);
+    mLocationSearchSection=locationRootView.findViewById(R.id.sectionLocationSearch);
+    mLocationViewSection=locationRootView.findViewById(R.id.sectionLocationView);
+    if (mActivity.getPost().hasLocation()) {
+      showLocationView();
+    }
+ else {
+      showLocationAdd();
+    }
+    Button addLocation=(Button)locationRootView.findViewById(R.id.addLocation);
+    addLocation.setOnClickListener(this);
+    Button searchLocation=(Button)locationRootView.findViewById(R.id.searchLocation);
+    searchLocation.setOnClickListener(this);
+    mLocationEditText=(EditText)locationRootView.findViewById(R.id.searchLocationText);
     Button viewMap=(Button)locationRootView.findViewById(R.id.viewMap);
     Button updateLocation=(Button)locationRootView.findViewById(R.id.updateLocation);
     Button removeLocation=(Button)locationRootView.findViewById(R.id.removeLocation);
     updateLocation.setOnClickListener(this);
     removeLocation.setOnClickListener(this);
     viewMap.setOnClickListener(this);
-    if (!mActivity.getPost().hasLocation()) {
-      getLocation();
+    if (post.hasLocation()) {
+      PostLocation location=post.getLocation();
+      new GetAddressTask().execute(location.getLatitude(),location.getLongitude());
     }
   }
 }
