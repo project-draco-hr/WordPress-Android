@@ -1,11 +1,13 @@
 {
   super.onCreate(savedInstanceState);
   setContentView(R.layout.reader_activity_photo_viewer);
-  if (savedInstanceState != null && savedInstanceState.containsKey(ReaderConstants.ARG_IMAGE_URL)) {
+  if (savedInstanceState != null) {
     mImageUrl=savedInstanceState.getString(ReaderConstants.ARG_IMAGE_URL);
+    mIsPrivate=savedInstanceState.getBoolean(ReaderConstants.ARG_IS_PRIVATE);
   }
- else   if (getIntent().hasExtra(ReaderConstants.ARG_IMAGE_URL)) {
+ else   if (getIntent() != null) {
     mImageUrl=getIntent().getStringExtra(ReaderConstants.ARG_IMAGE_URL);
+    mIsPrivate=getIntent().getBooleanExtra(ReaderConstants.ARG_IS_PRIVATE,false);
   }
   loadImage(mImageUrl);
 }
