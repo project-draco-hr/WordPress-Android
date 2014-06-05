@@ -1,5 +1,16 @@
 {
-  View v=inflater.inflate(R.layout.viewpost,container,false);
+  final View v=inflater.inflate(R.layout.viewpost,container,false);
+  v.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
+    @Override public void onGlobalLayout(){
+      loadPost(WordPress.currentPost);
+      v.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+    }
+  }
+);
+  mTitleTextView=(TextView)v.findViewById(R.id.postTitle);
+  mContentTextView=(TextView)v.findViewById(R.id.viewPostTextView);
+  mShareUrlButton=(ImageButton)v.findViewById(R.id.sharePostLink);
+  mViewPostButton=(ImageButton)v.findViewById(R.id.viewPost);
   mLayoutCommentBox=(ViewGroup)v.findViewById(R.id.layout_comment_box);
   mEditComment=(EditText)mLayoutCommentBox.findViewById(R.id.edit_comment);
   mEditComment.setHint(R.string.reader_hint_comment_on_post);
@@ -16,8 +27,7 @@
     }
   }
 );
-  ImageButton shareURLButton=(ImageButton)v.findViewById(R.id.sharePostLink);
-  shareURLButton.setOnClickListener(new ImageButton.OnClickListener(){
+  mShareUrlButton.setOnClickListener(new ImageButton.OnClickListener(){
     public void onClick(    View v){
       if (!parentActivity.isRefreshing()) {
         onDetailPostActionListener.onDetailPostAction(PostsActivity.POST_SHARE,WordPress.currentPost);
@@ -34,8 +44,7 @@
     }
   }
 );
-  ImageButton viewPostButton=(ImageButton)v.findViewById(R.id.viewPost);
-  viewPostButton.setOnClickListener(new ImageButton.OnClickListener(){
+  mViewPostButton.setOnClickListener(new ImageButton.OnClickListener(){
     public void onClick(    View v){
       onDetailPostActionListener.onDetailPostAction(PostsActivity.POST_VIEW,WordPress.currentPost);
       if (!parentActivity.isRefreshing()) {

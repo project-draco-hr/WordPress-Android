@@ -53,8 +53,12 @@
   Post post=mActivity.getPost();
   if (post != null) {
     if (!TextUtils.isEmpty(post.getContent())) {
-      if (post.isLocalDraft())       mContentEditText.setText(WPHtml.fromHtml(post.getContent().replaceAll("\uFFFC",""),mActivity,post));
- else       mContentEditText.setText(post.getContent().replaceAll("\uFFFC",""));
+      if (post.isLocalDraft()) {
+        new LoadPostContentTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,post.getContent().replaceAll("\uFFFC",""));
+      }
+ else {
+        mContentEditText.setText(post.getContent().replaceAll("\uFFFC",""));
+      }
     }
     if (!TextUtils.isEmpty(post.getTitle())) {
       mTitleEditText.setText(post.getTitle());

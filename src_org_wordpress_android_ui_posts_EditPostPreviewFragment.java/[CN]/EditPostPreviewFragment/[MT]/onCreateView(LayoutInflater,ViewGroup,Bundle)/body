@@ -3,5 +3,14 @@
   ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.fragment_edit_post_preview,container,false);
   mWebView=(WebView)rootView.findViewById(R.id.post_preview_webview);
   mTextView=(TextView)rootView.findViewById(R.id.post_preview_textview);
+  mTextView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
+    @Override public void onGlobalLayout(){
+      if (mActivity != null) {
+        loadPost();
+      }
+      mTextView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+    }
+  }
+);
   return rootView;
 }

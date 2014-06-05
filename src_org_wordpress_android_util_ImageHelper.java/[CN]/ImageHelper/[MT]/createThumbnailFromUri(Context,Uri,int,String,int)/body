@@ -1,12 +1,12 @@
 {
-  if (context == null || imageUri == null)   return null;
+  if (context == null || imageUri == null || maxWidth <= 0)   return null;
   String filePath=null;
   if (imageUri.toString().contains("content:")) {
-    String[] projection=new String[]{Images.Media.DATA};
+    String[] projection=new String[]{MediaStore.Images.Media.DATA};
     Cursor cur=context.getContentResolver().query(imageUri,projection,null,null,null);
     if (cur != null) {
       if (cur.moveToFirst()) {
-        int dataColumn=cur.getColumnIndex(Images.Media.DATA);
+        int dataColumn=cur.getColumnIndex(MediaStore.Images.Media.DATA);
         filePath=cur.getString(dataColumn);
       }
       cur.close();
@@ -22,7 +22,7 @@
     BitmapFactory.decodeFile(filePath,optBounds);
   }
  catch (  OutOfMemoryError e) {
-    CrashlyticsUtils.logException(e,ExceptionType.SPECIFIC,T.UTILS);
+    CrashlyticsUtils.logException(e,CrashlyticsUtils.ExceptionType.SPECIFIC,AppLog.T.UTILS);
     return null;
   }
   int scale=1;
@@ -37,8 +37,8 @@
     bmpResized=BitmapFactory.decodeFile(filePath,optActual);
   }
  catch (  OutOfMemoryError e) {
-    CrashlyticsUtils.setFloat(ExtraKey.IMAGE_RESIZE_SCALE,scale);
-    CrashlyticsUtils.logException(e,ExceptionType.SPECIFIC,T.UTILS);
+    CrashlyticsUtils.setFloat(CrashlyticsUtils.ExtraKey.IMAGE_RESIZE_SCALE,scale);
+    CrashlyticsUtils.logException(e,CrashlyticsUtils.ExceptionType.SPECIFIC,AppLog.T.UTILS);
     return null;
   }
   if (bmpResized == null)   return null;
@@ -66,11 +66,11 @@
     bmpRotated=Bitmap.createBitmap(bmpResized,0,0,bmpResized.getWidth(),bmpResized.getHeight(),matrix,true);
   }
  catch (  OutOfMemoryError e) {
-    CrashlyticsUtils.setInt(ExtraKey.IMAGE_ANGLE,rotation);
-    CrashlyticsUtils.setInt(ExtraKey.IMAGE_WIDTH,bmpResized.getWidth());
-    CrashlyticsUtils.setInt(ExtraKey.IMAGE_HEIGHT,bmpResized.getHeight());
-    CrashlyticsUtils.setFloat(ExtraKey.IMAGE_RESIZE_SCALE,scaleBy);
-    CrashlyticsUtils.logException(e,ExceptionType.SPECIFIC,T.UTILS);
+    CrashlyticsUtils.setInt(CrashlyticsUtils.ExtraKey.IMAGE_ANGLE,rotation);
+    CrashlyticsUtils.setInt(CrashlyticsUtils.ExtraKey.IMAGE_WIDTH,bmpResized.getWidth());
+    CrashlyticsUtils.setInt(CrashlyticsUtils.ExtraKey.IMAGE_HEIGHT,bmpResized.getHeight());
+    CrashlyticsUtils.setFloat(CrashlyticsUtils.ExtraKey.IMAGE_RESIZE_SCALE,scaleBy);
+    CrashlyticsUtils.logException(e,CrashlyticsUtils.ExceptionType.SPECIFIC,AppLog.T.UTILS);
     return null;
   }
   bmpRotated.compress(fmt,100,stream);
