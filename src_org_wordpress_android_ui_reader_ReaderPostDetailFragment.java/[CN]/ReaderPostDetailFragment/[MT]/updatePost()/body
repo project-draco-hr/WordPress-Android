@@ -1,10 +1,12 @@
 {
-  if (!hasPost() || !mPost.isWP())   return;
-  final int origNumLikes=mPost.numLikes;
-  final int origNumReplies=mPost.numReplies;
+  if (!hasPost() || !mPost.isWP()) {
+    return;
+  }
+  final int origNumLikes=ReaderLikeTable.getNumLikesForPost(mPost);
+  final int origNumReplies=ReaderCommentTable.getNumCommentsForPost(mPost);
   ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
     @Override public void onUpdateResult(    ReaderActions.UpdateResult result){
-      if (result == ReaderActions.UpdateResult.CHANGED) {
+      if (result != ReaderActions.UpdateResult.FAILED) {
         mPost=ReaderPostTable.getPost(mBlogId,mPostId);
         if (origNumLikes != mPost.numLikes) {
           refreshLikes();
