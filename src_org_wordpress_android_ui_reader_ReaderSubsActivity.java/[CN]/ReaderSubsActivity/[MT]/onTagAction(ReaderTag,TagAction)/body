@@ -5,17 +5,17 @@
 switch (action) {
 case ADD:
     AnalyticsTracker.track(AnalyticsTracker.Stat.READER_FOLLOWED_READER_TAG);
-  msgText=getString(R.string.reader_label_added_tag,tagName);
+  msgText=getString(R.string.reader_label_added_tag,tag.getTagName());
 msgType=MessageBarType.INFO;
-mLastAddedTag=tagName;
+mLastAddedTagName=tag.getTagName();
 getPageAdapter().refreshTagFragments(ReaderTagType.FOLLOWED);
 break;
 case DELETE:
 AnalyticsTracker.track(AnalyticsTracker.Stat.READER_UNFOLLOWED_READER_TAG);
-msgText=getString(R.string.reader_label_removed_tag,tagName);
+msgText=getString(R.string.reader_label_removed_tag,tag.getTagName());
 msgType=MessageBarType.ALERT;
-if (mLastAddedTag != null && mLastAddedTag.equals(tagName)) {
-mLastAddedTag=null;
+if (mLastAddedTagName != null && mLastAddedTagName.equalsIgnoreCase(tag.getTagName())) {
+mLastAddedTagName=null;
 }
 getPageAdapter().refreshTagFragments(ReaderTagType.RECOMMENDED);
 break;
