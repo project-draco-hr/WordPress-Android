@@ -3,15 +3,15 @@
     return;
   }
   SQLiteDatabase db=ReaderDatabase.getWritableDb();
-  SQLiteStatement stmt=db.compileStatement("INSERT INTO tbl_recommended_tags (" + COLUMN_NAMES + ") VALUES (?1,?2,?3)");
+  SQLiteStatement stmt=db.compileStatement("INSERT INTO tbl_tags_recommended (" + COLUMN_NAMES + ") VALUES (?1,?2,?3)");
   db.beginTransaction();
   try {
     try {
-      db.execSQL("DELETE FROM tbl_recommended_tags");
+      db.execSQL("DELETE FROM tbl_tags_recommended");
       for (      ReaderTag topic : topics) {
         stmt.bindString(1,topic.getTagName());
-        stmt.bindString(2,topic.getEndpoint());
-        stmt.bindLong(3,topic.tagType.toInt());
+        stmt.bindLong(2,topic.tagType.toInt());
+        stmt.bindString(3,topic.getEndpoint());
         stmt.execute();
         stmt.clearBindings();
       }
