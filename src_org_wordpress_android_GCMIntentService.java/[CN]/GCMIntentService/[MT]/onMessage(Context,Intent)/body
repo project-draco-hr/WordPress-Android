@@ -103,6 +103,9 @@
     String subject=String.format(getString(R.string.new_notifications),activeNotificationsMap.size());
     mBuilder=new NotificationCompat.Builder(this).setLargeIcon(BitmapFactory.decodeResource(getResources(),R.drawable.notification_multi)).setSmallIcon(R.drawable.notification_icon).setContentTitle("WordPress").setContentText(subject).setTicker(message).setAutoCancel(true).setStyle(inboxStyle);
   }
+  Intent notificationDeletedIntent=new Intent(this,NotificationDismissBroadcastReceiver.class);
+  PendingIntent pendingDeleteIntent=PendingIntent.getBroadcast(this.getApplicationContext(),0,notificationDeletedIntent,0);
+  mBuilder.setDeleteIntent(pendingDeleteIntent);
   if (sound)   mBuilder.setSound(Uri.parse("android.resource://" + getPackageName() + "/"+ R.raw.notification));
   if (vibrate)   mBuilder.setVibrate(new long[]{500,500,500});
   if (light)   mBuilder.setLights(0xff0000ff,1000,5000);
