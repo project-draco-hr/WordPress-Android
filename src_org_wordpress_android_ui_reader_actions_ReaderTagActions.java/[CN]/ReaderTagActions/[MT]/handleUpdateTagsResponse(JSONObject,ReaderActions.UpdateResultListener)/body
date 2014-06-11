@@ -7,8 +7,8 @@
   new Thread(){
     @Override public void run(){
       ReaderTagList serverTopics=new ReaderTagList();
-      serverTopics.addAll(parseTags(jsonObject,"default",ReaderTag.ReaderTagType.DEFAULT));
-      serverTopics.addAll(parseTags(jsonObject,"subscribed",ReaderTag.ReaderTagType.FOLLOWED));
+      serverTopics.addAll(parseTags(jsonObject,"default",ReaderTagType.DEFAULT));
+      serverTopics.addAll(parseTags(jsonObject,"subscribed",ReaderTagType.FOLLOWED));
       ReaderTagList localTopics=new ReaderTagList();
       localTopics.addAll(ReaderTagTable.getDefaultTags());
       localTopics.addAll(ReaderTagTable.getFollowedTags());
@@ -17,7 +17,7 @@
         deleteTags(localTopics.getDeletions(serverTopics));
         ReaderTagTable.replaceTags(serverTopics);
       }
-      ReaderTagList serverRecommended=parseTags(jsonObject,"recommended",ReaderTag.ReaderTagType.RECOMMENDED);
+      ReaderTagList serverRecommended=parseTags(jsonObject,"recommended",ReaderTagType.RECOMMENDED);
       ReaderTagList localRecommended=ReaderTagTable.getRecommendedTags(false);
       if (!serverRecommended.isSameList(localRecommended)) {
         AppLog.d(T.READER,"recommended topics changed");
