@@ -5,15 +5,12 @@
   if (!TextUtils.isEmpty(tag.getEndpoint())) {
     return tag.getEndpoint();
   }
-  String[] args={tag.getTagName(),Integer.toString(tag.tagType.toInt())};
-  String endpoint=SqlUtils.stringForQuery(ReaderDatabase.getReadableDb(),"SELECT endpoint FROM tbl_tags WHERE tag_name=? AND tag_type=?",args);
+  String endpoint=ReaderTagTable.getEndpointForTag(tag);
   if (!TextUtils.isEmpty(endpoint)) {
     return endpoint;
   }
   if (tag.tagType == ReaderTagType.DEFAULT) {
     return null;
   }
- else {
-    return String.format("/read/tags/%s/posts",ReaderTagActions.sanitizeTitle(tag.getTagName()));
-  }
+  return String.format("/read/tags/%s/posts",ReaderTagActions.sanitizeTitle(tag.getTagName()));
 }
