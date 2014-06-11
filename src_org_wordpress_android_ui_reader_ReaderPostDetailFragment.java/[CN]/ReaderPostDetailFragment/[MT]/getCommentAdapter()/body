@@ -1,13 +1,15 @@
 {
   if (mAdapter == null) {
-    if (!hasActivity())     AppLog.w(T.READER,"reader post detail > comment adapter created before activity");
     ReaderActions.DataLoadedListener dataLoadedListener=new ReaderActions.DataLoadedListener(){
       @Override public void onDataLoaded(      boolean isEmpty){
-        if (!hasActivity())         return;
-        mCommentFooter.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
-        if (mListState != null) {
-          if (!isEmpty)           getListView().onRestoreInstanceState(mListState);
-          mListState=null;
+        if (hasActivity()) {
+          mCommentFooter.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+          if (mListState != null) {
+            if (!isEmpty) {
+              getListView().onRestoreInstanceState(mListState);
+            }
+            mListState=null;
+          }
         }
       }
     }
@@ -25,9 +27,10 @@
 ;
     ReaderActions.DataRequestedListener dataRequestedListener=new ReaderActions.DataRequestedListener(){
       @Override public void onRequestData(      ReaderActions.RequestDataAction action){
-        if (mIsUpdatingComments)         return;
-        AppLog.i(T.READER,"reader post detail > requesting newer comments");
-        updateComments();
+        if (!mIsUpdatingComments) {
+          AppLog.i(T.READER,"reader post detail > requesting newer comments");
+          updateComments();
+        }
       }
     }
 ;

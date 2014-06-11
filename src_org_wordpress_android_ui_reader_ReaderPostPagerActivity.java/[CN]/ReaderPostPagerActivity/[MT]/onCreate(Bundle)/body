@@ -1,0 +1,58 @@
+{
+  if (isFullScreenSupported()) {
+    getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+  }
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.reader_activity_post_pager);
+  getWindow().setBackgroundDrawable(null);
+  ActionBar actionBar=getActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayShowTitleEnabled(true);
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
+  final int position;
+  final String title;
+  final Serializable serializedList;
+  if (savedInstanceState != null) {
+    position=savedInstanceState.getInt(ARG_POSITION,0);
+    title=savedInstanceState.getString(ARG_TITLE);
+    serializedList=savedInstanceState.getSerializable(ARG_BLOG_POST_ID_LIST);
+    if (savedInstanceState.containsKey(ReaderConstants.ARG_POST_LIST_TYPE)) {
+      mPostListType=(ReaderPostListType)savedInstanceState.getSerializable(ReaderConstants.ARG_POST_LIST_TYPE);
+    }
+  }
+ else {
+    position=getIntent().getIntExtra(ARG_POSITION,0);
+    title=getIntent().getStringExtra(ARG_TITLE);
+    serializedList=getIntent().getSerializableExtra(ARG_BLOG_POST_ID_LIST);
+    if (getIntent().hasExtra(ReaderConstants.ARG_POST_LIST_TYPE)) {
+      mPostListType=(ReaderPostListType)getIntent().getSerializableExtra(ReaderConstants.ARG_POST_LIST_TYPE);
+    }
+  }
+  if (!TextUtils.isEmpty(title)) {
+    this.setTitle(title);
+  }
+  mViewPager=(ViewPager)findViewById(R.id.viewpager);
+  mPageAdapter=new PostPagerAdapter(getFragmentManager(),new ReaderBlogIdPostIdList(serializedList));
+  mViewPager.setAdapter(mPageAdapter);
+  if (mPageAdapter.isValidPosition(position)) {
+    mViewPager.setCurrentItem(position);
+  }
+  mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+    @Override public void onPageSelected(    int position){
+      super.onPageSelected(position);
+      onRequestFullScreen(false);
+    }
+    @Override public void onPageScrollStateChanged(    int state){
+      super.onPageScrollStateChanged(state);
+      if (state == ViewPager.SCROLL_STATE_DRAGGING) {
+        onRequestFullScreen(false);
+        ReaderPostDetailFragment fragment=getActiveDetailFragment();
+        if (fragment != null) {
+          fragment.pauseWebView();
+        }
+      }
+    }
+  }
+);
+}

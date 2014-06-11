@@ -1,19 +1,15 @@
 {
   boolean isSelected=likeButton.isSelected();
   likeButton.setSelected(!isSelected);
-  AniUtils.zoomAction(likeButton);
+  ReaderAnim.animateLikeButton(likeButton);
   boolean isAskingToLike=!post.isLikedByCurrentUser;
   if (!ReaderPostActions.performLikeAction(post,isAskingToLike)) {
     likeButton.setSelected(isSelected);
     return;
   }
   mPost=ReaderPostTable.getPost(mBlogId,mPostId);
+  refreshLikes();
   if (isAskingToLike) {
     AnalyticsTracker.track(AnalyticsTracker.Stat.READER_LIKED_ARTICLE);
-    doPostChanged(PostChangeType.LIKED);
   }
- else {
-    doPostChanged(PostChangeType.UNLIKED);
-  }
-  refreshLikes(true);
 }

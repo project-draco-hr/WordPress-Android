@@ -1,37 +1,28 @@
 {
   final ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.reader_fragment_post_list,container,false);
-  boolean hasTransparentActionBar=isFullScreenSupported();
   mListView=(WPListView)rootView.findViewById(android.R.id.list);
   mNewPostsBar=(TextView)rootView.findViewById(R.id.text_new_posts);
   mNewPostsBar.setVisibility(View.GONE);
   mNewPostsBar.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View view){
-      reloadPosts(true);
+      reloadPosts();
       hideNewPostsBar();
     }
   }
 );
-  if (hasTransparentActionBar) {
-    View actionBarSpacer=rootView.findViewById(R.id.view_actionbar_spacer);
-    actionBarSpacer.setVisibility(View.VISIBLE);
-  }
 switch (getPostListType()) {
 case TAG_FOLLOWED:
-    ReaderUtils.layoutBelow(rootView,R.id.ptr_layout,R.id.view_actionbar_spacer);
-  break;
+    break;
 case TAG_PREVIEW:
-mTagInfoView=(ViewGroup)inflater.inflate(R.layout.reader_tag_info_view,container,false);
+  mTagInfoView=(ViewGroup)inflater.inflate(R.layout.reader_tag_info_view,container,false);
 rootView.addView(mTagInfoView);
-ReaderUtils.layoutBelow(rootView,mTagInfoView.getId(),R.id.view_actionbar_spacer);
 ReaderUtils.layoutBelow(rootView,R.id.ptr_layout,mTagInfoView.getId());
 break;
 case BLOG_PREVIEW:
-ReaderUtils.layoutBelow(rootView,R.id.ptr_layout,R.id.view_actionbar_spacer);
 mBlogInfoView=new ReaderBlogInfoView(container.getContext());
 rootView.addView(mBlogInfoView);
 mBlogInfoView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT));
-ReaderUtils.layoutBelow(rootView,mBlogInfoView.getId(),R.id.view_actionbar_spacer);
-int spacerHeight=mBlogInfoView.getMshotHeight() + DisplayUtils.dpToPx(container.getContext(),86);
+int spacerHeight=mBlogInfoView.getMshotHeight() + DisplayUtils.dpToPx(container.getContext(),105);
 mMshotSpacerView=ReaderUtils.addListViewHeader(mListView,spacerHeight);
 mMshotSpacerView.setTag(MSHOT_SPACER_TAG);
 mBlogInfoView.bringToFront();
@@ -72,7 +63,7 @@ return;
 switch (getPostListType()) {
 case TAG_FOLLOWED:
 case TAG_PREVIEW:
-updatePostsWithTag(getCurrentTag(),RequestDataAction.LOAD_NEWER,RefreshType.MANUAL);
+updatePostsWithTag(getCurrentTag(),RequestDataAction.LOAD_NEWER,ReaderTypes.RefreshType.MANUAL);
 break;
 case BLOG_PREVIEW:
 updatePostsInCurrentBlog(RequestDataAction.LOAD_NEWER);

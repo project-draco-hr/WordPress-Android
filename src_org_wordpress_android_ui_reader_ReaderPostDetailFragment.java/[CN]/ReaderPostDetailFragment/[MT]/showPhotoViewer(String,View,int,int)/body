@@ -2,7 +2,12 @@
   if (!hasActivity() || TextUtils.isEmpty(imageUrl)) {
     return false;
   }
-  boolean isPrivate=hasPost() && mPost.isPrivate;
-  ReaderActivityLauncher.showReaderPhotoViewer(getActivity(),imageUrl,isPrivate,source,startX,startY);
+  if (!imageUrl.startsWith("http")) {
+    return false;
+  }
+  if (hasPost() && mPost.isPrivate) {
+    imageUrl=UrlUtils.makeHttps(imageUrl);
+  }
+  ReaderActivityLauncher.showReaderPhotoViewer(getActivity(),imageUrl,source,startX,startY);
   return true;
 }
