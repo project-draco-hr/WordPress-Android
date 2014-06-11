@@ -1,8 +1,8 @@
 {
-  if (TextUtils.isEmpty(tagName)) {
+  if (tag == null) {
     return false;
   }
-  if (ReaderTagTable.isDefaultTag(tagName)) {
+  if (tag.tagType == ReaderTagType.DEFAULT) {
     if (actionListener != null) {
       actionListener.onActionResult(false);
     }
@@ -10,18 +10,18 @@
   }
   final ReaderTag originalTopic;
   final String path;
-  final String tagNameForApi=sanitizeTitle(tagName);
+  final String tagNameForApi=sanitizeTitle(tag.getTagName());
 switch (action) {
 case DELETE:
-    originalTopic=ReaderTagTable.getTag(tagName,ReaderTagType.FOLLOWED);
-  ReaderTagTable.deleteTag(tagName);
-ReaderPostTable.deletePostsWithTag(tagName);
+    originalTopic=ReaderTagTable.getTag(tag.getTagName(),ReaderTagType.FOLLOWED);
+  ReaderTagTable.deleteTag(tag);
+ReaderPostTable.deletePostsWithTag(tag);
 path="read/tags/" + tagNameForApi + "/mine/delete";
 break;
 case ADD:
 originalTopic=null;
 String endpoint="/read/tags/" + tagNameForApi + "/posts";
-ReaderTag newTopic=new ReaderTag(tagName,endpoint,ReaderTagType.FOLLOWED);
+ReaderTag newTopic=new ReaderTag(tag.getTagName(),endpoint,ReaderTagType.FOLLOWED);
 ReaderTagTable.addOrUpdateTag(newTopic);
 path="read/tags/" + tagNameForApi + "/mine/new";
 break;
@@ -57,7 +57,7 @@ ReaderTagTable.addOrUpdateTag(originalTopic);
 }
 break;
 case ADD:
-ReaderTagTable.deleteTag(tagName);
+ReaderTagTable.deleteTag(tag);
 break;
 }
 if (actionListener != null) {
