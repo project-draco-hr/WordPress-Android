@@ -1,13 +1,7 @@
 {
-  if (TextUtils.isEmpty(tagName)) {
+  if (TextUtils.isEmpty(tagName) || tagType == null) {
     return false;
   }
-  if (tagType == null) {
-    String[] args={tagName};
-    return SqlUtils.boolForQuery(ReaderDatabase.getReadableDb(),"SELECT 1 FROM tbl_tags WHERE tag_name=?1",args);
-  }
- else {
-    String[] args={tagName,Integer.toString(tagType.toInt())};
-    return SqlUtils.boolForQuery(ReaderDatabase.getReadableDb(),"SELECT 1 FROM tbl_tags WHERE tag_name=?1 AND tag_type=?2",args);
-  }
+  String[] args={tagName,Integer.toString(tagType.toInt())};
+  return SqlUtils.boolForQuery(ReaderDatabase.getReadableDb(),"SELECT 1 FROM tbl_tags WHERE tag_name=?1 AND tag_type=?2",args);
 }
