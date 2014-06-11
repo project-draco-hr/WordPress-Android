@@ -1,0 +1,22 @@
+{
+  mIsFollowing=!mIsFollowing;
+  ReaderUtils.showFollowStatus(followButton,mIsFollowing);
+  long siteId=JSONUtil.queryJSON(getNoteData(),"meta.ids.site",0);
+  if (siteId > 0 && mSiteFollowListener != null) {
+    WordPress.getRestClientUtils().followSite(String.valueOf(siteId),new RestRequest.Listener(){
+      @Override public void onResponse(      JSONObject jsonObject){
+        mSiteFollowListener.onSiteFollow(true);
+      }
+    }
+,new RestRequest.ErrorListener(){
+      @Override public void onErrorResponse(      VolleyError volleyError){
+        mIsFollowing=!mIsFollowing;
+        if (followButton != null) {
+          ReaderUtils.showFollowStatus(followButton,mIsFollowing);
+          mSiteFollowListener.onSiteFollow(false);
+        }
+      }
+    }
+);
+  }
+}
