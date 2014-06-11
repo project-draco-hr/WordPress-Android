@@ -1,0 +1,33 @@
+{
+  if (cursor.isClosed())   return;
+  Bucket.ObjectCursor<Note> bucketCursor=(Bucket.ObjectCursor<Note>)cursor;
+  Note note=bucketCursor.getObject();
+  NoteViewHolder noteViewHolder=(NoteViewHolder)view.getTag();
+  noteViewHolder.txtLabel.setText(note.getSubject());
+  if (note.isCommentType()) {
+    noteViewHolder.txtLabel.setMaxLines(2);
+    noteViewHolder.txtDetail.setText(note.getCommentPreview());
+    noteViewHolder.txtDetail.setVisibility(View.VISIBLE);
+    noteViewHolder.txtDetail.setText("I can't stop drinking coffee. It's the elixir of life, I'm telling you!");
+  }
+ else {
+    noteViewHolder.txtLabel.setMaxLines(3);
+    noteViewHolder.txtDetail.setVisibility(View.GONE);
+  }
+  String avatarUrl=PhotonUtils.fixAvatar(note.getIconURL(),mAvatarSz);
+  noteViewHolder.imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
+  if (!TextUtils.isEmpty(note.getNoticonCharacter())) {
+    noteViewHolder.noteIcon.setText(note.getNoticonCharacter());
+    if (note.isUnread()) {
+      noteViewHolder.noteIcon.setBackgroundResource(R.drawable.shape_oval_blue);
+    }
+ else {
+      noteViewHolder.noteIcon.setBackgroundResource(R.drawable.shape_oval_grey);
+    }
+    noteViewHolder.noteIcon.setVisibility(View.VISIBLE);
+  }
+ else {
+    noteViewHolder.noteIcon.setVisibility(View.GONE);
+  }
+  noteViewHolder.unreadIndicator.setVisibility(note.isUnread() ? View.VISIBLE : View.INVISIBLE);
+}

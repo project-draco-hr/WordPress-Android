@@ -1,0 +1,41 @@
+{
+  super.onActivityCreated(bundle);
+  ListView list=getListView();
+  list.setDivider(null);
+  list.setDividerHeight(0);
+  list.setHeaderDividersEnabled(false);
+  if (mNote == null) {
+    return;
+  }
+  if (hasActivity() && mNote.getSubject() != null) {
+    LinearLayout headerLayout=(LinearLayout)getActivity().getLayoutInflater().inflate(R.layout.notifications_detail_header,null);
+    if (headerLayout != null) {
+      NoticonTextView noticonTextView=(NoticonTextView)headerLayout.findViewById(R.id.notification_header_icon);
+      noticonTextView.setText(mNote.getNoticonCharacter());
+      WPTextView subjectTextView=(WPTextView)headerLayout.findViewById(R.id.notification_header_subject);
+      subjectTextView.setText(mNote.getSubject());
+      getListView().addHeaderView(headerLayout);
+    }
+  }
+  JSONArray bodyArray=mNote.getBody();
+  if (bodyArray != null && bodyArray.length() > 0) {
+    for (int i=0; i < bodyArray.length(); i++) {
+      try {
+        JSONObject noteObject=bodyArray.getJSONObject(i);
+        NoteBlock noteBlock;
+        String noteBlockTypeString=JSONUtil.queryJSON(noteObject,"type","");
+        if (NoteBlockIdType.fromString(noteBlockTypeString) == NoteBlockIdType.USER) {
+          noteBlock=new UserNoteBlock(noteObject);
+        }
+ else {
+          noteBlock=new NoteBlock(noteObject,mOnNoteBlockTextClickListener);
+        }
+        mNoteBlockArray.add(noteBlock);
+      }
+ catch (      JSONException e) {
+        e.printStackTrace();
+      }
+    }
+    setListAdapter(new NoteBlockAdapter(getActivity(),mNoteBlockArray));
+  }
+}

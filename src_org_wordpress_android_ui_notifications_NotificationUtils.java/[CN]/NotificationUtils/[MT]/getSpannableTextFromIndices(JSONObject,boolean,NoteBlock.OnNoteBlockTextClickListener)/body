@@ -1,0 +1,28 @@
+{
+  String text=subject.optString("text","");
+  SpannableStringBuilder spannableStringBuilder=new SpannableStringBuilder(text);
+  try {
+    JSONArray idsArray=subject.getJSONArray("ids");
+    for (int i=0; i < idsArray.length(); i++) {
+      JSONObject idObject=(JSONObject)idsArray.get(i);
+      NoteBlockClickableSpan clickableSpan=new NoteBlockClickableSpan(idObject){
+        @Override public void onClick(        View widget){
+          onNoteBlockTextClickListener.onNoteBlockTextClicked(this);
+        }
+      }
+;
+      int[] indices=clickableSpan.getIndices();
+      if (indices.length == 2 && indices[0] <= spannableStringBuilder.length() && indices[1] <= spannableStringBuilder.length()) {
+        spannableStringBuilder.setSpan(clickableSpan,indices[0],indices[1],Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        if (clickableSpan.getSpanStyle() != Typeface.NORMAL) {
+          StyleSpan styleSpan=new StyleSpan(clickableSpan.getSpanStyle());
+          spannableStringBuilder.setSpan(styleSpan,indices[0],indices[1],Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        }
+      }
+    }
+  }
+ catch (  JSONException e) {
+    e.printStackTrace();
+  }
+  return spannableStringBuilder;
+}
