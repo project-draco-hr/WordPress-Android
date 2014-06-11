@@ -32,8 +32,8 @@
   }
   mPreviousNoteId=note_id;
   mPreviousNoteTime=thisTime;
-  if (note_id != null) {
-    if (!activeNotificationsMap.containsKey(note_id))     activeNotificationsMap.put(note_id,extras);
+  if (note_id != null && !mActiveNotificationsMap.containsKey(note_id)) {
+    mActiveNotificationsMap.put(note_id,extras);
   }
   String iconURL=extras.getString("icon");
   Bitmap largeIconBitmap=null;
@@ -60,7 +60,7 @@
   resultIntent.setAction("android.intent.action.MAIN");
   resultIntent.addCategory("android.intent.category.LAUNCHER");
   resultIntent.putExtra(NotificationsActivity.FROM_NOTIFICATION_EXTRA,true);
-  if (activeNotificationsMap.size() <= 1) {
+  if (mActiveNotificationsMap.size() <= 1) {
     mBuilder=new NotificationCompat.Builder(this).setSmallIcon(R.drawable.notification_icon).setContentTitle(title).setContentText(message).setTicker(message).setAutoCancel(true).setStyle(new NotificationCompat.BigTextStyle().bigText(message));
     if (note_id != null) {
       resultIntent.putExtra(NotificationsActivity.NOTE_ID_EXTRA,note_id);
@@ -74,7 +74,9 @@
       commentReplyIntent.addCategory("comment-reply");
       commentReplyIntent.putExtra(NotificationsActivity.FROM_NOTIFICATION_EXTRA,true);
       commentReplyIntent.putExtra(NotificationsActivity.NOTE_INSTANT_REPLY_EXTRA,true);
-      if (note_id != null)       commentReplyIntent.putExtra(NotificationsActivity.NOTE_ID_EXTRA,note_id);
+      if (note_id != null) {
+        commentReplyIntent.putExtra(NotificationsActivity.NOTE_ID_EXTRA,note_id);
+      }
       PendingIntent commentReplyPendingIntent=PendingIntent.getActivity(context,0,commentReplyIntent,PendingIntent.FLAG_CANCEL_CURRENT);
       mBuilder.addAction(R.drawable.ab_icon_reply,getResources().getText(R.string.reply),commentReplyPendingIntent);
     }
@@ -85,7 +87,7 @@
  else {
     NotificationCompat.InboxStyle inboxStyle=new NotificationCompat.InboxStyle();
     int noteCtr=1;
-    for (    Bundle wpPN : activeNotificationsMap.values()) {
+    for (    Bundle wpPN : mActiveNotificationsMap.values()) {
       if (noteCtr > 5)       break;
       if (wpPN.getString("msg") == null)       continue;
       if (wpPN.getString("type") != null && wpPN.getString("type").equals("c")) {
@@ -99,16 +101,24 @@
       }
       noteCtr++;
     }
-    if (activeNotificationsMap.size() > 5)     inboxStyle.setSummaryText(String.format(getString(R.string.more_notifications),activeNotificationsMap.size() - 5));
-    String subject=String.format(getString(R.string.new_notifications),activeNotificationsMap.size());
+    if (mActiveNotificationsMap.size() > 5) {
+      inboxStyle.setSummaryText(String.format(getString(R.string.more_notifications),mActiveNotificationsMap.size() - 5));
+    }
+    String subject=String.format(getString(R.string.new_notifications),mActiveNotificationsMap.size());
     mBuilder=new NotificationCompat.Builder(this).setLargeIcon(BitmapFactory.decodeResource(getResources(),R.drawable.notification_multi)).setSmallIcon(R.drawable.notification_icon).setContentTitle("WordPress").setContentText(subject).setTicker(message).setAutoCancel(true).setStyle(inboxStyle);
   }
   Intent notificationDeletedIntent=new Intent(this,NotificationDismissBroadcastReceiver.class);
   PendingIntent pendingDeleteIntent=PendingIntent.getBroadcast(context,0,notificationDeletedIntent,0);
   mBuilder.setDeleteIntent(pendingDeleteIntent);
-  if (sound)   mBuilder.setSound(Uri.parse("android.resource://" + getPackageName() + "/"+ R.raw.notification));
-  if (vibrate)   mBuilder.setVibrate(new long[]{500,500,500});
-  if (light)   mBuilder.setLights(0xff0000ff,1000,5000);
+  if (sound) {
+    mBuilder.setSound(Uri.parse("android.resource://" + getPackageName() + "/"+ R.raw.notification));
+  }
+  if (vibrate) {
+    mBuilder.setVibrate(new long[]{500,500,500});
+  }
+  if (light) {
+    mBuilder.setLights(0xff0000ff,1000,5000);
+  }
   PendingIntent pendingIntent=PendingIntent.getActivity(context,0,resultIntent,PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_UPDATE_CURRENT);
   mBuilder.setContentIntent(pendingIntent);
   NotificationManager mNotificationManager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
