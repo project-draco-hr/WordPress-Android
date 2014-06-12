@@ -1,0 +1,24 @@
+{
+  if (tag == null) {
+    return;
+  }
+  if (isCurrentTag(tag) && hasPostAdapter() && getPostAdapter().isCurrentTag(tag)) {
+    return;
+  }
+  mCurrentTag=tag;
+switch (getPostListType()) {
+case TAG_FOLLOWED:
+    UserPrefs.setReaderTag(tag);
+  break;
+case TAG_PREVIEW:
+mTagPreviewHistory.push(tag.getTagName());
+break;
+}
+getPostAdapter().setCurrentTag(tag);
+hideNewPostsBar();
+updateTagPreviewHeader();
+hideLoadingProgress();
+if (allowAutoUpdate && ReaderTagTable.shouldAutoUpdateTag(tag)) {
+updatePostsWithTag(tag,RequestDataAction.LOAD_NEWER,ReaderTypes.RefreshType.AUTOMATIC);
+}
+}
