@@ -13,7 +13,7 @@
         ReaderTagTable.setTagLastUpdated(tag,DateTimeUtils.javaDateToIso8601(new Date()));
       }
       if (serverPosts.size() == 0) {
-        AppLog.d(T.READER,"no new posts in tag");
+        AppLog.d(T.READER,"no new posts in tag " + tag.getTagNameForLog());
         if (resultListener != null) {
           handler.post(new Runnable(){
             public void run(){
@@ -50,7 +50,7 @@ numNewPosts=ReaderPostTable.getNumNewPostsWithTag(tag,serverPosts);
 numNewPosts=serverPosts.size();
 }
 ReaderPostTable.addOrUpdatePosts(tag,serverPosts);
-AppLog.d(T.READER,String.format("retrieved %d posts (%d new) in tag",serverPosts.size(),numNewPosts));
+AppLog.d(T.READER,String.format("retrieved %d posts (%d new) in tag %s",serverPosts.size(),numNewPosts,tag.getTagNameForLog()));
 handler.post(new Runnable(){
 public void run(){
 if (resultListener != null) {
