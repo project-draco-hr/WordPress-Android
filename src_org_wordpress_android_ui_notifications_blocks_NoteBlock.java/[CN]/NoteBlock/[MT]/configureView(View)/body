@@ -4,25 +4,15 @@
     noteBlockHolder.getImageView().setImageUrl(mMediaItem.optString("url",""),WordPress.imageLoader);
     noteBlockHolder.getImageView().setVisibility(View.VISIBLE);
   }
- else   if (noteBlockHolder.imageView != null) {
-    noteBlockHolder.getImageView().setVisibility(View.GONE);
+ else {
+    noteBlockHolder.hideImageView();
   }
   if (hasVideoMediaItem()) {
     noteBlockHolder.getVideoView().setVideoURI(Uri.parse(mMediaItem.optString("url","")));
     noteBlockHolder.getVideoView().setVisibility(View.VISIBLE);
-    final MediaController mediaController=new MediaController(noteBlockHolder.getVideoView().getContext());
-    mediaController.setMediaPlayer(noteBlockHolder.getVideoView());
-    noteBlockHolder.getVideoView().setMediaController(mediaController);
-    mediaController.requestFocus();
-    noteBlockHolder.getVideoView().setOnPreparedListener(new MediaPlayer.OnPreparedListener(){
-      @Override public void onPrepared(      MediaPlayer mp){
-        mediaController.show(0);
-      }
-    }
-);
   }
- else   if (noteBlockHolder.videoView != null) {
-    noteBlockHolder.getVideoView().setVisibility(View.GONE);
+ else {
+    noteBlockHolder.hideVideoView();
   }
   if (!TextUtils.isEmpty(getNoteText())) {
     noteBlockHolder.getTextView().setText(getNoteText());
