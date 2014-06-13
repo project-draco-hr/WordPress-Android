@@ -1,0 +1,23 @@
+{
+  JSONArray bodyArray=mNote.getBody();
+  if (bodyArray != null && bodyArray.length() > 0) {
+    for (int i=0; i < bodyArray.length(); i++) {
+      try {
+        JSONObject noteObject=bodyArray.getJSONObject(i);
+        NoteBlock noteBlock;
+        String noteBlockTypeString=JSONUtil.queryJSON(noteObject,"type","");
+        if (NoteBlockIdType.fromString(noteBlockTypeString) == NoteBlockIdType.USER) {
+          noteBlock=new UserNoteBlock(noteObject,mOnNoteBlockTextClickListener,mOnSiteFollowListener);
+        }
+ else {
+          noteBlock=new NoteBlock(noteObject,mOnNoteBlockTextClickListener);
+        }
+        mNoteBlockArray.add(noteBlock);
+      }
+ catch (      JSONException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+  return null;
+}

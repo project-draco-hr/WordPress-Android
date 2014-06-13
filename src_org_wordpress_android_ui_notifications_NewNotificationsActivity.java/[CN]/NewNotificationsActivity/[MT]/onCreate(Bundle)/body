@@ -11,16 +11,8 @@
   setTitle(getResources().getString(R.string.notifications));
   FragmentManager fm=getFragmentManager();
   fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
-  if (savedInstanceState == null) {
-    mNotesList=new NewNotificationsListFragment();
-    mNotesList.setOnNoteClickListener(new NoteClickListener());
-    FragmentTransaction fragmentTransaction=fm.beginTransaction();
-    fragmentTransaction.add(R.id.layout_fragment_container,mNotesList,FRAGMENT_TAG_LIST);
-    fragmentTransaction.commitAllowingStateLoss();
-  }
- else {
-    mNotesList=(NewNotificationsListFragment)fm.findFragmentByTag(FRAGMENT_TAG_LIST);
-  }
+  mNotesList=(NewNotificationsListFragment)fm.findFragmentById(R.id.fragment_notes_list);
+  mNotesList.setOnNoteClickListener(new NoteClickListener());
   GCMIntentService.clearNotificationsMap();
   if (savedInstanceState != null) {
     mHasPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);

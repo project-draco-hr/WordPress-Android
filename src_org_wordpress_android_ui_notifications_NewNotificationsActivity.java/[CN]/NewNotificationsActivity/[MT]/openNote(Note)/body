@@ -7,10 +7,17 @@
   if (fm.getBackStackEntryCount() > 0) {
     fm.popBackStack();
   }
-  Fragment detailFragment=getDetailFragmentForNote(note);
+  mDetailFragment=getDetailFragmentForNote(note);
   FragmentTransaction ft=fm.beginTransaction();
-  ft.replace(R.id.layout_fragment_container,detailFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+  ft.add(R.id.layout_fragment_container,mDetailFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
   AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATIONS_OPENED_NOTIFICATION_DETAILS);
-  ft.addToBackStack(null);
+  View container=findViewById(R.id.layout_fragment_container);
+  if (container.findViewById(R.id.fragment_notes_list) != null) {
+    mMenuDrawer.setDrawerIndicatorEnabled(false);
+    ft.addToBackStack(null);
+    if (mNotesList != null) {
+      ft.hide(mNotesList);
+    }
+  }
   ft.commitAllowingStateLoss();
 }
