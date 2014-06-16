@@ -3,21 +3,20 @@
     return;
   }
   mSelectedNoteId=StringUtils.stringToInt(note.getId());
-  FragmentManager fm=getFragmentManager();
-  if (fm.getBackStackEntryCount() > 0) {
-    fm.popBackStack();
+  if (DisplayUtils.isLandscapeTablet(this) && mDetailFragment instanceof NotificationsDetailListFragment) {
+    NotificationsDetailListFragment detailListFragment=(NotificationsDetailListFragment)mDetailFragment;
+    detailListFragment.setNote(note);
+    detailListFragment.reloadNoteBlocks();
+    return;
+  }
+ else   if (DisplayUtils.isLandscapeTablet(this)) {
+    removeDetailFragment();
   }
   mDetailFragment=getDetailFragmentForNote(note);
+  FragmentManager fm=getFragmentManager();
   FragmentTransaction ft=fm.beginTransaction();
-  ft.add(R.id.layout_fragment_container,mDetailFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-  AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATIONS_OPENED_NOTIFICATION_DETAILS);
-  View container=findViewById(R.id.layout_fragment_container);
-  if (container.findViewById(R.id.fragment_notes_list) != null) {
-    mMenuDrawer.setDrawerIndicatorEnabled(false);
-    ft.addToBackStack(null);
-    if (mNotesList != null) {
-      ft.hide(mNotesList);
-    }
-  }
+  ft.replace(R.id.layout_fragment_container,mDetailFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+  mMenuDrawer.setDrawerIndicatorEnabled(false);
+  ft.addToBackStack(null);
   ft.commitAllowingStateLoss();
 }
