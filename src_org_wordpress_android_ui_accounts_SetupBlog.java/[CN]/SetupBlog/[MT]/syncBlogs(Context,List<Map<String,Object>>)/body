@@ -1,5 +1,6 @@
 {
-  addBlogs(newBlogList);
+  boolean retValue;
+  retValue=addBlogs(newBlogList);
   List<Map<String,Object>> allBlogs=WordPress.wpDB.getAccountsBy("dotcomFlag=1",null);
   Set<String> newBlogURLs=new HashSet<String>();
   for (  Map<String,Object> blog : newBlogList) {
@@ -8,6 +9,8 @@
   for (  Map<String,Object> blog : allBlogs) {
     if (!newBlogURLs.contains(blog.get("url").toString() + blog.get("blogId"))) {
       WordPress.wpDB.deleteAccount(context,Integer.parseInt(blog.get("id").toString()));
+      retValue=true;
     }
   }
+  return retValue;
 }
