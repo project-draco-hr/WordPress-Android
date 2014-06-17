@@ -5,4 +5,31 @@
   networkImageView=(NetworkImageView)view.findViewById(R.id.stats_list_cell_image);
   networkImageView.setErrorImageResId(R.drawable.stats_blank_image);
   networkImageView.setDefaultImageResId(R.drawable.stats_blank_image);
+  entryTextView.setOnTouchListener(new View.OnTouchListener(){
+    @Override public boolean onTouch(    View v,    MotionEvent event){
+      if (event.getAction() == MotionEvent.ACTION_UP) {
+        TextView currentTextView=(TextView)v;
+        URLSpan[] urls=currentTextView.getUrls();
+        if (urls.length > 0) {
+          String url=StringUtils.notNullStr(urls[0].getURL());
+          if (Uri.parse(url).getScheme() == null) {
+            url="http://" + url.trim();
+          }
+          url=url.trim();
+          try {
+            Intent statsWebViewIntent=new Intent(v.getContext(),StatsWebViewActivity.class);
+            statsWebViewIntent.putExtra(StatsWebViewActivity.STATS_URL,url);
+            v.getContext().startActivity(statsWebViewIntent);
+          }
+ catch (          ActivityNotFoundException e) {
+            AppLog.e(AppLog.T.UTILS,e);
+            ToastUtils.showToast(v.getContext(),v.getContext().getString(R.string.reader_toast_err_url_intent,url),ToastUtils.Duration.LONG);
+          }
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+);
 }

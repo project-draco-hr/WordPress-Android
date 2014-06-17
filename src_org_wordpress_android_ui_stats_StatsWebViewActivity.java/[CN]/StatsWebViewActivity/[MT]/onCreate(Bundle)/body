@@ -1,0 +1,21 @@
+{
+  super.onCreate(savedInstanceState);
+  Bundle extras=getIntent().getExtras();
+  mWebView.getSettings().setJavaScriptEnabled(true);
+  mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+  mWebView.getSettings().setUserAgentString(WordPress.getUserAgent());
+  mWebView.getSettings().setDomStorageEnabled(true);
+  if (extras != null) {
+    if (extras.containsKey(STATS_AUTHENTICATED_URL)) {
+      String addressToLoad=extras.getString(STATS_AUTHENTICATED_URL);
+      this.loadAuthenticatedUrl(addressToLoad);
+    }
+ else     if (extras.containsKey(STATS_URL)) {
+      String addressToLoad=extras.getString(STATS_URL);
+      this.loadUrl(addressToLoad);
+    }
+  }
+ else {
+    AppLog.e(AppLog.T.UTILS,"No valid URL passed to the StatsWebViewActivity");
+  }
+}
