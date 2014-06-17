@@ -1,2 +1,12 @@
 {
+  try {
+    if (mNotesAdapter != null && mNotesAdapter.getCount() > 0 && SimperiumUtils.getMetaBucket() != null) {
+      Note newestNote=mNotesAdapter.getNote(0);
+      BucketObject meta=SimperiumUtils.getMetaBucket().get("meta");
+      meta.setProperty("last_seen",newestNote.getTimestamp());
+      meta.save();
+    }
+  }
+ catch (  BucketObjectMissingException e) {
+  }
 }
