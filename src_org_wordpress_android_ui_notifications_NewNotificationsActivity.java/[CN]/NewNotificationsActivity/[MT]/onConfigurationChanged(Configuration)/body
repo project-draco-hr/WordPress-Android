@@ -2,7 +2,14 @@
   super.onConfigurationChanged(newConfig);
   if (DisplayUtils.isTablet(this)) {
     if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-      if (mNotesList != null) {
+      if (!mNotesList.isInLayout()) {
+        removeDetailFragment();
+        FragmentManager fm=getFragmentManager();
+        FragmentTransaction ft=fm.beginTransaction();
+        ft.add(R.id.layout_fragment_container,mNotesList,TAG_LIST_VIEW);
+        ft.commitAllowingStateLoss();
+      }
+ else {
         mNotesList.getListView().setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         mNotesList.resetSelection();
       }
