@@ -2,7 +2,10 @@
   if (note == null || isFinishing() || isActivityDestroyed()) {
     return;
   }
-  mSelectedNoteId=StringUtils.stringToInt(note.getId());
+  mSelectedNoteId=note.getId();
+  if (note.isUnread()) {
+    note.markAsRead();
+  }
   if (DisplayUtils.isLandscapeTablet(this) && mDetailFragment instanceof NotificationsDetailListFragment) {
     NotificationsDetailListFragment detailListFragment=(NotificationsDetailListFragment)mDetailFragment;
     detailListFragment.setNote(note);
