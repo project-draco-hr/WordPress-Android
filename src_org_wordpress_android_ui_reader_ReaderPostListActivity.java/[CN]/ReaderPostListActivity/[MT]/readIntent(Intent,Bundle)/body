@@ -32,14 +32,17 @@ String blogUrl=intent.getStringExtra(ReaderConstants.ARG_BLOG_URL);
 showListFragmentForBlog(blogId,blogUrl);
 }
  else {
-String tagName=intent.getStringExtra(ReaderConstants.ARG_TAG_NAME);
-if (TextUtils.isEmpty(tagName)) {
-tagName=UserPrefs.getReaderTag();
+ReaderTag tag;
+if (intent.hasExtra(ReaderConstants.ARG_TAG)) {
+tag=(ReaderTag)intent.getSerializableExtra(ReaderConstants.ARG_TAG);
 }
-if (mPostListType == ReaderTypes.ReaderPostListType.TAG_FOLLOWED && !ReaderTagTable.tagExists(tagName)) {
-tagName=ReaderTag.TAG_NAME_DEFAULT;
+ else {
+tag=UserPrefs.getReaderTag();
 }
-showListFragmentForTag(tagName,mPostListType);
+if (mPostListType == ReaderTypes.ReaderPostListType.TAG_FOLLOWED && !ReaderTagTable.tagExists(tag)) {
+tag=ReaderTag.getDefaultTag();
+}
+showListFragmentForTag(tag,mPostListType);
 }
 }
 }

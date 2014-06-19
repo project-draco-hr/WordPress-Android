@@ -1,0 +1,52 @@
+{
+  String endpoint=getEndpointForTag(tag);
+  if (TextUtils.isEmpty(endpoint)) {
+    if (resultListener != null) {
+      resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED,-1);
+    }
+    return;
+  }
+  StringBuilder sb=new StringBuilder(endpoint);
+  sb.append("?number=").append(ReaderConstants.READER_MAX_POSTS_TO_REQUEST);
+  sb.append("&order=DESC");
+  if (ReaderPostTable.hasPostsWithTag(tag)) {
+switch (updateAction) {
+case LOAD_NEWER:
+      String dateNewest=ReaderTagTable.getTagNewestDate(tag);
+    if (!TextUtils.isEmpty(dateNewest)) {
+      sb.append("&after=").append(UrlUtils.urlEncode(dateNewest));
+      AppLog.d(T.READER,String.format("requesting newer posts in tag %s (%s)",tag.getTagNameForLog(),dateNewest));
+    }
+  break;
+case LOAD_OLDER:
+String dateOldest=ReaderTagTable.getTagOldestDate(tag);
+if (TextUtils.isEmpty(dateOldest)) {
+dateOldest=ReaderPostTable.getOldestPubDateWithTag(tag);
+}
+if (!TextUtils.isEmpty(dateOldest)) {
+sb.append("&before=").append(UrlUtils.urlEncode(dateOldest));
+AppLog.d(T.READER,String.format("requesting older posts in tag %s (%s)",tag.getTagNameForLog(),dateOldest));
+}
+break;
+}
+}
+ else {
+AppLog.d(T.READER,"requesting posts in empty tag " + tag.getTagNameForLog());
+}
+com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+@Override public void onResponse(JSONObject jsonObject){
+handleUpdatePostsWithTagResponse(tag,updateAction,jsonObject,resultListener,backfillListener);
+}
+}
+;
+RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+@Override public void onErrorResponse(VolleyError volleyError){
+AppLog.e(T.READER,volleyError);
+if (resultListener != null) {
+resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED,-1);
+}
+}
+}
+;
+WordPress.getRestClientUtils().get(sb.toString(),null,null,listener,errorListener);
+}

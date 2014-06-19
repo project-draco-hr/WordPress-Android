@@ -1,0 +1,22 @@
+{
+  String endpoint=getEndpointForTag(tag);
+  if (TextUtils.isEmpty(endpoint)) {
+    return;
+  }
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      handleBackfillResponse(jsonObject,tag,recursionCounter,backfillListener);
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.READER,volleyError);
+    }
+  }
+;
+  String strDateBefore=DateTimeUtils.javaDateToIso8601(dateBefore);
+  String path=endpoint + "?number=" + ReaderConstants.READER_MAX_POSTS_TO_REQUEST+ "&order=DESC"+ "&before="+ UrlUtils.urlEncode(strDateBefore);
+  AppLog.i(T.READER,String.format("backfilling tag %s, recursion %d",tag.getTagNameForLog(),recursionCounter));
+  WordPress.getRestClientUtils().get(path,null,null,listener,errorListener);
+}

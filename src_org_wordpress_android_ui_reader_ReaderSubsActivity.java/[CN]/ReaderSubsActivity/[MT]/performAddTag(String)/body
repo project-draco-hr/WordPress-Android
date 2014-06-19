@@ -7,15 +7,16 @@
       if (!succeeded && !isFinishing()) {
         getPageAdapter().refreshTagFragments();
         ToastUtils.showToast(ReaderSubsActivity.this,R.string.reader_toast_err_add_tag);
-        mLastAddedTag=null;
+        mLastAddedTagName=null;
       }
     }
   }
 ;
-  if (ReaderTagActions.performTagAction(TagAction.ADD,tagName,actionListener)) {
+  ReaderTag tag=new ReaderTag(tagName,ReaderTagType.FOLLOWED);
+  if (ReaderTagActions.performTagAction(tag,TagAction.ADD,actionListener)) {
     String msgText=getString(R.string.reader_label_added_tag,tagName);
     MessageBarUtils.showMessageBar(this,msgText,MessageBarType.INFO);
     getPageAdapter().refreshTagFragments(null,tagName);
-    onTagAction(TagAction.ADD,tagName);
+    onTagAction(tag,TagAction.ADD);
   }
 }

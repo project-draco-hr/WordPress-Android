@@ -1,0 +1,23 @@
+{
+  if (posts == null || posts.size() == 0 || tag == null) {
+    return 0;
+  }
+  if (getNumPostsWithTag(tag) == 0) {
+    return posts.size();
+  }
+  StringBuilder sb=new StringBuilder("SELECT COUNT(*) FROM tbl_post_tags WHERE tag_name=? AND tag_type=? AND pseudo_id IN (");
+  boolean isFirst=true;
+  for (  ReaderPost post : posts) {
+    if (isFirst) {
+      isFirst=false;
+    }
+ else {
+      sb.append(",");
+    }
+    sb.append("'").append(post.getPseudoId()).append("'");
+  }
+  sb.append(")");
+  String[] args={tag.getTagName(),Integer.toString(tag.tagType.toInt())};
+  int numExisting=SqlUtils.intForQuery(ReaderDatabase.getReadableDb(),sb.toString(),args);
+  return posts.size() - numExisting;
+}

@@ -1,14 +1,14 @@
 {
-  if (tags == null || tags.size() == 0) {
+  if (tagList == null || tagList.size() == 0) {
     return;
   }
   SQLiteStatement stmt=null;
   try {
     stmt=ReaderDatabase.getWritableDb().compileStatement("INSERT OR REPLACE INTO tbl_tags (" + COLUMN_NAMES + ") VALUES (?1,?2,?3)");
-    for (    ReaderTag topic : tags) {
-      stmt.bindString(1,topic.getTagName());
-      stmt.bindString(2,topic.getEndpoint());
-      stmt.bindLong(3,topic.tagType.toInt());
+    for (    ReaderTag tag : tagList) {
+      stmt.bindString(1,tag.getTagName());
+      stmt.bindLong(2,tag.tagType.toInt());
+      stmt.bindString(3,tag.getEndpoint());
       stmt.execute();
       stmt.clearBindings();
     }
