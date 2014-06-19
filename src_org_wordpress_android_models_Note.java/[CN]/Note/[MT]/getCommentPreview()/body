@@ -1,7 +1,16 @@
 {
   if (mCommentPreview == null) {
-    mCommentPreview=HtmlUtils.fastStripHtml(getCommentText());
-    if (mCommentPreview.length() > MAX_COMMENT_PREVIEW_LENGTH) {
+    JSONArray noteBodyItems=getBody();
+    if (noteBodyItems != null) {
+      for (int i=0; i < noteBodyItems.length(); i++) {
+        JSONObject bodyItem=noteBodyItems.optJSONObject(i);
+        if (bodyItem != null && bodyItem.optString("type","").equals(NOTE_COMMENT_TYPE)) {
+          mCommentPreview=bodyItem.optString("text","");
+          break;
+        }
+      }
+    }
+    if (mCommentPreview != null && mCommentPreview.length() > MAX_COMMENT_PREVIEW_LENGTH) {
       mCommentPreview=mCommentPreview.substring(0,MAX_COMMENT_PREVIEW_LENGTH - 1);
     }
   }
