@@ -1,8 +1,21 @@
 {
   final BasicNoteBlockHolder noteBlockHolder=(BasicNoteBlockHolder)view.getTag();
   if (hasImageMediaItem()) {
-    noteBlockHolder.getImageView().setImageUrl(mMediaItem.optString("url",""),WordPress.imageLoader);
     noteBlockHolder.getImageView().setVisibility(View.VISIBLE);
+    WordPress.imageLoader.get(mMediaItem.optString("url",""),new ImageLoader.ImageListener(){
+      @Override public void onResponse(      ImageLoader.ImageContainer response,      boolean isImmediate){
+        if (response.getBitmap() != null && view.getContext() != null) {
+          noteBlockHolder.getImageView().setImageBitmap(response.getBitmap());
+          Animation pop=AnimationUtils.loadAnimation(view.getContext(),R.anim.pop);
+          noteBlockHolder.getImageView().startAnimation(pop);
+          noteBlockHolder.getImageView().setVisibility(View.VISIBLE);
+        }
+      }
+      @Override public void onErrorResponse(      VolleyError volleyError){
+        noteBlockHolder.hideImageView();
+      }
+    }
+);
   }
  else {
     noteBlockHolder.hideImageView();
@@ -17,9 +30,11 @@
   if (!TextUtils.isEmpty(getNoteText())) {
     if (hasImageMediaItem() || hasVideoMediaItem()) {
       noteBlockHolder.getTextView().setGravity(Gravity.CENTER_HORIZONTAL);
+      noteBlockHolder.getTextView().setPadding(0,DisplayUtils.dpToPx(view.getContext(),8),0,0);
     }
  else {
       noteBlockHolder.getTextView().setGravity(Gravity.NO_GRAVITY);
+      noteBlockHolder.getTextView().setPadding(0,0,0,0);
     }
     noteBlockHolder.getTextView().setText(getNoteText());
     noteBlockHolder.getTextView().setVisibility(View.VISIBLE);
