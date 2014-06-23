@@ -1,0 +1,17 @@
+{
+  if (WordPress.getCurrentBlog() != null) {
+    ApiHelper.GenericCallback callback=new ApiHelper.GenericCallback(){
+      @Override public void onSuccess(){
+        if (isFinishing()) {
+          return;
+        }
+        refreshBlogSpinner(getBlogNames());
+        updateMenuDrawer();
+      }
+      @Override public void onFailure(      ErrorType errorType,      String errorMessage,      Throwable throwable){
+      }
+    }
+;
+    new ApiHelper.RefreshBlogContentTask(this,WordPress.getCurrentBlog(),callback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,false);
+  }
+}
