@@ -1,0 +1,7 @@
+{
+  String blogId=blogMap.get("blogid").toString();
+  String xmlRpcUrl=blogMap.get("xmlrpc").toString();
+  int blogLocalId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogIdAndXmlRpcUrl(Integer.parseInt(blogId),xmlRpcUrl);
+  Blog firstBlog=WordPress.wpDB.instantiateBlogByLocalId(blogLocalId);
+  new ApiHelper.RefreshBlogContentTask(getActivity(),firstBlog,null).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,false);
+}
