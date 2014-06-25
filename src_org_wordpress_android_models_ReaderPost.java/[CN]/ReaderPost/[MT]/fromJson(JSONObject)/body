@@ -67,6 +67,9 @@
   if (!post.hasTitle() && post.hasExcerpt()) {
     post.title=extractTitle(post.excerpt,50);
   }
+  if (post.hasTitle() && post.title.contains("<") && post.title.contains(">")) {
+    post.title=HtmlUtils.stripHtml(post.title);
+  }
   assignTagsFromJson(post,json.optJSONObject("tags"));
   JSONObject jsonSite=JSONUtil.getJSONChild(json,"meta/data/site");
   if (jsonSite != null) {
