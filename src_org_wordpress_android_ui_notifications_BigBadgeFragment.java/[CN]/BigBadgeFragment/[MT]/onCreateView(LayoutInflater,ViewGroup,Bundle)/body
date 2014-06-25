@@ -2,7 +2,7 @@
   View view=inflater.inflate(R.layout.notifications_big_badge,parent,false);
   NetworkImageView badgeImageView=(NetworkImageView)view.findViewById(R.id.badge);
   TextView bodyTextView=(TextView)view.findViewById(R.id.body);
-  bodyTextView.setMovementMethod(WPLinkMovementMethod.getInstance());
+  bodyTextView.setMovementMethod(StatsWPLinkMovementMethod.getInstance());
   if (getNote() != null) {
     String noteHTML=JSONUtil.queryJSON(getNote().toJSONObject(),"body.html","");
     if (noteHTML.equals("")) {
@@ -11,7 +11,9 @@
     Spanned html=HtmlUtils.fromHtml(noteHTML);
     bodyTextView.setText(html);
     String iconURL=getNote().getIconURL();
-    if (!iconURL.equals(""))     badgeImageView.setImageUrl(iconURL,WordPress.imageLoader);
+    if (!iconURL.equals("")) {
+      badgeImageView.setImageUrl(iconURL,WordPress.imageLoader);
+    }
     if (isStatsNote()) {
       final int remoteBlogId=getNote().getMetaValueAsInt("blog_id",-1);
       if (WordPress.wpDB.isDotComAccountVisible(remoteBlogId)) {
