@@ -1,9 +1,5 @@
 {
   super.onCreate(null);
-  createMenuDrawer(R.layout.notifications);
-  if (savedInstanceState == null) {
-    AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATIONS_ACCESSED);
-  }
   createMenuDrawer(R.layout.notifications_activity);
   FragmentManager fm=getFragmentManager();
   if (savedInstanceState == null) {
@@ -11,6 +7,7 @@
     FragmentTransaction fragmentTransaction=fm.beginTransaction();
     fragmentTransaction.add(R.id.layout_fragment_container,mNotesList,TAG_LIST_VIEW);
     fragmentTransaction.commit();
+    AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATIONS_ACCESSED);
   }
  else {
     mNotesList=(NewNotificationsListFragment)getFragmentManager().findFragmentByTag(TAG_LIST_VIEW);
