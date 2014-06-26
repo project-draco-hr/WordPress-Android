@@ -1,0 +1,25 @@
+{
+  super.onCreate(savedInstanceState);
+  Bundle extras=getIntent().getExtras();
+  mWebView.setWebViewClient(new WebViewClient());
+  mWebView.setWebChromeClient(new WPWebChromeClient(this,(ProgressBar)findViewById(R.id.progress_bar)));
+  mWebView.getSettings().setJavaScriptEnabled(true);
+  mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+  mWebView.getSettings().setUserAgentString(WordPress.getUserAgent());
+  mWebView.getSettings().setDomStorageEnabled(true);
+  if (extras != null) {
+    if (extras.containsKey(STATS_AUTHENTICATED_URL)) {
+      String addressToLoad=extras.getString(STATS_AUTHENTICATED_URL);
+      String username=extras.getString(STATS_AUTHENTICATED_USER,"");
+      String password=extras.getString(STATS_AUTHENTICATED_PASSWD,"");
+      this.loadAuthenticatedStatsUrl(addressToLoad,username,password);
+    }
+ else     if (extras.containsKey(STATS_URL)) {
+      String addressToLoad=extras.getString(STATS_URL);
+      this.loadUrl(addressToLoad);
+    }
+  }
+ else {
+    AppLog.e(AppLog.T.STATS,"No valid URL passed to StatsWebViewActivity!!");
+  }
+}

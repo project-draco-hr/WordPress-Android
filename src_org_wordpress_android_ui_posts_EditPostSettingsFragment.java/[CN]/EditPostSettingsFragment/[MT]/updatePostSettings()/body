@@ -28,15 +28,8 @@
   if (post.isUploaded() && post.getPostStatus().equals(PostStatus.toString(PostStatus.DRAFT)) && status.equals(PostStatus.toString(PostStatus.PUBLISHED))) {
     post.setChangedFromLocalDraftToPublished(true);
   }
-  double latitude=0.0;
-  double longitude=0.0;
-  if (mCurrentLocation == null) {
-    latitude=post.getLatitude();
-    longitude=post.getLongitude();
-  }
- else   if (WordPress.getCurrentBlog().isLocation() && !mActivity.getPost().isPage()) {
-    latitude=mCurrentLocation.getLatitude();
-    longitude=mCurrentLocation.getLongitude();
+  if (post.supportsLocation()) {
+    post.setLocation(mPostLocation);
   }
   post.setPostExcerpt(excerpt);
   post.setDate_created_gmt(pubDateTimestamp);
@@ -44,7 +37,5 @@
   post.setKeywords(tags);
   post.setPostStatus(status);
   post.setPassword(password);
-  post.setLatitude(latitude);
-  post.setLongitude(longitude);
   post.setPostFormat(postFormat);
 }

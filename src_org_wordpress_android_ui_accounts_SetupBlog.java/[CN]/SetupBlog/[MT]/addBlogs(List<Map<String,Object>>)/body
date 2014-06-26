@@ -1,4 +1,5 @@
 {
+  boolean retValue=false;
   for (int i=0; i < blogList.size(); i++) {
     Map<String,Object> blogMap=blogList.get(i);
     String blogName=StringUtils.unescapeHTML(blogMap.get("blogName").toString());
@@ -6,11 +7,12 @@
     if (!UrlUtils.isValidUrlAndHostNotNull(xmlrpcUrl)) {
       mErrorMsgId=R.string.invalid_xmlrpc_url;
       AppLog.e(T.NUX,"Invalid XMLRPC url: " + xmlrpcUrl);
-      return;
+      return retValue;
     }
     String homeUrl=blogMap.get("url").toString();
     String blogId=blogMap.get("blogid").toString();
     boolean isAdmin=MapUtils.getMapBool(blogMap,"isAdmin");
-    addBlog(blogName,xmlrpcUrl,homeUrl,blogId,mUsername,mPassword,isAdmin);
+    retValue|=addOrUpdateBlog(blogName,xmlrpcUrl,homeUrl,blogId,mUsername,mPassword,isAdmin);
   }
+  return retValue;
 }

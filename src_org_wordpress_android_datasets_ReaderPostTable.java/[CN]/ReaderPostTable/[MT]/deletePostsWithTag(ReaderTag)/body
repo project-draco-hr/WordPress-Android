@@ -1,0 +1,9 @@
+{
+  if (tag == null) {
+    return 0;
+  }
+  String[] args={tag.getTagName(),Integer.toString(tag.tagType.toInt())};
+  int numDeleted=ReaderDatabase.getWritableDb().delete("tbl_post_tags","tag_name=? AND tag_type=?",args);
+  if (numDeleted > 0)   ReaderDatabase.getWritableDb().delete("tbl_posts","post_id NOT IN (SELECT DISTINCT post_id FROM tbl_post_tags)",null);
+  return numDeleted;
+}

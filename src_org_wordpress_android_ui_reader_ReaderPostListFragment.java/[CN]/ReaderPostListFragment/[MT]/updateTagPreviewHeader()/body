@@ -4,17 +4,17 @@
   }
   final TextView txtTagName=(TextView)mTagInfoView.findViewById(R.id.text_tag_name);
   String color=HtmlUtils.colorResToHtmlColor(getActivity(),R.color.grey_extra_dark);
-  String htmlTag="<font color=" + color + ">"+ getCurrentTag()+ "</font>";
+  String htmlTag="<font color=" + color + ">"+ getCurrentTagName()+ "</font>";
   String htmlLabel=getString(R.string.reader_label_tag_preview,htmlTag);
   txtTagName.setText(Html.fromHtml(htmlLabel));
   final TextView txtFollow=(TextView)mTagInfoView.findViewById(R.id.text_follow_blog);
-  ReaderUtils.showFollowStatus(txtFollow,ReaderTagTable.isFollowedTag(getCurrentTag()));
+  ReaderUtils.showFollowStatus(txtFollow,ReaderTagTable.isFollowedTagName(getCurrentTagName()));
   txtFollow.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
       ReaderAnim.animateFollowButton(txtFollow);
-      boolean isAskingToFollow=!ReaderTagTable.isFollowedTag(getCurrentTag());
+      boolean isAskingToFollow=!ReaderTagTable.isFollowedTagName(getCurrentTagName());
       TagAction action=(isAskingToFollow ? TagAction.ADD : TagAction.DELETE);
-      if (ReaderTagActions.performTagAction(action,getCurrentTag(),null)) {
+      if (ReaderTagActions.performTagAction(getCurrentTag(),action,null)) {
         ReaderUtils.showFollowStatus(txtFollow,isAskingToFollow);
       }
     }

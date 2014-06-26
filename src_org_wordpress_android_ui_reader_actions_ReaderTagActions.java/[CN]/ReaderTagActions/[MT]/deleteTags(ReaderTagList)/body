@@ -1,14 +1,17 @@
 {
-  if (topics == null || topics.size() == 0)   return;
-  ReaderDatabase.getWritableDb().beginTransaction();
+  if (tagList == null || tagList.size() == 0) {
+    return;
+  }
+  SQLiteDatabase db=ReaderDatabase.getWritableDb();
+  db.beginTransaction();
   try {
-    for (    ReaderTag topic : topics) {
-      ReaderTagTable.deleteTag(topic.getTagName());
-      ReaderPostTable.deletePostsWithTag(topic.getTagName());
+    for (    ReaderTag tag : tagList) {
+      ReaderTagTable.deleteTag(tag);
+      ReaderPostTable.deletePostsWithTag(tag);
     }
-    ReaderDatabase.getWritableDb().setTransactionSuccessful();
+    db.setTransactionSuccessful();
   }
   finally {
-    ReaderDatabase.getWritableDb().endTransaction();
+    db.endTransaction();
   }
 }

@@ -6,13 +6,16 @@
   final boolean isPostTableEmpty=ReaderPostTable.isEmpty();
   ReaderActions.UpdateResultListener listener=new ReaderActions.UpdateResultListener(){
     @Override public void onUpdateResult(    UpdateResult result){
+      if (isFinishing()) {
+        return;
+      }
       if (result != UpdateResult.FAILED) {
         mHasPerformedInitialUpdate=true;
       }
       if (result == UpdateResult.CHANGED) {
         ReaderPostListFragment listFragment=getListFragment();
         if (listFragment == null) {
-          showListFragmentForTag(ReaderTag.TAG_NAME_DEFAULT,ReaderTypes.ReaderPostListType.TAG_FOLLOWED);
+          showListFragmentForTag(ReaderTag.getDefaultTag(),ReaderTypes.ReaderPostListType.TAG_FOLLOWED);
         }
  else         if (listFragment.getPostListType() == ReaderTypes.ReaderPostListType.TAG_FOLLOWED) {
           listFragment.refreshTags();

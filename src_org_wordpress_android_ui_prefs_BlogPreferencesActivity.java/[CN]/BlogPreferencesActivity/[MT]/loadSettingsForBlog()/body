@@ -1,7 +1,6 @@
 {
   ((TextView)findViewById(R.id.l_section1)).setText(getResources().getString(R.string.account_details).toUpperCase(Locale.getDefault()));
   ((TextView)findViewById(R.id.l_section2)).setText(getResources().getString(R.string.media).toUpperCase(Locale.getDefault()));
-  ((TextView)findViewById(R.id.l_section3)).setText(getResources().getString(R.string.location).toUpperCase(Locale.getDefault()));
   ((TextView)findViewById(R.id.l_maxImageWidth)).setText(getResources().getString(R.string.max_thumbnail_px_width).toUpperCase(Locale.getDefault()));
   ((TextView)findViewById(R.id.l_httpuser)).setText(getResources().getString(R.string.http_credentials).toUpperCase(Locale.getDefault()));
   ArrayAdapter<Object> spinnerArrayAdapter=new ArrayAdapter<Object>(this,R.layout.spinner_textview,new String[]{"Original Size","100","200","300","400","500","600","700","800","900","1000","1100","1200","1300","1400","1500","1600","1700","1800","1900","2000"});
@@ -53,22 +52,6 @@
     }
   }
 );
-  boolean hasLocationProvider=false;
-  LocationManager locationManager=(LocationManager)getSystemService(LOCATION_SERVICE);
-  List<String> providers=locationManager.getProviders(true);
-  for (  String providerName : providers) {
-    if (providerName.equals(LocationManager.GPS_PROVIDER) || providerName.equals(LocationManager.NETWORK_PROVIDER)) {
-      hasLocationProvider=true;
-    }
-  }
-  if (hasLocationProvider) {
-    mLocationCB.setChecked(blog.isLocation());
-  }
- else {
-    mLocationCB.setChecked(false);
-    RelativeLayout locationLayout=(RelativeLayout)findViewById(R.id.sectionLocation);
-    locationLayout.setVisibility(View.GONE);
-  }
   int imageWidthPosition=spinnerArrayAdapter.getPosition(blog.getMaxImageWidth());
   mImageWidthSpinner.setSelection((imageWidthPosition >= 0) ? imageWidthPosition : 0);
   if (mImageWidthSpinner.getSelectedItemPosition() == 0)   fullSizeImageCheckBox.setVisibility(View.GONE);
