@@ -1,11 +1,19 @@
 {
-  String regId;
-  GCMRegistrar.checkDevice(context);
-  GCMRegistrar.checkManifest(context);
-  regId=GCMRegistrar.getRegistrationId(context);
-  String gcmId=BuildConfig.GCM_ID;
-  if (gcmId != null && TextUtils.isEmpty(regId)) {
-    GCMRegistrar.register(context,gcmId);
+  String regId="";
+  try {
+    GCMRegistrar.checkDevice(context);
+    GCMRegistrar.checkManifest(context);
+    regId=GCMRegistrar.getRegistrationId(context);
+    String gcmId=BuildConfig.GCM_ID;
+    if (gcmId != null && TextUtils.isEmpty(regId)) {
+      GCMRegistrar.register(context,gcmId);
+    }
+  }
+ catch (  UnsupportedOperationException e) {
+    AppLog.e(T.NOTIFS,"Device doesn't support GCM: " + e.getMessage());
+  }
+catch (  IllegalStateException e) {
+    AppLog.e(T.NOTIFS,"APK (manifest error or dependency missing) doesn't support GCM: " + e.getMessage());
   }
   return regId;
 }
