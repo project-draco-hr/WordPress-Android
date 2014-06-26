@@ -1,0 +1,17 @@
+{
+  super.onViewCreated(view,savedInstanceState);
+  if (savedInstanceState == null) {
+    if (mNote.getSubject() != null) {
+      NoticonTextView noticonTextView=(NoticonTextView)view.findViewById(R.id.notification_header_icon);
+      noticonTextView.setText(mNote.getNoticonCharacter());
+      WPTextView subjectTextView=(WPTextView)view.findViewById(R.id.notification_header_subject);
+      subjectTextView.setText(mNote.getSubject());
+    }
+    if (mSubFragment != null) {
+      FragmentManager fragmentManager=getFragmentManager();
+      FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+      fragmentTransaction.replace(R.id.notification_detail_fragment_container,mSubFragment);
+      fragmentTransaction.commitAllowingStateLoss();
+    }
+  }
+}

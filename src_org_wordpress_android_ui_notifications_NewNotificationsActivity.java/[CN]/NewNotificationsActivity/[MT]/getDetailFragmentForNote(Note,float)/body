@@ -1,18 +1,20 @@
 {
   if (note == null)   return null;
+  NotificationsDetailFragment fragment=NotificationsDetailFragment.newInstance(note,yPosition);
   if (note.isCommentType()) {
-    return CommentDetailFragment.newInstance(note);
+    fragment.setFragment(CommentDetailFragment.newInstance(note));
   }
  else   if (note.isAutomattcherType()) {
     boolean isPost=(note.getBlogId() != 0 && note.getPostId() != 0 && note.getCommentId() == 0);
     if (isPost) {
-      return ReaderPostDetailFragment.newInstance(note.getBlogId(),note.getPostId());
+      fragment.setFragment(ReaderPostDetailFragment.newInstance(note.getBlogId(),note.getPostId()));
     }
  else {
-      return NotificationsDetailListFragment.newInstance(note,yPosition);
+      fragment.setFragment(NotificationsDetailListFragment.newInstance(note));
     }
   }
  else {
-    return NotificationsDetailListFragment.newInstance(note,yPosition);
+    fragment.setFragment(NotificationsDetailListFragment.newInstance(note));
   }
+  return fragment;
 }
