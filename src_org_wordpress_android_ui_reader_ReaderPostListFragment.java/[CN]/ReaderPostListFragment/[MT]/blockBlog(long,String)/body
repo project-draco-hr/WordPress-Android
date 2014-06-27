@@ -1,0 +1,32 @@
+{
+  if (!NetworkUtils.checkConnection(getActivity())) {
+    return;
+  }
+  final ReaderPostList postsToRestore=ReaderPostTable.getPostsInBlog(blogId,ReaderConstants.READER_MAX_POSTS_TO_DISPLAY);
+  if (!ReaderBlogActions.blockBlogFromReader(blogId)) {
+    return;
+  }
+  Animation.AnimationListener aniListener=new Animation.AnimationListener(){
+    @Override public void onAnimationStart(    Animation animation){
+    }
+    @Override public void onAnimationRepeat(    Animation animation){
+    }
+    @Override public void onAnimationEnd(    Animation animation){
+      if (hasActivity()) {
+        refreshPosts();
+      }
+    }
+  }
+;
+  ReaderAnim.animateListItem(mListView,mContextMenuListItemPosition,aniListener,R.anim.fade_out);
+  UndoBarController.UndoListener undoListener=new UndoBarController.UndoListener(){
+    @Override public void onUndo(    Parcelable parcelable){
+      if (ReaderBlogActions.unblockBlogFromReader(blogId)) {
+        ReaderPostTable.addOrUpdatePosts(getCurrentTag(),postsToRestore);
+        refreshPosts();
+      }
+    }
+  }
+;
+  new UndoBarController.UndoBar(getActivity()).message(getString(R.string.reader_toast_blog_blocked,blogName)).listener(undoListener).translucent(true).show();
+}
