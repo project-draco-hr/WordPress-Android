@@ -1,0 +1,28 @@
+{
+  if (listView == null) {
+    return;
+  }
+  int firstVisible=listView.getFirstVisiblePosition();
+  int positionRelative=positionAbsolute - firstVisible;
+  View listItem=listView.getChildAt(positionRelative);
+  if (listItem == null) {
+    return;
+  }
+  final int animResId;
+switch (style) {
+case ADDITION:
+    animResId=R.anim.reader_listitem_add;
+  break;
+case DELETION:
+animResId=R.anim.reader_listitem_delete;
+break;
+default :
+return;
+}
+Animation animation=AnimationUtils.loadAnimation(listView.getContext(),animResId);
+animation.setFillAfter(false);
+if (listener != null) {
+animation.setAnimationListener(listener);
+}
+listItem.startAnimation(animation);
+}
