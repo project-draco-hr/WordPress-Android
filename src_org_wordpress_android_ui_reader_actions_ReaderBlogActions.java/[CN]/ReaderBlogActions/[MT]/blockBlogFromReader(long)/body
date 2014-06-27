@@ -1,7 +1,26 @@
 {
   if (blogId == 0) {
-    return false;
+    return null;
   }
+  final ReaderPostList postsToRestore=ReaderPostTable.getPostsInBlog(blogId,0);
   ReaderPostTable.deletePostsInBlog(blogId);
-  return true;
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      boolean success=(jsonObject != null && jsonObject.optBoolean("success"));
+      if (!success) {
+        ReaderPostTable.addOrUpdatePosts(null,postsToRestore);
+      }
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.READER,volleyError);
+      ReaderPostTable.addOrUpdatePosts(null,postsToRestore);
+    }
+  }
+;
+  String path="/me/block/sites/" + Long.toString(blogId) + "/new";
+  WordPress.getRestClientUtils().post(path,listener,errorListener);
+  return postsToRestore;
 }
