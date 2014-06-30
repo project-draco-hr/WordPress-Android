@@ -10,7 +10,7 @@
         final JSONObject currentClicksJsonObject=response.getJSONObject(currentClickPath);
         if (!isSingleCallResponseError(currentClickPath,currentClicksJsonObject)) {
           String date=currentClicksJsonObject.getString("date");
-          long dateMs=StatUtils.toMs(date);
+          long dateMs=StatsUtils.toMs(date);
           ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
           ContentProviderOperation deleteGroup=ContentProviderOperation.newDelete(StatsContentProvider.STATS_CLICK_GROUP_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mRequestBlogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
           ContentProviderOperation deleteChildOp=ContentProviderOperation.newDelete(StatsContentProvider.STATS_CLICKS_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mRequestBlogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();

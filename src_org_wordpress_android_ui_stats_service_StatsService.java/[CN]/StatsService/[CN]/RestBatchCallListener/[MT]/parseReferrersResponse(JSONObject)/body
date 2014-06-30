@@ -10,7 +10,7 @@
         final JSONObject currentReferrersJsonObject=response.getJSONObject(currentReferrerPath);
         if (!isSingleCallResponseError(currentReferrerPath,currentReferrersJsonObject)) {
           String date=currentReferrersJsonObject.getString("date");
-          long dateMs=StatUtils.toMs(date);
+          long dateMs=StatsUtils.toMs(date);
           ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
           ContentProviderOperation deleteGroupOp=ContentProviderOperation.newDelete(StatsContentProvider.STATS_REFERRER_GROUP_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mRequestBlogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
           operations.add(deleteGroupOp);

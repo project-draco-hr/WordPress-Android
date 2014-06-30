@@ -10,7 +10,7 @@
         final JSONObject currentSearchEngineTermsJsonObject=response.getJSONObject(currentSearchEngineTermsPath);
         if (!isSingleCallResponseError(currentSearchEngineTermsPath,currentSearchEngineTermsJsonObject)) {
           String date=currentSearchEngineTermsJsonObject.getString("date");
-          long dateMs=StatUtils.toMs(date);
+          long dateMs=StatsUtils.toMs(date);
           ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
           ContentProviderOperation deleteOp=ContentProviderOperation.newDelete(StatsContentProvider.STATS_SEARCH_ENGINE_TERMS_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mRequestBlogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
           operations.add(deleteOp);

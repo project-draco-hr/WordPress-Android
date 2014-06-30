@@ -15,7 +15,7 @@
           JSONArray results=currentTopPostsAndPagesJsonObject.getJSONArray("top-posts");
           int count=Math.min(results.length(),StatsActivity.STATS_GROUP_MAX_ITEMS);
           String date=currentTopPostsAndPagesJsonObject.getString("date");
-          long dateMs=StatUtils.toMs(date);
+          long dateMs=StatsUtils.toMs(date);
           ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
           ContentProviderOperation deleteOp=ContentProviderOperation.newDelete(StatsContentProvider.STATS_TOP_POSTS_AND_PAGES_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mRequestBlogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
           operations.add(deleteOp);
