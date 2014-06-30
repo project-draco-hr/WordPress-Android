@@ -1,0 +1,44 @@
+{
+  Bundle bundle=getArguments();
+  final String title=StringUtils.notNullStr(bundle.getString(ARG_TITLE));
+  final String message=StringUtils.notNullStr(bundle.getString(ARG_MESSAGE));
+  final WPAlertDialogType dialogType;
+  if (bundle.containsKey(ARG_TYPE) && bundle.getSerializable(ARG_TYPE) instanceof WPAlertDialogType) {
+    dialogType=(WPAlertDialogType)bundle.getSerializable(ARG_TYPE);
+  }
+ else {
+    dialogType=WPAlertDialogType.ALERT;
+  }
+  AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+  builder.setTitle(title);
+  builder.setMessage(message);
+switch (dialogType) {
+case ALERT:
+    builder.setIcon(android.R.drawable.ic_dialog_alert);
+  builder.setNeutralButton(R.string.ok,this);
+break;
+case CONFIRM:
+builder.setPositiveButton(R.string.yes,new DialogInterface.OnClickListener(){
+@Override public void onClick(DialogInterface dialog,int which){
+  if (getActivity() instanceof OnDialogConfirmListener) {
+    OnDialogConfirmListener act=(OnDialogConfirmListener)getActivity();
+    act.onDialogConfirm();
+  }
+}
+}
+);
+builder.setNegativeButton(R.string.no,this);
+break;
+case URL_INFO:
+final String infoTitle=StringUtils.notNullStr(bundle.getString(ARG_INFO_TITLE));
+final String infoURL=StringUtils.notNullStr(bundle.getString(ARG_INFO_URL));
+builder.setPositiveButton(infoTitle,new DialogInterface.OnClickListener(){
+@Override public void onClick(DialogInterface dialog,int which){
+if (!TextUtils.isEmpty(infoURL)) startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(infoURL)));
+}
+}
+);
+break;
+}
+return builder.create();
+}
