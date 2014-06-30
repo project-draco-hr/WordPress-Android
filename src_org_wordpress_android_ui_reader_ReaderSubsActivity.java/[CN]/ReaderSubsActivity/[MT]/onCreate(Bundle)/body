@@ -4,7 +4,11 @@
   restoreState(savedInstanceState);
   mViewPager=(ViewPager)findViewById(R.id.viewpager);
   mViewPager.setAdapter(getPageAdapter());
-  setupActionBar();
+  getActionBar().setDisplayShowTitleEnabled(true);
+  getActionBar().setDisplayHomeAsUpEnabled(true);
+  PagerTabStrip tabStrip=(PagerTabStrip)findViewById(R.id.pager_tabs);
+  tabStrip.setTabIndicatorColorResource(R.color.blue_medium);
+  tabStrip.setBackgroundColor(getResources().getColor(R.color.grey_extra_light));
   mEditAdd=(EditText)findViewById(R.id.edit_add);
   mEditAdd.setOnEditorActionListener(new TextView.OnEditorActionListener(){
     @Override public boolean onEditorAction(    TextView v,    int actionId,    KeyEvent event){
@@ -27,7 +31,6 @@
   }
   mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
     @Override public void onPageSelected(    int position){
-      getActionBar().setSelectedNavigationItem(position);
       String pageTitle=(String)getPageAdapter().getPageTitle(position);
       UserPrefs.setReaderSubsPageTitle(pageTitle);
     }
