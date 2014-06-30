@@ -2,7 +2,15 @@
   if (!NetworkUtils.checkConnection(getActivity())) {
     return;
   }
-  final ReaderPostList postsToRestore=ReaderBlogActions.blockBlogFromReader(blogId);
+  final ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      if (!succeeded) {
+        ToastUtils.showToast(getActivity(),R.string.reader_toast_err_generic);
+      }
+    }
+  }
+;
+  final ReaderPostList postsToRestore=ReaderBlogActions.blockBlogFromReader(blogId,actionListener);
   Animation.AnimationListener aniListener=new Animation.AnimationListener(){
     @Override public void onAnimationStart(    Animation animation){
     }
@@ -18,7 +26,7 @@
   ReaderAnim.animateListItem(mListView,mContextMenuListItemPosition,ReaderAnim.AnimateListItemStyle.DELETION,aniListener);
   UndoBarController.UndoListener undoListener=new UndoBarController.UndoListener(){
     @Override public void onUndo(    Parcelable parcelable){
-      if (ReaderBlogActions.unblockBlogFromReader(blogId,postsToRestore)) {
+      if (ReaderBlogActions.unblockBlogFromReader(blogId,postsToRestore,actionListener)) {
         refreshPosts();
       }
     }

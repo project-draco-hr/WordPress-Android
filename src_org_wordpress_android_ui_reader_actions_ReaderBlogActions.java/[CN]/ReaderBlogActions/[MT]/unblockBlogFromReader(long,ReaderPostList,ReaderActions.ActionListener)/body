@@ -2,12 +2,22 @@
   ReaderPostTable.addOrUpdatePosts(null,postsToRestore);
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
+      boolean success=(jsonObject != null && jsonObject.optBoolean("success"));
+      if (!success) {
+        AppLog.w(T.READER,"failed to unblock blog");
+      }
+      if (actionListener != null) {
+        actionListener.onActionResult(success);
+      }
     }
   }
 ;
   RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.e(T.READER,volleyError);
+      if (actionListener != null) {
+        actionListener.onActionResult(false);
+      }
     }
   }
 ;
