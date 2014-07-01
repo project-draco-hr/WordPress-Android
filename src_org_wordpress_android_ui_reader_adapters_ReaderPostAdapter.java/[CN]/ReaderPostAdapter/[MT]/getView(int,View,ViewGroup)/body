@@ -133,8 +133,10 @@
   if (post.isWP() && !post.isPrivate && getPostListType() == ReaderPostListType.TAG_FOLLOWED) {
     holder.imgDropDown.setVisibility(View.VISIBLE);
     holder.imgDropDown.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View v){
-        v.showContextMenu();
+      @Override public void onClick(      View view){
+        if (mOnPostPopupListener != null) {
+          mOnPostPopupListener.onShowPostPopup(view,post,position);
+        }
       }
     }
 );
