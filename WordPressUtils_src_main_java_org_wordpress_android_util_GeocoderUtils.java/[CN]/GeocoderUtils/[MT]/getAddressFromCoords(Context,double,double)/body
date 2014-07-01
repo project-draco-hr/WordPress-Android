@@ -1,0 +1,18 @@
+{
+  Address address=null;
+  List<Address> addresses=null;
+  Geocoder gcd=getGeocoder(context);
+  if (gcd == null) {
+    return null;
+  }
+  try {
+    addresses=gcd.getFromLocation(latitude,longitude,1);
+  }
+ catch (  IOException e) {
+    AppLog.e(AppLog.T.UTILS,"Unable to parse response from server. Is Geocoder service hitting the server too frequently?",e);
+  }
+  if (addresses != null && addresses.size() > 0) {
+    address=addresses.get(0);
+  }
+  return address;
+}
