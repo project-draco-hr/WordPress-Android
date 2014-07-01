@@ -5,7 +5,7 @@
     @Override public void onResponse(    JSONObject jsonObject){
       boolean success=(jsonObject != null && jsonObject.optBoolean("success"));
       if (!success) {
-        AppLog.w(T.READER,"failed to block blog");
+        AppLog.w(T.READER,"failed to block blog " + blogId);
         ReaderPostTable.addOrUpdatePosts(null,deletedPosts);
       }
       if (actionListener != null) {
@@ -24,6 +24,7 @@
     }
   }
 ;
+  AppLog.i(T.READER,"blocking blog " + blogId);
   String path="/me/block/sites/" + Long.toString(blogId) + "/new";
   WordPress.getRestClientUtils().post(path,listener,errorListener);
   return deletedPosts;

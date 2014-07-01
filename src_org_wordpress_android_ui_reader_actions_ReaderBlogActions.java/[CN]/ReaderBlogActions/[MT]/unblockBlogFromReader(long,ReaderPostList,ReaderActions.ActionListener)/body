@@ -1,10 +1,12 @@
 {
-  ReaderPostTable.addOrUpdatePosts(null,postsToRestore);
+  if (postsToRestore != null) {
+    ReaderPostTable.addOrUpdatePosts(null,postsToRestore);
+  }
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       boolean success=(jsonObject != null && jsonObject.optBoolean("success"));
       if (!success) {
-        AppLog.w(T.READER,"failed to unblock blog");
+        AppLog.w(T.READER,"failed to unblock blog " + blogId);
       }
       if (actionListener != null) {
         actionListener.onActionResult(success);
@@ -21,6 +23,7 @@
     }
   }
 ;
+  AppLog.i(T.READER,"unblocking blog " + blogId);
   String path="/me/block/sites/" + Long.toString(blogId) + "/delete";
   WordPress.getRestClientUtils().post(path,listener,errorListener);
   return true;
