@@ -1,0 +1,30 @@
+{
+  Handler mainLooperHandler=new Handler(WordPress.getContext().getMainLooper());
+  final CountDownLatch countDownLatch=new CountDownLatch(1);
+  final boolean success[]=new boolean[1];
+  Runnable getImage=new Runnable(){
+    @Override public void run(){
+      try {
+        WordPress.imageLoader.get("http;///hello/null/host",new ImageListener(){
+          @Override public void onResponse(          ImageContainer imageContainer,          boolean b){
+          }
+          @Override public void onErrorResponse(          VolleyError volleyError){
+          }
+        }
+,1,1);
+        success[0]=true;
+      }
+ catch (      Exception e) {
+        AppLog.e(T.TESTS,e);
+        success[0]=false;
+      }
+ finally {
+        countDownLatch.countDown();
+      }
+    }
+  }
+;
+  mainLooperHandler.post(getImage);
+  countDownLatch.await(1,TimeUnit.SECONDS);
+  assertTrue("Invalid Volley library version",success[0]);
+}
