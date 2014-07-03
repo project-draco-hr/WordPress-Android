@@ -3,8 +3,13 @@
   ReaderPostTable.deletePostsInBlog(blogId);
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
+      boolean success=(jsonObject != null && jsonObject.optBoolean("success"));
+      if (!success) {
+        AppLog.w(T.READER,"failed to block blog " + blogId);
+        ReaderPostTable.addOrUpdatePosts(null,deletedPosts);
+      }
       if (actionListener != null) {
-        actionListener.onActionResult(true);
+        actionListener.onActionResult(success);
       }
     }
   }
