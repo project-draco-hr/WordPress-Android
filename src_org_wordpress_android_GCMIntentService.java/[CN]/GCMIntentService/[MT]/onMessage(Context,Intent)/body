@@ -1,7 +1,11 @@
 {
   AppLog.v(T.NOTIFS,"Received Message");
-  if (!WordPress.hasValidWPComCredentials(context))   return;
   Bundle extras=intent.getExtras();
+  if (extras != null && TextUtils.equals(extras.getString("origin"),"helpshift")) {
+    HelpshiftHelper.getInstance().handlePush(context,intent);
+    return;
+  }
+  if (!WordPress.hasValidWPComCredentials(context))   return;
   if (extras == null) {
     AppLog.v(T.NOTIFS,"No notification message content received. Aborting.");
     return;
