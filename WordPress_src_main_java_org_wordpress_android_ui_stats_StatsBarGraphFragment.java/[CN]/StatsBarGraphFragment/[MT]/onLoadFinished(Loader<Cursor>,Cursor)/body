@@ -26,9 +26,8 @@
   viewsSeries.getStyle().padding=DisplayUtils.dpToPx(getActivity(),1);
   visitorsSeries.getStyle().color=getResources().getColor(R.color.stats_bar_graph_visitors);
   visitorsSeries.getStyle().padding=DisplayUtils.dpToPx(getActivity(),3);
-  final GraphView graphView;
   if (mGraphContainer.getChildCount() >= 1 && mGraphContainer.getChildAt(0) instanceof GraphView) {
-    graphView=(GraphView)mGraphContainer.getChildAt(0);
+    graphView=(StatsBarGraph)mGraphContainer.getChildAt(0);
   }
  else {
     mGraphContainer.removeAllViews();
@@ -41,28 +40,6 @@
     graphView.addSeries(visitorsSeries);
     graphView.getGraphViewStyle().setNumHorizontalLabels(getNumOfHorizontalLabels(numPoints));
     graphView.setHorizontalLabels(horLabels);
-    graphView.setOnTouchListener(new View.OnTouchListener(){
-      @Override public boolean onTouch(      View view,      MotionEvent motionEvent){
-        ViewConfiguration vc=ViewConfiguration.get(view.getContext());
-        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-          GraphView currentGraphView=(GraphView)view;
-          float x=motionEvent.getX(motionEvent.getActionIndex());
-          int width=currentGraphView.getWidth();
-          double xValue=(x / width);
-          AppLog.w(AppLog.T.STATS,"x " + x);
-          AppLog.w(AppLog.T.STATS,"width " + width);
-          AppLog.w(AppLog.T.STATS,"xValue " + xValue);
-          float y=motionEvent.getY(motionEvent.getActionIndex());
-          int height=currentGraphView.getHeight();
-          double yValue=(y / height);
-          AppLog.w(AppLog.T.STATS,"y " + y);
-          AppLog.w(AppLog.T.STATS,"height " + height);
-          AppLog.w(AppLog.T.STATS,"yValue " + yValue);
-          AppLog.e(AppLog.T.STATS,"<<< graphView.onTouch");
-        }
-        return false;
-      }
-    }
-);
+    graphView.setOnTouchListener(mBarGraphTouchListener);
   }
 }
