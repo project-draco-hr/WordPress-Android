@@ -11,6 +11,7 @@
   }
   int numPoints=Math.min(getNumOfPoints(),cursor.getCount());
   final String[] horLabels=new String[numPoints];
+  statsDate=new String[numPoints];
   GraphView.GraphViewData[] views=new GraphView.GraphViewData[numPoints];
   GraphView.GraphViewData[] visitors=new GraphView.GraphViewData[numPoints];
   StatsBarChartUnit unit=getBarChartUnit();
@@ -18,10 +19,11 @@
     views[i]=new GraphView.GraphViewData(i,getViews(cursor));
     visitors[i]=new GraphView.GraphViewData(i,getVisitors(cursor));
     horLabels[i]=getDateLabel(cursor,unit);
+    statsDate[i]=getDate(cursor);
     cursor.moveToNext();
   }
-  GraphViewSeries viewsSeries=new GraphViewSeries(views);
-  GraphViewSeries visitorsSeries=new GraphViewSeries(visitors);
+  viewsSeries=new GraphViewSeries(views);
+  visitorsSeries=new GraphViewSeries(visitors);
   viewsSeries.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views);
   viewsSeries.getStyle().padding=DisplayUtils.dpToPx(getActivity(),1);
   visitorsSeries.getStyle().color=getResources().getColor(R.color.stats_bar_graph_visitors);
@@ -40,6 +42,5 @@
     graphView.addSeries(visitorsSeries);
     graphView.getGraphViewStyle().setNumHorizontalLabels(getNumOfHorizontalLabels(numPoints));
     graphView.setHorizontalLabels(horLabels);
-    graphView.setOnTouchListener(mBarGraphTouchListener);
   }
 }
