@@ -12,7 +12,9 @@
   content=Emoticons.replaceEmoticonsWithEmoji(content);
   final Spanned html;
   if (maxImageSize > 0 && content.contains("<img")) {
-    html=HtmlUtils.fromHtml(content,new WPImageGetter(textView,maxImageSize));
+    Drawable loading=textView.getContext().getResources().getDrawable(R.drawable.remote_image);
+    Drawable failed=textView.getContext().getResources().getDrawable(R.drawable.remote_failed);
+    html=HtmlUtils.fromHtml(content,new WPImageGetter(textView,maxImageSize,WordPress.imageLoader,loading,failed));
   }
  else {
     html=HtmlUtils.fromHtml(content);
