@@ -1,27 +1,29 @@
 {
-  if (ssb != null && !MediaUtils.isInMediaStore(imageUri))   imageUri=MediaUtils.downloadExternalMedia(getActivity(),imageUri);
+  if (ssb != null && !MediaUtils.isInMediaStore(imageUri)) {
+    imageUri=MediaUtils.downloadExternalMedia(context,imageUri);
+  }
   if (imageUri == null) {
     return false;
   }
   Bitmap thumbnailBitmap;
   String mediaTitle;
   if (imageUri.toString().contains("video") && !MediaUtils.isInMediaStore(imageUri)) {
-    thumbnailBitmap=BitmapFactory.decodeResource(getActivity().getResources(),R.drawable.media_movieclip);
+    thumbnailBitmap=BitmapFactory.decodeResource(context.getResources(),R.drawable.media_movieclip);
     mediaTitle=getResources().getString(R.string.video);
   }
  else {
-    thumbnailBitmap=ImageHelper.getWPImageSpanThumbnailFromFilePath(getActivity(),imageUri.getEncodedPath(),getMaximumThumbnailWidth());
+    thumbnailBitmap=ImageHelper.getWPImageSpanThumbnailFromFilePath(context,imageUri.getEncodedPath(),getMaximumThumbnailWidth());
     if (thumbnailBitmap == null) {
       return false;
     }
-    mediaTitle=ImageHelper.getTitleForWPImageSpan(getActivity(),imageUri.getEncodedPath());
+    mediaTitle=ImageHelper.getTitleForWPImageSpan(context,imageUri.getEncodedPath());
   }
-  WPImageSpan is=new WPImageSpan(getActivity(),thumbnailBitmap,imageUri);
+  WPImageSpan is=new WPImageSpan(context,thumbnailBitmap,imageUri);
   MediaFile mediaFile=is.getMediaFile();
   mediaFile.setPostID(mActivity.getPost().getLocalTablePostId());
   mediaFile.setTitle(mediaTitle);
   mediaFile.setFilePath(is.getImageSource().toString());
-  MediaUtils.setWPImageSpanWidth(getActivity(),imageUri,is);
+  MediaUtils.setWPImageSpanWidth(context,imageUri,is);
   if (imageUri.getEncodedPath() != null)   mediaFile.setVideo(imageUri.getEncodedPath().contains("video"));
   mediaFile.save();
   if (ssb != null) {

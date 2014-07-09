@@ -24,7 +24,7 @@ if (resultCode == Activity.RESULT_OK) {
 try {
 File f=new File(mMediaCapturePath);
 Uri capturedImageUri=Uri.fromFile(f);
-if (!addMedia(capturedImageUri,null)) Toast.makeText(getActivity(),getResources().getText(R.string.gallery_error),Toast.LENGTH_SHORT).show();
+if (!addMedia(capturedImageUri,null,getActivity())) Toast.makeText(getActivity(),getResources().getText(R.string.gallery_error),Toast.LENGTH_SHORT).show();
 getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,Uri.parse("file://" + Environment.getExternalStorageDirectory())));
 AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_ADDED_PHOTO_VIA_LOCAL_LIBRARY);
 }
@@ -47,7 +47,7 @@ break;
 case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO:
 if (resultCode == Activity.RESULT_OK) {
 Uri capturedVideoUri=MediaUtils.getLastRecordedVideoUri(getActivity());
-if (!addMedia(capturedVideoUri,null)) Toast.makeText(getActivity(),getResources().getText(R.string.gallery_error),Toast.LENGTH_SHORT).show();
+if (!addMedia(capturedVideoUri,null,getActivity())) Toast.makeText(getActivity(),getResources().getText(R.string.gallery_error),Toast.LENGTH_SHORT).show();
 }
  else if (mActivity != null && mQuickMediaType > -1 && TextUtils.isEmpty(mContentEditText.getText())) {
 WordPress.wpDB.deletePost(mActivity.getPost());
