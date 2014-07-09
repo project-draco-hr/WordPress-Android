@@ -4,13 +4,15 @@
   if (!BuildUtils.isDebugBuild()) {
     Crashlytics.start(this);
   }
-  versionName=ProfilingUtils.getVersionName(this);
+  HelpshiftHelper.init(this);
+  versionName=getVersionName(this);
   initWpDb();
   wpStatsDB=new WordPressStatsDB(this);
   mContext=this;
   RestClientUtils.setUserAgent(getUserAgent());
   configureSimperium();
   setupVolleyQueue();
+  ABTestingUtils.init();
   SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
   if (settings.getInt("wp_pref_last_activity",-1) >= 0) {
     shouldRestoreSelectedActivity=true;
