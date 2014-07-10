@@ -1,17 +1,21 @@
 {
-  if (getActivity() == null)   return;
+  if (getActivity() == null) {
+    return;
+  }
   if (!cursor.moveToFirst()) {
     Context context=mGraphContainer.getContext();
     if (context != null) {
       LayoutInflater inflater=LayoutInflater.from(context);
       View emptyBarGraphView=inflater.inflate(R.layout.stats_bar_graph_empty,mGraphContainer,false);
-      if (emptyBarGraphView != null)       mGraphContainer.addView(emptyBarGraphView);
+      if (emptyBarGraphView != null) {
+        mGraphContainer.addView(emptyBarGraphView);
+      }
     }
     return;
   }
   int numPoints=Math.min(getNumOfPoints(),cursor.getCount());
   final String[] horLabels=new String[numPoints];
-  statsDate=new String[numPoints];
+  mStatsDate=new String[numPoints];
   GraphView.GraphViewData[] views=new GraphView.GraphViewData[numPoints];
   GraphView.GraphViewData[] visitors=new GraphView.GraphViewData[numPoints];
   StatsBarChartUnit unit=getBarChartUnit();
@@ -19,28 +23,28 @@
     views[i]=new GraphView.GraphViewData(i,getViews(cursor));
     visitors[i]=new GraphView.GraphViewData(i,getVisitors(cursor));
     horLabels[i]=getDateLabel(cursor,unit);
-    statsDate[i]=getDate(cursor);
+    mStatsDate[i]=getDate(cursor);
     cursor.moveToNext();
   }
-  viewsSeries=new GraphViewSeries(views);
-  visitorsSeries=new GraphViewSeries(visitors);
-  viewsSeries.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views);
-  viewsSeries.getStyle().padding=DisplayUtils.dpToPx(getActivity(),1);
-  visitorsSeries.getStyle().color=getResources().getColor(R.color.stats_bar_graph_visitors);
-  visitorsSeries.getStyle().padding=DisplayUtils.dpToPx(getActivity(),3);
+  mViewsSeries=new GraphViewSeries(views);
+  mVisitorsSeries=new GraphViewSeries(visitors);
+  mViewsSeries.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views);
+  mViewsSeries.getStyle().padding=DisplayUtils.dpToPx(getActivity(),1);
+  mVisitorsSeries.getStyle().color=getResources().getColor(R.color.stats_bar_graph_visitors);
+  mVisitorsSeries.getStyle().padding=DisplayUtils.dpToPx(getActivity(),3);
   if (mGraphContainer.getChildCount() >= 1 && mGraphContainer.getChildAt(0) instanceof GraphView) {
-    graphView=(StatsBarGraph)mGraphContainer.getChildAt(0);
+    mGraphView=(StatsBarGraph)mGraphContainer.getChildAt(0);
   }
  else {
     mGraphContainer.removeAllViews();
-    graphView=new StatsBarGraph(getActivity());
-    mGraphContainer.addView(graphView);
+    mGraphView=new StatsBarGraph(getActivity());
+    mGraphContainer.addView(mGraphView);
   }
-  if (graphView != null) {
-    graphView.removeAllSeries();
-    graphView.addSeries(viewsSeries);
-    graphView.addSeries(visitorsSeries);
-    graphView.getGraphViewStyle().setNumHorizontalLabels(getNumOfHorizontalLabels(numPoints));
-    graphView.setHorizontalLabels(horLabels);
+  if (mGraphView != null) {
+    mGraphView.removeAllSeries();
+    mGraphView.addSeries(mViewsSeries);
+    mGraphView.addSeries(mVisitorsSeries);
+    mGraphView.getGraphViewStyle().setNumHorizontalLabels(getNumOfHorizontalLabels(numPoints));
+    mGraphView.setHorizontalLabels(horLabels);
   }
 }
