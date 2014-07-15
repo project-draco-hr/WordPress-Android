@@ -1,9 +1,19 @@
 {
-  UserActionNoteBlockHolder noteBlockHolder=(UserActionNoteBlockHolder)view.getTag();
+  final UserActionNoteBlockHolder noteBlockHolder=(UserActionNoteBlockHolder)view.getTag();
   noteBlockHolder.mNameTextView.setText(getNoteText());
   noteBlockHolder.mUrlTextView.setText(NotificationUtils.getClickableTextForIdUrl(getUrlIdObject(),getUserUrl(),getOnNoteBlockTextClickListener()));
   if (hasImageMediaItem()) {
     noteBlockHolder.mAvatarImageView.setImageUrl(getNoteMediaItem().optString("url",""),WordPress.imageLoader);
+    if (!TextUtils.isEmpty(getUserUrl())) {
+      noteBlockHolder.mAvatarImageView.setOnTouchListener(mOnGravatarTouchListener);
+    }
+ else {
+      noteBlockHolder.mAvatarImageView.setOnTouchListener(null);
+    }
+  }
+ else {
+    noteBlockHolder.mAvatarImageView.setImageResource(R.drawable.placeholder);
+    noteBlockHolder.mAvatarImageView.setOnTouchListener(null);
   }
   if (hasAction()) {
     configureActionButton(noteBlockHolder.mActionButton);
