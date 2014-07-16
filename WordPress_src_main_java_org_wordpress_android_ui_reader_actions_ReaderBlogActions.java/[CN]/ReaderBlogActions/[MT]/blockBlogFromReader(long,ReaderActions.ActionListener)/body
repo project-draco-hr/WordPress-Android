@@ -1,0 +1,31 @@
+{
+  final ReaderPostList deletedPosts=ReaderPostTable.getPostsInBlog(blogId,0);
+  ReaderPostTable.deletePostsInBlog(blogId);
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      boolean success=(jsonObject != null && jsonObject.optBoolean("success"));
+      if (!success) {
+        AppLog.w(T.READER,"failed to block blog " + blogId);
+        ReaderPostTable.addOrUpdatePosts(null,deletedPosts);
+      }
+      if (actionListener != null) {
+        actionListener.onActionResult(success);
+      }
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.READER,volleyError);
+      ReaderPostTable.addOrUpdatePosts(null,deletedPosts);
+      if (actionListener != null) {
+        actionListener.onActionResult(false);
+      }
+    }
+  }
+;
+  AppLog.i(T.READER,"blocking blog " + blogId);
+  String path="/me/block/sites/" + Long.toString(blogId) + "/new";
+  WordPress.getRestClientUtils().post(path,listener,errorListener);
+  return deletedPosts;
+}
