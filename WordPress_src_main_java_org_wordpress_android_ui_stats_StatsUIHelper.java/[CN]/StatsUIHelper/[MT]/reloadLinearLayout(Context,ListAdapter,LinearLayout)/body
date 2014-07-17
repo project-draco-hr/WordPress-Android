@@ -1,0 +1,32 @@
+{
+  if (ctx == null || linearLayout == null || adapter == null) {
+    return;
+  }
+  int count=Math.min(adapter.getCount(),STATS_GROUP_MAX_ITEMS);
+  if (count == 0) {
+    linearLayout.removeAllViews();
+    return;
+  }
+  int numExistingViews=linearLayout.getChildCount();
+  int altRowColor=ctx.getResources().getColor(R.color.stats_alt_row);
+  if (count < numExistingViews) {
+    int numToRemove=numExistingViews - count;
+    linearLayout.removeViews(count,numToRemove);
+    numExistingViews=count;
+  }
+  for (int i=0; i < count; i++) {
+    int bgColor=(i % 2 == 1 ? altRowColor : Color.TRANSPARENT);
+    final View view;
+    if (i < numExistingViews) {
+      View convertView=linearLayout.getChildAt(i);
+      view=adapter.getView(i,convertView,linearLayout);
+      view.setBackgroundColor(bgColor);
+    }
+ else {
+      view=adapter.getView(i,null,linearLayout);
+      view.setBackgroundColor(bgColor);
+      linearLayout.addView(view);
+    }
+  }
+  linearLayout.invalidate();
+}
