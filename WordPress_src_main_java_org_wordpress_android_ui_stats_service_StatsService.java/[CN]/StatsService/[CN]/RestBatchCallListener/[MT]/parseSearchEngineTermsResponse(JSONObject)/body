@@ -1,0 +1,42 @@
+{
+  String currentServiceBlogId=getServiceBlogId();
+  if (currentServiceBlogId == null || !currentServiceBlogId.equals(mRequestBlogId)) {
+    return;
+  }
+  String[] searchEngineTermsPaths={mSearchEngineTermsTodayPath,mSearchEngineTermsYesterdayPath};
+  for (  String currentSearchEngineTermsPath : searchEngineTermsPaths) {
+    if (response.has(currentSearchEngineTermsPath)) {
+      try {
+        final JSONObject currentSearchEngineTermsJsonObject=response.getJSONObject(currentSearchEngineTermsPath);
+        if (!isSingleCallResponseError(currentSearchEngineTermsPath,currentSearchEngineTermsJsonObject)) {
+          String date=currentSearchEngineTermsJsonObject.getString("date");
+          long dateMs=StatsUtils.toMs(date);
+          ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
+          ContentProviderOperation deleteOp=ContentProviderOperation.newDelete(StatsContentProvider.STATS_SEARCH_ENGINE_TERMS_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mRequestBlogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
+          operations.add(deleteOp);
+          JSONArray results=currentSearchEngineTermsJsonObject.getJSONArray("search-terms");
+          int count=Math.min(results.length(),StatsActivity.STATS_GROUP_MAX_ITEMS);
+          for (int i=0; i < count; i++) {
+            JSONArray result=results.getJSONArray(i);
+            StatsSearchEngineTerm stat=new StatsSearchEngineTerm(mRequestBlogId,date,result);
+            ContentValues values=StatsSearchEngineTermsTable.getContentValues(stat);
+            getContentResolver().insert(StatsContentProvider.STATS_SEARCH_ENGINE_TERMS_URI,values);
+            ContentProviderOperation insertOp=ContentProviderOperation.newInsert(StatsContentProvider.STATS_SEARCH_ENGINE_TERMS_URI).withValues(values).build();
+            operations.add(insertOp);
+          }
+          getContentResolver().applyBatch(BuildConfig.STATS_PROVIDER_AUTHORITY,operations);
+        }
+      }
+ catch (      RemoteException e) {
+        logSingleCallError(currentSearchEngineTermsPath,e);
+      }
+catch (      OperationApplicationException e) {
+        logSingleCallError(currentSearchEngineTermsPath,e);
+      }
+catch (      JSONException e) {
+        logSingleCallError(currentSearchEngineTermsPath,e);
+      }
+    }
+  }
+  getContentResolver().notifyChange(StatsContentProvider.STATS_SEARCH_ENGINE_TERMS_URI,null);
+}

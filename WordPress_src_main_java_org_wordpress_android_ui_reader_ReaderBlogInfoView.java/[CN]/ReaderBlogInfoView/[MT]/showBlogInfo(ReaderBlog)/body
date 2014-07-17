@@ -1,0 +1,68 @@
+{
+  final ViewGroup layoutInner=(ViewGroup)findViewById(R.id.layout_bloginfo_container_inner);
+  if (blogInfo == null) {
+    layoutInner.setVisibility(View.INVISIBLE);
+    return;
+  }
+  if (mBlogInfo != null && mBlogInfo.isSameAs(blogInfo)) {
+    return;
+  }
+  mBlogInfo=blogInfo;
+  layoutInner.setVisibility(View.VISIBLE);
+  final TextView txtBlogName=(TextView)findViewById(R.id.text_blog_name);
+  final TextView txtDescription=(TextView)findViewById(R.id.text_blog_description);
+  final TextView txtFollowCnt=(TextView)findViewById(R.id.text_follow_count);
+  final TextView txtFollowBtn=(TextView)findViewById(R.id.text_follow_blog);
+  if (blogInfo.hasUrl()) {
+    View.OnClickListener urlClickListener=new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ReaderActivityLauncher.openUrl(getContext(),blogInfo.getUrl());
+      }
+    }
+;
+    txtBlogName.setOnClickListener(urlClickListener);
+    mImageMshot.setOnClickListener(urlClickListener);
+  }
+  if (blogInfo.hasName()) {
+    txtBlogName.setText(blogInfo.getName());
+  }
+ else   if (blogInfo.hasUrl()) {
+    txtBlogName.setText(UrlUtils.getDomainFromUrl(blogInfo.getUrl()));
+  }
+ else {
+    txtBlogName.setText(getContext().getString(R.string.reader_untitled_post));
+  }
+  if (blogInfo.hasDescription()) {
+    txtDescription.setText(blogInfo.getDescription());
+    txtDescription.setVisibility(View.VISIBLE);
+  }
+ else   if (blogInfo.hasUrl()) {
+    txtDescription.setText(UrlUtils.getDomainFromUrl(blogInfo.getUrl()));
+    txtDescription.setVisibility(View.VISIBLE);
+  }
+ else {
+    txtDescription.setVisibility(View.GONE);
+  }
+  if (blogInfo.numSubscribers > 0) {
+    String numFollowers=getResources().getString(R.string.reader_label_followers,FormatUtils.formatInt(blogInfo.numSubscribers));
+    txtFollowCnt.setText(numFollowers);
+    txtFollowCnt.setVisibility(View.VISIBLE);
+  }
+ else {
+    txtFollowCnt.setVisibility(View.INVISIBLE);
+  }
+  ReaderUtils.showFollowStatus(txtFollowBtn,blogInfo.isFollowing);
+  txtFollowBtn.setVisibility(View.VISIBLE);
+  txtFollowBtn.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      toggleBlogFollowStatus(txtFollowBtn,blogInfo);
+    }
+  }
+);
+  if (mImageMshot.getUrl() == null) {
+    loadMshotImage(blogInfo);
+  }
+  if (mBlogInfoListener != null) {
+    mBlogInfoListener.onBlogInfoLoaded();
+  }
+}

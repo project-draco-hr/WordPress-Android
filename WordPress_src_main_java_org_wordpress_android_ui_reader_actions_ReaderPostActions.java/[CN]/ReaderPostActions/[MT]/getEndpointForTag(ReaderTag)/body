@@ -1,0 +1,16 @@
+{
+  if (tag == null) {
+    return null;
+  }
+  if (!TextUtils.isEmpty(tag.getEndpoint())) {
+    return tag.getEndpoint();
+  }
+  String endpoint=ReaderTagTable.getEndpointForTag(tag);
+  if (!TextUtils.isEmpty(endpoint)) {
+    return endpoint;
+  }
+  if (tag.tagType == ReaderTagType.DEFAULT) {
+    return null;
+  }
+  return String.format("/read/tags/%s/posts",ReaderUtils.sanitizeTagName(tag.getTagName()));
+}

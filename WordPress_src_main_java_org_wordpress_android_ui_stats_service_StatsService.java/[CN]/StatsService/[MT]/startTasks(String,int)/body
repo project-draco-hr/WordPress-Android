@@ -1,0 +1,33 @@
+{
+  setServiceBlogId(blogId);
+  this.mServiceStartId=startId;
+  this.mErrorObject=null;
+  new Thread(){
+    @Override public void run(){
+      final RestClientUtils restClientUtils=WordPress.getRestClientUtils();
+      final String today=StatsUtils.getCurrentDate();
+      final String yesterday=StatsUtils.getYesterdaysDate();
+      AppLog.i(T.STATS,"Update started for blogID - " + blogId);
+      broadcastUpdate(true);
+      final String summaryPath=String.format("/sites/%s/stats",blogId);
+      final String barChartWeekPath=getBarChartPath(blogId,StatsBarChartUnit.WEEK,30);
+      final String barChartMonthPath=getBarChartPath(blogId,StatsBarChartUnit.MONTH,30);
+      final String topPostsAndPagesTodayPath=String.format("/sites/%s/stats/top-posts?date=%s",blogId,today);
+      final String topPostsAndPagesYesterdayPath=String.format("/sites/%s/stats/top-posts?date=%s",blogId,yesterday);
+      final String referrersTodayPath=String.format("/sites/%s/stats/referrers?date=%s",blogId,today);
+      final String referrersYesterdayPath=String.format("/sites/%s/stats/referrers?date=%s",blogId,yesterday);
+      final String clicksTodayPath=String.format("/sites/%s/stats/clicks?date=%s",blogId,today);
+      final String clicksYesterdayPath=String.format("/sites/%s/stats/clicks?date=%s",blogId,yesterday);
+      final String searchEngineTermsTodayPath=String.format("/sites/%s/stats/search-terms?date=%s",blogId,today);
+      final String searchEngineTermsYesterdayPath=String.format("/sites/%s/stats/search-terms?date=%s",blogId,yesterday);
+      final String viewByCountryTodayPath=String.format("/sites/%s/stats/country-views?date=%s",blogId,today);
+      final String viewByCountryYesterdayPath=String.format("/sites/%s/stats/country-views?date=%s",blogId,yesterday);
+      final String parametersSepator="&urls%5B%5D=";
+      String path=new StringBuilder("batch/?urls%5B%5D=").append(Uri.encode(summaryPath)).append(parametersSepator).append(Uri.encode(barChartWeekPath)).append(parametersSepator).append(Uri.encode(barChartMonthPath)).append(parametersSepator).append(Uri.encode(topPostsAndPagesTodayPath)).append(parametersSepator).append(Uri.encode(topPostsAndPagesYesterdayPath)).append(parametersSepator).append(Uri.encode(referrersTodayPath)).append(parametersSepator).append(Uri.encode(referrersYesterdayPath)).append(parametersSepator).append(Uri.encode(clicksTodayPath)).append(parametersSepator).append(Uri.encode(clicksYesterdayPath)).append(parametersSepator).append(Uri.encode(searchEngineTermsTodayPath)).append(parametersSepator).append(Uri.encode(searchEngineTermsYesterdayPath)).append(parametersSepator).append(Uri.encode(viewByCountryTodayPath)).append(parametersSepator).append(Uri.encode(viewByCountryYesterdayPath)).toString();
+      RestBatchCallListener restAPIListener=new RestBatchCallListener(blogId,summaryPath,barChartWeekPath,barChartMonthPath,topPostsAndPagesTodayPath,topPostsAndPagesYesterdayPath,referrersTodayPath,referrersYesterdayPath,clicksTodayPath,clicksYesterdayPath,searchEngineTermsTodayPath,searchEngineTermsYesterdayPath,viewByCountryTodayPath,viewByCountryYesterdayPath);
+      AppLog.i(T.STATS,"Enqueuing the following Stats request " + path);
+      restClientUtils.get(path,restAPIListener,restAPIListener);
+    }
+  }
+.start();
+}
