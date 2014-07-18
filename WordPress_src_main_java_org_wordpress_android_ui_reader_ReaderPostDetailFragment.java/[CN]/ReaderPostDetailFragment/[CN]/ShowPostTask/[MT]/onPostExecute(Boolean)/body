@@ -86,10 +86,21 @@
  else {
     imgBtnComment.setVisibility(View.GONE);
   }
-  if (mPost.numLikes > 0 && mLayoutLikes.getVisibility() == View.GONE) {
-    mLayoutLikes.setVisibility(View.INVISIBLE);
+  if (mPost.isLikesEnabled) {
+    imgBtnLike.setVisibility(View.VISIBLE);
+    if (mPost.numLikes > 0 && mLayoutLikes.getVisibility() == View.GONE) {
+      mLayoutLikes.setVisibility(View.INVISIBLE);
+    }
   }
-  mLayoutIcons.setVisibility(mPost.isExternal ? View.GONE : View.VISIBLE);
+ else {
+    imgBtnLike.setVisibility(View.GONE);
+  }
+  if (!mPost.isExternal && (mPost.isLikesEnabled || mPost.canReblog() || mPost.isCommentsOpen)) {
+    mLayoutIcons.setVisibility(View.VISIBLE);
+  }
+ else {
+    mLayoutIcons.setVisibility(View.GONE);
+  }
   mReaderWebView.getSettings().setJavaScriptEnabled(canEnableJavaScript());
   mReaderWebView.loadDataWithBaseURL(null,postHtml,"text/html","UTF-8",null);
   mLayoutIcons.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);

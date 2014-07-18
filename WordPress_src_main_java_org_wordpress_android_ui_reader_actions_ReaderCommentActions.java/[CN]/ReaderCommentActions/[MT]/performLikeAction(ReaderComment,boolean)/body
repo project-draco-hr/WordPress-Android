@@ -1,0 +1,61 @@
+{
+  if (comment == null) {
+    return false;
+  }
+  final ReaderComment originalComment=ReaderCommentTable.getComment(comment.blogId,comment.postId,comment.commentId);
+  if (originalComment != null && originalComment.isLikedByCurrentUser == isAskingToLike) {
+    return true;
+  }
+  comment.isLikedByCurrentUser=isAskingToLike;
+  if (isAskingToLike) {
+    comment.numLikes++;
+  }
+ else   if (!isAskingToLike && comment.numLikes > 0) {
+    comment.numLikes--;
+  }
+  ReaderCommentTable.addOrUpdateComment(comment);
+  ReaderLikeTable.setCurrentUserLikesComment(comment,isAskingToLike);
+  final String actionName=isAskingToLike ? "like" : "unlike";
+  String path="sites/" + comment.blogId + "/comments/"+ comment.commentId+ "/likes/";
+  if (isAskingToLike) {
+    path+="new";
+  }
+ else {
+    path+="mine/delete";
+  }
+  RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      boolean success=(jsonObject != null && JSONUtil.getBool(jsonObject,"success"));
+      if (success) {
+        AppLog.d(T.READER,String.format("comment %s succeeded",actionName));
+      }
+ else {
+        AppLog.w(T.READER,String.format("comment %s failed",actionName));
+        if (originalComment != null) {
+          ReaderCommentTable.addOrUpdateComment(originalComment);
+          ReaderLikeTable.setCurrentUserLikesComment(comment,originalComment.isLikedByCurrentUser);
+        }
+      }
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      String error=VolleyUtils.errStringFromVolleyError(volleyError);
+      if (TextUtils.isEmpty(error)) {
+        AppLog.w(T.READER,String.format("comment %s failed",actionName));
+      }
+ else {
+        AppLog.w(T.READER,String.format("comment %s failed (%s)",actionName,error));
+      }
+      AppLog.e(T.READER,volleyError);
+      if (originalComment != null) {
+        ReaderCommentTable.addOrUpdateComment(originalComment);
+        ReaderLikeTable.setCurrentUserLikesComment(comment,originalComment.isLikedByCurrentUser);
+      }
+    }
+  }
+;
+  WordPress.getRestClientUtils().post(path,listener,errorListener);
+  return true;
+}
