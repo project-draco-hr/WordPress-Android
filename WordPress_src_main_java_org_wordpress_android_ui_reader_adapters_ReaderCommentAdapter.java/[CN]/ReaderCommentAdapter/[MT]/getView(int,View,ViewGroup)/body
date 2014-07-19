@@ -28,14 +28,14 @@
  else {
     holder.txtAuthor.setTextColor(mNoLinkColor);
   }
-  holder.spacerIndent.setVisibility(comment.parentId == 0 ? View.GONE : View.VISIBLE);
-  if (comment.level > 0) {
+  if (comment.parentId != 0 && comment.level > 0) {
     int indent=Math.min(MAX_INDENT_LEVEL,comment.level) * mIndentPerLevel;
     RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)holder.spacerIndent.getLayoutParams();
-    if (params.width != indent) {
-      params.width=indent;
-    }
+    params.width=indent;
     holder.spacerIndent.setVisibility(View.VISIBLE);
+  }
+ else {
+    holder.spacerIndent.setVisibility(View.GONE);
   }
   if (mHighlightCommentId == comment.commentId) {
     convertView.setBackgroundColor(mBgColorHighlight);
