@@ -1,0 +1,20 @@
+{
+  ReaderUserIdList userIds=new ReaderUserIdList();
+  if (comment == null) {
+    return userIds;
+  }
+  String[] args={Long.toString(comment.blogId),Long.toString(comment.commentId)};
+  Cursor c=ReaderDatabase.getReadableDb().rawQuery("SELECT user_id FROM tbl_comment_likes WHERE blog_id=? AND comment_id=?",args);
+  try {
+    if (c.moveToFirst()) {
+      do {
+        userIds.add(c.getLong(0));
+      }
+ while (c.moveToNext());
+    }
+    return userIds;
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+}
