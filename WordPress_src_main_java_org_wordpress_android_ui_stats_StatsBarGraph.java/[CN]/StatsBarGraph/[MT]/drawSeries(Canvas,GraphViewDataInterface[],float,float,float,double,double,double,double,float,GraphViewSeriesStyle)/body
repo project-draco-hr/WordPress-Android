@@ -2,6 +2,7 @@
   float colwidth=graphwidth / values.length;
   paint.setStrokeWidth(style.thickness);
   paint.setColor(style.color);
+  List<BarChartRect> barChartRects=new LinkedList<BarChartRect>();
   for (int i=0; i < values.length; i++) {
     float valY=(float)(values[i].getY() - minY);
     float ratY=(float)(valY / diffY);
@@ -9,11 +10,26 @@
     if (style.getValueDependentColor() != null) {
       paint.setColor(style.getValueDependentColor().get(values[i]));
     }
+    if (mBarPositionToHighlight == i) {
+      int color;
+      if (style.color == getResources().getColor(R.color.stats_bar_graph_views)) {
+        color=getResources().getColor(R.color.stats_views_hover_color);
+      }
+ else {
+        color=getResources().getColor(R.color.stats_visitors_hover_color);
+      }
+      paint.setColor(color);
+    }
+ else {
+      paint.setColor(style.color);
+    }
     float pad=style.padding;
     float left=(i * colwidth) + horstart;
     float top=(border - y) + graphheight;
     float right=left + colwidth;
     float bottom=graphheight + border - 1;
     canvas.drawRect(left + pad,top,right - pad,bottom,paint);
+    barChartRects.add(new BarChartRect(left + pad,top,right - pad,bottom));
   }
+  mSeriesRectsDrawedOnScreen.add(barChartRects);
 }
