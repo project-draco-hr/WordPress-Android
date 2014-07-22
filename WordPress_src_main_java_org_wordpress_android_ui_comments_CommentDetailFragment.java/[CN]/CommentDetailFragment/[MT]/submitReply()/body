@@ -1,5 +1,5 @@
 {
-  if (!hasActivity() || mIsSubmittingReply)   return;
+  if (!isAdded() || mIsSubmittingReply)   return;
   if (!NetworkUtils.checkConnection(getActivity()))   return;
   final String replyText=EditTextUtils.getText(mEditReply);
   if (TextUtils.isEmpty(replyText))   return;
@@ -14,7 +14,7 @@
     @Override public void onActionResult(    boolean succeeded){
       mIsSubmittingReply=false;
       if (succeeded && mOnCommentChangeListener != null)       mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL,ChangeType.REPLIED);
-      if (hasActivity()) {
+      if (isAdded()) {
         mEditReply.setEnabled(true);
         mImgSubmitReply.setVisibility(View.VISIBLE);
         progress.setVisibility(View.GONE);

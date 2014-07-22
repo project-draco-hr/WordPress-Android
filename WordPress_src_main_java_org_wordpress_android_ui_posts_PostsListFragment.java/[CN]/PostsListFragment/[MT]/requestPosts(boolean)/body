@@ -1,5 +1,5 @@
 {
-  if (!hasActivity() || WordPress.getCurrentBlog() == null || mIsFetchingPosts)   return;
+  if (!isAdded() || WordPress.getCurrentBlog() == null || mIsFetchingPosts)   return;
   if (!NetworkUtils.checkConnection(getActivity()))   return;
   int postCount=getPostListAdapter().getRemotePostCount() + POSTS_REQUEST_COUNT;
   if (!loadMore) {
@@ -18,7 +18,7 @@
     @Override public void onSuccess(    int postCount){
       mCurrentFetchPostsTask=null;
       mIsFetchingPosts=false;
-      if (!hasActivity())       return;
+      if (!isAdded())       return;
       mPullToRefreshHelper.setRefreshing(false);
       if (mProgressFooterView != null) {
         mProgressFooterView.setVisibility(View.GONE);
@@ -34,7 +34,7 @@
     @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
       mCurrentFetchPostsTask=null;
       mIsFetchingPosts=false;
-      if (!hasActivity()) {
+      if (!isAdded()) {
         return;
       }
       mPullToRefreshHelper.setRefreshing(false);

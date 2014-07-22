@@ -1,6 +1,6 @@
 {
   if (post == null || post.getTitle() == null)   return;
-  if (!hasActivity() || getView() == null)   return;
+  if (!isAdded() || getView() == null)   return;
   final Handler handler=new Handler();
   final WebView webView=(WebView)getView().findViewById(R.id.viewPostWebView);
   webView.setWebViewClient(new WPWebViewClient(WordPress.getCurrentBlog()));
@@ -22,7 +22,7 @@
       }
       handler.post(new Runnable(){
         @Override public void run(){
-          if (!hasActivity())           return;
+          if (!isAdded())           return;
           mTitleTextView.setText(title);
           if (post.isLocalDraft()) {
             mContentTextView.setVisibility(View.VISIBLE);
