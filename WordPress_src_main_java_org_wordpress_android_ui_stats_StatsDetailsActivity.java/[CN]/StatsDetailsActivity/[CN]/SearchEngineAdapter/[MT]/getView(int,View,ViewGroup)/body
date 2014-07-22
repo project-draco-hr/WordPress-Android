@@ -1,0 +1,22 @@
+{
+  View view;
+  if (convertView == null) {
+    LayoutInflater inflator=mContext.getLayoutInflater();
+    view=inflator.inflate(R.layout.stats_list_cell,null);
+    final StatsViewHolder viewHolder=new StatsViewHolder(view);
+    view.setTag(viewHolder);
+  }
+ else {
+    view=convertView;
+  }
+  final StatsViewHolder holder=(StatsViewHolder)view.getTag();
+  StatsSearchEngineTerm element=mList.get(position);
+  final String entry=element.getSearch();
+  int total=element.getViews();
+  holder.entryTextView.setText(entry);
+  holder.totalsTextView.setText(FormatUtils.formatDecimal(total));
+  holder.networkImageView.setVisibility(View.GONE);
+  int bgColor=(position % 2 == 1 ? mAltRowColor : Color.TRANSPARENT);
+  view.setBackgroundColor(bgColor);
+  return view;
+}
