@@ -1,10 +1,10 @@
 {
-  final ProgressBar progress=(hasActivity() ? (ProgressBar)getView().findViewById(R.id.progress_loading) : null);
+  final ProgressBar progress=(isAdded() ? (ProgressBar)getView().findViewById(R.id.progress_loading) : null);
   if (progress != null)   progress.setVisibility(View.VISIBLE);
   RestRequest.Listener restListener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       mIsRequestingComment=false;
-      if (hasActivity()) {
+      if (isAdded()) {
         if (progress != null)         progress.setVisibility(View.GONE);
         Comment comment=Comment.fromJSON(jsonObject);
         if (comment != null) {
@@ -19,7 +19,7 @@
     @Override public void onErrorResponse(    VolleyError volleyError){
       mIsRequestingComment=false;
       AppLog.e(T.COMMENTS,VolleyUtils.errStringFromVolleyError(volleyError),volleyError);
-      if (hasActivity()) {
+      if (isAdded()) {
         if (progress != null)         progress.setVisibility(View.GONE);
         ToastUtils.showToast(getActivity(),R.string.reader_toast_err_get_comment,ToastUtils.Duration.LONG);
       }
