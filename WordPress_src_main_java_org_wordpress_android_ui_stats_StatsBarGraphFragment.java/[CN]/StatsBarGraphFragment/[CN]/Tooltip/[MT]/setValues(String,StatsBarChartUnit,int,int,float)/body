@@ -1,0 +1,29 @@
+{
+  ObjectAnimator mover=ObjectAnimator.ofFloat(mArrow,"x",pos - (arrawWidthPixel / 2));
+  AnimatorSet animatorSet=new AnimatorSet();
+  animatorSet.play(mover);
+  animatorSet.start();
+  String formattedDate;
+  if (unit == StatsBarChartUnit.WEEK) {
+    formattedDate=StatsUtils.parseDate(date,"yyyy'W'MM'W'dd","EEEE, d MMMM, yyyy");
+    mDate.setText("Week of " + formattedDate);
+  }
+ else {
+    formattedDate=StatsUtils.parseDate(date,"yyyy-MM","MMMM yyyy");
+    mDate.setText(formattedDate);
+  }
+  double viewsPerVisitor=0d;
+  if (visitors == 0) {
+    visitors=1;
+  }
+  if (views == 0) {
+    visitors=0;
+    views=0;
+  }
+ else {
+    viewsPerVisitor=(double)views / visitors;
+  }
+  mVisitors.setText(String.format("%s %s",FormatUtils.formatDecimal(visitors),getString(R.string.stats_totals_visitors)));
+  mViews.setText(String.format("%s %s",FormatUtils.formatDecimal(views),getString(R.string.stats_totals_views)));
+  mViewsForVisitors.setText(String.format("%.2f %s",viewsPerVisitor,getString(R.string.stats_totals_views_per_visitor)));
+}

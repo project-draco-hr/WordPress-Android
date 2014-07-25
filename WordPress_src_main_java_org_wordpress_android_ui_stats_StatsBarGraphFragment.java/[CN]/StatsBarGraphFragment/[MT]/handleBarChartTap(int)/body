@@ -20,18 +20,7 @@
  else {
     GraphViewDataInterface[] views=mViewsSeries.getData();
     GraphViewDataInterface[] visitors=mVisitorsSeries.getData();
-    String formattedDate;
-    if (unit == StatsBarChartUnit.WEEK) {
-      formattedDate=StatsUtils.parseDate(date,"yyyy'W'MM'W'dd","MMM d");
-    }
- else {
-      formattedDate=StatsUtils.parseDate(date,"yyyy-MM","MMM yyyy");
-    }
-    String message=String.format("%s - %s %d - %s %d",formattedDate,getString(R.string.stats_totals_views),(int)views[tappedBar].getY(),getString(R.string.stats_totals_visitors),(int)visitors[tappedBar].getY());
-    if (mTappedToast != null) {
-      mTappedToast.cancel();
-      mTappedToast=null;
-    }
-    mTappedToast=ToastUtils.showToast(this.getActivity(),message,ToastUtils.Duration.LONG);
+    mTooltip.setValues(date,unit,(int)views[tappedBar].getY(),(int)visitors[tappedBar].getY(),mGraphView.getMiddlePointOfTappedBar(tappedBar));
+    mTooltip.showTooltip(true);
   }
 }
