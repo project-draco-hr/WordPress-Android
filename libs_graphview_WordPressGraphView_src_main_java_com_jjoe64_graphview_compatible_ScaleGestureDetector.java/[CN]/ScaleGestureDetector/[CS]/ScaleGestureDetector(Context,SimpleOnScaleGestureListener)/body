@@ -1,0 +1,15 @@
+{
+  try {
+    Class.forName("android.view.ScaleGestureDetector");
+    Class<?> classRealScaleGestureDetector=Class.forName("com.jjoe64.graphview.compatible.RealScaleGestureDetector");
+    method_getScaleFactor=classRealScaleGestureDetector.getMethod("getScaleFactor");
+    method_isInProgress=classRealScaleGestureDetector.getMethod("isInProgress");
+    method_onTouchEvent=classRealScaleGestureDetector.getMethod("onTouchEvent",MotionEvent.class);
+    Constructor<?> constructor=classRealScaleGestureDetector.getConstructor(Context.class,getClass(),SimpleOnScaleGestureListener.class);
+    realScaleGestureDetector=constructor.newInstance(context,this,simpleOnScaleGestureListener);
+  }
+ catch (  Exception e) {
+    Log.w("com.jjoe64.graphview","*** WARNING *** No scaling available for graphs. Exception:");
+    e.printStackTrace();
+  }
+}
