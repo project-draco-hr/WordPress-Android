@@ -16,7 +16,7 @@
     @Override public void onErrorResponse(    VolleyError arg0){
     }
     @Override public void onResponse(    ImageLoader.ImageContainer container,    boolean arg1){
-      if (!hasActivity()) {
+      if (!isAdded()) {
         return;
       }
       Bitmap downloadedBitmap=container.getBitmap();
@@ -46,7 +46,7 @@
         for (        WPImageSpan is : spans) {
           MediaFile mediaFile=is.getMediaFile();
           if (mediaFile == null)           continue;
-          if (mediaId.equals(mediaFile.getMediaId()) && !is.isNetworkImageLoaded() && hasActivity()) {
+          if (mediaId.equals(mediaFile.getMediaId()) && !is.isNetworkImageLoaded() && isAdded()) {
             int spanStart=s.getSpanStart(is);
             int spanEnd=s.getSpanEnd(is);
             WPImageSpan imageSpan=new WPImageSpan(getActivity(),resizedBitmap,is.getImageSource());

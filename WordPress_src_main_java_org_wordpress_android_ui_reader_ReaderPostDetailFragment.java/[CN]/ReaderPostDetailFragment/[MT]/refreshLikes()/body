@@ -1,6 +1,6 @@
 {
   AppLog.d(T.READER,"reader post detail > refreshLikes");
-  if (!hasActivity() || !hasPost() || !mPost.isWP()) {
+  if (!isAdded() || !hasPost() || !mPost.isWP()|| !mPost.isLikesEnabled) {
     return;
   }
   new Thread(){
@@ -21,7 +21,7 @@
       final ArrayList<String> avatars=ReaderUserTable.getAvatarUrls(avatarIds,maxAvatars,likeAvatarSize);
       mHandler.post(new Runnable(){
         public void run(){
-          if (!hasActivity()) {
+          if (!isAdded()) {
             return;
           }
           imgBtnLike.setSelected(mPost.isLikedByCurrentUser);

@@ -8,7 +8,7 @@
   }
   setIsUpdating(true,updateAction);
   setEmptyTitleAndDescriptionForCurrentTag();
-  if (getPostListType() == ReaderTypes.ReaderPostListType.TAG_FOLLOWED && ReaderTagTable.isEmpty()) {
+  if (getPostListType() == ReaderPostListType.TAG_FOLLOWED && ReaderTagTable.isEmpty()) {
     AppLog.d(T.READER,"reader post list > empty followed tags, canceled update");
     return;
   }
@@ -17,7 +17,7 @@
   }
   ReaderActions.UpdateResultAndCountListener resultListener=new ReaderActions.UpdateResultAndCountListener(){
     @Override public void onUpdateResult(    ReaderActions.UpdateResult result,    int numNewPosts){
-      if (!hasActivity()) {
+      if (!isAdded()) {
         AppLog.w(T.READER,"reader post list > new posts when fragment has no activity");
         return;
       }
@@ -27,7 +27,7 @@
         return;
       }
       if (result == ReaderActions.UpdateResult.CHANGED && numNewPosts > 0) {
-        if (!isPostAdapterEmpty() && getPostListType().equals(ReaderTypes.ReaderPostListType.TAG_FOLLOWED) && updateAction == RequestDataAction.LOAD_NEWER && !isListScrolledToTop()) {
+        if (!isPostAdapterEmpty() && getPostListType().equals(ReaderPostListType.TAG_FOLLOWED) && updateAction == RequestDataAction.LOAD_NEWER && !isListScrolledToTop()) {
           showNewPostsBar();
         }
  else {
@@ -44,7 +44,7 @@
   if (allowBackfill) {
     ReaderActions.PostBackfillListener backfillListener=new ReaderActions.PostBackfillListener(){
       @Override public void onPostsBackfilled(){
-        if (!hasActivity()) {
+        if (!isAdded()) {
           AppLog.w(T.READER,"reader post list > new posts backfilled when fragment has no activity");
           return;
         }

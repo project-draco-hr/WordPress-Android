@@ -1,0 +1,31 @@
+{
+  mClickGroups.clear();
+  if (!response.has(mClicksPath)) {
+    return;
+  }
+  try {
+    final JSONObject currentJsonObject=response.getJSONObject(mClicksPath);
+    if (isSingleCallResponseError(mClicksPath,currentJsonObject)) {
+      return;
+    }
+    JSONArray groups=currentJsonObject.getJSONArray("clicks");
+    String date=currentJsonObject.getString("date");
+    int groupsCount=Math.min(groups.length(),StatsUIHelper.STATS_GROUP_MAX_ITEMS);
+    for (int i=0; i < groupsCount; i++) {
+      JSONObject group=groups.getJSONObject(i);
+      MyStatsClicksGroup statGroup=new MyStatsClicksGroup(mRequestBlogId,date,group);
+      mClickGroups.append(i,statGroup);
+      JSONArray clicks=group.getJSONArray("results");
+      int childCount=Math.min(clicks.length(),StatsUIHelper.STATS_CHILD_MAX_ITEMS);
+      if (childCount > 1) {
+        for (int j=0; j < childCount; j++) {
+          StatsClick stat=new StatsClick(mRequestBlogId,date,statGroup.getGroupId(),clicks.getJSONArray(j));
+          statGroup.clicks.add(stat);
+        }
+      }
+    }
+  }
+ catch (  JSONException e) {
+    logSingleCallError(mClicksPath,e);
+  }
+}

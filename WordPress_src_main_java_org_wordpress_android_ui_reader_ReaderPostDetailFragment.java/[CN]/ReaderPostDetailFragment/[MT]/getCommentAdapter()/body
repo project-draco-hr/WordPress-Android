@@ -1,14 +1,17 @@
 {
-  if (mAdapter == null) {
+  if (mCommentAdapter == null) {
     ReaderActions.DataLoadedListener dataLoadedListener=new ReaderActions.DataLoadedListener(){
       @Override public void onDataLoaded(      boolean isEmpty){
-        if (hasActivity()) {
+        if (isAdded()) {
           mCommentFooter.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
           if (mListState != null) {
             if (!isEmpty) {
               getListView().onRestoreInstanceState(mListState);
             }
             mListState=null;
+          }
+          if (mTopMostCommentId != 0) {
+            restoreTopmostComment();
           }
         }
       }
@@ -29,12 +32,12 @@
       @Override public void onRequestData(){
         if (!mIsUpdatingComments) {
           AppLog.i(T.READER,"reader post detail > requesting newer comments");
-          updateComments();
+          updateComments(true);
         }
       }
     }
 ;
-    mAdapter=new ReaderCommentAdapter(getActivity(),mPost,replyListener,dataLoadedListener,dataRequestedListener);
+    mCommentAdapter=new ReaderCommentAdapter(getActivity(),mPost,replyListener,dataLoadedListener,dataRequestedListener);
   }
-  return mAdapter;
+  return mCommentAdapter;
 }

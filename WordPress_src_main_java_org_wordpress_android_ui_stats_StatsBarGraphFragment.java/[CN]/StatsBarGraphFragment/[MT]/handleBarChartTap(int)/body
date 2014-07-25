@@ -1,0 +1,37 @@
+{
+  if (tappedBar < 0 || mStatsDate.length < tappedBar) {
+    return;
+  }
+  String date=mStatsDate[tappedBar];
+  StatsBarChartUnit unit=getBarChartUnit();
+  if (unit == StatsBarChartUnit.DAY) {
+    StatsUtils.StatsCredentials credentials=StatsUtils.getCurrentBlogStatsCredentials();
+    if (credentials == null) {
+      return;
+    }
+    String statsAuthenticatedUser=credentials.getUsername();
+    String statsAuthenticatedPassword=credentials.getPassword();
+    Intent statsWebViewIntent=new Intent(this.getActivity(),StatsDetailsActivity.class);
+    statsWebViewIntent.putExtra(StatsWebViewActivity.STATS_AUTHENTICATED_USER,statsAuthenticatedUser);
+    statsWebViewIntent.putExtra(StatsWebViewActivity.STATS_AUTHENTICATED_PASSWD,statsAuthenticatedPassword);
+    statsWebViewIntent.putExtra(StatsActivity.STATS_DETAILS_DATE,date);
+    this.getActivity().startActivity(statsWebViewIntent);
+  }
+ else {
+    GraphViewDataInterface[] views=mViewsSeries.getData();
+    GraphViewDataInterface[] visitors=mVisitorsSeries.getData();
+    String formattedDate;
+    if (unit == StatsBarChartUnit.WEEK) {
+      formattedDate=StatsUtils.parseDate(date,"yyyy'W'MM'W'dd","MMM d");
+    }
+ else {
+      formattedDate=StatsUtils.parseDate(date,"yyyy-MM","MMM yyyy");
+    }
+    String message=String.format("%s - %s %d - %s %d",formattedDate,getString(R.string.stats_totals_views),(int)views[tappedBar].getY(),getString(R.string.stats_totals_visitors),(int)visitors[tappedBar].getY());
+    if (mTappedToast != null) {
+      mTappedToast.cancel();
+      mTappedToast=null;
+    }
+    mTappedToast=ToastUtils.showToast(this.getActivity(),message,ToastUtils.Duration.LONG);
+  }
+}
