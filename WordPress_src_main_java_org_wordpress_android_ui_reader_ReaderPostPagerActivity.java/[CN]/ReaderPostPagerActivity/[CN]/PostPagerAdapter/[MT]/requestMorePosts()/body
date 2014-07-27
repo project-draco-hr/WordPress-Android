@@ -1,0 +1,18 @@
+{
+  if (mIsRequestingMorePosts) {
+    return;
+  }
+  ReaderActions.UpdateResultAndCountListener resultListener=new ReaderActions.UpdateResultAndCountListener(){
+    @Override public void onUpdateResult(    ReaderActions.UpdateResult result,    int numNewPosts){
+      mIsRequestingMorePosts=false;
+      if (isFinishing()) {
+        return;
+      }
+      if (result == ReaderActions.UpdateResult.CHANGED && numNewPosts > 0) {
+      }
+    }
+  }
+;
+  mIsRequestingMorePosts=true;
+  ReaderPostActions.updatePostsInTag(getCurrentTag(),ReaderActions.RequestDataAction.LOAD_OLDER,resultListener);
+}
