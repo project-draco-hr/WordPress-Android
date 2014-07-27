@@ -7,10 +7,10 @@
   }
  else {
     fragment=ReaderPostDetailFragment.newInstance(blogId,postId,getPostListType());
+    if (position > (getCount() - LOAD_MORE_OFFSET) && canRequestMorePosts()) {
+      requestMorePosts();
+    }
   }
   mFragmentMap.put(getItemKey(position),new WeakReference<Fragment>(fragment));
-  if ((position >= (mIdList.size() - 3)) && canRequestMorePosts()) {
-    requestMorePosts();
-  }
   return fragment;
 }

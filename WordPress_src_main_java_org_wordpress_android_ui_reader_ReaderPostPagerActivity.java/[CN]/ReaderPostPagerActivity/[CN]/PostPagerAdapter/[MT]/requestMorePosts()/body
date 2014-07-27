@@ -8,11 +8,33 @@
       if (isFinishing()) {
         return;
       }
-      if (result == ReaderActions.UpdateResult.CHANGED && numNewPosts > 0) {
+      if (numNewPosts > 0) {
+        AppLog.d(AppLog.T.READER,"reader pager > older posts received");
+        final Handler handler=new Handler();
+        new Thread(){
+          @Override public void run(){
+            int offset=mIdList.size();
+            ReaderPostList posts=ReaderPostTable.getPostsWithTag(getCurrentTag(),ReaderConstants.READER_MAX_POSTS_TO_DISPLAY,offset);
+            if (posts.size() > 0) {
+              final ReaderBlogIdPostIdList newIds=new ReaderBlogIdPostIdList();
+              for (              ReaderPost post : posts) {
+                newIds.add(new ReaderBlogIdPostId(post.blogId,post.postId));
+              }
+              handler.post(new Runnable(){
+                @Override public void run(){
+                  addIds(newIds);
+                }
+              }
+);
+            }
+          }
+        }
+.start();
       }
     }
   }
 ;
   mIsRequestingMorePosts=true;
+  AppLog.d(AppLog.T.READER,"reader pager > requesting older posts");
   ReaderPostActions.updatePostsInTag(getCurrentTag(),ReaderActions.RequestDataAction.LOAD_OLDER,resultListener);
 }
