@@ -2,24 +2,33 @@
   final Handler handler=new Handler();
   new Thread(){
     @Override public void run(){
-      final ReaderPostList posts;
-      int maxPosts=ReaderConstants.READER_MAX_POSTS_TO_DISPLAY;
+      final ReaderPostList postList;
+      if (mIsSinglePostView) {
+        ReaderPost post=ReaderPostTable.getPost(blogId,postId);
+        if (post == null) {
+          return;
+        }
+        postList=new ReaderPostList();
+        postList.add(post);
+      }
+ else {
+        int maxPosts=ReaderConstants.READER_MAX_POSTS_TO_DISPLAY;
 switch (getPostListType()) {
 case TAG_FOLLOWED:
 case TAG_PREVIEW:
-        posts=ReaderPostTable.getPostsWithTag(getCurrentTag(),maxPosts);
-      break;
+          postList=ReaderPostTable.getPostsWithTag(getCurrentTag(),maxPosts);
+        break;
 case BLOG_PREVIEW:
-    posts=ReaderPostTable.getPostsInBlog(blogId,maxPosts);
-  break;
+      postList=ReaderPostTable.getPostsInBlog(blogId,maxPosts);
+    break;
 default :
-return;
+  return;
 }
-final ReaderBlogIdPostIdList ids=posts.getBlogIdPostIdList();
+}
+final ReaderBlogIdPostIdList ids=postList.getBlogIdPostIdList();
 handler.post(new Runnable(){
 @Override public void run(){
-mPageAdapter=new PostPagerAdapter(getFragmentManager(),ids);
-mViewPager.setAdapter(mPageAdapter);
+mViewPager.setAdapter(new PostPagerAdapter(getFragmentManager(),ids));
 int selectedIndex=ids.indexOf(blogId,postId);
 if (selectedIndex > -1) {
   mViewPager.setCurrentItem(selectedIndex);
