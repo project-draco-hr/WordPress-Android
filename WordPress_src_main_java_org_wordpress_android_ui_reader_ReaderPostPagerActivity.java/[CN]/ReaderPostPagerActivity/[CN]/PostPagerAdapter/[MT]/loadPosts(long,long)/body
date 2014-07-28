@@ -1,0 +1,38 @@
+{
+  final Handler handler=new Handler();
+  new Thread(){
+    @Override public void run(){
+      final ReaderPostList posts;
+      int maxPosts=ReaderConstants.READER_MAX_POSTS_TO_DISPLAY;
+switch (getPostListType()) {
+case TAG_FOLLOWED:
+case TAG_PREVIEW:
+        posts=ReaderPostTable.getPostsWithTag(getCurrentTag(),maxPosts);
+      break;
+case BLOG_PREVIEW:
+    posts=ReaderPostTable.getPostsInBlog(blogId,maxPosts);
+  break;
+default :
+return;
+}
+if (posts.size() > 0) {
+handler.post(new Runnable(){
+@Override public void run(){
+  mIdList.clear();
+  mIdList.addAll(posts.getBlogIdPostIdList());
+  if (mIdList.size() > 1 && mIdList.indexOf(END_ID,END_ID) == -1) {
+    mIdList.add(new ReaderBlogIdPostId(END_ID,END_ID));
+  }
+  notifyDataSetChanged();
+  int selectedIndex=mIdList.indexOf(blogId,postId);
+  if (isValidPosition(selectedIndex)) {
+    mViewPager.setCurrentItem(selectedIndex);
+  }
+}
+}
+);
+}
+}
+}
+.start();
+}

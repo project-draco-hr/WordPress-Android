@@ -1,16 +1,17 @@
 {
-  outState.putString(ARG_TITLE,(String)this.getTitle());
+  outState.putString(ReaderConstants.ARG_TITLE,(String)this.getTitle());
   if (hasCurrentTag()) {
     outState.putSerializable(ReaderConstants.ARG_TAG,getCurrentTag());
   }
-  if (mViewPager != null) {
-    outState.putInt(ARG_POSITION,mViewPager.getCurrentItem());
-  }
-  if (mPageAdapter != null) {
-    outState.putSerializable(ARG_BLOG_POST_ID_LIST,mPageAdapter.mIdList);
-  }
   if (mPostListType != null) {
     outState.putSerializable(ReaderConstants.ARG_POST_LIST_TYPE,mPostListType);
+  }
+  if (mPageAdapter != null) {
+    ReaderBlogIdPostId id=mPageAdapter.getCurrentBlogIdPostId();
+    if (id != null) {
+      outState.putLong(ReaderConstants.ARG_BLOG_ID,id.getBlogId());
+      outState.putLong(ReaderConstants.ARG_POST_ID,id.getPostId());
+    }
   }
   super.onSaveInstanceState(outState);
 }
