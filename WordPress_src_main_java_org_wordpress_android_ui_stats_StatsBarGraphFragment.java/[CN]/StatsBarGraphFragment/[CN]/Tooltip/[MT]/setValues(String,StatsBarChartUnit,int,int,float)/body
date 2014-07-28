@@ -3,14 +3,16 @@
   AnimatorSet animatorSet=new AnimatorSet();
   animatorSet.play(mover);
   animatorSet.start();
-  String formattedDate;
   if (unit == StatsBarChartUnit.WEEK) {
-    formattedDate=StatsUtils.parseDate(date,"yyyy'W'MM'W'dd","EEEE, d MMMM, yyyy");
-    mDate.setText("Week of " + formattedDate);
+    String formattedDay=StatsUtils.parseDate(date,"yyyy'W'MM'W'dd","EEEE");
+    String formattedMonth=StatsUtils.parseDate(date,"yyyy'W'MM'W'dd","d MMMM");
+    String formattedYear=StatsUtils.parseDate(date,"yyyy'W'MM'W'dd","yyyy");
+    mDate.setText(Html.fromHtml(String.format("Week of <b>%s</b>, <b>%s</b>, %s",formattedDay,formattedMonth,formattedYear)));
   }
  else {
-    formattedDate=StatsUtils.parseDate(date,"yyyy-MM","MMMM yyyy");
-    mDate.setText(formattedDate);
+    String formattedMonth=StatsUtils.parseDate(date,"yyyy-MM","MMMM");
+    String formattedYear=StatsUtils.parseDate(date,"yyyy-MM","yyyy");
+    mDate.setText(Html.fromHtml(String.format("<b>%s</b> %s",formattedMonth,formattedYear)));
   }
   double viewsPerVisitor=0d;
   if (visitors == 0) {
@@ -23,7 +25,7 @@
  else {
     viewsPerVisitor=(double)views / visitors;
   }
-  mVisitors.setText(String.format("%s %s",FormatUtils.formatDecimal(visitors),getString(R.string.stats_totals_visitors)));
-  mViews.setText(String.format("%s %s",FormatUtils.formatDecimal(views),getString(R.string.stats_totals_views)));
-  mViewsForVisitors.setText(String.format("%.2f %s",viewsPerVisitor,getString(R.string.stats_totals_views_per_visitor)));
+  mVisitors.setText(Html.fromHtml(String.format("<b>%s</b> %s",FormatUtils.formatDecimal(visitors),getString(R.string.stats_totals_visitors))));
+  mViews.setText(Html.fromHtml(String.format("<b>%s</b> %s",FormatUtils.formatDecimal(views),getString(R.string.stats_totals_views))));
+  mViewsForVisitors.setText(Html.fromHtml(String.format("<b>%.2f</b> %s",viewsPerVisitor,getString(R.string.stats_totals_views_per_visitor))));
 }
