@@ -15,23 +15,18 @@ case BLOG_PREVIEW:
 default :
 return;
 }
-if (posts.size() > 0) {
+final ReaderBlogIdPostIdList ids=posts.getBlogIdPostIdList();
 handler.post(new Runnable(){
 @Override public void run(){
-  mIdList.clear();
-  mIdList.addAll(posts.getBlogIdPostIdList());
-  if (mIdList.size() > 1 && mIdList.indexOf(END_ID,END_ID) == -1) {
-    mIdList.add(new ReaderBlogIdPostId(END_ID,END_ID));
-  }
-  notifyDataSetChanged();
-  int selectedIndex=mIdList.indexOf(blogId,postId);
-  if (isValidPosition(selectedIndex)) {
-    mViewPager.setCurrentItem(selectedIndex);
-  }
+mPageAdapter=new PostPagerAdapter(getFragmentManager(),ids);
+mViewPager.setAdapter(mPageAdapter);
+int selectedIndex=ids.indexOf(blogId,postId);
+if (selectedIndex > -1) {
+  mViewPager.setCurrentItem(selectedIndex);
+}
 }
 }
 );
-}
 }
 }
 .start();
