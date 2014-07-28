@@ -1,0 +1,17 @@
+{
+  Activity activity=mActivityRef.get();
+  if (activity == null) {
+    return;
+  }
+  setRefreshing(true);
+  mRefreshListener.onRefreshStarted(mPullToRefreshLayout);
+  SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(activity);
+  int refreshHits=preferences.getInt(REFRESH_BUTTON_HIT_COUNT,0);
+  refreshHits+=1;
+  if (TOAST_FREQUENCY.contains(refreshHits)) {
+    ToastUtils.showToast(activity,R.string.ptr_tip_message,Duration.LONG);
+  }
+  Editor editor=preferences.edit();
+  editor.putInt(REFRESH_BUTTON_HIT_COUNT,refreshHits);
+  editor.commit();
+}

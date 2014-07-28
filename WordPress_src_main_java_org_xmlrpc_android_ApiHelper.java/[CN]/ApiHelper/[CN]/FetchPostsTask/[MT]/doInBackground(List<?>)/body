@@ -28,13 +28,23 @@
     }
     return true;
   }
- catch (  XMLRPCException e) {
+ catch (  XMLRPCFault e) {
+    mErrorType=ErrorType.NETWORK_XMLRPC;
+    if (e.getFaultCode() == 401) {
+      mErrorType=ErrorType.UNAUTHORIZED;
+    }
+    mErrorMessage=e.getMessage();
+  }
+catch (  XMLRPCException e) {
+    mErrorType=ErrorType.NETWORK_XMLRPC;
     mErrorMessage=e.getMessage();
   }
 catch (  IOException e) {
+    mErrorType=ErrorType.INVALID_RESULT;
     mErrorMessage=e.getMessage();
   }
 catch (  XmlPullParserException e) {
+    mErrorType=ErrorType.INVALID_RESULT;
     mErrorMessage=e.getMessage();
   }
   return false;
