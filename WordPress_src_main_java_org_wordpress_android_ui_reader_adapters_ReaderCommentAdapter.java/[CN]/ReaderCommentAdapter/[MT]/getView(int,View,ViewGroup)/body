@@ -11,7 +11,9 @@
   }
   holder.txtAuthor.setText(comment.getAuthorName());
   holder.imgAvatar.setImageUrl(PhotonUtils.fixAvatar(comment.getAuthorAvatar(),mAvatarSz),WPNetworkImageView.ImageType.AVATAR);
-  CommentUtils.displayHtmlComment(holder.txtText,comment.getText(),mMaxImageSz);
+  int textWrapMarginOffset=mAvatarSz + DisplayUtils.dpToPx(convertView.getContext(),12);
+  int textWrapHeightOffset=Math.round(mAvatarSz - holder.txtAuthor.getPaint().getTextSize());
+  CommentUtils.displayHtmlComment(holder.txtText,comment.getText(),mMaxImageSz,textWrapMarginOffset,textWrapHeightOffset);
   java.util.Date dtPublished=DateTimeUtils.iso8601ToJavaDate(comment.getPublished());
   holder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(dtPublished));
   if (comment.hasAuthorBlogId()) {
