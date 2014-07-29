@@ -5,23 +5,26 @@
   ReaderActions.UpdateResultAndCountListener resultListener=new ReaderActions.UpdateResultAndCountListener(){
     @Override public void onUpdateResult(    ReaderActions.UpdateResult result,    int numNewPosts){
       mIsRequestingMorePosts=false;
-      if (!isFinishing()) {
-        if (numNewPosts > 0) {
-          AppLog.i(AppLog.T.READER,"reader pager > older posts received");
-          ReaderBlogIdPostId id=getCurrentBlogIdPostId();
-          long blogId=(id != null ? id.getBlogId() : 0);
-          long postId=(id != null ? id.getPostId() : 0);
-          loadPosts(blogId,postId);
-        }
+      if (isFinishing()) {
+        return;
+      }
+      hideLoadingProgress();
+      if (numNewPosts > 0 && !isEndFragmentActive()) {
+        AppLog.i(AppLog.T.READER,"reader pager > older posts received");
+        ReaderBlogIdPostId id=getCurrentBlogIdPostId();
+        long blogId=(id != null ? id.getBlogId() : 0);
+        long postId=(id != null ? id.getPostId() : 0);
+        loadPosts(blogId,postId);
+      }
  else {
-          mAllPostsLoaded=true;
-          checkEndFragment();
-        }
+        mAllPostsLoaded=true;
+        checkEndFragment();
       }
     }
   }
 ;
   mIsRequestingMorePosts=true;
+  showLoadingProgress();
   AppLog.i(AppLog.T.READER,"reader pager > requesting older posts");
   ReaderPostActions.updatePostsInTag(getCurrentTag(),ReaderActions.RequestDataAction.LOAD_OLDER,resultListener);
 }
