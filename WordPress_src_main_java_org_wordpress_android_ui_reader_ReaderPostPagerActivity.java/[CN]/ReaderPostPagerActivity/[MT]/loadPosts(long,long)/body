@@ -25,12 +25,20 @@ default :
 }
 }
 final ReaderBlogIdPostIdList ids=postList.getBlogIdPostIdList();
+final int currentPosition=mViewPager.getCurrentItem();
 runOnUiThread(new Runnable(){
 @Override public void run(){
-mViewPager.setAdapter(new PostPagerAdapter(getFragmentManager(),ids));
-int selectedIndex=ids.indexOf(blogId,postId);
-if (selectedIndex > -1) {
-  mViewPager.setCurrentItem(selectedIndex);
+PostPagerAdapter adapter=new PostPagerAdapter(getFragmentManager(),ids);
+mViewPager.setAdapter(adapter);
+int newPosition;
+if (blogId < 0 && postId < 0) {
+  newPosition=currentPosition;
+}
+ else {
+  newPosition=ids.indexOf(blogId,postId);
+}
+if (adapter.isValidPosition(newPosition)) {
+  mViewPager.setCurrentItem(newPosition);
 }
 }
 }

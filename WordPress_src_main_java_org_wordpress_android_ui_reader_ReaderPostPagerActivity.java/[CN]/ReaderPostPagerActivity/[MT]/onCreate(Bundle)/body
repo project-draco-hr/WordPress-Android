@@ -51,6 +51,13 @@
     @Override public void onPageSelected(    int position){
       super.onPageSelected(position);
       onRequestFullScreen(false);
+      if (mViewPager.getAdapter() != null) {
+        PostPagerAdapter adapter=(PostPagerAdapter)mViewPager.getAdapter();
+        ReaderBlogIdPostId id=adapter.mIdList.get(position);
+        if (id != null && id.getBlogId() == LOADING_FRAGMENT_ID && id.getPostId() == LOADING_FRAGMENT_ID) {
+          adapter.requestMorePosts();
+        }
+      }
     }
     @Override public void onPageScrollStateChanged(    int state){
       super.onPageScrollStateChanged(state);

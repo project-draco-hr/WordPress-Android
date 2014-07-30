@@ -2,16 +2,17 @@
   long blogId=mIdList.get(position).getBlogId();
   long postId=mIdList.get(position).getPostId();
   boolean isEndFragment=(blogId == END_FRAGMENT_ID && postId == END_FRAGMENT_ID);
+  boolean isLoadingFragment=(blogId == LOADING_FRAGMENT_ID && postId == LOADING_FRAGMENT_ID);
   final Fragment fragment;
   if (isEndFragment) {
     fragment=PostPagerEndFragment.newInstance();
+  }
+ else   if (isLoadingFragment) {
+    fragment=PostPagerLoadingFragment.newInstance();
   }
  else {
     fragment=ReaderPostDetailFragment.newInstance(blogId,postId,getPostListType());
   }
   mFragmentMap.put(getItemKey(position),new WeakReference<Fragment>(fragment));
-  if (!isEndFragment && !mIsRequestingMorePosts && position >= (getCount() - LOAD_MORE_OFFSET) && canRequestMorePosts()) {
-    requestMorePosts();
-  }
   return fragment;
 }
