@@ -2,7 +2,10 @@
   FragmentTransaction ft=getFragmentManager().beginTransaction();
   NUXDialogFragment nuxAlert;
   if (mErrorMsgId == R.string.account_two_step_auth_enabled) {
-    nuxAlert=NUXDialogFragment.newInstance(getString(R.string.nux_cannot_log_in),getString(mErrorMsgId),getString(R.string.nux_tap_continue),R.drawable.nux_icon_alert,true,getString(R.string.visit_security_settings),NUXDialogFragment.ACTION_OPEN_URL,"https://wordpress.com/settings/security/?ssl=forced");
+    nuxAlert=NUXDialogFragment.newInstance(getString(R.string.nux_cannot_log_in),getString(mErrorMsgId),R.drawable.nux_icon_alert,2,getString(R.string.cancel),getString(R.string.visit_security_settings),"",NUXDialogFragment.ACTION_OPEN_URL,0);
+    Bundle bundle=nuxAlert.getArguments();
+    bundle.putString(NUXDialogFragment.ARG_OPEN_URL_PARAM,"https://wordpress.com/settings/security/?ssl=forced");
+    nuxAlert.setArguments(bundle);
   }
  else {
     if (mErrorMsgId == R.string.username_or_password_incorrect) {
@@ -16,7 +19,7 @@
       return;
     }
  else {
-      nuxAlert=NUXDialogFragment.newInstance(getString(R.string.nux_cannot_log_in),getString(mErrorMsgId),getString(R.string.nux_tap_continue),R.drawable.nux_icon_alert);
+      nuxAlert=NUXDialogFragment.newInstance(getString(R.string.nux_cannot_log_in),getString(mErrorMsgId),R.drawable.nux_icon_alert,getString(R.string.nux_tap_continue));
     }
   }
   ft.add(nuxAlert,"alert");
