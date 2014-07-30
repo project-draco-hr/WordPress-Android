@@ -8,7 +8,7 @@
   mFooterTwoButtons=(RelativeLayout)v.findViewById(R.id.nux_dialog_footer_2_buttons);
   mFooterRightButton=(WPTextView)v.findViewById(R.id.nux_dialog_get_started_button);
   mFooterLeftButton=(WPTextView)v.findViewById(R.id.nux_dialog_learn_more_button);
-  Bundle args=this.getArguments();
+  final Bundle args=getArguments();
   mTitleTextView.setText(args.getString(ARG_TITLE));
   mDescriptionTextView.setText(args.getString(ARG_DESCRIPTION));
   mFooterOneButton.setText(args.getString(ARG_FOOTER));
@@ -34,6 +34,16 @@
       if (action == ACTION_OPEN_URL) {
         Intent intent=new Intent(Intent.ACTION_VIEW,Uri.parse(param));
         startActivity(intent);
+        dismissAllowingStateLoss();
+      }
+      if (action == ACTION_OPEN_SUPPORT_CHAT) {
+        if (!isAdded()) {
+          return;
+        }
+        Activity activity=getActivity();
+        HelpshiftHelper.getInstance().addMetaData(MetadataKey.USER_ENTERED_URL,args.getString(WelcomeFragmentSignIn.ENTERED_URL_KEY));
+        HelpshiftHelper.getInstance().addMetaData(MetadataKey.USER_ENTERED_USERNAME,args.getString(WelcomeFragmentSignIn.ENTERED_USERNAME_KEY));
+        HelpshiftHelper.getInstance().showConversation(activity);
         dismissAllowingStateLoss();
       }
     }
