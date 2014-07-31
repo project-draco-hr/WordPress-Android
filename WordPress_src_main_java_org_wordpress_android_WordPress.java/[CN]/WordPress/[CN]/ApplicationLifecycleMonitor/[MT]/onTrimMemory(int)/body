@@ -1,8 +1,11 @@
 {
   if (level == ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
     isInBackground=true;
+    SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(getContext());
+    String lastActivityString=settings.getString(WPActionBarActivity.LAST_ACTIVITY_PREFERENCE,ActivityId.UNKNOWN.name());
+    ActivityId lastActivity=ActivityId.valueOf(lastActivityString);
     Map<String,String> properties=new HashMap<String,String>();
-    properties.put("last_visible_screen",ActivityUtils.getTopActivityClassName(getContext()));
+    properties.put("last_visible_screen",lastActivity.toString());
     AnalyticsTracker.track(AnalyticsTracker.Stat.APPLICATION_CLOSED,properties);
     AnalyticsTracker.endSession(false);
   }
