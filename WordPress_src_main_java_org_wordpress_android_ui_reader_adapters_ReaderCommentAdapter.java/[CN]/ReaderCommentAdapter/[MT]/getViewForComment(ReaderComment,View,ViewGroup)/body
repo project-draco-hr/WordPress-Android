@@ -25,10 +25,10 @@
 ;
     holder.imgAvatar.setOnClickListener(authorListener);
     holder.txtAuthor.setOnClickListener(authorListener);
-    holder.txtAuthor.setTextColor(mLinkColor);
+    holder.txtAuthor.setTextColor(comment.isUnapproved() ? mTextColorUnapproved : mTextColorNormal);
   }
  else {
-    holder.txtAuthor.setTextColor(mNoLinkColor);
+    holder.txtAuthor.setTextColor(comment.isUnapproved() ? mTextColorUnapproved : mTextColorNoLink);
   }
   if (comment.parentId != 0 && comment.level > 0) {
     int indent=Math.min(MAX_INDENT_LEVEL,comment.level) * mIndentPerLevel;
@@ -40,16 +40,39 @@
     holder.spacerIndent.setVisibility(View.GONE);
   }
   if (mHighlightCommentId == comment.commentId) {
-    convertView.setBackgroundColor(mBgColorHighlight);
+    convertView.setBackgroundDrawable(mBgColorHighlight);
     holder.progress.setVisibility(mShowProgressForHighlightedComment ? View.VISIBLE : View.GONE);
   }
  else   if (mPost != null && comment.authorId == mPost.authorId) {
-    convertView.setBackgroundColor(mBgColorHighlight);
+    convertView.setBackgroundDrawable(mBgColorHighlight);
+    holder.progress.setVisibility(View.GONE);
+  }
+ else   if (comment.isUnapproved()) {
+    int paddingLeft=convertView.getPaddingLeft();
+    int paddingTop=convertView.getPaddingTop();
+    int paddingRight=convertView.getPaddingRight();
+    int paddingBottom=convertView.getPaddingBottom();
+    convertView.setBackgroundDrawable(mBgDrawableUnapproved);
+    convertView.setPadding(paddingLeft,paddingTop,paddingRight,paddingBottom);
     holder.progress.setVisibility(View.GONE);
   }
  else {
-    convertView.setBackgroundColor(mBgColorNormal);
+    convertView.setBackgroundDrawable(mBgColorNormal);
     holder.progress.setVisibility(View.GONE);
+  }
+  if (comment.isUnapproved()) {
+    holder.commentActions.setVisibility(View.GONE);
+    holder.commentModerationActions.setVisibility(View.VISIBLE);
+    holder.txtText.setTextColor(mTextColorUnapproved);
+    holder.txtDate.setTextColor(mTextColorUnapproved);
+    holder.txtDateIcon.setTextColor(mTextColorUnapproved);
+  }
+ else {
+    holder.commentModerationActions.setVisibility(View.GONE);
+    holder.commentActions.setVisibility(View.VISIBLE);
+    holder.txtText.setTextColor(mTextColorNormal);
+    holder.txtDate.setTextColor(mTextColorNormal);
+    holder.txtDateIcon.setTextColor(mTextColorNormal);
   }
   if (mReplyListener != null) {
     View.OnClickListener replyClickListener=new View.OnClickListener(){
