@@ -3,7 +3,7 @@
     ReaderActions.DataLoadedListener dataLoadedListener=new ReaderActions.DataLoadedListener(){
       @Override public void onDataLoaded(      boolean isEmpty){
         if (isAdded()) {
-          mCommentFooter.setVisibility(isEmpty && mNote == null ? View.GONE : View.VISIBLE);
+          mCommentFooter.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
           if (mListState != null) {
             if (!isEmpty) {
               getListView().onRestoreInstanceState(mListState);
@@ -13,27 +13,8 @@
           if (mTopMostCommentId != 0) {
             restoreTopmostComment();
           }
-          if (mNote != null && !isEmpty && mListView.getVisibility() == View.INVISIBLE) {
-            scrollToCommentId(mNote.getCommentId());
-            mListView.setAlpha(0.0f);
-            mListView.setVisibility(View.VISIBLE);
-            mListView.animate().alpha(1.0f).setStartDelay(300).setListener(new Animator.AnimatorListener(){
-              @Override public void onAnimationStart(              Animator animation){
-              }
-              @Override public void onAnimationEnd(              Animator animation){
-                mHeaderDetail.setAlpha(0.0f);
-                mHeaderDetail.setVisibility(View.VISIBLE);
-                mHeaderDetail.animate().alpha(1.0f).setStartDelay(300);
-                if (mNotificationCommentView != null) {
-                  mNotificationCommentView.setVisibility(View.GONE);
-                }
-              }
-              @Override public void onAnimationCancel(              Animator animation){
-              }
-              @Override public void onAnimationRepeat(              Animator animation){
-              }
-            }
-);
+ else           if (mScrollToCommentId > 0) {
+            scrollToCommentId(mScrollToCommentId);
           }
         }
       }
