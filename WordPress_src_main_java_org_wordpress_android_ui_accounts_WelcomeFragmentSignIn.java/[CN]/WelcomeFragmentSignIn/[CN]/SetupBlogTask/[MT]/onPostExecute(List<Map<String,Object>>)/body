@@ -11,6 +11,9 @@
     signInError();
     return;
   }
+  Map<String,Boolean> properties=new HashMap<String,Boolean>();
+  properties.put("dotcom_user",mSetupBlog.isDotComBlog());
+  AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNED_IN,properties);
   refreshFirstBlogContent(userBlogList);
   if (mSelfHosted) {
     AnalyticsTracker.track(AnalyticsTracker.Stat.ADDED_SELF_HOSTED_SITE);
@@ -28,6 +31,7 @@
     }
 ,null);
   }
+  AnalyticsTracker.refreshMetadata();
   if (userBlogList != null) {
     if (getActivity() != null) {
       getActivity().setResult(Activity.RESULT_OK);
