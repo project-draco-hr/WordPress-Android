@@ -1,33 +1,42 @@
 {
   int itemId=item.getItemId();
   if (itemId == R.id.menu_save_post) {
-    if (mPost.isUploaded()) {
-      AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_UPDATED_POST);
-    }
+    PostStatus status=mPost.getStatusEnum();
+switch (status) {
+case PUBLISHED:
+      if (mPost.isUploaded()) {
+        AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_UPDATED_POST);
+      }
  else {
-      AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_PUBLISHED_POST);
-    }
-    savePost(false);
-    PostUploadService.addPostToUpload(mPost);
-    startService(new Intent(this,PostUploadService.class));
-    Intent i=new Intent();
-    i.putExtra("shouldRefresh",true);
-    setResult(RESULT_OK,i);
-    finish();
-    return true;
-  }
- else   if (itemId == R.id.menu_preview_post) {
-    mViewPager.setCurrentItem(PAGE_PREVIEW);
-  }
- else   if (itemId == android.R.id.home) {
-    if (mViewPager.getCurrentItem() > PAGE_CONTENT) {
-      mViewPager.setCurrentItem(PAGE_CONTENT);
-      invalidateOptionsMenu();
-    }
+        AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_PUBLISHED_POST);
+      }
+    break;
+case DRAFT:
+  AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_SAVED_DRAFT);
+break;
+default :
+}
+savePost(false);
+PostUploadService.addPostToUpload(mPost);
+startService(new Intent(this,PostUploadService.class));
+Intent i=new Intent();
+i.putExtra("shouldRefresh",true);
+setResult(RESULT_OK,i);
+finish();
+return true;
+}
+ else if (itemId == R.id.menu_preview_post) {
+mViewPager.setCurrentItem(PAGE_PREVIEW);
+}
+ else if (itemId == android.R.id.home) {
+if (mViewPager.getCurrentItem() > PAGE_CONTENT) {
+mViewPager.setCurrentItem(PAGE_CONTENT);
+invalidateOptionsMenu();
+}
  else {
-      saveAndFinish();
-    }
-    return true;
-  }
-  return false;
+saveAndFinish();
+}
+return true;
+}
+return false;
 }
