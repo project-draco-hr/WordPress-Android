@@ -1,12 +1,16 @@
 {
-  if (mIsSinglePostView) {
+  int position=mIdList.indexOf(END_FRAGMENT_ID,END_FRAGMENT_ID);
+  if (!isValidPosition(position)) {
     return;
   }
-  boolean canRequestMore=!mAllPostsLoaded && mIdList.size() < ReaderConstants.READER_MAX_POSTS_TO_DISPLAY && NetworkUtils.isNetworkAvailable(ReaderPostPagerActivity.this);
-  if (canRequestMore) {
-    ensureLoadingPageExists();
-  }
+  Fragment fragment=getFragmentAtPosition(position);
+  if (fragment instanceof PostPagerEndFragment) {
+    PostPagerEndFragment endFragment=(PostPagerEndFragment)fragment;
+    if (canRequestMostPosts()) {
+      endFragment.setFragmentType(EndFragmentType.LOADING);
+    }
  else {
-    ensureNoMorePageExists();
+      endFragment.setFragmentType(EndFragmentType.NO_MORE);
+    }
   }
 }

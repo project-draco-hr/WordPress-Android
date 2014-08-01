@@ -50,13 +50,22 @@
   mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
     @Override public void onPageSelected(    int position){
       super.onPageSelected(position);
-      AnalyticsTracker.track(AnalyticsTracker.Stat.READER_OPENED_ARTICLE);
       onRequestFullScreen(false);
       if (mViewPager.getAdapter() != null) {
         PostPagerAdapter adapter=(PostPagerAdapter)mViewPager.getAdapter();
-        ReaderBlogIdPostId id=adapter.mIdList.get(position);
-        if (id != null && id.getBlogId() == LOADING_FRAGMENT_ID && id.getPostId() == LOADING_FRAGMENT_ID) {
-          adapter.requestMorePosts();
+        Fragment fragment=adapter.getFragmentAtPosition(position);
+        if (fragment instanceof ReaderPostDetailFragment) {
+          AnalyticsTracker.track(AnalyticsTracker.Stat.READER_OPENED_ARTICLE);
+        }
+ else         if (fragment instanceof PostPagerEndFragment) {
+          PostPagerEndFragment endFragment=(PostPagerEndFragment)fragment;
+          if (adapter.canRequestMostPosts()) {
+            endFragment.setFragmentType(EndFragmentType.LOADING);
+            adapter.requestMorePosts();
+          }
+ else {
+            endFragment.setFragmentType(EndFragmentType.NO_MORE);
+          }
         }
       }
     }
