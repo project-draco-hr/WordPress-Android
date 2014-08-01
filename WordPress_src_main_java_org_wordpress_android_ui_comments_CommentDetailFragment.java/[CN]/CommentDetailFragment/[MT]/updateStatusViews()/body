@@ -37,6 +37,13 @@ break;
 default :
 return;
 }
+if (mNote != null && canLike()) {
+mBtnLikeComment.setVisibility(View.VISIBLE);
+toggleLikeButton(mNote.hasLikedComment());
+}
+ else {
+mBtnLikeComment.setVisibility(View.GONE);
+}
 if (mIsUsersBlog && mComment.getStatusEnum() != CommentStatus.APPROVED) {
 mTxtStatus.setText(getString(statusTextResId).toUpperCase());
 mTxtStatus.setTextColor(statusColor);
@@ -77,7 +84,7 @@ mBtnSpamComment.setVisibility(View.GONE);
 mBtnTrashComment.setVisibility(canTrash() ? View.VISIBLE : View.GONE);
 mBtnEditComment.setVisibility(canEdit() ? View.VISIBLE : View.GONE);
 boolean isAnimating=(mLayoutButtons.getAnimation() != null && !mLayoutButtons.getAnimation().hasEnded());
-if ((mLayoutButtons.getVisibility() != View.VISIBLE || isAnimating) && (canMarkAsSpam() || canModerate())) {
+if ((mLayoutButtons.getVisibility() != View.VISIBLE || isAnimating) && (canMarkAsSpam() || canModerate() || canLike())) {
 AniUtils.flyIn(mLayoutButtons);
 }
 }
