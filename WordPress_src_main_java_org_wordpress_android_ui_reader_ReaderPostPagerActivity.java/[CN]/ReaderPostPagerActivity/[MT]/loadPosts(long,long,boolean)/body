@@ -26,19 +26,22 @@ default :
 }
 final ReaderBlogIdPostIdList ids=postList.getBlogIdPostIdList();
 final int currentPosition=mViewPager.getCurrentItem();
+final int newPosition;
+if (gotoNext) {
+newPosition=ids.indexOf(blogId,postId) + 1;
+}
+ else {
+newPosition=ids.indexOf(blogId,postId);
+}
 runOnUiThread(new Runnable(){
 @Override public void run(){
 PostPagerAdapter adapter=new PostPagerAdapter(getFragmentManager(),ids);
 mViewPager.setAdapter(adapter);
-int newPosition;
-if (blogId < 0 && postId < 0) {
-  newPosition=currentPosition;
-}
- else {
-  newPosition=ids.indexOf(blogId,postId);
-}
 if (adapter.isValidPosition(newPosition)) {
   mViewPager.setCurrentItem(newPosition);
+}
+ else if (adapter.isValidPosition(currentPosition)) {
+  mViewPager.setCurrentItem(currentPosition);
 }
 }
 }

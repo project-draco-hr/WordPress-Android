@@ -1,19 +1,12 @@
 {
-  int noMoreIndex=mIdList.indexOf(NO_MORE_FRAGMENT_ID,NO_MORE_FRAGMENT_ID);
-  int loadingIndex=mIdList.indexOf(LOADING_FRAGMENT_ID,LOADING_FRAGMENT_ID);
-  boolean canRequestMore=!mAllPostsLoaded && !mIsSinglePostView && mIdList.size() < ReaderConstants.READER_MAX_POSTS_TO_DISPLAY && NetworkUtils.isNetworkAvailable(ReaderPostPagerActivity.this);
-  if (canRequestMore && loadingIndex == -1) {
-    if (noMoreIndex >= 0) {
-      mIdList.remove(noMoreIndex);
-    }
-    mIdList.add(new ReaderBlogIdPostId(LOADING_FRAGMENT_ID,LOADING_FRAGMENT_ID));
-    notifyDataSetChanged();
+  if (mIsSinglePostView) {
+    return;
   }
- else   if (!canRequestMore && noMoreIndex == -1) {
-    if (loadingIndex >= 0) {
-      mIdList.remove(loadingIndex);
-    }
-    mIdList.add(new ReaderBlogIdPostId(NO_MORE_FRAGMENT_ID,NO_MORE_FRAGMENT_ID));
-    notifyDataSetChanged();
+  boolean canRequestMore=!mAllPostsLoaded && mIdList.size() < ReaderConstants.READER_MAX_POSTS_TO_DISPLAY && NetworkUtils.isNetworkAvailable(ReaderPostPagerActivity.this);
+  if (canRequestMore) {
+    ensureLoadingPageExists();
+  }
+ else {
+    ensureNoMorePageExists();
   }
 }
