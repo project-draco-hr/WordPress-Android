@@ -12,8 +12,9 @@
         mImageMshot.setOnClickListener(new OnClickListener(){
           @Override public void onClick(          View v){
             int displayWidth=DisplayUtils.getDisplayPixelWidth(getContext());
-            String mshotUrlFull=blogInfo.getMshotsUrl(displayWidth);
-            ReaderActivityLauncher.showReaderPhotoViewer(getContext(),mshotUrlFull);
+            int startX=mImageMshot.getLeft();
+            int startY=mImageMshot.getTop();
+            ReaderActivityLauncher.showReaderPhotoViewer(getContext(),blogInfo.getMshotsUrl(displayWidth),mImageMshot,startX,startY);
           }
         }
 );
@@ -21,6 +22,6 @@
     }
   }
 ;
-  String mshotUrl=blogInfo.getMshotsUrl(mMshotWidth);
-  mImageMshot.setImageUrl(mshotUrl,WPNetworkImageView.ImageType.MSHOT,imageListener);
+  int mshotWidth=getContext().getResources().getDimensionPixelSize(R.dimen.reader_mshot_image_width);
+  mImageMshot.setImageUrl(blogInfo.getMshotsUrl(mshotWidth),WPNetworkImageView.ImageType.MSHOT,imageListener);
 }
