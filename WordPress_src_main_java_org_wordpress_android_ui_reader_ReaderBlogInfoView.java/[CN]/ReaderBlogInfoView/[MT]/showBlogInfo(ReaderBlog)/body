@@ -10,7 +10,6 @@
   mBlogInfo=blogInfo;
   final TextView txtBlogName=(TextView)findViewById(R.id.text_blog_name);
   final TextView txtDescription=(TextView)findViewById(R.id.text_blog_description);
-  final TextView txtFollowCnt=(TextView)findViewById(R.id.text_follow_count);
   final TextView txtFollowBtn=(TextView)findViewById(R.id.text_follow_blog);
   if (blogInfo.hasUrl()) {
     txtBlogName.setOnClickListener(new OnClickListener(){
@@ -40,12 +39,11 @@
  else {
     txtDescription.setVisibility(View.GONE);
   }
-  String numFollowers=getResources().getString(R.string.reader_label_followers,FormatUtils.formatInt(blogInfo.numSubscribers));
-  txtFollowCnt.setText(numFollowers);
+  showFollowerCount(blogInfo.numSubscribers);
   ReaderUtils.showFollowStatus(txtFollowBtn,blogInfo.isFollowing);
   txtFollowBtn.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
-      toggleBlogFollowStatus(txtFollowBtn,blogInfo);
+      toggleBlogFollowStatus(txtFollowBtn);
     }
   }
 );
