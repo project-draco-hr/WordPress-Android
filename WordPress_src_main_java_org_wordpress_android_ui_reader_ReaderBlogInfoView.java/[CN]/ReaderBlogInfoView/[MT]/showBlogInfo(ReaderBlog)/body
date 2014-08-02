@@ -7,8 +7,8 @@
   if (mBlogInfo != null && mBlogInfo.isSameAs(blogInfo)) {
     return;
   }
+  boolean wasEmpty=(mBlogInfo == null);
   mBlogInfo=blogInfo;
-  layoutInner.setVisibility(View.VISIBLE);
   final TextView txtBlogName=(TextView)findViewById(R.id.text_blog_name);
   final TextView txtDescription=(TextView)findViewById(R.id.text_blog_description);
   final TextView txtFollowCnt=(TextView)findViewById(R.id.text_follow_count);
@@ -46,13 +46,20 @@
   String numFollowers=getResources().getString(R.string.reader_label_followers,FormatUtils.formatInt(blogInfo.numSubscribers));
   txtFollowCnt.setText(numFollowers);
   ReaderUtils.showFollowStatus(txtFollowBtn,blogInfo.isFollowing);
-  txtFollowBtn.setVisibility(View.VISIBLE);
   txtFollowBtn.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
       toggleBlogFollowStatus(txtFollowBtn,blogInfo);
     }
   }
 );
+  if (layoutInner.getVisibility() != View.VISIBLE) {
+    new Handler().postDelayed(new Runnable(){
+      @Override public void run(){
+        ReaderAnim.scaleIn(layoutInner,ReaderAnim.Duration.MEDIUM);
+      }
+    }
+,250);
+  }
   if (mImageMshot.getUrl() == null) {
     loadMshotImage(blogInfo);
   }
