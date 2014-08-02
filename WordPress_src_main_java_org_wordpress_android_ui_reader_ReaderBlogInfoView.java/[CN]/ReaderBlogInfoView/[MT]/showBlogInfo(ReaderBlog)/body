@@ -1,5 +1,5 @@
 {
-  final ViewGroup layoutInner=(ViewGroup)findViewById(R.id.layout_bloginfo_container_inner);
+  final ViewGroup layoutInner=(ViewGroup)findViewById(R.id.layout_bloginfo_inner);
   if (blogInfo == null) {
     layoutInner.setVisibility(View.INVISIBLE);
     return;
@@ -7,21 +7,18 @@
   if (mBlogInfo != null && mBlogInfo.isSameAs(blogInfo)) {
     return;
   }
-  boolean wasEmpty=(mBlogInfo == null);
   mBlogInfo=blogInfo;
   final TextView txtBlogName=(TextView)findViewById(R.id.text_blog_name);
   final TextView txtDescription=(TextView)findViewById(R.id.text_blog_description);
   final TextView txtFollowCnt=(TextView)findViewById(R.id.text_follow_count);
   final TextView txtFollowBtn=(TextView)findViewById(R.id.text_follow_blog);
   if (blogInfo.hasUrl()) {
-    View.OnClickListener urlClickListener=new View.OnClickListener(){
+    txtBlogName.setOnClickListener(new OnClickListener(){
       @Override public void onClick(      View v){
         ReaderActivityLauncher.openUrl(getContext(),blogInfo.getUrl());
       }
     }
-;
-    txtBlogName.setOnClickListener(urlClickListener);
-    mImageMshot.setOnClickListener(urlClickListener);
+);
   }
   if (blogInfo.hasName()) {
     txtBlogName.setText(blogInfo.getName());

@@ -1,20 +1,26 @@
 {
   if (blogInfo == null || !blogInfo.hasUrl()) {
-    hideProgress();
     return;
   }
   if (blogInfo.isPrivate) {
-    hideProgress();
-    mImageMshot.setScaleType(ImageView.ScaleType.CENTER);
     mImageMshot.setImageResource(R.drawable.ic_action_secure);
     return;
   }
   WPNetworkImageView.ImageListener imageListener=new WPNetworkImageView.ImageListener(){
     @Override public void onImageLoaded(    boolean succeeded){
-      hideProgress();
+      if (succeeded) {
+        mImageMshot.setOnClickListener(new OnClickListener(){
+          @Override public void onClick(          View v){
+            int displayWidth=DisplayUtils.getDisplayPixelWidth(getContext());
+            String mshotUrlFull=blogInfo.getMshotsUrl(displayWidth);
+            ReaderActivityLauncher.showReaderPhotoViewer(getContext(),mshotUrlFull);
+          }
+        }
+);
+      }
     }
   }
 ;
-  final String imageUrl=blogInfo.getMshotsUrl(mMshotWidth);
-  mImageMshot.setImageUrl(imageUrl,WPNetworkImageView.ImageType.MSHOT,imageListener);
+  String mshotUrl=blogInfo.getMshotsUrl(mMshotWidth);
+  mImageMshot.setImageUrl(mshotUrl,WPNetworkImageView.ImageType.MSHOT,imageListener);
 }
