@@ -6,15 +6,16 @@
     mImageMshot.setImageResource(R.drawable.ic_action_secure);
     return;
   }
+  int displayWidth=DisplayUtils.getDisplayPixelWidth(getContext());
+  final String mshotUrl=blogInfo.getMshotsUrl(displayWidth);
   WPNetworkImageView.ImageListener imageListener=new WPNetworkImageView.ImageListener(){
     @Override public void onImageLoaded(    boolean succeeded){
       if (succeeded) {
         mImageMshot.setOnClickListener(new OnClickListener(){
           @Override public void onClick(          View v){
-            int displayWidth=DisplayUtils.getDisplayPixelWidth(getContext());
             int startX=mImageMshot.getLeft();
             int startY=mImageMshot.getTop();
-            ReaderActivityLauncher.showReaderPhotoViewer(getContext(),blogInfo.getMshotsUrl(displayWidth),mImageMshot,startX,startY);
+            ReaderActivityLauncher.showReaderPhotoViewer(getContext(),mshotUrl,mImageMshot,startX,startY);
           }
         }
 );
@@ -22,6 +23,5 @@
     }
   }
 ;
-  int mshotWidth=getContext().getResources().getDimensionPixelSize(R.dimen.reader_mshot_image_width);
-  mImageMshot.setImageUrl(blogInfo.getMshotsUrl(mshotWidth),WPNetworkImageView.ImageType.MSHOT,imageListener);
+  mImageMshot.setImageUrl(mshotUrl,WPNetworkImageView.ImageType.MSHOT,imageListener);
 }
