@@ -1,10 +1,10 @@
 {
-  long blogId=mIdList.get(position).getBlogId();
-  long postId=mIdList.get(position).getPostId();
-  if (blogId == END_FRAGMENT_ID && postId == END_FRAGMENT_ID) {
-    return PostPagerEndFragment.newInstance();
+  if (isEndFragmentId(mIdList.get(position))) {
+    PostPagerEndFragment endFragment=PostPagerEndFragment.newInstance();
+    endFragment.setEndFragmentType(canRequestMostPosts() ? EndFragmentType.LOADING : EndFragmentType.NO_MORE);
+    return endFragment;
   }
  else {
-    return ReaderPostDetailFragment.newInstance(blogId,postId,getPostListType());
+    return ReaderPostDetailFragment.newInstance(mIdList.get(position).getBlogId(),mIdList.get(position).getPostId(),getPostListType());
   }
 }
