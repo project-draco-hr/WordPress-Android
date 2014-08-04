@@ -1,0 +1,31 @@
+{
+  String imageTagsPattern="<img[^>]+android-uri\\s*=\\s*['\"]([^'\"]+)['\"][^>]*>";
+  Pattern pattern=Pattern.compile(imageTagsPattern);
+  Matcher matcher=pattern.matcher(postContent);
+  List<String> imageTags=new ArrayList<String>();
+  while (matcher.find()) {
+    imageTags.add(matcher.group());
+  }
+  for (  String tag : imageTags) {
+    Pattern p=Pattern.compile("android-uri=\"([^\"]+)\"");
+    Matcher m=p.matcher(tag);
+    if (m.find()) {
+      String imgPath=m.group(1);
+      if (!imgPath.equals("")) {
+        MediaFile mf=WordPress.wpDB.getMediaFile(imgPath,mPost);
+        if (mf != null) {
+          mPostUploadNotifier.updateNotificationMessage(null,mf.isVideo() ? getString(R.string.sending_video) : getString(R.string.sending_image),null);
+          String imgHTML=uploadMediaFile(mf,mBlog);
+          if (imgHTML != null) {
+            postContent=postContent.replace(tag,imgHTML);
+          }
+ else {
+            postContent=postContent.replace(tag,"");
+            mIsMediaError=true;
+          }
+        }
+      }
+    }
+  }
+  return postContent;
+}
