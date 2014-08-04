@@ -1,48 +1,38 @@
 {
   mErrorUnavailableVideoPress=false;
-  post=posts[0];
-  nm=(NotificationManager)SystemServiceFactory.get(context,Context.NOTIFICATION_SERVICE);
-  String postOrPage=(String)(post.isPage() ? context.getResources().getText(R.string.page_id) : context.getResources().getText(R.string.post_id));
-  String message=context.getResources().getText(R.string.uploading) + " " + postOrPage;
-  n=new Notification(R.drawable.notification_icon,message,System.currentTimeMillis());
-  Intent notificationIntent=new Intent(context,post.isPage() ? PagesActivity.class : PostsActivity.class);
-  notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK);
-  notificationIntent.setAction(Intent.ACTION_MAIN);
-  notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-  notificationIntent.setData((Uri.parse("custom://wordpressNotificationIntent" + post.getLocalTableBlogId())));
-  notificationIntent.putExtra(PostsActivity.EXTRA_VIEW_PAGES,post.isPage());
-  PendingIntent pendingIntent=PendingIntent.getActivity(context,0,notificationIntent,Intent.FLAG_ACTIVITY_CLEAR_TOP);
-  n.setLatestEventInfo(context,message,message,pendingIntent);
-  notificationID=(new Random()).nextInt() + post.getLocalTableBlogId();
-  nm.notify(notificationID,n);
-  Blog blog=WordPress.wpDB.instantiateBlogByLocalId(post.getLocalTableBlogId());
+  mPost=posts[0];
+  mPostUploadNotifier=new PostUploadNotifier(mPost);
+  String postTitle=TextUtils.isEmpty(mPost.getTitle()) ? getString(R.string.untitled) : mPost.getTitle();
+  String uploadingPostTitle=String.format(getString(R.string.uploading_post),postTitle);
+  mPostUploadNotifier.updateNotificationMessage(uploadingPostTitle,getString(R.string.sending_content),null);
+  Blog blog=WordPress.wpDB.instantiateBlogByLocalId(mPost.getLocalTableBlogId());
   if (blog == null) {
     mErrorMessage=context.getString(R.string.blog_not_found);
     return false;
   }
   boolean isFirstTimePublishing=false;
-  if (TextUtils.isEmpty(post.getPostStatus())) {
-    post.setPostStatus("publish");
+  if (TextUtils.isEmpty(mPost.getPostStatus())) {
+    mPost.setPostStatus("publish");
   }
-  if (post.hasChangedFromLocalDraftToPublished()) {
+  if (mPost.hasChangedFromLocalDraftToPublished()) {
     isFirstTimePublishing=true;
   }
-  if (!post.isUploaded() && post.getPostStatus().equals("publish")) {
+  if (!mPost.isUploaded() && mPost.getPostStatus().equals("publish")) {
     isFirstTimePublishing=true;
   }
   Boolean publishThis=false;
   Boolean hasImage=false;
   Boolean hasVideo=false;
   Boolean hasCategory=false;
-  Boolean hasTag=!post.getKeywords().equals("");
+  Boolean hasTag=!mPost.getKeywords().equals("");
   String descriptionContent="", moreContent="";
   int moreCount=1;
-  if (!TextUtils.isEmpty(post.getMoreText()))   moreCount++;
+  if (!TextUtils.isEmpty(mPost.getMoreText()))   moreCount++;
   String imgTags="<img[^>]+android-uri\\s*=\\s*['\"]([^'\"]+)['\"][^>]*>";
   Pattern pattern=Pattern.compile(imgTags);
   for (int x=0; x < moreCount; x++) {
-    if (x == 0)     descriptionContent=post.getDescription();
- else     moreContent=post.getMoreText();
+    if (x == 0)     descriptionContent=mPost.getDescription();
+ else     moreContent=mPost.getMoreText();
     Matcher matcher;
     if (x == 0) {
       matcher=pattern.matcher(descriptionContent);
@@ -60,7 +50,7 @@
       if (m.find()) {
         String imgPath=m.group(1);
         if (!imgPath.equals("")) {
-          MediaFile mf=WordPress.wpDB.getMediaFile(imgPath,post);
+          MediaFile mf=WordPress.wpDB.getMediaFile(imgPath,mPost);
           if (mf != null) {
             if (mf.isVideo()) {
               hasVideo=true;
@@ -68,6 +58,7 @@
  else {
               hasImage=true;
             }
+            mPostUploadNotifier.updateNotificationMessage(null,mf.isVideo() ? getString(R.string.sending_video) : getString(R.string.sending_image),null);
             String imgHTML=uploadMediaFile(mf,blog);
             if (imgHTML != null) {
               if (x == 0) {
@@ -88,7 +79,7 @@
     }
   }
   if (mIsMediaError)   return false;
-  JSONArray categoriesJsonArray=post.getJSONCategories();
+  JSONArray categoriesJsonArray=mPost.getJSONCategories();
   String[] postCategories=null;
   if (categoriesJsonArray != null) {
     if (categoriesJsonArray.length() > 0) {
@@ -105,7 +96,7 @@
     }
   }
   Map<String,Object> contentStruct=new HashMap<String,Object>();
-  if (!post.isPage() && post.isLocalDraft()) {
+  if (!mPost.isPage() && mPost.isLocalDraft()) {
     SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(context);
     if (prefs.getBoolean("wp_pref_signature_enabled",false)) {
       String tagline=prefs.getString("wp_pref_post_signature","");
@@ -116,14 +107,14 @@
       }
     }
   }
-  if (!post.isPage()) {
-    if (!TextUtils.isEmpty(post.getPostFormat())) {
-      contentStruct.put("wp_post_format",post.getPostFormat());
+  if (!mPost.isPage()) {
+    if (!TextUtils.isEmpty(mPost.getPostFormat())) {
+      contentStruct.put("wp_post_format",mPost.getPostFormat());
     }
   }
-  contentStruct.put("post_type",(post.isPage()) ? "page" : "post");
-  contentStruct.put("title",post.getTitle());
-  long pubDate=post.getDate_created_gmt();
+  contentStruct.put("post_type",(mPost.isPage()) ? "page" : "post");
+  contentStruct.put("title",mPost.getTitle());
+  long pubDate=mPost.getDate_created_gmt();
   if (pubDate != 0) {
     Date date_created_gmt=new Date(pubDate);
     contentStruct.put("date_created_gmt",date_created_gmt);
@@ -132,23 +123,23 @@
   }
   if (!moreContent.equals("")) {
     descriptionContent=descriptionContent.trim() + "<!--more-->" + moreContent;
-    post.setMoreText("");
+    mPost.setMoreText("");
   }
-  if (post.isLocalDraft()) {
+  if (mPost.isLocalDraft()) {
     descriptionContent=descriptionContent.replace("<p>","").replace("</p>","\n").replace("<br>","");
   }
   descriptionContent=descriptionContent.replaceAll("\uFFFC","");
   contentStruct.put("description",descriptionContent);
-  if (!post.isPage()) {
-    contentStruct.put("mt_keywords",post.getKeywords());
+  if (!mPost.isPage()) {
+    contentStruct.put("mt_keywords",mPost.getKeywords());
     if (postCategories != null && postCategories.length > 0)     contentStruct.put("categories",postCategories);
   }
-  contentStruct.put("mt_excerpt",post.getPostExcerpt());
-  contentStruct.put((post.isPage()) ? "page_status" : "post_status",post.getPostStatus());
-  if (post.supportsLocation()) {
-    JSONObject remoteGeoLatitude=post.getCustomField("geo_latitude");
-    JSONObject remoteGeoLongitude=post.getCustomField("geo_longitude");
-    JSONObject remoteGeoPublic=post.getCustomField("geo_public");
+  contentStruct.put("mt_excerpt",mPost.getPostExcerpt());
+  contentStruct.put((mPost.isPage()) ? "page_status" : "post_status",mPost.getPostStatus());
+  if (mPost.supportsLocation()) {
+    JSONObject remoteGeoLatitude=mPost.getCustomField("geo_latitude");
+    JSONObject remoteGeoLongitude=mPost.getCustomField("geo_longitude");
+    JSONObject remoteGeoPublic=mPost.getCustomField("geo_public");
     Map<Object,Object> hLatitude=new HashMap<Object,Object>();
     Map<Object,Object> hLongitude=new HashMap<Object,Object>();
     Map<Object,Object> hPublic=new HashMap<Object,Object>();
@@ -162,8 +153,8 @@
       if (remoteGeoPublic != null) {
         hPublic.put("id",remoteGeoPublic.getInt("id"));
       }
-      if (post.hasLocation()) {
-        PostLocation location=post.getLocation();
+      if (mPost.hasLocation()) {
+        PostLocation location=mPost.getLocation();
         if (!hLatitude.containsKey("id")) {
           hLatitude.put("key","geo_latitude");
         }
@@ -190,28 +181,26 @@
     contentStruct.put("wp_post_thumbnail",featuredImageID);
   }
   XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
-  if (!TextUtils.isEmpty(post.getQuickPostType())) {
-    client.addQuickPostHeader(post.getQuickPostType());
+  if (!TextUtils.isEmpty(mPost.getQuickPostType())) {
+    client.addQuickPostHeader(mPost.getQuickPostType());
   }
-  n.setLatestEventInfo(context,message,message,n.contentIntent);
-  nm.notify(notificationID,n);
-  contentStruct.put("wp_password",post.getPassword());
+  contentStruct.put("wp_password",mPost.getPassword());
   Object[] params;
-  if (post.isLocalDraft() && !post.isUploaded())   params=new Object[]{blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),contentStruct,publishThis};
- else   params=new Object[]{post.getRemotePostId(),blog.getUsername(),blog.getPassword(),contentStruct,publishThis};
+  if (mPost.isLocalDraft() && !mPost.isUploaded())   params=new Object[]{blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),contentStruct,publishThis};
+ else   params=new Object[]{mPost.getRemotePostId(),blog.getUsername(),blog.getPassword(),contentStruct,publishThis};
   try {
-    if (post.isLocalDraft() && !post.isUploaded()) {
+    if (mPost.isLocalDraft() && !mPost.isUploaded()) {
       Object newPostId=client.call("metaWeblog.newPost",params);
       if (newPostId instanceof String) {
-        post.setRemotePostId((String)newPostId);
+        mPost.setRemotePostId((String)newPostId);
       }
     }
  else {
       client.call("metaWeblog.editPost",params);
     }
-    post.setUploaded(true);
-    post.setLocalChange(false);
-    WordPress.wpDB.updatePost(post);
+    mPost.setUploaded(true);
+    mPost.setLocalChange(false);
+    WordPress.wpDB.updatePost(mPost);
     if (isFirstTimePublishing) {
       if (hasImage) {
         AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_PUBLISHED_POST_WITH_PHOTO);
