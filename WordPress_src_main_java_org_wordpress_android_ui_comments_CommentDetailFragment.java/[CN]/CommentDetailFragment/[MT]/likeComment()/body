@@ -1,16 +1,16 @@
 {
   if (mNote == null)   return;
   toggleLikeButton(!mBtnLikeComment.isSelected());
-  WordPress.getRestClientUtils().likeComment(String.valueOf(mNote.getBlogId()),String.valueOf(mNote.getCommentId()),!mBtnLikeComment.isSelected(),new RestRequest.Listener(){
+  WordPress.getRestClientUtils().likeComment(String.valueOf(mNote.getBlogId()),String.valueOf(mNote.getCommentId()),mBtnLikeComment.isSelected(),new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject response){
       if (response != null && !response.optBoolean("success")) {
-        toggleLikeButton(mBtnLikeComment.isSelected());
+        toggleLikeButton(!mBtnLikeComment.isSelected());
       }
     }
   }
 ,new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError error){
-      toggleLikeButton(mBtnLikeComment.isSelected());
+      toggleLikeButton(!mBtnLikeComment.isSelected());
     }
   }
 );
