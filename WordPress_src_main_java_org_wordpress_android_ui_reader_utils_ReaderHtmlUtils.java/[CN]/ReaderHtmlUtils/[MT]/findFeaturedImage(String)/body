@@ -1,5 +1,5 @@
 {
-  if (text == null || !text.contains("<img ") || !text.contains("size-")) {
+  if (text == null || !text.contains("<img ")) {
     return null;
   }
   final String classToFind;
@@ -13,14 +13,22 @@
     classToFind="size-medium";
   }
  else {
-    return null;
+    classToFind=null;
   }
-  Matcher imgMatcher=IMG_PATTERN.matcher(text);
+  Matcher imgMatcher=IMG_TAG_PATTERN.matcher(text);
   while (imgMatcher.find()) {
     String imgTag=text.substring(imgMatcher.start(),imgMatcher.end());
-    String classAttr=getClassAttrValue(imgTag);
-    if (classAttr != null && classAttr.contains(classToFind)) {
-      return getSrcAttrValue(imgTag);
+    if (classToFind != null) {
+      String classAttr=getClassAttrValue(imgTag);
+      if (classAttr != null && classAttr.contains(classToFind)) {
+        return getSrcAttrValue(imgTag);
+      }
+    }
+ else {
+      String imageUrl=getSrcAttrValue(imgTag);
+      if (getIntQueryParam(imageUrl,"w") >= MIN_FEATURED_IMAGE_WIDTH) {
+        return imageUrl;
+      }
     }
   }
   return null;
