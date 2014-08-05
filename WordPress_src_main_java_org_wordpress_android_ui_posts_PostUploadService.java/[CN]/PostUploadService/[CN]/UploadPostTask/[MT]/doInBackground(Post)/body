@@ -11,17 +11,13 @@
     return false;
   }
   mClient=XMLRPCFactory.instantiate(mBlog.getUri(),mBlog.getHttpuser(),mBlog.getHttppassword());
-  boolean isFirstTimePublishing=false;
   if (TextUtils.isEmpty(mPost.getPostStatus())) {
     mPost.setPostStatus(PostStatus.toString(PostStatus.PUBLISHED));
   }
+  boolean isFirstTimePublishing=false;
   if (mPost.hasChangedFromLocalDraftToPublished() || (!mPost.isUploaded() && mPost.getStatusEnum() == PostStatus.PUBLISHED)) {
     isFirstTimePublishing=true;
   }
-  Boolean hasImage=false;
-  Boolean hasVideo=false;
-  Boolean hasCategory=false;
-  Boolean hasTag=!mPost.getKeywords().equals("");
   String descriptionContent=processPostMedia(mPost.getDescription());
   String moreContent="";
   if (!TextUtils.isEmpty(mPost.getMoreText())) {
@@ -34,7 +30,7 @@
   String[] postCategories=null;
   if (categoriesJsonArray != null) {
     if (categoriesJsonArray.length() > 0) {
-      hasCategory=true;
+      mHasCategory=true;
     }
     postCategories=new String[categoriesJsonArray.length()];
     for (int i=0; i < categoriesJsonArray.length(); i++) {
@@ -154,16 +150,16 @@
     mPost.setLocalChange(false);
     WordPress.wpDB.updatePost(mPost);
     if (isFirstTimePublishing) {
-      if (hasImage) {
+      if (mHasImage) {
         AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_PUBLISHED_POST_WITH_PHOTO);
       }
-      if (hasVideo) {
+      if (mHasVideo) {
         AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_PUBLISHED_POST_WITH_VIDEO);
       }
-      if (hasCategory) {
+      if (mHasCategory) {
         AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_PUBLISHED_POST_WITH_CATEGORIES);
       }
-      if (hasTag) {
+      if (!TextUtils.isEmpty(mPost.getKeywords())) {
         AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_PUBLISHED_POST_WITH_TAGS);
       }
     }
