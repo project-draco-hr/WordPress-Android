@@ -1,0 +1,104 @@
+{
+  String tempFileName="wp-" + System.currentTimeMillis();
+  try {
+    mContext.openFileOutput(tempFileName,Context.MODE_PRIVATE);
+  }
+ catch (  FileNotFoundException e) {
+    mErrorMessage=getResources().getString(R.string.file_error_create);
+    mIsMediaError=true;
+    return null;
+  }
+  if (mediaFile.getFilePath() == null) {
+    return null;
+  }
+  Uri videoUri=Uri.parse(mediaFile.getFilePath());
+  File videoFile=null;
+  String mimeType="", xRes="", yRes="";
+  if (videoUri.toString().contains("content:")) {
+    String[] projection=new String[]{Video.Media._ID,Video.Media.DATA,Video.Media.MIME_TYPE,Video.Media.RESOLUTION};
+    Cursor cur=mContext.getContentResolver().query(videoUri,projection,null,null,null);
+    if (cur != null && cur.moveToFirst()) {
+      int mimeTypeColumn, resolutionColumn, dataColumn;
+      dataColumn=cur.getColumnIndex(Video.Media.DATA);
+      mimeTypeColumn=cur.getColumnIndex(Video.Media.MIME_TYPE);
+      resolutionColumn=cur.getColumnIndex(Video.Media.RESOLUTION);
+      mediaFile=new MediaFile();
+      String thumbData=cur.getString(dataColumn);
+      mimeType=cur.getString(mimeTypeColumn);
+      videoFile=new File(thumbData);
+      mediaFile.setFilePath(videoFile.getPath());
+      String resolution=cur.getString(resolutionColumn);
+      if (resolution != null) {
+        String[] resolutions=resolution.split("x");
+        if (resolutions.length >= 2) {
+          xRes=resolutions[0];
+          yRes=resolutions[1];
+        }
+      }
+ else {
+        if (!mBlog.getMaxImageWidth().equals("Original Size")) {
+          xRes=mBlog.getMaxImageWidth();
+          yRes=String.valueOf(Math.round(Integer.valueOf(mBlog.getMaxImageWidth()) * 0.75));
+        }
+ else {
+          xRes="640";
+          yRes="480";
+        }
+      }
+    }
+  }
+ else {
+    String filePath=videoUri.toString().replace("file://","");
+    mediaFile.setFilePath(filePath);
+    videoFile=new File(filePath);
+  }
+  if (videoFile == null) {
+    mErrorMessage=mContext.getResources().getString(R.string.error_media_upload);
+    return null;
+  }
+  if (TextUtils.isEmpty(mimeType)) {
+    mimeType=MediaUtils.getMediaFileMimeType(videoFile);
+  }
+  String videoName=MediaUtils.getMediaFileName(videoFile,mimeType);
+  Map<String,Object> m=new HashMap<String,Object>();
+  m.put("name",videoName);
+  m.put("type",mimeType);
+  m.put("bits",mediaFile);
+  m.put("overwrite",true);
+  Object[] params={1,mBlog.getUsername(),mBlog.getPassword(),m};
+  FeatureSet featureSet=synchronousGetFeatureSet();
+  boolean selfHosted=WordPress.currentBlog != null && !WordPress.currentBlog.isDotcomFlag();
+  boolean isVideoEnabled=selfHosted || (featureSet != null && mFeatureSet.isVideopressEnabled());
+  if (isVideoEnabled) {
+    File tempFile;
+    try {
+      String fileExtension=MimeTypeMap.getFileExtensionFromUrl(videoName);
+      tempFile=createTempUploadFile(fileExtension);
+    }
+ catch (    IOException e) {
+      mErrorMessage=getResources().getString(R.string.file_error_create);
+      mIsMediaError=true;
+      return null;
+    }
+    Object result=uploadFileHelper(mClient,params,tempFile);
+    Map<?,?> resultMap=(HashMap<?,?>)result;
+    if (resultMap != null && resultMap.containsKey("url")) {
+      String resultURL=resultMap.get("url").toString();
+      if (resultMap.containsKey("videopress_shortcode")) {
+        resultURL=resultMap.get("videopress_shortcode").toString() + "\n";
+      }
+ else {
+        resultURL=String.format("<video width=\"%s\" height=\"%s\" controls=\"controls\"><source src=\"%s\" type=\"%s\" /><a href=\"%s\">Click to view video</a>.</video>",xRes,yRes,resultURL,mimeType,resultURL);
+      }
+      return resultURL;
+    }
+ else {
+      return null;
+    }
+  }
+ else {
+    mErrorMessage=getString(R.string.media_no_video_message);
+    mErrorUnavailableVideoPress=true;
+    return null;
+  }
+}

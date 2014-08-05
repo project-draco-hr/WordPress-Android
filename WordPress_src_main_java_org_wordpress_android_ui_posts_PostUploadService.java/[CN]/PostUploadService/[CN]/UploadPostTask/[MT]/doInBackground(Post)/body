@@ -7,10 +7,10 @@
   mPostUploadNotifier.updateNotificationMessage(uploadingPostTitle,getString(R.string.sending_content),null);
   mBlog=WordPress.wpDB.instantiateBlogByLocalId(mPost.getLocalTableBlogId());
   if (mBlog == null) {
-    mErrorMessage=context.getString(R.string.blog_not_found);
+    mErrorMessage=mContext.getString(R.string.blog_not_found);
     return false;
   }
-  XMLRPCClientInterface client=XMLRPCFactory.instantiate(mBlog.getUri(),mBlog.getHttpuser(),mBlog.getHttppassword());
+  mClient=XMLRPCFactory.instantiate(mBlog.getUri(),mBlog.getHttpuser(),mBlog.getHttppassword());
   boolean isFirstTimePublishing=false;
   if (TextUtils.isEmpty(mPost.getPostStatus())) {
     mPost.setPostStatus(PostStatus.toString(PostStatus.PUBLISHED));
@@ -48,7 +48,7 @@
   }
   Map<String,Object> contentStruct=new HashMap<String,Object>();
   if (!mPost.isPage() && mPost.isLocalDraft()) {
-    SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(context);
+    SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(mContext);
     if (prefs.getBoolean("wp_pref_signature_enabled",false)) {
       String tagline=prefs.getString("wp_pref_post_signature","");
       if (!TextUtils.isEmpty(tagline)) {
@@ -134,7 +134,7 @@
     contentStruct.put("wp_post_thumbnail",featuredImageID);
   }
   if (!TextUtils.isEmpty(mPost.getQuickPostType())) {
-    client.addQuickPostHeader(mPost.getQuickPostType());
+    mClient.addQuickPostHeader(mPost.getQuickPostType());
   }
   contentStruct.put("wp_password",mPost.getPassword());
   Object[] params;
@@ -142,13 +142,13 @@
  else   params=new Object[]{mPost.getRemotePostId(),mBlog.getUsername(),mBlog.getPassword(),contentStruct,false};
   try {
     if (mPost.isLocalDraft() && !mPost.isUploaded()) {
-      Object newPostId=client.call("metaWeblog.newPost",params);
+      Object newPostId=mClient.call("metaWeblog.newPost",params);
       if (newPostId instanceof String) {
         mPost.setRemotePostId((String)newPostId);
       }
     }
  else {
-      client.call("metaWeblog.editPost",params);
+      mClient.call("metaWeblog.editPost",params);
     }
     mPost.setUploaded(true);
     mPost.setLocalChange(false);

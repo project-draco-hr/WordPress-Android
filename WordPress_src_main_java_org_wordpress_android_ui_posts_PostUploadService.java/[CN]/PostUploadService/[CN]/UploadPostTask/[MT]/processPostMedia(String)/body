@@ -12,12 +12,18 @@
     if (m.find()) {
       String imgPath=m.group(1);
       if (!imgPath.equals("")) {
-        MediaFile mf=WordPress.wpDB.getMediaFile(imgPath,mPost);
-        if (mf != null) {
-          mPostUploadNotifier.updateNotificationMessage(null,mf.isVideo() ? getString(R.string.sending_video) : getString(R.string.sending_image),null);
-          String imgHTML=uploadMediaFile(mf,mBlog);
-          if (imgHTML != null) {
-            postContent=postContent.replace(tag,imgHTML);
+        MediaFile mediaFile=WordPress.wpDB.getMediaFile(imgPath,mPost);
+        if (mediaFile != null) {
+          mPostUploadNotifier.updateNotificationMessage(null,mediaFile.isVideo() ? getString(R.string.sending_video) : getString(R.string.sending_image),null);
+          String mediaUploadOutput;
+          if (mediaFile.isVideo()) {
+            mediaUploadOutput=uploadVideo(mediaFile);
+          }
+ else {
+            mediaUploadOutput=uploadImage(mediaFile);
+          }
+          if (mediaUploadOutput != null) {
+            postContent=postContent.replace(tag,mediaUploadOutput);
           }
  else {
             postContent=postContent.replace(tag,"");
