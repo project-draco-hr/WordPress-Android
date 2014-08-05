@@ -1,6 +1,16 @@
 {
+  if (mClient instanceof XMLRPCClient) {
+    XMLRPCClient xmlrpcClient=(XMLRPCClient)mClient;
+    xmlrpcClient.setOnBytesUploadedListener(new XMLRPCClient.OnBytesUploadedListener(){
+      @Override public void onBytesUploaded(      long uploadedBytes){
+        float percentage=(uploadedBytes * 100) / tempFile.length();
+        mPostUploadNotifier.updateNotificationProgress(Math.round(percentage));
+      }
+    }
+);
+  }
   try {
-    return client.call("wp.uploadFile",params,tempFile);
+    return mClient.call("wp.uploadFile",params,tempFile);
   }
  catch (  XMLRPCException e) {
     AppLog.e(T.API,e);
