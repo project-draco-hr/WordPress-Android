@@ -1,0 +1,27 @@
+{
+  if (text == null || !text.contains("<img ") || !text.contains("size-")) {
+    return null;
+  }
+  final String classToFind;
+  if (text.contains("size-full")) {
+    classToFind="size-full";
+  }
+ else   if (text.contains("size-large")) {
+    classToFind="size-large";
+  }
+ else   if (text.contains("size-medium")) {
+    classToFind="size-medium";
+  }
+ else {
+    return null;
+  }
+  Matcher imgMatcher=IMG_PATTERN.matcher(text);
+  while (imgMatcher.find()) {
+    String imgTag=text.substring(imgMatcher.start(),imgMatcher.end());
+    String classAttr=getClassAttrValue(imgTag);
+    if (classAttr != null && classAttr.contains(classToFind)) {
+      return getSrcAttrValue(imgTag);
+    }
+  }
+  return null;
+}
