@@ -3,7 +3,13 @@
     return null;
   }
  else   if (url.contains("/imgpress")) {
-    return getImageUrlFromImagepressUrl(url);
+    String imageUrl=Uri.parse(url).getQueryParameter("url");
+    if (imageUrl != null && imageUrl.contains("url=")) {
+      return getImageUrlFromFPFeaturedImageUrl(imageUrl);
+    }
+ else {
+      return UrlUtils.removeQuery(imageUrl);
+    }
   }
  else   if (PhotonUtils.isMshotsUrl(url)) {
     return UrlUtils.removeQuery(url).replaceFirst("https","http");
