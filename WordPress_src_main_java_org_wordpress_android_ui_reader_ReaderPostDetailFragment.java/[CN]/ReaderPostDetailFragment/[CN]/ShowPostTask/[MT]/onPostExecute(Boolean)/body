@@ -101,6 +101,20 @@
  else {
     mLayoutIcons.setVisibility(View.GONE);
   }
+  if (canBlockBlog()) {
+    imgDropDown.setVisibility(View.VISIBLE);
+    imgDropDown.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        if (mOnPopupListener != null) {
+          mOnPopupListener.onShowPostPopup(v,mPost,-1);
+        }
+      }
+    }
+);
+  }
+ else {
+    imgDropDown.setVisibility(View.GONE);
+  }
   mReaderWebView.getSettings().setJavaScriptEnabled(canEnableJavaScript());
   mReaderWebView.loadDataWithBaseURL(null,postHtml,"text/html","UTF-8",null);
   mLayoutIcons.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
