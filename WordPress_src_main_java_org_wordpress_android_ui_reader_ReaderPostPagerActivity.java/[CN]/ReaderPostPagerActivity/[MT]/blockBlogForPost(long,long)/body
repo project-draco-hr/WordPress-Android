@@ -11,22 +11,16 @@
     }
   }
 ;
-  final ReaderPostList postsToRestore=ReaderBlogActions.blockBlogFromReader(post.blogId,actionListener);
+  final ReaderPostList postsToRestore=ReaderBlogActions.blockBlogFromReader(blogId,actionListener);
   AnalyticsTracker.track(AnalyticsTracker.Stat.READER_BLOCKED_BLOG);
-  Animation.AnimationListener aniListener=new Animation.AnimationListener(){
-    @Override public void onAnimationStart(    Animation animation){
-    }
-    @Override public void onAnimationRepeat(    Animation animation){
-    }
-    @Override public void onAnimationEnd(    Animation animation){
-      if (!isFinishing()) {
-      }
-    }
-  }
-;
+  ReaderBlogIdPostId idAdjacent=getPagerAdapter().getAdjacentId(blogId,postId);
+  long adjacentBlogId=(idAdjacent != null ? idAdjacent.getBlogId() : 0);
+  long adjacentPostId=(idAdjacent != null ? idAdjacent.getPostId() : 0);
+  loadPosts(adjacentBlogId,adjacentPostId,false);
   UndoBarController.UndoListener undoListener=new UndoBarController.UndoListener(){
     @Override public void onUndo(    Parcelable parcelable){
-      ReaderBlogActions.unblockBlogFromReader(post.blogId,postsToRestore);
+      ReaderBlogActions.unblockBlogFromReader(blogId,postsToRestore);
+      loadPosts(blogId,postId,false);
     }
   }
 ;
