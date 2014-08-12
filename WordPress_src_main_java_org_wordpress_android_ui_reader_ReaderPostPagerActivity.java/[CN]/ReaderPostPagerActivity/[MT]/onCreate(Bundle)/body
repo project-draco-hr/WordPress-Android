@@ -52,14 +52,13 @@
       super.onPageSelected(position);
       onRequestFullScreen(false);
       if (hasPagerAdapter()) {
-        PostPagerAdapter adapter=getPagerAdapter();
-        Fragment fragment=adapter.getFragmentAtPosition(position);
+        Fragment fragment=getPagerAdapter().getFragmentAtPosition(position);
         if (fragment instanceof ReaderPostDetailFragment) {
           AnalyticsTracker.track(AnalyticsTracker.Stat.READER_OPENED_ARTICLE);
         }
  else         if (fragment instanceof PostPagerEndFragment) {
-          if (adapter.canRequestMostPosts()) {
-            adapter.requestMorePosts();
+          if (getPagerAdapter().canRequestMostPosts()) {
+            getPagerAdapter().requestMorePosts();
           }
         }
       }
