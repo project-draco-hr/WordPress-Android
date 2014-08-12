@@ -4,6 +4,29 @@
   Bucket.ObjectCursor<Note> bucketCursor=(Bucket.ObjectCursor<Note>)cursor;
   Note note=bucketCursor.getObject();
   NoteViewHolder noteViewHolder=(NoteViewHolder)view.getTag();
+  Note previousNote=null;
+  if (bucketCursor.moveToPrevious()) {
+    previousNote=bucketCursor.getObject();
+    bucketCursor.moveToNext();
+  }
+  if (previousNote != null && previousNote.getTimeGroup() == note.getTimeGroup()) {
+    noteViewHolder.headerView.setVisibility(View.GONE);
+  }
+ else {
+    if (note.getTimeGroup() == Note.NoteTimeGroup.GROUP_TODAY) {
+      noteViewHolder.headerText.setText(context.getString(R.string.stats_timeframe_today).toUpperCase());
+    }
+ else     if (note.getTimeGroup() == Note.NoteTimeGroup.GROUP_YESTERDAY) {
+      noteViewHolder.headerText.setText(context.getString(R.string.stats_timeframe_yesterday).toUpperCase());
+    }
+ else     if (note.getTimeGroup() == Note.NoteTimeGroup.GROUP_LAST_WEEK) {
+      noteViewHolder.headerText.setText(context.getString(R.string.last_week).toUpperCase());
+    }
+ else {
+      noteViewHolder.headerText.setText(context.getString(R.string.older).toUpperCase());
+    }
+    noteViewHolder.headerView.setVisibility(View.VISIBLE);
+  }
   noteViewHolder.txtLabel.setText(note.getFormattedSubject());
   if (note.isCommentType()) {
     noteViewHolder.txtLabel.setMaxLines(2);
@@ -14,7 +37,6 @@
     noteViewHolder.txtLabel.setMaxLines(3);
     noteViewHolder.txtDetail.setVisibility(View.GONE);
   }
-  noteViewHolder.txtTime.setText(DateTimeUtils.timestampToTimeSpan(note.getTimestamp()));
   String avatarUrl=PhotonUtils.fixAvatar(note.getIconURL(),mAvatarSz);
   noteViewHolder.imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
   if (!TextUtils.isEmpty(note.getNoticonCharacter())) {
@@ -30,5 +52,10 @@
  else {
     noteViewHolder.noteIcon.setVisibility(View.GONE);
   }
-  noteViewHolder.unreadIndicator.setVisibility(note.isUnread() ? View.VISIBLE : View.INVISIBLE);
+  if (note.isUnread()) {
+    view.setBackgroundResource(mUnreadBackgroundResId);
+  }
+ else {
+    view.setBackgroundResource(mReadBackgroundResId);
+  }
 }
