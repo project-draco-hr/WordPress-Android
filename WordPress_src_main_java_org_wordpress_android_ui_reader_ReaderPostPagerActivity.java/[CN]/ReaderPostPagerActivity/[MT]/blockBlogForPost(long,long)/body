@@ -13,14 +13,17 @@
 ;
   final ReaderPostList postsToRestore=ReaderBlogActions.blockBlogFromReader(blogId,actionListener);
   AnalyticsTracker.track(AnalyticsTracker.Stat.READER_BLOCKED_BLOG);
-  int newPosition=getPagerAdapter().getPositionNotInSameBlog(mViewPager.getCurrentItem());
+  final int newPosition=getPagerAdapter().getPositionNotInSameBlog(mViewPager.getCurrentItem());
   if (newPosition > -1) {
     mViewPager.setCurrentItem(newPosition,true);
   }
   new Handler().postDelayed(new Runnable(){
     @Override public void run(){
       if (!isFinishing()) {
-        getPagerAdapter().removePostsInBlog(blogId);
+        ReaderBlogIdPostId newId=getPagerAdapter().getBlogIdPostIdAtPosition(newPosition);
+        long newBlogId=(newId != null ? newId.getBlogId() : 0);
+        long newPostId=(newId != null ? newId.getPostId() : 0);
+        loadPosts(newBlogId,newPostId,false);
       }
     }
   }
