@@ -13,10 +13,22 @@
 ;
   final ReaderPostList postsToRestore=ReaderBlogActions.blockBlogFromReader(blogId,actionListener);
   AnalyticsTracker.track(AnalyticsTracker.Stat.READER_BLOCKED_BLOG);
-  ReaderBlogIdPostId idAdjacent=getPagerAdapter().getAdjacentId(blogId,postId);
-  long adjacentBlogId=(idAdjacent != null ? idAdjacent.getBlogId() : 0);
-  long adjacentPostId=(idAdjacent != null ? idAdjacent.getPostId() : 0);
-  loadPosts(adjacentBlogId,adjacentPostId,false);
+  final int newPosition=getPagerAdapter().getNextPositionNotInSameBlog(mViewPager.getCurrentItem());
+  if (newPosition > -1) {
+    mViewPager.setCurrentItem(newPosition,true);
+    new Handler().postDelayed(new Runnable(){
+      @Override public void run(){
+        ReaderBlogIdPostId newId=getPagerAdapter().getBlogIdPostIdAtPos(newPosition);
+        long newBlogId=(newId != null ? newId.getBlogId() : 0);
+        long newPostId=(newId != null ? newId.getPostId() : 0);
+        loadPosts(newBlogId,newPostId,false);
+      }
+    }
+,600);
+  }
+ else {
+    loadPosts(END_FRAGMENT_ID,END_FRAGMENT_ID,false);
+  }
   UndoBarController.UndoListener undoListener=new UndoBarController.UndoListener(){
     @Override public void onUndo(    Parcelable parcelable){
       ReaderBlogActions.unblockBlogFromReader(blogId,postsToRestore);
