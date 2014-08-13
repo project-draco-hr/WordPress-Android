@@ -16,13 +16,13 @@
   ReaderAnim.Duration animDuration=ReaderAnim.Duration.SHORT;
   Fragment fragment=getActiveDetailFragment();
   if (fragment != null && fragment.getView() != null) {
-    ReaderAnim.scaleOut(fragment.getView(),View.GONE,animDuration);
+    ReaderAnim.scaleOut(fragment.getView(),View.INVISIBLE,animDuration);
   }
   new Handler().postDelayed(new Runnable(){
     @Override public void run(){
       if (!isFinishing()) {
-        int newPosition=getPagerAdapter().getPositionNotInSameBlog(mViewPager.getCurrentItem());
-        ReaderBlogIdPostId newId=getPagerAdapter().getBlogIdPostIdAtPosition(newPosition);
+        int position=mViewPager.getCurrentItem();
+        ReaderBlogIdPostId newId=getPagerAdapter().getBestIdNotInBlog(position,blogId);
         long newBlogId=(newId != null ? newId.getBlogId() : 0);
         long newPostId=(newId != null ? newId.getPostId() : 0);
         loadPosts(newBlogId,newPostId,false);
