@@ -1,0 +1,29 @@
+{
+  if (blockResult == null) {
+    return;
+  }
+  if (blockResult.deletedPosts != null) {
+    ReaderPostTable.addOrUpdatePosts(null,blockResult.deletedPosts);
+  }
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      boolean success=(jsonObject != null && jsonObject.optBoolean("success"));
+      if (success && blockResult.wasFollowing) {
+        performFollowAction(blockResult.blogId,null,true,null);
+      }
+ else       if (!success) {
+        AppLog.w(T.READER,"failed to unblock blog " + blockResult.blogId);
+      }
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.READER,volleyError);
+    }
+  }
+;
+  AppLog.i(T.READER,"unblocking blog " + blockResult.blogId);
+  String path="/me/block/sites/" + Long.toString(blockResult.blogId) + "/delete";
+  WordPress.getRestClientUtils().post(path,listener,errorListener);
+}

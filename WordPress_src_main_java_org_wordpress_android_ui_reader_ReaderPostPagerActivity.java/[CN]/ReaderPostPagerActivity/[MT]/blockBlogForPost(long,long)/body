@@ -11,11 +11,11 @@
     }
   }
 ;
-  final ReaderPostList postsToRestore=ReaderBlogActions.blockBlogFromReader(blogId,actionListener);
+  final ReaderBlogActions.BlockedBlogResult blockResult=ReaderBlogActions.blockBlogFromReader(blogId,actionListener);
   AnalyticsTracker.track(AnalyticsTracker.Stat.READER_BLOCKED_BLOG);
   UndoBarController.UndoListener undoListener=new UndoBarController.UndoListener(){
     @Override public void onUndo(    Parcelable parcelable){
-      ReaderBlogActions.unblockBlogFromReader(blogId,postsToRestore);
+      ReaderBlogActions.undoBlockBlogFromReader(blockResult);
       loadPosts(blogId,postId,false);
     }
   }
