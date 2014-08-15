@@ -1,0 +1,16 @@
+{
+  RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      handleFollowedBlogsResponse(jsonObject);
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(AppLog.T.READER,volleyError);
+      taskCompleted(UpdateTask.FOLLOWED_BLOGS,true);
+    }
+  }
+;
+  WordPress.getRestClientUtils().get("/read/following/mine?meta=site%2Cfeed",listener,errorListener);
+}
