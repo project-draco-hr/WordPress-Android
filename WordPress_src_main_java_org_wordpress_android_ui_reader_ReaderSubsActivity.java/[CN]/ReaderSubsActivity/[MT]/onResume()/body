@@ -1,4 +1,12 @@
 {
   super.onResume();
-  LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver,new IntentFilter(ReaderTagService.ACTION_FOLLOWED_TAGS_CHANGED));
+  IntentFilter filter=new IntentFilter();
+  filter.addAction(ReaderServiceActions.ACTION_FOLLOWED_TAGS_CHANGED);
+  filter.addAction(ReaderServiceActions.ACTION_RECOMMENDED_TAGS_CHANGED);
+  filter.addAction(ReaderServiceActions.ACTION_FOLLOWED_BLOGS_CHANGED);
+  filter.addAction(ReaderServiceActions.ACTION_RECOMMENDED_BLOGS_CHANGED);
+  LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver,filter);
+  if (!mHasPerformedUpdate) {
+    performUpdate();
+  }
 }

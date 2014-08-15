@@ -10,20 +10,18 @@
       ReaderTagList localTopics=new ReaderTagList();
       localTopics.addAll(ReaderTagTable.getDefaultTags());
       localTopics.addAll(ReaderTagTable.getFollowedTags());
-      boolean isFollowedTagsChanged=!localTopics.isSameList(serverTopics);
-      if (isFollowedTagsChanged) {
+      if (!localTopics.isSameList(serverTopics)) {
+        AppLog.d(AppLog.T.READER,"reader tag service > followed topics changed");
         deleteTags(localTopics.getDeletions(serverTopics));
         ReaderTagTable.replaceTags(serverTopics);
+        sendLocalBroadcast(new Intent().setAction(ReaderServiceActions.ACTION_FOLLOWED_TAGS_CHANGED));
       }
       ReaderTagList serverRecommended=parseTags(jsonObject,"recommended",ReaderTagType.RECOMMENDED);
       ReaderTagList localRecommended=ReaderTagTable.getRecommendedTags(false);
       if (!serverRecommended.isSameList(localRecommended)) {
         AppLog.d(AppLog.T.READER,"reader tag service > recommended topics changed");
         ReaderTagTable.setRecommendedTags(serverRecommended);
-      }
-      if (isFollowedTagsChanged) {
-        AppLog.d(AppLog.T.READER,"reader tag service > followed topics changed");
-        sendLocalBroadcast(new Intent().setAction(ACTION_FOLLOWED_TAGS_CHANGED));
+        sendLocalBroadcast(new Intent().setAction(ReaderServiceActions.ACTION_RECOMMENDED_TAGS_CHANGED));
       }
     }
   }
