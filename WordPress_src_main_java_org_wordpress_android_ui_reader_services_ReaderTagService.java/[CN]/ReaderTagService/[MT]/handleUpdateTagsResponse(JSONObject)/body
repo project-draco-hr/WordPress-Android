@@ -1,0 +1,30 @@
+{
+  if (jsonObject == null) {
+    return;
+  }
+  new Thread(){
+    @Override public void run(){
+      ReaderTagList serverTopics=new ReaderTagList();
+      serverTopics.addAll(parseTags(jsonObject,"default",ReaderTagType.DEFAULT));
+      serverTopics.addAll(parseTags(jsonObject,"subscribed",ReaderTagType.FOLLOWED));
+      ReaderTagList localTopics=new ReaderTagList();
+      localTopics.addAll(ReaderTagTable.getDefaultTags());
+      localTopics.addAll(ReaderTagTable.getFollowedTags());
+      boolean isFollowedTagsChanged=!localTopics.isSameList(serverTopics);
+      if (isFollowedTagsChanged) {
+        deleteTags(localTopics.getDeletions(serverTopics));
+        ReaderTagTable.replaceTags(serverTopics);
+      }
+      ReaderTagList serverRecommended=parseTags(jsonObject,"recommended",ReaderTagType.RECOMMENDED);
+      ReaderTagList localRecommended=ReaderTagTable.getRecommendedTags(false);
+      if (!serverRecommended.isSameList(localRecommended)) {
+        AppLog.d(AppLog.T.READER,"recommended topics changed");
+        ReaderTagTable.setRecommendedTags(serverRecommended);
+      }
+      if (isFollowedTagsChanged) {
+        sendLocalBroadcast(new Intent().setAction(BROADCAST_FOLLOWED_TAGS_CHANGED));
+      }
+    }
+  }
+.start();
+}

@@ -1,0 +1,17 @@
+{
+  if (tagList == null || tagList.size() == 0) {
+    return;
+  }
+  SQLiteDatabase db=ReaderDatabase.getWritableDb();
+  db.beginTransaction();
+  try {
+    for (    ReaderTag tag : tagList) {
+      ReaderTagTable.deleteTag(tag);
+      ReaderPostTable.deletePostsWithTag(tag);
+    }
+    db.setTransactionSuccessful();
+  }
+  finally {
+    db.endTransaction();
+  }
+}
