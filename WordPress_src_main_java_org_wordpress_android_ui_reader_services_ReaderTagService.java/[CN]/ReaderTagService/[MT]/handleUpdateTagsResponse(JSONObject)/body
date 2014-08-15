@@ -18,11 +18,12 @@
       ReaderTagList serverRecommended=parseTags(jsonObject,"recommended",ReaderTagType.RECOMMENDED);
       ReaderTagList localRecommended=ReaderTagTable.getRecommendedTags(false);
       if (!serverRecommended.isSameList(localRecommended)) {
-        AppLog.d(AppLog.T.READER,"recommended topics changed");
+        AppLog.d(AppLog.T.READER,"reader tag service > recommended topics changed");
         ReaderTagTable.setRecommendedTags(serverRecommended);
       }
       if (isFollowedTagsChanged) {
-        sendLocalBroadcast(new Intent().setAction(BROADCAST_FOLLOWED_TAGS_CHANGED));
+        AppLog.d(AppLog.T.READER,"reader tag service > followed topics changed");
+        sendLocalBroadcast(new Intent().setAction(ACTION_FOLLOWED_TAGS_CHANGED));
       }
     }
   }
