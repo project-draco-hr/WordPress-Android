@@ -1,4 +1,5 @@
 {
+  super.onCreate();
   ProfilingUtils.start("WordPress.onCreate");
   AppLog.enableRecording(true);
   if (!BuildUtils.isDebugBuild()) {
@@ -13,8 +14,8 @@
   configureSimperium();
   setupVolleyQueue();
   ABTestingUtils.init();
-  SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
-  if (settings.getInt("wp_pref_last_activity",-1) >= 0) {
+  String lastActivityStr=UserPrefs.getLastActivityStr();
+  if (!TextUtils.isEmpty(lastActivityStr) && !lastActivityStr.equals(ActivityId.UNKNOWN)) {
     shouldRestoreSelectedActivity=true;
   }
   AppLockManager.getInstance().enableDefaultAppLockIfAvailable(this);
@@ -25,9 +26,8 @@
   AnalyticsTracker.registerTracker(new AnalyticsTrackerMixpanel());
   AnalyticsTracker.registerTracker(new AnalyticsTrackerWPCom());
   AnalyticsTracker.beginSession();
-  AnalyticsTracker.track(AnalyticsTracker.Stat.APPLICATION_OPENED);
+  AnalyticsTracker.track(Stat.APPLICATION_STARTED);
   registerForCloudMessaging(this);
-  super.onCreate();
   ApplicationLifecycleMonitor pnBackendMonitor=new ApplicationLifecycleMonitor();
   registerComponentCallbacks(pnBackendMonitor);
   registerActivityLifecycleCallbacks(pnBackendMonitor);
