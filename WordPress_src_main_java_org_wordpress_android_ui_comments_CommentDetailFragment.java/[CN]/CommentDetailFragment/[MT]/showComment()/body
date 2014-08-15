@@ -5,11 +5,17 @@
   if (mComment == null) {
     scrollView.setVisibility(View.GONE);
     layoutBottom.setVisibility(View.GONE);
-    if (mNote != null && !mIsRequestingComment)     showCommentForNote(mNote);
+    if (mNote != null && !mIsRequestingComment) {
+      showCommentForNote(mNote);
+    }
     return;
   }
   scrollView.setVisibility(View.VISIBLE);
   layoutBottom.setVisibility(View.VISIBLE);
+  if (mNote == null && mLayoutButtons.getParent() == null) {
+    ViewGroup commentContentLayout=(ViewGroup)getView().findViewById(R.id.comment_content_container);
+    commentContentLayout.addView(mLayoutButtons);
+  }
   final WPNetworkImageView imgAvatar=(WPNetworkImageView)getView().findViewById(R.id.image_avatar);
   final TextView txtName=(TextView)getView().findViewById(R.id.text_name);
   final TextView txtDate=(TextView)getView().findViewById(R.id.text_date);
