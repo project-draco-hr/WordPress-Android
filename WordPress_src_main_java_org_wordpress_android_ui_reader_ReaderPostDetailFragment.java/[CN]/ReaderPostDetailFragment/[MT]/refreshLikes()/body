@@ -10,15 +10,11 @@
       }
       final ImageView imgBtnLike=(ImageView)getView().findViewById(R.id.image_like_btn);
       final TextView txtLikeCount=(TextView)mLayoutLikes.findViewById(R.id.text_like_count);
-      final int marginExtraSmall=getResources().getDimensionPixelSize(R.dimen.margin_extra_small);
-      final int marginLarge=getResources().getDimensionPixelSize(R.dimen.margin_large);
-      final int likeAvatarSize=getResources().getDimensionPixelSize(R.dimen.avatar_sz_small);
-      final int likeAvatarSizeWithMargin=likeAvatarSize + (marginExtraSmall * 2);
-      final int displayWidth=DisplayUtils.getDisplayPixelWidth(getActivity());
-      final int spaceForAvatars=displayWidth - (marginLarge * 2);
+      final int likeAvatarSizeWithMargin=mResourceVars.likeAvatarSize + (mResourceVars.marginExtraSmall * 2);
+      final int spaceForAvatars=mResourceVars.displayWidth - (mResourceVars.marginLarge * 2);
       final int maxAvatars=spaceForAvatars / likeAvatarSizeWithMargin;
       ReaderUserIdList avatarIds=ReaderLikeTable.getLikesForPost(mPost);
-      final ArrayList<String> avatars=ReaderUserTable.getAvatarUrls(avatarIds,maxAvatars,likeAvatarSize);
+      final ArrayList<String> avatars=ReaderUserTable.getAvatarUrls(avatarIds,maxAvatars,mResourceVars.likeAvatarSize);
       mHandler.post(new Runnable(){
         public void run(){
           if (!isAdded()) {
