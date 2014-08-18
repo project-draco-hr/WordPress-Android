@@ -1,0 +1,18 @@
+{
+  if (buffer == null) {
+    return false;
+  }
+  ImageSpan imgSpans[]=buffer.getSpans(0,buffer.length(),ImageSpan.class);
+  if (imgSpans.length > 0) {
+    String imageUrl=StringUtils.notNullStr(imgSpans[0].getSource());
+    ReaderActivityLauncher.showReaderPhotoViewer(context,imageUrl);
+    return true;
+  }
+  URLSpan urlSpans[]=buffer.getSpans(0,buffer.length(),URLSpan.class);
+  if (urlSpans.length > 0) {
+    String url=StringUtils.notNullStr(urlSpans[0].getURL());
+    ReaderActivityLauncher.openUrl(context,url);
+    return true;
+  }
+  return false;
+}
