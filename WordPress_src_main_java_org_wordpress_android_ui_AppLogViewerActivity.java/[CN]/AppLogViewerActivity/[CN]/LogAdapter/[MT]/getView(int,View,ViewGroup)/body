@@ -1,0 +1,21 @@
+{
+  final LogViewHolder holder;
+  if (convertView == null) {
+    convertView=mInflater.inflate(R.layout.logviewer_listitem,parent,false);
+    holder=new LogViewHolder(convertView);
+    convertView.setTag(holder);
+  }
+ else {
+    holder=(LogViewHolder)convertView.getTag();
+  }
+  int lineNum=position - AppLog.HEADER_LINE_COUNT + 1;
+  if (lineNum > 0) {
+    holder.txtLineNumber.setText(String.format("%02d",lineNum));
+    holder.txtLineNumber.setVisibility(View.VISIBLE);
+  }
+ else {
+    holder.txtLineNumber.setVisibility(View.GONE);
+  }
+  holder.txtLogEntry.setText(Html.fromHtml(mEntries.get(position)));
+  return convertView;
+}
