@@ -1,0 +1,27 @@
+{
+  if (isFinishing()) {
+    return;
+  }
+  AppLog.i(T.READER,"completed task " + task.toString() + ", result = "+ result.toString());
+switch (task) {
+case UPDATE_TAGS:
+    if (result != ReaderTaskResult.FAILED) {
+      mHasPerformedInitialUpdate=true;
+    }
+  if (result == ReaderTaskResult.HAS_CHANGES) {
+    ReaderPostListFragment listFragment=getListFragment();
+    if (listFragment == null) {
+      showListFragmentForTag(ReaderTag.getDefaultTag(),ReaderPostListType.TAG_FOLLOWED);
+    }
+ else     if (listFragment.getPostListType() == ReaderPostListType.TAG_FOLLOWED) {
+      listFragment.refreshTags();
+      if (listFragment.isPostAdapterEmpty()) {
+        listFragment.updatePostsWithTag(listFragment.getCurrentTag(),RequestDataAction.LOAD_NEWER,ReaderTypes.RefreshType.AUTOMATIC);
+      }
+    }
+  }
+ReaderUserActions.updateCurrentUser(null);
+ReaderBlogActions.updateFollowedBlogs(null);
+ReaderAuthActions.updateCookies(ReaderPostListActivity.this);
+}
+}
