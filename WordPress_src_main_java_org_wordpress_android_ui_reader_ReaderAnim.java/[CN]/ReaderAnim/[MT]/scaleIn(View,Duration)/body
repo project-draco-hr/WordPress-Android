@@ -1,0 +1,20 @@
+{
+  if (target == null || duration == null) {
+    return;
+  }
+  PropertyValuesHolder scaleX=PropertyValuesHolder.ofFloat(View.SCALE_X,0f,1f);
+  PropertyValuesHolder scaleY=PropertyValuesHolder.ofFloat(View.SCALE_Y,0f,1f);
+  ObjectAnimator animator=ObjectAnimator.ofPropertyValuesHolder(target,scaleX,scaleY);
+  animator.setDuration(duration.toMillis(target.getContext()));
+  animator.setInterpolator(new AccelerateDecelerateInterpolator());
+  if (target.getVisibility() != View.VISIBLE) {
+    animator.addListener(new AnimatorListenerAdapter(){
+      @Override public void onAnimationStart(      Animator animation){
+        super.onAnimationStart(animation);
+        target.setVisibility(View.VISIBLE);
+      }
+    }
+);
+  }
+  animator.start();
+}
