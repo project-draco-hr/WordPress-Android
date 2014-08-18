@@ -1,8 +1,20 @@
 {
   if (event.getAction() == MotionEvent.ACTION_UP) {
-    return handleTap(textView.getContext(),buffer);
+    ImageSpan imgSpans[]=buffer.getSpans(0,buffer.length(),ImageSpan.class);
+    if (imgSpans.length > 0) {
+      String imageUrl=StringUtils.notNullStr(imgSpans[0].getSource());
+      ReaderActivityLauncher.showReaderPhotoViewer(textView.getContext(),imageUrl,textView,(int)event.getX(),(int)event.getY());
+      return true;
+    }
+    URLSpan urlSpans[]=buffer.getSpans(0,buffer.length(),URLSpan.class);
+    if (urlSpans.length > 0) {
+      String url=StringUtils.notNullStr(urlSpans[0].getURL());
+      if (Uri.parse(url).getScheme() == null) {
+        url="http://" + url.trim();
+      }
+      ReaderActivityLauncher.openUrl(textView.getContext(),url);
+      return true;
+    }
   }
- else {
-    return super.onTouchEvent(textView,buffer,event);
-  }
+  return false;
 }
