@@ -48,14 +48,19 @@
   }
 );
   if (layoutInner.getVisibility() != View.VISIBLE) {
-    new Handler().postDelayed(new Runnable(){
-      @Override public void run(){
-        if (layoutInner.getVisibility() != View.VISIBLE) {
-          ReaderAnim.scaleIn(layoutInner,ReaderAnim.Duration.SHORT);
+    if (animateIn) {
+      new Handler().postDelayed(new Runnable(){
+        @Override public void run(){
+          if (layoutInner.getVisibility() != View.VISIBLE) {
+            ReaderAnim.fadeIn(layoutInner,ReaderAnim.Duration.SHORT);
+          }
         }
       }
-    }
 ,500);
+    }
+ else {
+      layoutInner.setVisibility(View.VISIBLE);
+    }
   }
   if (mImageMshot.getUrl() == null) {
     loadMshotImage(blogInfo);
