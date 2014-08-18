@@ -3,35 +3,38 @@
   float scale;
   float translationX;
 switch (mTransformType) {
+case FLOW:
+    view.setRotationY(position * -30f);
+  return;
 case DEPTH:
-    if (position > 0 && position < 1) {
-      alpha=(1 - position);
-      scale=MIN_SCALE_DEPTH + (1 - MIN_SCALE_DEPTH) * (1 - Math.abs(position));
-      translationX=(view.getWidth() * -position);
-    }
- else {
-      alpha=1;
-      scale=1;
-      translationX=0;
-    }
-  break;
-case ZOOM:
-if (position >= -1 && position <= 1) {
-  scale=Math.max(MIN_SCALE_ZOOM,1 - Math.abs(position));
-  alpha=MIN_ALPHA_ZOOM + (scale - MIN_SCALE_ZOOM) / (1 - MIN_SCALE_ZOOM) * (1 - MIN_ALPHA_ZOOM);
-  float vMargin=view.getHeight() * (1 - scale) / 2;
-  float hMargin=view.getWidth() * (1 - scale) / 2;
-  if (position < 0) {
-    translationX=(hMargin - vMargin / 2);
-  }
- else {
-    translationX=(-hMargin + vMargin / 2);
-  }
+if (position > 0 && position < 1) {
+  alpha=(1 - position);
+  scale=MIN_SCALE_DEPTH + (1 - MIN_SCALE_DEPTH) * (1 - Math.abs(position));
+  translationX=(view.getWidth() * -position);
 }
  else {
   alpha=1;
   scale=1;
   translationX=0;
+}
+break;
+case ZOOM:
+if (position >= -1 && position <= 1) {
+scale=Math.max(MIN_SCALE_ZOOM,1 - Math.abs(position));
+alpha=MIN_ALPHA_ZOOM + (scale - MIN_SCALE_ZOOM) / (1 - MIN_SCALE_ZOOM) * (1 - MIN_ALPHA_ZOOM);
+float vMargin=view.getHeight() * (1 - scale) / 2;
+float hMargin=view.getWidth() * (1 - scale) / 2;
+if (position < 0) {
+translationX=(hMargin - vMargin / 2);
+}
+ else {
+translationX=(-hMargin + vMargin / 2);
+}
+}
+ else {
+alpha=1;
+scale=1;
+translationX=0;
 }
 break;
 default :
