@@ -2,7 +2,9 @@
   if (getActivity() == null) {
     return;
   }
-  if (stats != null && stats.getDay() != null && StatsUtils.toMs(stats.getDay()) != StatsUtils.getCurrentDateMs()) {
+  String timezone=StatsUtils.getBlogTimezone(WordPress.getCurrentBlog());
+  long currentDate=timezone != null ? StatsUtils.getCurrentDateMsTZ(timezone) : StatsUtils.getCurrentDateMs();
+  if (stats != null && stats.getDay() != null && StatsUtils.toMs(stats.getDay()) != currentDate) {
     mVisitorsTodayLabel.setText(stats.getDay());
   }
  else {
