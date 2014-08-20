@@ -1,0 +1,17 @@
+{
+  try {
+    AccountManager accountManager=AccountManager.get(context);
+    if (accountManager == null)     return "";
+    Account[] accounts=accountManager.getAccounts();
+    Pattern emailPattern=Patterns.EMAIL_ADDRESS;
+    for (    Account account : accounts) {
+      if (emailPattern.matcher(account.name).matches()) {
+        return account.name;
+      }
+    }
+    return "";
+  }
+ catch (  SecurityException e) {
+    return "";
+  }
+}
