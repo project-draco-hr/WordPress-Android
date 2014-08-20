@@ -1,0 +1,34 @@
+{
+  if (mClient instanceof XMLRPCClient) {
+    XMLRPCClient xmlrpcClient=(XMLRPCClient)mClient;
+    xmlrpcClient.setOnBytesUploadedListener(new XMLRPCClient.OnBytesUploadedListener(){
+      @Override public void onBytesUploaded(      long uploadedBytes){
+        if (tempFile.length() == 0)         return;
+        float percentage=(uploadedBytes * 100) / tempFile.length();
+        mPostUploadNotifier.updateNotificationProgress(percentage);
+      }
+    }
+);
+  }
+  try {
+    return mClient.call("wp.uploadFile",params,tempFile);
+  }
+ catch (  XMLRPCException e) {
+    AppLog.e(T.API,e);
+    mErrorMessage=mContext.getResources().getString(R.string.error_media_upload) + ": " + e.getMessage();
+    return null;
+  }
+catch (  IOException e) {
+    AppLog.e(T.API,e);
+    mErrorMessage=mContext.getResources().getString(R.string.error_media_upload) + ": " + e.getMessage();
+    return null;
+  }
+catch (  XmlPullParserException e) {
+    AppLog.e(T.API,e);
+    mErrorMessage=mContext.getResources().getString(R.string.error_media_upload) + ": " + e.getMessage();
+    return null;
+  }
+ finally {
+    if (tempFile != null && tempFile.exists())     tempFile.delete();
+  }
+}
