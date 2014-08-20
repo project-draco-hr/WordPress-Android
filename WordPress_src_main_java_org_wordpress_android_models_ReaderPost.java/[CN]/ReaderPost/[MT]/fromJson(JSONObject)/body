@@ -31,7 +31,7 @@
   if (jsonEditorial != null) {
     post.blogId=jsonEditorial.optLong("blog_id");
     post.blogName=JSONUtil.getStringDecoded(jsonEditorial,"blog_name");
-    post.featuredImage=getImageUrlFromFeaturedImageUrl(JSONUtil.getString(jsonEditorial,"image"));
+    post.featuredImage=ReaderFeaturedImageFinder.getImageUrlFromFPFeaturedImageUrl(JSONUtil.getString(jsonEditorial,"image"));
     post.setPrimaryTag(JSONUtil.getString(jsonEditorial,"highlight_topic_title"));
     post.published=JSONUtil.getString(jsonEditorial,"displayed_on");
   }
@@ -63,7 +63,7 @@
       }
     }
     if (!post.hasFeaturedImage()) {
-      post.featuredImage=findFeaturedImage(post.text);
+      post.featuredImage=new ReaderFeaturedImageFinder(post.text).getBestFeaturedImage();
     }
   }
   if (!post.hasTitle() && post.hasExcerpt()) {
