@@ -1,0 +1,26 @@
+{
+  ViewGroup parent=this;
+  if (avatarUrls == null || avatarUrls.size() == 0) {
+    parent.removeAllViews();
+    return;
+  }
+  int numExistingViews=parent.getChildCount();
+  if (numExistingViews > avatarUrls.size()) {
+    int numToRemove=numExistingViews - avatarUrls.size();
+    parent.removeViews(numExistingViews - numToRemove,numToRemove);
+  }
+  int index=0;
+  LayoutInflater inflater=LayoutInflater.from(getContext());
+  for (  String url : avatarUrls) {
+    WPNetworkImageView imgAvatar;
+    if (index < numExistingViews) {
+      imgAvatar=(WPNetworkImageView)parent.getChildAt(index);
+    }
+ else {
+      imgAvatar=(WPNetworkImageView)inflater.inflate(R.layout.reader_like_avatar,parent,false);
+      addView(imgAvatar);
+    }
+    imgAvatar.setImageUrl(url,WPNetworkImageView.ImageType.AVATAR);
+    index++;
+  }
+}
