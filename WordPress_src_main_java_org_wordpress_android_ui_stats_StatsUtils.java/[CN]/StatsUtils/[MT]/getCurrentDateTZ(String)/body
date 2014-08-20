@@ -1,0 +1,20 @@
+{
+  Date date=new Date();
+  SimpleDateFormat gmtDf=new SimpleDateFormat("yyyy-MM-dd");
+  if (blogTimeZoneOptione.equalsIgnoreCase("0")) {
+    gmtDf.setTimeZone(TimeZone.getTimeZone("GMT"));
+  }
+ else   if (blogTimeZoneOptione.startsWith("-")) {
+    gmtDf.setTimeZone(TimeZone.getTimeZone("GMT" + blogTimeZoneOptione));
+  }
+ else {
+    if (blogTimeZoneOptione.startsWith("+")) {
+      gmtDf.setTimeZone(TimeZone.getTimeZone("GMT" + blogTimeZoneOptione));
+    }
+ else {
+      gmtDf.setTimeZone(TimeZone.getTimeZone("GMT+" + blogTimeZoneOptione));
+    }
+  }
+  AppLog.e(T.STATS,"OFFSET - " + gmtDf.format(date));
+  return gmtDf.format(date);
+}

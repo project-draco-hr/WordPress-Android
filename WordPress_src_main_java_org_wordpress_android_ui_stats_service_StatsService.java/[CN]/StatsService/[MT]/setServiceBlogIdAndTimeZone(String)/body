@@ -1,0 +1,24 @@
+{
+synchronized (mServiceBlogIdMonitor) {
+    mServiceBlogId=value;
+    String timezone=null;
+    if (mServiceBlogId != null) {
+      Blog blog=WordPress.wpDB.getBlogForDotComBlogId(value);
+      JSONObject jsonOptions=blog.getBlogOptionsJSONObject();
+      if (jsonOptions != null && jsonOptions.has("time_zone")) {
+        try {
+          timezone=jsonOptions.getJSONObject("time_zone").getString("value");
+        }
+ catch (        JSONException e) {
+          AppLog.e(T.UTILS,"Cannot load time_zone from options: " + jsonOptions,e);
+        }
+      }
+    }
+    if (timezone != null) {
+      mServiceBlogTimezone=timezone;
+    }
+ else {
+      mServiceBlogTimezone=null;
+    }
+  }
+}

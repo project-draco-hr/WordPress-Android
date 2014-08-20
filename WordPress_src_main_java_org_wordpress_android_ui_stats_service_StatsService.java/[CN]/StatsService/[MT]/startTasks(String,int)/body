@@ -1,14 +1,20 @@
 {
-  setServiceBlogId(blogId);
+  setServiceBlogIdAndTimeZone(blogId);
   this.mServiceStartId=startId;
   this.mErrorObject=null;
   new Thread(){
     @Override public void run(){
       final RestClientUtils restClientUtils=WordPress.getRestClientUtils();
-      final String today=StatsUtils.getCurrentDate();
-      final String yesterday=StatsUtils.getYesterdaysDate();
+      String todayStats=StatsUtils.getCurrentDate();
+      String yesterdayStats=StatsUtils.getYesterdaysDate();
+      if (mServiceBlogTimezone != null) {
+        todayStats=StatsUtils.getCurrentDateTZ(mServiceBlogTimezone);
+        yesterdayStats=StatsUtils.getYesterdaysDateTZ(mServiceBlogTimezone);
+      }
       AppLog.i(T.STATS,"Update started for blogID - " + blogId);
       broadcastUpdate(true);
+      final String today=todayStats;
+      final String yesterday=yesterdayStats;
       final String summaryPath=String.format("/sites/%s/stats",blogId);
       final String barChartWeekPath=getBarChartPath(blogId,StatsBarChartUnit.WEEK,30);
       final String barChartMonthPath=getBarChartPath(blogId,StatsBarChartUnit.MONTH,30);
