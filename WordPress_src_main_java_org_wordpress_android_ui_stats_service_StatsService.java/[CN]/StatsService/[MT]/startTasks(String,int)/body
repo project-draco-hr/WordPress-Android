@@ -1,12 +1,12 @@
 {
-  setServiceBlogId(blogId);
+  setServiceBlogIdAndTimeZone(blogId);
   this.mServiceStartId=startId;
   this.mErrorObject=null;
   new Thread(){
     @Override public void run(){
       final RestClientUtils restClientUtils=WordPress.getRestClientUtils();
-      final String today=StatsUtils.getCurrentDate();
-      final String yesterday=StatsUtils.getYesterdaysDate();
+      final String today=(mServiceBlogTimezone != null) ? StatsUtils.getCurrentDateTZ(mServiceBlogTimezone) : StatsUtils.getCurrentDate();
+      final String yesterday=(mServiceBlogTimezone != null) ? StatsUtils.getYesterdaysDateTZ(mServiceBlogTimezone) : StatsUtils.getYesterdaysDate();
       AppLog.i(T.STATS,"Update started for blogID - " + blogId);
       broadcastUpdate(true);
       final String summaryPath=String.format("/sites/%s/stats",blogId);
