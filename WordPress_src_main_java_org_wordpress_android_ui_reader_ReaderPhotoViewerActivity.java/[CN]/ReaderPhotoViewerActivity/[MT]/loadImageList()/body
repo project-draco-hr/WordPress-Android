@@ -1,0 +1,19 @@
+{
+  new Thread(){
+    @Override public void run(){
+      final ImageList imageList=new ReaderImageScanner(mContent).getImageList();
+      if (!imageList.hasImageUrl(mImageUrl)) {
+        imageList.addImageUrl(mImageUrl);
+      }
+      runOnUiThread(new Runnable(){
+        @Override public void run(){
+          if (!isFinishing()) {
+            setImageList(imageList);
+          }
+        }
+      }
+);
+    }
+  }
+.start();
+}
