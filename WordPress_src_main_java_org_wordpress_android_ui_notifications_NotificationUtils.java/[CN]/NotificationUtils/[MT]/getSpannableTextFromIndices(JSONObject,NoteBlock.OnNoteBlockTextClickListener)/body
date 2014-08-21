@@ -1,13 +1,16 @@
 {
   String text=subject.optString("text","");
   SpannableStringBuilder spannableStringBuilder=new SpannableStringBuilder(text);
+  boolean shouldLink=onNoteBlockTextClickListener != null;
   try {
     JSONArray idsArray=subject.getJSONArray("ids");
     for (int i=0; i < idsArray.length(); i++) {
       JSONObject idObject=(JSONObject)idsArray.get(i);
-      NoteBlockClickableSpan clickableSpan=new NoteBlockClickableSpan(idObject,Color.parseColor("#90aec2")){
+      NoteBlockClickableSpan clickableSpan=new NoteBlockClickableSpan(idObject,mBgColor,mTextColor,mLinkColor,shouldLink){
         @Override public void onClick(        View widget){
-          onNoteBlockTextClickListener.onNoteBlockTextClicked(this);
+          if (onNoteBlockTextClickListener != null) {
+            onNoteBlockTextClickListener.onNoteBlockTextClicked(this);
+          }
         }
       }
 ;

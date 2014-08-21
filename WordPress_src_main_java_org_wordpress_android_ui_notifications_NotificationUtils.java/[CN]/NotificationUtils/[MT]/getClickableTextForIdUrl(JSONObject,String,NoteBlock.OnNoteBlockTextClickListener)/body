@@ -2,9 +2,12 @@
   if (idBlock == null || TextUtils.isEmpty(text)) {
     return new SpannableStringBuilder("");
   }
-  NoteBlockClickableSpan clickableSpan=new NoteBlockClickableSpan(idBlock,Color.parseColor("#b2c6d3")){
+  boolean shouldLink=onNoteBlockTextClickListener != null;
+  NoteBlockClickableSpan clickableSpan=new NoteBlockClickableSpan(idBlock,mBgColor,mTextColor,mLinkColor,shouldLink){
     @Override public void onClick(    View widget){
-      onNoteBlockTextClickListener.onNoteBlockTextClicked(this);
+      if (onNoteBlockTextClickListener != null) {
+        onNoteBlockTextClickListener.onNoteBlockTextClicked(this);
+      }
     }
   }
 ;
