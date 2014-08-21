@@ -2,14 +2,11 @@
   if (!hasPost() || !mPost.isWP()) {
     return;
   }
-  final int numLikesBefore=mPost.numLikes;
   ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
     @Override public void onUpdateResult(    ReaderActions.UpdateResult result){
-      if (result != ReaderActions.UpdateResult.FAILED) {
+      if (result == ReaderActions.UpdateResult.CHANGED) {
         mPost=ReaderPostTable.getPost(mBlogId,mPostId);
-        if (mPost != null && numLikesBefore != mPost.numLikes) {
-          refreshLikes();
-        }
+        refreshLikes();
         updateComments(false);
       }
     }
