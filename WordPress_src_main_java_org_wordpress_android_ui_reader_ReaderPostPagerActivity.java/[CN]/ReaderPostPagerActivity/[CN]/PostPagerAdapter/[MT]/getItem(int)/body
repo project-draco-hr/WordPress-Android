@@ -1,13 +1,10 @@
 {
-  long blogId=mIdList.get(position).getBlogId();
-  long postId=mIdList.get(position).getPostId();
-  Fragment fragment;
-  if (blogId == END_ID && postId == END_ID) {
-    fragment=PostPagerEndFragment.newInstance();
+  if (isEndFragmentId(mIdList.get(position))) {
+    EndFragmentType fragmentType=(canRequestMostPosts() ? EndFragmentType.LOADING : EndFragmentType.NO_MORE);
+    return ReaderPostPagerEndFragment.newInstance(fragmentType);
   }
  else {
-    fragment=ReaderPostDetailFragment.newInstance(blogId,postId,getPostListType());
+    boolean disableBlockBlog=mIsSinglePostView;
+    return ReaderPostDetailFragment.newInstance(mIdList.get(position).getBlogId(),mIdList.get(position).getPostId(),disableBlockBlog,getPostListType());
   }
-  mFragmentMap.put(getItemKey(position),new WeakReference<Fragment>(fragment));
-  return fragment;
 }

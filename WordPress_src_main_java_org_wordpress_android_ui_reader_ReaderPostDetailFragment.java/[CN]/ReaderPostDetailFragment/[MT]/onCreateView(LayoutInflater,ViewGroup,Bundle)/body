@@ -4,13 +4,13 @@
   if (isFullScreenSupported()) {
     mListView.setOnScrollDirectionListener(this);
     mListView.setOnScrollListener(this);
-    ReaderUtils.addListViewHeader(mListView,DisplayUtils.getActionBarHeight(container.getContext()));
+    ReaderUtils.addListViewHeader(mListView,mResourceVars.actionBarHeight);
   }
   ViewGroup headerDetail=(ViewGroup)inflater.inflate(R.layout.reader_listitem_post_detail,mListView,false);
   mListView.addHeaderView(headerDetail,null,false);
   mCommentFooter=(ViewGroup)inflater.inflate(R.layout.reader_footer_progress,mListView,false);
   mCommentFooter.setVisibility(View.GONE);
-  mCommentFooter.setBackgroundColor(getResources().getColor(R.color.grey_extra_light));
+  mCommentFooter.setBackgroundColor(mResourceVars.colorGreyExtraLight);
   mProgressFooter=(ProgressBar)mCommentFooter.findViewById(R.id.progress_footer);
   mProgressFooter.setVisibility(View.INVISIBLE);
   mListView.addFooterView(mCommentFooter);
@@ -20,8 +20,7 @@
   mReaderWebView=(ReaderWebView)view.findViewById(R.id.reader_webview);
   mReaderWebView.setCustomViewListener(this);
   mReaderWebView.setUrlClickListener(this);
-  mListView.setVisibility(View.INVISIBLE);
-  mReaderWebView.setVisibility(View.INVISIBLE);
+  mReaderWebView.setPageFinishedListener(this);
   mLayoutIcons.setVisibility(View.INVISIBLE);
   return view;
 }
