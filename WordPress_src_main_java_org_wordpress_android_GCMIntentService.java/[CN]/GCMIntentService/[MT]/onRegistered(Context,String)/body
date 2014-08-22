@@ -9,7 +9,9 @@
       editor.commit();
     }
     NotificationUtils.registerDeviceForPushNotifications(context,regId);
-    HelpshiftHelper.getInstance().registerDeviceToken(context,regId);
+    if (ABTestingUtils.isFeatureEnabled(Feature.HELPSHIFT)) {
+      HelpshiftHelper.getInstance().registerDeviceToken(context,regId);
+    }
     AnalyticsTracker.registerPushNotificationToken(regId);
   }
 }
