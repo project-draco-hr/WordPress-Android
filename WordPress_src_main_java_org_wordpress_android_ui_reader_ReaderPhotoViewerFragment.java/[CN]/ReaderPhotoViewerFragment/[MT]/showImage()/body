@@ -3,7 +3,7 @@
     return;
   }
   if (TextUtils.isEmpty(mImageUrl)) {
-    handleImageLoadFailure();
+    hideProgress();
     return;
   }
   final String imageUrl;
@@ -15,18 +15,23 @@
  else {
     imageUrl=PhotonUtils.getPhotonImageUrl(mImageUrl,maxWidth,0);
   }
-  final ProgressBar progress=(ProgressBar)getView().findViewById(R.id.progress);
-  progress.setVisibility(View.VISIBLE);
+  showProgress();
   final WPNetworkImageView imageView=(WPNetworkImageView)getView().findViewById(R.id.image_photo);
   imageView.setImageUrl(imageUrl,WPNetworkImageView.ImageType.PHOTO_FULL,new WPNetworkImageView.ImageListener(){
     @Override public void onImageLoaded(    boolean succeeded){
-      if (isAdded()) {
-        progress.setVisibility(View.GONE);
+      if (!isAdded()) {
+        return;
+      }
+      hideProgress();
+      if (succeeded) {
+        createAttacher(imageView);
+      }
+      if (mPhotoListener != null) {
         if (succeeded) {
-          createAttacher(imageView);
+          mPhotoListener.onPhotoLoaded(mPosition);
         }
  else {
-          handleImageLoadFailure();
+          mPhotoListener.onPhotoFailed(mPosition);
         }
       }
     }
