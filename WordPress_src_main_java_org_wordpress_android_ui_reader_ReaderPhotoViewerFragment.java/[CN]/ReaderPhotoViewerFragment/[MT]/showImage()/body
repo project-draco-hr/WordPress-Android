@@ -1,0 +1,35 @@
+{
+  if (!isAdded()) {
+    return;
+  }
+  if (TextUtils.isEmpty(mImageUrl)) {
+    handleImageLoadFailure();
+    return;
+  }
+  final String imageUrl;
+  Point pt=DisplayUtils.getDisplayPixelSize(getActivity());
+  int maxWidth=Math.max(pt.x,pt.y);
+  if (mIsPrivate) {
+    imageUrl=ReaderUtils.getPrivateImageForDisplay(mImageUrl,maxWidth,0);
+  }
+ else {
+    imageUrl=PhotonUtils.getPhotonImageUrl(mImageUrl,maxWidth,0);
+  }
+  final ProgressBar progress=(ProgressBar)getView().findViewById(R.id.progress);
+  progress.setVisibility(View.VISIBLE);
+  final WPNetworkImageView imageView=(WPNetworkImageView)getView().findViewById(R.id.image_photo);
+  imageView.setImageUrl(imageUrl,WPNetworkImageView.ImageType.PHOTO_FULL,new WPNetworkImageView.ImageListener(){
+    @Override public void onImageLoaded(    boolean succeeded){
+      if (isAdded()) {
+        progress.setVisibility(View.GONE);
+        if (succeeded) {
+          createAttacher(imageView);
+        }
+ else {
+          handleImageLoadFailure();
+        }
+      }
+    }
+  }
+);
+}

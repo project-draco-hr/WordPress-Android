@@ -1,9 +1,10 @@
 {
   new Thread(){
     @Override public void run(){
-      final ImageList imageList=new ReaderImageScanner(mContent).getImageList();
-      if (!imageList.hasImageUrl(mImageUrl)) {
-        imageList.addImageUrl(mImageUrl);
+      ReaderImageScanner scanner=new ReaderImageScanner(mContent,mIsPrivate);
+      final ReaderImageList imageList=scanner.getImageList();
+      if (!imageList.hasImageUrl(mInitialImageUrl)) {
+        imageList.addImageUrl(0,mInitialImageUrl);
       }
       runOnUiThread(new Runnable(){
         @Override public void run(){
