@@ -3,6 +3,7 @@
   setContentView(R.layout.reader_activity_photo_viewer);
   mViewPager=(ViewPager)findViewById(R.id.viewpager);
   mViewPager.setPageTransformer(false,new ReaderViewPagerTransformer(TransformType.FLOW));
+  mTxtTitle=(TextView)findViewById(R.id.text_title);
   if (savedInstanceState != null) {
     mInitialImageUrl=savedInstanceState.getString(ReaderConstants.ARG_IMAGE_URL);
     mIsPrivate=savedInstanceState.getBoolean(ReaderConstants.ARG_IS_PRIVATE);
@@ -13,5 +14,11 @@
     mIsPrivate=getIntent().getBooleanExtra(ReaderConstants.ARG_IS_PRIVATE,false);
     mContent=getIntent().getStringExtra(ReaderConstants.ARG_CONTENT);
   }
+  mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+    @Override public void onPageSelected(    int position){
+      showTitle(position);
+    }
+  }
+);
   loadImageList();
 }
