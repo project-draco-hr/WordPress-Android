@@ -1,19 +1,43 @@
 {
   final UserActionNoteBlockHolder noteBlockHolder=(UserActionNoteBlockHolder)view.getTag();
-  noteBlockHolder.mNameTextView.setText(getNoteText());
-  noteBlockHolder.mUrlTextView.setText(NotificationUtils.getClickableTextForIdUrl(getUrlIdObject(),getUserUrl(),getOnNoteBlockTextClickListener()));
+  noteBlockHolder.nameTextView.setText(getNoteText().toString());
+  String linkedText=null;
+  if (hasUserUrlAndTitle()) {
+    linkedText=getUserBlogTitle();
+  }
+ else   if (hasUserUrl()) {
+    linkedText=getUserUrl();
+  }
+  if (!TextUtils.isEmpty(linkedText)) {
+    noteBlockHolder.urlTextView.setText(NotificationUtils.getClickableTextForIdUrl(getUrlIdObject(),linkedText,getOnNoteBlockTextClickListener()));
+    noteBlockHolder.urlTextView.setVisibility(View.VISIBLE);
+  }
+ else {
+    noteBlockHolder.urlTextView.setVisibility(View.GONE);
+  }
+  if (hasUserBlogTagline()) {
+    noteBlockHolder.taglineTextView.setText(getUserBlogTagline());
+    noteBlockHolder.taglineTextView.setVisibility(View.VISIBLE);
+  }
+ else   if (hasUserUrlAndTitle()) {
+    noteBlockHolder.taglineTextView.setText(getUserUrl());
+    noteBlockHolder.taglineTextView.setVisibility(View.VISIBLE);
+  }
+ else {
+    noteBlockHolder.taglineTextView.setVisibility(View.GONE);
+  }
   if (hasImageMediaItem()) {
-    noteBlockHolder.mAvatarImageView.setImageUrl(getNoteMediaItem().optString("url",""),WordPress.imageLoader);
+    noteBlockHolder.avatarImageView.setImageUrl(getNoteMediaItem().optString("url",""),WordPress.imageLoader);
     if (!TextUtils.isEmpty(getUserUrl())) {
-      noteBlockHolder.mAvatarImageView.setOnTouchListener(mOnGravatarTouchListener);
+      noteBlockHolder.avatarImageView.setOnTouchListener(mOnGravatarTouchListener);
     }
  else {
-      noteBlockHolder.mAvatarImageView.setOnTouchListener(null);
+      noteBlockHolder.avatarImageView.setOnTouchListener(null);
     }
   }
  else {
-    noteBlockHolder.mAvatarImageView.setImageResource(R.drawable.placeholder);
-    noteBlockHolder.mAvatarImageView.setOnTouchListener(null);
+    noteBlockHolder.avatarImageView.setImageResource(R.drawable.placeholder);
+    noteBlockHolder.avatarImageView.setOnTouchListener(null);
   }
   return view;
 }

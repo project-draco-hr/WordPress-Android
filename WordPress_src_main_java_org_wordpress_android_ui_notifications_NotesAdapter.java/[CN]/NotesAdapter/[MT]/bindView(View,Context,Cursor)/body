@@ -1,25 +1,26 @@
 {
   if (cursor.isClosed())   return;
-  view.setActivated(mShouldHighlightRows && cursor.getPosition() == mSelectedPosition);
-  Bucket.ObjectCursor<Note> bucketCursor=(Bucket.ObjectCursor<Note>)cursor;
-  Note note=bucketCursor.getObject();
+  Bucket.ObjectCursor<Note> objectCursor=(Bucket.ObjectCursor<Note>)cursor;
+  view.setActivated(mShouldHighlightRows && objectCursor.getPosition() == mSelectedPosition);
   NoteViewHolder noteViewHolder=(NoteViewHolder)view.getTag();
-  Note previousNote=null;
-  if (bucketCursor.moveToPrevious()) {
-    previousNote=bucketCursor.getObject();
-    bucketCursor.moveToNext();
+  noteViewHolder.setNoteId(objectCursor.getSimperiumKey());
+  Note.NoteTimeGroup timeGroup=Note.getTimeGroupForTimestamp(getLongForColumnName(objectCursor,Note.Schema.TIMESTAMP_INDEX));
+  Note.NoteTimeGroup previousTimeGroup=null;
+  if (objectCursor.getPosition() > 0 && objectCursor.moveToPrevious()) {
+    previousTimeGroup=Note.getTimeGroupForTimestamp(getLongForColumnName(objectCursor,Note.Schema.TIMESTAMP_INDEX));
+    objectCursor.moveToNext();
   }
-  if (previousNote != null && previousNote.getTimeGroup() == note.getTimeGroup()) {
+  if (previousTimeGroup != null && previousTimeGroup == timeGroup) {
     noteViewHolder.headerView.setVisibility(View.GONE);
   }
  else {
-    if (note.getTimeGroup() == Note.NoteTimeGroup.GROUP_TODAY) {
+    if (timeGroup == Note.NoteTimeGroup.GROUP_TODAY) {
       noteViewHolder.headerText.setText(context.getString(R.string.stats_timeframe_today).toUpperCase());
     }
- else     if (note.getTimeGroup() == Note.NoteTimeGroup.GROUP_YESTERDAY) {
+ else     if (timeGroup == Note.NoteTimeGroup.GROUP_YESTERDAY) {
       noteViewHolder.headerText.setText(context.getString(R.string.stats_timeframe_yesterday).toUpperCase());
     }
- else     if (note.getTimeGroup() == Note.NoteTimeGroup.GROUP_LAST_WEEK) {
+ else     if (timeGroup == Note.NoteTimeGroup.GROUP_LAST_WEEK) {
       noteViewHolder.headerText.setText(context.getString(R.string.last_week).toUpperCase());
     }
  else {
@@ -27,21 +28,25 @@
     }
     noteViewHolder.headerView.setVisibility(View.VISIBLE);
   }
-  noteViewHolder.txtLabel.setText(note.getFormattedSubject());
-  if (note.isCommentType()) {
+  String noteSubjectHtml=getStringForColumnName(objectCursor,Note.Schema.SUBJECT_INDEX);
+  noteViewHolder.txtLabel.setText(Html.fromHtml(noteSubjectHtml));
+  String noteSnippet=getStringForColumnName(objectCursor,Note.Schema.SNIPPET_INDEX);
+  if (!TextUtils.isEmpty(noteSnippet)) {
     noteViewHolder.txtLabel.setMaxLines(2);
-    noteViewHolder.txtDetail.setText(note.getCommentPreview());
+    noteViewHolder.txtDetail.setText(noteSnippet);
     noteViewHolder.txtDetail.setVisibility(View.VISIBLE);
   }
  else {
     noteViewHolder.txtLabel.setMaxLines(3);
     noteViewHolder.txtDetail.setVisibility(View.GONE);
   }
-  String avatarUrl=PhotonUtils.fixAvatar(note.getIconURL(),mAvatarSz);
+  String avatarUrl=PhotonUtils.fixAvatar(getStringForColumnName(objectCursor,Note.Schema.ICON_URL_INDEX),mAvatarSz);
   noteViewHolder.imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
-  if (!TextUtils.isEmpty(note.getNoticonCharacter())) {
-    noteViewHolder.noteIcon.setText(note.getNoticonCharacter());
-    if (note.isUnread()) {
+  boolean isUnread=SqlUtils.sqlToBool(getIntForColumnName(objectCursor,Note.Schema.UNREAD_INDEX));
+  String noticonCharacter=getStringForColumnName(objectCursor,Note.Schema.NOTICON_INDEX);
+  if (!TextUtils.isEmpty(noticonCharacter)) {
+    noteViewHolder.noteIcon.setText(noticonCharacter);
+    if (isUnread) {
       noteViewHolder.noteIcon.setBackgroundResource(R.drawable.shape_oval_blue);
     }
  else {
@@ -52,7 +57,7 @@
  else {
     noteViewHolder.noteIcon.setVisibility(View.GONE);
   }
-  if (note.isUnread()) {
+  if (isUnread) {
     view.setBackgroundResource(mUnreadBackgroundResId);
   }
  else {
