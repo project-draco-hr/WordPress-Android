@@ -1,0 +1,28 @@
+{
+  mFragmentType=fragmentType;
+  AppLog.d(AppLog.T.READER,"reader pager > setting end fragment type to " + fragmentType.toString());
+  if (view == null) {
+    AppLog.w(AppLog.T.READER,"reader pager > null view setting end fragment type");
+    return;
+  }
+  ViewGroup layoutLoading=(ViewGroup)view.findViewById(R.id.layout_loading);
+  ViewGroup layoutNoMore=(ViewGroup)view.findViewById(R.id.layout_no_more);
+switch (mFragmentType) {
+case LOADING:
+    layoutLoading.setVisibility(View.VISIBLE);
+  layoutNoMore.setVisibility(View.GONE);
+break;
+case NO_MORE:
+layoutLoading.setVisibility(View.GONE);
+layoutNoMore.setVisibility(View.VISIBLE);
+layoutNoMore.setOnClickListener(new View.OnClickListener(){
+@Override public void onClick(View v){
+if (getActivity() != null) {
+getActivity().finish();
+}
+}
+}
+);
+break;
+}
+}

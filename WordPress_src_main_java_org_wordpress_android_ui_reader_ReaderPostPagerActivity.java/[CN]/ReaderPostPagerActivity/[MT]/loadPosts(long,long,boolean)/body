@@ -1,0 +1,54 @@
+{
+  new Thread(){
+    @Override public void run(){
+      final ReaderPostList postList;
+      if (mIsSinglePostView) {
+        ReaderPost post=ReaderPostTable.getPost(blogId,postId);
+        if (post == null) {
+          return;
+        }
+        postList=new ReaderPostList();
+        postList.add(post);
+      }
+ else {
+        int maxPosts=ReaderConstants.READER_MAX_POSTS_TO_DISPLAY;
+switch (getPostListType()) {
+case TAG_FOLLOWED:
+case TAG_PREVIEW:
+          postList=ReaderPostTable.getPostsWithTag(getCurrentTag(),maxPosts);
+        break;
+case BLOG_PREVIEW:
+      postList=ReaderPostTable.getPostsInBlog(blogId,maxPosts);
+    break;
+default :
+  return;
+}
+}
+final ReaderBlogIdPostIdList ids=postList.getBlogIdPostIdList();
+final int currentPosition=mViewPager.getCurrentItem();
+final int newPosition;
+if (gotoNext) {
+newPosition=ids.indexOf(blogId,postId) + 1;
+}
+ else {
+newPosition=ids.indexOf(blogId,postId);
+}
+runOnUiThread(new Runnable(){
+@Override public void run(){
+mPagerAdapter=new PostPagerAdapter(getFragmentManager());
+mPagerAdapter.showPosts(ids);
+mViewPager.setAdapter(mPagerAdapter);
+if (mPagerAdapter.isValidPosition(newPosition)) {
+  mViewPager.setCurrentItem(newPosition);
+}
+ else if (mPagerAdapter.isValidPosition(currentPosition)) {
+  mViewPager.setCurrentItem(currentPosition);
+}
+mPagerAdapter.updateEndFragmentIfActive();
+}
+}
+);
+}
+}
+.start();
+}
