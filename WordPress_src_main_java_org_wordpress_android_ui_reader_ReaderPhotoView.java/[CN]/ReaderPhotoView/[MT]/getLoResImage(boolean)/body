@@ -1,0 +1,27 @@
+{
+  showProgress();
+  Point pt=DisplayUtils.getDisplayPixelSize(this.getContext());
+  int maxSize=Math.min(pt.x,pt.y);
+  mImageContainer=WordPress.imageLoader.get(mLoResImageUrl,new ImageLoader.ImageListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+      AppLog.e(AppLog.T.READER,error);
+      hideProgress();
+      showError();
+    }
+    @Override public void onResponse(    final ImageLoader.ImageContainer response,    boolean isImmediate){
+      hideProgress();
+      if (isImmediate && isInLayoutPass) {
+        post(new Runnable(){
+          @Override public void run(){
+            handleResponse(response,true);
+          }
+        }
+);
+      }
+ else {
+        handleResponse(response,true);
+      }
+    }
+  }
+,maxSize,maxSize);
+}
