@@ -1,7 +1,7 @@
 {
-  showProgress();
   Point pt=DisplayUtils.getDisplayPixelSize(this.getContext());
   int maxSize=Math.min(pt.x,pt.y);
+  showProgress();
   mImageContainer=WordPress.imageLoader.get(mLoResImageUrl,new ImageLoader.ImageListener(){
     @Override public void onErrorResponse(    VolleyError error){
       AppLog.e(AppLog.T.READER,error);
@@ -9,17 +9,18 @@
       showError();
     }
     @Override public void onResponse(    final ImageLoader.ImageContainer response,    boolean isImmediate){
-      hideProgress();
       if (isImmediate && isInLayoutPass) {
         post(new Runnable(){
           @Override public void run(){
             handleResponse(response,true);
+            hideProgress();
           }
         }
 );
       }
  else {
         handleResponse(response,true);
+        hideProgress();
       }
     }
   }
