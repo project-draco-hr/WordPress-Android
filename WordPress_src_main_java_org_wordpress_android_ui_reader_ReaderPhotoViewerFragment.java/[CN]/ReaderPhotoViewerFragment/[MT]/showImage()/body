@@ -6,9 +6,9 @@
     hideProgress();
     return;
   }
-  final String imageUrl;
   Point pt=DisplayUtils.getDisplayPixelSize(getActivity());
   int maxWidth=Math.max(pt.x,pt.y);
+  final String imageUrl;
   if (mIsPrivate) {
     imageUrl=ReaderUtils.getPrivateImageForDisplay(mImageUrl,maxWidth,0);
   }
@@ -16,15 +16,14 @@
     imageUrl=PhotonUtils.getPhotonImageUrl(mImageUrl,maxWidth,0);
   }
   showProgress();
-  final WPNetworkImageView imageView=(WPNetworkImageView)getView().findViewById(R.id.image_photo);
-  imageView.setImageUrl(imageUrl,WPNetworkImageView.ImageType.PHOTO_FULL,new WPNetworkImageView.ImageListener(){
+  mImageView.setImageUrl(imageUrl,WPNetworkImageView.ImageType.PHOTO_FULL,new WPNetworkImageView.ImageListener(){
     @Override public void onImageLoaded(    boolean succeeded){
       if (!isAdded()) {
         return;
       }
       hideProgress();
       if (succeeded) {
-        createAttacher(imageView);
+        createAttacher(mImageView);
       }
       if (mPhotoListener != null) {
         if (succeeded) {
