@@ -1,11 +1,17 @@
 {
+  if (!hasLayout() || TextUtils.isEmpty(mHiResImageUrl)) {
+    return;
+  }
+  if (isRequestingUrl(mHiResContainer,mHiResImageUrl)) {
+    return;
+  }
   Point pt=DisplayUtils.getDisplayPixelSize(this.getContext());
   int maxSize=Math.max(pt.x,pt.y);
-  mImageContainer=WordPress.imageLoader.get(mHiResImageUrl,new ImageLoader.ImageListener(){
+  mHiResContainer=WordPress.imageLoader.get(mHiResImageUrl,new ImageLoader.ImageListener(){
     @Override public void onErrorResponse(    VolleyError error){
       AppLog.e(AppLog.T.READER,error);
     }
-    @Override public void onResponse(    final ImageLoader.ImageContainer response,    boolean isImmediate){
+    @Override public void onResponse(    final ImageContainer response,    boolean isImmediate){
       post(new Runnable(){
         @Override public void run(){
           handleResponse(response,false);

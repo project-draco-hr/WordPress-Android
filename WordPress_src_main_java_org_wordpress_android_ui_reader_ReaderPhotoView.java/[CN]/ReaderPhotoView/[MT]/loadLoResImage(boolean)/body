@@ -1,26 +1,30 @@
 {
+  if (!hasLayout() || TextUtils.isEmpty(mLoResImageUrl)) {
+    return;
+  }
+  if (isRequestingUrl(mLoResContainer,mLoResImageUrl)) {
+    return;
+  }
   Point pt=DisplayUtils.getDisplayPixelSize(this.getContext());
   int maxSize=Math.min(pt.x,pt.y);
   showProgress();
-  mImageContainer=WordPress.imageLoader.get(mLoResImageUrl,new ImageLoader.ImageListener(){
+  mLoResContainer=WordPress.imageLoader.get(mLoResImageUrl,new ImageLoader.ImageListener(){
     @Override public void onErrorResponse(    VolleyError error){
       AppLog.e(AppLog.T.READER,error);
       hideProgress();
       showError();
     }
-    @Override public void onResponse(    final ImageLoader.ImageContainer response,    boolean isImmediate){
+    @Override public void onResponse(    final ImageContainer response,    boolean isImmediate){
       if (isImmediate && isInLayoutPass) {
         post(new Runnable(){
           @Override public void run(){
             handleResponse(response,true);
-            hideProgress();
           }
         }
 );
       }
  else {
         handleResponse(response,true);
-        hideProgress();
       }
     }
   }

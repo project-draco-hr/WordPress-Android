@@ -1,0 +1,18 @@
+{
+  if (response.getBitmap() != null) {
+    mImageView.setImageBitmap(response.getBitmap());
+    createAttacher(mImageView);
+    if (isLoResResponse) {
+      hideProgress();
+      ReaderAnim.fadeIn(mImageView,ReaderAnim.Duration.SHORT);
+      if (mPhotoListener != null) {
+        mPhotoListener.onPhotoLoaded(mPosition);
+      }
+      loadHiResImage();
+    }
+    AppLog.d(AppLog.T.READER,"reader photo > loaded " + (isLoResResponse ? "lo-res" : "hi-res"));
+  }
+ else {
+    AppLog.w(AppLog.T.READER,"reader photo > null bitmap " + (isLoResResponse ? "lo-res" : "hi-res"));
+  }
+}
