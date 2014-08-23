@@ -1,0 +1,46 @@
+{
+  int width=getWidth();
+  int height=getHeight();
+  if (width == 0 && height == 0) {
+    return;
+  }
+  if (TextUtils.isEmpty(mImageUrl)) {
+    if (mImageContainer != null) {
+      mImageContainer.cancelRequest();
+      mImageContainer=null;
+    }
+    showError();
+    return;
+  }
+  if (mImageContainer != null && mImageContainer.getRequestUrl() != null) {
+    if (mImageContainer.getRequestUrl().equals(mImageUrl)) {
+      return;
+    }
+ else {
+      mImageContainer.cancelRequest();
+    }
+  }
+  Point pt=DisplayUtils.getDisplayPixelSize(this.getContext());
+  int maxSize=Math.max(pt.x,pt.y);
+  showProgress();
+  mImageContainer=WordPress.imageLoader.get(mImageUrl,new ImageLoader.ImageListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+      AppLog.e(AppLog.T.READER,error);
+      showError();
+    }
+    @Override public void onResponse(    final ImageLoader.ImageContainer response,    boolean isImmediate){
+      if (isImmediate && isInLayoutPass) {
+        post(new Runnable(){
+          @Override public void run(){
+            handleResponse(response,true);
+          }
+        }
+);
+      }
+ else {
+        handleResponse(response,isImmediate);
+      }
+    }
+  }
+,maxSize,maxSize);
+}
