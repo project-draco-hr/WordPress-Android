@@ -1,7 +1,13 @@
 {
-  if (isFinishing()) {
+  if (isFinishing() || getImageCount() <= 1) {
     return;
   }
-  String title=getString(R.string.reader_title_photo_viewer,position + 1,getImageCount());
+  final String title=getString(R.string.reader_title_photo_viewer,position + 1,getImageCount());
+  if (title.equals(mTxtTitle.getText())) {
+    return;
+  }
   mTxtTitle.setText(title);
+  if (mTxtTitle.getVisibility() != View.VISIBLE) {
+    ReaderAnim.fadeIn(mTxtTitle,ReaderAnim.Duration.MEDIUM);
+  }
 }
