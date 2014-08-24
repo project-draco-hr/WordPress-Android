@@ -5,7 +5,6 @@
   if (isRequestingUrl(mLoResContainer,mLoResImageUrl)) {
     return;
   }
-  AppLog.d(AppLog.T.READER,"reader photo > loadLoResImage " + mPosition);
   showProgress();
   Point pt=DisplayUtils.getDisplayPixelSize(this.getContext());
   int maxSize=Math.min(pt.x,pt.y);
@@ -16,17 +15,12 @@
       showError();
     }
     @Override public void onResponse(    final ImageContainer response,    boolean isImmediate){
-      if (isImmediate && isInLayoutPass) {
-        post(new Runnable(){
-          @Override public void run(){
-            handleResponse(response,true);
-          }
+      post(new Runnable(){
+        @Override public void run(){
+          handleResponse(response.getBitmap(),true);
         }
+      }
 );
-      }
- else {
-        handleResponse(response,true);
-      }
     }
   }
 ,maxSize,maxSize);
