@@ -1,14 +1,14 @@
 {
   super.onCreate();
+  mContext=this;
   ProfilingUtils.start("WordPress.onCreate");
   AppLog.enableRecording(true);
-  if (!BuildUtils.isDebugBuild()) {
+  if (!PackageUtils.isDebugBuild()) {
     Crashlytics.start(this);
   }
-  versionName=ProfilingUtils.getVersionName(this);
+  versionName=PackageUtils.getVersionName(this);
   initWpDb();
   wpStatsDB=new WordPressStatsDB(this);
-  mContext=this;
   RestClientUtils.setUserAgent(getUserAgent());
   configureSimperium();
   setupVolleyQueue();
