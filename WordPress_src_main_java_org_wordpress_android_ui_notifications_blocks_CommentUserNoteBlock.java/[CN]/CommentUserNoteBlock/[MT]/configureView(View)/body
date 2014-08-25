@@ -1,0 +1,25 @@
+{
+  final CommentUserNoteBlockHolder noteBlockHolder=(CommentUserNoteBlockHolder)view.getTag();
+  noteBlockHolder.nameTextView.setText(getNoteText().toString());
+  if (hasImageMediaItem()) {
+    noteBlockHolder.avatarImageView.setImageUrl(getNoteMediaItem().optString("url",""),WordPress.imageLoader);
+    if (!TextUtils.isEmpty(getUserUrl())) {
+      noteBlockHolder.avatarImageView.setOnTouchListener(mOnGravatarTouchListener);
+    }
+ else {
+      noteBlockHolder.avatarImageView.setOnTouchListener(null);
+    }
+  }
+ else {
+    noteBlockHolder.avatarImageView.setImageResource(R.drawable.placeholder);
+    noteBlockHolder.avatarImageView.setOnTouchListener(null);
+  }
+  if (mTextViewIndent == 0) {
+    Context context=view.getContext();
+    if (context != null) {
+      mTextViewIndent=context.getResources().getDimensionPixelSize(R.dimen.avatar_sz_small) + context.getResources().getDimensionPixelSize(R.dimen.margin_medium);
+    }
+  }
+  CommentUtils.indentTextViewFirstLine(noteBlockHolder.commentTextView,NotificationUtils.getSpannableTextFromIndices(getNoteData().optJSONObject("comment-text"),getOnNoteBlockTextClickListener()),mTextViewIndent);
+  return view;
+}
