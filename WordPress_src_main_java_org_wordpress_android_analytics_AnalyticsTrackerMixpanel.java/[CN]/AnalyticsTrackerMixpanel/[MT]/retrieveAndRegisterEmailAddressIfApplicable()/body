@@ -1,10 +1,17 @@
 {
+  final SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
+  if (preferences.getBoolean(EMAIL_ADDRESS_RETRIEVED_KEY,false)) {
+    return;
+  }
   RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       try {
         if (jsonObject != null && !TextUtils.isEmpty(jsonObject.getString("email"))) {
           String email=jsonObject.getString("email");
           setValueForPeopleProperty("$email",email);
+          SharedPreferences.Editor editor=preferences.edit();
+          editor.putBoolean(EMAIL_ADDRESS_RETRIEVED_KEY,true);
+          editor.apply();
         }
       }
  catch (      JSONException e) {
