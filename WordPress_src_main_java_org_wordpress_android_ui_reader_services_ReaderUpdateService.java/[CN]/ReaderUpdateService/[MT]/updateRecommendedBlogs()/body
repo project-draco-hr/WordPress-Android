@@ -1,0 +1,18 @@
+{
+  RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      handleRecommendedBlogsResponse(jsonObject);
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(AppLog.T.READER,volleyError);
+      taskCompleted(UpdateTask.RECOMMENDED_BLOGS,true);
+    }
+  }
+;
+  AppLog.d(AppLog.T.READER,"reader service > updating recommended blogs");
+  String path="/read/recommendations/mine/" + "?source=mobile" + "&number="+ Integer.toString(ReaderConstants.READER_MAX_RECOMMENDED_TO_REQUEST);
+  WordPress.getRestClientUtils().get(path,listener,errorListener);
+}
