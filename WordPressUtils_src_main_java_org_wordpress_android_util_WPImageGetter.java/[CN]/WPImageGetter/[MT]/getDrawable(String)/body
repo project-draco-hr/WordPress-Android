@@ -29,21 +29,15 @@
         AppLog.w(T.UTILS,"WPImageGetter view is invalid");
         return;
       }
-      final int oldHeight=remote.getBounds().height();
       int maxWidth=view.getWidth() - view.getPaddingLeft() - view.getPaddingRight();
       if (mMaxSize > 0 && (maxWidth > mMaxSize || maxWidth == 0)) {
         maxWidth=mMaxSize;
-        AppLog.d(T.UTILS,"WPImageGetter setting maxWidth = mMaxSize");
       }
       Drawable drawable=new BitmapDrawable(view.getContext().getResources(),response.getBitmap());
       remote.setRemoteDrawable(drawable,maxWidth);
-      if (isImmediate) {
-        AppLog.d(T.UTILS,"WPImageGetter isImmediate");
-        return;
+      if (!isImmediate) {
+        view.setText(view.getText());
       }
-      view.invalidate();
-      int newHeight=remote.getBounds().height();
-      view.setHeight(view.getHeight() + newHeight - oldHeight);
     }
   }
 );
