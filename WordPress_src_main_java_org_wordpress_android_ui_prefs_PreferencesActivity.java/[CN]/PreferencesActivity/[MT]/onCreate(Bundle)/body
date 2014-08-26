@@ -33,7 +33,7 @@
   resetAutoShare.setOnPreferenceClickListener(resetAUtoSharePreferenceClickListener);
   mSettings=PreferenceManager.getDefaultSharedPreferences(this);
   if (WordPress.hasValidWPComCredentials(PreferencesActivity.this)) {
-    String settingsJson=mSettings.getString(NotificationUtils.WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,null);
+    String settingsJson=mSettings.getString(NotificationsUtils.WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,null);
     if (settingsJson == null) {
       com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
         @Override public void onResponse(        JSONObject jsonObject){
@@ -41,7 +41,7 @@
           Editor editor=mSettings.edit();
           try {
             JSONObject settingsJSON=jsonObject.getJSONObject("settings");
-            editor.putString(NotificationUtils.WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,settingsJSON.toString());
+            editor.putString(NotificationsUtils.WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,settingsJSON.toString());
             editor.commit();
           }
  catch (          JSONException e) {
@@ -57,7 +57,7 @@
         }
       }
 ;
-      NotificationUtils.getPushNotificationSettings(PreferencesActivity.this,listener,errorListener);
+      NotificationsUtils.getPushNotificationSettings(PreferencesActivity.this,listener,errorListener);
     }
   }
   if (AppLockManager.getInstance().isAppLockFeatureEnabled() == false) {
