@@ -28,8 +28,10 @@
     }
     noteViewHolder.headerView.setVisibility(View.VISIBLE);
   }
-  String noteSubjectHtml=getStringForColumnName(objectCursor,Note.Schema.SUBJECT_INDEX);
-  noteViewHolder.txtLabel.setText(Html.fromHtml(noteSubjectHtml));
+  String noteSubjectHtml=getStringForColumnName(objectCursor,Note.Schema.SUBJECT_INDEX).trim();
+  CharSequence noteSubjectSpanned=Html.fromHtml(noteSubjectHtml);
+  noteSubjectSpanned=noteSubjectSpanned.subSequence(0,TextUtils.getTrimmedLength(noteSubjectSpanned));
+  noteViewHolder.txtLabel.setText(noteSubjectSpanned);
   String noteSnippet=getStringForColumnName(objectCursor,Note.Schema.SNIPPET_INDEX);
   if (!TextUtils.isEmpty(noteSnippet)) {
     noteViewHolder.txtLabel.setMaxLines(2);
