@@ -1,0 +1,14 @@
+{
+  new Thread(){
+    @Override public void run(){
+      ReaderRecommendBlogList serverBlogs=ReaderRecommendBlogList.fromJson(jsonObject);
+      ReaderRecommendBlogList localBlogs=ReaderBlogTable.getAllRecommendedBlogs();
+      if (!localBlogs.isSameList(serverBlogs)) {
+        ReaderBlogTable.setRecommendedBlogs(serverBlogs);
+        sendLocalBroadcast(new Intent().setAction(ACTION_RECOMMENDED_BLOGS_CHANGED));
+      }
+      taskCompleted(UpdateTask.RECOMMENDED_BLOGS,false);
+    }
+  }
+.start();
+}
