@@ -3,13 +3,18 @@
     mId=JSONUtil.queryJSON(mBlockData,"id",0);
     mSiteId=JSONUtil.queryJSON(mBlockData,"site_id",0);
     mPostId=JSONUtil.queryJSON(mBlockData,"post_id",0);
-    mType=NoteBlockIdType.fromString(JSONUtil.queryJSON(mBlockData,"type",""));
+    mRangeType=NoteBlockRangeType.fromString(JSONUtil.queryJSON(mBlockData,"type",""));
     mUrl=JSONUtil.queryJSON(mBlockData,"url","");
     mIndices=new int[]{0,0};
     JSONArray indicesArray=mBlockData.optJSONArray("indices");
     if (indicesArray != null) {
       mIndices[0]=indicesArray.optInt(0);
       mIndices[1]=indicesArray.optInt(1);
+    }
+    mShouldLink=mShouldLink && mRangeType != NoteBlockRangeType.UNKNOWN;
+    if (getRangeType() == NoteBlockRangeType.BLOCKQUOTE) {
+      mShouldLink=false;
+      mTextColor=Color.parseColor("#90aec2");
     }
   }
 }
