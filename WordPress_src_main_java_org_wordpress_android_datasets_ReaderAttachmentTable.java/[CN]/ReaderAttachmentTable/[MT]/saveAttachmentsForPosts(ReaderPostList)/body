@@ -3,7 +3,6 @@
     return;
   }
   SQLiteDatabase db=ReaderDatabase.getWritableDb();
-  db.beginTransaction();
   SQLiteStatement stmt=db.compileStatement("INSERT INTO tbl_attachments" + " (blog_id, post_id, attachment_id, url, mime_type, width, height)" + " VALUES (?1,?2,?3,?4,?5,?6,?7)");
   try {
     for (    ReaderPost post : posts) {
@@ -24,7 +23,6 @@
     }
   }
   finally {
-    db.endTransaction();
     SqlUtils.closeStatement(stmt);
   }
 }
