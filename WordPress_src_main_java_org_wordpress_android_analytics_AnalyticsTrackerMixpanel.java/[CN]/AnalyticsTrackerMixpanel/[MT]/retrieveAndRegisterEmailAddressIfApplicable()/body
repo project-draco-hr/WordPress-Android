@@ -1,6 +1,5 @@
 {
-  final SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
-  if (preferences.getBoolean(EMAIL_ADDRESS_RETRIEVED_KEY,false)) {
+  if (AppPrefs.getMixpanelEmailRetrievalCheck()) {
     return;
   }
   RestRequest.Listener listener=new RestRequest.Listener(){
@@ -9,9 +8,7 @@
         if (jsonObject != null && !TextUtils.isEmpty(jsonObject.getString("email"))) {
           String email=jsonObject.getString("email");
           setValueForPeopleProperty("$email",email);
-          SharedPreferences.Editor editor=preferences.edit();
-          editor.putBoolean(EMAIL_ADDRESS_RETRIEVED_KEY,true);
-          editor.apply();
+          AppPrefs.setMixpanelEmailRetrievalCheck(true);
         }
       }
  catch (      JSONException e) {
