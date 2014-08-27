@@ -1,0 +1,30 @@
+{
+  if (posts == null || posts.size() == 0) {
+    return;
+  }
+  SQLiteDatabase db=ReaderDatabase.getWritableDb();
+  db.beginTransaction();
+  SQLiteStatement stmt=db.compileStatement("INSERT INTO tbl_attachments" + " (blog_id, post_id, attachment_id, url, mime_type, width, height)" + " VALUES (?1,?2,?3,?4,?5,?6,?7)");
+  try {
+    for (    ReaderPost post : posts) {
+      if (post.hasAttachments()) {
+        String[] args={Long.toString(post.blogId),Long.toString(post.postId)};
+        db.delete("tbl_attachments","blog_id=? AND post_id=?",args);
+        stmt.bindLong(1,post.blogId);
+        stmt.bindLong(2,post.postId);
+        for (        ReaderAttachment attach : post.getAttachments()) {
+          stmt.bindLong(3,attach.attachmentId);
+          stmt.bindString(4,attach.getUrl());
+          stmt.bindString(5,attach.getMimeType());
+          stmt.bindLong(6,attach.width);
+          stmt.bindLong(7,attach.height);
+          stmt.execute();
+        }
+      }
+    }
+  }
+  finally {
+    db.endTransaction();
+    SqlUtils.closeStatement(stmt);
+  }
+}
