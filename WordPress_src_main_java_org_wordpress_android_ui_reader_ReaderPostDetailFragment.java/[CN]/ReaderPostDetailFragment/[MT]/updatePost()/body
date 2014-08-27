@@ -2,12 +2,22 @@
   if (!hasPost() || !mPost.isWP()) {
     return;
   }
+  final int numLikesBefore=ReaderLikeTable.getNumLikesForPost(mPost);
   ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
     @Override public void onUpdateResult(    ReaderActions.UpdateResult result){
+      if (!isAdded()) {
+        return;
+      }
       if (result == ReaderActions.UpdateResult.CHANGED) {
         mPost=ReaderPostTable.getPost(mBlogId,mPostId);
-        refreshLikes();
-        updateComments(false);
+      }
+      if (result != ReaderActions.UpdateResult.FAILED) {
+        if (numLikesBefore != ReaderLikeTable.getNumLikesForPost(mPost)) {
+          refreshLikes();
+        }
+        if (mPost.numReplies != ReaderCommentTable.getNumCommentsForPost(mPost)) {
+          updateComments(false);
+        }
       }
     }
   }
