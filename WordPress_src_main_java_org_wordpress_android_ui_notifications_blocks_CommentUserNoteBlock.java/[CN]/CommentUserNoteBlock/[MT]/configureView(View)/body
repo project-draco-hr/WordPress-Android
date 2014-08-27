@@ -15,12 +15,38 @@
     noteBlockHolder.avatarImageView.setImageResource(R.drawable.placeholder);
     noteBlockHolder.avatarImageView.setOnTouchListener(null);
   }
-  if (mTextViewIndent == 0) {
-    Context context=view.getContext();
-    if (context != null) {
-      mTextViewIndent=context.getResources().getDimensionPixelSize(R.dimen.avatar_sz_small) + context.getResources().getDimensionPixelSize(R.dimen.notifications_adjusted_font_margin);
-    }
-  }
   CommentUtils.indentTextViewFirstLine(noteBlockHolder.commentTextView,NotificationsUtils.getSpannableTextFromIndices(getNoteData().optJSONObject("comment_text"),getOnNoteBlockTextClickListener()),mTextViewIndent);
+  int paddingLeft=view.getPaddingLeft();
+  int paddingTop=view.getPaddingTop();
+  int paddingRight=view.getPaddingRight();
+  int paddingBottom=view.getPaddingBottom();
+  if (mCommentStatus == CommentStatus.UNAPPROVED) {
+    if (hasCommentNestingLevel()) {
+      paddingLeft=mIndentedLeftPadding;
+      view.setBackgroundResource(R.drawable.comment_reply_unapproved_background);
+    }
+ else {
+      view.setBackgroundResource(R.drawable.comment_unapproved_background);
+    }
+    noteBlockHolder.dividerView.setVisibility(View.INVISIBLE);
+    noteBlockHolder.agoTextView.setTextColor(mUnapprovedTextColor);
+    noteBlockHolder.nameTextView.setTextColor(mUnapprovedTextColor);
+    noteBlockHolder.commentTextView.setTextColor(mUnapprovedTextColor);
+  }
+ else {
+    if (hasCommentNestingLevel()) {
+      paddingLeft=mIndentedLeftPadding;
+      view.setBackgroundResource(R.drawable.comment_reply_background);
+      noteBlockHolder.dividerView.setVisibility(View.INVISIBLE);
+    }
+ else {
+      view.setBackgroundColor(mNormalBackgroundColor);
+      noteBlockHolder.dividerView.setVisibility(View.VISIBLE);
+    }
+    noteBlockHolder.agoTextView.setTextColor(mAgoTextColor);
+    noteBlockHolder.nameTextView.setTextColor(mNormalTextColor);
+    noteBlockHolder.commentTextView.setTextColor(mNormalTextColor);
+  }
+  view.setPadding(paddingLeft,paddingTop,paddingRight,paddingBottom);
   return view;
 }
