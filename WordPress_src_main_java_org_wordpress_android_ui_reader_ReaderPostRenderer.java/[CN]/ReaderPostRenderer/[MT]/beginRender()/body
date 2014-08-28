@@ -1,25 +1,28 @@
 {
-  mRenderContent=getPostContent();
+  final String contentForScan=getPostContent();
+  mRenderContent=contentForScan;
   if (!mPost.hasAttachments()) {
     endRender();
     return;
   }
+  mNumImages=0;
+  mNumMatchedImages=0;
   final ReaderAttachmentList attachments=mPost.getAttachments();
   ReaderImageScanner.ImageScanListener imageListener=new ReaderImageScanner.ImageScanListener(){
     @Override public void onImageFound(    String imageTag,    String imageUrl,    int start,    int end){
-      AppLog.d(AppLog.T.READER,"reader renderer > found " + imageUrl);
+      mNumImages++;
       ReaderAttachment attach=attachments.get(imageUrl);
       if (attach != null) {
-        AppLog.d(AppLog.T.READER,"reader renderer > matched attachment " + imageUrl);
-        setImageSize(imageTag,imageUrl,attach);
+        mNumMatchedImages++;
+        setImageSize(imageTag,attach);
       }
     }
     @Override public void onScanCompleted(){
-      AppLog.d(AppLog.T.READER,"reader renderer > image scan completed");
+      AppLog.i(AppLog.T.READER,String.format("reader renderer > image scan completed, matched %d of %d images",mNumMatchedImages,mNumImages));
       endRender();
     }
   }
 ;
-  ReaderImageScanner scanner=new ReaderImageScanner(mRenderContent,mPost.isPrivate);
+  ReaderImageScanner scanner=new ReaderImageScanner(contentForScan,mPost.isPrivate);
   scanner.beginScan(imageListener);
 }
