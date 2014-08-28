@@ -6,20 +6,15 @@
   if (note.isUnread()) {
     note.markAsRead();
   }
+  Fragment fragment=getDetailFragmentForNote(note);
   if (DisplayUtils.isLandscapeTablet(this)) {
-    NotificationsDetailListFragment detailListFragment=(NotificationsDetailListFragment)mDetailFragment;
-    detailListFragment.setNote(note);
-    detailListFragment.reloadNoteBlocks();
+    mDetailFragment.setCurrentFragment(fragment);
     return;
   }
- else   if (DisplayUtils.isLandscapeTablet(this)) {
-    removeDetailFragment();
-  }
-  mDetailFragment=getDetailFragmentForNote(note);
   FragmentManager fm=getFragmentManager();
   FragmentTransaction ft=fm.beginTransaction();
   ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-  ft.replace(R.id.layout_fragment_container,mDetailFragment);
+  ft.replace(R.id.layout_fragment_container,fragment);
   mMenuDrawer.setDrawerIndicatorEnabled(false);
   ft.addToBackStack(null);
   ft.commitAllowingStateLoss();
