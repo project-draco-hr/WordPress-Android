@@ -9,8 +9,10 @@
     PostsListAdapter.OnPostsLoadedListener postsLoadedListener=new PostsListAdapter.OnPostsLoadedListener(){
       @Override public void onPostsLoaded(      int postCount){
         if (postCount == 0 && mCanLoadMorePosts) {
-          setRefreshing(true);
-          requestPosts(false);
+          if (NetworkUtils.isNetworkAvailable(getActivity())) {
+            setRefreshing(true);
+            requestPosts(false);
+          }
         }
  else         if (mShouldSelectFirstPost) {
           mShouldSelectFirstPost=false;

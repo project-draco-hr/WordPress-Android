@@ -35,8 +35,10 @@
   restoreState(savedInstanceState);
   mDetector=new GestureDetectorCompat(this,new MyGestureListener());
   mDetector.setIsLongpressEnabled(false);
-  refreshStats();
-  mPullToRefreshHelper.setRefreshing(true);
+  if (NetworkUtils.isNetworkAvailable(this)) {
+    refreshStats();
+    mPullToRefreshHelper.setRefreshing(true);
+  }
   ScrollViewExt scrollView=(ScrollViewExt)findViewById(R.id.scroll_view_stats);
   if (scrollView != null) {
     scrollView.setScrollViewListener(this);
