@@ -1,0 +1,23 @@
+{
+  if (post == null) {
+    return "";
+  }
+ else   if (post.hasText()) {
+    String content=post.getText().replace("src=\"//","src=\"http://");
+    if (post.hasFeaturedImage() && !PhotonUtils.isMshotsUrl(post.getFeaturedImage())) {
+      Uri uri=Uri.parse(post.getFeaturedImage());
+      String path=StringUtils.notNullStr(uri.getLastPathSegment());
+      if (!content.contains(path)) {
+        AppLog.d(AppLog.T.READER,"reader post detail > added featured image to content");
+        content=String.format("<p><img class='img.size-full' src='%s' /></p>",post.getFeaturedImage()) + content;
+      }
+    }
+    return content;
+  }
+ else   if (post.hasFeaturedImage()) {
+    return String.format("<p><img class='img.size-full' src='%s' /></p>",post.getFeaturedImage());
+  }
+ else {
+    return "";
+  }
+}

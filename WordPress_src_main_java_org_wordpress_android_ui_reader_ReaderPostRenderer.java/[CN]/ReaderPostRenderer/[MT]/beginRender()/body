@@ -1,28 +1,40 @@
 {
-  final String contentForScan=getPostContent();
-  mRenderContent=contentForScan;
+  mRenderContent=getPostContent(mPost);
   if (!mPost.hasAttachments()) {
-    endRender();
+    renderContent(mRenderContent);
     return;
   }
   mNumImages=0;
   mNumMatchedImages=0;
-  final ReaderAttachmentList attachments=mPost.getAttachments();
-  ReaderImageScanner.ImageScanListener imageListener=new ReaderImageScanner.ImageScanListener(){
-    @Override public void onImageFound(    String imageTag,    String imageUrl,    int start,    int end){
-      mNumImages++;
-      ReaderAttachment attach=attachments.get(imageUrl);
-      if (attach != null) {
-        mNumMatchedImages++;
-        setImageSize(imageTag,attach);
+  final Handler handler=new Handler();
+  new Thread(){
+    @Override public void run(){
+      final ReaderAttachmentList attachments=mPost.getAttachments();
+      ReaderImageScanner.ImageScanListener imageListener=new ReaderImageScanner.ImageScanListener(){
+        @Override public void onImageFound(        String imageTag,        String imageUrl,        int start,        int end){
+          mNumImages++;
+          ReaderAttachment attach=attachments.get(imageUrl);
+          if (attach != null && attach.isImage()) {
+            mNumMatchedImages++;
+            replaceImageTag(imageTag,attach);
+          }
+        }
+        @Override public void onScanCompleted(){
+          AppLog.i(AppLog.T.READER,String.format("reader renderer > image scan completed, matched %d of %d images",mNumMatchedImages,mNumImages));
+          final String htmlContent=getPostContentForWebView(mRenderContent);
+          handler.post(new Runnable(){
+            @Override public void run(){
+              renderContent(htmlContent);
+            }
+          }
+);
+        }
       }
-    }
-    @Override public void onScanCompleted(){
-      AppLog.i(AppLog.T.READER,String.format("reader renderer > image scan completed, matched %d of %d images",mNumMatchedImages,mNumImages));
-      endRender();
+;
+      final String contentForScan=mRenderContent;
+      ReaderImageScanner scanner=new ReaderImageScanner(contentForScan,mPost.isPrivate);
+      scanner.beginScan(imageListener);
     }
   }
-;
-  ReaderImageScanner scanner=new ReaderImageScanner(contentForScan,mPost.isPrivate);
-  scanner.beginScan(imageListener);
+.start();
 }
