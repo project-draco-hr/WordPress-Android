@@ -8,13 +8,14 @@
   }
   Fragment fragment=getDetailFragmentForNote(note);
   if (DisplayUtils.isLandscapeTablet(this)) {
-    mDetailFragment.setCurrentFragment(fragment);
+    mTabletDetailFragment.setCurrentFragment(fragment,false);
     return;
   }
+  mCurrentFragment=fragment;
   FragmentManager fm=getFragmentManager();
   FragmentTransaction ft=fm.beginTransaction();
   ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-  ft.replace(R.id.layout_fragment_container,fragment);
+  ft.replace(R.id.layout_fragment_container,mCurrentFragment);
   mMenuDrawer.setDrawerIndicatorEnabled(false);
   ft.addToBackStack(null);
   ft.commitAllowingStateLoss();

@@ -6,17 +6,17 @@
   }
   FragmentManager fm=getFragmentManager();
   if (fm.findFragmentByTag(TAG_LIST_VIEW) != null) {
-    mNotesList=(NotificationsListFragment)fm.findFragmentByTag(TAG_LIST_VIEW);
+    mNotesListFragment=(NotificationsListFragment)fm.findFragmentByTag(TAG_LIST_VIEW);
   }
  else {
-    mNotesList=new NotificationsListFragment();
+    mNotesListFragment=new NotificationsListFragment();
     FragmentTransaction fragmentTransaction=fm.beginTransaction();
-    fragmentTransaction.add(R.id.layout_fragment_container,mNotesList,TAG_LIST_VIEW);
+    fragmentTransaction.add(R.id.layout_fragment_container,mNotesListFragment,TAG_LIST_VIEW);
     fragmentTransaction.commit();
   }
   if (DisplayUtils.isLandscapeTablet(this)) {
     if (fm.findFragmentByTag(TAG_DETAIL_VIEW) != null) {
-      mDetailFragment=(NotificationsDetailFragment)fm.findFragmentByTag(TAG_DETAIL_VIEW);
+      mTabletDetailFragment=(NotificationsDetailFragment)fm.findFragmentByTag(TAG_DETAIL_VIEW);
     }
  else {
       addDetailFragment();
@@ -28,7 +28,7 @@
   }
   setTitle(getResources().getString(R.string.notifications));
   fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
-  mNotesList.setOnNoteClickListener(new NoteClickListener());
+  mNotesListFragment.setOnNoteClickListener(new NoteClickListener());
   GCMIntentService.clearNotificationsMap();
   if (savedInstanceState != null) {
     mHasPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);
