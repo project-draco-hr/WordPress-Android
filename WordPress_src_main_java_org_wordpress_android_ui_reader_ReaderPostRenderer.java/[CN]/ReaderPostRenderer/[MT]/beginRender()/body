@@ -1,28 +1,15 @@
 {
   final String content=getPostContent(mPost);
-  if (!mPost.hasAttachments()) {
-    renderContent(getPostContentForWebView(content));
-    return;
-  }
-  mNumImages=0;
-  mNumMatchedImages=0;
   mRenderBuilder=new StringBuilder(content);
   final Handler handler=new Handler();
   new Thread(){
     @Override public void run(){
-      final ReaderAttachmentList attachments=mPost.getAttachments();
       ReaderImageScanner.ImageScanListener imageListener=new ReaderImageScanner.ImageScanListener(){
         @Override public void onImageFound(        String imageTag,        String imageUrl,        int start,        int end){
-          mNumImages++;
-          ReaderAttachment attach=attachments.get(imageUrl);
-          if (attach != null && attach.isImage()) {
-            mNumMatchedImages++;
-            replaceImageTag(imageTag,attach);
-          }
+          replaceImageTag(imageTag,imageUrl);
         }
         @Override public void onScanCompleted(){
-          AppLog.d(AppLog.T.READER,String.format("reader renderer > image scan completed, matched %d of %d images",mNumMatchedImages,mNumImages));
-          final String htmlContent=getPostContentForWebView(mRenderBuilder.toString());
+          final String htmlContent=formatPostContentForWebView(mRenderBuilder.toString());
           handler.post(new Runnable(){
             @Override public void run(){
               renderContent(htmlContent);

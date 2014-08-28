@@ -1,0 +1,45 @@
+{
+  int origWidth;
+  int origHeight;
+  ReaderAttachment attach=mAttachments.get(imageUrl);
+  if (attach != null && attach.isImage()) {
+    origWidth=attach.width;
+    origHeight=attach.height;
+  }
+ else   if (imageUrl.contains("files.wordpress.com")) {
+    Uri uri=Uri.parse(imageUrl.replace("&#038;","&"));
+    origWidth=StringUtils.stringToInt(uri.getQueryParameter("w"));
+    origHeight=StringUtils.stringToInt(uri.getQueryParameter("h"));
+  }
+ else {
+    return;
+  }
+  int newWidth;
+  int newHeight;
+  if (origWidth > 0 && origHeight > 0) {
+    float ratio=((float)origHeight / (float)origWidth);
+    newWidth=mResourceVars.fullSizeImageWidth;
+    newHeight=(int)(newWidth * ratio);
+  }
+ else   if (origWidth > 0) {
+    newWidth=mResourceVars.fullSizeImageWidth;
+    newHeight=0;
+  }
+ else {
+    return;
+  }
+  String newImageUrl;
+  if (mPost.isPrivate) {
+    newImageUrl=ReaderUtils.getPrivateImageForDisplay(UrlUtils.removeQuery(imageUrl),newWidth,newHeight);
+  }
+ else {
+    newImageUrl=PhotonUtils.getPhotonImageUrl(UrlUtils.removeQuery(imageUrl),newWidth,newHeight);
+  }
+  String newImageTag=String.format("<img class='size-full' src='%s' width='%d' height='%d' />",newImageUrl,newWidth,newHeight);
+  int start=mRenderBuilder.indexOf(imageTag);
+  if (start == -1) {
+    AppLog.w(AppLog.T.READER,"reader renderer > image not found in builder");
+    return;
+  }
+  mRenderBuilder.replace(start,start + imageTag.length(),newImageTag);
+}
