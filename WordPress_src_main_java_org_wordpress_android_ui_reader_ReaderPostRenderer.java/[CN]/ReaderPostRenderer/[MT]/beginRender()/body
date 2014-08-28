@@ -1,0 +1,25 @@
+{
+  mRenderContent=getPostContent();
+  if (!mPost.hasAttachments()) {
+    endRender();
+    return;
+  }
+  final ReaderAttachmentList attachments=mPost.getAttachments();
+  ReaderImageScanner.ImageScanListener imageListener=new ReaderImageScanner.ImageScanListener(){
+    @Override public void onImageFound(    String imageTag,    String imageUrl,    int start,    int end){
+      AppLog.d(AppLog.T.READER,"reader renderer > found " + imageUrl);
+      ReaderAttachment attach=attachments.get(imageUrl);
+      if (attach != null) {
+        AppLog.d(AppLog.T.READER,"reader renderer > matched attachment " + imageUrl);
+        setImageSize(imageTag,imageUrl,attach);
+      }
+    }
+    @Override public void onScanCompleted(){
+      AppLog.d(AppLog.T.READER,"reader renderer > image scan completed");
+      endRender();
+    }
+  }
+;
+  ReaderImageScanner scanner=new ReaderImageScanner(mRenderContent,mPost.isPrivate);
+  scanner.beginScan(imageListener);
+}
