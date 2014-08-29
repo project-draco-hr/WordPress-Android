@@ -1,0 +1,18 @@
+{
+  if (mContent == null || !mContent.contains("<img ")) {
+    return null;
+  }
+  String currentImageUrl=null;
+  int currentMaxWidth=MIN_FEATURED_IMAGE_WIDTH;
+  Matcher imgMatcher=IMG_TAG_PATTERN.matcher(mContent);
+  while (imgMatcher.find()) {
+    String imgTag=mContent.substring(imgMatcher.start(),imgMatcher.end());
+    String imageUrl=getSrcAttrValue(imgTag);
+    int width=Math.max(getWidthAttrValue(imgTag),getIntQueryParam(imageUrl,"w"));
+    if (width > currentMaxWidth) {
+      currentImageUrl=imageUrl;
+      currentMaxWidth=width;
+    }
+  }
+  return currentImageUrl;
+}

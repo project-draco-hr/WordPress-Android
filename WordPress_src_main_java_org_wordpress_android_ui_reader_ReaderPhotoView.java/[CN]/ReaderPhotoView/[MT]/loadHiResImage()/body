@@ -1,0 +1,25 @@
+{
+  if (!hasLayout() || TextUtils.isEmpty(mHiResImageUrl)) {
+    return;
+  }
+  if (isRequestingUrl(mHiResContainer,mHiResImageUrl)) {
+    AppLog.d(AppLog.T.READER,"reader photo > already requesting hi-res");
+    return;
+  }
+  Point pt=DisplayUtils.getDisplayPixelSize(this.getContext());
+  int maxSize=Math.max(pt.x,pt.y);
+  mHiResContainer=WordPress.imageLoader.get(mHiResImageUrl,new ImageLoader.ImageListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+      AppLog.e(AppLog.T.READER,error);
+    }
+    @Override public void onResponse(    final ImageContainer response,    boolean isImmediate){
+      post(new Runnable(){
+        @Override public void run(){
+          handleResponse(response.getBitmap(),false);
+        }
+      }
+);
+    }
+  }
+,maxSize,maxSize);
+}

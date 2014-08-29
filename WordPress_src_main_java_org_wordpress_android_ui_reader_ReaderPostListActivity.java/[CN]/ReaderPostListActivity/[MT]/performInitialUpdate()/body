@@ -2,9 +2,10 @@
   if (!NetworkUtils.isNetworkAvailable(this)) {
     return;
   }
-  String fragmentTag=getString(R.string.fragment_tag_reader_task);
-  FragmentManager fm=getFragmentManager();
-  if (fm.findFragmentByTag(fragmentTag) == null) {
-    fm.beginTransaction().add(ReaderTaskFragment.newInstance(ReaderTaskType.UPDATE_TAGS),fragmentTag).commit();
-  }
+  ReaderUpdateService.startService(this,EnumSet.of(UpdateTask.TAGS,UpdateTask.FOLLOWED_BLOGS));
+  mHasPerformedInitialUpdate=true;
+  AppLog.d(T.READER,"reader post list > updating current user");
+  ReaderUserActions.updateCurrentUser(null);
+  AppLog.d(T.READER,"reader post list > updating cookies");
+  ReaderAuthActions.updateCookies(ReaderPostListActivity.this);
 }

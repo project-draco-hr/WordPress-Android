@@ -10,6 +10,8 @@
     }
     return;
   }
+  mReaderWebView.getSettings().setJavaScriptEnabled(canEnableJavaScript());
+  mReaderWebView.loadDataWithBaseURL(null,postHtml,"text/html","UTF-8",null);
   txtTitle.setText(mPost.hasTitle() ? mPost.getTitle() : getString(R.string.reader_untitled_post));
   ReaderUtils.showFollowStatus(txtFollow,mPost.isFollowedByCurrentUser);
   txtFollow.setOnClickListener(new View.OnClickListener(){
@@ -36,8 +38,7 @@
     txtDateAndAuthor.setText(DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished()));
   }
   if (mPost.hasPostAvatar()) {
-    int avatarSz=getResources().getDimensionPixelSize(R.dimen.avatar_sz_medium);
-    imgAvatar.setImageUrl(mPost.getPostAvatarForDisplay(avatarSz),WPNetworkImageView.ImageType.AVATAR);
+    imgAvatar.setImageUrl(mPost.getPostAvatarForDisplay(mResourceVars.likeAvatarSize),WPNetworkImageView.ImageType.AVATAR);
     imgAvatar.setVisibility(View.VISIBLE);
   }
  else {
@@ -45,21 +46,6 @@
   }
   if (isBlogPreview()) {
     layoutDetailHeader.setVisibility(View.GONE);
-  }
-  if (showFeaturedImage) {
-    imgFeatured.setVisibility(View.VISIBLE);
-    imgFeatured.setImageUrl(featuredImageUrl,WPNetworkImageView.ImageType.PHOTO);
-    imgFeatured.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View view){
-        int startX=(DisplayUtils.getDisplayPixelWidth(getActivity()) / 2);
-        int startY=(DisplayUtils.getDisplayPixelWidth(getActivity()) / 2);
-        showPhotoViewer(mPost.getFeaturedImage(),view,startX,startY);
-      }
-    }
-);
-  }
- else {
-    imgFeatured.setVisibility(View.GONE);
   }
   if (mPost.canReblog()) {
     imgBtnReblog.setVisibility(View.VISIBLE);
@@ -101,19 +87,22 @@
  else {
     mLayoutIcons.setVisibility(View.GONE);
   }
-  mReaderWebView.getSettings().setJavaScriptEnabled(canEnableJavaScript());
-  mReaderWebView.loadDataWithBaseURL(null,postHtml,"text/html","UTF-8",null);
+  if (canBlockBlog()) {
+    imgDropDown.setVisibility(View.VISIBLE);
+    imgDropDown.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        if (mOnPopupListener != null) {
+          mOnPopupListener.onShowPostPopup(view,mPost);
+        }
+      }
+    }
+);
+  }
+ else {
+    imgDropDown.setVisibility(View.GONE);
+  }
   mLayoutIcons.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
   if (getListView().getAdapter() == null) {
     getListView().setAdapter(getCommentAdapter());
-  }
-  if (getListView().getVisibility() != View.VISIBLE) {
-    getListView().setVisibility(View.VISIBLE);
-  }
-  if (mReaderWebView.getVisibility() == View.VISIBLE) {
-    showContent();
-  }
- else {
-    showContentDelayed();
   }
 }

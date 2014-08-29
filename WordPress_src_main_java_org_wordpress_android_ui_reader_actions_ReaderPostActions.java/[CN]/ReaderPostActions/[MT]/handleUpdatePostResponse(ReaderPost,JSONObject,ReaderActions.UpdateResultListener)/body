@@ -9,23 +9,28 @@
   new Thread(){
     @Override public void run(){
       ReaderPost updatedPost=ReaderPost.fromJson(jsonObject);
-      final boolean hasChanges=(updatedPost.numReplies != post.numReplies || updatedPost.numLikes != post.numLikes || updatedPost.isCommentsOpen != post.isCommentsOpen || updatedPost.isLikedByCurrentUser != post.isLikedByCurrentUser || updatedPost.isFollowedByCurrentUser != post.isFollowedByCurrentUser);
+      boolean hasChanges=(updatedPost.numReplies != originalPost.numReplies || updatedPost.numLikes != originalPost.numLikes || updatedPost.isCommentsOpen != originalPost.isCommentsOpen || updatedPost.isLikedByCurrentUser != originalPost.isLikedByCurrentUser || updatedPost.isFollowedByCurrentUser != originalPost.isFollowedByCurrentUser);
       if (hasChanges) {
         AppLog.d(T.READER,"post updated");
-        if (post.hasFeaturedImage()) {
-          updatedPost.setFeaturedImage(post.getFeaturedImage());
+        if (originalPost.hasFeaturedImage()) {
+          updatedPost.setFeaturedImage(originalPost.getFeaturedImage());
         }
-        if (post.hasFeaturedVideo()) {
-          updatedPost.setFeaturedVideo(post.getFeaturedVideo());
-          updatedPost.isVideoPress=post.isVideoPress;
+        if (originalPost.hasFeaturedVideo()) {
+          updatedPost.setFeaturedVideo(originalPost.getFeaturedVideo());
+          updatedPost.isVideoPress=originalPost.isVideoPress;
         }
+        updatedPost.timestamp=originalPost.timestamp;
+        updatedPost.setPublished(originalPost.getPublished());
         ReaderPostTable.addOrUpdatePost(updatedPost);
       }
-      handlePostLikes(updatedPost,jsonObject);
+      if (handlePostLikes(updatedPost,jsonObject)) {
+        hasChanges=true;
+      }
       if (resultListener != null) {
+        final ReaderActions.UpdateResult result=(hasChanges ? ReaderActions.UpdateResult.CHANGED : ReaderActions.UpdateResult.UNCHANGED);
         handler.post(new Runnable(){
           public void run(){
-            resultListener.onUpdateResult(hasChanges ? ReaderActions.UpdateResult.CHANGED : ReaderActions.UpdateResult.UNCHANGED);
+            resultListener.onUpdateResult(result);
           }
         }
 );

@@ -4,8 +4,11 @@
   restoreState(savedInstanceState);
   mViewPager=(ViewPager)findViewById(R.id.viewpager);
   mViewPager.setAdapter(getPageAdapter());
-  getActionBar().setDisplayShowTitleEnabled(true);
-  getActionBar().setDisplayHomeAsUpEnabled(true);
+  ActionBar actionBar=getActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayShowTitleEnabled(true);
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
   PagerTabStrip tabStrip=(PagerTabStrip)findViewById(R.id.pager_tabs);
   tabStrip.setTabIndicatorColorResource(R.color.blue_medium);
   tabStrip.setBackgroundColor(getResources().getColor(R.color.grey_extra_light));
@@ -32,11 +35,8 @@
   mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
     @Override public void onPageSelected(    int position){
       String pageTitle=(String)getPageAdapter().getPageTitle(position);
-      UserPrefs.setReaderSubsPageTitle(pageTitle);
+      AppPrefs.setReaderSubsPageTitle(pageTitle);
     }
   }
 );
-  if (!mHasPerformedUpdate) {
-    performUpdate();
-  }
 }

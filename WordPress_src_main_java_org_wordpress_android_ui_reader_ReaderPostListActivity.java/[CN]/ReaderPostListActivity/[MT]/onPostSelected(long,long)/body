@@ -1,22 +1,18 @@
 {
   if (!this.hasWindowFocus()) {
-    AppLog.i(T.READER,"post selected when activity not focused");
+    AppLog.w(T.READER,"reader post list > post selected when activity not focused");
     return;
   }
   ReaderPostListFragment listFragment=getListFragment();
   if (listFragment != null) {
-    ReaderBlogIdPostIdList idList=listFragment.getBlogIdPostIdList();
-    int position=idList.indexOf(blogId,postId);
-    final String title;
 switch (getPostListType()) {
 case TAG_FOLLOWED:
 case TAG_PREVIEW:
-      title=listFragment.getCurrentTagName();
+      ReaderActivityLauncher.showReaderPostPagerForTag(this,listFragment.getCurrentTag(),getPostListType(),blogId,postId);
     break;
-default :
-  title=(String)this.getTitle();
+case BLOG_PREVIEW:
+  ReaderActivityLauncher.showReaderPostPagerForBlog(this,blogId,postId);
 break;
 }
-ReaderActivityLauncher.showReaderPostPager(this,title,position,idList,getPostListType());
 }
 }
