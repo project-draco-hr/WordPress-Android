@@ -2,21 +2,12 @@
   if (post == null) {
     return "";
   }
- else   if (post.hasText()) {
+ else {
     String content=post.getText().replace("src=\"//","src=\"http://");
-    if (post.hasFeaturedImage() && !PhotonUtils.isMshotsUrl(post.getFeaturedImage())) {
-      Uri uri=Uri.parse(post.getFeaturedImage());
-      String path=StringUtils.notNullStr(uri.getLastPathSegment());
-      if (!content.contains(path)) {
-        content=getFeaturedImageHtml(post,resourceVars) + content;
-      }
+    if (shouldAddFeaturedImage(post)) {
+      AppLog.w(AppLog.T.READER,"reader renderer > added featured image");
+      content=getFeaturedImageHtml(post,resourceVars) + content;
     }
     return content;
-  }
- else   if (post.hasFeaturedImage()) {
-    return getFeaturedImageHtml(post,resourceVars);
-  }
- else {
-    return "";
   }
 }
