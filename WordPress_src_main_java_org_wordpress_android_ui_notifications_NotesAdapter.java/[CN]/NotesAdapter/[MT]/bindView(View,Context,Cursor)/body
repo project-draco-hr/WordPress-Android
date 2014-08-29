@@ -3,7 +3,6 @@
   Bucket.ObjectCursor<Note> objectCursor=(Bucket.ObjectCursor<Note>)cursor;
   view.setActivated(mShouldHighlightRows && objectCursor.getPosition() == mSelectedPosition);
   NoteViewHolder noteViewHolder=(NoteViewHolder)view.getTag();
-  noteViewHolder.setNoteId(objectCursor.getSimperiumKey());
   Note.NoteTimeGroup timeGroup=Note.getTimeGroupForTimestamp(getLongForColumnName(objectCursor,Note.Schema.TIMESTAMP_INDEX));
   Note.NoteTimeGroup previousTimeGroup=null;
   if (objectCursor.getPosition() > 0 && objectCursor.moveToPrevious()) {
@@ -20,11 +19,14 @@
  else     if (timeGroup == Note.NoteTimeGroup.GROUP_YESTERDAY) {
       noteViewHolder.headerText.setText(context.getString(R.string.stats_timeframe_yesterday).toUpperCase());
     }
- else     if (timeGroup == Note.NoteTimeGroup.GROUP_LAST_WEEK) {
-      noteViewHolder.headerText.setText(context.getString(R.string.last_week).toUpperCase());
+ else     if (timeGroup == Note.NoteTimeGroup.GROUP_OLDER_TWO_DAYS) {
+      noteViewHolder.headerText.setText(context.getString(R.string.older_two_days).toUpperCase());
+    }
+ else     if (timeGroup == Note.NoteTimeGroup.GROUP_OLDER_WEEK) {
+      noteViewHolder.headerText.setText(context.getString(R.string.older_last_week).toUpperCase());
     }
  else {
-      noteViewHolder.headerText.setText(context.getString(R.string.older).toUpperCase());
+      noteViewHolder.headerText.setText(context.getString(R.string.older_month).toUpperCase());
     }
     noteViewHolder.headerView.setVisibility(View.VISIBLE);
   }
