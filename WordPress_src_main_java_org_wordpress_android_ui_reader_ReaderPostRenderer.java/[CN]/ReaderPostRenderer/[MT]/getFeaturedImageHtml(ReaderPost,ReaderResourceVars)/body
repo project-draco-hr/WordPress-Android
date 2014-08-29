@@ -1,10 +1,12 @@
 {
-  String imageUrl;
   if (resourceVars != null) {
-    imageUrl=ReaderUtils.getResizedImageUrl(post.getFeaturedImage(),resourceVars.fullSizeImageWidth,resourceVars.featuredImageHeight,post.isPrivate);
+    int width=resourceVars.fullSizeImageWidth;
+    int height=resourceVars.featuredImageHeight;
+    String imageUrl=ReaderUtils.getResizedImageUrl(post.getFeaturedImage(),width,height,post.isPrivate);
+    AppLog.d(AppLog.T.READER,"reader renderer > featured image added to content");
+    return String.format("<img class='size-full' src='%s' width='%d' height='%d' />",imageUrl,width,height);
   }
  else {
-    imageUrl=post.getFeaturedImage();
+    return String.format("<img class='size-full' src='%s' />",post.getFeaturedImage());
   }
-  return String.format("<p><img class='size-full' src='%s' /></p>",imageUrl);
 }
