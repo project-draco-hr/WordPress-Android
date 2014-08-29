@@ -1,6 +1,5 @@
 {
-  final String content=getPostContent(mPost,mResourceVars);
-  mRenderBuilder=new StringBuilder(content);
+  mRenderBuilder=new StringBuilder(getPostContent());
   final Handler handler=new Handler();
   new Thread(){
     @Override public void run(){
@@ -10,16 +9,17 @@
         }
         @Override public void onScanCompleted(){
           final String htmlContent=formatPostContentForWebView(mRenderBuilder.toString());
+          mRenderBuilder=null;
           handler.post(new Runnable(){
             @Override public void run(){
-              renderContent(htmlContent);
+              renderHtmlContent(htmlContent);
             }
           }
 );
         }
       }
 ;
-      ReaderImageScanner scanner=new ReaderImageScanner(content,mPost.isPrivate);
+      ReaderImageScanner scanner=new ReaderImageScanner(mRenderBuilder.toString(),mPost.isPrivate);
       scanner.beginScan(imageListener);
     }
   }
