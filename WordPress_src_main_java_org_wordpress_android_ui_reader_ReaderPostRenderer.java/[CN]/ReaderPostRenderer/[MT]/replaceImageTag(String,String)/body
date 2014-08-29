@@ -8,19 +8,14 @@
   if (attach != null && attach.isImage()) {
     origWidth=attach.width;
     origHeight=attach.height;
-    AppLog.d(AppLog.T.READER,"reader renderer > setting size from attachment");
   }
  else   if (imageUrl.contains("files.wordpress.com")) {
     Uri uri=Uri.parse(imageUrl.replace("&#038;","&"));
     origWidth=StringUtils.stringToInt(uri.getQueryParameter("w"));
     origHeight=StringUtils.stringToInt(uri.getQueryParameter("h"));
-    if (origWidth > 0) {
-      AppLog.d(AppLog.T.READER,"reader renderer > setting size from query params");
-    }
   }
  else {
-    origWidth=0;
-    origHeight=0;
+    return;
   }
   int newWidth;
   int newHeight;
@@ -34,7 +29,6 @@
     newHeight=0;
   }
  else {
-    AppLog.d(AppLog.T.READER,"reader renderer > no size for " + imageUrl);
     return;
   }
   String newImageUrl=ReaderUtils.getResizedImageUrl(imageUrl,newWidth,newHeight,mPost.isPrivate);
