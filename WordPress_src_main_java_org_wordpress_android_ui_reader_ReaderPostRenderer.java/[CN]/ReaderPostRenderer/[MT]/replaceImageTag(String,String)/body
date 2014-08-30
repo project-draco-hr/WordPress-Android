@@ -2,29 +2,18 @@
   if (imageTag.contains("featured-image")) {
     return;
   }
-  int origWidth;
-  int origHeight;
-  ReaderAttachment attach=(mAttachments != null ? mAttachments.get(imageUrl) : null);
-  if (attach != null && attach.isImage()) {
-    origWidth=attach.width;
-    origHeight=attach.height;
-  }
- else   if (imageUrl.contains("files.wordpress.com") && imageUrl.contains("w=")) {
-    Uri uri=Uri.parse(imageUrl.replace("&#038;","&"));
-    origWidth=StringUtils.stringToInt(uri.getQueryParameter("w"));
-    origHeight=StringUtils.stringToInt(uri.getQueryParameter("h"));
-  }
- else {
+  ImageSize origSize=getImageSize(imageUrl);
+  if (origSize == null) {
     return;
   }
   int newWidth;
   int newHeight;
-  if (origWidth > 0 && origHeight > 0) {
-    float ratio=((float)origHeight / (float)origWidth);
+  if (origSize.width > 0 && origSize.height > 0) {
+    float ratio=((float)origSize.height / (float)origSize.width);
     newWidth=mResourceVars.fullSizeImageWidth;
     newHeight=(int)(newWidth * ratio);
   }
- else   if (origWidth > 0) {
+ else   if (origSize.width > 0) {
     newWidth=mResourceVars.fullSizeImageWidth;
     newHeight=0;
   }
