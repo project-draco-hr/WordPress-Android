@@ -9,10 +9,13 @@
     origWidth=attach.width;
     origHeight=attach.height;
   }
+ else   if (imageUrl.contains("files.wordpress.com") && imageUrl.contains("w=")) {
+    Uri uri=Uri.parse(imageUrl.replace("&#038;","&"));
+    origWidth=StringUtils.stringToInt(uri.getQueryParameter("w"));
+    origHeight=StringUtils.stringToInt(uri.getQueryParameter("h"));
+  }
  else {
-    ImageSize size=getImageSizeFromImageUrl(imageUrl);
-    origWidth=(size != null ? size.width : 0);
-    origHeight=(size != null ? size.height : 0);
+    return;
   }
   int newWidth;
   int newHeight;
@@ -26,7 +29,6 @@
     newHeight=0;
   }
  else {
-    AppLog.d(AppLog.T.READER,"reader renderer > no size for " + imageUrl);
     return;
   }
   String newImageUrl=ReaderUtils.getResizedImageUrl(imageUrl,newWidth,newHeight,mPost.isPrivate);
