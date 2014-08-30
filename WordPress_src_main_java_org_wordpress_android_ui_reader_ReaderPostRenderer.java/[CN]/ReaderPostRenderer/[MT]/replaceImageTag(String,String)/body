@@ -9,14 +9,10 @@
     origWidth=attach.width;
     origHeight=attach.height;
   }
- else   if (imageUrl.contains("files.wordpress.com")) {
-    Uri uri=Uri.parse(imageUrl.replace("&#038;","&"));
-    origWidth=StringUtils.stringToInt(uri.getQueryParameter("w"));
-    origHeight=StringUtils.stringToInt(uri.getQueryParameter("h"));
-  }
  else {
-    origWidth=0;
-    origHeight=0;
+    ImageSize size=getImageSizeFromImageUrl(imageUrl);
+    origWidth=(size != null ? size.width : 0);
+    origHeight=(size != null ? size.height : 0);
   }
   int newWidth;
   int newHeight;
