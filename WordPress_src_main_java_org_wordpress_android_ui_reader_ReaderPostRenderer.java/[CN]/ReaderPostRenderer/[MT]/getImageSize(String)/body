@@ -1,11 +1,10 @@
 {
-  ImageSize size=getAttachmentSize(imageUrl);
+  ImageSize size=getImageSizeFromAttachments(imageUrl);
   if (size != null) {
     return size;
   }
- else   if (imageUrl.contains("files.wordpress.com") && imageUrl.contains("w=")) {
-    Uri uri=Uri.parse(imageUrl.replace("&#038;","&"));
-    return new ImageSize(StringUtils.stringToInt(uri.getQueryParameter("w")),StringUtils.stringToInt(uri.getQueryParameter("h")));
+ else   if (imageUrl.contains("?")) {
+    return getImageSizeFromQueryParams(imageUrl);
   }
  else {
     return null;
