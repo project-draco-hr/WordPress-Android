@@ -18,7 +18,13 @@
     return;
   }
   String newImageUrl=ReaderUtils.getResizedImageUrl(imageUrl,newWidth,newHeight,mPost.isPrivate);
-  String newImageTag=String.format("<img class='size-full' src='%s' width='%d' height='%d' />",newImageUrl,newWidth,newHeight);
+  String newImageTag;
+  if (newHeight > 0) {
+    newImageTag=String.format("<img class='size-full' src='%s' width='%d' height='%d' />",newImageUrl,pxToDp(newWidth),pxToDp(newHeight));
+  }
+ else {
+    newImageTag=String.format("<img class='size-full' src='%s' width='%d' />",newImageUrl,pxToDp(newWidth));
+  }
   int start=mRenderBuilder.indexOf(imageTag);
   if (start == -1) {
     AppLog.w(AppLog.T.READER,"reader renderer > image not found in builder");
