@@ -14,5 +14,9 @@ catch (  IOException e) {
   currentBlog=null;
   AnalyticsTracker.endSession(false);
   AnalyticsTracker.clearAllData();
+  AbstractAppLock appLock=AppLockManager.getInstance().getCurrentAppLock();
+  if (appLock != null) {
+    appLock.setPassword(null);
+  }
   sendLocalBroadcast(context,BROADCAST_ACTION_SIGNOUT);
 }
