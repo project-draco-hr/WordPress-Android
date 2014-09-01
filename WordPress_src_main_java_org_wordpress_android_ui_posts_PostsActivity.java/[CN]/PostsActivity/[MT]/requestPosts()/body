@@ -2,10 +2,7 @@
   if (WordPress.getCurrentBlog() == null) {
     return;
   }
-  if (WordPress.wpDB.findLocalChanges(WordPress.getCurrentBlog().getLocalTableBlogId(),mIsPage)) {
-    ToastUtils.showToast(this,R.string.refresh_aborted_local_changes,Duration.LONG);
-  }
- else {
+  if (!WordPress.wpDB.findLocalChanges(WordPress.getCurrentBlog().getLocalTableBlogId(),mIsPage)) {
     popPostDetail();
     mPostList.requestPosts(false);
     mPostList.setRefreshing(true);
