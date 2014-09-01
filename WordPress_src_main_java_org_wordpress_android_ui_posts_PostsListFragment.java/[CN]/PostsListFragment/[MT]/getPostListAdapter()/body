@@ -9,8 +9,10 @@
     PostsListAdapter.OnPostsLoadedListener postsLoadedListener=new PostsListAdapter.OnPostsLoadedListener(){
       @Override public void onPostsLoaded(      int postCount){
         if (postCount == 0 && mCanLoadMorePosts) {
-          setRefreshing(true);
-          requestPosts(false);
+          if (isAdded() && NetworkUtils.isNetworkAvailable(getActivity())) {
+            setRefreshing(true);
+            requestPosts(false);
+          }
         }
  else         if (mShouldSelectFirstPost) {
           mShouldSelectFirstPost=false;
@@ -22,7 +24,7 @@
             }
           }
         }
- else         if (DisplayUtils.isTablet(getActivity())) {
+ else         if (isAdded() && DisplayUtils.isTablet(getActivity())) {
           int selectedPosition=getListView().getCheckedItemPosition();
           if (selectedPosition != ListView.INVALID_POSITION && selectedPosition < mPostsListAdapter.getCount()) {
             PostsListPost postsListPost=(PostsListPost)mPostsListAdapter.getItem(selectedPosition);

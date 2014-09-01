@@ -60,12 +60,7 @@
       NotificationsUtils.getPushNotificationSettings(PreferencesActivity.this,listener,errorListener);
     }
   }
-  if (AppLockManager.getInstance().isAppLockFeatureEnabled() == false) {
-    PreferenceScreen rootScreen=(PreferenceScreen)findPreference("wp_pref_root");
-    PreferenceGroup passcodeGroup=(PreferenceGroup)findPreference("wp_passcode_lock_category");
-    rootScreen.removePreference(passcodeGroup);
-  }
- else {
+  if (AppLockManager.getInstance().isAppLockFeatureEnabled()) {
     final CheckBoxPreference passcodeEnabledCheckBoxPreference=(CheckBoxPreference)findPreference("wp_pref_passlock_enabled");
     passcodeEnabledCheckBoxPreference.setOnPreferenceClickListener(new OnPreferenceClickListener(){
       @Override public boolean onPreferenceClick(      Preference preference){
@@ -74,6 +69,11 @@
       }
     }
 );
+  }
+ else {
+    PreferenceScreen rootScreen=(PreferenceScreen)findPreference("wp_pref_root");
+    PreferenceGroup passcodeGroup=(PreferenceGroup)findPreference("wp_passcode_lock_category");
+    rootScreen.removePreference(passcodeGroup);
   }
   displayPreferences();
 }
