@@ -2,9 +2,13 @@
   ImageSize origSize=getImageSize(imageTag,imageUrl);
   boolean hasWidth=(origSize != null && origSize.width > 0);
   boolean isFullSize=hasWidth && (origSize.width >= mMinFullSizeWidthDp);
+  boolean isMidSize=hasWidth && (origSize.width >= mMinMidSizeWidthDp) && (origSize.width < mMinFullSizeWidthDp);
   final String newImageTag;
   if (isFullSize) {
     newImageTag=makeFullSizeImageTag(imageUrl,origSize.width,origSize.height);
+  }
+ else   if (isMidSize) {
+    newImageTag=makeImageTag(imageUrl,origSize.width,origSize.height,"size-medium");
   }
  else   if (hasWidth) {
     newImageTag=makeImageTag(imageUrl,origSize.width,origSize.height,"size-none");
