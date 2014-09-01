@@ -1,39 +1,16 @@
 {
   ImageSize origSize=getImageSize(imageTag,imageUrl);
-  if (origSize == null) {
-    return;
+  boolean hasWidth=(origSize != null && origSize.width > 0);
+  boolean isFullSize=hasWidth && (origSize.width >= mMinFullSizeWidthDp);
+  final String newImageTag;
+  if (isFullSize) {
+    newImageTag=makeFullSizeImageTag(imageUrl,origSize.width,origSize.height);
   }
-  if (origSize.width > 0 && origSize.width < (mResourceVars.fullSizeImageWidthPx / 4)) {
-    return;
-  }
-  int newWidth;
-  int newHeight;
-  if (origSize.width > 0 && origSize.height > 0) {
-    if (origSize.height > origSize.width) {
-      newHeight=mResourceVars.fullSizeImageWidthPx;
-      float ratio=((float)origSize.width / (float)origSize.height);
-      newWidth=(int)(newHeight * ratio);
-    }
- else {
-      float ratio=((float)origSize.height / (float)origSize.width);
-      newWidth=mResourceVars.fullSizeImageWidthPx;
-      newHeight=(int)(newWidth * ratio);
-    }
-  }
- else   if (origSize.width > 0) {
-    newWidth=mResourceVars.fullSizeImageWidthPx;
-    newHeight=0;
+ else   if (hasWidth) {
+    newImageTag=makeImageTag(imageUrl,origSize.width,origSize.height,"size-none");
   }
  else {
-    return;
-  }
-  String newImageUrl=ReaderUtils.getResizedImageUrl(imageUrl,newWidth,newHeight,mPost.isPrivate);
-  String newImageTag;
-  if (newHeight > 0) {
-    newImageTag=String.format("<img class='size-full' src='%s' width='%d' height='%d' />",newImageUrl,pxToDp(newWidth),pxToDp(newHeight));
-  }
- else {
-    newImageTag=String.format("<img class='size-full' src='%s' width='%d' />",newImageUrl,pxToDp(newWidth));
+    newImageTag=String.format("<img class='size-none' src='%s' />",imageUrl);
   }
   int start=mRenderBuilder.indexOf(imageTag);
   if (start == -1) {
