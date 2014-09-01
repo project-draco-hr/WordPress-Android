@@ -39,6 +39,12 @@
  else   if (getIntent() != null) {
     mLocalBlogID=getIntent().getIntExtra(ARG_LOCAL_TABLE_BLOG_ID,-1);
   }
+  final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
+  if (currentBlog == null) {
+    Toast.makeText(this,R.string.stats_no_blog,Toast.LENGTH_LONG).show();
+    finish();
+    return;
+  }
   loadStatsFragments();
   mDetector=new GestureDetectorCompat(this,new MyGestureListener());
   mDetector.setIsLongpressEnabled(false);
