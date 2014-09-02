@@ -1,15 +1,10 @@
 {
   ImageSize size=getImageSizeFromAttachments(imageUrl);
-  if (size != null) {
-    return size;
+  if (size == null && imageUrl.contains("?")) {
+    size=getImageSizeFromQueryParams(imageUrl);
   }
- else   if (imageUrl.contains("?")) {
-    return getImageSizeFromQueryParams(imageUrl);
+  if (size == null && imageTag.contains("width=")) {
+    size=getImageSizeFromAttributes(imageTag);
   }
- else   if (imageTag.contains("width=")) {
-    return getImageSizeFromAttributes(imageTag);
-  }
- else {
-    return null;
-  }
+  return size;
 }
