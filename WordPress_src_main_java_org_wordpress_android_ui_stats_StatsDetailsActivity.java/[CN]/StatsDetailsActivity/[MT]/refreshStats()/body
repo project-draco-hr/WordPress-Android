@@ -3,14 +3,14 @@
     AppLog.w(AppLog.T.STATS,"stats details are already updating for the following date " + mStatsDate + ", refresh cancelled.");
     return;
   }
-  final Blog currentBlog=WordPress.getCurrentBlog();
+  final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
   if (mStatsDate == null || currentBlog == null || !NetworkUtils.isNetworkAvailable(this)) {
     mPullToRefreshHelper.setRefreshing(false);
     int errorMessageId=(mStatsDate == null || currentBlog == null) ? R.string.error_refresh_stats : R.string.connection_error;
     ToastUtils.showToast(this,this.getString(errorMessageId),ToastUtils.Duration.LONG);
     return;
   }
-  final String blogId=StatsUtils.getBlogId();
+  final String blogId=StatsUtils.getBlogId(mLocalBlogID);
   final String viewAndVisitorsPath=String.format("/sites/%s/stats/visits?date=%s&unit=day&quantity=1",blogId,mStatsDate);
   final String topPostsAndPagesPath=String.format("/sites/%s/stats/top-posts?date=%s&days=1",blogId,mStatsDate);
   final String referrersPath=String.format("/sites/%s/stats/referrers?date=%s&days=1",blogId,mStatsDate);
