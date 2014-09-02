@@ -1,6 +1,10 @@
 {
   AlertDialog.Builder builder=new AlertDialog.Builder(currentActivity);
   final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
+  if (currentBlog == null && !isFinishing()) {
+    AppLog.e(T.STATS,"The blog with local_blog_id " + mLocalBlogID + " cannot be loaded from the DB.");
+    Toast.makeText(this,R.string.stats_no_blog,Toast.LENGTH_LONG).show();
+  }
   if (currentBlog.isAdmin()) {
     builder.setMessage(getString(R.string.jetpack_message)).setTitle(getString(R.string.jetpack_not_found));
     builder.setPositiveButton(R.string.yes,new DialogInterface.OnClickListener(){
