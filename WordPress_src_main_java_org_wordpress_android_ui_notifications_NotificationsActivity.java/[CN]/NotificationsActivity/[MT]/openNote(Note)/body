@@ -8,14 +8,17 @@
   }
   Fragment fragment=getDetailFragmentForNote(note);
   if (DisplayUtils.isLandscapeTablet(this)) {
-    mTabletDetailFragment.setCurrentFragment(fragment,false);
+    FragmentManager fm=getFragmentManager();
+    FragmentTransaction ft=fm.beginTransaction();
+    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+    ft.replace(R.id.notifications_detail_fragment_container,fragment);
+    ft.commitAllowingStateLoss();
     return;
   }
-  mCurrentFragment=fragment;
   FragmentManager fm=getFragmentManager();
   FragmentTransaction ft=fm.beginTransaction();
   ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-  ft.replace(R.id.layout_fragment_container,mCurrentFragment);
+  ft.replace(R.id.layout_fragment_container,fragment);
   mMenuDrawer.setDrawerIndicatorEnabled(false);
   ft.addToBackStack(null);
   ft.commitAllowingStateLoss();
