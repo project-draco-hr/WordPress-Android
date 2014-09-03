@@ -1,5 +1,7 @@
 {
-  if (WordPress.getCurrentBlog() == null) {
+  final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
+  if (currentBlog == null) {
+    AppLog.w(T.STATS,"Current blog is null. This should never happen here.");
     mPullToRefreshHelper.setRefreshing(false);
     return;
   }
@@ -12,22 +14,16 @@
     AppLog.w(T.STATS,"stats are already updating, refresh cancelled");
     return;
   }
-  final Blog currentBlog=WordPress.getCurrentBlog();
-  if (currentBlog == null) {
-    mPullToRefreshHelper.setRefreshing(false);
-    AppLog.w(T.STATS,"Current blog is null. This should never happen here.");
-    return;
-  }
-  final String blogId=StatsUtils.getBlogId();
+  final String blogId=StatsUtils.getBlogId(mLocalBlogID);
   if (blogId != null) {
-    if (!WordPress.getCurrentBlog().isDotcomFlag() && !WordPress.getCurrentBlog().hasValidJetpackCredentials() && mResultCode != RESULT_CANCELED) {
+    if (!currentBlog.isDotcomFlag() && !currentBlog.hasValidJetpackCredentials() && mResultCode != RESULT_CANCELED) {
       if (WordPress.hasValidWPComCredentials(this)) {
         SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
         String username=settings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,null);
         String password=WordPressDB.decryptPassword(settings.getString(WordPress.WPCOM_PASSWORD_PREFERENCE,null));
-        WordPress.getCurrentBlog().setDotcom_username(username);
-        WordPress.getCurrentBlog().setDotcom_password(password);
-        WordPress.wpDB.saveBlog(WordPress.getCurrentBlog());
+        currentBlog.setDotcom_username(username);
+        currentBlog.setDotcom_password(password);
+        WordPress.wpDB.saveBlog(currentBlog);
         mPullToRefreshHelper.setRefreshing(true);
       }
  else {
