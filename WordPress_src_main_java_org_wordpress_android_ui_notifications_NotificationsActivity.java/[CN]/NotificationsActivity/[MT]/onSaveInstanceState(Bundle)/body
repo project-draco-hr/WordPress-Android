@@ -3,6 +3,11 @@
     outState.putBoolean("bug_19917_fix",true);
   }
   outState.putBoolean(KEY_INITIAL_UPDATE,mHasPerformedInitialUpdate);
-  outState.putString(NOTE_ID_EXTRA,mSelectedNoteId);
+  if (DisplayUtils.isLandscapeTablet(this) || getFragmentManager().getBackStackEntryCount() > 0) {
+    outState.putString(NOTE_ID_EXTRA,mSelectedNoteId);
+  }
+  if (!TextUtils.isEmpty(getCommentReplyText())) {
+    outState.putString(KEY_REPLY_TEXT,getCommentReplyText());
+  }
   super.onSaveInstanceState(outState);
 }

@@ -2,7 +2,11 @@
   if (note == null)   return null;
   Fragment fragment;
   if (note.isCommentType()) {
-    fragment=CommentDetailFragment.newInstance(note);
+    CommentDetailFragment commentDetailFragment=CommentDetailFragment.newInstance(note);
+    if (!TextUtils.isEmpty(mRestoredReplyText)) {
+      commentDetailFragment.setRestoredReplyText(mRestoredReplyText);
+    }
+    fragment=commentDetailFragment;
   }
  else   if (note.isAutomattcherType()) {
     boolean isPost=(note.getSiteId() != 0 && note.getPostId() != 0 && note.getCommentId() == 0);
