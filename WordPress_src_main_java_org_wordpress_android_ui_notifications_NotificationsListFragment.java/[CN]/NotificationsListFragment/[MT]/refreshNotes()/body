@@ -7,26 +7,17 @@
       mNotesAdapter.setShouldHighlightRows(DisplayUtils.isLandscapeTablet(getActivity()));
       mNotesAdapter.reloadNotes();
       updateLastSeenTime();
-      if (mShouldLoadFirstNote && mNotesAdapter.getCount() > 0) {
-        mShouldLoadFirstNote=false;
-        Note note=mNotesAdapter.getNote(0);
-        if (getListView() != null && note != null && mNoteClickListener != null) {
-          mNoteClickListener.onClickNote(note,0);
-          getListView().setItemChecked(0,true);
-        }
-      }
-      if (DisplayUtils.isLandscapeTablet(getActivity()) && (mShouldLoadFirstNote || mListPositionSelection != ListView.INVALID_POSITION)) {
+      if (DisplayUtils.isLandscapeTablet(getActivity()) && getListView() != null) {
         if (mShouldLoadFirstNote) {
-          mListPositionSelection=0;
-          Note note=mNotesAdapter.getNote(mListPositionSelection);
-          if (note != null) {
-            mNoteClickListener.onClickNote(note,mListPositionSelection);
-          }
           mShouldLoadFirstNote=false;
+          Note note=mNotesAdapter.getNote(0);
+          if (note != null) {
+            mNoteClickListener.onClickNote(note,0);
+            mSelectedNoteId=note.getId();
+          }
         }
-        if (mListPositionSelection < mNotesAdapter.getCount() && getListView() != null) {
-          getListView().setItemChecked(mListPositionSelection,true);
-          mListPositionSelection=ListView.INVALID_POSITION;
+        if (mSelectedNoteId != null) {
+          new HighlightSelectedNoteTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
       }
     }

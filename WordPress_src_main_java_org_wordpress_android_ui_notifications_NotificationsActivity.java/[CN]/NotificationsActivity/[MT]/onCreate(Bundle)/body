@@ -18,11 +18,11 @@
   GCMIntentService.clearNotificationsMap();
   if (savedInstanceState != null) {
     mHasPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);
-    if (savedInstanceState.containsKey(NOTE_ID_EXTRA)) {
+    if (getIntent().hasExtra(NOTE_ID_EXTRA)) {
+      launchWithNoteId();
+    }
+ else     if (savedInstanceState.getString(NOTE_ID_EXTRA) != null) {
       openNoteForNoteId(savedInstanceState.getString(NOTE_ID_EXTRA));
-      if (DisplayUtils.isLandscapeTablet(this) && savedInstanceState.containsKey(KEY_LIST_POSITION)) {
-        mNotesListFragment.setSelectedPosition(savedInstanceState.getInt(KEY_LIST_POSITION));
-      }
     }
   }
  else {
