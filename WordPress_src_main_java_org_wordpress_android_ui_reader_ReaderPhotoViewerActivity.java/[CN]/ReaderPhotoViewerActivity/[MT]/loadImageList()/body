@@ -1,29 +1,20 @@
 {
-  if (TextUtils.isEmpty(mContent)) {
-    final ReaderImageList imageList=new ReaderImageList(mIsPrivate);
-    if (!TextUtils.isEmpty(mInitialImageUrl)) {
-      imageList.add(mInitialImageUrl);
-    }
-    setImageList(imageList,mInitialImageUrl);
-  }
- else {
-    new Thread(){
-      @Override public void run(){
-        final ReaderImageList imageList=new ReaderImageScanner(mContent,mIsPrivate).getImageList();
-        if (!TextUtils.isEmpty(mInitialImageUrl) && !imageList.hasImageUrl(mInitialImageUrl)) {
-          AppLog.w(AppLog.T.READER,"reader photo viewer > initial image not in list");
-          imageList.addImageUrl(0,mInitialImageUrl);
-        }
-        runOnUiThread(new Runnable(){
-          @Override public void run(){
-            if (!isFinishing()) {
-              setImageList(imageList,mInitialImageUrl);
-            }
+  new Thread(){
+    @Override public void run(){
+      ReaderImageScanner scanner=new ReaderImageScanner(mContent,mIsPrivate);
+      final ReaderImageList imageList=scanner.getImageList();
+      if (!TextUtils.isEmpty(mInitialImageUrl) && !imageList.hasImageUrl(mInitialImageUrl)) {
+        imageList.addImageUrl(0,mInitialImageUrl);
+      }
+      runOnUiThread(new Runnable(){
+        @Override public void run(){
+          if (!isFinishing()) {
+            setImageList(imageList,mInitialImageUrl);
           }
         }
-);
       }
+);
     }
-.start();
   }
+.start();
 }

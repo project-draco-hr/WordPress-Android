@@ -6,13 +6,12 @@
   if (!result) {
     if (!mHasAlreadyRequestedPost) {
       mHasAlreadyRequestedPost=true;
-      AppLog.i(T.READER,"reader post detail > post not found, requesting it");
       requestPost();
     }
     return;
   }
-  mRenderer=new ReaderPostRenderer(mReaderWebView,mPost);
-  mRenderer.beginRender();
+  mReaderWebView.getSettings().setJavaScriptEnabled(canEnableJavaScript());
+  mReaderWebView.loadDataWithBaseURL(null,postHtml,"text/html","UTF-8",null);
   txtTitle.setText(mPost.hasTitle() ? mPost.getTitle() : getString(R.string.reader_untitled_post));
   ReaderUtils.showFollowStatus(txtFollow,mPost.isFollowedByCurrentUser);
   txtFollow.setOnClickListener(new View.OnClickListener(){
@@ -39,7 +38,7 @@
     txtDateAndAuthor.setText(DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished()));
   }
   if (mPost.hasPostAvatar()) {
-    imgAvatar.setImageUrl(mPost.getPostAvatarForDisplay(mResourceVars.likeAvatarSizePx),WPNetworkImageView.ImageType.AVATAR);
+    imgAvatar.setImageUrl(mPost.getPostAvatarForDisplay(mResourceVars.likeAvatarSize),WPNetworkImageView.ImageType.AVATAR);
     imgAvatar.setVisibility(View.VISIBLE);
   }
  else {
