@@ -1,0 +1,22 @@
+{
+  final MenuDrawer menuDrawer;
+  ActionBar actionBar=getActionBar();
+  if (isStaticMenuDrawer()) {
+    menuDrawer=MenuDrawer.attach(this,MenuDrawer.Type.STATIC,Position.LEFT);
+    if (actionBar != null) {
+      actionBar.setDisplayHomeAsUpEnabled(false);
+    }
+  }
+ else {
+    menuDrawer=MenuDrawer.attach(this,MenuDrawer.Type.OVERLAY);
+    if (actionBar != null) {
+      actionBar.setDisplayHomeAsUpEnabled(true);
+    }
+    menuDrawer.setDrawerIndicatorEnabled(true);
+  }
+  int shadowSizeInPixels=getResources().getDimensionPixelSize(R.dimen.menu_shadow_width);
+  menuDrawer.setDropShadowSize(shadowSizeInPixels);
+  menuDrawer.setDropShadowColor(getResources().getColor(R.color.md__shadowColor));
+  menuDrawer.setSlideDrawable(R.drawable.ic_drawer);
+  return menuDrawer;
+}

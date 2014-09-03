@@ -1,0 +1,42 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.reader_activity_subs);
+  restoreState(savedInstanceState);
+  mViewPager=(ViewPager)findViewById(R.id.viewpager);
+  mViewPager.setAdapter(getPageAdapter());
+  ActionBar actionBar=getActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayShowTitleEnabled(true);
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
+  PagerTabStrip tabStrip=(PagerTabStrip)findViewById(R.id.pager_tabs);
+  tabStrip.setTabIndicatorColorResource(R.color.blue_medium);
+  tabStrip.setBackgroundColor(getResources().getColor(R.color.grey_extra_light));
+  mEditAdd=(EditText)findViewById(R.id.edit_add);
+  mEditAdd.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+    @Override public boolean onEditorAction(    TextView v,    int actionId,    KeyEvent event){
+      if (actionId == EditorInfo.IME_ACTION_DONE) {
+        addCurrentEntry();
+      }
+      return false;
+    }
+  }
+);
+  mBtnAdd=(ImageButton)findViewById(R.id.btn_add);
+  mBtnAdd.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      addCurrentEntry();
+    }
+  }
+);
+  if (savedInstanceState == null) {
+    restorePreviousPage();
+  }
+  mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+    @Override public void onPageSelected(    int position){
+      String pageTitle=(String)getPageAdapter().getPageTitle(position);
+      AppPrefs.setReaderSubsPageTitle(pageTitle);
+    }
+  }
+);
+}

@@ -1,0 +1,22 @@
+{
+  AppLog.i(AppLog.T.READER,"onShowCustomView");
+  if (mCustomView != null) {
+    AppLog.w(AppLog.T.READER,"customView already showing");
+    onHideCustomView();
+    return;
+  }
+  ViewGroup contentView=getContentView();
+  if (contentView != null) {
+    contentView.setVisibility(View.INVISIBLE);
+  }
+  ViewGroup targetView=getTargetView();
+  if (targetView != null) {
+    targetView.addView(view);
+    targetView.setVisibility(View.VISIBLE);
+  }
+  if (mReaderWebView.hasCustomViewListener()) {
+    mReaderWebView.getCustomViewListener().onCustomViewShown();
+  }
+  mCustomView=view;
+  mCustomViewCallback=callback;
+}

@@ -1,0 +1,30 @@
+{
+  if (jsonObject == null) {
+    return;
+  }
+  final Handler handler=new Handler();
+  new Thread(){
+    @Override public void run(){
+      final ReaderPostList serverPosts=ReaderPostList.fromJson(jsonObject);
+      final int numNewPosts=ReaderPostTable.getNumNewPostsWithTag(tag,serverPosts);
+      if (numNewPosts == 0) {
+        return;
+      }
+      AppLog.i(T.READER,String.format("backfilling tag %s found %d new posts",tag.getTagNameForLog(),numNewPosts));
+      ReaderPostTable.addOrUpdatePosts(tag,serverPosts);
+      handler.post(new Runnable(){
+        public void run(){
+          if (backfillListener != null) {
+            backfillListener.onPostsBackfilled();
+          }
+          boolean areAllPostsNew=(numNewPosts == ReaderConstants.READER_MAX_POSTS_TO_REQUEST);
+          if (areAllPostsNew && recursionCounter < BACKFILL_MAX_RECURSION) {
+            backfillPostsWithTag(tag,serverPosts.getOldestPubDate(),recursionCounter + 1,backfillListener);
+          }
+        }
+      }
+);
+    }
+  }
+.start();
+}

@@ -1,0 +1,29 @@
+{
+  if (mAdapter == null) {
+    mAdapter=new ReaderReblogAdapter(this,mBlogId,new ReaderInterfaces.DataLoadedListener(){
+      @Override public void onDataLoaded(      boolean isEmpty){
+        final TextView txtEmpty=(TextView)findViewById(R.id.text_empty);
+        final View scrollView=findViewById(R.id.scroll_view);
+        if (isEmpty) {
+          String emptyMsg=getString(R.string.reader_label_reblog_empty);
+          String emptyLink="<a href='settings'>" + getString(R.string.reader_label_reblog_empty_link) + "</a>";
+          txtEmpty.setText(Html.fromHtml(emptyMsg + "<br /><br />" + emptyLink));
+          txtEmpty.setOnClickListener(new View.OnClickListener(){
+            @Override public void onClick(            View v){
+              Intent i=new Intent(ReaderReblogActivity.this,PreferencesActivity.class);
+              startActivityForResult(i,INTENT_SETTINGS);
+            }
+          }
+);
+        }
+        txtEmpty.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        scrollView.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+        if (!isEmpty && mDestinationBlogId != 0) {
+          selectBlogInActionbar(mDestinationBlogId);
+        }
+      }
+    }
+);
+  }
+  return mAdapter;
+}

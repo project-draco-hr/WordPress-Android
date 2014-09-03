@@ -1,0 +1,32 @@
+{
+  AppLog.d(T.READER,"reader post detail > refreshLikes");
+  if (!isAdded() || !hasPost() || !mPost.isWP()|| !mPost.isLikesEnabled) {
+    return;
+  }
+  final TextView txtLikeCount=(TextView)mLayoutLikes.findViewById(R.id.text_like_count);
+  txtLikeCount.setText(ReaderUtils.getLongLikeLabelText(getActivity(),mPost.numLikes,mPost.isLikedByCurrentUser));
+  final ImageView imgBtnLike=(ImageView)getView().findViewById(R.id.image_like_btn);
+  imgBtnLike.setSelected(mPost.isLikedByCurrentUser);
+  imgBtnLike.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View view){
+      togglePostLike(mPost,imgBtnLike);
+    }
+  }
+);
+  if (mPost.numLikes == 0) {
+    if (mLayoutLikes.getVisibility() != View.GONE) {
+      ReaderAnim.fadeOut(mLayoutLikes,ReaderAnim.Duration.SHORT);
+    }
+    return;
+  }
+  mLayoutLikes.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View view){
+      ReaderActivityLauncher.showReaderLikingUsers(getActivity(),mPost);
+    }
+  }
+);
+  if (mLayoutLikes.getVisibility() != View.VISIBLE) {
+    ReaderAnim.fadeIn(mLayoutLikes,ReaderAnim.Duration.SHORT);
+  }
+  mLikingUsersView.showLikingUsers(mPost);
+}

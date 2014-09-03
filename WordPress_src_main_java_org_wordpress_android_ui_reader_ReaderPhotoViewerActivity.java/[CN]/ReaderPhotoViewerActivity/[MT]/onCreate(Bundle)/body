@@ -1,0 +1,26 @@
+{
+  super.onCreate(savedInstanceState);
+  requestWindowFeature(Window.FEATURE_NO_TITLE);
+  setContentView(R.layout.reader_activity_photo_viewer);
+  mViewPager=(ViewPager)findViewById(R.id.viewpager);
+  mTxtTitle=(TextView)findViewById(R.id.text_title);
+  mTxtTitle.setVisibility(View.GONE);
+  if (savedInstanceState != null) {
+    mInitialImageUrl=savedInstanceState.getString(ReaderConstants.ARG_IMAGE_URL);
+    mIsPrivate=savedInstanceState.getBoolean(ReaderConstants.ARG_IS_PRIVATE);
+    mContent=savedInstanceState.getString(ReaderConstants.ARG_CONTENT);
+  }
+ else   if (getIntent() != null) {
+    mInitialImageUrl=getIntent().getStringExtra(ReaderConstants.ARG_IMAGE_URL);
+    mIsPrivate=getIntent().getBooleanExtra(ReaderConstants.ARG_IS_PRIVATE,false);
+    mContent=getIntent().getStringExtra(ReaderConstants.ARG_CONTENT);
+  }
+  mViewPager.setPageTransformer(false,new ReaderViewPagerTransformer(TransformType.FLOW));
+  mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+    @Override public void onPageSelected(    int position){
+      updateTitle(position);
+    }
+  }
+);
+  loadImageList();
+}

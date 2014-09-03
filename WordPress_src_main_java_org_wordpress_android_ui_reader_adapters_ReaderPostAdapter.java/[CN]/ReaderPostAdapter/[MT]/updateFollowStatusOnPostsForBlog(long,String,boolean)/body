@@ -1,0 +1,21 @@
+{
+  if (isEmpty()) {
+    return;
+  }
+  boolean hasBlogId=(blogId != 0);
+  boolean hasBlogUrl=!TextUtils.isEmpty(blogUrl);
+  if (!hasBlogId && !hasBlogUrl) {
+    return;
+  }
+  boolean isChanged=false;
+  for (  ReaderPost post : mPosts) {
+    boolean isMatched=(hasBlogId ? (blogId == post.blogId) : blogUrl.equals(post.getBlogUrl()));
+    if (isMatched) {
+      post.isFollowedByCurrentUser=followStatus;
+      isChanged=true;
+    }
+  }
+  if (isChanged) {
+    notifyDataSetChanged();
+  }
+}

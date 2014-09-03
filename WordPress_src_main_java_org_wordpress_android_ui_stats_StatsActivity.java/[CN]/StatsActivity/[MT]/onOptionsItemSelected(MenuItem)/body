@@ -1,0 +1,29 @@
+{
+  if (item.getItemId() == R.id.menu_view_stats_full_site) {
+    final String blogId=StatsUtils.getBlogId(mLocalBlogID);
+    if (blogId == null) {
+      showJetpackMissingAlert(this);
+      return true;
+    }
+    StatsUtils.StatsCredentials credentials=StatsUtils.getBlogStatsCredentials(mLocalBlogID);
+    if (credentials == null) {
+      Toast.makeText(this,R.string.jetpack_message_not_admin,Toast.LENGTH_LONG).show();
+      return true;
+    }
+    String statsAuthenticatedUser=credentials.getUsername();
+    String statsAuthenticatedPassword=credentials.getPassword();
+    String addressToLoad="https://wordpress.com/my-stats/?no-chrome&blog=" + blogId + "&unit=1";
+    Intent statsWebViewIntent=new Intent(this,StatsWebViewActivity.class);
+    statsWebViewIntent.putExtra(StatsWebViewActivity.STATS_AUTHENTICATED_USER,statsAuthenticatedUser);
+    statsWebViewIntent.putExtra(StatsWebViewActivity.STATS_AUTHENTICATED_PASSWD,statsAuthenticatedPassword);
+    statsWebViewIntent.putExtra(StatsWebViewActivity.STATS_AUTHENTICATED_URL,addressToLoad);
+    startActivityWithDelay(statsWebViewIntent);
+    AnalyticsTracker.track(AnalyticsTracker.Stat.STATS_OPENED_WEB_VERSION);
+    return true;
+  }
+ else   if (mNoMenuDrawer && item.getItemId() == android.R.id.home) {
+    onBackPressed();
+    return true;
+  }
+  return super.onOptionsItemSelected(item);
+}

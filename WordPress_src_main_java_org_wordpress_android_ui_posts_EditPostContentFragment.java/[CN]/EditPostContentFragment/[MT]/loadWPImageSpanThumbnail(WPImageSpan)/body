@@ -1,0 +1,64 @@
+{
+  MediaFile mediaFile=imageSpan.getMediaFile();
+  if (mediaFile == null)   return;
+  final String mediaId=mediaFile.getMediaId();
+  if (mediaId == null)   return;
+  String imageURL;
+  if (WordPress.getCurrentBlog() != null && WordPress.getCurrentBlog().isPhotonCapable()) {
+    String photonUrl=imageSpan.getImageSource().toString();
+    imageURL=StringUtils.getPhotonUrl(photonUrl,getMaximumThumbnailWidth());
+  }
+ else {
+    imageURL=mediaFile.getFileURL() != null ? mediaFile.getFileURL() : mediaFile.getThumbnailURL();
+  }
+  if (imageURL == null)   return;
+  WordPress.imageLoader.get(imageURL,new ImageLoader.ImageListener(){
+    @Override public void onErrorResponse(    VolleyError arg0){
+    }
+    @Override public void onResponse(    ImageLoader.ImageContainer container,    boolean arg1){
+      if (!isAdded()) {
+        return;
+      }
+      Bitmap downloadedBitmap=container.getBitmap();
+      if (downloadedBitmap == null) {
+        return;
+      }
+      if (downloadedBitmap.getWidth() < MIN_THUMBNAIL_WIDTH) {
+        return;
+      }
+      Bitmap resizedBitmap;
+      int maxWidth=getMaximumThumbnailWidth();
+      try {
+        resizedBitmap=ImageUtils.getScaledBitmapAtLongestSide(downloadedBitmap,maxWidth);
+      }
+ catch (      OutOfMemoryError er) {
+        CrashlyticsUtils.setInt(ExtraKey.IMAGE_WIDTH,downloadedBitmap.getWidth());
+        CrashlyticsUtils.setInt(ExtraKey.IMAGE_HEIGHT,downloadedBitmap.getHeight());
+        CrashlyticsUtils.setFloat(ExtraKey.IMAGE_RESIZE_SCALE,((float)maxWidth) / downloadedBitmap.getWidth());
+        CrashlyticsUtils.logException(er,ExceptionType.SPECIFIC,T.POSTS);
+        return;
+      }
+      if (resizedBitmap == null)       return;
+      Editable s=mContentEditText.getText();
+      if (s == null)       return;
+      WPImageSpan[] spans=s.getSpans(0,s.length(),WPImageSpan.class);
+      if (spans.length != 0) {
+        for (        WPImageSpan is : spans) {
+          MediaFile mediaFile=is.getMediaFile();
+          if (mediaFile == null)           continue;
+          if (mediaId.equals(mediaFile.getMediaId()) && !is.isNetworkImageLoaded() && isAdded()) {
+            int spanStart=s.getSpanStart(is);
+            int spanEnd=s.getSpanEnd(is);
+            WPImageSpan imageSpan=new WPImageSpan(getActivity(),resizedBitmap,is.getImageSource());
+            imageSpan.setMediaFile(is.getMediaFile());
+            imageSpan.setNetworkImageLoaded(true);
+            s.removeSpan(is);
+            s.setSpan(imageSpan,spanStart,spanEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            break;
+          }
+        }
+      }
+    }
+  }
+,0,0);
+}

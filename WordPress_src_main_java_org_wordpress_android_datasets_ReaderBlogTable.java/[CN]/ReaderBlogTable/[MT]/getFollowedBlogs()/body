@@ -1,0 +1,17 @@
+{
+  Cursor c=ReaderDatabase.getReadableDb().rawQuery("SELECT * FROM tbl_blog_info WHERE is_following!=0 ORDER BY name COLLATE NOCASE, blog_url",null);
+  try {
+    ReaderBlogList blogs=new ReaderBlogList();
+    if (c.moveToFirst()) {
+      do {
+        ReaderBlog blogInfo=getBlogInfoFromCursor(c);
+        blogs.add(blogInfo);
+      }
+ while (c.moveToNext());
+    }
+    return blogs;
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+}

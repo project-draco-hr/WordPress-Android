@@ -1,0 +1,32 @@
+{
+  requestWindowFeature(Window.FEATURE_PROGRESS);
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.webview);
+  ActionBar actionBar=getActionBar();
+  setTitle(R.string.view_admin);
+  if (actionBar != null) {
+    actionBar.setDisplayHomeAsUpEnabled(true);
+    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+    actionBar.setDisplayShowTitleEnabled(true);
+  }
+  mWebView=(WebView)findViewById(R.id.webView);
+  mWebView.getSettings().setUserAgentString(WordPress.getUserAgent());
+  mWebView.getSettings().setJavaScriptEnabled(true);
+  mWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+  Bundle extras=getIntent().getExtras();
+  if (extras != null && extras.containsKey("blogID")) {
+    mBlog=WordPress.wpDB.instantiateBlogByLocalId(extras.getInt("blogID",-1));
+    if (mBlog == null) {
+      mBlog=WordPress.getCurrentBlog();
+    }
+  }
+  if (mBlog == null) {
+    Toast.makeText(this,getResources().getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
+    finish();
+  }
+  mWebView.setWebViewClient(new WPWebViewClient(mBlog));
+  mWebView.setWebChromeClient(new WPWebChromeClient(this,(ProgressBar)findViewById(R.id.progress_bar)));
+  mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+  mWebView.getSettings().setSavePassword(false);
+  loadDashboard();
+}

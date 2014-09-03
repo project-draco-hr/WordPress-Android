@@ -1,0 +1,20 @@
+{
+  int itemId=item.getItemId();
+  if (itemId == R.id.menu_new_category) {
+    Bundle bundle=new Bundle();
+    bundle.putInt("id",blog.getLocalTableBlogId());
+    Intent i=new Intent(SelectCategoriesActivity.this,AddCategoryActivity.class);
+    i.putExtras(bundle);
+    startActivityForResult(i,0);
+    return true;
+  }
+ else   if (itemId == android.R.id.home) {
+    saveAndFinish();
+    return true;
+  }
+ else   if (item.getItemId() == R.id.menu_refresh) {
+    WordPress.sendLocalBroadcast(this,PullToRefreshHelper.BROADCAST_ACTION_REFRESH_MENU_PRESSED);
+    return true;
+  }
+  return super.onOptionsItemSelected(item);
+}

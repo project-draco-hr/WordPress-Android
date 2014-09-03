@@ -1,0 +1,17 @@
+{
+  if (comment == null) {
+    return;
+  }
+  long currentUserId=AppPrefs.getCurrentUserId();
+  if (isLiked) {
+    ContentValues values=new ContentValues();
+    values.put("blog_id",comment.blogId);
+    values.put("comment_id",comment.commentId);
+    values.put("user_id",currentUserId);
+    ReaderDatabase.getWritableDb().insert("tbl_comment_likes",null,values);
+  }
+ else {
+    String args[]={Long.toString(comment.blogId),Long.toString(comment.commentId),Long.toString(currentUserId)};
+    ReaderDatabase.getWritableDb().delete("tbl_comment_likes","blog_id=? AND comment_id=? AND user_id=?",args);
+  }
+}

@@ -1,0 +1,20 @@
+{
+  try {
+    JSONObject statsObject=stat.getJSONObject("stats");
+    String day=stat.getString("day");
+    statsObject.put("day",day);
+    FileOutputStream fos=WordPress.getContext().openFileOutput(STAT_SUMMARY + blogId,Context.MODE_PRIVATE);
+    fos.write(statsObject.toString().getBytes());
+    fos.close();
+  }
+ catch (  FileNotFoundException e) {
+    AppLog.e(T.STATS,e);
+  }
+catch (  IOException e) {
+    AppLog.e(T.STATS,e);
+  }
+catch (  JSONException e) {
+    AppLog.e(T.STATS,e);
+  }
+  saveGraphData(blogId,stat);
+}

@@ -1,0 +1,18 @@
+{
+  if (tagList == null || tagList.size() == 0) {
+    return;
+  }
+  SQLiteStatement stmt=null;
+  try {
+    stmt=ReaderDatabase.getWritableDb().compileStatement("INSERT OR REPLACE INTO tbl_tags (" + COLUMN_NAMES + ") VALUES (?1,?2,?3)");
+    for (    ReaderTag tag : tagList) {
+      stmt.bindString(1,tag.getTagName());
+      stmt.bindLong(2,tag.tagType.toInt());
+      stmt.bindString(3,tag.getEndpoint());
+      stmt.execute();
+    }
+  }
+  finally {
+    SqlUtils.closeStatement(stmt);
+  }
+}

@@ -1,0 +1,27 @@
+{
+  if (tagList == null) {
+    return;
+  }
+  SQLiteDatabase db=ReaderDatabase.getWritableDb();
+  SQLiteStatement stmt=db.compileStatement("INSERT INTO tbl_tags_recommended (" + COLUMN_NAMES + ") VALUES (?1,?2,?3)");
+  db.beginTransaction();
+  try {
+    try {
+      db.execSQL("DELETE FROM tbl_tags_recommended");
+      for (      ReaderTag tag : tagList) {
+        stmt.bindString(1,tag.getTagName());
+        stmt.bindLong(2,tag.tagType.toInt());
+        stmt.bindString(3,tag.getEndpoint());
+        stmt.execute();
+      }
+      db.setTransactionSuccessful();
+    }
+ catch (    SQLException e) {
+      AppLog.e(T.READER,e);
+    }
+  }
+  finally {
+    SqlUtils.closeStatement(stmt);
+    db.endTransaction();
+  }
+}

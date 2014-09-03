@@ -1,0 +1,14 @@
+{
+  boolean isAskingToLike=!post.isLikedByCurrentUser;
+  ReaderAnim.animateLikeButton(holder.imgBtnLike,isAskingToLike);
+  if (!ReaderPostActions.performLikeAction(post,isAskingToLike)) {
+    return;
+  }
+  if (isAskingToLike) {
+    AnalyticsTracker.track(AnalyticsTracker.Stat.READER_LIKED_ARTICLE);
+  }
+  ReaderPost updatedPost=ReaderPostTable.getPost(post.blogId,post.postId);
+  mPosts.set(position,updatedPost);
+  showLikeStatus(holder.imgBtnLike,updatedPost.isLikedByCurrentUser);
+  showCounts(holder,post,true);
+}

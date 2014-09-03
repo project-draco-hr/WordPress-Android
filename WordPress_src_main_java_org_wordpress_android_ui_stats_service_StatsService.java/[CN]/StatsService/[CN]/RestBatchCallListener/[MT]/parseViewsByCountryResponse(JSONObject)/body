@@ -1,0 +1,46 @@
+{
+  String currentServiceBlogId=getServiceBlogId();
+  if (currentServiceBlogId == null || !currentServiceBlogId.equals(mRequestBlogId)) {
+    return;
+  }
+  String[] viewsByCountryPaths={mViewByCountryTodayPath,mViewByCountryYesterdayPath};
+  for (  String currentViewsByCountryPath : viewsByCountryPaths) {
+    if (response.has(currentViewsByCountryPath)) {
+      try {
+        final JSONObject currentViewsByCountryJsonObject=response.getJSONObject(currentViewsByCountryPath);
+        if (!isSingleCallResponseError(currentViewsByCountryPath,currentViewsByCountryJsonObject)) {
+          if (!currentViewsByCountryJsonObject.has("country-views")) {
+            return;
+          }
+          JSONArray results=currentViewsByCountryJsonObject.getJSONArray("country-views");
+          int count=Math.min(results.length(),StatsUIHelper.STATS_GROUP_MAX_ITEMS);
+          String date=currentViewsByCountryJsonObject.getString("date");
+          long dateMs=StatsUtils.toMs(date);
+          ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
+          if (count > 0) {
+            ContentProviderOperation deleteOp=ContentProviderOperation.newDelete(StatsContentProvider.STATS_GEOVIEWS_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mRequestBlogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
+            operations.add(deleteOp);
+          }
+          for (int i=0; i < count; i++) {
+            JSONObject result=results.getJSONObject(i);
+            StatsGeoview stat=new StatsGeoview(mRequestBlogId,result);
+            ContentValues values=StatsGeoviewsTable.getContentValues(stat);
+            ContentProviderOperation op=ContentProviderOperation.newInsert(StatsContentProvider.STATS_GEOVIEWS_URI).withValues(values).build();
+            operations.add(op);
+          }
+          getContentResolver().applyBatch(BuildConfig.STATS_PROVIDER_AUTHORITY,operations);
+        }
+      }
+ catch (      RemoteException e) {
+        logSingleCallError(currentViewsByCountryPath,e);
+      }
+catch (      OperationApplicationException e) {
+        logSingleCallError(currentViewsByCountryPath,e);
+      }
+catch (      JSONException e) {
+        logSingleCallError(currentViewsByCountryPath,e);
+      }
+    }
+  }
+  getContentResolver().notifyChange(StatsContentProvider.STATS_GEOVIEWS_URI,null);
+}
