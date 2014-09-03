@@ -1,0 +1,45 @@
+{
+  super.onActivityResult(requestCode,resultCode,data);
+  if (requestCode == WPComLoginActivity.REQUEST_CODE) {
+    mResultCode=resultCode;
+    final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
+    if (resultCode == RESULT_OK && currentBlog != null && !currentBlog.isDotcomFlag()) {
+      if (StatsUtils.getBlogId(mLocalBlogID) == null) {
+        final Handler handler=new Handler();
+        XMLRPCClientInterface xmlrpcClient=XMLRPCFactory.instantiate(currentBlog.getUri(),"","");
+        Map<String,String> args=ApiHelper.blogOptionsXMLRPCParameters;
+        Object[] params={currentBlog.getRemoteBlogId(),currentBlog.getUsername(),currentBlog.getPassword(),args};
+        xmlrpcClient.callAsync(new XMLRPCCallback(){
+          @Override public void onSuccess(          long id,          Object result){
+            if (result != null && (result instanceof HashMap)) {
+              Map<?,?> blogOptions=(HashMap<?,?>)result;
+              ApiHelper.updateBlogOptions(currentBlog,blogOptions);
+              AnalyticsTracker.refreshMetadata();
+              AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNED_INTO_JETPACK);
+              AnalyticsTracker.track(AnalyticsTracker.Stat.PERFORMED_JETPACK_SIGN_IN_FROM_STATS_SCREEN);
+              if (!isFinishing()) {
+                mPullToRefreshHelper.setRefreshing(true);
+                refreshStats();
+              }
+            }
+          }
+          @Override public void onFailure(          long id,          Exception error){
+            AppLog.e(T.STATS,"Cannot load blog options (wp.getOptions failed) " + "and no jetpack_client_id is then available",error);
+            handler.post(new Runnable(){
+              @Override public void run(){
+                mPullToRefreshHelper.setRefreshing(false);
+                ToastUtils.showToast(StatsActivity.this,StatsActivity.this.getString(R.string.error_refresh_stats),Duration.LONG);
+              }
+            }
+);
+          }
+        }
+,"wp.getOptions",params);
+      }
+ else {
+        refreshStats();
+      }
+      mPullToRefreshHelper.setRefreshing(true);
+    }
+  }
+}

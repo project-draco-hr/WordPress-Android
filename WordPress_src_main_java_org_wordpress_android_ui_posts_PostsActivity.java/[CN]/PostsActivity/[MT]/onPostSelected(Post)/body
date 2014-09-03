@@ -1,0 +1,23 @@
+{
+  if (isFinishing() || isActivityDestroyed()) {
+    return;
+  }
+  FragmentManager fm=getFragmentManager();
+  ViewPostFragment viewPostFragment=(ViewPostFragment)fm.findFragmentById(R.id.postDetail);
+  if (post != null) {
+    WordPress.currentPost=post;
+    if (viewPostFragment == null || !viewPostFragment.isInLayout()) {
+      FragmentTransaction ft=fm.beginTransaction();
+      ft.hide(mPostList);
+      viewPostFragment=new ViewPostFragment();
+      ft.add(R.id.postDetailFragmentContainer,viewPostFragment);
+      ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+      ft.addToBackStack(null);
+      ft.commitAllowingStateLoss();
+      mMenuDrawer.setDrawerIndicatorEnabled(false);
+    }
+ else {
+      viewPostFragment.loadPost(post);
+    }
+  }
+}

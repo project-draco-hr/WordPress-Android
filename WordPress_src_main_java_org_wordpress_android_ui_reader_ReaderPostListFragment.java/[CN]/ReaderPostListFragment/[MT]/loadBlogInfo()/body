@@ -1,0 +1,23 @@
+{
+  if (mBlogInfoView != null && mBlogInfoView.isEmpty()) {
+    AppLog.d(T.READER,"reader post list > loading blogInfo");
+    mBlogInfoView.loadBlogInfo(mCurrentBlogId,mCurrentBlogUrl,new ReaderBlogInfoView.BlogInfoListener(){
+      @Override public void onBlogInfoLoaded(){
+      }
+      @Override public void onBlogInfoFailed(){
+        if (isAdded()) {
+          ToastUtils.showToast(getActivity(),R.string.reader_toast_err_get_blog_info);
+          new Handler().postDelayed(new Runnable(){
+            @Override public void run(){
+              if (isAdded()) {
+                getActivity().onBackPressed();
+              }
+            }
+          }
+,1000);
+        }
+      }
+    }
+);
+  }
+}

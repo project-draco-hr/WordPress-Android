@@ -1,0 +1,22 @@
+{
+  if (cert == null)   return false;
+  Bundle bundle=SslCertificate.saveState(cert);
+  X509Certificate x509Certificate;
+  byte[] bytes=bundle.getByteArray("x509-certificate");
+  if (bytes == null) {
+    AppLog.e(T.API,"Cannot load the SSLCertificate bytes from the bundle!");
+    x509Certificate=null;
+  }
+ else {
+    try {
+      CertificateFactory certFactory=CertificateFactory.getInstance("X.509");
+      Certificate certX509=certFactory.generateCertificate(new ByteArrayInputStream(bytes));
+      x509Certificate=(X509Certificate)certX509;
+    }
+ catch (    CertificateException e) {
+      AppLog.e(T.API,"Cannot generate the X509Certificate with the bytes provided",e);
+      x509Certificate=null;
+    }
+  }
+  return isCertificateTrusted(x509Certificate);
+}

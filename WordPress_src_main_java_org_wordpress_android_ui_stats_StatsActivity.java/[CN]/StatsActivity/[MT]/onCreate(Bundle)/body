@@ -1,0 +1,60 @@
+{
+  super.onCreate(savedInstanceState);
+  if (WordPress.wpDB == null) {
+    Toast.makeText(this,R.string.fatal_db_error,Toast.LENGTH_LONG).show();
+    finish();
+    return;
+  }
+  if (savedInstanceState == null) {
+    AnalyticsTracker.track(AnalyticsTracker.Stat.STATS_ACCESSED);
+  }
+  mNoMenuDrawer=getIntent().getBooleanExtra(ARG_NO_MENU_DRAWER,false);
+  if (mNoMenuDrawer) {
+    setContentView(R.layout.stats_activity);
+    ActionBar actionBar=getActionBar();
+    if (actionBar != null) {
+      actionBar.setDisplayHomeAsUpEnabled(true);
+    }
+  }
+ else {
+    createMenuDrawer(R.layout.stats_activity);
+  }
+  mFragmentContainer=(LinearLayout)findViewById(R.id.stats_fragment_container);
+  mPullToRefreshHelper=new PullToRefreshHelper(this,(PullToRefreshLayout)findViewById(R.id.ptr_layout),new RefreshListener(){
+    @Override public void onRefreshStarted(    View view){
+      if (!NetworkUtils.checkConnection(getBaseContext())) {
+        mPullToRefreshHelper.setRefreshing(false);
+        return;
+      }
+      refreshStats();
+    }
+  }
+);
+  setTitle(R.string.stats);
+  if (savedInstanceState != null) {
+    mNavPosition=savedInstanceState.getInt(SAVED_NAV_POSITION);
+    mResultCode=savedInstanceState.getInt(SAVED_WP_LOGIN_STATE);
+    mLocalBlogID=savedInstanceState.getInt(ARG_LOCAL_TABLE_BLOG_ID);
+  }
+ else   if (getIntent() != null) {
+    mLocalBlogID=getIntent().getIntExtra(ARG_LOCAL_TABLE_BLOG_ID,-1);
+  }
+  final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
+  if (currentBlog == null) {
+    AppLog.e(T.STATS,"The blog with local_blog_id " + mLocalBlogID + " cannot be loaded from the DB.");
+    Toast.makeText(this,R.string.stats_no_blog,Toast.LENGTH_LONG).show();
+    finish();
+    return;
+  }
+  loadStatsFragments();
+  mDetector=new GestureDetectorCompat(this,new MyGestureListener());
+  mDetector.setIsLongpressEnabled(false);
+  if (NetworkUtils.isNetworkAvailable(this) && savedInstanceState == null) {
+    refreshStats();
+    mPullToRefreshHelper.setRefreshing(true);
+  }
+  ScrollViewExt scrollView=(ScrollViewExt)findViewById(R.id.scroll_view_stats);
+  if (scrollView != null) {
+    scrollView.setScrollViewListener(this);
+  }
+}

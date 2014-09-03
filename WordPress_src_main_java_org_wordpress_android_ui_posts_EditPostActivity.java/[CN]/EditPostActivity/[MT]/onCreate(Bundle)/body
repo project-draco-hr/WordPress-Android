@@ -1,0 +1,84 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.activity_new_edit_post);
+  final ActionBar actionBar=getActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
+  Bundle extras=getIntent().getExtras();
+  String action=getIntent().getAction();
+  if (savedInstanceState == null) {
+    if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action) || EditPostContentFragment.NEW_MEDIA_GALLERY.equals(action)|| EditPostContentFragment.NEW_MEDIA_POST.equals(action)|| getIntent().hasExtra(EXTRA_IS_QUICKPRESS)|| (extras != null && extras.getInt("quick-media",-1) > -1)) {
+      if (getIntent().hasExtra(EXTRA_QUICKPRESS_BLOG_ID)) {
+        int blogId=getIntent().getIntExtra(EXTRA_QUICKPRESS_BLOG_ID,-1);
+        Blog quickPressBlog=WordPress.wpDB.instantiateBlogByLocalId(blogId);
+        if (quickPressBlog == null) {
+          showErrorAndFinish(R.string.blog_not_found);
+          return;
+        }
+        if (quickPressBlog.isHidden()) {
+          showErrorAndFinish(R.string.error_blog_hidden);
+          return;
+        }
+        WordPress.currentBlog=quickPressBlog;
+      }
+      mPost=new Post(WordPress.getCurrentLocalTableBlogId(),false);
+      WordPress.wpDB.savePost(mPost);
+      mIsNewPost=true;
+    }
+ else     if (extras != null) {
+      long localTablePostId=extras.getLong(EXTRA_POSTID,-1);
+      boolean isPage=extras.getBoolean(EXTRA_IS_PAGE);
+      mIsNewPost=extras.getBoolean(EXTRA_IS_NEW_POST);
+      mPost=WordPress.wpDB.getPostForLocalTablePostId(localTablePostId);
+      mOriginalPost=WordPress.wpDB.getPostForLocalTablePostId(localTablePostId);
+    }
+ else {
+      showErrorAndFinish(R.string.post_not_found);
+      return;
+    }
+  }
+ else   if (savedInstanceState.containsKey(STATE_KEY_ORIGINAL_POST)) {
+    try {
+      mPost=(Post)savedInstanceState.getSerializable(STATE_KEY_CURRENT_POST);
+      mOriginalPost=(Post)savedInstanceState.getSerializable(STATE_KEY_ORIGINAL_POST);
+    }
+ catch (    ClassCastException e) {
+      mPost=null;
+    }
+  }
+  if (WordPress.getCurrentBlog() == null) {
+    showErrorAndFinish(R.string.blog_not_found);
+    return;
+  }
+  if (mPost == null) {
+    showErrorAndFinish(R.string.post_not_found);
+    return;
+  }
+  setTitle(StringUtils.unescapeHTML(WordPress.getCurrentBlog().getBlogName()));
+  mSectionsPagerAdapter=new SectionsPagerAdapter(getFragmentManager());
+  mViewPager=(WPViewPager)findViewById(R.id.pager);
+  mViewPager.setAdapter(mSectionsPagerAdapter);
+  mViewPager.setOffscreenPageLimit(2);
+  mViewPager.setPagingEnabled(false);
+  mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+    @Override public void onPageSelected(    int position){
+      invalidateOptionsMenu();
+      if (position == PAGE_CONTENT) {
+        setTitle(StringUtils.unescapeHTML(WordPress.getCurrentBlog().getBlogName()));
+      }
+ else       if (position == PAGE_SETTINGS) {
+        setTitle(mPost.isPage() ? R.string.page_settings : R.string.post_settings);
+      }
+ else       if (position == PAGE_PREVIEW) {
+        setTitle(mPost.isPage() ? R.string.preview_page : R.string.preview_post);
+        savePost(true);
+        if (mEditPostPreviewFragment != null) {
+          mEditPostPreviewFragment.loadPost();
+        }
+      }
+    }
+  }
+);
+  ActivityId.trackLastActivity(this,ActivityId.POST_EDITOR);
+}

@@ -1,0 +1,39 @@
+{
+  final String imageUri;
+  if (isLocal) {
+    imageUri=cursor.getString(cursor.getColumnIndex("filePath"));
+  }
+ else {
+    imageUri=cursor.getString(cursor.getColumnIndex("fileURL"));
+  }
+  if (MediaUtils.isValidImage(imageUri)) {
+    int width=cursor.getInt(cursor.getColumnIndex("width"));
+    int height=cursor.getInt(cursor.getColumnIndex("height"));
+    float screenWidth;
+    if (this.isInLayout()) {
+      screenWidth=mLinearLayout.getMeasuredWidth();
+    }
+ else {
+      screenWidth=getActivity().getResources().getDisplayMetrics().widthPixels;
+    }
+    float screenHeight=getActivity().getResources().getDisplayMetrics().heightPixels;
+    if (width > screenWidth) {
+      height=(int)(height / (width / screenWidth));
+    }
+ else     if (height > screenHeight) {
+      width=(int)(width / (height / screenHeight));
+    }
+    if (isLocal) {
+      loadLocalImage(mLocalImageView,imageUri,width,height);
+      mLocalImageView.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,height));
+    }
+ else {
+      mNetworkImageView.setImageUrl(imageUri + "?w=" + screenWidth,mImageLoader);
+      mNetworkImageView.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,height));
+    }
+  }
+ else {
+    mNetworkImageView.setVisibility(View.GONE);
+    mLocalImageView.setVisibility(View.GONE);
+  }
+}

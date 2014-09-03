@@ -1,0 +1,22 @@
+{
+  if (tappedBar < 0 || mStatsDate.length < tappedBar) {
+    return;
+  }
+  String date=mStatsDate[tappedBar];
+  StatsBarChartUnit unit=getBarChartUnit();
+  Map<String,String> properties=new HashMap<String,String>();
+  properties.put("unit",unit.name());
+  AnalyticsTracker.track(AnalyticsTracker.Stat.STATS_TAPPED_BAR_CHART,properties);
+  if (unit == StatsBarChartUnit.DAY) {
+    Intent statsWebViewIntent=new Intent(this.getActivity(),StatsDetailsActivity.class);
+    statsWebViewIntent.putExtra(StatsActivity.STATS_DETAILS_DATE,date);
+    statsWebViewIntent.putExtra(StatsActivity.ARG_LOCAL_TABLE_BLOG_ID,getLocalTableBlogID());
+    this.getActivity().startActivity(statsWebViewIntent);
+  }
+ else {
+    GraphViewDataInterface[] views=mViewsSeries.getData();
+    GraphViewDataInterface[] visitors=mVisitorsSeries.getData();
+    mTooltip.setValues(date,unit,(int)views[tappedBar].getY(),(int)visitors[tappedBar].getY(),mGraphView.getMiddlePointOfTappedBar(tappedBar));
+    mTooltip.showTooltip(true);
+  }
+}

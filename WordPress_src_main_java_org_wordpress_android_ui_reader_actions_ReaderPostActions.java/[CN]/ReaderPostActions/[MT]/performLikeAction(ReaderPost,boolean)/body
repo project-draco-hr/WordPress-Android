@@ -1,0 +1,48 @@
+{
+  final ReaderPost originalPost=ReaderPostTable.getPost(post.blogId,post.postId);
+  if (originalPost != null && originalPost.isLikedByCurrentUser == isAskingToLike) {
+    return true;
+  }
+  post.isLikedByCurrentUser=isAskingToLike;
+  if (isAskingToLike) {
+    post.numLikes++;
+  }
+ else   if (!isAskingToLike && post.numLikes > 0) {
+    post.numLikes--;
+  }
+  ReaderPostTable.addOrUpdatePost(post);
+  ReaderLikeTable.setCurrentUserLikesPost(post,isAskingToLike);
+  final String actionName=isAskingToLike ? "like" : "unlike";
+  String path="sites/" + post.blogId + "/posts/"+ post.postId+ "/likes/";
+  if (isAskingToLike) {
+    path+="new";
+  }
+ else {
+    path+="mine/delete";
+  }
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      AppLog.d(T.READER,String.format("post %s succeeded",actionName));
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      String error=VolleyUtils.errStringFromVolleyError(volleyError);
+      if (TextUtils.isEmpty(error)) {
+        AppLog.w(T.READER,String.format("post %s failed",actionName));
+      }
+ else {
+        AppLog.w(T.READER,String.format("post %s failed (%s)",actionName,error));
+      }
+      AppLog.e(T.READER,volleyError);
+      if (originalPost != null) {
+        ReaderPostTable.addOrUpdatePost(originalPost);
+        ReaderLikeTable.setCurrentUserLikesPost(post,originalPost.isLikedByCurrentUser);
+      }
+    }
+  }
+;
+  WordPress.getRestClientUtils().post(path,listener,errorListener);
+  return true;
+}

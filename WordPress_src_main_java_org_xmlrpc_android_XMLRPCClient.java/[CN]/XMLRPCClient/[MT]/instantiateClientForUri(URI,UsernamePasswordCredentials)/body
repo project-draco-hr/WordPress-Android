@@ -1,0 +1,37 @@
+{
+  DefaultHttpClient client=null;
+  if (uri != null && uri.getHost() != null && uri.getHost().endsWith("wordpress.com")) {
+    mIsWpcom=true;
+  }
+  if (mIsWpcom || (uri == null || uri.getScheme() == null || uri.getScheme().equals("http"))) {
+    client=new DefaultHttpClient();
+  }
+ else {
+    int port=uri.getPort();
+    if (port == -1) {
+      port=443;
+    }
+    try {
+      client=new ConnectionClient(port);
+    }
+ catch (    GeneralSecurityException e) {
+      AppLog.e(T.API,"Cannot create the DefaultHttpClient object with our TrustAllSSLSocketFactory",e);
+      client=null;
+    }
+catch (    IOException e) {
+      AppLog.e(T.API,"Cannot create the DefaultHttpClient object with our TrustAllSSLSocketFactory",e);
+      client=null;
+    }
+    if (client == null) {
+      client=new DefaultHttpClient();
+    }
+  }
+  HttpConnectionParams.setConnectionTimeout(client.getParams(),DEFAULT_CONNECTION_TIMEOUT);
+  HttpConnectionParams.setSoTimeout(client.getParams(),DEFAULT_SOCKET_TIMEOUT);
+  if (usernamePasswordCredentials != null) {
+    BasicCredentialsProvider cP=new BasicCredentialsProvider();
+    cP.setCredentials(AuthScope.ANY,usernamePasswordCredentials);
+    client.setCredentialsProvider(cP);
+  }
+  return client;
+}

@@ -1,0 +1,33 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.reader_activity_reblog);
+  ActionBar actionBar=getActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayShowTitleEnabled(false);
+    actionBar.setDisplayHomeAsUpEnabled(true);
+    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+    actionBar.setListNavigationCallbacks(getReblogAdapter(),new ActionBar.OnNavigationListener(){
+      @Override public boolean onNavigationItemSelected(      int itemPosition,      long itemId){
+        mDestinationBlogId=itemId;
+        return true;
+      }
+    }
+);
+  }
+  mBlogId=getIntent().getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
+  mPostId=getIntent().getLongExtra(ReaderConstants.ARG_POST_ID,0);
+  mEditComment=(EditText)findViewById(R.id.edit_comment);
+  mLayoutExcerpt=(ViewGroup)findViewById(R.id.layout_post_excerpt);
+  if (savedInstanceState == null) {
+    mEditComment.setVisibility(View.INVISIBLE);
+    new Handler().postDelayed(new Runnable(){
+      @Override public void run(){
+        if (!isFinishing()) {
+          animateCommentView();
+        }
+      }
+    }
+,300);
+  }
+  loadPost();
+}

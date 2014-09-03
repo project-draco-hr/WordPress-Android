@@ -1,0 +1,22 @@
+{
+  if (!isAdded() || getView() == null) {
+    return;
+  }
+  final TextView txtCheckmark=(TextView)getView().findViewById(R.id.text_checkmark);
+  if (txtCheckmark == null || txtCheckmark.getVisibility() == View.VISIBLE) {
+    return;
+  }
+  PropertyValuesHolder scaleX=PropertyValuesHolder.ofFloat(View.SCALE_X,0.25f,1.0f);
+  PropertyValuesHolder scaleY=PropertyValuesHolder.ofFloat(View.SCALE_Y,0.25f,1.0f);
+  ObjectAnimator animator=ObjectAnimator.ofPropertyValuesHolder(txtCheckmark,scaleX,scaleY);
+  animator.setDuration(750);
+  animator.setInterpolator(new OvershootInterpolator());
+  animator.addListener(new AnimatorListenerAdapter(){
+    @Override public void onAnimationStart(    Animator animation){
+      super.onAnimationStart(animation);
+      txtCheckmark.setVisibility(View.VISIBLE);
+    }
+  }
+);
+  animator.start();
+}

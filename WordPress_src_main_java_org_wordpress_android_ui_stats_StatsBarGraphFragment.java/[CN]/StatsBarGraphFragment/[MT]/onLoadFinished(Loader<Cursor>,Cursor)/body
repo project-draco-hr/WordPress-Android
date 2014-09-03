@@ -1,0 +1,52 @@
+{
+  if (getActivity() == null) {
+    return;
+  }
+  if (!cursor.moveToFirst()) {
+    Context context=mGraphContainer.getContext();
+    if (context != null) {
+      LayoutInflater inflater=LayoutInflater.from(context);
+      View emptyBarGraphView=inflater.inflate(R.layout.stats_bar_graph_empty,mGraphContainer,false);
+      if (emptyBarGraphView != null) {
+        mGraphContainer.addView(emptyBarGraphView);
+      }
+    }
+    return;
+  }
+  int numPoints=Math.min(getNumOfPoints(),cursor.getCount());
+  final String[] horLabels=new String[numPoints];
+  mStatsDate=new String[numPoints];
+  GraphView.GraphViewData[] views=new GraphView.GraphViewData[numPoints];
+  GraphView.GraphViewData[] visitors=new GraphView.GraphViewData[numPoints];
+  StatsBarChartUnit unit=getBarChartUnit();
+  for (int i=numPoints - 1; i >= 0; i--) {
+    views[i]=new GraphView.GraphViewData(i,getViews(cursor));
+    visitors[i]=new GraphView.GraphViewData(i,getVisitors(cursor));
+    horLabels[i]=getDateLabel(cursor,unit);
+    mStatsDate[i]=getDate(cursor);
+    cursor.moveToNext();
+  }
+  mViewsSeries=new GraphViewSeries(views);
+  mVisitorsSeries=new GraphViewSeries(visitors);
+  mViewsSeries.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views);
+  mViewsSeries.getStyle().padding=DisplayUtils.dpToPx(getActivity(),1);
+  mVisitorsSeries.getStyle().color=getResources().getColor(R.color.stats_bar_graph_visitors);
+  mVisitorsSeries.getStyle().padding=DisplayUtils.dpToPx(getActivity(),3);
+  if (mGraphContainer.getChildCount() >= 1 && mGraphContainer.getChildAt(0) instanceof GraphView) {
+    mGraphView=(StatsBarGraph)mGraphContainer.getChildAt(0);
+  }
+ else {
+    mGraphContainer.removeAllViews();
+    mGraphView=new StatsBarGraph(getActivity());
+    mGraphContainer.addView(mGraphView);
+    mTooltip=new Tooltip(getActivity());
+    mGraphContainer.addView(mTooltip);
+  }
+  if (mGraphView != null) {
+    mGraphView.removeAllSeries();
+    mGraphView.addSeries(mViewsSeries);
+    mGraphView.addSeries(mVisitorsSeries);
+    mGraphView.getGraphViewStyle().setNumHorizontalLabels(getNumOfHorizontalLabels(numPoints));
+    mGraphView.setHorizontalLabels(horLabels);
+  }
+}

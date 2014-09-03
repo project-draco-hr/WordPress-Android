@@ -1,0 +1,45 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.share_intent_receiver_dialog);
+  mBlogSpinnerTitle=(TextView)findViewById(R.id.blog_spinner_title);
+  mBlogSpinner=(Spinner)findViewById(R.id.blog_spinner);
+  mAlwaysUseCheckBox=(CheckedTextView)findViewById(R.id.always_use_checkbox);
+  mAlwaysUseCheckBox.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      mAlwaysUseCheckBox.setChecked(!mAlwaysUseCheckBox.isChecked());
+    }
+  }
+);
+  String[] blogNames=getBlogNames();
+  if (blogNames == null) {
+    finishIfNoVisibleBlogs();
+    return;
+  }
+  if (autoShareIfEnabled()) {
+    return;
+  }
+  if (blogNames.length == 1) {
+    mBlogSpinner.setVisibility(View.GONE);
+    mBlogSpinnerTitle.setVisibility(View.GONE);
+  }
+ else {
+    ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,R.layout.spinner_menu_dropdown_item,blogNames);
+    mBlogSpinner.setAdapter(adapter);
+    mBlogSpinner.setOnItemSelectedListener(this);
+  }
+  mActionSpinner=(Spinner)findViewById(R.id.action_spinner);
+  if (isSharingText()) {
+    mActionSpinner.setVisibility(View.GONE);
+    findViewById(R.id.action_spinner_title).setVisibility(View.GONE);
+    if (blogNames.length == 1) {
+      startActivityAndFinish(new Intent(this,EditPostActivity.class));
+    }
+  }
+ else {
+    String[] actions=new String[]{getString(R.string.share_action_post),getString(R.string.share_action_media)};
+    ArrayAdapter<String> actionAdapter=new ArrayAdapter<String>(this,R.layout.spinner_menu_dropdown_item,actions);
+    mActionSpinner.setAdapter(actionAdapter);
+    mActionSpinner.setOnItemSelectedListener(this);
+  }
+  loadLastUsed();
+}

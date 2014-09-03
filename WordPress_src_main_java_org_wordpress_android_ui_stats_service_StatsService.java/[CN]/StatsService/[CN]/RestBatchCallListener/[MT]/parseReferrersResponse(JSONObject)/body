@@ -1,0 +1,54 @@
+{
+  String currentServiceBlogId=getServiceBlogId();
+  if (currentServiceBlogId == null || !currentServiceBlogId.equals(mRequestBlogId)) {
+    return;
+  }
+  String[] referrersPaths={mReferrersTodayPath,mReferrersYesterdayPath};
+  for (  String currentReferrerPath : referrersPaths) {
+    if (response.has(currentReferrerPath)) {
+      try {
+        final JSONObject currentReferrersJsonObject=response.getJSONObject(currentReferrerPath);
+        if (!isSingleCallResponseError(currentReferrerPath,currentReferrersJsonObject)) {
+          String date=currentReferrersJsonObject.getString("date");
+          long dateMs=StatsUtils.toMs(date);
+          ArrayList<ContentProviderOperation> operations=new ArrayList<ContentProviderOperation>();
+          ContentProviderOperation deleteGroupOp=ContentProviderOperation.newDelete(StatsContentProvider.STATS_REFERRER_GROUP_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mRequestBlogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
+          operations.add(deleteGroupOp);
+          ContentProviderOperation deleteOp=ContentProviderOperation.newDelete(StatsContentProvider.STATS_REFERRERS_URI).withSelection("blogId=? AND (date=? OR date<=?)",new String[]{mRequestBlogId,dateMs + "",(dateMs - TWO_DAYS) + ""}).build();
+          operations.add(deleteOp);
+          JSONArray groups=currentReferrersJsonObject.getJSONArray("referrers");
+          int groupsCount=Math.min(groups.length(),StatsUIHelper.STATS_GROUP_MAX_ITEMS);
+          for (int i=0; i < groupsCount; i++) {
+            JSONObject group=groups.getJSONObject(i);
+            StatsReferrerGroup statGroup=new StatsReferrerGroup(mRequestBlogId,date,group);
+            ContentValues values=StatsReferrerGroupsTable.getContentValues(statGroup);
+            ContentProviderOperation insertGroupOp=ContentProviderOperation.newInsert(StatsContentProvider.STATS_REFERRER_GROUP_URI).withValues(values).build();
+            operations.add(insertGroupOp);
+            JSONArray referrers=group.getJSONArray("results");
+            int childCount=Math.min(referrers.length(),StatsUIHelper.STATS_CHILD_MAX_ITEMS);
+            if (childCount > 1) {
+              for (int j=0; j < childCount; j++) {
+                StatsReferrer stat=new StatsReferrer(mRequestBlogId,date,statGroup.getGroupId(),referrers.getJSONArray(j));
+                ContentValues v=StatsReferrersTable.getContentValues(stat);
+                ContentProviderOperation insertChildOp=ContentProviderOperation.newInsert(StatsContentProvider.STATS_REFERRERS_URI).withValues(v).build();
+                operations.add(insertChildOp);
+              }
+            }
+          }
+          getContentResolver().applyBatch(BuildConfig.STATS_PROVIDER_AUTHORITY,operations);
+        }
+      }
+ catch (      RemoteException e) {
+        logSingleCallError(currentReferrerPath,e);
+      }
+catch (      OperationApplicationException e) {
+        logSingleCallError(currentReferrerPath,e);
+      }
+catch (      JSONException e) {
+        logSingleCallError(currentReferrerPath,e);
+      }
+    }
+  }
+  getContentResolver().notifyChange(StatsContentProvider.STATS_REFERRER_GROUP_URI,null);
+  getContentResolver().notifyChange(StatsContentProvider.STATS_REFERRERS_URI,null);
+}

@@ -1,0 +1,57 @@
+{
+  if (mSystemService.getActiveNetworkInfo() == null) {
+    AlertUtil.showAlert(getActivity(),R.string.no_network_title,R.string.no_network_message);
+    return;
+  }
+  if (!isUserDataValid()) {
+    return;
+  }
+  if (View.VISIBLE == mProgressBarSignIn.getVisibility()) {
+    return;
+  }
+  startProgress(getString(R.string.validating_user_data));
+  final String siteUrl=EditTextUtils.getText(mSiteUrlTextField).trim();
+  final String email=EditTextUtils.getText(mEmailTextField).trim();
+  final String password=EditTextUtils.getText(mPasswordTextField).trim();
+  final String username=EditTextUtils.getText(mUsernameTextField).trim();
+  final String siteName=siteUrlToSiteName(siteUrl);
+  final String language=CreateUserAndBlog.getDeviceLanguage(getActivity().getResources());
+  CreateUserAndBlog createUserAndBlog=new CreateUserAndBlog(email,username,password,siteUrl,siteName,language,getRestClientUtils(),getActivity(),new ErrorListener(),new CreateUserAndBlog.Callback(){
+    @Override public void onStepFinished(    CreateUserAndBlog.Step step){
+      if (!isAdded()) {
+        return;
+      }
+switch (step) {
+case VALIDATE_USER:
+        updateProgress(getString(R.string.validating_site_data));
+      break;
+case VALIDATE_SITE:
+    updateProgress(getString(R.string.creating_your_account));
+  break;
+case CREATE_USER:
+updateProgress(getString(R.string.creating_your_site));
+break;
+case CREATE_SITE:
+case AUTHENTICATE_USER:
+default :
+break;
+}
+}
+@Override public void onSuccess(JSONObject createSiteResponse){
+AnalyticsTracker.refreshMetadata();
+AnalyticsTracker.track(AnalyticsTracker.Stat.CREATED_ACCOUNT);
+endProgress();
+if (isAdded()) {
+finishThisStuff(username);
+}
+}
+@Override public void onError(int messageId){
+endProgress();
+if (isAdded()) {
+showError(getString(messageId));
+}
+}
+}
+);
+createUserAndBlog.startCreateUserAndBlogProcess();
+}

@@ -1,0 +1,12 @@
+{
+  ReaderImageList imageList=new ReaderImageList(mIsPrivate);
+  if (mContent == null || !mContent.contains("<img ")) {
+    return imageList;
+  }
+  Matcher imgMatcher=IMG_TAG_PATTERN.matcher(mContent);
+  while (imgMatcher.find()) {
+    String imgTag=mContent.substring(imgMatcher.start(),imgMatcher.end());
+    imageList.addImageUrl(getSrcAttrValue(imgTag));
+  }
+  return imageList;
+}

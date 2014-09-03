@@ -1,0 +1,22 @@
+{
+  removeWpComUserRelatedData(context);
+  try {
+    SelfSignedSSLCertsManager.getInstance(context).emptyLocalKeyStoreFile();
+  }
+ catch (  GeneralSecurityException e) {
+    AppLog.e(T.UTILS,"Error while cleaning the Local KeyStore File",e);
+  }
+catch (  IOException e) {
+    AppLog.e(T.UTILS,"Error while cleaning the Local KeyStore File",e);
+  }
+  wpDB.deleteAllAccounts();
+  wpDB.updateLastBlogId(-1);
+  currentBlog=null;
+  AnalyticsTracker.endSession(false);
+  AnalyticsTracker.clearAllData();
+  AbstractAppLock appLock=AppLockManager.getInstance().getCurrentAppLock();
+  if (appLock != null) {
+    appLock.setPassword(null);
+  }
+  sendLocalBroadcast(context,BROADCAST_ACTION_SIGNOUT);
+}

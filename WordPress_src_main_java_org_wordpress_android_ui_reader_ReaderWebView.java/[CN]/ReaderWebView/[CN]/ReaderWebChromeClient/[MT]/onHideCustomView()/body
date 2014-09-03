@@ -1,0 +1,25 @@
+{
+  AppLog.i(AppLog.T.READER,"onHideCustomView");
+  if (mCustomView == null) {
+    AppLog.w(AppLog.T.READER,"customView does not exist");
+    return;
+  }
+  ViewGroup targetView=getTargetView();
+  if (targetView != null) {
+    targetView.removeView(mCustomView);
+    targetView.setVisibility(View.GONE);
+  }
+  ViewGroup contentView=getContentView();
+  if (contentView != null) {
+    contentView.setVisibility(View.VISIBLE);
+  }
+  if (mCustomViewCallback != null) {
+    mCustomViewCallback.onCustomViewHidden();
+  }
+  if (mReaderWebView.hasCustomViewListener()) {
+    mReaderWebView.getCustomViewListener().onCustomViewHidden();
+  }
+  mCustomView=null;
+  mCustomViewCallback=null;
+  mReaderWebView.onPause();
+}

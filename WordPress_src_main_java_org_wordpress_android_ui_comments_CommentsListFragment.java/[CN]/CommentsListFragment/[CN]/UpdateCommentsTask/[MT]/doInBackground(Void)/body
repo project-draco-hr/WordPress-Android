@@ -1,0 +1,35 @@
+{
+  if (!isAdded())   return null;
+  Blog blog=WordPress.getCurrentBlog();
+  if (blog == null) {
+    mErrorType=ErrorType.INVALID_CURRENT_BLOG;
+    return null;
+  }
+  if (!mHasCheckedDeletedComments && !mIsLoadingMore) {
+    mHasCheckedDeletedComments=true;
+    ApiHelper.removeDeletedComments(blog);
+  }
+  Map<String,Object> hPost=new HashMap<String,Object>();
+  if (mIsLoadingMore) {
+    int numExisting=getCommentAdapter().getCount();
+    hPost.put("offset",numExisting);
+    hPost.put("number",COMMENTS_PER_PAGE);
+  }
+ else {
+    hPost.put("number",COMMENTS_PER_PAGE);
+  }
+  Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),hPost};
+  try {
+    return ApiHelper.refreshComments(getActivity(),blog,params);
+  }
+ catch (  XMLRPCFault xmlrpcFault) {
+    mErrorType=ErrorType.UNKNOWN_ERROR;
+    if (xmlrpcFault.getFaultCode() == 401) {
+      mErrorType=ErrorType.UNAUTHORIZED;
+    }
+  }
+catch (  Exception e) {
+    mErrorType=ErrorType.UNKNOWN_ERROR;
+  }
+  return null;
+}

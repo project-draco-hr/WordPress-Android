@@ -1,0 +1,48 @@
+{
+  if (!isAdded() || getView() == null)   return;
+  final ScrollView scrollView=(ScrollView)getView().findViewById(R.id.scroll_view);
+  final View layoutBottom=getView().findViewById(R.id.layout_bottom);
+  if (mComment == null) {
+    scrollView.setVisibility(View.GONE);
+    layoutBottom.setVisibility(View.GONE);
+    if (mNote != null && !mIsRequestingComment)     showCommentForNote(mNote);
+    return;
+  }
+  scrollView.setVisibility(View.VISIBLE);
+  layoutBottom.setVisibility(View.VISIBLE);
+  final WPNetworkImageView imgAvatar=(WPNetworkImageView)getView().findViewById(R.id.image_avatar);
+  final TextView txtName=(TextView)getView().findViewById(R.id.text_name);
+  final TextView txtDate=(TextView)getView().findViewById(R.id.text_date);
+  txtName.setText(mComment.hasAuthorName() ? mComment.getAuthorName() : getString(R.string.anonymous));
+  txtDate.setText(DateTimeUtils.javaDateToTimeSpan(mComment.getDatePublished()));
+  int maxImageSz=getResources().getDimensionPixelSize(R.dimen.reader_comment_max_image_size);
+  CommentUtils.displayHtmlComment(mTxtContent,mComment.getCommentText(),maxImageSz);
+  int avatarSz=getResources().getDimensionPixelSize(R.dimen.avatar_sz_large);
+  if (mComment.hasProfileImageUrl()) {
+    imgAvatar.setImageUrl(PhotonUtils.fixAvatar(mComment.getProfileImageUrl(),avatarSz),WPNetworkImageView.ImageType.AVATAR);
+  }
+ else   if (mComment.hasAuthorEmail()) {
+    String avatarUrl=GravatarUtils.gravatarUrlFromEmail(mComment.getAuthorEmail(),avatarSz);
+    imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
+  }
+ else {
+    imgAvatar.setImageUrl(null,WPNetworkImageView.ImageType.AVATAR);
+  }
+  updateStatusViews();
+  if (mComment.hasAuthorUrl()) {
+    View.OnClickListener authorListener=new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ReaderActivityLauncher.openUrl(getActivity(),mComment.getAuthorUrl());
+      }
+    }
+;
+    imgAvatar.setOnClickListener(authorListener);
+    txtName.setOnClickListener(authorListener);
+    txtName.setTextColor(getResources().getColor(R.color.reader_hyperlink));
+  }
+ else {
+    txtName.setTextColor(getResources().getColor(R.color.grey_medium_dark));
+  }
+  showPostTitle(getRemoteBlogId(),mComment.postID);
+  if (mLayoutReply.getVisibility() != View.VISIBLE && canReply())   AniUtils.flyIn(mLayoutReply);
+}

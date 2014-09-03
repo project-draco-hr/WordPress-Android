@@ -1,0 +1,26 @@
+{
+  boolean hasBlogId=(blogId != 0);
+  boolean hasBlogUrl=!TextUtils.isEmpty(blogUrl);
+  if (!hasBlogId && !hasBlogUrl) {
+    return null;
+  }
+  final Cursor cursor;
+  SQLiteDatabase db=ReaderDatabase.getReadableDb();
+  if (hasBlogId) {
+    String[] args={Long.toString(blogId)};
+    cursor=db.rawQuery("SELECT * FROM tbl_blog_info WHERE blog_id=?",args);
+  }
+ else {
+    String[] args={blogUrl};
+    cursor=db.rawQuery("SELECT * FROM tbl_blog_info WHERE blog_url=?",args);
+  }
+  try {
+    if (!cursor.moveToFirst()) {
+      return null;
+    }
+    return getBlogInfoFromCursor(cursor);
+  }
+  finally {
+    SqlUtils.closeCursor(cursor);
+  }
+}

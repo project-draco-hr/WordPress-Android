@@ -1,0 +1,50 @@
+{
+  String imageTagsPattern="<img[^>]+android-uri\\s*=\\s*['\"]([^'\"]+)['\"][^>]*>";
+  Pattern pattern=Pattern.compile(imageTagsPattern);
+  Matcher matcher=pattern.matcher(postContent);
+  int totalMediaItems=0;
+  List<String> imageTags=new ArrayList<String>();
+  while (matcher.find()) {
+    imageTags.add(matcher.group());
+    totalMediaItems++;
+  }
+  mPostUploadNotifier.setTotalMediaItems(totalMediaItems);
+  int mediaItemCount=0;
+  for (  String tag : imageTags) {
+    Pattern p=Pattern.compile("android-uri=\"([^\"]+)\"");
+    Matcher m=p.matcher(tag);
+    if (m.find()) {
+      String imageUri=m.group(1);
+      if (!imageUri.equals("")) {
+        MediaFile mediaFile=WordPress.wpDB.getMediaFile(imageUri,mPost);
+        if (mediaFile != null) {
+          Bitmap imageIcon=ImageUtils.getWPImageSpanThumbnailFromFilePath(mContext,imageUri,DisplayUtils.dpToPx(mContext,128));
+          if (imageIcon != null) {
+            int squaredSize=DisplayUtils.dpToPx(mContext,64);
+            imageIcon=ThumbnailUtils.extractThumbnail(imageIcon,squaredSize,squaredSize);
+          }
+          mediaItemCount++;
+          mPostUploadNotifier.setCurrentMediaItem(mediaItemCount);
+          mPostUploadNotifier.updateNotificationIcon(imageIcon);
+          String mediaUploadOutput;
+          if (mediaFile.isVideo()) {
+            mHasVideo=true;
+            mediaUploadOutput=uploadVideo(mediaFile);
+          }
+ else {
+            mHasImage=true;
+            mediaUploadOutput=uploadImage(mediaFile);
+          }
+          if (mediaUploadOutput != null) {
+            postContent=postContent.replace(tag,mediaUploadOutput);
+          }
+ else {
+            postContent=postContent.replace(tag,"");
+            mIsMediaError=true;
+          }
+        }
+      }
+    }
+  }
+  return postContent;
+}

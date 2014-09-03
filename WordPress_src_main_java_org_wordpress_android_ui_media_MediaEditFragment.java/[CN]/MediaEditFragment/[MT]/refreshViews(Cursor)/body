@@ -1,0 +1,30 @@
+{
+  if (cursor == null || !cursor.moveToFirst() || cursor.getCount() == 0) {
+    mLinearLayout.setVisibility(View.GONE);
+    return;
+  }
+  mLinearLayout.setVisibility(View.VISIBLE);
+  mScrollView.scrollTo(0,0);
+  String state=cursor.getString(cursor.getColumnIndex("uploadState"));
+  boolean isLocal=MediaUtils.isLocalFile(state);
+  if (isLocal) {
+    mNetworkImageView.setVisibility(View.GONE);
+    mLocalImageView.setVisibility(View.VISIBLE);
+  }
+ else {
+    mNetworkImageView.setVisibility(View.VISIBLE);
+    mLocalImageView.setVisibility(View.GONE);
+  }
+  mSaveButton.setEnabled(!isLocal);
+  mTitleView.setEnabled(!isLocal);
+  mCaptionView.setEnabled(!isLocal);
+  mDescriptionView.setEnabled(!isLocal);
+  mMediaId=cursor.getString(cursor.getColumnIndex("mediaId"));
+  mTitleView.setText(cursor.getString(cursor.getColumnIndex("title")));
+  mTitleView.requestFocus();
+  mTitleView.setSelection(mTitleView.getText().length());
+  mCaptionView.setText(cursor.getString(cursor.getColumnIndex("caption")));
+  mDescriptionView.setText(cursor.getString(cursor.getColumnIndex("description")));
+  refreshImageView(cursor,isLocal);
+  disableEditingOnOldVersion();
+}

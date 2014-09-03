@@ -1,0 +1,47 @@
+{
+  path=params[0];
+  BitmapFactory.Options bfo=new BitmapFactory.Options();
+  bfo.inJustDecodeBounds=true;
+  BitmapFactory.decodeFile(path,bfo);
+  bfo.inSampleSize=calculateInSampleSize(bfo,targetWidth,targetHeight);
+  bfo.inJustDecodeBounds=false;
+  int bitmapWidth=0;
+  int bitmapHeight=0;
+  try {
+    File f=new File(path);
+    ExifInterface exif=new ExifInterface(f.getPath());
+    int orientation=exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,ExifInterface.ORIENTATION_NORMAL);
+    int angle=0;
+    if (orientation == ExifInterface.ORIENTATION_NORMAL) {
+      return BitmapFactory.decodeFile(path,bfo);
+    }
+ else     if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
+      angle=90;
+    }
+ else     if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
+      angle=180;
+    }
+ else     if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
+      angle=270;
+    }
+    Matrix mat=new Matrix();
+    mat.postRotate(angle);
+    try {
+      Bitmap bmp=BitmapFactory.decodeStream(new FileInputStream(f),null,bfo);
+      if (bmp == null) {
+        AppLog.e(AppLog.T.UTILS,"can't decode bitmap: " + f.getPath());
+        return null;
+      }
+      bitmapWidth=bmp.getWidth();
+      bitmapHeight=bmp.getHeight();
+      return Bitmap.createBitmap(bmp,0,0,bmp.getWidth(),bmp.getHeight(),mat,true);
+    }
+ catch (    OutOfMemoryError oom) {
+      AppLog.e(AppLog.T.UTILS,"OutOfMemoryError Error in setting image: " + oom);
+    }
+  }
+ catch (  IOException e) {
+    AppLog.e(AppLog.T.UTILS,"Error in setting image",e);
+  }
+  return null;
+}
