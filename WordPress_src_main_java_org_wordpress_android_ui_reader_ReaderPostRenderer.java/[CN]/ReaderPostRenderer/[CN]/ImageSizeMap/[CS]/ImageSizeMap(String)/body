@@ -1,0 +1,24 @@
+{
+  if (TextUtils.isEmpty(jsonString)) {
+    return;
+  }
+  try {
+    JSONObject json=new JSONObject(jsonString);
+    Iterator<String> it=json.keys();
+    if (!it.hasNext()) {
+      return;
+    }
+    while (it.hasNext()) {
+      JSONObject jsonAttach=json.optJSONObject(it.next());
+      if (jsonAttach != null && JSONUtil.getString(jsonAttach,"mime_type").startsWith("image")) {
+        String normUrl=UrlUtils.normalizeUrl(UrlUtils.removeQuery(JSONUtil.getString(json,"URL")));
+        int width=jsonAttach.optInt("width");
+        int height=jsonAttach.optInt("height");
+        this.put(normUrl,new ImageSize(width,height));
+      }
+    }
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.READER,e);
+  }
+}

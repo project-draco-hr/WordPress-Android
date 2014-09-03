@@ -28,10 +28,13 @@
     }
   }
 );
-  Bundle extras=getIntent().getExtras();
-  if (extras != null && extras.containsKey(StatsActivity.STATS_DETAILS_DATE)) {
-    String date=extras.getString(StatsActivity.STATS_DETAILS_DATE);
-    mStatsDate=date;
+  if (getIntent() != null) {
+    Bundle extras=getIntent().getExtras();
+    if (extras != null && extras.containsKey(StatsActivity.STATS_DETAILS_DATE)) {
+      String date=extras.getString(StatsActivity.STATS_DETAILS_DATE);
+      mStatsDate=date;
+    }
+    mLocalBlogID=getIntent().getIntExtra(StatsActivity.ARG_LOCAL_TABLE_BLOG_ID,-1);
   }
   setTitle(getString(R.string.stats));
   ((TextView)findViewById(R.id.stats_views_visitors_date)).setText(StatsUtils.parseDate(mStatsDate,"yyyy-MM-dd","EEEE, MMMM d, yyyy"));
