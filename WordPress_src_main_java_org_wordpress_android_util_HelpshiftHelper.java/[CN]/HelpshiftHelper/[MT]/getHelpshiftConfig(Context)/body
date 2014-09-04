@@ -1,0 +1,15 @@
+{
+  String emailAddress=UserEmail.getPrimaryEmail(context);
+  String name=(String)getMetaData(MetadataKey.USER_ENTERED_USERNAME);
+  if (TextUtils.isEmpty(name)) {
+    String[] splitEmail=TextUtils.split(emailAddress,"@");
+    if (splitEmail.length >= 1) {
+      name=splitEmail[0];
+    }
+  }
+  Helpshift.setNameAndEmail(name,emailAddress);
+  addDefaultMetaData(context);
+  HashMap config=new HashMap();
+  config.put(Helpshift.HSCustomMetadataKey,mMetadata);
+  return config;
+}
