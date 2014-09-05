@@ -1,41 +1,32 @@
 {
   if (!isAdded() || !hasComment() || mIsModeratingComment)   return;
   if (!NetworkUtils.checkConnection(getActivity()))   return;
-  final int dlgId;
+  mLayoutButtons.setEnabled(false);
+  if (mTxtStatus.getVisibility() == View.VISIBLE) {
+    mTxtStatus.clearAnimation();
+    AniUtils.startAnimation(mTxtStatus,R.anim.fade_out);
+    mTxtStatus.setVisibility(View.INVISIBLE);
+  }
+  CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      mIsModeratingComment=false;
+      if (isAdded()) {
+        mLayoutButtons.setEnabled(true);
+        if (succeeded) {
+          mComment.setStatus(CommentStatus.toString(newStatus));
 switch (newStatus) {
 case APPROVED:
-    dlgId=CommentDialogs.ID_COMMENT_DLG_APPROVING;
-  AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_APPROVED);
-break;
+            if (mOnCommentChangeListener != null) {
+              mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL,ChangeType.STATUS);
+            }
+          AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_APPROVED);
+        break;
 case UNAPPROVED:
-dlgId=CommentDialogs.ID_COMMENT_DLG_UNAPPROVING;
-break;
-case SPAM:
-dlgId=CommentDialogs.ID_COMMENT_DLG_SPAMMING;
-AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_FLAGGED_AS_SPAM);
-break;
-case TRASH:
-dlgId=CommentDialogs.ID_COMMENT_DLG_TRASHING;
-AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_TRASHED);
-break;
-default :
-return;
+      if (mOnCommentChangeListener != null) {
+        mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL,ChangeType.STATUS);
+      }
+    break;
 }
-getActivity().showDialog(dlgId);
-mLayoutButtons.setEnabled(false);
-if (mTxtStatus.getVisibility() == View.VISIBLE) {
-mTxtStatus.clearAnimation();
-AniUtils.startAnimation(mTxtStatus,R.anim.fade_out);
-mTxtStatus.setVisibility(View.INVISIBLE);
-}
-CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
-@Override public void onActionResult(boolean succeeded){
-mIsModeratingComment=false;
-if (isAdded()) {
-dismissDialog(dlgId);
-mLayoutButtons.setEnabled(true);
-if (succeeded) {
-mComment.setStatus(CommentStatus.toString(newStatus));
 }
  else {
 ToastUtils.showToast(getActivity(),R.string.error_moderate_comment,ToastUtils.Duration.LONG);
@@ -47,22 +38,10 @@ clear();
 updateStatusViews();
 }
 }
-if (succeeded && mDetailListFragment != null) {
-mDetailListFragment.refreshBlocksForCommentStatus(newStatus);
+ else {
+if (mOnCommentChangeListener != null) {
+mOnCommentChangeListener.onModerationCompleted(succeeded);
 }
-if (succeeded && mOnCommentChangeListener != null) {
-ChangeType changeType;
-switch (newStatus) {
-case SPAM:
-changeType=ChangeType.SPAMMED;
-break;
-case TRASH:
-changeType=ChangeType.SPAMMED;
-break;
-default :
-changeType=ChangeType.STATUS;
-}
-mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL,changeType);
 }
 }
 }
@@ -73,5 +52,22 @@ CommentActions.moderateCommentForNote(mNote,newStatus,actionListener);
 }
  else {
 CommentActions.moderateComment(mLocalBlogId,mComment,newStatus,actionListener);
+}
+switch (newStatus) {
+case SPAM:
+if (mOnCommentChangeListener != null) {
+mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL,ChangeType.SPAMMED);
+}
+AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_FLAGGED_AS_SPAM);
+break;
+case TRASH:
+if (mOnCommentChangeListener != null) {
+mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL,ChangeType.TRASHED);
+}
+AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_TRASHED);
+break;
+}
+if (mDetailListFragment != null) {
+mDetailListFragment.refreshBlocksForCommentStatus(newStatus);
 }
 }

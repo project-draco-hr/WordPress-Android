@@ -19,6 +19,7 @@
       postHash.put("author_url",comment.getAuthorUrl());
       postHash.put("author_email",comment.getAuthorEmail());
       Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),Long.toString(comment.commentID),postHash};
+      mModeratingCommentId=comment.commentID;
       Object result;
       try {
         result=client.call("wp.editComment",params);
@@ -35,6 +36,7 @@ catch (      XmlPullParserException e) {
         AppLog.e(T.COMMENTS,"Error while editing comment",e);
         result=null;
       }
+      mModeratingCommentId=-1;
       final boolean success=(result != null && Boolean.parseBoolean(result.toString()));
       if (success)       CommentTable.updateCommentStatus(blog.getLocalTableBlogId(),comment.commentID,CommentStatus.toString(newStatus));
       if (actionListener != null) {
