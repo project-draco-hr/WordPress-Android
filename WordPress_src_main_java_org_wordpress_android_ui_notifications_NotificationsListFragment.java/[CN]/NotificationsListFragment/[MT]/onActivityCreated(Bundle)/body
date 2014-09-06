@@ -2,4 +2,24 @@
   super.onActivityCreated(savedInstanceState);
   initPullToRefreshHelper();
   mFauxPullToRefreshHelper.registerReceiver(getActivity());
+  mBucket=SimperiumUtils.getNotesBucket();
+  if (mBucket == null) {
+    ToastUtils.showToast(getActivity(),R.string.error_refresh_notifications);
+    return;
+  }
+  ListView listView=getListView();
+  listView.setDivider(null);
+  listView.setDividerHeight(0);
+  listView.setBackgroundColor(getResources().getColor(R.color.white));
+  if (DisplayUtils.isLandscapeTablet(getActivity())) {
+    listView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+  }
+  if (mNotesAdapter == null) {
+    mNotesAdapter=new NotesAdapter(getActivity(),mBucket);
+  }
+  setListAdapter(mNotesAdapter);
+  TextView textview=(TextView)listView.getEmptyView();
+  if (textview != null) {
+    textview.setText(getText(R.string.notifications_empty_list));
+  }
 }
