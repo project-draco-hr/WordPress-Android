@@ -1,0 +1,15 @@
+{
+  mPost=ReaderPostTable.getPost(mBlogId,mPostId);
+  if (mPost == null) {
+    ToastUtils.showToast(this,R.string.reader_toast_err_get_post);
+    finish();
+  }
+  final View header=findViewById(R.id.layout_post_header);
+  final TextView txtTitle=(TextView)header.findViewById(R.id.text_post_title);
+  final TextView txtDate=(TextView)header.findViewById(R.id.text_post_date);
+  final WPNetworkImageView imgAvatar=(WPNetworkImageView)header.findViewById(R.id.image_post_avatar);
+  txtTitle.setText(mPost.getTitle());
+  txtDate.setText(DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished()));
+  String url=mPost.getPostAvatarForDisplay(getResources().getDimensionPixelSize(R.dimen.avatar_sz_medium));
+  imgAvatar.setImageUrl(url,WPNetworkImageView.ImageType.AVATAR);
+}
