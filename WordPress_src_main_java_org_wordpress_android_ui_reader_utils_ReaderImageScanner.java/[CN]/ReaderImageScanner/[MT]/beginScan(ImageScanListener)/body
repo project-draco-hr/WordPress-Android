@@ -1,0 +1,18 @@
+{
+  if (listener == null) {
+    throw new IllegalArgumentException("ImageScanListener is required");
+  }
+  if (!mContentContainsImages) {
+    listener.onScanCompleted();
+    return;
+  }
+  Matcher imgMatcher=IMG_TAG_PATTERN.matcher(mContent);
+  while (imgMatcher.find()) {
+    String imageTag=mContent.substring(imgMatcher.start(),imgMatcher.end());
+    String imageUrl=getSrcAttrValue(imageTag);
+    if (!TextUtils.isEmpty(imageUrl)) {
+      listener.onImageFound(imageTag,imageUrl,imgMatcher.start(),imgMatcher.end());
+    }
+  }
+  listener.onScanCompleted();
+}
