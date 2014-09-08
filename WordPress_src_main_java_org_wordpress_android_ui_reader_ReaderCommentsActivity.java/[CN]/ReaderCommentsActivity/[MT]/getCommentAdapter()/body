@@ -1,0 +1,33 @@
+{
+  if (mCommentAdapter == null) {
+    ReaderInterfaces.DataLoadedListener dataLoadedListener=new ReaderInterfaces.DataLoadedListener(){
+      @Override public void onDataLoaded(      boolean isEmpty){
+        if (!isFinishing()) {
+        }
+      }
+    }
+;
+    ReaderCommentAdapter.RequestReplyListener replyListener=new ReaderCommentAdapter.RequestReplyListener(){
+      @Override public void onRequestReply(      long commentId){
+        if (!isAddCommentBoxShowing()) {
+          showAddCommentBox(commentId);
+        }
+ else {
+          hideAddCommentBox();
+        }
+      }
+    }
+;
+    ReaderActions.DataRequestedListener dataRequestedListener=new ReaderActions.DataRequestedListener(){
+      @Override public void onRequestData(){
+        if (!mIsUpdatingComments) {
+          AppLog.i(T.READER,"reader comments > requesting newer comments");
+          updateComments(true);
+        }
+      }
+    }
+;
+    mCommentAdapter=new ReaderCommentAdapter(this,getPost(),replyListener,dataLoadedListener,dataRequestedListener);
+  }
+  return mCommentAdapter;
+}

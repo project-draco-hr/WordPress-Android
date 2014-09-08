@@ -1,0 +1,27 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.reader_activity_comments);
+  mListView=(WPListView)findViewById(android.R.id.list);
+  mLayoutCommentBox=(ViewGroup)findViewById(R.id.layout_comment_box);
+  mLayoutCommentBox.setVisibility(View.VISIBLE);
+  ActionBar actionBar=getActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayShowTitleEnabled(true);
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
+  if (savedInstanceState != null) {
+    mBlogId=savedInstanceState.getLong(ReaderConstants.ARG_BLOG_ID);
+    mPostId=savedInstanceState.getLong(ReaderConstants.ARG_POST_ID);
+    if (savedInstanceState.getBoolean(KEY_SHOW_COMMENT_BOX)) {
+      long replyToCommentId=savedInstanceState.getLong(KEY_REPLY_TO_COMMENT_ID);
+      showAddCommentBox(replyToCommentId);
+    }
+  }
+ else {
+    mBlogId=getIntent().getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
+    mPostId=getIntent().getLongExtra(ReaderConstants.ARG_POST_ID,0);
+  }
+  mListView.setAdapter(getCommentAdapter());
+  refreshComments();
+  updateComments(true);
+}

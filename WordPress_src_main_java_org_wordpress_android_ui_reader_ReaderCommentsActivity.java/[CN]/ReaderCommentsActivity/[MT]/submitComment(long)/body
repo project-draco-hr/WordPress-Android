@@ -1,0 +1,38 @@
+{
+  final EditText editComment=(EditText)findViewById(R.id.edit_comment);
+  final String commentText=EditTextUtils.getText(editComment);
+  if (TextUtils.isEmpty(commentText)) {
+    return;
+  }
+  AnalyticsTracker.track(AnalyticsTracker.Stat.READER_COMMENTED_ON_ARTICLE);
+  hideAddCommentBox();
+  final long fakeCommentId=ReaderCommentActions.generateFakeCommentId();
+  mIsSubmittingComment=true;
+  ReaderActions.CommentActionListener actionListener=new ReaderActions.CommentActionListener(){
+    @Override public void onActionResult(    boolean succeeded,    ReaderComment newComment){
+      mIsSubmittingComment=false;
+      if (isFinishing()) {
+        return;
+      }
+      if (succeeded) {
+        getCommentAdapter().setHighlightCommentId(0,false);
+        getCommentAdapter().replaceComment(fakeCommentId,newComment);
+        mListView.invalidateViews();
+      }
+ else {
+        editComment.setText(commentText);
+        showAddCommentBox(replyToCommentId);
+        getCommentAdapter().removeComment(fakeCommentId);
+        ToastUtils.showToast(ReaderCommentsActivity.this,R.string.reader_toast_err_comment_failed,ToastUtils.Duration.LONG);
+      }
+    }
+  }
+;
+  final ReaderComment newComment=ReaderCommentActions.submitPostComment(getPost(),fakeCommentId,commentText,replyToCommentId,actionListener);
+  if (newComment != null) {
+    editComment.setText(null);
+    getCommentAdapter().setHighlightCommentId(newComment.commentId,true);
+    getCommentAdapter().addComment(newComment);
+    scrollToCommentId(fakeCommentId);
+  }
+}

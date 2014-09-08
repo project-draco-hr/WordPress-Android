@@ -1,0 +1,21 @@
+{
+  if (mIsUpdatingComments) {
+    AppLog.w(T.READER,"reader comments > already updating comments");
+    return;
+  }
+  AppLog.d(T.READER,"reader comments > updateComments");
+  mIsUpdatingComments=true;
+  ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
+    @Override public void onUpdateResult(    ReaderActions.UpdateResult result){
+      mIsUpdatingComments=false;
+      if (isFinishing()) {
+        return;
+      }
+      if (result == ReaderActions.UpdateResult.CHANGED) {
+        refreshComments();
+      }
+    }
+  }
+;
+  ReaderCommentActions.updateCommentsForPost(getPost(),requestNewer,resultListener);
+}
