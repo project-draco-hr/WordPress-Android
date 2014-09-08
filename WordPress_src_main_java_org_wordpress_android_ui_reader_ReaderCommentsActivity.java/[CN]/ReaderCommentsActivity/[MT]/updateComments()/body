@@ -5,17 +5,20 @@
   }
   AppLog.d(T.READER,"reader comments > updateComments");
   mIsUpdatingComments=true;
+  if (isCommentAdapterEmpty()) {
+    showProgress();
+  }
   ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
     @Override public void onUpdateResult(    ReaderActions.UpdateResult result){
       mIsUpdatingComments=false;
-      if (isFinishing()) {
-        return;
-      }
-      if (result == ReaderActions.UpdateResult.CHANGED) {
-        refreshComments();
+      if (!isFinishing()) {
+        hideProgress();
+        if (result == ReaderActions.UpdateResult.CHANGED) {
+          refreshComments();
+        }
       }
     }
   }
 ;
-  ReaderCommentActions.updateCommentsForPost(getPost(),requestNewer,resultListener);
+  ReaderCommentActions.updateCommentsForPost(getPost(),true,resultListener);
 }
