@@ -4,12 +4,14 @@
     ToastUtils.showToast(this,R.string.reader_toast_err_get_post);
     finish();
   }
-  final View header=findViewById(R.id.layout_post_header);
-  final TextView txtTitle=(TextView)header.findViewById(R.id.text_post_title);
-  final TextView txtDate=(TextView)header.findViewById(R.id.text_post_date);
-  final WPNetworkImageView imgAvatar=(WPNetworkImageView)header.findViewById(R.id.image_post_avatar);
-  txtTitle.setText(mPost.getTitle());
+  final View postHeader=findViewById(R.id.layout_post_header);
+  final TextView txtTitle=(TextView)postHeader.findViewById(R.id.text_post_title);
+  final TextView txtDate=(TextView)postHeader.findViewById(R.id.text_post_date);
+  final WPNetworkImageView imgAvatar=(WPNetworkImageView)postHeader.findViewById(R.id.image_post_avatar);
+  String color=HtmlUtils.colorResToHtmlColor(this,R.color.grey_medium);
+  String htmlTitle="<font color=" + color + ">"+ getString(R.string.reader_label_comments_on)+ "</font>"+ " "+ mPost.getTitle();
+  txtTitle.setText(Html.fromHtml(htmlTitle));
   txtDate.setText(DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished()));
-  String url=mPost.getPostAvatarForDisplay(getResources().getDimensionPixelSize(R.dimen.avatar_sz_medium));
+  String url=mPost.getPostAvatarForDisplay(getResources().getDimensionPixelSize(R.dimen.avatar_sz_small));
   imgAvatar.setImageUrl(url,WPNetworkImageView.ImageType.AVATAR);
 }
