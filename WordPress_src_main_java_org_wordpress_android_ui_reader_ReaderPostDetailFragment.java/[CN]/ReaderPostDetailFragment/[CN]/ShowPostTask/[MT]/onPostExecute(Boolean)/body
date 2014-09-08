@@ -62,8 +62,9 @@
     imgBtnReblog.setVisibility(View.GONE);
   }
   if (mPost.isWP() && (mPost.isCommentsOpen || mPost.numReplies > 0)) {
-    imgBtnComment.setVisibility(View.VISIBLE);
-    imgBtnComment.setOnClickListener(new View.OnClickListener(){
+    countComments.setCount(mPost.numReplies);
+    countComments.setVisibility(View.VISIBLE);
+    countComments.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
         ReaderActivityLauncher.showReaderComments(getActivity(),mPost);
       }
@@ -71,16 +72,17 @@
 );
   }
  else {
-    imgBtnComment.setVisibility(View.GONE);
+    countComments.setVisibility(View.GONE);
   }
   if (mPost.isLikesEnabled) {
-    imgBtnLike.setVisibility(View.VISIBLE);
+    countLikes.setCount(mPost.numLikes);
+    countLikes.setVisibility(View.VISIBLE);
     if (mPost.numLikes > 0 && mLayoutLikes.getVisibility() == View.GONE) {
       mLayoutLikes.setVisibility(View.INVISIBLE);
     }
   }
  else {
-    imgBtnLike.setVisibility(View.GONE);
+    countLikes.setVisibility(View.GONE);
   }
   if (!mPost.isExternal && (mPost.isLikesEnabled || mPost.canReblog() || mPost.isCommentsOpen)) {
     mLayoutIcons.setVisibility(View.VISIBLE);
