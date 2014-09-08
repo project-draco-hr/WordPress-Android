@@ -1,5 +1,15 @@
 {
   final View view=inflater.inflate(R.layout.reader_fragment_post_detail,container,false);
+  final View spacer=view.findViewById(R.id.spacer_actionbar);
+  mScrollView=(WPScrollView)view.findViewById(R.id.scroll_view_reader);
+  if (isFullScreenSupported()) {
+    spacer.getLayoutParams().height=DisplayUtils.getActionBarHeight(container.getContext());
+    spacer.setVisibility(View.VISIBLE);
+    mScrollView.setOnScrollDirectionListener(this);
+  }
+ else {
+    spacer.setVisibility(View.GONE);
+  }
   mLayoutIcons=(ViewGroup)view.findViewById(R.id.layout_actions);
   mLayoutLikes=(ViewGroup)view.findViewById(R.id.layout_likes);
   mLikingUsersView=(ReaderLikingUsersView)mLayoutLikes.findViewById(R.id.layout_liking_users_view);
