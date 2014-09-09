@@ -1,7 +1,7 @@
 {
   if (cursor.isClosed())   return;
   Bucket.ObjectCursor<Note> objectCursor=(Bucket.ObjectCursor<Note>)cursor;
-  NoteViewHolder noteViewHolder=(NoteViewHolder)view.getTag();
+  final NoteViewHolder noteViewHolder=(NoteViewHolder)view.getTag();
   Note.NoteTimeGroup timeGroup=Note.getTimeGroupForTimestamp(getLongForColumnName(objectCursor,Note.Schema.TIMESTAMP_INDEX));
   Note.NoteTimeGroup previousTimeGroup=null;
   if (objectCursor.getPosition() > 0 && objectCursor.moveToPrevious()) {
@@ -29,7 +29,13 @@
     }
     noteViewHolder.headerView.setVisibility(View.VISIBLE);
   }
-  if (CommentActions.getModeratingNoteId() != null && CommentActions.getModeratingNoteId().equals(objectCursor.getSimperiumKey())) {
+  if (mHiddenNoteIds.size() > 0 && mHiddenNoteIds.contains(objectCursor.getSimperiumKey())) {
+    noteViewHolder.contentView.setVisibility(View.GONE);
+  }
+ else {
+    noteViewHolder.contentView.setVisibility(View.VISIBLE);
+  }
+  if (mModeratingNoteIds.size() > 0 && mModeratingNoteIds.contains(objectCursor.getSimperiumKey())) {
     noteViewHolder.progressBar.setVisibility(View.VISIBLE);
   }
  else {

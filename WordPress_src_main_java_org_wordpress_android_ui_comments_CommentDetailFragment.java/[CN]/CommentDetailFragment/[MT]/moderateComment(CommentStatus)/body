@@ -1,73 +1,10 @@
 {
-  if (!isAdded() || !hasComment() || mIsModeratingComment)   return;
+  if (!isAdded() || !hasComment())   return;
   if (!NetworkUtils.checkConnection(getActivity()))   return;
-  mLayoutButtons.setEnabled(false);
-  if (mTxtStatus.getVisibility() == View.VISIBLE) {
-    mTxtStatus.clearAnimation();
-    AniUtils.startAnimation(mTxtStatus,R.anim.fade_out);
-    mTxtStatus.setVisibility(View.INVISIBLE);
+  if (mNote != null && mOnNoteCommentActionListener != null) {
+    mOnNoteCommentActionListener.onModerateCommentForNote(mNote,mNote.getCommentStatus(),newStatus);
   }
-  CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
-    @Override public void onActionResult(    boolean succeeded){
-      mIsModeratingComment=false;
-      if (isAdded()) {
-        mLayoutButtons.setEnabled(true);
-        if (succeeded) {
-          mComment.setStatus(CommentStatus.toString(newStatus));
-switch (newStatus) {
-case APPROVED:
-            if (mOnCommentChangeListener != null) {
-              mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL,ChangeType.STATUS);
-            }
-          AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_APPROVED);
-        break;
-case UNAPPROVED:
-      if (mOnCommentChangeListener != null) {
-        mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL,ChangeType.STATUS);
-      }
-    break;
-}
-}
- else {
-ToastUtils.showToast(getActivity(),R.string.error_moderate_comment,ToastUtils.Duration.LONG);
-}
-if (newStatus == CommentStatus.TRASH) {
-clear();
-}
- else {
-updateStatusViews();
-}
-}
- else {
-if (mOnCommentChangeListener != null) {
-mOnCommentChangeListener.onModerationCompleted(succeeded);
-}
-}
-}
-}
-;
-mIsModeratingComment=true;
-if (mNote != null) {
-CommentActions.moderateCommentForNote(mNote,newStatus,actionListener);
-}
- else {
-CommentActions.moderateComment(mLocalBlogId,mComment,newStatus,actionListener);
-}
-switch (newStatus) {
-case SPAM:
-if (mOnCommentChangeListener != null) {
-mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL,ChangeType.SPAMMED);
-}
-AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_FLAGGED_AS_SPAM);
-break;
-case TRASH:
-if (mOnCommentChangeListener != null) {
-mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL,ChangeType.TRASHED);
-}
-AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_TRASHED);
-break;
-}
-if (mDetailListFragment != null) {
-mDetailListFragment.refreshBlocksForCommentStatus(newStatus);
-}
+ else   if (mOnCommentActionListener != null) {
+    mOnCommentActionListener.onModerateComment(mLocalBlogId,mComment,newStatus);
+  }
 }

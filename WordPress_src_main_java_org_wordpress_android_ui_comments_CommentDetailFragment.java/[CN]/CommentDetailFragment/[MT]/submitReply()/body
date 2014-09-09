@@ -1,40 +1,18 @@
 {
-  if (!isAdded() || mIsSubmittingReply)   return;
+  if (!isAdded())   return;
   if (!NetworkUtils.checkConnection(getActivity()))   return;
   final String replyText=EditTextUtils.getText(mEditReply);
   if (TextUtils.isEmpty(replyText))   return;
+  AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_REPLIED_TO);
   mEditReply.setEnabled(false);
   EditTextUtils.hideSoftInput(mEditReply);
   mImgSubmitReply.setVisibility(View.GONE);
-  final ProgressBar progress=(ProgressBar)getView().findViewById(R.id.progress_submit_comment);
+  ProgressBar progress=(ProgressBar)getView().findViewById(R.id.progress_submit_comment);
   progress.setVisibility(View.VISIBLE);
-  CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
-    @Override public void onActionResult(    boolean succeeded){
-      mIsSubmittingReply=false;
-      if (succeeded && mOnCommentChangeListener != null)       mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL,ChangeType.REPLIED);
-      if (isAdded()) {
-        mEditReply.setEnabled(true);
-        mImgSubmitReply.setVisibility(View.VISIBLE);
-        progress.setVisibility(View.GONE);
-        updateStatusViews();
-        if (succeeded) {
-          ToastUtils.showToast(getActivity(),getString(R.string.note_reply_successful));
-          mEditReply.setText(null);
-        }
- else {
-          ToastUtils.showToast(getActivity(),R.string.reply_failed,ToastUtils.Duration.LONG);
-          EditTextUtils.showSoftInput(mEditReply);
-        }
-      }
-    }
+  if (mNote != null && mOnNoteCommentActionListener != null) {
+    mOnNoteCommentActionListener.onReplyToNote(mNote,replyText);
   }
-;
-  mIsSubmittingReply=true;
-  AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_REPLIED_TO);
-  if (mNote != null) {
-    CommentActions.submitReplyToCommentNote(mNote,replyText,actionListener);
-  }
- else {
-    CommentActions.submitReplyToComment(mLocalBlogId,mComment,replyText,actionListener);
+ else   if (mOnCommentActionListener != null) {
+    mOnCommentActionListener.onReplyToComment(mLocalBlogId,mComment,replyText);
   }
 }

@@ -6,26 +6,7 @@
     @Override public void run(){
       mNotesAdapter.reloadNotes();
       updateLastSeenTime();
-      if (getListView() == null)       return;
-      if (DisplayUtils.isLandscapeTablet(getActivity())) {
-        if (mShouldLoadFirstNote) {
-          mShouldLoadFirstNote=false;
-          Note note=mNotesAdapter.getNote(0);
-          if (note != null) {
-            mNoteClickListener.onClickNote(note,0);
-            mSelectedNoteId=note.getId();
-          }
-        }
-        if (mSelectedNoteId != null) {
-          new HighlightSelectedNoteTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }
- else {
-          restoreListScrollPosition();
-        }
-      }
- else {
-        restoreListScrollPosition();
-      }
+      restoreListScrollPosition();
     }
   }
 );
