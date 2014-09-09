@@ -35,12 +35,20 @@ showStatus=false;
 break;
 }
 holder.txtStatus.setVisibility(showStatus ? View.VISIBLE : View.GONE);
+boolean useSelectionBackground=false;
 if (mEnableSelection && isItemSelected(position)) {
+useSelectionBackground=true;
 if (holder.imgCheckmark.getVisibility() != View.VISIBLE) holder.imgCheckmark.setVisibility(View.VISIBLE);
 }
  else {
 if (holder.imgCheckmark.getVisibility() == View.VISIBLE) holder.imgCheckmark.setVisibility(View.GONE);
 holder.imgAvatar.setImageUrl(comment.getAvatarForDisplay(mAvatarSz),WPNetworkImageView.ImageType.AVATAR);
+}
+if (useSelectionBackground) {
+convertView.setBackgroundColor(mSelectionColor);
+}
+ else {
+convertView.setBackgroundDrawable(null);
 }
 boolean adjustComment=(showStatus && holder.txtTitle.getLineCount() <= 1);
 RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)holder.txtComment.getLayoutParams();
