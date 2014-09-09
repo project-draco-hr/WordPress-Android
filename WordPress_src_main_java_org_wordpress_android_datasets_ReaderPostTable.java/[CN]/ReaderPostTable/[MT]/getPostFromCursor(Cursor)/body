@@ -3,6 +3,10 @@
     throw new IllegalArgumentException("getPostFromCursor > null cursor");
   }
   ReaderPost post=new ReaderPost();
+  int idxText=c.getColumnIndex("text");
+  if (idxText > -1) {
+    post.setText(c.getString(idxText));
+  }
   post.postId=c.getLong(c.getColumnIndex("post_id"));
   post.blogId=c.getLong(c.getColumnIndex("blog_id"));
   post.authorId=c.getLong(c.getColumnIndex("author_id"));
@@ -14,7 +18,6 @@
   post.setFeaturedImage(c.getString(c.getColumnIndex("featured_image")));
   post.setFeaturedVideo(c.getString(c.getColumnIndex("featured_video")));
   post.setTitle(c.getString(c.getColumnIndex("title")));
-  post.setText(c.getString(c.getColumnIndex("text")));
   post.setUrl(c.getString(c.getColumnIndex("url")));
   post.setPostAvatar(c.getString(c.getColumnIndex("post_avatar")));
   post.timestamp=c.getLong(c.getColumnIndex("timestamp"));
@@ -28,7 +31,6 @@
   post.isExternal=SqlUtils.sqlToBool(c.getInt(c.getColumnIndex("is_external")));
   post.isPrivate=SqlUtils.sqlToBool(c.getInt(c.getColumnIndex("is_private")));
   post.isVideoPress=SqlUtils.sqlToBool(c.getInt(c.getColumnIndex("is_videopress")));
-  post.setTags(c.getString(c.getColumnIndex("tag_list")));
   post.setPrimaryTag(c.getString(c.getColumnIndex("primary_tag")));
   post.setSecondaryTag(c.getString(c.getColumnIndex("secondary_tag")));
   post.isLikesEnabled=SqlUtils.sqlToBool(c.getInt(c.getColumnIndex("is_likes_enabled")));
