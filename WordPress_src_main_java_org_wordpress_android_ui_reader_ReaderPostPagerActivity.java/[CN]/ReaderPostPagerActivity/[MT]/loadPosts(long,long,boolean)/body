@@ -7,20 +7,19 @@
         idList.add(new ReaderBlogIdPostId(blogId,postId));
       }
  else {
-        final ReaderPostList postList;
         int maxPosts=ReaderConstants.READER_MAX_POSTS_TO_DISPLAY;
 switch (getPostListType()) {
 case TAG_FOLLOWED:
 case TAG_PREVIEW:
-          postList=ReaderPostTable.getPostsWithTag(getCurrentTag(),maxPosts);
-        break;
+          ReaderPostList postList=ReaderPostTable.getPostsWithTag(getCurrentTag(),maxPosts);
+        idList=postList.getBlogIdPostIdList();
+      break;
 case BLOG_PREVIEW:
-      postList=ReaderPostTable.getPostsInBlog(blogId,maxPosts);
-    break;
+    idList=ReaderPostTable.getBlogIdPostIdsInBlog(blogId,maxPosts);
+  break;
 default :
-  return;
+return;
 }
-idList=postList.getBlogIdPostIdList();
 }
 final int currentPosition=mViewPager.getCurrentItem();
 final int newPosition;
@@ -36,10 +35,10 @@ mPagerAdapter=new PostPagerAdapter(getFragmentManager());
 mPagerAdapter.showPosts(idList);
 mViewPager.setAdapter(mPagerAdapter);
 if (mPagerAdapter.isValidPosition(newPosition)) {
-  mViewPager.setCurrentItem(newPosition);
+mViewPager.setCurrentItem(newPosition);
 }
  else if (mPagerAdapter.isValidPosition(currentPosition)) {
-  mViewPager.setCurrentItem(currentPosition);
+mViewPager.setCurrentItem(currentPosition);
 }
 mPagerAdapter.updateEndFragmentIfActive();
 }
