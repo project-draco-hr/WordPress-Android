@@ -1,8 +1,6 @@
 {
-  mModeratingNoteId=note.getId();
   WordPress.getRestClientUtils().moderateComment(String.valueOf(note.getSiteId()),String.valueOf(note.getCommentId()),CommentStatus.toRESTString(newStatus),new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject response){
-      mModeratingNoteId=null;
       if (actionListener != null) {
         actionListener.onActionResult(true);
       }
@@ -10,7 +8,6 @@
   }
 ,new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError error){
-      mModeratingNoteId=null;
       if (actionListener != null) {
         actionListener.onActionResult(false);
       }

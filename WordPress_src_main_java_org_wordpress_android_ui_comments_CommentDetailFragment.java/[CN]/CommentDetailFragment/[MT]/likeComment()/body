@@ -2,16 +2,34 @@
   if (mNote == null)   return;
   toggleLikeButton(!mBtnLikeComment.isActivated());
   ReaderAnim.animateLikeButton(mBtnLikeIcon,mBtnLikeComment.isActivated());
+  boolean commentWasUnapproved=false;
+  if (mNotificationsDetailListFragment != null && mComment != null) {
+    if (mBtnLikeComment.isActivated() && mComment.getStatusEnum() == CommentStatus.UNAPPROVED) {
+      mComment.setStatus(CommentStatus.toString(CommentStatus.APPROVED));
+      mNotificationsDetailListFragment.refreshBlocksForCommentStatus(CommentStatus.APPROVED);
+      setModerateButtonForStatus(CommentStatus.APPROVED);
+      commentWasUnapproved=true;
+    }
+  }
+  final boolean commentStatusShouldRevert=commentWasUnapproved;
   WordPress.getRestClientUtils().likeComment(String.valueOf(mNote.getSiteId()),String.valueOf(mNote.getCommentId()),mBtnLikeComment.isActivated(),new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject response){
       if (response != null && !response.optBoolean("success")) {
+        if (!isAdded())         return;
         toggleLikeButton(!mBtnLikeComment.isActivated());
+        if (commentStatusShouldRevert) {
+          setCommentStatusUnapproved();
+        }
       }
     }
   }
 ,new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError error){
+      if (!isAdded())       return;
       toggleLikeButton(!mBtnLikeComment.isActivated());
+      if (commentStatusShouldRevert) {
+        setCommentStatusUnapproved();
+      }
     }
   }
 );
