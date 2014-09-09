@@ -1,0 +1,16 @@
+{
+  ReaderPostList posts=new ReaderPostList();
+  try {
+    if (cursor != null && cursor.moveToFirst()) {
+      do {
+        posts.add(getPostFromCursor(cursor));
+      }
+ while (cursor.moveToNext());
+    }
+  }
+ catch (  IllegalStateException e) {
+    CrashlyticsUtils.logException(e,CrashlyticsUtils.ExceptionType.SPECIFIC);
+    AppLog.e(AppLog.T.READER,e);
+  }
+  return posts;
+}
