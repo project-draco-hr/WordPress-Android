@@ -3,7 +3,7 @@
   JSONArray bodyArray=mNote.getBody();
   mNoteBlockArray.clear();
   if (mNote.getHeader() != null) {
-    HeaderUserNoteBlock headerNoteBlock=new HeaderUserNoteBlock(mNote.getHeader(),mOnNoteBlockTextClickListener,mOnGravatarClickedListener);
+    HeaderUserNoteBlock headerNoteBlock=new HeaderUserNoteBlock(getActivity(),mNote.getHeader(),mOnNoteBlockTextClickListener,mOnGravatarClickedListener);
     headerNoteBlock.setIsComment(mNote.isCommentType());
     mNoteBlockArray.add(headerNoteBlock);
   }
@@ -23,14 +23,14 @@
               i++;
             }
             noteObject.put("timestamp",mNote.getTimestamp());
-            noteBlock=new CommentUserNoteBlock(noteObject,mOnNoteBlockTextClickListener,mOnGravatarClickedListener);
+            noteBlock=new CommentUserNoteBlock(getActivity(),noteObject,mOnNoteBlockTextClickListener,mOnGravatarClickedListener);
             CommentUserNoteBlock commentUserNoteBlock=(CommentUserNoteBlock)noteBlock;
             mOnCommentStatusChangeListener=commentUserNoteBlock.getOnCommentChangeListener();
             commentUserNoteBlock.setCommentStatus(mNote.getCommentStatus());
             commentUserNoteBlock.configureResources(getActivity());
           }
  else {
-            noteBlock=new UserNoteBlock(noteObject,mOnNoteBlockTextClickListener,mOnGravatarClickedListener);
+            noteBlock=new UserNoteBlock(getActivity(),noteObject,mOnNoteBlockTextClickListener,mOnGravatarClickedListener);
           }
         }
  else {
