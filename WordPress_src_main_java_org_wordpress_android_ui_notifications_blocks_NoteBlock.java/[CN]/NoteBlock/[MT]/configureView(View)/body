@@ -4,7 +4,8 @@
     noteBlockHolder.getImageView().setVisibility(View.VISIBLE);
     WordPress.imageLoader.get(getNoteMediaItem().optString("url",""),new ImageLoader.ImageListener(){
       @Override public void onResponse(      ImageLoader.ImageContainer response,      boolean isImmediate){
-        if (response.getBitmap() != null && view.getContext() != null) {
+        if (!mHasAnimatedBadge && response.getBitmap() != null && view.getContext() != null) {
+          mHasAnimatedBadge=true;
           noteBlockHolder.getImageView().setImageBitmap(response.getBitmap());
           Animation pop=AnimationUtils.loadAnimation(view.getContext(),R.anim.pop);
           noteBlockHolder.getImageView().startAnimation(pop);
