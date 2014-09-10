@@ -15,30 +15,14 @@
     mBlogId=getIntent().getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
     mPostId=getIntent().getLongExtra(ReaderConstants.ARG_POST_ID,0);
   }
-  loadPost();
   mListView=(WPListView)findViewById(android.R.id.list);
+  mCommentBox=(ViewGroup)findViewById(R.id.layout_comment_box);
+  mEditComment=(EditText)mCommentBox.findViewById(R.id.edit_comment);
+  mImgSubmitComment=(ImageView)mCommentBox.findViewById(R.id.image_post_comment);
+  loadPost();
   int height=getResources().getDimensionPixelSize(R.dimen.margin_extra_small);
   ReaderUtils.addListViewHeader(mListView,height);
   mListView.setAdapter(getCommentAdapter());
-  ViewGroup layoutCommentBox=(ViewGroup)findViewById(R.id.layout_comment_box);
-  layoutCommentBox.setVisibility(View.VISIBLE);
-  mEditComment=(EditText)layoutCommentBox.findViewById(R.id.edit_comment);
-  mEditComment.setOnEditorActionListener(new TextView.OnEditorActionListener(){
-    @Override public boolean onEditorAction(    TextView v,    int actionId,    KeyEvent event){
-      if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEND) {
-        submitComment();
-      }
-      return false;
-    }
-  }
-);
-  mImgSubmitComment=(ImageView)layoutCommentBox.findViewById(R.id.image_post_comment);
-  mImgSubmitComment.setOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View v){
-      submitComment();
-    }
-  }
-);
   if (savedInstanceState != null) {
     setReplyToCommentId(savedInstanceState.getLong(KEY_REPLY_TO_COMMENT_ID));
   }

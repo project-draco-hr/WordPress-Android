@@ -7,7 +7,31 @@
   final View postHeader=findViewById(R.id.layout_post_header);
   final TextView txtTitle=(TextView)postHeader.findViewById(R.id.text_post_title);
   final WPNetworkImageView imgAvatar=(WPNetworkImageView)postHeader.findViewById(R.id.image_post_avatar);
+  final TextView txtCommentsClosed=(TextView)findViewById(R.id.text_comments_closed);
   txtTitle.setText(mPost.getTitle());
   String url=mPost.getPostAvatarForDisplay(getResources().getDimensionPixelSize(R.dimen.avatar_sz_small));
   imgAvatar.setImageUrl(url,WPNetworkImageView.ImageType.AVATAR);
+  if (mPost.isCommentsOpen) {
+    mCommentBox.setVisibility(View.VISIBLE);
+    txtCommentsClosed.setVisibility(View.GONE);
+    mEditComment.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+      @Override public boolean onEditorAction(      TextView v,      int actionId,      KeyEvent event){
+        if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEND) {
+          submitComment();
+        }
+        return false;
+      }
+    }
+);
+    mImgSubmitComment.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        submitComment();
+      }
+    }
+);
+  }
+ else {
+    mCommentBox.setVisibility(View.GONE);
+    txtCommentsClosed.setVisibility(View.VISIBLE);
+  }
 }
