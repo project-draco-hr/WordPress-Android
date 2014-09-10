@@ -1,37 +1,39 @@
 {
-  final EditText editComment=(EditText)findViewById(R.id.edit_comment);
-  final String commentText=EditTextUtils.getText(editComment);
+  final String commentText=EditTextUtils.getText(mEditComment);
   if (TextUtils.isEmpty(commentText)) {
     return;
   }
+  if (!NetworkUtils.checkConnection(this)) {
+    return;
+  }
   AnalyticsTracker.track(AnalyticsTracker.Stat.READER_COMMENTED_ON_ARTICLE);
-  hideAddCommentBox();
+  mImgSubmitComment.setEnabled(false);
+  mEditComment.setEnabled(false);
   final long fakeCommentId=ReaderCommentActions.generateFakeCommentId();
-  mIsSubmittingComment=true;
   ReaderActions.CommentActionListener actionListener=new ReaderActions.CommentActionListener(){
     @Override public void onActionResult(    boolean succeeded,    ReaderComment newComment){
-      mIsSubmittingComment=false;
       if (isFinishing()) {
         return;
       }
+      mImgSubmitComment.setEnabled(true);
+      mEditComment.setEnabled(true);
       if (succeeded) {
         getCommentAdapter().setHighlightCommentId(0,false);
         getCommentAdapter().replaceComment(fakeCommentId,newComment);
         mListView.invalidateViews();
-        showAddCommentBox(0);
+        setReplyToCommentId(0);
       }
  else {
-        editComment.setText(commentText);
-        showAddCommentBox(replyToCommentId);
+        mEditComment.setText(commentText);
         getCommentAdapter().removeComment(fakeCommentId);
         ToastUtils.showToast(ReaderCommentListActivity.this,R.string.reader_toast_err_comment_failed,ToastUtils.Duration.LONG);
       }
     }
   }
 ;
-  final ReaderComment newComment=ReaderCommentActions.submitPostComment(getPost(),fakeCommentId,commentText,replyToCommentId,actionListener);
+  ReaderComment newComment=ReaderCommentActions.submitPostComment(getPost(),fakeCommentId,commentText,mReplyToCommentId,actionListener);
   if (newComment != null) {
-    editComment.setText(null);
+    mEditComment.setText(null);
     getCommentAdapter().setHighlightCommentId(newComment.commentId,true);
     getCommentAdapter().addComment(newComment);
     scrollToCommentId(fakeCommentId);
