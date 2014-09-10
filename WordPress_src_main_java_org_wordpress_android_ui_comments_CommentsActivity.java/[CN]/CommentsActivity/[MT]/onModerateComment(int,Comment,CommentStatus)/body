@@ -10,6 +10,7 @@
         if (isFinishing())         return;
         getListFragment().setCommentIsModerating(comment.commentID,false);
         if (succeeded) {
+          updateMenuDrawer();
           getListFragment().updateComments(false);
         }
  else {
@@ -24,13 +25,16 @@
     getListFragment().setCommentIsModerating(comment.commentID,true);
     new UndoBarController.UndoBar(this).message(newStatus == CommentStatus.TRASH ? R.string.comment_trashed : R.string.comment_spammed).listener(new UndoBarController.AdvancedUndoListener(){
       @Override public void onHide(      Parcelable parcelable){
-        if (isFinishing())         return;
         CommentActions.moderateComment(accountId,comment,newStatus,new CommentActions.CommentActionListener(){
           @Override public void onActionResult(          boolean succeeded){
+            if (isFinishing())             return;
             getListFragment().setCommentIsModerating(comment.commentID,false);
             if (!succeeded) {
               getListFragment().loadComments();
               ToastUtils.showToast(CommentsActivity.this,R.string.error_moderate_comment,ToastUtils.Duration.LONG);
+            }
+ else {
+              updateMenuDrawer();
             }
           }
         }
