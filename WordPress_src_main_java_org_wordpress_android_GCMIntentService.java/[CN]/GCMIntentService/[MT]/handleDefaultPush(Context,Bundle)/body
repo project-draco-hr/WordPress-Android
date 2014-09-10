@@ -39,8 +39,12 @@
  catch (    UnsupportedEncodingException e) {
       AppLog.e(T.NOTIFS,e);
     }
-    float screenDensity=getResources().getDisplayMetrics().densityDpi;
-    int size=Math.round(64 * (screenDensity / 160));
+    int size=128;
+    Resources resources=getResources();
+    if (resources != null && resources.getDisplayMetrics() != null) {
+      float screenDensity=resources.getDisplayMetrics().densityDpi;
+      size=Math.round(64 * (screenDensity / 160));
+    }
     String resizedURL=iconURL.replaceAll("(?<=[?&;])s=[0-9]*","s=" + size);
     largeIconBitmap=ImageUtils.downloadBitmap(resizedURL);
   }
