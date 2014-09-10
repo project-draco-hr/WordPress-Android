@@ -32,7 +32,7 @@
   }
   BitmapFactory.Options optActual=new BitmapFactory.Options();
   optActual.inSampleSize=scale;
-  Bitmap bmpResized;
+  final Bitmap bmpResized;
   try {
     bmpResized=BitmapFactory.decodeFile(filePath,optActual);
   }
@@ -40,7 +40,9 @@
     AppLog.e(AppLog.T.UTILS,"OutOfMemoryError Error in setting image: " + e);
     return null;
   }
-  if (bmpResized == null)   return null;
+  if (bmpResized == null) {
+    return null;
+  }
   ByteArrayOutputStream stream=new ByteArrayOutputStream();
   float percentage=(float)maxWidth / bmpResized.getWidth();
   float proportionateHeight=bmpResized.getHeight() * percentage;
@@ -66,6 +68,13 @@
   }
  catch (  OutOfMemoryError e) {
     AppLog.e(AppLog.T.UTILS,"OutOfMemoryError Error in setting image: " + e);
+    return null;
+  }
+catch (  NullPointerException e) {
+    AppLog.e(AppLog.T.UTILS,"Bitmap.createBitmap has thrown a NPE internally. This should never happen: " + e);
+    return null;
+  }
+  if (bmpRotated == null) {
     return null;
   }
   bmpRotated.compress(fmt,100,stream);
