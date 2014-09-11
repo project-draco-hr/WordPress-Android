@@ -3,8 +3,25 @@
   if (!NetworkUtils.checkConnection(getActivity()))   return;
   if (mNote != null && mOnNoteCommentActionListener != null) {
     mOnNoteCommentActionListener.onModerateCommentForNote(mNote,newStatus);
+    return;
   }
  else   if (mOnCommentActionListener != null) {
     mOnCommentActionListener.onModerateComment(mLocalBlogId,mComment,newStatus);
+    return;
   }
+  if (mNote == null)   return;
+  final CommentStatus oldStatus=mComment.getStatusEnum();
+  mComment.setStatus(CommentStatus.toString(newStatus));
+  updateStatusViews();
+  CommentActions.moderateCommentRestApi(mNote.getSiteId(),mComment.commentID,newStatus,new CommentActions.CommentActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      if (!isAdded())       return;
+      if (!succeeded) {
+        mComment.setStatus(CommentStatus.toString(oldStatus));
+        updateStatusViews();
+        ToastUtils.showToast(getActivity(),R.string.error_moderate_comment);
+      }
+    }
+  }
+);
 }

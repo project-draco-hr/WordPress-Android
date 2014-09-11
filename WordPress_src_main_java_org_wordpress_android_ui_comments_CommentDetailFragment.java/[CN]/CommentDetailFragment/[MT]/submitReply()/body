@@ -1,5 +1,5 @@
 {
-  if (!isAdded())   return;
+  if (!isAdded() || mIsSubmittingReply)   return;
   if (!NetworkUtils.checkConnection(getActivity()))   return;
   final String replyText=EditTextUtils.getText(mEditReply);
   if (TextUtils.isEmpty(replyText))   return;
@@ -7,12 +7,39 @@
   mEditReply.setEnabled(false);
   EditTextUtils.hideSoftInput(mEditReply);
   mImgSubmitReply.setVisibility(View.GONE);
-  ProgressBar progress=(ProgressBar)getView().findViewById(R.id.progress_submit_comment);
-  progress.setVisibility(View.VISIBLE);
+  final ProgressBar progressBar=getView() != null ? (ProgressBar)getView().findViewById(R.id.progress_submit_comment) : null;
+  if (getView() != null) {
+    progressBar.setVisibility(View.VISIBLE);
+  }
   if (mNote != null && mOnNoteCommentActionListener != null) {
     mOnNoteCommentActionListener.onReplyToNote(mNote,replyText);
+    return;
   }
  else   if (mOnCommentActionListener != null) {
     mOnCommentActionListener.onReplyToComment(mLocalBlogId,mComment,replyText);
+    return;
   }
+  if (mNote == null)   return;
+  mIsSubmittingReply=true;
+  CommentActions.submitReplyToCommentRestApi(mNote.getSiteId(),mComment.commentID,replyText,new CommentActions.CommentActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      if (!isAdded())       return;
+      mIsSubmittingReply=false;
+      mEditReply.setEnabled(true);
+      mImgSubmitReply.setVisibility(View.VISIBLE);
+      if (progressBar != null) {
+        progressBar.setVisibility(View.GONE);
+      }
+      updateStatusViews();
+      if (succeeded) {
+        ToastUtils.showToast(getActivity(),getString(R.string.note_reply_successful));
+        mEditReply.setText(null);
+      }
+ else {
+        ToastUtils.showToast(getActivity(),R.string.reply_failed,ToastUtils.Duration.LONG);
+        EditTextUtils.showSoftInput(mEditReply);
+      }
+    }
+  }
+);
 }
