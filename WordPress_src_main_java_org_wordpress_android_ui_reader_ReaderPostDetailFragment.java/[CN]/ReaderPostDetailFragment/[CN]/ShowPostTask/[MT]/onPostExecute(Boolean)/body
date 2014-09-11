@@ -49,6 +49,20 @@
   if (isBlogPreview()) {
     layoutDetailHeader.setVisibility(View.GONE);
   }
+ else {
+    if (!mPost.isExternal) {
+      layoutDetailHeader.setEnabled(true);
+      layoutDetailHeader.setOnClickListener(new View.OnClickListener(){
+        @Override public void onClick(        View v){
+          ReaderActivityLauncher.showReaderBlogPreview(v.getContext(),mPost.blogId,mPost.getBlogUrl());
+        }
+      }
+);
+    }
+ else {
+      layoutDetailHeader.setEnabled(false);
+    }
+  }
   if (mPost.canReblog()) {
     imgBtnReblog.setVisibility(View.VISIBLE);
     imgBtnReblog.setSelected(mPost.isRebloggedByCurrentUser);
