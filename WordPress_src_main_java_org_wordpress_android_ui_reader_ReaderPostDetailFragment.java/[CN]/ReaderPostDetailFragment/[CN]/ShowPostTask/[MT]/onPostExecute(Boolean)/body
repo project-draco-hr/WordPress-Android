@@ -76,31 +76,6 @@
  else {
     imgBtnReblog.setVisibility(View.INVISIBLE);
   }
-  if (mPost.isWP() && (mPost.isCommentsOpen || mPost.numReplies > 0)) {
-    countComments.setCount(mPost.numReplies);
-    countComments.setVisibility(View.VISIBLE);
-    countComments.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View v){
-        ReaderActivityLauncher.showReaderComments(getActivity(),mPost);
-      }
-    }
-);
-  }
- else {
-    countComments.setVisibility(View.INVISIBLE);
-    countComments.setOnClickListener(null);
-  }
-  if (mPost.isLikesEnabled) {
-    countLikes.setCount(mPost.numLikes);
-    countLikes.setVisibility(View.VISIBLE);
-    countLikes.setSelected(mPost.isLikedByCurrentUser);
-    if (mPost.numLikes > 0 && mLayoutLikes.getVisibility() == View.GONE) {
-      mLayoutLikes.setVisibility(View.INVISIBLE);
-    }
-  }
- else {
-    countLikes.setVisibility(View.INVISIBLE);
-  }
   if (!mPost.isExternal && (mPost.isLikesEnabled || mPost.canReblog() || mPost.isCommentsOpen)) {
     mLayoutIcons.setVisibility(View.VISIBLE);
   }
@@ -122,4 +97,5 @@
     imgDropDown.setVisibility(View.GONE);
   }
   mLayoutIcons.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
+  refreshIconBarCounts();
 }
