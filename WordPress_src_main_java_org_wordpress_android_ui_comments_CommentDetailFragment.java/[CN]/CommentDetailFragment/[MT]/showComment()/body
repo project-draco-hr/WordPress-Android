@@ -5,14 +5,25 @@
   if (mComment == null) {
     scrollView.setVisibility(View.GONE);
     layoutBottom.setVisibility(View.GONE);
-    if (mNote != null) {
+    if (mNote != null && mIsCommentReply) {
+      int localTableBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(mNote.getSiteId());
+      if (localTableBlogId > 0) {
+        Comment comment=CommentTable.getComment(localTableBlogId,mNote.getParentCommentId());
+        if (comment != null) {
+          setComment(localTableBlogId,comment);
+          return;
+        }
+      }
+      requestComment(localTableBlogId,mNote.getSiteId(),mNote.getParentCommentId());
+    }
+ else     if (mNote != null) {
       showCommentForNote(mNote);
     }
     return;
   }
   scrollView.setVisibility(View.VISIBLE);
   layoutBottom.setVisibility(View.VISIBLE);
-  if (mNote == null && mLayoutButtons.getParent() == null) {
+  if ((mNote == null || mIsCommentReply) && mLayoutButtons.getParent() == null) {
     ViewGroup commentContentLayout=(ViewGroup)getView().findViewById(R.id.comment_content_container);
     commentContentLayout.addView(mLayoutButtons);
   }
