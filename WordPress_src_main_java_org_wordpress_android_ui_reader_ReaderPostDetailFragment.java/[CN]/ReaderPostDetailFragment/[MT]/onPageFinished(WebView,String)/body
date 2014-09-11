@@ -3,12 +3,20 @@
     return;
   }
   if (url != null && url.equals("about:blank")) {
-    refreshLikes();
-    refreshCommentCount();
-    if (!mHasAlreadyUpdatedPost) {
-      mHasAlreadyUpdatedPost=true;
-      updatePost();
+    view.postDelayed(new Runnable(){
+      @Override public void run(){
+        if (!isAdded()) {
+          return;
+        }
+        refreshLikes();
+        refreshCommentCount();
+        if (!mHasAlreadyUpdatedPost) {
+          mHasAlreadyUpdatedPost=true;
+          updatePost();
+        }
+      }
     }
+,300);
   }
  else {
     AppLog.w(T.READER,"reader post detail > page finished - " + url);
