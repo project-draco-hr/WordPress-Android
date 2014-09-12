@@ -1,0 +1,39 @@
+{
+  if (isFinishing())   return;
+  final ProgressBar progress=(ProgressBar)findViewById(R.id.edit_comment_progress);
+  final View editContainer=findViewById(R.id.edit_comment_container);
+  if (progress == null || editContainer == null) {
+    return;
+  }
+  editContainer.setVisibility(View.GONE);
+  progress.setVisibility(View.VISIBLE);
+  RestRequest.Listener restListener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      if (!isFinishing()) {
+        progress.setVisibility(View.GONE);
+        editContainer.setVisibility(View.VISIBLE);
+        Comment comment=Comment.fromJSON(jsonObject);
+        if (comment != null) {
+          mComment=comment;
+          configureViews();
+        }
+ else {
+          showErrorAndFinish();
+        }
+      }
+    }
+  }
+;
+  RestRequest.ErrorListener restErrListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(AppLog.T.COMMENTS,VolleyUtils.errStringFromVolleyError(volleyError),volleyError);
+      if (!isFinishing()) {
+        progress.setVisibility(View.GONE);
+        showErrorAndFinish();
+      }
+    }
+  }
+;
+  final String path=String.format("/sites/%s/comments/%s",note.getSiteId(),note.getCommentId());
+  WordPress.getRestClientUtils().get(path,restListener,restErrListener);
+}

@@ -1,13 +1,16 @@
 {
-  if (textView == null)   return;
+  if (textView == null)   return null;
   if (content == null) {
     textView.setText(null);
-    return;
+    return null;
   }
   if (!content.contains("<") && !content.contains("&")) {
-    textView.setText(content.trim());
-    if (content.contains("://"))     Linkify.addLinks(textView,Linkify.WEB_URLS);
-    return;
+    content=content.trim();
+    textView.setText(content);
+    if (content.contains("://")) {
+      Linkify.addLinks(textView,Linkify.WEB_URLS);
+    }
+    return content;
   }
   content=Emoticons.replaceEmoticonsWithEmoji(content);
   final Spanned html;
@@ -28,5 +31,6 @@
   while (end > start && Character.isWhitespace(source.charAt(end - 1))) {
     end--;
   }
-  textView.setText(source.subSequence(start,end));
+  textView.setText(source);
+  return source;
 }

@@ -1,4 +1,16 @@
 {
-  getCursor().moveToPosition(position);
-  return getNote();
+  if (getCursor() == null) {
+    return null;
+  }
+  Bucket.ObjectCursor<Note> cursor=(Bucket.ObjectCursor<Note>)getCursor();
+  if (cursor.moveToPosition(position)) {
+    String noteId=cursor.getSimperiumKey();
+    try {
+      return mNotesBucket.get(noteId);
+    }
+ catch (    BucketObjectMissingException e) {
+      return null;
+    }
+  }
+  return null;
 }

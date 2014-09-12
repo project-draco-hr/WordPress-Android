@@ -1,23 +1,6 @@
 {
   Intent intent=getIntent();
   if (intent.hasExtra(NOTE_ID_EXTRA)) {
-    String noteID=intent.getStringExtra(NOTE_ID_EXTRA);
-    Bucket<Note> notesBucket=SimperiumUtils.getNotesBucket();
-    try {
-      if (notesBucket != null) {
-        Note note=notesBucket.get(noteID);
-        if (note != null) {
-          openNote(note);
-        }
-      }
-    }
- catch (    BucketObjectMissingException e) {
-      AppLog.e(T.NOTIFS,"Could not load notification from bucket.");
-    }
-  }
- else {
-    if (mDualPane && mNotesList != null) {
-      mNotesList.setShouldLoadFirstNote(true);
-    }
+    openNoteForNoteId(intent.getStringExtra(NOTE_ID_EXTRA));
   }
 }

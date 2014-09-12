@@ -1,0 +1,18 @@
+{
+  if (mOnCommentStatusChangeListener != null) {
+    mOnCommentStatusChangeListener.onCommentStatusChanged(newStatus);
+    ListView listView=getListView();
+    if (listView == null || mCommentListPosition == ListView.INVALID_POSITION) {
+      return;
+    }
+    int firstPosition=listView.getFirstVisiblePosition();
+    int endPosition=listView.getLastVisiblePosition();
+    for (int i=firstPosition; i < endPosition; i++) {
+      if (mCommentListPosition == i) {
+        View view=listView.getChildAt(i - firstPosition);
+        listView.getAdapter().getView(i,view,listView);
+        break;
+      }
+    }
+  }
+}

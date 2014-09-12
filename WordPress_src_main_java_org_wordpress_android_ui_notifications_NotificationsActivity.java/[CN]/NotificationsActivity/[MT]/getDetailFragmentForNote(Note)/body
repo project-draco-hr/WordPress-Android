@@ -1,25 +1,24 @@
 {
   if (note == null)   return null;
+  Fragment fragment;
   if (note.isCommentType()) {
-    return CommentDetailFragment.newInstance(note);
-  }
- else   if (note.isCommentLikeType()) {
-    return new NoteCommentLikeFragment();
+    CommentDetailFragment commentDetailFragment=CommentDetailFragment.newInstance(note);
+    if (!TextUtils.isEmpty(mRestoredReplyText)) {
+      commentDetailFragment.setRestoredReplyText(mRestoredReplyText);
+    }
+    fragment=commentDetailFragment;
   }
  else   if (note.isAutomattcherType()) {
-    boolean isPost=(note.getBlogId() != 0 && note.getPostId() != 0 && note.getCommentId() == 0);
+    boolean isPost=(note.getSiteId() != 0 && note.getPostId() != 0 && note.getCommentId() == 0);
     if (isPost) {
-      return ReaderPostDetailFragment.newInstance(note.getBlogId(),note.getPostId());
+      fragment=ReaderPostDetailFragment.newInstance(note.getSiteId(),note.getPostId());
     }
  else {
-      return new NoteMatcherFragment();
+      fragment=NotificationsDetailListFragment.newInstance(note);
     }
   }
- else   if (note.isSingleLineListTemplate()) {
-    return new NoteSingleLineListFragment();
+ else {
+    fragment=NotificationsDetailListFragment.newInstance(note);
   }
- else   if (note.isBigBadgeTemplate()) {
-    return new BigBadgeFragment();
-  }
-  return null;
+  return fragment;
 }
