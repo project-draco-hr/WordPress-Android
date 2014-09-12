@@ -3,8 +3,8 @@
     ReaderInterfaces.DataLoadedListener dataLoadedListener=new ReaderInterfaces.DataLoadedListener(){
       @Override public void onDataLoaded(      boolean isEmpty){
         if (!isFinishing()) {
-          if (isEmpty) {
-            updateComments();
+          if (isEmpty || !mHasUpdatedComments) {
+            updateComments(isEmpty);
           }
  else           if (mTopMostCommentId != 0) {
             restoreTopmostComment();
@@ -23,7 +23,7 @@
       @Override public void onRequestData(){
         if (!mIsUpdatingComments) {
           AppLog.i(T.READER,"reader comments > requesting newer comments");
-          updateComments();
+          updateComments(true);
         }
       }
     }
