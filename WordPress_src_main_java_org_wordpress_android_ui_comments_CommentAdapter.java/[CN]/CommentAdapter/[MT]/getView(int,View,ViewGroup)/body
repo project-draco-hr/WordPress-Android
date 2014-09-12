@@ -9,6 +9,12 @@
  else {
     holder=(CommentHolder)convertView.getTag();
   }
+  if (isModeratingCommentId(comment.commentID)) {
+    holder.progressBar.setVisibility(View.VISIBLE);
+  }
+ else {
+    holder.progressBar.setVisibility(View.GONE);
+  }
   holder.txtTitle.setText(Html.fromHtml(comment.getFormattedTitle()));
   holder.txtComment.setText(comment.getUnescapedCommentText());
   holder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(comment.getDatePublished()));
@@ -29,13 +35,12 @@ showStatus=false;
 break;
 }
 holder.txtStatus.setVisibility(showStatus ? View.VISIBLE : View.GONE);
-final boolean useSelectionBackground;
+boolean useSelectionBackground=false;
 if (mEnableSelection && isItemSelected(position)) {
 useSelectionBackground=true;
 if (holder.imgCheckmark.getVisibility() != View.VISIBLE) holder.imgCheckmark.setVisibility(View.VISIBLE);
 }
  else {
-useSelectionBackground=(mHighlightedCommentId == comment.commentID);
 if (holder.imgCheckmark.getVisibility() == View.VISIBLE) holder.imgCheckmark.setVisibility(View.GONE);
 holder.imgAvatar.setImageUrl(comment.getAvatarForDisplay(mAvatarSz),WPNetworkImageView.ImageType.AVATAR);
 }

@@ -1,13 +1,25 @@
 {
+  if (getView() == null)   return;
+  View view=getView();
+  View commentContent=view.findViewById(R.id.comment_content);
+  if (commentContent != null) {
+    commentContent.setVisibility(View.GONE);
+  }
+  View commentText=view.findViewById(R.id.text_content);
+  if (commentText != null) {
+    commentText.setVisibility(View.GONE);
+  }
+  FragmentManager fragmentManager=getFragmentManager();
+  FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+  mNotificationsDetailListFragment=NotificationsDetailListFragment.newInstance(note);
+  mNotificationsDetailListFragment.setFooterView(mLayoutButtons);
+  fragmentTransaction.add(R.id.comment_content_container,mNotificationsDetailListFragment);
+  fragmentTransaction.commitAllowingStateLoss();
   mEnabledActions=note.getEnabledActions();
-  mRemoteBlogId=note.getBlogId();
-  long commentId=note.getCommentId();
+  mRemoteBlogId=note.getSiteId();
+  if (!TextUtils.isEmpty(mNote.getCommentAuthorName()) && mNote.getCommentAuthorName().length() < 28) {
+    mEditReply.setHint(String.format(getString(R.string.comment_reply_to_user),mNote.getCommentAuthorName()));
+  }
   int localBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(mRemoteBlogId);
-  final Comment comment=(localBlogId > 0 ? CommentTable.getComment(localBlogId,commentId) : null);
-  if (comment != null) {
-    setComment(localBlogId,comment);
-  }
- else {
-    requestComment(localBlogId,mRemoteBlogId,commentId);
-  }
+  setComment(localBlogId,note.buildComment());
 }
