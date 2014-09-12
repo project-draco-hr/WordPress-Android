@@ -1,0 +1,19 @@
+{
+  if (mVideoView == null) {
+    mVideoView=new VideoView(mRootLayout.getContext());
+    FrameLayout.LayoutParams layoutParams=new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,DisplayUtils.dpToPx(mRootLayout.getContext(),220));
+    mVideoView.setLayoutParams(layoutParams);
+    mRootLayout.addView(mVideoView,0);
+    final MediaController mediaController=new MediaController(mRootLayout.getContext());
+    mediaController.setMediaPlayer(mVideoView);
+    mVideoView.setMediaController(mediaController);
+    mediaController.requestFocus();
+    mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener(){
+      @Override public void onPrepared(      MediaPlayer mp){
+        mediaController.show(0);
+      }
+    }
+);
+  }
+  return mVideoView;
+}

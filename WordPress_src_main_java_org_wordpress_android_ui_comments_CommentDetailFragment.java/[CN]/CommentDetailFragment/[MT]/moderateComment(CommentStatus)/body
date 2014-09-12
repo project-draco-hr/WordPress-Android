@@ -1,66 +1,27 @@
 {
-  if (!isAdded() || !hasComment() || mIsModeratingComment)   return;
+  if (!isAdded() || !hasComment())   return;
   if (!NetworkUtils.checkConnection(getActivity()))   return;
-  final int dlgId;
-switch (newStatus) {
-case APPROVED:
-    dlgId=CommentDialogs.ID_COMMENT_DLG_APPROVING;
-  AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_APPROVED);
-break;
-case UNAPPROVED:
-dlgId=CommentDialogs.ID_COMMENT_DLG_UNAPPROVING;
-break;
-case SPAM:
-dlgId=CommentDialogs.ID_COMMENT_DLG_SPAMMING;
-AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_FLAGGED_AS_SPAM);
-break;
-case TRASH:
-dlgId=CommentDialogs.ID_COMMENT_DLG_TRASHING;
-AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_TRASHED);
-break;
-default :
-return;
-}
-getActivity().showDialog(dlgId);
-mLayoutButtons.setEnabled(false);
-mLayoutButtons.clearAnimation();
-AniUtils.flyOut(mLayoutButtons);
-if (mTxtStatus.getVisibility() == View.VISIBLE) {
-mTxtStatus.clearAnimation();
-AniUtils.startAnimation(mTxtStatus,R.anim.fade_out);
-mTxtStatus.setVisibility(View.INVISIBLE);
-}
-CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
-@Override public void onActionResult(boolean succeeded){
-mIsModeratingComment=false;
-if (isAdded()) {
-dismissDialog(dlgId);
-mLayoutButtons.setEnabled(true);
-if (succeeded) {
-mComment.setStatus(CommentStatus.toString(newStatus));
-}
- else {
-ToastUtils.showToast(getActivity(),R.string.error_moderate_comment,ToastUtils.Duration.LONG);
-}
-if (newStatus == CommentStatus.TRASH) {
-clear();
-}
- else {
-updateStatusViews();
-}
-}
-if (succeeded && mOnCommentChangeListener != null) {
-ChangeType changeType=(newStatus == CommentStatus.TRASH ? ChangeType.TRASHED : ChangeType.STATUS);
-mOnCommentChangeListener.onCommentChanged(ChangedFrom.COMMENT_DETAIL,changeType);
-}
-}
-}
-;
-mIsModeratingComment=true;
-if (mNote != null) {
-CommentActions.moderateCommentForNote(mNote,newStatus,actionListener);
-}
- else {
-CommentActions.moderateComment(mLocalBlogId,mComment,newStatus,actionListener);
-}
+  if (mNote != null && mOnNoteCommentActionListener != null) {
+    mOnNoteCommentActionListener.onModerateCommentForNote(mNote,newStatus);
+    return;
+  }
+ else   if (mOnCommentActionListener != null) {
+    mOnCommentActionListener.onModerateComment(mLocalBlogId,mComment,newStatus);
+    return;
+  }
+  if (mNote == null)   return;
+  final CommentStatus oldStatus=mComment.getStatusEnum();
+  mComment.setStatus(CommentStatus.toString(newStatus));
+  updateStatusViews();
+  CommentActions.moderateCommentRestApi(mNote.getSiteId(),mComment.commentID,newStatus,new CommentActions.CommentActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      if (!isAdded())       return;
+      if (!succeeded) {
+        mComment.setStatus(CommentStatus.toString(oldStatus));
+        updateStatusViews();
+        ToastUtils.showToast(getActivity(),R.string.error_moderate_comment);
+      }
+    }
+  }
+);
 }

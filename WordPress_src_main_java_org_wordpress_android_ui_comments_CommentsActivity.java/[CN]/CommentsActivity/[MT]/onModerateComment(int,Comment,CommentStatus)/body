@@ -1,0 +1,52 @@
+{
+  FragmentManager fm=getFragmentManager();
+  if (fm.getBackStackEntryCount() > 0) {
+    fm.popBackStack();
+  }
+  if (newStatus == CommentStatus.APPROVED || newStatus == CommentStatus.UNAPPROVED) {
+    getListFragment().setCommentIsModerating(comment.commentID,true);
+    CommentActions.moderateComment(accountId,comment,newStatus,new CommentActions.CommentActionListener(){
+      @Override public void onActionResult(      boolean succeeded){
+        if (isFinishing())         return;
+        getListFragment().setCommentIsModerating(comment.commentID,false);
+        if (succeeded) {
+          updateMenuDrawer();
+          getListFragment().updateComments(false);
+        }
+ else {
+          ToastUtils.showToast(CommentsActivity.this,R.string.error_moderate_comment,ToastUtils.Duration.LONG);
+        }
+      }
+    }
+);
+  }
+ else   if (newStatus == CommentStatus.SPAM || newStatus == CommentStatus.TRASH) {
+    getListFragment().removeComment(comment);
+    getListFragment().setCommentIsModerating(comment.commentID,true);
+    new UndoBarController.UndoBar(this).message(newStatus == CommentStatus.TRASH ? R.string.comment_trashed : R.string.comment_spammed).listener(new UndoBarController.AdvancedUndoListener(){
+      @Override public void onHide(      Parcelable parcelable){
+        CommentActions.moderateComment(accountId,comment,newStatus,new CommentActions.CommentActionListener(){
+          @Override public void onActionResult(          boolean succeeded){
+            if (isFinishing())             return;
+            getListFragment().setCommentIsModerating(comment.commentID,false);
+            if (!succeeded) {
+              getListFragment().loadComments();
+              ToastUtils.showToast(CommentsActivity.this,R.string.error_moderate_comment,ToastUtils.Duration.LONG);
+            }
+ else {
+              updateMenuDrawer();
+            }
+          }
+        }
+);
+      }
+      @Override public void onClear(){
+      }
+      @Override public void onUndo(      Parcelable parcelable){
+        getListFragment().setCommentIsModerating(comment.commentID,false);
+        getListFragment().loadComments();
+      }
+    }
+).show();
+  }
+}

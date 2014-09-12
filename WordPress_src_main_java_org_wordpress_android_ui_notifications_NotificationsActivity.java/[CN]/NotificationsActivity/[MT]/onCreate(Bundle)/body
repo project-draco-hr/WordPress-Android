@@ -1,22 +1,32 @@
 {
   super.onCreate(null);
-  createMenuDrawer(R.layout.notifications);
+  createMenuDrawer(R.layout.notifications_activity);
   if (savedInstanceState == null) {
     AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATIONS_ACCESSED);
   }
-  View fragmentContainer=findViewById(R.id.layout_fragment_container);
-  mDualPane=fragmentContainer != null && getString(R.string.dual_pane_mode).equals(fragmentContainer.getTag());
+  FragmentManager fragmentManager=getFragmentManager();
+  if (mNotesListFragment == null) {
+    mNotesListFragment=(NotificationsListFragment)fragmentManager.findFragmentByTag(TAG_LIST_VIEW);
+  }
   ActionBar actionBar=getActionBar();
-  actionBar.setDisplayShowTitleEnabled(true);
+  if (actionBar != null) {
+    actionBar.setDisplayShowTitleEnabled(true);
+  }
   setTitle(getResources().getString(R.string.notifications));
-  FragmentManager fm=getFragmentManager();
-  fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
-  mNotesList=(NotificationsListFragment)fm.findFragmentById(R.id.fragment_notes_list);
-  mNotesList.setOnNoteClickListener(new NoteClickListener());
+  fragmentManager.addOnBackStackChangedListener(mOnBackStackChangedListener);
+  mNotesListFragment.setOnNoteClickListener(new NoteClickListener());
   GCMIntentService.clearNotificationsMap();
   if (savedInstanceState != null) {
     mHasPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);
-    popNoteDetail();
+    if (savedInstanceState.getString(KEY_REPLY_TEXT) != null) {
+      mRestoredReplyText=savedInstanceState.getString(KEY_REPLY_TEXT);
+    }
+    if (savedInstanceState.getString(NOTE_ID_EXTRA) != null) {
+      openNoteForNoteId(savedInstanceState.getString(NOTE_ID_EXTRA));
+    }
+    if (savedInstanceState.containsKey(KEY_LIST_POSITION)) {
+      mNotesListFragment.setRestoredListPosition(savedInstanceState.getInt(KEY_LIST_POSITION,ListView.INVALID_POSITION));
+    }
   }
  else {
     launchWithNoteId();

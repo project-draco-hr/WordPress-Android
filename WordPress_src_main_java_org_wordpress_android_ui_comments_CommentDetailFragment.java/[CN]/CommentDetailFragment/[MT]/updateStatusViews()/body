@@ -1,41 +1,39 @@
 {
   if (!isAdded() || !hasComment())   return;
-  final int moderationDrawResId;
-  final int moderationTextResId;
   final CommentStatus newStatus;
   final int statusTextResId;
   final int statusColor;
 switch (mComment.getStatusEnum()) {
 case APPROVED:
-    moderationDrawResId=R.drawable.ic_cab_unapprove;
-  moderationTextResId=R.string.mnu_comment_unapprove;
-newStatus=CommentStatus.UNAPPROVED;
-statusTextResId=R.string.comment_status_approved;
-statusColor=getActivity().getResources().getColor(R.color.comment_status_approved);
+    newStatus=CommentStatus.UNAPPROVED;
+  statusTextResId=R.string.comment_status_approved;
+statusColor=getActivity().getResources().getColor(R.color.calypso_orange_dark);
 break;
 case UNAPPROVED:
-moderationDrawResId=R.drawable.ic_cab_approve;
-moderationTextResId=R.string.mnu_comment_approve;
 newStatus=CommentStatus.APPROVED;
 statusTextResId=R.string.comment_status_unapproved;
-statusColor=getActivity().getResources().getColor(R.color.comment_status_unapproved);
+statusColor=getActivity().getResources().getColor(R.color.calypso_orange_dark);
 break;
 case SPAM:
-moderationDrawResId=R.drawable.ic_cab_approve;
-moderationTextResId=R.string.mnu_comment_approve;
 newStatus=CommentStatus.APPROVED;
 statusTextResId=R.string.comment_status_spam;
 statusColor=getActivity().getResources().getColor(R.color.comment_status_spam);
 break;
 case TRASH:
-moderationDrawResId=R.drawable.ic_cab_approve;
-moderationTextResId=R.string.mnu_comment_approve;
+default :
 newStatus=CommentStatus.APPROVED;
 statusTextResId=R.string.comment_status_trash;
 statusColor=getActivity().getResources().getColor(R.color.comment_status_spam);
 break;
-default :
-return;
+}
+int commentActionCount=0;
+if (mNote != null && canLike()) {
+commentActionCount++;
+mBtnLikeComment.setVisibility(View.VISIBLE);
+toggleLikeButton(mNote.hasLikedComment());
+}
+ else {
+mBtnLikeComment.setVisibility(View.GONE);
 }
 if (mIsUsersBlog && mComment.getStatusEnum() != CommentStatus.APPROVED) {
 mTxtStatus.setText(getString(statusTextResId).toUpperCase());
@@ -49,10 +47,13 @@ AniUtils.fadeIn(mTxtStatus);
 mTxtStatus.setVisibility(View.GONE);
 }
 if (canModerate()) {
-setTextDrawable(mBtnModerateComment,moderationDrawResId);
-mBtnModerateComment.setText(moderationTextResId);
+commentActionCount++;
+setModerateButtonForStatus(mComment.getStatusEnum());
 mBtnModerateComment.setOnClickListener(new View.OnClickListener(){
 @Override public void onClick(View v){
+mComment.setStatus(newStatus.toString());
+setModerateButtonForStatus(newStatus);
+AniUtils.startAnimation(mBtnModerateIcon,R.anim.notifications_button_scale);
 moderateComment(newStatus);
 }
 }
@@ -63,6 +64,7 @@ mBtnModerateComment.setVisibility(View.VISIBLE);
 mBtnModerateComment.setVisibility(View.GONE);
 }
 if (canMarkAsSpam()) {
+commentActionCount++;
 mBtnSpamComment.setVisibility(View.VISIBLE);
 if (mComment.getStatusEnum() == CommentStatus.SPAM) {
 mBtnSpamComment.setText(R.string.mnu_comment_unspam);
@@ -74,10 +76,31 @@ mBtnSpamComment.setText(R.string.mnu_comment_spam);
  else {
 mBtnSpamComment.setVisibility(View.GONE);
 }
-mBtnTrashComment.setVisibility(canTrash() ? View.VISIBLE : View.GONE);
-mBtnEditComment.setVisibility(canEdit() ? View.VISIBLE : View.GONE);
-boolean isAnimating=(mLayoutButtons.getAnimation() != null && !mLayoutButtons.getAnimation().hasEnded());
-if ((mLayoutButtons.getVisibility() != View.VISIBLE || isAnimating) && (canMarkAsSpam() || canModerate())) {
-AniUtils.flyIn(mLayoutButtons);
+if (canTrash()) {
+commentActionCount++;
+mBtnTrashComment.setVisibility(View.VISIBLE);
 }
+ else {
+mBtnTrashComment.setVisibility(View.GONE);
+}
+if (canEdit()) {
+commentActionCount++;
+mBtnEditComment.setVisibility(View.VISIBLE);
+}
+ else {
+mBtnEditComment.setVisibility(View.GONE);
+}
+if (commentActionCount > 3) {
+if (commentActionCount >= 4 && canEdit()) {
+mBtnEditComment.setVisibility(View.GONE);
+}
+if (commentActionCount == 5 && canMarkAsSpam()) {
+mBtnSpamComment.setVisibility(View.GONE);
+}
+mBtnMore.setVisibility(View.VISIBLE);
+}
+ else {
+mBtnMore.setVisibility(View.GONE);
+}
+mLayoutButtons.setVisibility(View.VISIBLE);
 }
