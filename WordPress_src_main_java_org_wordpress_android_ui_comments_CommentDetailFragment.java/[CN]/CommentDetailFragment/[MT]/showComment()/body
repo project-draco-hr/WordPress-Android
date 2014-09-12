@@ -5,7 +5,7 @@
   if (mComment == null) {
     scrollView.setVisibility(View.GONE);
     layoutBottom.setVisibility(View.GONE);
-    if (mNote != null && mIsRemoteCommentWithNote) {
+    if (mNote != null && mShouldRequestCommentFromNote) {
       int localTableBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(mNote.getSiteId());
       if (localTableBlogId > 0) {
         Comment comment=CommentTable.getComment(localTableBlogId,mNote.getParentCommentId());
@@ -24,7 +24,7 @@
   }
   scrollView.setVisibility(View.VISIBLE);
   layoutBottom.setVisibility(View.VISIBLE);
-  if ((mNote == null || mIsRemoteCommentWithNote) && mLayoutButtons.getParent() == null) {
+  if ((mNote == null || mShouldRequestCommentFromNote) && mLayoutButtons.getParent() == null) {
     ViewGroup commentContentLayout=(ViewGroup)getView().findViewById(R.id.comment_content_container);
     commentContentLayout.addView(mLayoutButtons);
   }
