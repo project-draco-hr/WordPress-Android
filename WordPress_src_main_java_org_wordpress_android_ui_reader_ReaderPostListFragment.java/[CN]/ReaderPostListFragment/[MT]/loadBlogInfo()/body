@@ -2,7 +2,15 @@
   if (mBlogInfoView != null && mBlogInfoView.isEmpty()) {
     AppLog.d(T.READER,"reader post list > loading blogInfo");
     mBlogInfoView.loadBlogInfo(mCurrentBlogId,mCurrentBlogUrl,new ReaderBlogInfoView.BlogInfoListener(){
-      @Override public void onBlogInfoLoaded(){
+      @Override public void onBlogInfoLoaded(      ReaderBlog blogInfo){
+        if (isAdded()) {
+          mCurrentBlogId=blogInfo.blogId;
+          mCurrentBlogUrl=blogInfo.getUrl();
+          if (isPostAdapterEmpty()) {
+            getPostAdapter().setCurrentBlog(mCurrentBlogId);
+            updatePostsInCurrentBlog(RequestDataAction.LOAD_NEWER);
+          }
+        }
       }
       @Override public void onBlogInfoFailed(){
         if (isAdded()) {
