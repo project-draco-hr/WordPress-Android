@@ -1,0 +1,68 @@
+{
+  if (subject == null) {
+    return new SpannableStringBuilder();
+  }
+  String text=subject.optString("text","").trim();
+  SpannableStringBuilder spannableStringBuilder=new SpannableStringBuilder(text);
+  boolean shouldLink=onNoteBlockTextClickListener != null;
+  JSONArray mediaArray=subject.optJSONArray("media");
+  if (textView != null && mediaArray != null) {
+    int addedCharCount=0;
+    for (int i=0; i < mediaArray.length(); i++) {
+      JSONObject mediaObject=mediaArray.optJSONObject(i);
+      if (mediaObject == null) {
+        continue;
+      }
+      if (mediaObject.optString("type","").startsWith("image") && mediaObject.has("url")) {
+        String imageTag=String.format("<img src=\"%s\" />",mediaObject.optString("url",""));
+        int index=JSONUtil.queryJSON(mediaObject,"indices[0]",-1);
+        if (index == 0) {
+          String breakTag="<br />";
+          spannableStringBuilder.insert(0,breakTag);
+          addedCharCount+=breakTag.length();
+        }
+        int adjustedIndex=index + addedCharCount;
+        if (adjustedIndex > spannableStringBuilder.length()) {
+          adjustedIndex=spannableStringBuilder.length();
+        }
+        if (index >= 0 && adjustedIndex <= spannableStringBuilder.length()) {
+          spannableStringBuilder.insert(adjustedIndex,imageTag);
+          addedCharCount+=imageTag.length();
+        }
+      }
+    }
+    Context context=textView.getContext();
+    if (addedCharCount > 0) {
+      Drawable loading=context.getResources().getDrawable(R.drawable.remote_image);
+      Drawable failed=context.getResources().getDrawable(R.drawable.remote_failed);
+      int padding=context.getResources().getDimensionPixelSize(R.dimen.margin_extra_large) * 2;
+      spannableStringBuilder=new SpannableStringBuilder(Html.fromHtml(spannableStringBuilder.toString(),new WPImageGetter(textView,textView.getWidth() - padding,WordPress.imageLoader,loading,failed),null));
+    }
+  }
+  JSONArray rangesArray=subject.optJSONArray("ranges");
+  if (rangesArray != null) {
+    for (int i=0; i < rangesArray.length(); i++) {
+      JSONObject rangeObject=rangesArray.optJSONObject(i);
+      if (rangeObject == null) {
+        continue;
+      }
+      NoteBlockClickableSpan clickableSpan=new NoteBlockClickableSpan(rangeObject,shouldLink){
+        @Override public void onClick(        View widget){
+          if (onNoteBlockTextClickListener != null) {
+            onNoteBlockTextClickListener.onNoteBlockTextClicked(this);
+          }
+        }
+      }
+;
+      int[] indices=clickableSpan.getIndices();
+      if (indices.length == 2 && indices[0] <= spannableStringBuilder.length() && indices[1] <= spannableStringBuilder.length()) {
+        spannableStringBuilder.setSpan(clickableSpan,indices[0],indices[1],Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        if (clickableSpan.getSpanStyle() != Typeface.NORMAL) {
+          StyleSpan styleSpan=new StyleSpan(clickableSpan.getSpanStyle());
+          spannableStringBuilder.setSpan(styleSpan,indices[0],indices[1],Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        }
+      }
+    }
+  }
+  return spannableStringBuilder;
+}
