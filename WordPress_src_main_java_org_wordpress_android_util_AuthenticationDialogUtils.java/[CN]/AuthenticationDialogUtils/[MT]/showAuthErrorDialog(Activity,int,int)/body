@@ -8,12 +8,12 @@
   }
   FragmentTransaction ft=activity.getFragmentManager().beginTransaction();
   AuthErrorDialogFragment authAlert;
-  if (WordPress.getCurrentBlog() == null) {
-    authAlert=AuthErrorDialogFragment.newInstance(true,titleResId,messageResId);
+  boolean isDotCom=true;
+  if (WordPress.getCurrentBlog() != null) {
+    isDotCom=WordPress.getCurrentBlog().isDotcomFlag();
   }
- else {
-    authAlert=AuthErrorDialogFragment.newInstance(WordPress.getCurrentBlog().isDotcomFlag(),titleResId,messageResId);
-  }
+  authAlert=new AuthErrorDialogFragment();
+  authAlert.setWPComTitleMessage(isDotCom,titleResId,messageResId);
   ft.add(authAlert,ALERT_TAG);
   ft.commitAllowingStateLoss();
 }

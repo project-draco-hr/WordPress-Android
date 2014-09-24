@@ -1,6 +1,10 @@
 {
-  JSONObject replyAction=getActions().get(ACTION_KEY_REPLY);
-  String restPath=JSONUtil.queryJSON(replyAction,"params.rest_path","");
-  AppLog.d(T.NOTIFS,String.format("Search actions %s",restPath));
-  return new Reply(this,String.format("%s/replies/new",restPath),content);
+  String restPath;
+  if (this.isCommentType()) {
+    restPath=String.format("sites/%d/comments/%d",getSiteId(),getCommentId());
+  }
+ else {
+    restPath=String.format("sites/%d/posts/%d",getSiteId(),getPostId());
+  }
+  return new Reply(String.format("%s/replies/new",restPath),content);
 }

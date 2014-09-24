@@ -1,5 +1,5 @@
 {
-  final EditText editContent=(EditText)findViewById(R.id.comment_content);
+  final EditText editContent=(EditText)findViewById(R.id.edit_comment_content);
   if (EditTextUtils.isEmpty(editContent)) {
     editContent.setError(getString(R.string.content_required));
     return;
@@ -9,6 +9,27 @@
     return;
   }
   if (!NetworkUtils.checkConnection(this))   return;
-  if (mIsUpdateTaskRunning)   AppLog.w(AppLog.T.COMMENTS,"update task already running");
-  new UpdateCommentTask().execute();
+  if (mNote != null) {
+    showSaveDialog();
+    WordPress.getRestClientUtils().editCommentContent(mNote.getSiteId(),mNote.getCommentId(),EditTextUtils.getText(editContent),new RestRequest.Listener(){
+      @Override public void onResponse(      JSONObject response){
+        if (isFinishing())         return;
+        dismissSaveDialog();
+        setResult(RESULT_OK);
+        finish();
+      }
+    }
+,new RestRequest.ErrorListener(){
+      @Override public void onErrorResponse(      VolleyError error){
+        if (isFinishing())         return;
+        dismissSaveDialog();
+        showEditErrorAlert();
+      }
+    }
+);
+  }
+ else {
+    if (mIsUpdateTaskRunning)     AppLog.w(AppLog.T.COMMENTS,"update task already running");
+    new UpdateCommentTask().execute();
+  }
 }

@@ -5,8 +5,10 @@
     public void onItemClick(    AdapterView<?> parent,    View view,    int position,    long id){
       if (mActionMode == null) {
         Comment comment=(Comment)getCommentAdapter().getItem(position);
-        mOnCommentSelectedListener.onCommentSelected(comment.commentID);
-        getListView().invalidateViews();
+        if (!getCommentAdapter().isModeratingCommentId(comment.commentID)) {
+          mOnCommentSelectedListener.onCommentSelected(comment.commentID);
+          getListView().invalidateViews();
+        }
       }
  else {
         getCommentAdapter().toggleItemSelected(position,view);
