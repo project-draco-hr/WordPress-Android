@@ -1,10 +1,12 @@
 {
-  if (mSubject == null) {
-    String text=queryJSON("subject.text","").trim();
-    if (text.equals("")) {
-      text=queryJSON("subject.html","");
+  try {
+    JSONArray subjectArray=mNoteJSON.getJSONArray("subject");
+    if (subjectArray.length() > 0) {
+      return subjectArray.getJSONObject(0);
     }
-    mSubject=Html.fromHtml(text).toString();
   }
-  return mSubject;
+ catch (  JSONException e) {
+    return null;
+  }
+  return null;
 }

@@ -8,6 +8,9 @@
 ;
     PostsListAdapter.OnPostsLoadedListener postsLoadedListener=new PostsListAdapter.OnPostsLoadedListener(){
       @Override public void onPostsLoaded(      int postCount){
+        if (!isAdded()) {
+          return;
+        }
         if (postCount == 0 && mCanLoadMorePosts) {
           if (isAdded() && NetworkUtils.isNetworkAvailable(getActivity())) {
             setRefreshing(true);
@@ -24,7 +27,7 @@
             }
           }
         }
- else         if (isAdded() && DisplayUtils.isTablet(getActivity())) {
+ else         if (isAdded() && ((PostsActivity)getActivity()).isDualPane()) {
           int selectedPosition=getListView().getCheckedItemPosition();
           if (selectedPosition != ListView.INVALID_POSITION && selectedPosition < mPostsListAdapter.getCount()) {
             PostsListPost postsListPost=(PostsListPost)mPostsListAdapter.getItem(selectedPosition);
