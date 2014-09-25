@@ -9,8 +9,13 @@
     builder.setMessage(getString(R.string.jetpack_message)).setTitle(getString(R.string.jetpack_not_found));
     builder.setPositiveButton(R.string.yes,new DialogInterface.OnClickListener(){
       public void onClick(      DialogInterface dialog,      int id){
-        Intent jetpackIntent=new Intent(currentActivity,AuthenticatedWebViewActivity.class);
-        jetpackIntent.putExtra(AuthenticatedWebViewActivity.LOAD_AUTHENTICATED_URL,currentBlog.getAdminUrl() + "plugin-install.php?tab=search&s=jetpack+by+wordpress.com" + "&plugin-search-input=Search+Plugins");
+        String stringToLoad=currentBlog.getAdminUrl() + "plugin-install.php?tab=search&s=jetpack+by+wordpress.com" + "&plugin-search-input=Search+Plugins";
+        String authURL=WPWebViewActivity.getBlogLoginUrl(currentBlog);
+        Intent jetpackIntent=new Intent(currentActivity,WPWebViewActivity.class);
+        jetpackIntent.putExtra(WPWebViewActivity.AUTHENTICATION_USER,currentBlog.getUsername());
+        jetpackIntent.putExtra(WPWebViewActivity.AUTHENTICATION_PASSWD,currentBlog.getPassword());
+        jetpackIntent.putExtra(WPWebViewActivity.URL_TO_LOAD,stringToLoad);
+        jetpackIntent.putExtra(WPWebViewActivity.AUTHENTICATION_URL,authURL);
         startActivityForResult(jetpackIntent,REQUEST_JETPACK);
         AnalyticsTracker.track(AnalyticsTracker.Stat.STATS_SELECTED_INSTALL_JETPACK);
       }
