@@ -1,6 +1,18 @@
 {
   if (WordPress.currentPost != null && !TextUtils.isEmpty(WordPress.currentPost.getPermaLink())) {
-    Intent i=new Intent(getActivity(),PreviewPostActivity.class);
-    startActivity(i);
+    Post post=WordPress.currentPost;
+    String url=post.getPermaLink();
+    if (WordPress.getCurrentBlog().isPrivate() || post.isLocalDraft() || post.isLocalChange()|| post.getStatusEnum() != PostStatus.PUBLISHED) {
+      if (-1 == url.indexOf('?')) {
+        url=url.concat("?preview=true");
+      }
+ else {
+        url=url.concat("&preview=true");
+      }
+      WPWebViewActivity.openUrlByUsingBlogCredentials(getActivity(),WordPress.currentBlog,url);
+    }
+ else {
+      WPWebViewActivity.openURL(getActivity(),url);
+    }
   }
 }
