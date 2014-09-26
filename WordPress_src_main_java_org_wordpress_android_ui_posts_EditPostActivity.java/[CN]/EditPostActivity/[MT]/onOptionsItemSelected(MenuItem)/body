@@ -16,7 +16,12 @@ case DRAFT:
 break;
 default :
 }
-savePost(false);
+updatePostObject(false);
+if (!mPost.isPublishable()) {
+ToastUtils.showToast(this,R.string.error_publish_empty_post,Duration.SHORT);
+return false;
+}
+savePost(false,false);
 PostUploadService.addPostToUpload(mPost);
 startService(new Intent(this,PostUploadService.class));
 Intent i=new Intent();
