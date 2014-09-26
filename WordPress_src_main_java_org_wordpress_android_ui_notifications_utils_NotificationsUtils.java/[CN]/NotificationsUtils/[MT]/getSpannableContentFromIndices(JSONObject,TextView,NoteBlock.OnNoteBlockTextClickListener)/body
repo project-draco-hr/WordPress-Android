@@ -8,6 +8,12 @@
   JSONArray mediaArray=subject.optJSONArray("media");
   if (textView != null && mediaArray != null) {
     Context context=textView.getContext();
+    if (context == null) {
+      return spannableStringBuilder;
+    }
+    Drawable loading=context.getResources().getDrawable(R.drawable.remote_image);
+    Drawable failed=context.getResources().getDrawable(R.drawable.remote_failed);
+    WPImageGetter imageGetter=new WPImageGetter(textView,context.getResources().getDimensionPixelSize(R.dimen.notifications_max_image_size),WordPress.imageLoader,loading,failed);
     int indexAdjustment=0;
     String imagePlaceholder;
     for (int i=0; i < mediaArray.length(); i++) {
@@ -15,25 +21,20 @@
       if (mediaObject == null) {
         continue;
       }
-      if (context != null) {
-        Drawable loading=context.getResources().getDrawable(R.drawable.remote_image);
-        Drawable failed=context.getResources().getDrawable(R.drawable.remote_failed);
-        WPImageGetter imageGetter=new WPImageGetter(textView,context.getResources().getDimensionPixelSize(R.dimen.notifications_max_image_size),WordPress.imageLoader,loading,failed);
-        final Drawable remoteDrawable=imageGetter.getDrawable(mediaObject.optString("url",""));
-        ImageSpan noteImageSpan=new ImageSpan(remoteDrawable,mediaObject.optString("url",""),DynamicDrawableSpan.ALIGN_BOTTOM);
-        int index=JSONUtil.queryJSON(mediaObject,"indices[0]",-1);
-        if (index >= 0) {
-          index+=indexAdjustment;
-          imagePlaceholder=" ";
-          if (index == 0) {
-            imagePlaceholder="\n ";
-          }
-          spannableStringBuilder.insert(index,imagePlaceholder);
-          index+=imagePlaceholder.length() - 1;
-          spannableStringBuilder.setSpan(noteImageSpan,index,index + 1,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-          spannableStringBuilder.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),index,index + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-          indexAdjustment+=imagePlaceholder.length();
+      final Drawable remoteDrawable=imageGetter.getDrawable(mediaObject.optString("url",""));
+      ImageSpan noteImageSpan=new ImageSpan(remoteDrawable,mediaObject.optString("url",""));
+      int index=JSONUtil.queryJSON(mediaObject,"indices[0]",-1);
+      if (index >= 0) {
+        index+=indexAdjustment;
+        imagePlaceholder=" ";
+        if (index == 0) {
+          imagePlaceholder="\n ";
         }
+        spannableStringBuilder.insert(index,imagePlaceholder);
+        index+=imagePlaceholder.length() - 1;
+        spannableStringBuilder.setSpan(noteImageSpan,index,index + 1,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        spannableStringBuilder.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),index,index + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        indexAdjustment+=imagePlaceholder.length();
       }
     }
   }
