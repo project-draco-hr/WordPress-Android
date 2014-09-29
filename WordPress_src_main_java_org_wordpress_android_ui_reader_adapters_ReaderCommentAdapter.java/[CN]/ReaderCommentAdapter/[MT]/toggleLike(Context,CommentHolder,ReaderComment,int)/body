@@ -1,0 +1,13 @@
+{
+  if (!NetworkUtils.checkConnection(context)) {
+    return;
+  }
+  boolean isAskingToLike=!comment.isLikedByCurrentUser;
+  ReaderAnim.animateLikeButton(holder.imgLike,isAskingToLike);
+  if (!ReaderCommentActions.performLikeAction(comment,isAskingToLike)) {
+    return;
+  }
+  ReaderComment updatedComment=ReaderCommentTable.getComment(comment.blogId,comment.postId,comment.commentId);
+  mComments.set(position,updatedComment);
+  showLikeStatus(holder,comment,position);
+}

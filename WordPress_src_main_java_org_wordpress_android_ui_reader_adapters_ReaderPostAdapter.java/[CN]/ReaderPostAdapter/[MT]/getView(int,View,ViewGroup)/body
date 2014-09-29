@@ -84,6 +84,7 @@
   }
  else {
     holder.txtTag.setVisibility(View.GONE);
+    holder.txtTag.setOnClickListener(null);
   }
   boolean showLikes=post.isWP() && post.isLikesEnabled;
   boolean showComments=post.isWP() && (post.isCommentsOpen || post.numReplies > 0);
@@ -91,9 +92,9 @@
     showCounts(holder,post,false);
   }
   if (showLikes) {
-    showLikeStatus(holder.imgBtnLike,post.isLikedByCurrentUser);
-    holder.imgBtnLike.setVisibility(View.VISIBLE);
-    holder.imgBtnLike.setOnClickListener(new View.OnClickListener(){
+    holder.likeCount.setSelected(post.isLikedByCurrentUser);
+    holder.likeCount.setVisibility(View.VISIBLE);
+    holder.likeCount.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
         toggleLike(holder,position,post);
       }
@@ -101,27 +102,21 @@
 );
   }
  else {
-    holder.imgBtnLike.setVisibility(View.GONE);
-    holder.txtLikeCount.setVisibility(View.GONE);
+    holder.likeCount.setVisibility(View.GONE);
+    holder.likeCount.setOnClickListener(null);
   }
   if (showComments) {
-    holder.imgBtnComment.setVisibility(View.VISIBLE);
-    if (post.isCommentsOpen) {
-      holder.imgBtnComment.setOnClickListener(new View.OnClickListener(){
-        @Override public void onClick(        View v){
-          if (parent instanceof ListView) {
-            ListView listView=(ListView)parent;
-            int index=position + listView.getHeaderViewsCount();
-            listView.performItemClick(holder.imgBtnComment,index,getItemId(position));
-          }
-        }
+    holder.commentCount.setVisibility(View.VISIBLE);
+    holder.commentCount.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ReaderActivityLauncher.showReaderComments(v.getContext(),post);
       }
-);
     }
+);
   }
  else {
-    holder.imgBtnComment.setVisibility(View.GONE);
-    holder.txtCommentCount.setVisibility(View.GONE);
+    holder.commentCount.setVisibility(View.GONE);
+    holder.commentCount.setOnClickListener(null);
   }
   if (post.canReblog()) {
     showReblogStatus(holder.imgBtnReblog,post.isRebloggedByCurrentUser);
@@ -137,9 +132,13 @@
       }
 );
     }
+ else {
+      holder.imgBtnReblog.setOnClickListener(null);
+    }
   }
  else {
     holder.imgBtnReblog.setVisibility(View.INVISIBLE);
+    holder.imgBtnReblog.setOnClickListener(null);
   }
   if (post.isWP() && !post.isPrivate && postListType == ReaderPostListType.TAG_FOLLOWED) {
     holder.imgDropDown.setVisibility(View.VISIBLE);
@@ -154,6 +153,7 @@
   }
  else {
     holder.imgDropDown.setVisibility(View.GONE);
+    holder.imgDropDown.setOnClickListener(null);
   }
   if (mCanRequestMorePosts && mDataRequestedListener != null && (position >= getCount() - 1)) {
     mDataRequestedListener.onRequestData();

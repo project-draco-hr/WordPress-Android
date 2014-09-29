@@ -10,14 +10,11 @@
       }
       if (result == ReaderActions.UpdateResult.CHANGED) {
         mPost=ReaderPostTable.getPost(mBlogId,mPostId);
+        refreshIconBarCounts(true);
+        refreshComments();
       }
-      if (result != ReaderActions.UpdateResult.FAILED) {
-        if (numLikesBefore != ReaderLikeTable.getNumLikesForPost(mPost)) {
-          refreshLikes();
-        }
-        if (mPost.numReplies != ReaderCommentTable.getNumCommentsForPost(mPost)) {
-          updateComments(false);
-        }
+      if (result != ReaderActions.UpdateResult.FAILED && numLikesBefore != ReaderLikeTable.getNumLikesForPost(mPost)) {
+        refreshLikes();
       }
     }
   }
