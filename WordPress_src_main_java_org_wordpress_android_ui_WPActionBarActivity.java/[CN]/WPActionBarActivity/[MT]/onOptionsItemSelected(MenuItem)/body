@@ -19,8 +19,12 @@
     dialogBuilder.setPositiveButton(R.string.sign_out,new DialogInterface.OnClickListener(){
       public void onClick(      DialogInterface dialog,      int whichButton){
         AnalyticsTracker.refreshMetadata();
-        WordPress.signOut(WPActionBarActivity.this);
-        refreshMenuDrawer();
+        WordPress.signOutAsyncWithProgressBar(WPActionBarActivity.this,new SignOutCallback(){
+          @Override public void onSignOut(){
+            refreshMenuDrawer();
+          }
+        }
+);
       }
     }
 );
