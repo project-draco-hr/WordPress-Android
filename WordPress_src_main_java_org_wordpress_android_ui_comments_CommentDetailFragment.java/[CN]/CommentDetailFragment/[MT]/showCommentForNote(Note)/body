@@ -13,6 +13,14 @@
   FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
   mNotificationsDetailListFragment=NotificationsDetailListFragment.newInstance(note);
   mNotificationsDetailListFragment.setFooterView(mLayoutButtons);
+  mNotificationsDetailListFragment.setOnNoteChangeListener(new NotificationsDetailListFragment.OnNoteChangeListener(){
+    @Override public void onNoteChanged(    Note note){
+      mNote=note;
+      mComment=mNote.buildComment();
+      updateStatusViews();
+    }
+  }
+);
   fragmentTransaction.add(R.id.comment_content_container,mNotificationsDetailListFragment);
   fragmentTransaction.commitAllowingStateLoss();
   mEnabledActions=note.getEnabledActions();
