@@ -7,15 +7,17 @@
     try {
       mNote=noteBucket.get(noteId);
       mNote.markAsRead();
-      getActivity().runOnUiThread(new Runnable(){
-        @Override public void run(){
-          reloadNoteBlocks();
-          if (mOnNoteChangeListener != null) {
-            mOnNoteChangeListener.onNoteChanged(mNote);
+      if (getActivity() != null) {
+        getActivity().runOnUiThread(new Runnable(){
+          @Override public void run(){
+            reloadNoteBlocks();
+            if (mOnNoteChangeListener != null) {
+              mOnNoteChangeListener.onNoteChanged(mNote);
+            }
           }
         }
-      }
 );
+      }
     }
  catch (    BucketObjectMissingException e) {
       AppLog.e(AppLog.T.NOTIFS,"Couldn't load note after receiving change.");
