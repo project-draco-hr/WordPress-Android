@@ -1,15 +1,8 @@
 {
-  String path="sites/" + post.blogId + "/posts/"+ post.postId+ "/replies/"+ "?number="+ Integer.toString(ReaderConstants.READER_MAX_COMMENTS_TO_REQUEST)+ "&meta=likes";
-  path+="&order=ASC";
-  if (requestNewer) {
-    int numLocalComments=ReaderCommentTable.getNumCommentsForPost(post);
-    if (numLocalComments > 0) {
-      path+="&offset=" + Integer.toString(numLocalComments);
-    }
-  }
+  String path="sites/" + post.blogId + "/posts/"+ post.postId+ "/replies/"+ "?number="+ Integer.toString(ReaderConstants.READER_MAX_COMMENTS_TO_REQUEST)+ "&meta=likes"+ "&hierarchical=true"+ "&order=ASC"+ "&page="+ pageNumber;
   RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
-      handleUpdateCommentsResponse(jsonObject,post.blogId,requestNewer,resultListener);
+      handleUpdateCommentsResponse(jsonObject,post.blogId,pageNumber,resultListener);
     }
   }
 ;
