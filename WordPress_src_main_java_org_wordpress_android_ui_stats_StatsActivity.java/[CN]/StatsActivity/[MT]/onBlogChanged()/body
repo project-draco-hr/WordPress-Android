@@ -1,7 +1,11 @@
 {
   super.onBlogChanged();
-  mLocalBlogID=WordPress.getCurrentBlog().getLocalTableBlogId();
   stopStatsService();
+  if (WordPress.getCurrentBlog() == null) {
+    finish();
+    return;
+  }
+  mLocalBlogID=WordPress.getCurrentBlog().getLocalTableBlogId();
   scrollToTop();
   FragmentManager fm=getFragmentManager();
   FragmentTransaction ft=fm.beginTransaction();
