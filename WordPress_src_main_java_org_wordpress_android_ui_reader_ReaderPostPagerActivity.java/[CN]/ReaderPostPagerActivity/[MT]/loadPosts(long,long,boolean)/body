@@ -7,20 +7,18 @@
         idList.add(new ReaderBlogIdPostId(blogId,postId));
       }
  else {
-        final ReaderPostList postList;
         int maxPosts=ReaderConstants.READER_MAX_POSTS_TO_DISPLAY;
 switch (getPostListType()) {
 case TAG_FOLLOWED:
 case TAG_PREVIEW:
-          postList=ReaderPostTable.getPostsWithTag(getCurrentTag(),maxPosts,EXCLUDE_TEXT_COLUMN);
+          idList=ReaderPostTable.getBlogIdPostIdsWithTag(getCurrentTag(),maxPosts);
         break;
 case BLOG_PREVIEW:
-      postList=ReaderPostTable.getPostsInBlog(blogId,maxPosts,EXCLUDE_TEXT_COLUMN);
+      idList=ReaderPostTable.getBlogIdPostIdsInBlog(blogId,maxPosts);
     break;
 default :
   return;
 }
-idList=postList.getBlogIdPostIdList();
 }
 final int currentPosition=mViewPager.getCurrentItem();
 final int newPosition;

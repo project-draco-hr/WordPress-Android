@@ -1,0 +1,15 @@
+{
+  mReplyToCommentId=commentId;
+  mEditComment.setHint(mReplyToCommentId == 0 ? R.string.reader_hint_comment_on_post : R.string.reader_hint_comment_on_comment);
+  if (mReplyToCommentId != 0) {
+    mEditComment.requestFocus();
+    EditTextUtils.showSoftInput(mEditComment);
+    getCommentAdapter().setHighlightCommentId(mReplyToCommentId,false);
+    mListView.postDelayed(new Runnable(){
+      @Override public void run(){
+        scrollToCommentId(mReplyToCommentId);
+      }
+    }
+,300);
+  }
+}

@@ -2,18 +2,13 @@
   if (comment == null) {
     return false;
   }
-  final ReaderComment originalComment=ReaderCommentTable.getComment(comment.blogId,comment.postId,comment.commentId);
-  if (originalComment != null && originalComment.isLikedByCurrentUser == isAskingToLike) {
-    return true;
+  boolean isCurrentlyLiked=ReaderCommentTable.isCommentLikedByCurrentUser(comment);
+  if (isCurrentlyLiked == isAskingToLike) {
+    AppLog.w(T.READER,"comment like unchanged");
+    return false;
   }
-  comment.isLikedByCurrentUser=isAskingToLike;
-  if (isAskingToLike) {
-    comment.numLikes++;
-  }
- else   if (comment.numLikes > 0) {
-    comment.numLikes--;
-  }
-  ReaderCommentTable.addOrUpdateComment(comment);
+  int newNumLikes=(isAskingToLike ? comment.numLikes + 1 : comment.numLikes - 1);
+  ReaderCommentTable.setLikesForComment(comment,newNumLikes,isAskingToLike);
   ReaderLikeTable.setCurrentUserLikesComment(comment,isAskingToLike);
   final String actionName=isAskingToLike ? "like" : "unlike";
   String path="sites/" + comment.blogId + "/comments/"+ comment.commentId+ "/likes/";
@@ -31,10 +26,8 @@
       }
  else {
         AppLog.w(T.READER,String.format("comment %s failed",actionName));
-        if (originalComment != null) {
-          ReaderCommentTable.addOrUpdateComment(originalComment);
-          ReaderLikeTable.setCurrentUserLikesComment(comment,originalComment.isLikedByCurrentUser);
-        }
+        ReaderCommentTable.setLikesForComment(comment,comment.numLikes,comment.isLikedByCurrentUser);
+        ReaderLikeTable.setCurrentUserLikesComment(comment,comment.isLikedByCurrentUser);
       }
     }
   }
@@ -49,10 +42,8 @@
         AppLog.w(T.READER,String.format("comment %s failed (%s)",actionName,error));
       }
       AppLog.e(T.READER,volleyError);
-      if (originalComment != null) {
-        ReaderCommentTable.addOrUpdateComment(originalComment);
-        ReaderLikeTable.setCurrentUserLikesComment(comment,originalComment.isLikedByCurrentUser);
-      }
+      ReaderCommentTable.setLikesForComment(comment,comment.numLikes,comment.isLikedByCurrentUser);
+      ReaderLikeTable.setCurrentUserLikesComment(comment,comment.isLikedByCurrentUser);
     }
   }
 ;
