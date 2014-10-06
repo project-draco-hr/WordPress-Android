@@ -5,47 +5,7 @@
   String text=subject.optString("text","");
   SpannableStringBuilder spannableStringBuilder=new SpannableStringBuilder(text);
   boolean shouldLink=onNoteBlockTextClickListener != null;
-  JSONArray mediaArray=subject.optJSONArray("media");
-  if (textView != null && mediaArray != null) {
-    Context context=textView.getContext();
-    if (context == null) {
-      return spannableStringBuilder;
-    }
-    Drawable loading=context.getResources().getDrawable(R.drawable.remote_image);
-    Drawable failed=context.getResources().getDrawable(R.drawable.remote_failed);
-    WPImageGetter imageGetter=new WPImageGetter(textView,context.getResources().getDimensionPixelSize(R.dimen.notifications_max_image_size),WordPress.imageLoader,loading,failed);
-    int indexAdjustment=0;
-    String imagePlaceholder;
-    for (int i=0; i < mediaArray.length(); i++) {
-      JSONObject mediaObject=mediaArray.optJSONObject(i);
-      if (mediaObject == null) {
-        continue;
-      }
-      final Drawable remoteDrawable=imageGetter.getDrawable(mediaObject.optString("url",""));
-      ImageSpan noteImageSpan=new ImageSpan(remoteDrawable,mediaObject.optString("url",""));
-      int startIndex=JSONUtil.queryJSON(mediaObject,"indices[0]",-1);
-      int endIndex=JSONUtil.queryJSON(mediaObject,"indices[1]",-1);
-      if (startIndex >= 0) {
-        if (endIndex > startIndex && endIndex < spannableStringBuilder.length()) {
-          spannableStringBuilder.replace(startIndex,endIndex,"");
-        }
-        startIndex+=indexAdjustment;
-        imagePlaceholder=" ";
-        if (startIndex == 0) {
-          imagePlaceholder="\n ";
-        }
-        int tempIndex=startIndex + imagePlaceholder.length() - 1;
-        if (spannableStringBuilder.getSpans(tempIndex,tempIndex,ImageSpan.class).length > 0) {
-          imagePlaceholder="\n" + imagePlaceholder;
-        }
-        spannableStringBuilder.insert(startIndex,imagePlaceholder);
-        startIndex+=imagePlaceholder.length() - 1;
-        spannableStringBuilder.setSpan(noteImageSpan,startIndex,startIndex + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        spannableStringBuilder.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),startIndex,startIndex + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        indexAdjustment+=imagePlaceholder.length();
-      }
-    }
-  }
+  addImageSpansForBlockMedia(textView,subject,spannableStringBuilder);
   JSONArray rangesArray=subject.optJSONArray("ranges");
   if (rangesArray != null) {
     for (int i=0; i < rangesArray.length(); i++) {
