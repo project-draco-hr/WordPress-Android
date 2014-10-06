@@ -7,20 +7,18 @@
         idList.add(new ReaderBlogIdPostId(blogId,postId));
       }
  else {
-        final ReaderPostList postList;
         int maxPosts=ReaderConstants.READER_MAX_POSTS_TO_DISPLAY;
 switch (getPostListType()) {
 case TAG_FOLLOWED:
 case TAG_PREVIEW:
-          postList=ReaderPostTable.getPostsWithTag(getCurrentTag(),maxPosts,EXCLUDE_TEXT_COLUMN);
+          idList=ReaderPostTable.getBlogIdPostIdsWithTag(getCurrentTag(),maxPosts);
         break;
 case BLOG_PREVIEW:
-      postList=ReaderPostTable.getPostsInBlog(blogId,maxPosts,EXCLUDE_TEXT_COLUMN);
+      idList=ReaderPostTable.getBlogIdPostIdsInBlog(blogId,maxPosts);
     break;
 default :
   return;
 }
-idList=postList.getBlogIdPostIdList();
 }
 final int currentPosition=mViewPager.getCurrentItem();
 final int newPosition;
@@ -32,16 +30,18 @@ newPosition=idList.indexOf(blogId,postId);
 }
 runOnUiThread(new Runnable(){
 @Override public void run(){
-mPagerAdapter=new PostPagerAdapter(getFragmentManager());
-mPagerAdapter.showPosts(idList);
-mViewPager.setAdapter(mPagerAdapter);
-if (mPagerAdapter.isValidPosition(newPosition)) {
+if (hasPagerAdapter()) {
+  mViewPager.setAdapter(null);
+}
+PostPagerAdapter adapter=new PostPagerAdapter(getFragmentManager(),idList);
+mViewPager.setAdapter(adapter);
+if (adapter.isValidPosition(newPosition)) {
   mViewPager.setCurrentItem(newPosition);
 }
- else if (mPagerAdapter.isValidPosition(currentPosition)) {
+ else if (adapter.isValidPosition(currentPosition)) {
   mViewPager.setCurrentItem(currentPosition);
 }
-mPagerAdapter.updateEndFragmentIfActive();
+adapter.updateEndFragmentIfActive();
 }
 }
 );

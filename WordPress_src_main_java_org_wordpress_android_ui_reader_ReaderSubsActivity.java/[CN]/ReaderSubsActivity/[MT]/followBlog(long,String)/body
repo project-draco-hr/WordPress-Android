@@ -1,0 +1,23 @@
+{
+  ReaderActions.ActionListener followListener=new ReaderActions.ActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      if (isFinishing()) {
+        return;
+      }
+      hideAddUrlProgress();
+      if (succeeded) {
+        mEditAdd.setText(null);
+        EditTextUtils.hideSoftInput(mEditAdd);
+        String msgText=getString(R.string.reader_label_followed_blog);
+        MessageBarUtils.showMessageBar(ReaderSubsActivity.this,msgText,MessageBarType.INFO);
+        onFollowBlogChanged();
+        getPageAdapter().refreshBlogFragments(ReaderBlogType.FOLLOWED);
+      }
+ else {
+        ToastUtils.showToast(ReaderSubsActivity.this,R.string.reader_toast_err_follow_blog);
+      }
+    }
+  }
+;
+  ReaderBlogActions.performFollowAction(blogId,normUrl,true,followListener);
+}

@@ -1,0 +1,72 @@
+{
+  final ViewGroup layoutInner=(ViewGroup)findViewById(R.id.layout_bloginfo_inner);
+  if (blogInfo == null) {
+    layoutInner.setVisibility(View.INVISIBLE);
+    return;
+  }
+  if (mBlogInfo != null && mBlogInfo.isSameAs(blogInfo)) {
+    return;
+  }
+  boolean wasEmpty=(mBlogInfo == null);
+  mBlogInfo=blogInfo;
+  final TextView txtBlogName=(TextView)findViewById(R.id.text_blog_name);
+  final TextView txtDescription=(TextView)findViewById(R.id.text_blog_description);
+  final TextView txtFollowBtn=(TextView)findViewById(R.id.text_follow_blog);
+  if (blogInfo.hasUrl()) {
+    txtBlogName.setOnClickListener(new OnClickListener(){
+      @Override public void onClick(      View v){
+        ReaderActivityLauncher.openUrl(getContext(),blogInfo.getUrl());
+      }
+    }
+);
+  }
+  if (blogInfo.hasName()) {
+    txtBlogName.setText(blogInfo.getName());
+  }
+ else   if (blogInfo.hasUrl()) {
+    txtBlogName.setText(UrlUtils.getDomainFromUrl(blogInfo.getUrl()));
+  }
+ else {
+    txtBlogName.setText(getContext().getString(R.string.reader_untitled_post));
+  }
+  if (blogInfo.hasDescription()) {
+    txtDescription.setText(blogInfo.getDescription());
+    txtDescription.setVisibility(View.VISIBLE);
+  }
+ else   if (blogInfo.hasUrl()) {
+    txtDescription.setText(UrlUtils.getDomainFromUrl(blogInfo.getUrl()));
+    txtDescription.setVisibility(View.VISIBLE);
+  }
+ else {
+    txtDescription.setVisibility(View.GONE);
+  }
+  showFollowerCount(blogInfo.numSubscribers);
+  ReaderUtils.showFollowStatus(txtFollowBtn,blogInfo.isFollowing);
+  txtFollowBtn.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      toggleBlogFollowStatus(txtFollowBtn);
+    }
+  }
+);
+  if (layoutInner.getVisibility() != View.VISIBLE) {
+    if (animateIn) {
+      new Handler().postDelayed(new Runnable(){
+        @Override public void run(){
+          if (layoutInner.getVisibility() != View.VISIBLE) {
+            ReaderAnim.fadeIn(layoutInner,ReaderAnim.Duration.SHORT);
+          }
+        }
+      }
+,500);
+    }
+ else {
+      layoutInner.setVisibility(View.VISIBLE);
+    }
+  }
+  if (mImageMshot.getUrl() == null) {
+    loadMshotImage(blogInfo);
+  }
+  if (wasEmpty && mBlogInfoListener != null) {
+    mBlogInfoListener.onBlogInfoLoaded(blogInfo);
+  }
+}

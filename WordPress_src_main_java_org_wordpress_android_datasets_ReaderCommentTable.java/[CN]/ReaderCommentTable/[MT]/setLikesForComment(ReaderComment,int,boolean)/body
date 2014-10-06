@@ -1,0 +1,10 @@
+{
+  if (comment == null) {
+    return;
+  }
+  String[] args={Long.toString(comment.blogId),Long.toString(comment.postId),Long.toString(comment.commentId)};
+  ContentValues values=new ContentValues();
+  values.put("num_likes",numLikes);
+  values.put("is_liked",SqlUtils.boolToSql(isLikedByCurrentUser));
+  ReaderDatabase.getWritableDb().update("tbl_comments",values,"blog_id=? AND post_id=? AND comment_id=?",args);
+}

@@ -1,4 +1,24 @@
 {
-  AppLog.d(T.READER,"reader post detail > refreshComments");
-  getCommentAdapter().refreshComments();
+  if (!isAdded() || !hasPost()) {
+    return;
+  }
+  final TextView txtCommentCount=(TextView)getView().findViewById(R.id.text_comment_count);
+  if (mPost.numReplies == 0) {
+    txtCommentCount.setVisibility(View.GONE);
+  }
+ else {
+    txtCommentCount.setVisibility(View.VISIBLE);
+    if (mPost.numReplies == 1) {
+      txtCommentCount.setText(getString(R.string.reader_label_comment_count_single));
+    }
+ else {
+      txtCommentCount.setText(getString(R.string.reader_label_comment_count_multi,mPost.numReplies));
+    }
+    txtCommentCount.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ReaderActivityLauncher.showReaderComments(getActivity(),mPost);
+      }
+    }
+);
+  }
 }
