@@ -61,7 +61,10 @@
   String noticonCharacter=getStringForColumnName(objectCursor,Note.Schema.NOTICON_INDEX);
   if (!TextUtils.isEmpty(noticonCharacter)) {
     noteViewHolder.noteIcon.setText(noticonCharacter);
-    if (isUnread) {
+    if (SqlUtils.sqlToBool(getIntForColumnName(cursor,Note.Schema.IS_UNAPPROVED_INDEX))) {
+      noteViewHolder.noteIcon.setBackgroundResource(R.drawable.shape_oval_orange);
+    }
+ else     if (isUnread) {
       noteViewHolder.noteIcon.setBackgroundResource(R.drawable.shape_oval_blue);
     }
  else {
