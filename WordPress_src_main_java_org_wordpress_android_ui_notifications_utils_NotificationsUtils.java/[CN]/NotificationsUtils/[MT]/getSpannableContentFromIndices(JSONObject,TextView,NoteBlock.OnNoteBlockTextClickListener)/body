@@ -2,13 +2,17 @@
   if (subject == null) {
     return new SpannableStringBuilder();
   }
-  String text=subject.optString("text","").trim();
+  String text=subject.optString("text","");
   SpannableStringBuilder spannableStringBuilder=new SpannableStringBuilder(text);
   boolean shouldLink=onNoteBlockTextClickListener != null;
-  try {
-    JSONArray rangesArray=subject.getJSONArray("ranges");
+  addImageSpansForBlockMedia(textView,subject,spannableStringBuilder);
+  JSONArray rangesArray=subject.optJSONArray("ranges");
+  if (rangesArray != null) {
     for (int i=0; i < rangesArray.length(); i++) {
-      JSONObject rangeObject=(JSONObject)rangesArray.get(i);
+      JSONObject rangeObject=rangesArray.optJSONObject(i);
+      if (rangeObject == null) {
+        continue;
+      }
       NoteBlockClickableSpan clickableSpan=new NoteBlockClickableSpan(rangeObject,shouldLink){
         @Override public void onClick(        View widget){
           if (onNoteBlockTextClickListener != null) {
@@ -26,9 +30,6 @@
         }
       }
     }
-  }
- catch (  JSONException e) {
-    return spannableStringBuilder;
   }
   return spannableStringBuilder;
 }
