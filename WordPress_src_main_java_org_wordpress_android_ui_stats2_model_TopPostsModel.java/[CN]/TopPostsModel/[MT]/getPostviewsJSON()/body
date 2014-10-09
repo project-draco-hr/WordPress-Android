@@ -1,0 +1,14 @@
+{
+  JSONArray jArray;
+  String decodedString=StringUtils.unescapeHTML(this.getDays() != null ? this.getDays() : "{}");
+  try {
+    JSONObject jDaysObject=new JSONObject(decodedString);
+    JSONObject jDateObject=jDaysObject.getJSONObject(this.getDate());
+    jArray=jDateObject.getJSONArray("postviews");
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.STATS,e);
+    return null;
+  }
+  return jArray;
+}
