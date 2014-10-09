@@ -1,15 +1,10 @@
 {
   final Handler handler=new Handler();
-  final String content=getPostContent();
-  mRenderBuilder=new StringBuilder(content);
+  mRenderBuilder=new StringBuilder(getPostContent());
   new Thread(){
     @Override public void run(){
-      if (content.contains("<img")) {
-        resizeImages();
-      }
-      if (content.contains("<iframe")) {
-        resizeIframes();
-      }
+      resizeImages();
+      resizeIframes();
       final String htmlContent=formatPostContentForWebView(mRenderBuilder.toString());
       mRenderBuilder=null;
       handler.post(new Runnable(){
