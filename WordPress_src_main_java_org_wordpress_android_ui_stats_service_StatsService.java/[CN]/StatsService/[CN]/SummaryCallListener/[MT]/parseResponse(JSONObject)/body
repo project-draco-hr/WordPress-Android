@@ -1,11 +1,5 @@
 {
-  Realm realm=Realm.getInstance(WordPress.getContext());
-  realm.beginTransaction();
-  RealmQuery<SummaryModel> query=realm.where(SummaryModel.class);
-  query.equalTo("blogID",mRequestBlogId);
-  RealmResults<SummaryModel> result1=query.findAll();
-  result1.clear();
-  SummaryModel summaryModel=realm.createObject(SummaryModel.class);
+  SummaryModel summaryModel=new SummaryModel();
   summaryModel.setBlogID(mRequestBlogId);
   summaryModel.setFollowers(response.optInt("followers",0));
   summaryModel.setViews(response.optInt("views",0));
@@ -15,5 +9,5 @@
   summaryModel.setComments(response.optInt("comments",0));
   summaryModel.setDate(response.getString("date"));
   summaryModel.setPeriod(response.getString("period"));
-  realm.commitTransaction();
+  return summaryModel;
 }

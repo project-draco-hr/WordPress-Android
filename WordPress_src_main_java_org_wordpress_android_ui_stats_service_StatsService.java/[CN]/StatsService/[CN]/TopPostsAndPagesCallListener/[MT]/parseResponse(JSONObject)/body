@@ -1,14 +1,8 @@
 {
-  Realm realm=Realm.getInstance(WordPress.getContext());
-  realm.beginTransaction();
-  RealmQuery<TopPostsModel> query=realm.where(TopPostsModel.class);
-  query.equalTo("blogID",mRequestBlogId);
-  RealmResults<TopPostsModel> result1=query.findAll();
-  result1.clear();
-  TopPostsModel topPostsModel=realm.createObject(TopPostsModel.class);
+  TopPostsModel topPostsModel=new TopPostsModel();
   topPostsModel.setBlogID(mRequestBlogId);
   topPostsModel.setDate(response.getString("date"));
   topPostsModel.setPeriod(response.getString("period"));
   topPostsModel.setDays(response.getJSONObject("days").toString());
-  realm.commitTransaction();
+  return topPostsModel;
 }
