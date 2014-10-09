@@ -3,8 +3,15 @@
   String decodedString=StringUtils.unescapeHTML(this.getDays() != null ? this.getDays() : "{}");
   try {
     JSONObject jDaysObject=new JSONObject(decodedString);
-    JSONObject jDateObject=jDaysObject.getJSONObject(this.getDate());
-    jArray=jDateObject.getJSONArray("postviews");
+    Iterator<String> keys=jDaysObject.keys();
+    if (keys.hasNext()) {
+      String key=keys.next();
+      JSONObject jDateObject=jDaysObject.getJSONObject(key);
+      jArray=jDateObject.getJSONArray("postviews");
+    }
+ else {
+      jArray=new JSONArray();
+    }
   }
  catch (  JSONException e) {
     AppLog.e(AppLog.T.STATS,e);
