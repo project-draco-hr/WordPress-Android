@@ -1,0 +1,24 @@
+{
+  this.mServiceBlogId=blogId;
+  this.mRequestedTimeframe=timeframe;
+  this.mServiceStartId=startId;
+  new Thread(){
+    @Override public void run(){
+      final RestClientUtils restClientUtils=WordPress.getRestClientUtilsV1_1();
+      String period=timeframe.getLabelForRestCall();
+      AppLog.i(T.STATS,"Update started for blogID - " + blogId + " with the following period: "+ period);
+      broadcastUpdate(true);
+      SummaryCallListener sListener=new SummaryCallListener(mServiceBlogId);
+      final String summaryPath=String.format("/sites/%s/stats/summary?period=%s&date=%s",blogId,period,StatsUtils.getCurrentDate());
+      statsNetworkRequests.add(restClientUtils.get(summaryPath,sListener,sListener));
+      VisitsCallListener vListener=new VisitsCallListener(mServiceBlogId);
+      final String visitsPath=String.format("/sites/%s/stats/visits?unit=%s&quantity=10&date=%s",blogId,period,StatsUtils.getCurrentDate());
+      statsNetworkRequests.add(restClientUtils.get(visitsPath,vListener,vListener));
+      TopPostsAndPagesCallListener topPostsAndPagesListener=new TopPostsAndPagesCallListener(mServiceBlogId);
+      final String topPostsAndPagesPath=String.format("/sites/%s/stats/top-posts?period=%s&max=11&date=%s",blogId,period,StatsUtils.getCurrentDate());
+      statsNetworkRequests.add(restClientUtils.get(topPostsAndPagesPath,topPostsAndPagesListener,topPostsAndPagesListener));
+      numberOfNetworkCalls=statsNetworkRequests.size();
+    }
+  }
+.start();
+}

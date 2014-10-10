@@ -5,14 +5,14 @@
     return START_NOT_STICKY;
   }
   final String blogId=StringUtils.notNullStr(intent.getStringExtra(ARG_BLOG_ID));
-  StatsPeriodEnum period=StatsPeriodEnum.DAY;
+  StatsTimeframe period=StatsTimeframe.TODAY;
   if (intent.hasExtra(ARG_PERIOD)) {
-    period=(StatsPeriodEnum)intent.getSerializableExtra(ARG_PERIOD);
+    period=(StatsTimeframe)intent.getSerializableExtra(ARG_PERIOD);
   }
   if (mServiceBlogId == null) {
     startTasks(blogId,period,startId);
   }
- else   if (blogId.equals(mServiceBlogId) && mRequestedPeriod == period) {
+ else   if (blogId.equals(mServiceBlogId) && mRequestedTimeframe == period) {
     AppLog.i(T.STATS,"StatsService is already running on this blogID - " + mServiceBlogId);
   }
  else {

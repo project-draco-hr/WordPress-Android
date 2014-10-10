@@ -1,0 +1,27 @@
+{
+  View view=inflater.inflate(R.layout.stats_list_fragment,container,false);
+  TextView titleTextView=(TextView)view.findViewById(R.id.stats_pager_title);
+  titleTextView.setText(getTitle().toUpperCase(Locale.getDefault()));
+  TextView entryLabel=(TextView)view.findViewById(R.id.stats_list_entry_label);
+  entryLabel.setText(getEntryLabelResId());
+  TextView totalsLabel=(TextView)view.findViewById(R.id.stats_list_totals_label);
+  totalsLabel.setText(getTotalsLabelResId());
+  mEmptyLabel=(TextView)view.findViewById(R.id.stats_list_empty_text);
+  String label;
+  if (getEmptyLabelDescResId() == NO_STRING_ID) {
+    label="<b>" + getString(getEmptyLabelTitleResId()) + "</b>";
+  }
+ else {
+    label="<b>" + getString(getEmptyLabelTitleResId()) + "</b> "+ getString(getEmptyLabelDescResId());
+  }
+  if (label.contains("<")) {
+    mEmptyLabel.setText(Html.fromHtml(label));
+  }
+ else {
+    mEmptyLabel.setText(label);
+  }
+  configureEmptyLabel();
+  mLinearLayout=(LinearLayout)view.findViewById(R.id.stats_list_linearlayout);
+  mLinearLayout.setVisibility(View.VISIBLE);
+  return view;
+}
