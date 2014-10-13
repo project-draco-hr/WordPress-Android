@@ -6,10 +6,14 @@
   if (!result) {
     if (!mHasAlreadyRequestedPost) {
       mHasAlreadyRequestedPost=true;
+      AppLog.i(T.READER,"reader post detail > post not found, requesting it");
       requestPost();
     }
     return;
   }
+  mScrollView.setVisibility(View.VISIBLE);
+  mRenderer=new ReaderPostRenderer(mReaderWebView,mPost);
+  mRenderer.beginRender();
   txtTitle.setText(mPost.hasTitle() ? mPost.getTitle() : getString(R.string.reader_untitled_post));
   ReaderUtils.showFollowStatus(txtFollow,mPost.isFollowedByCurrentUser);
   txtFollow.setOnClickListener(new View.OnClickListener(){
@@ -36,8 +40,7 @@
     txtDateAndAuthor.setText(DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished()));
   }
   if (mPost.hasPostAvatar()) {
-    int avatarSz=getResources().getDimensionPixelSize(R.dimen.avatar_sz_medium);
-    imgAvatar.setImageUrl(mPost.getPostAvatarForDisplay(avatarSz),WPNetworkImageView.ImageType.AVATAR);
+    imgAvatar.setImageUrl(mPost.getPostAvatarForDisplay(mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.AVATAR);
     imgAvatar.setVisibility(View.VISIBLE);
   }
  else {
@@ -46,20 +49,19 @@
   if (isBlogPreview()) {
     layoutDetailHeader.setVisibility(View.GONE);
   }
-  if (showFeaturedImage) {
-    imgFeatured.setVisibility(View.VISIBLE);
-    imgFeatured.setImageUrl(featuredImageUrl,WPNetworkImageView.ImageType.PHOTO);
-    imgFeatured.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View view){
-        int startX=(DisplayUtils.getDisplayPixelWidth(getActivity()) / 2);
-        int startY=(DisplayUtils.getDisplayPixelWidth(getActivity()) / 2);
-        showPhotoViewer(mPost.getFeaturedImage(),view,startX,startY);
-      }
-    }
-);
-  }
  else {
-    imgFeatured.setVisibility(View.GONE);
+    if (!mPost.isExternal) {
+      layoutDetailHeader.setEnabled(true);
+      layoutDetailHeader.setOnClickListener(new View.OnClickListener(){
+        @Override public void onClick(        View v){
+          ReaderActivityLauncher.showReaderBlogPreview(v.getContext(),mPost.blogId,mPost.getBlogUrl());
+        }
+      }
+);
+    }
+ else {
+      layoutDetailHeader.setEnabled(false);
+    }
   }
   if (mPost.canReblog()) {
     imgBtnReblog.setVisibility(View.VISIBLE);
@@ -72,28 +74,7 @@
 );
   }
  else {
-    imgBtnReblog.setVisibility(View.GONE);
-  }
-  if (mPost.isWP() && mPost.isCommentsOpen) {
-    imgBtnComment.setVisibility(View.VISIBLE);
-    imgBtnComment.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View v){
-        toggleShowAddCommentBox();
-      }
-    }
-);
-  }
- else {
-    imgBtnComment.setVisibility(View.GONE);
-  }
-  if (mPost.isLikesEnabled) {
-    imgBtnLike.setVisibility(View.VISIBLE);
-    if (mPost.numLikes > 0 && mLayoutLikes.getVisibility() == View.GONE) {
-      mLayoutLikes.setVisibility(View.INVISIBLE);
-    }
-  }
- else {
-    imgBtnLike.setVisibility(View.GONE);
+    imgBtnReblog.setVisibility(View.INVISIBLE);
   }
   if (!mPost.isExternal && (mPost.isLikesEnabled || mPost.canReblog() || mPost.isCommentsOpen)) {
     mLayoutIcons.setVisibility(View.VISIBLE);
@@ -101,19 +82,20 @@
  else {
     mLayoutIcons.setVisibility(View.GONE);
   }
-  mReaderWebView.getSettings().setJavaScriptEnabled(canEnableJavaScript());
-  mReaderWebView.loadDataWithBaseURL(null,postHtml,"text/html","UTF-8",null);
-  mLayoutIcons.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
-  if (getListView().getAdapter() == null) {
-    getListView().setAdapter(getCommentAdapter());
-  }
-  if (getListView().getVisibility() != View.VISIBLE) {
-    getListView().setVisibility(View.VISIBLE);
-  }
-  if (mReaderWebView.getVisibility() == View.VISIBLE) {
-    showContent();
+  if (canBlockBlog()) {
+    imgDropDown.setVisibility(View.VISIBLE);
+    imgDropDown.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        if (mOnPopupListener != null) {
+          mOnPopupListener.onShowPostPopup(view,mPost);
+        }
+      }
+    }
+);
   }
  else {
-    showContentDelayed();
+    imgDropDown.setVisibility(View.GONE);
   }
+  mLayoutIcons.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
+  refreshIconBarCounts(false);
 }

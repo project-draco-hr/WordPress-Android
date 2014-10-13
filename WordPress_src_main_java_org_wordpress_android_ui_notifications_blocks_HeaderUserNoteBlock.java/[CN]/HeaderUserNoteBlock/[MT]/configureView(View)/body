@@ -1,0 +1,19 @@
+{
+  final NoteHeaderBlockHolder noteBlockHolder=(NoteHeaderBlockHolder)view.getTag();
+  noteBlockHolder.nameTextView.setText(getUserName());
+  noteBlockHolder.avatarImageView.setImageUrl(getAvatarUrl(),WordPress.imageLoader);
+  if (!TextUtils.isEmpty(getUserUrl())) {
+    noteBlockHolder.avatarImageView.setOnTouchListener(mOnGravatarTouchListener);
+  }
+ else {
+    noteBlockHolder.avatarImageView.setOnTouchListener(null);
+  }
+  noteBlockHolder.snippetTextView.setText(getSnippet());
+  if (mIsComment) {
+    View footerView=view.findViewById(R.id.header_footer);
+    View footerCommentView=view.findViewById(R.id.header_footer_comment);
+    footerView.setVisibility(View.GONE);
+    footerCommentView.setVisibility(View.VISIBLE);
+  }
+  return view;
+}

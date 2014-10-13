@@ -1,0 +1,24 @@
+{
+  if (!isAdded()) {
+    return;
+  }
+  if (url != null && url.equals("about:blank")) {
+    view.postDelayed(new Runnable(){
+      @Override public void run(){
+        if (!isAdded()) {
+          return;
+        }
+        refreshLikes();
+        refreshComments();
+        if (!mHasAlreadyUpdatedPost) {
+          mHasAlreadyUpdatedPost=true;
+          updatePost();
+        }
+      }
+    }
+,300);
+  }
+ else {
+    AppLog.w(T.READER,"reader post detail > page finished - " + url);
+  }
+}

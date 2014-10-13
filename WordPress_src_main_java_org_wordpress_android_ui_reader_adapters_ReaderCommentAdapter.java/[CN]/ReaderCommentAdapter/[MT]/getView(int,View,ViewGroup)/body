@@ -3,7 +3,7 @@
   final CommentHolder holder;
   if (convertView == null) {
     convertView=mInflater.inflate(R.layout.reader_listitem_comment,parent,false);
-    holder=new CommentHolder(convertView);
+    holder=new CommentHolder(convertView,isPrivatePost());
     convertView.setTag(holder);
   }
  else {
@@ -11,7 +11,7 @@
   }
   holder.txtAuthor.setText(comment.getAuthorName());
   holder.imgAvatar.setImageUrl(PhotonUtils.fixAvatar(comment.getAuthorAvatar(),mAvatarSz),WPNetworkImageView.ImageType.AVATAR);
-  CommentUtils.displayHtmlComment(holder.txtText,comment.getText(),mMaxImageSz);
+  CommentUtils.displayHtmlComment(holder.txtText,comment.getText(),parent.getWidth());
   java.util.Date dtPublished=DateTimeUtils.iso8601ToJavaDate(comment.getPublished());
   holder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(dtPublished));
   if (comment.hasAuthorBlogId()) {

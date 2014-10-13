@@ -1,16 +1,11 @@
 {
-  final ReaderPost originalPost=ReaderPostTable.getPost(post.blogId,post.postId);
-  if (originalPost != null && originalPost.isLikedByCurrentUser == isAskingToLike) {
-    return true;
+  boolean isCurrentlyLiked=ReaderPostTable.isPostLikedByCurrentUser(post);
+  if (isCurrentlyLiked == isAskingToLike) {
+    AppLog.w(T.READER,"post like unchanged");
+    return false;
   }
-  post.isLikedByCurrentUser=isAskingToLike;
-  if (isAskingToLike) {
-    post.numLikes++;
-  }
- else   if (!isAskingToLike && post.numLikes > 0) {
-    post.numLikes--;
-  }
-  ReaderPostTable.addOrUpdatePost(post);
+  int newNumLikes=(isAskingToLike ? post.numLikes + 1 : post.numLikes - 1);
+  ReaderPostTable.setLikesForPost(post,newNumLikes,isAskingToLike);
   ReaderLikeTable.setCurrentUserLikesPost(post,isAskingToLike);
   final String actionName=isAskingToLike ? "like" : "unlike";
   String path="sites/" + post.blogId + "/posts/"+ post.postId+ "/likes/";
@@ -36,10 +31,8 @@
         AppLog.w(T.READER,String.format("post %s failed (%s)",actionName,error));
       }
       AppLog.e(T.READER,volleyError);
-      if (originalPost != null) {
-        ReaderPostTable.addOrUpdatePost(originalPost);
-        ReaderLikeTable.setCurrentUserLikesPost(post,originalPost.isLikedByCurrentUser);
-      }
+      ReaderPostTable.setLikesForPost(post,post.numLikes,post.isLikedByCurrentUser);
+      ReaderLikeTable.setCurrentUserLikesPost(post,post.isLikedByCurrentUser);
     }
   }
 ;

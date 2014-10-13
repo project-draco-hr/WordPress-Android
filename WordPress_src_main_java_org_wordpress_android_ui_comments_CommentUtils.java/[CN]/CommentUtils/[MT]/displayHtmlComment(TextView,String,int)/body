@@ -1,19 +1,24 @@
 {
-  if (textView == null)   return;
+  if (textView == null) {
+    return;
+  }
   if (content == null) {
     textView.setText(null);
     return;
   }
   if (!content.contains("<") && !content.contains("&")) {
-    textView.setText(content.trim());
-    if (content.contains("://"))     Linkify.addLinks(textView,Linkify.WEB_URLS);
+    content=content.trim();
+    textView.setText(content);
+    if (content.contains("://")) {
+      Linkify.addLinks(textView,Linkify.WEB_URLS);
+    }
     return;
   }
   content=Emoticons.replaceEmoticonsWithEmoji(content);
   final Spanned html;
   if (maxImageSize > 0 && content.contains("<img")) {
-    Drawable loading=textView.getContext().getResources().getDrawable(R.drawable.remote_image);
-    Drawable failed=textView.getContext().getResources().getDrawable(R.drawable.remote_failed);
+    Drawable loading=textView.getContext().getResources().getDrawable(R.drawable.dashicon_format_image_big_grey);
+    Drawable failed=textView.getContext().getResources().getDrawable(R.drawable.noticon_warning_big_grey);
     html=HtmlUtils.fromHtml(content,new WPImageGetter(textView,maxImageSize,WordPress.imageLoader,loading,failed));
   }
  else {

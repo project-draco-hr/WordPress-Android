@@ -18,8 +18,13 @@
     dialogBuilder.setMessage(getString(R.string.sign_out_confirm));
     dialogBuilder.setPositiveButton(R.string.sign_out,new DialogInterface.OnClickListener(){
       public void onClick(      DialogInterface dialog,      int whichButton){
-        WordPress.signOut(WPActionBarActivity.this);
-        refreshMenuDrawer();
+        AnalyticsTracker.refreshMetadata();
+        WordPress.signOutAsyncWithProgressBar(WPActionBarActivity.this,new SignOutCallback(){
+          @Override public void onSignOut(){
+            refreshMenuDrawer();
+          }
+        }
+);
       }
     }
 );

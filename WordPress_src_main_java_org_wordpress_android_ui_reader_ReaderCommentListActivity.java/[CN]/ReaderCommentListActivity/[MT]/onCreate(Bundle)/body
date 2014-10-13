@@ -1,0 +1,31 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.reader_activity_comment_list);
+  ActionBar actionBar=getActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayShowTitleEnabled(true);
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
+  if (savedInstanceState != null) {
+    mBlogId=savedInstanceState.getLong(ReaderConstants.ARG_BLOG_ID);
+    mPostId=savedInstanceState.getLong(ReaderConstants.ARG_POST_ID);
+    mTopMostCommentId=savedInstanceState.getLong(KEY_TOPMOST_COMMENT_ID);
+    mHasUpdatedComments=savedInstanceState.getBoolean(KEY_HAS_UPDATED_COMMENTS);
+  }
+ else {
+    mBlogId=getIntent().getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
+    mPostId=getIntent().getLongExtra(ReaderConstants.ARG_POST_ID,0);
+  }
+  mListView=(WPListView)findViewById(android.R.id.list);
+  mCommentBox=(ViewGroup)findViewById(R.id.layout_comment_box);
+  mEditComment=(EditText)mCommentBox.findViewById(R.id.edit_comment);
+  mImgSubmitComment=(ImageView)mCommentBox.findViewById(R.id.image_post_comment);
+  loadPost();
+  int height=getResources().getDimensionPixelSize(R.dimen.margin_medium);
+  ReaderUtils.addListViewHeader(mListView,height);
+  mListView.setAdapter(getCommentAdapter());
+  if (savedInstanceState != null) {
+    setReplyToCommentId(savedInstanceState.getLong(KEY_REPLY_TO_COMMENT_ID));
+  }
+  refreshComments();
+}

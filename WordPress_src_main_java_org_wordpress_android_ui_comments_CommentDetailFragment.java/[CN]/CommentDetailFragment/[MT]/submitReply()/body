@@ -8,8 +8,6 @@
   mImgSubmitReply.setVisibility(View.GONE);
   final ProgressBar progress=(ProgressBar)getView().findViewById(R.id.progress_submit_comment);
   progress.setVisibility(View.VISIBLE);
-  mLayoutButtons.clearAnimation();
-  AniUtils.flyOut(mLayoutButtons);
   CommentActions.CommentActionListener actionListener=new CommentActions.CommentActionListener(){
     @Override public void onActionResult(    boolean succeeded){
       mIsSubmittingReply=false;
@@ -34,7 +32,12 @@
   mIsSubmittingReply=true;
   AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATION_REPLIED_TO);
   if (mNote != null) {
-    CommentActions.submitReplyToCommentNote(mNote,replyText,actionListener);
+    if (mShouldRequestCommentFromNote) {
+      CommentActions.submitReplyToCommentRestApi(mNote.getSiteId(),mComment.commentID,replyText,actionListener);
+    }
+ else {
+      CommentActions.submitReplyToCommentNote(mNote,replyText,actionListener);
+    }
   }
  else {
     CommentActions.submitReplyToComment(mLocalBlogId,mComment,replyText,actionListener);

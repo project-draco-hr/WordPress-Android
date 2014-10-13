@@ -2,10 +2,10 @@
   super.onActivityResult(requestCode,resultCode,data);
   if (requestCode == WPComLoginActivity.REQUEST_CODE) {
     mResultCode=resultCode;
-    if (resultCode == RESULT_OK && !WordPress.getCurrentBlog().isDotcomFlag()) {
-      if (StatsUtils.getBlogId() == null) {
+    final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
+    if (resultCode == RESULT_OK && currentBlog != null && !currentBlog.isDotcomFlag()) {
+      if (StatsUtils.getBlogId(mLocalBlogID) == null) {
         final Handler handler=new Handler();
-        final Blog currentBlog=WordPress.getCurrentBlog();
         XMLRPCClientInterface xmlrpcClient=XMLRPCFactory.instantiate(currentBlog.getUri(),"","");
         Map<String,String> args=ApiHelper.blogOptionsXMLRPCParameters;
         Object[] params={currentBlog.getRemoteBlogId(),currentBlog.getUsername(),currentBlog.getPassword(),args};
@@ -14,6 +14,7 @@
             if (result != null && (result instanceof HashMap)) {
               Map<?,?> blogOptions=(HashMap<?,?>)result;
               ApiHelper.updateBlogOptions(currentBlog,blogOptions);
+              AnalyticsTracker.refreshMetadata();
               AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNED_INTO_JETPACK);
               AnalyticsTracker.track(AnalyticsTracker.Stat.PERFORMED_JETPACK_SIGN_IN_FROM_STATS_SCREEN);
               if (!isFinishing()) {

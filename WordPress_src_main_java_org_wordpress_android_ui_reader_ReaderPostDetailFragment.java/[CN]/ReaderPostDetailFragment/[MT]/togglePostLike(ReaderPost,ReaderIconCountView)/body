@@ -1,0 +1,16 @@
+{
+  boolean isSelected=likeCount.isSelected();
+  likeCount.setSelected(!isSelected);
+  boolean isAskingToLike=!post.isLikedByCurrentUser;
+  ReaderAnim.animateLikeButton(likeCount.getImageView(),isAskingToLike);
+  if (!ReaderPostActions.performLikeAction(post,isAskingToLike)) {
+    likeCount.setSelected(isSelected);
+    return;
+  }
+  mPost=ReaderPostTable.getPost(mBlogId,mPostId);
+  refreshLikes();
+  refreshIconBarCounts(true);
+  if (isAskingToLike) {
+    AnalyticsTracker.track(AnalyticsTracker.Stat.READER_LIKED_ARTICLE);
+  }
+}

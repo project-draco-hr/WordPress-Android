@@ -1,25 +1,23 @@
 {
   final View view=inflater.inflate(R.layout.reader_fragment_post_detail,container,false);
-  mListView=(WPListView)view.findViewById(android.R.id.list);
+  final View spacer=view.findViewById(R.id.spacer_actionbar);
+  mScrollView=(WPScrollView)view.findViewById(R.id.scroll_view_reader);
   if (isFullScreenSupported()) {
-    mListView.setOnScrollDirectionListener(this);
-    ReaderUtils.addListViewHeader(mListView,DisplayUtils.getActionBarHeight(container.getContext()));
+    spacer.getLayoutParams().height=DisplayUtils.getActionBarHeight(container.getContext());
+    spacer.setVisibility(View.VISIBLE);
+    mScrollView.setOnScrollDirectionListener(this);
   }
-  ViewGroup headerDetail=(ViewGroup)inflater.inflate(R.layout.reader_listitem_post_detail,mListView,false);
-  mListView.addHeaderView(headerDetail,null,false);
-  mCommentFooter=(ViewGroup)inflater.inflate(R.layout.reader_footer_progress,mListView,false);
-  mCommentFooter.setVisibility(View.GONE);
-  mCommentFooter.setBackgroundColor(getResources().getColor(R.color.grey_extra_light));
-  mProgressFooter=(ProgressBar)mCommentFooter.findViewById(R.id.progress_footer);
-  mProgressFooter.setVisibility(View.INVISIBLE);
-  mListView.addFooterView(mCommentFooter);
+ else {
+    spacer.setVisibility(View.GONE);
+  }
   mLayoutIcons=(ViewGroup)view.findViewById(R.id.layout_actions);
   mLayoutLikes=(ViewGroup)view.findViewById(R.id.layout_likes);
+  mLikingUsersView=(ReaderLikingUsersView)mLayoutLikes.findViewById(R.id.layout_liking_users_view);
   mReaderWebView=(ReaderWebView)view.findViewById(R.id.reader_webview);
   mReaderWebView.setCustomViewListener(this);
   mReaderWebView.setUrlClickListener(this);
-  mListView.setVisibility(View.INVISIBLE);
-  mReaderWebView.setVisibility(View.INVISIBLE);
+  mReaderWebView.setPageFinishedListener(this);
+  mScrollView.setVisibility(View.INVISIBLE);
   mLayoutIcons.setVisibility(View.INVISIBLE);
   return view;
 }

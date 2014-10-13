@@ -21,22 +21,11 @@ break;
 case BLOG_PREVIEW:
 mBlogInfoView=new ReaderBlogInfoView(container.getContext());
 rootView.addView(mBlogInfoView);
-mBlogInfoView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT));
-int spacerHeight=mBlogInfoView.getMshotHeight() + DisplayUtils.dpToPx(container.getContext(),105);
-mMshotSpacerView=ReaderUtils.addListViewHeader(mListView,spacerHeight);
-mMshotSpacerView.setTag(MSHOT_SPACER_TAG);
-mBlogInfoView.bringToFront();
-mBlogInfoView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
-@Override public void onGlobalLayout(){
-int currentHeight=mMshotSpacerView.getLayoutParams().height;
-int newHeight=mBlogInfoView.getInfoContainerHeight() + mBlogInfoView.getMshotHeight();
-if (currentHeight != newHeight) {
-mMshotSpacerView.getLayoutParams().height=newHeight;
-}
-}
-}
-);
+ReaderUtils.layoutBelow(rootView,R.id.ptr_layout,mBlogInfoView.getId());
 break;
+}
+if (getPostListType().isPreviewType()) {
+ReaderUtils.addListViewHeader(mListView,0);
 }
 mEmptyView=rootView.findViewById(R.id.empty_view);
 mListView.setOnScrollListener(this);
@@ -46,6 +35,7 @@ position-=mListView.getHeaderViewsCount();
 if (position >= 0 && mPostSelectedListener != null) {
 ReaderPost post=(ReaderPost)getPostAdapter().getItem(position);
 if (post != null) {
+AnalyticsTracker.track(AnalyticsTracker.Stat.READER_OPENED_ARTICLE);
 mPostSelectedListener.onPostSelected(post.blogId,post.postId);
 }
 }

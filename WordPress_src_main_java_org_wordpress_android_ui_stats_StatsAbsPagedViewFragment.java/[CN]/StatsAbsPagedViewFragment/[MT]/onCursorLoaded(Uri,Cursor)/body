@@ -6,7 +6,8 @@
   String timeframe=uri.getQueryParameter("timeframe");
   if (timeframe == null)   return;
   long date=cursor.getLong(colDate);
-  long currentDate=StatsUtils.getCurrentDateMs();
+  String timezone=StatsUtils.getBlogTimezone(WordPress.getBlog(getLocalTableBlogID()));
+  long currentDate=timezone != null ? StatsUtils.getCurrentDateMsTZ(timezone) : StatsUtils.getCurrentDateMs();
   boolean isToday=timeframe.equals(StatsTimeframe.TODAY.name());
   boolean isYesterday=timeframe.equals(StatsTimeframe.YESTERDAY.name());
   final String label0;

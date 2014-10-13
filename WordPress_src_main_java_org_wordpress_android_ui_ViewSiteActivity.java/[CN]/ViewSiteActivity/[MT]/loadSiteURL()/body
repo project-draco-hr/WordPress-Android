@@ -1,5 +1,7 @@
 {
-  if (mBlog == null)   return;
+  if (mBlog == null) {
+    return;
+  }
   String siteURL=null;
   Gson gson=new Gson();
   Type type=new TypeToken<Map<?,?>>(){
@@ -8,10 +10,18 @@
   Map<?,?> blogOptions=gson.fromJson(mBlog.getBlogOptions(),type);
   if (blogOptions != null) {
     Map<?,?> homeURLMap=(Map<?,?>)blogOptions.get("home_url");
-    if (homeURLMap != null)     siteURL=homeURLMap.get("value").toString();
+    if (homeURLMap != null) {
+      siteURL=homeURLMap.get("value").toString();
+    }
   }
   if (siteURL == null) {
     siteURL=mBlog.getUrl().replace("/xmlrpc.php","");
   }
-  loadAuthenticatedUrl(siteURL);
+  try {
+    String postData=String.format("log=%s&pwd=%s&redirect_to=%s",URLEncoder.encode(mBlog.getUsername(),"UTF-8"),URLEncoder.encode(mBlog.getPassword(),"UTF-8"),URLEncoder.encode(siteURL,"UTF-8"));
+    mWebView.postUrl(WPWebViewActivity.getBlogLoginUrl(mBlog),postData.getBytes());
+  }
+ catch (  UnsupportedEncodingException e) {
+    AppLog.e(AppLog.T.UTILS,e);
+  }
 }

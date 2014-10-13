@@ -1,0 +1,48 @@
+{
+  final UserActionNoteBlockHolder noteBlockHolder=(UserActionNoteBlockHolder)view.getTag();
+  noteBlockHolder.nameTextView.setText(getNoteText().toString());
+  String linkedText=null;
+  if (hasUserUrlAndTitle()) {
+    linkedText=getUserBlogTitle();
+  }
+ else   if (hasUserUrl()) {
+    linkedText=getUserUrl();
+  }
+  if (!TextUtils.isEmpty(linkedText)) {
+    noteBlockHolder.urlTextView.setText(NotificationsUtils.getClickableTextForIdUrl(getUrlRangeObject(),linkedText,getOnNoteBlockTextClickListener()));
+    noteBlockHolder.urlTextView.setVisibility(View.VISIBLE);
+  }
+ else {
+    noteBlockHolder.urlTextView.setVisibility(View.GONE);
+  }
+  if (hasUserBlogTagline()) {
+    noteBlockHolder.taglineTextView.setText(getUserBlogTagline());
+    noteBlockHolder.taglineTextView.setVisibility(View.VISIBLE);
+  }
+ else   if (hasUserUrlAndTitle()) {
+    noteBlockHolder.taglineTextView.setText(getUserUrl());
+    noteBlockHolder.taglineTextView.setVisibility(View.VISIBLE);
+  }
+ else {
+    noteBlockHolder.taglineTextView.setVisibility(View.GONE);
+  }
+  if (hasImageMediaItem()) {
+    String imageUrl=PhotonUtils.fixAvatar(getNoteMediaItem().optString("url",""),getAvatarSize());
+    noteBlockHolder.avatarImageView.setImageUrl(imageUrl,WordPress.imageLoader);
+    if (!TextUtils.isEmpty(getUserUrl())) {
+      noteBlockHolder.avatarImageView.setOnTouchListener(mOnGravatarTouchListener);
+      noteBlockHolder.rootView.setBackgroundResource(R.drawable.notifications_header_selector);
+      noteBlockHolder.rootView.setOnClickListener(mOnClickListener);
+    }
+ else {
+      noteBlockHolder.avatarImageView.setOnTouchListener(null);
+      noteBlockHolder.rootView.setBackgroundColor(NotificationsConstants.COLOR_CALYPSO_WHITE);
+      noteBlockHolder.rootView.setOnClickListener(null);
+    }
+  }
+ else {
+    noteBlockHolder.avatarImageView.setImageResource(R.drawable.gravatar_placeholder);
+    noteBlockHolder.avatarImageView.setOnTouchListener(null);
+  }
+  return view;
+}

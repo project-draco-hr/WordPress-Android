@@ -1,0 +1,26 @@
+{
+  if (event.getAction() == MotionEvent.ACTION_UP) {
+    int x=(int)event.getX();
+    int y=(int)event.getY();
+    x-=textView.getTotalPaddingLeft();
+    y-=textView.getTotalPaddingTop();
+    x+=textView.getScrollX();
+    y+=textView.getScrollY();
+    Layout layout=textView.getLayout();
+    int line=layout.getLineForVertical(y);
+    int off=layout.getOffsetForHorizontal(line,x);
+    ImageSpan[] images=buffer.getSpans(off,off,ImageSpan.class);
+    if (images != null && images.length > 0) {
+      String imageUrl=StringUtils.notNullStr(images[0].getSource());
+      ReaderActivityLauncher.showReaderPhotoViewer(textView.getContext(),imageUrl,null,textView,mIsPrivate,(int)event.getX(),(int)event.getY());
+      return true;
+    }
+  }
+  try {
+    return super.onTouchEvent(textView,buffer,event);
+  }
+ catch (  ActivityNotFoundException e) {
+    AppLog.e(AppLog.T.UTILS,e);
+    return false;
+  }
+}

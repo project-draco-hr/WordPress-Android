@@ -30,11 +30,31 @@
     }
   }
 );
-  loadStatsFragments();
   setTitle(R.string.stats);
-  restoreState(savedInstanceState);
+  if (savedInstanceState != null) {
+    mNavPosition=savedInstanceState.getInt(SAVED_NAV_POSITION);
+    mResultCode=savedInstanceState.getInt(SAVED_WP_LOGIN_STATE);
+    mLocalBlogID=savedInstanceState.getInt(ARG_LOCAL_TABLE_BLOG_ID);
+  }
+ else   if (getIntent() != null) {
+    mLocalBlogID=getIntent().getIntExtra(ARG_LOCAL_TABLE_BLOG_ID,-1);
+  }
+  final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
+  if (currentBlog == null) {
+    AppLog.e(T.STATS,"The blog with local_blog_id " + mLocalBlogID + " cannot be loaded from the DB.");
+    Toast.makeText(this,R.string.stats_no_blog,Toast.LENGTH_LONG).show();
+    finish();
+    return;
+  }
+  loadStatsFragments();
   mDetector=new GestureDetectorCompat(this,new MyGestureListener());
   mDetector.setIsLongpressEnabled(false);
-  refreshStats();
-  mPullToRefreshHelper.setRefreshing(true);
+  if (NetworkUtils.isNetworkAvailable(this) && savedInstanceState == null) {
+    refreshStats();
+    mPullToRefreshHelper.setRefreshing(true);
+  }
+  ScrollViewExt scrollView=(ScrollViewExt)findViewById(R.id.scroll_view_stats);
+  if (scrollView != null) {
+    scrollView.setScrollViewListener(this);
+  }
 }

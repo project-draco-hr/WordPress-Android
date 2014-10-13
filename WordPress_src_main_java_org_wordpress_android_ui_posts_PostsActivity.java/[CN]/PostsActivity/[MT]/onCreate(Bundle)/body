@@ -14,13 +14,10 @@
   }
   if (WordPress.shouldRestoreSelectedActivity && WordPress.getCurrentBlog() != null && !(this instanceof PagesActivity)) {
     WordPress.shouldRestoreSelectedActivity=false;
-    SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
-    int lastActivitySelection=settings.getInt(LAST_ACTIVITY_PREFERENCE,-1);
-    if (lastActivitySelection > MenuDrawerItem.NO_ITEM_ID && lastActivitySelection != WPActionBarActivity.DASHBOARD_ACTIVITY) {
-      Iterator<MenuDrawerItem> itemIterator=mMenuItems.iterator();
-      while (itemIterator.hasNext()) {
-        MenuDrawerItem item=itemIterator.next();
-        if (item.hasItemId() && item.getItemId() == lastActivitySelection && !item.isSelected() && item.isVisible()) {
+    ActivityId lastActivity=ActivityId.getActivityIdFromName(AppPrefs.getLastActivityStr());
+    if (lastActivity.autoRestoreMapper() != ActivityId.UNKNOWN) {
+      for (      MenuDrawerItem item : mMenuItems) {
+        if (item.hasItemId() && item.getItemId() == lastActivity.autoRestoreMapper() && !item.isSelected() && item.isVisible()) {
           mFirstLaunch=true;
           item.selectItem();
           finish();
@@ -41,9 +38,15 @@
     mIsPage=extras.getBoolean(EXTRA_VIEW_PAGES);
     showErrorDialogIfNeeded(extras);
   }
-  if (mIsPage)   setTitle(getString(R.string.pages));
- else   setTitle(getString(R.string.posts));
+  if (mIsPage) {
+    setTitle(getString(R.string.pages));
+  }
+ else {
+    setTitle(getString(R.string.posts));
+  }
   WordPress.currentPost=null;
-  if (savedInstanceState != null)   popPostDetail();
+  if (savedInstanceState != null) {
+    popPostDetail();
+  }
   attemptToSelectPost();
 }
