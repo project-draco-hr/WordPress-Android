@@ -17,6 +17,7 @@
           for (int i=0; i < jsonCommentList.length(); i++) {
             JSONObject jsonComment=jsonCommentList.optJSONObject(i);
             ReaderComment comment=ReaderComment.fromJson(jsonComment,blogId);
+            comment.pageNumber=pageNumber;
             serverComments.add(comment);
             JSONObject jsonLikes=JSONUtil.getJSONChild(jsonComment,"meta/data/likes");
             if (jsonLikes != null) {
@@ -26,12 +27,7 @@
             }
           }
         }
-        if (requestNewer) {
-          hasNewComments=(serverComments.size() > 0);
-        }
- else {
-          hasNewComments=ReaderCommentTable.hasNewComments(serverComments);
-        }
+        hasNewComments=(serverComments.size() > 0);
         ReaderCommentTable.addOrUpdateComments(serverComments);
         ReaderDatabase.getWritableDb().setTransactionSuccessful();
       }

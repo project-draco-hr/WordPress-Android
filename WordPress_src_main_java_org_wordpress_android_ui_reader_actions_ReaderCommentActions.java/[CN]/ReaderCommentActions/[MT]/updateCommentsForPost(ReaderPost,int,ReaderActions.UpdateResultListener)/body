@@ -1,13 +1,8 @@
 {
-  if (comment == null) {
-    if (resultListener != null) {
-      resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED);
-    }
-    return;
-  }
+  String path="sites/" + post.blogId + "/posts/"+ post.postId+ "/replies/"+ "?number="+ Integer.toString(ReaderConstants.READER_MAX_COMMENTS_TO_REQUEST)+ "&meta=likes"+ "&hierarchical=true"+ "&order=ASC"+ "&page="+ pageNumber;
   RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
-      handleUpdateCommentLikesResponse(comment,jsonObject,resultListener);
+      handleUpdateCommentsResponse(jsonObject,post.blogId,pageNumber,resultListener);
     }
   }
 ;
@@ -20,7 +15,6 @@
     }
   }
 ;
-  AppLog.d(T.READER,"updating comment likes");
-  String path="sites/" + comment.blogId + "/comments/"+ comment.commentId+ "/likes/";
+  AppLog.d(T.READER,"updating comments");
   WordPress.getRestClientUtils().get(path,null,null,listener,errorListener);
 }
