@@ -1,7 +1,7 @@
 {
   if (jsonObject == null) {
     if (resultListener != null) {
-      resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED,-1);
+      resultListener.onUpdateResult(UpdateResult.FAILED);
     }
     return;
   }
@@ -14,7 +14,7 @@
         if (resultListener != null) {
           handler.post(new Runnable(){
             public void run(){
-              resultListener.onUpdateResult(ReaderActions.UpdateResult.UNCHANGED,0);
+              resultListener.onUpdateResult(UpdateResult.UNCHANGED);
             }
           }
 );
@@ -34,14 +34,15 @@
       if (updateAction == ReaderActions.RequestDataAction.LOAD_NEWER) {
         ReaderTagTable.setTagLastUpdated(tag,DateTimeUtils.javaDateToIso8601(new Date()));
       }
-      handler.post(new Runnable(){
-        public void run(){
-          if (resultListener != null) {
-            resultListener.onUpdateResult(ReaderActions.UpdateResult.CHANGED,numNewPosts);
+      if (resultListener != null) {
+        handler.post(new Runnable(){
+          public void run(){
+            ReaderActions.UpdateResult result=(numNewPosts > 0 ? UpdateResult.CHANGED : UpdateResult.UNCHANGED);
+            resultListener.onUpdateResult(result);
           }
         }
-      }
 );
+      }
     }
   }
 .start();

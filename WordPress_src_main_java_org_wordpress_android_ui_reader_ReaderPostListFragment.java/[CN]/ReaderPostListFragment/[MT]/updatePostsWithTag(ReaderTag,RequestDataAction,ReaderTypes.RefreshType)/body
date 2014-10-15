@@ -15,18 +15,18 @@
   if (refreshType == ReaderTypes.RefreshType.MANUAL && isCurrentTag(tag)) {
     if (tag.getTagName().equals(ReaderTag.TAG_NAME_LIKED) || tag.getTagName().equals(ReaderTag.TAG_NAME_FOLLOWING))     refreshPosts();
   }
-  ReaderActions.UpdateResultAndCountListener resultListener=new ReaderActions.UpdateResultAndCountListener(){
-    @Override public void onUpdateResult(    ReaderActions.UpdateResult result,    int numNewPosts){
+  ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
+    @Override public void onUpdateResult(    ReaderActions.UpdateResult result){
       if (!isAdded()) {
         AppLog.w(T.READER,"reader post list > new posts when fragment has no activity");
         return;
       }
       setIsUpdating(false,updateAction);
       if (!isCurrentTag(tag)) {
-        AppLog.i(T.READER,"reader post list > new posts in inactive tag");
         return;
       }
-      if (result == ReaderActions.UpdateResult.CHANGED && numNewPosts > 0) {
+      boolean hasNewPosts=(result == ReaderActions.UpdateResult.CHANGED);
+      if (hasNewPosts) {
         if (!isPostAdapterEmpty() && getPostListType().equals(ReaderPostListType.TAG_FOLLOWED) && updateAction == RequestDataAction.LOAD_NEWER && !isListScrolledToTop()) {
           showNewPostsBar();
         }

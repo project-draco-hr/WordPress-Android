@@ -7,9 +7,10 @@
 switch (getPostListType()) {
 case TAG_PREVIEW:
 case TAG_FOLLOWED:
-    UpdateResultAndCountListener resultListener=new UpdateResultAndCountListener(){
-      @Override public void onUpdateResult(      ReaderActions.UpdateResult result,      int numNewPosts){
-        doAfterUpdate(numNewPosts > 0);
+    ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
+      @Override public void onUpdateResult(      ReaderActions.UpdateResult result){
+        boolean hasNewPosts=(result == ReaderActions.UpdateResult.CHANGED);
+        doAfterUpdate(hasNewPosts);
       }
     }
 ;
