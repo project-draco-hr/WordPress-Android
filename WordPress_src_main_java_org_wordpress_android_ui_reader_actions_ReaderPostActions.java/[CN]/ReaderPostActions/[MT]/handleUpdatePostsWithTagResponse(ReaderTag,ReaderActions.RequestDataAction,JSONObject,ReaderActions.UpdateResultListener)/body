@@ -21,23 +21,16 @@
         }
         return;
       }
-      final boolean hasExistingPostsWithTag=ReaderPostTable.hasPostsWithTag(tag);
-      final int numNewPosts;
-      if (hasExistingPostsWithTag) {
-        numNewPosts=ReaderPostTable.getNumNewPostsWithTag(tag,serverPosts);
-      }
- else {
-        numNewPosts=serverPosts.size();
-      }
+      int numNewPosts=ReaderPostTable.getNumNewPostsWithTag(tag,serverPosts);
       ReaderPostTable.addOrUpdatePosts(tag,serverPosts);
       AppLog.d(T.READER,String.format("retrieved %d posts (%d new) in tag %s",serverPosts.size(),numNewPosts,tag.getTagNameForLog()));
       if (updateAction == ReaderActions.RequestDataAction.LOAD_NEWER) {
-        ReaderTagTable.setTagLastUpdated(tag,DateTimeUtils.javaDateToIso8601(new Date()));
+        ReaderTagTable.setTagLastUpdated(tag);
       }
       if (resultListener != null) {
+        final ReaderActions.UpdateResult result=(numNewPosts > 0 ? UpdateResult.CHANGED : UpdateResult.UNCHANGED);
         handler.post(new Runnable(){
           public void run(){
-            ReaderActions.UpdateResult result=(numNewPosts > 0 ? UpdateResult.CHANGED : UpdateResult.UNCHANGED);
             resultListener.onUpdateResult(result);
           }
         }
