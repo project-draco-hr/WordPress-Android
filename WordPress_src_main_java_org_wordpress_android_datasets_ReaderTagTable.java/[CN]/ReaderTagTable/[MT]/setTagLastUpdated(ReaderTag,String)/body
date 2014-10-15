@@ -1,3 +1,16 @@
 {
-  setDateColumn(tag,"date_updated",date);
+  if (tag == null) {
+    return;
+  }
+  String sql="UPDATE tbl_tags SET date_updated=?1 WHERE tag_name=?2 AND tag_type=?3";
+  SQLiteStatement stmt=ReaderDatabase.getWritableDb().compileStatement(sql);
+  try {
+    stmt.bindString(1,date);
+    stmt.bindString(2,tag.getTagName());
+    stmt.bindLong(3,tag.tagType.toInt());
+    stmt.execute();
+  }
+  finally {
+    SqlUtils.closeStatement(stmt);
+  }
 }
