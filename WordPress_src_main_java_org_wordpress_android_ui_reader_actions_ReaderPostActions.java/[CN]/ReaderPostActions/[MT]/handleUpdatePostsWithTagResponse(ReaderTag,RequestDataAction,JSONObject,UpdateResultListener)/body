@@ -21,22 +21,33 @@
         }
         return;
       }
-      int numNewPosts=ReaderPostTable.getNumNewPostsWithTag(tag,serverPosts);
-      ReaderPostTable.addOrUpdatePosts(tag,serverPosts);
-      AppLog.d(T.READER,String.format("retrieved %d posts (%d new) in tag %s",serverPosts.size(),numNewPosts,tag.getTagNameForLog()));
-      if (updateAction == RequestDataAction.LOAD_NEWER) {
-        ReaderTagTable.setTagLastUpdated(tag);
+      final UpdateResult updateResult=ReaderPostTable.comparePosts(serverPosts);
+      if (updateResult.isNewOrChanged()) {
+        ReaderPostTable.addOrUpdatePosts(tag,serverPosts);
       }
-      if (resultListener != null) {
-        final UpdateResult result=(numNewPosts > 0 ? UpdateResult.HAS_NEW : UpdateResult.CHANGED);
-        handler.post(new Runnable(){
-          public void run(){
-            resultListener.onUpdateResult(result);
-          }
-        }
+switch (updateResult) {
+case HAS_NEW:
+        AppLog.d(T.READER,String.format("retrieved %d posts in tag %s (has new)",serverPosts.size(),tag.getTagNameForLog()));
+      break;
+case CHANGED:
+    AppLog.d(T.READER,String.format("retrieved %d posts in tag %s (has changes)",serverPosts.size(),tag.getTagNameForLog()));
+  break;
+default :
+AppLog.d(T.READER,String.format("retrieved %d posts in tag %s (no new or changed)",serverPosts.size(),tag.getTagNameForLog()));
+break;
+}
+if (updateAction == RequestDataAction.LOAD_NEWER) {
+ReaderTagTable.setTagLastUpdated(tag);
+}
+if (resultListener != null) {
+handler.post(new Runnable(){
+public void run(){
+resultListener.onUpdateResult(updateResult);
+}
+}
 );
-      }
-    }
-  }
+}
+}
+}
 .start();
 }

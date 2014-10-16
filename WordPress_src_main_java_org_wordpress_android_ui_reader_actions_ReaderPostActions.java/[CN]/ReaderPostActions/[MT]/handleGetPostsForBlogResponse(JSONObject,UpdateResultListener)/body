@@ -5,10 +5,12 @@
     }
     return;
   }
-  ReaderPostList posts=ReaderPostList.fromJson(jsonObject);
-  ReaderPostTable.addOrUpdatePosts(null,posts);
+  ReaderPostList serverPosts=ReaderPostList.fromJson(jsonObject);
+  UpdateResult updateResult=ReaderPostTable.comparePosts(serverPosts);
+  if (updateResult.isNewOrChanged()) {
+    ReaderPostTable.addOrUpdatePosts(null,serverPosts);
+  }
   if (resultListener != null) {
-    UpdateResult result=(posts.size() > 0 ? UpdateResult.HAS_NEW : UpdateResult.UNCHANGED);
-    resultListener.onUpdateResult(result);
+    resultListener.onUpdateResult(updateResult);
   }
 }
