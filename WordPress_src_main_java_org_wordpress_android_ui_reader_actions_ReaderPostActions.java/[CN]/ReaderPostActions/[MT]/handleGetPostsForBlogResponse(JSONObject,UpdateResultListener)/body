@@ -5,12 +5,23 @@
     }
     return;
   }
-  ReaderPostList serverPosts=ReaderPostList.fromJson(jsonObject);
-  UpdateResult updateResult=ReaderPostTable.comparePosts(serverPosts);
-  if (updateResult.isNewOrChanged()) {
-    ReaderPostTable.addOrUpdatePosts(null,serverPosts);
+  final Handler handler=new Handler();
+  new Thread(){
+    @Override public void run(){
+      ReaderPostList serverPosts=ReaderPostList.fromJson(jsonObject);
+      final UpdateResult updateResult=ReaderPostTable.comparePosts(serverPosts);
+      if (updateResult.isNewOrChanged()) {
+        ReaderPostTable.addOrUpdatePosts(null,serverPosts);
+      }
+      if (resultListener != null) {
+        handler.post(new Runnable(){
+          public void run(){
+            resultListener.onUpdateResult(updateResult);
+          }
+        }
+);
+      }
+    }
   }
-  if (resultListener != null) {
-    resultListener.onUpdateResult(updateResult);
-  }
+.start();
 }
