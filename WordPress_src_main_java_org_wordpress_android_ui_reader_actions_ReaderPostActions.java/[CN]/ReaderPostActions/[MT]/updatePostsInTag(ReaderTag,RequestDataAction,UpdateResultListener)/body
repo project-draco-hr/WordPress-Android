@@ -9,36 +9,29 @@
   StringBuilder sb=new StringBuilder(endpoint);
   sb.append("?number=").append(ReaderConstants.READER_MAX_POSTS_TO_REQUEST);
   sb.append("&order=DESC");
-switch (updateAction) {
-case LOAD_NEWER:
-    String dateNewest=ReaderTagTable.getTagLastUpdated(tag);
-  if (!TextUtils.isEmpty(dateNewest)) {
-    sb.append("&after=").append(UrlUtils.urlEncode(dateNewest));
-    AppLog.d(T.READER,String.format("requesting newer posts in tag %s (%s)",tag.getTagNameForLog(),dateNewest));
+  if (updateAction == RequestDataAction.LOAD_OLDER) {
+    String dateOldest=ReaderPostTable.getOldestPubDateWithTag(tag);
+    if (!TextUtils.isEmpty(dateOldest)) {
+      sb.append("&before=").append(UrlUtils.urlEncode(dateOldest));
+    }
   }
-break;
-case LOAD_OLDER:
-String dateOldest=ReaderPostTable.getOldestPubDateWithTag(tag);
-if (!TextUtils.isEmpty(dateOldest)) {
-sb.append("&before=").append(UrlUtils.urlEncode(dateOldest));
-AppLog.d(T.READER,String.format("requesting older posts in tag %s (%s)",tag.getTagNameForLog(),dateOldest));
-}
-break;
-}
-com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
-@Override public void onResponse(JSONObject jsonObject){
-handleUpdatePostsWithTagResponse(tag,updateAction,jsonObject,resultListener);
-}
-}
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      if (updateAction == RequestDataAction.LOAD_NEWER) {
+        ReaderTagTable.setTagLastUpdated(tag);
+      }
+      handleUpdatePostsResponse(tag,jsonObject,resultListener);
+    }
+  }
 ;
-RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
-@Override public void onErrorResponse(VolleyError volleyError){
-AppLog.e(T.READER,volleyError);
-if (resultListener != null) {
-resultListener.onUpdateResult(UpdateResult.FAILED);
-}
-}
-}
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.READER,volleyError);
+      if (resultListener != null) {
+        resultListener.onUpdateResult(UpdateResult.FAILED);
+      }
+    }
+  }
 ;
-WordPress.getRestClientUtils().get(sb.toString(),null,null,listener,errorListener);
+  WordPress.getRestClientUtils().get(sb.toString(),null,null,listener,errorListener);
 }

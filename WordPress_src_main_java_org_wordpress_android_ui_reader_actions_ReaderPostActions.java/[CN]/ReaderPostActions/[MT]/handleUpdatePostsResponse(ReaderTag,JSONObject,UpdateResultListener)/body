@@ -11,8 +11,9 @@
       ReaderPostList serverPosts=ReaderPostList.fromJson(jsonObject);
       final UpdateResult updateResult=ReaderPostTable.comparePosts(serverPosts);
       if (updateResult.isNewOrChanged()) {
-        ReaderPostTable.addOrUpdatePosts(null,serverPosts);
+        ReaderPostTable.addOrUpdatePosts(tag,serverPosts);
       }
+      AppLog.d(T.READER,"requested posts response = " + updateResult.toString());
       if (resultListener != null) {
         handler.post(new Runnable(){
           public void run(){

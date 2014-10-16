@@ -9,7 +9,7 @@
   new Thread(){
     @Override public void run(){
       ReaderPost updatedPost=ReaderPost.fromJson(jsonObject);
-      boolean hasChanges=(updatedPost.numReplies != originalPost.numReplies || updatedPost.numLikes != originalPost.numLikes || updatedPost.isCommentsOpen != originalPost.isCommentsOpen || updatedPost.isLikedByCurrentUser != originalPost.isLikedByCurrentUser || updatedPost.isFollowedByCurrentUser != originalPost.isFollowedByCurrentUser);
+      boolean hasChanges=!originalPost.isSamePost(updatedPost);
       if (hasChanges) {
         AppLog.d(T.READER,"post updated");
         if (originalPost.hasFeaturedImage()) {
