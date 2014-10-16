@@ -18,21 +18,19 @@
   ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
     @Override public void onUpdateResult(    ReaderActions.UpdateResult result){
       if (!isAdded()) {
-        AppLog.w(T.READER,"reader post list > new posts when fragment has no activity");
+        AppLog.w(T.READER,"reader post list > posts updated when fragment has no activity");
         return;
       }
       setIsUpdating(false,updateAction);
       if (!isCurrentTag(tag)) {
         return;
       }
-      boolean hasNewPosts=(result == ReaderActions.UpdateResult.CHANGED);
-      if (hasNewPosts) {
-        if (!isPostAdapterEmpty() && getPostListType().equals(ReaderPostListType.TAG_FOLLOWED) && updateAction == RequestDataAction.LOAD_NEWER && !isListScrolledToTop()) {
-          showNewPostsBar();
-        }
- else {
-          refreshPosts();
-        }
+      boolean showNewPostsBar=result == ReaderActions.UpdateResult.HAS_NEW && !isPostAdapterEmpty() && getPostListType().equals(ReaderPostListType.TAG_FOLLOWED) && updateAction == RequestDataAction.LOAD_NEWER && !isListScrolledToTop();
+      if (showNewPostsBar) {
+        showNewPostsBar();
+      }
+ else       if (result.isNewOrChanged()) {
+        refreshPosts();
       }
  else {
         setEmptyTitleAndDescriptionForCurrentTag();

@@ -1,0 +1,14 @@
+{
+  if (jsonObject == null) {
+    if (resultListener != null) {
+      resultListener.onUpdateResult(UpdateResult.FAILED);
+    }
+    return;
+  }
+  ReaderPostList posts=ReaderPostList.fromJson(jsonObject);
+  ReaderPostTable.addOrUpdatePosts(null,posts);
+  if (resultListener != null) {
+    UpdateResult result=(posts.size() > 0 ? UpdateResult.HAS_NEW : UpdateResult.UNCHANGED);
+    resultListener.onUpdateResult(result);
+  }
+}

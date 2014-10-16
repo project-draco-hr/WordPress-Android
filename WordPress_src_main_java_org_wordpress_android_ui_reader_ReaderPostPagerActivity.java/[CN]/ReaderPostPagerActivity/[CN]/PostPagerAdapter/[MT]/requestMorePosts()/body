@@ -4,26 +4,19 @@
   }
   mIsRequestingMorePosts=true;
   AppLog.d(AppLog.T.READER,"reader pager > requesting older posts");
+  ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
+    @Override public void onUpdateResult(    ReaderActions.UpdateResult result){
+      doAfterUpdate(result);
+    }
+  }
+;
 switch (getPostListType()) {
 case TAG_PREVIEW:
 case TAG_FOLLOWED:
-    ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
-      @Override public void onUpdateResult(      ReaderActions.UpdateResult result){
-        boolean hasNewPosts=(result == ReaderActions.UpdateResult.CHANGED);
-        doAfterUpdate(hasNewPosts);
-      }
-    }
-;
-  ReaderPostActions.updatePostsInTag(getCurrentTag(),ReaderActions.RequestDataAction.LOAD_OLDER,resultListener);
-break;
+    ReaderPostActions.updatePostsInTag(getCurrentTag(),ReaderActions.RequestDataAction.LOAD_OLDER,resultListener);
+  break;
 case BLOG_PREVIEW:
-ActionListener actionListener=new ActionListener(){
-@Override public void onActionResult(boolean succeeded){
-  doAfterUpdate(succeeded);
-}
-}
-;
-ReaderPostActions.requestPostsForBlog(mCurrentBlogId,null,ReaderActions.RequestDataAction.LOAD_OLDER,actionListener);
+ReaderPostActions.requestPostsForBlog(mCurrentBlogId,null,ReaderActions.RequestDataAction.LOAD_OLDER,resultListener);
 break;
 }
 }
