@@ -39,9 +39,16 @@
     mNavPosition=savedInstanceState.getInt(SAVED_NAV_POSITION);
     mResultCode=savedInstanceState.getInt(SAVED_WP_LOGIN_STATE);
     mLocalBlogID=savedInstanceState.getInt(ARG_LOCAL_TABLE_BLOG_ID);
+    mCurrentTimeframe=(StatsTimeframe)savedInstanceState.getSerializable(SAVED_STATS_TIMEFRAME);
   }
  else   if (getIntent() != null) {
     mLocalBlogID=getIntent().getIntExtra(ARG_LOCAL_TABLE_BLOG_ID,-1);
+    if (getIntent().hasExtra(SAVED_STATS_TIMEFRAME)) {
+      mCurrentTimeframe=(StatsTimeframe)getIntent().getSerializableExtra(SAVED_STATS_TIMEFRAME);
+    }
+ else {
+      mCurrentTimeframe=StatsTimeframe.TODAY;
+    }
   }
   final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
   if (currentBlog == null) {
