@@ -9,9 +9,9 @@
     AnalyticsTracker.track(AnalyticsTracker.Stat.STATS_ACCESSED);
   }
   mNoMenuDrawer=getIntent().getBooleanExtra(ARG_NO_MENU_DRAWER,false);
+  ActionBar actionBar=getActionBar();
   if (mNoMenuDrawer) {
     setContentView(R.layout.stats_activity);
-    ActionBar actionBar=getActionBar();
     if (actionBar != null) {
       actionBar.setDisplayHomeAsUpEnabled(true);
     }
@@ -30,7 +30,7 @@
         AppLog.w(T.STATS,"stats are already updating, refresh cancelled");
         return;
       }
-      refreshStats(StatsTimeframe.TODAY);
+      refreshStats(StatsTimeframe.DAY);
     }
   }
 );
@@ -47,7 +47,7 @@
       mCurrentTimeframe=(StatsTimeframe)getIntent().getSerializableExtra(SAVED_STATS_TIMEFRAME);
     }
  else {
-      mCurrentTimeframe=StatsTimeframe.TODAY;
+      mCurrentTimeframe=StatsTimeframe.DAY;
     }
   }
   final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
@@ -62,4 +62,12 @@
   if (scrollView != null) {
     scrollView.setScrollViewListener(this);
   }
+  if (!mNoMenuDrawer && actionBar.getNavigationMode() != ActionBar.NAVIGATION_MODE_LIST) {
+    StatsTimeframe[] timeframes={StatsTimeframe.DAY,StatsTimeframe.WEEK,StatsTimeframe.MONTH,StatsTimeframe.YEAR};
+    mTimeframeSpinnerAdapter=new TimeframeSpinnerAdapter(this,timeframes);
+    actionBar.setDisplayShowTitleEnabled(false);
+    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+    actionBar.setListNavigationCallbacks(mTimeframeSpinnerAdapter,this);
+  }
+  selectTimeframeInActionBar(mCurrentTimeframe);
 }
