@@ -49,11 +49,10 @@
   vibrate=prefs.getBoolean("wp_pref_notification_vibrate",false);
   light=prefs.getBoolean("wp_pref_notification_light",false);
   NotificationCompat.Builder mBuilder;
-  Intent resultIntent=new Intent(this,PostsActivity.class);
+  Intent resultIntent=new Intent(this,NotificationsActivity.class);
   resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
   resultIntent.setAction("android.intent.action.MAIN");
   resultIntent.addCategory("android.intent.category.LAUNCHER");
-  resultIntent.putExtra(NotificationsActivity.FROM_NOTIFICATION_EXTRA,true);
   if (mActiveNotificationsMap.size() <= 1) {
     mBuilder=new NotificationCompat.Builder(this).setSmallIcon(R.drawable.notification_icon).setContentTitle(title).setContentText(message).setTicker(message).setAutoCancel(true).setStyle(new NotificationCompat.BigTextStyle().bigText(message));
     if (note_id != null) {
@@ -61,18 +60,17 @@
     }
     String noteType=extras.getString("type");
     if (noteType != null && noteType.equals("c")) {
-      Intent commentReplyIntent=new Intent(this,PostsActivity.class);
+      Intent commentReplyIntent=new Intent(this,NotificationsActivity.class);
       commentReplyIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
       commentReplyIntent.setAction("android.intent.action.MAIN");
       commentReplyIntent.addCategory("android.intent.category.LAUNCHER");
       commentReplyIntent.addCategory("comment-reply");
-      commentReplyIntent.putExtra(NotificationsActivity.FROM_NOTIFICATION_EXTRA,true);
       commentReplyIntent.putExtra(NotificationsActivity.NOTE_INSTANT_REPLY_EXTRA,true);
       if (note_id != null) {
         commentReplyIntent.putExtra(NotificationsActivity.NOTE_ID_EXTRA,note_id);
       }
       PendingIntent commentReplyPendingIntent=PendingIntent.getActivity(context,0,commentReplyIntent,PendingIntent.FLAG_CANCEL_CURRENT);
-      mBuilder.addAction(R.drawable.ic_action_refresh,context.getText(R.string.reply),commentReplyPendingIntent);
+      mBuilder.addAction(R.drawable.ic_action_reply,context.getText(R.string.reply),commentReplyPendingIntent);
     }
     if (largeIconBitmap != null) {
       mBuilder.setLargeIcon(largeIconBitmap);
@@ -82,7 +80,7 @@
     NotificationCompat.InboxStyle inboxStyle=new NotificationCompat.InboxStyle();
     int noteCtr=1;
     for (    Bundle wpPN : mActiveNotificationsMap.values()) {
-      if (noteCtr > 5)       break;
+      if (noteCtr > mMaxInboxItems)       break;
       if (wpPN.getString("msg") == null)       continue;
       if (wpPN.getString("type") != null && wpPN.getString("type").equals("c")) {
         String pnTitle=StringEscapeUtils.unescapeHtml((wpPN.getString("title")));
@@ -95,8 +93,8 @@
       }
       noteCtr++;
     }
-    if (mActiveNotificationsMap.size() > 5) {
-      inboxStyle.setSummaryText(String.format(getString(R.string.more_notifications),mActiveNotificationsMap.size() - 5));
+    if (mActiveNotificationsMap.size() > mMaxInboxItems) {
+      inboxStyle.setSummaryText(String.format(getString(R.string.more_notifications),mActiveNotificationsMap.size() - mMaxInboxItems));
     }
     String subject=String.format(getString(R.string.new_notifications),mActiveNotificationsMap.size());
     mBuilder=new NotificationCompat.Builder(this).setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.noticon_notification)).setSmallIcon(R.drawable.notification_icon).setContentTitle("WordPress").setContentText(subject).setTicker(message).setAutoCancel(true).setStyle(inboxStyle);
