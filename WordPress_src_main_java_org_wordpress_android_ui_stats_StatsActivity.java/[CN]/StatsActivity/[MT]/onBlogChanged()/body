@@ -2,14 +2,9 @@
   stopStatsService();
   mLocalBlogID=WordPress.getCurrentBlog().getLocalTableBlogId();
   mCurrentTimeframe=StatsTimeframe.DAY;
+  selectTimeframeInActionBar(mCurrentTimeframe);
   scrollToTop();
-  FragmentManager fm=getFragmentManager();
-  FragmentTransaction ft=fm.beginTransaction();
-  StatsAbstractFragment fragment;
-  fragment=StatsAbstractFragment.newInstance(StatsViewType.GRAPH_AND_SUMMARY,mLocalBlogID);
-  ft.replace(R.id.stats_visitors_and_views_container,fragment,StatsVisitorsAndViewsFragment.TAG);
-  fragment=StatsAbstractFragment.newInstance(StatsViewType.TOP_POSTS_AND_PAGES,mLocalBlogID);
-  ft.replace(R.id.stats_top_posts_container,fragment,StatsTopPostsAndPagesFragment.TAG);
+  loadStatsFragments(true);
   mPullToRefreshHelper.setRefreshing(true);
   refreshStats(mCurrentTimeframe);
 }

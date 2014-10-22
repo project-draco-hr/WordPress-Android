@@ -1,0 +1,17 @@
+{
+  HashMap<String,Integer> mapping=new HashMap<String,Integer>(6);
+  final JSONArray fieldsJSON=visitsData.getFieldsJSON();
+  if (visitsData == null || fieldsJSON == null) {
+    return mapping;
+  }
+  try {
+    for (int i=0; i < fieldsJSON.length(); i++) {
+      final String field=fieldsJSON.getString(i);
+      mapping.put(field,new Integer(i));
+    }
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.STATS,this.getClass().getName() + "JSON error",e);
+  }
+  return mapping;
+}
