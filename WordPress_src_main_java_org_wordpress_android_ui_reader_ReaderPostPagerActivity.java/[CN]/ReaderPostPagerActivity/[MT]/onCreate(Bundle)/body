@@ -11,12 +11,10 @@
   }
   mViewPager=(ReaderViewPager)findViewById(R.id.viewpager);
   final String title;
-  final long blogId;
-  final long postId;
   if (savedInstanceState != null) {
     title=savedInstanceState.getString(ReaderConstants.ARG_TITLE);
-    blogId=savedInstanceState.getLong(ReaderConstants.ARG_BLOG_ID);
-    postId=savedInstanceState.getLong(ReaderConstants.ARG_POST_ID);
+    mBlogId=savedInstanceState.getLong(ReaderConstants.ARG_BLOG_ID);
+    mPostId=savedInstanceState.getLong(ReaderConstants.ARG_POST_ID);
     mIsSinglePostView=savedInstanceState.getBoolean(ARG_IS_SINGLE_POST);
     if (savedInstanceState.containsKey(ReaderConstants.ARG_POST_LIST_TYPE)) {
       mPostListType=(ReaderPostListType)savedInstanceState.getSerializable(ReaderConstants.ARG_POST_LIST_TYPE);
@@ -27,8 +25,8 @@
   }
  else {
     title=getIntent().getStringExtra(ReaderConstants.ARG_TITLE);
-    blogId=getIntent().getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
-    postId=getIntent().getLongExtra(ReaderConstants.ARG_POST_ID,0);
+    mBlogId=getIntent().getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
+    mPostId=getIntent().getLongExtra(ReaderConstants.ARG_POST_ID,0);
     mIsSinglePostView=getIntent().getBooleanExtra(ARG_IS_SINGLE_POST,false);
     if (getIntent().hasExtra(ReaderConstants.ARG_POST_LIST_TYPE)) {
       mPostListType=(ReaderPostListType)getIntent().getSerializableExtra(ReaderConstants.ARG_POST_LIST_TYPE);
@@ -40,13 +38,9 @@
   if (mPostListType == null) {
     mPostListType=ReaderPostListType.TAG_FOLLOWED;
   }
- else   if (mPostListType == ReaderPostListType.BLOG_PREVIEW) {
-    mCurrentBlogId=blogId;
-  }
   if (!TextUtils.isEmpty(title)) {
     this.setTitle(title);
   }
-  loadPosts(blogId,postId,false);
   mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
     @Override public void onPageSelected(    int position){
       super.onPageSelected(position);
