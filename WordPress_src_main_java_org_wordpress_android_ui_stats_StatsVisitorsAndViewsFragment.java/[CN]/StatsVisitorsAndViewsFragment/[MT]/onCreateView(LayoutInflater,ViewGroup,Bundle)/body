@@ -1,22 +1,21 @@
 {
   View view=inflater.inflate(R.layout.stats_visitors_and_views_fragment,container,false);
   setRetainInstance(true);
-  TextView titleTextView=(TextView)view.findViewById(R.id.stats_pager_title);
-  titleTextView.setText(getTitle().toUpperCase(Locale.getDefault()));
   mGraphContainer=(LinearLayout)view.findViewById(R.id.stats_bar_chart_fragment_container);
   setupEmptyGraph();
   mRadioGroup=(RadioGroup)view.findViewById(R.id.stats_pager_tabs);
   int dp8=DisplayUtils.dpToPx(view.getContext(),8);
   int dp80=DisplayUtils.dpToPx(view.getContext(),80);
-  for (int i=0; i < titles.length; i++) {
+  for (int i=0; i < overviewItems.length; i++) {
     RadioButton rb=(RadioButton)inflater.inflate(R.layout.stats_radio_button,null,false);
     RadioGroup.LayoutParams params=new RadioGroup.LayoutParams(RadioGroup.LayoutParams.WRAP_CONTENT,RadioGroup.LayoutParams.WRAP_CONTENT);
     rb.setTypeface((TypefaceCache.getTypeface(view.getContext())));
-    params.setMargins(dp8,0,0,0);
+    params.setMargins(0,dp8,0,0);
     rb.setMinimumWidth(dp80);
     rb.setGravity(Gravity.CENTER);
     rb.setLayoutParams(params);
-    rb.setText(titles[i]);
+    rb.setText(overviewItems[i].getLabel());
+    rb.setTag(overviewItems[i]);
     mRadioGroup.addView(rb);
     if (i == 0) {
       rb.setChecked(true);

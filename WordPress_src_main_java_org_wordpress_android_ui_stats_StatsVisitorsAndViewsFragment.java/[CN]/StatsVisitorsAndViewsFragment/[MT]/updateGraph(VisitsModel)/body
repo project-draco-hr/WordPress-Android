@@ -9,49 +9,66 @@
   if (mGraphView != null) {
     barToHighlight=mGraphView.getHighlightBar();
   }
-  String currentField=titles[mSelectedButtonIndex].toLowerCase();
-  HashMap<String,Integer> columnsMapping=getDataModelColumnIndexes(visitsData);
-  int numPoints=Math.min(getNumOfPoints(),dataJSON.length());
-  final String[] horLabels=new String[numPoints];
-  mStatsDate=new String[numPoints];
-  GraphView.GraphViewData[] views=new GraphView.GraphViewData[numPoints];
-  int currentPointIndex=numPoints - 1;
-  for (int i=dataJSON.length() - 1; i >= 0 && currentPointIndex >= 0; i--) {
+  final SummaryModel[] dataToShowOnGraph=getDataToShowOnGraph(visitsData);
+  final String[] horLabels=new String[dataToShowOnGraph.length];
+  mStatsDate=new String[dataToShowOnGraph.length];
+  GraphView.GraphViewData[] views=new GraphView.GraphViewData[dataToShowOnGraph.length];
+  boolean isEmptyGraph=true;
+  for (int i=0; i < dataToShowOnGraph.length; i++) {
     int currentItemValue=0;
-    try {
-      JSONArray currentDayData=dataJSON.getJSONArray(i);
-      currentItemValue=currentDayData.getInt(columnsMapping.get(currentField).intValue());
-      views[currentPointIndex]=new GraphView.GraphViewData(currentPointIndex,currentItemValue);
-      String currentItemStatsDate=currentDayData.getString(columnsMapping.get("period").intValue());
-      horLabels[currentPointIndex]=getDateLabel(currentItemStatsDate);
-      mStatsDate[currentPointIndex]=currentItemStatsDate;
-    }
- catch (    JSONException e) {
-      AppLog.e(AppLog.T.STATS,this.getClass().getName() + "JSON error",e);
-    }
-    currentPointIndex--;
-  }
-  mCurrentSeriesOnScreen=new GraphViewSeries(views);
-  mCurrentSeriesOnScreen.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views);
-  mCurrentSeriesOnScreen.getStyle().padding=DisplayUtils.dpToPx(getActivity(),1);
-  if (mGraphContainer.getChildCount() >= 1 && mGraphContainer.getChildAt(0) instanceof GraphView) {
-    mGraphView=(StatsBarGraph)mGraphContainer.getChildAt(0);
-  }
+switch (overviewItems[mSelectedButtonIndex]) {
+case VIEWS:
+      currentItemValue=dataToShowOnGraph[i].getViews();
+    break;
+case VISITORS:
+  currentItemValue=dataToShowOnGraph[i].getVisitors();
+break;
+case REBLOGS:
+currentItemValue=dataToShowOnGraph[i].getReblogs();
+break;
+case LIKES:
+currentItemValue=dataToShowOnGraph[i].getLikes();
+break;
+case COMMENTS:
+currentItemValue=dataToShowOnGraph[i].getComments();
+break;
+}
+views[i]=new GraphView.GraphViewData(i,currentItemValue);
+String currentItemStatsDate=dataToShowOnGraph[i].getPeriod();
+horLabels[i]=getDateLabel(currentItemStatsDate);
+mStatsDate[i]=currentItemStatsDate;
+if (currentItemValue > 0) {
+isEmptyGraph=false;
+}
+}
+mCurrentSeriesOnScreen=new GraphViewSeries(views);
+mCurrentSeriesOnScreen.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views);
+mCurrentSeriesOnScreen.getStyle().padding=DisplayUtils.dpToPx(getActivity(),1);
+if (isEmptyGraph) {
+setupEmptyGraph();
+}
  else {
-    mGraphContainer.removeAllViews();
-    mGraphView=new StatsBarGraph(getActivity());
-    mGraphContainer.addView(mGraphView);
-  }
-  if (mGraphView != null) {
-    mGraphView.removeAllSeries();
-    mGraphView.addSeries(mCurrentSeriesOnScreen);
-    mGraphView.getGraphViewStyle().setNumHorizontalLabels(getNumOfHorizontalLabels(numPoints));
-    mGraphView.setHorizontalLabels(horLabels);
-  }
-  if (barToHighlight != -1) {
-    mGraphView.highlightBar(barToHighlight);
-  }
+if (mGraphContainer.getChildCount() >= 1 && mGraphContainer.getChildAt(0) instanceof GraphView) {
+mGraphView=(StatsBarGraph)mGraphContainer.getChildAt(0);
+}
  else {
-    mGraphView.highlightBar(numPoints - 1);
-  }
+mGraphContainer.removeAllViews();
+mGraphView=new StatsBarGraph(getActivity());
+mGraphContainer.addView(mGraphView);
+}
+if (mGraphView != null) {
+mGraphView.removeAllSeries();
+mGraphView.addSeries(mCurrentSeriesOnScreen);
+mGraphView.getGraphViewStyle().setNumHorizontalLabels(getNumOfHorizontalLabels(dataToShowOnGraph.length));
+mGraphView.setHorizontalLabels(horLabels);
+mGraphView.setGestureListener(this);
+}
+if (barToHighlight != -1) {
+mGraphView.highlightBar(barToHighlight);
+}
+ else {
+mGraphView.highlightBar(dataToShowOnGraph.length - 1);
+}
+}
+updateOverviewAreaBelowTheGraph(barToHighlight != -1 ? barToHighlight : dataToShowOnGraph.length - 1);
 }

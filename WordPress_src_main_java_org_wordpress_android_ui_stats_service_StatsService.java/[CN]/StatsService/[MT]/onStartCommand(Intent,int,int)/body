@@ -9,15 +9,21 @@
   if (intent.hasExtra(ARG_PERIOD)) {
     period=(StatsTimeframe)intent.getSerializableExtra(ARG_PERIOD);
   }
-  if (mServiceBlogId == null) {
-    startTasks(blogId,period,startId);
+  String requestedDate=intent.getStringExtra(ARG_DATE);
+  if (requestedDate == null) {
+    AppLog.w(T.STATS,"StatsService is started with a NULL date on this blogID - " + mServiceBlogId + ". Using current date!!!");
+    requestedDate=StatsUtils.getCurrentDate();
   }
- else   if (blogId.equals(mServiceBlogId) && mServiceRequestedTimeframe == period) {
-    AppLog.i(T.STATS,"StatsService is already running on this blogID - " + mServiceBlogId);
+  boolean updateGraph=intent.getBooleanExtra(ARG_UPDATE_GRAPH,true);
+  if (mServiceBlogId == null) {
+    startTasks(blogId,period,requestedDate,updateGraph,startId);
+  }
+ else   if (blogId.equals(mServiceBlogId) && mServiceRequestedTimeframe == period && requestedDate.equals(mServiceRequestedDate)) {
+    AppLog.i(T.STATS,"StatsService is already running on this blogID - " + mServiceBlogId + " for the same period and the same date.");
   }
  else {
     stopRefresh();
-    startTasks(blogId,period,startId);
+    startTasks(blogId,period,requestedDate,updateGraph,startId);
   }
   this.mServiceStartId=startId;
   return START_NOT_STICKY;

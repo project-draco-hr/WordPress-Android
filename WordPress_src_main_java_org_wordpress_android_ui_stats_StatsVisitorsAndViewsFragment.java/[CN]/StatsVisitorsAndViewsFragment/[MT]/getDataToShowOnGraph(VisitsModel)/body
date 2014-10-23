@@ -1,0 +1,37 @@
+{
+  final JSONArray dataJSON=visitsData.getDataJSON();
+  if (dataJSON == null) {
+    return null;
+  }
+  if (dataJSON.length() == 0) {
+    return new SummaryModel[0];
+  }
+  HashMap<String,Integer> columnsMapping=getDataModelColumnIndexes(visitsData);
+  int viewsColumnIndex=columnsMapping.get(OverviewLabel.VIEWS.getRestApiFieldName()).intValue();
+  int visitorsColumnIndex=columnsMapping.get(OverviewLabel.VISITORS.getRestApiFieldName()).intValue();
+  int likesColumnIndex=columnsMapping.get(OverviewLabel.LIKES.getRestApiFieldName()).intValue();
+  int reblogsColumnIndex=columnsMapping.get(OverviewLabel.REBLOGS.getRestApiFieldName()).intValue();
+  int commentsColumnIndex=columnsMapping.get(OverviewLabel.COMMENTS.getRestApiFieldName()).intValue();
+  int periodColumnIndex=columnsMapping.get("period").intValue();
+  int numPoints=Math.min(getNumOfPoints(),dataJSON.length());
+  int currentPointIndex=numPoints - 1;
+  SummaryModel[] summaryModels=new SummaryModel[numPoints];
+  for (int i=dataJSON.length() - 1; i >= 0 && currentPointIndex >= 0; i--) {
+    try {
+      JSONArray currentDayData=dataJSON.getJSONArray(i);
+      SummaryModel currentSummaryModel=new SummaryModel();
+      currentSummaryModel.setPeriod(currentDayData.getString(periodColumnIndex));
+      currentSummaryModel.setViews(currentDayData.getInt(viewsColumnIndex));
+      currentSummaryModel.setVisitors(currentDayData.getInt(visitorsColumnIndex));
+      currentSummaryModel.setComments(currentDayData.getInt(commentsColumnIndex));
+      currentSummaryModel.setLikes(currentDayData.getInt(likesColumnIndex));
+      currentSummaryModel.setReblogs(currentDayData.getInt(reblogsColumnIndex));
+      summaryModels[currentPointIndex]=currentSummaryModel;
+    }
+ catch (    JSONException e) {
+      AppLog.e(AppLog.T.STATS,"Cannot draw the bar at index " + currentPointIndex,e);
+    }
+    currentPointIndex--;
+  }
+  return summaryModels;
+}

@@ -1,0 +1,38 @@
+{
+  AppLog.e(AppLog.T.STATS," Tapped bar date " + mStatsDate[tappedBar]);
+  updateOverviewAreaBelowTheGraph(tappedBar);
+  String date=mStatsDate[tappedBar];
+  if (date == null) {
+    AppLog.w(AppLog.T.STATS,"A call to update stats is made but a null date is received!!");
+    return;
+  }
+  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+    return;
+  }
+  String calculatedDate=null;
+switch (getTimeframe()) {
+case DAY:
+    calculatedDate=date;
+  break;
+case WEEK:
+calculatedDate=StatsUtils.parseDate(date,"yyyy'W'MM'W'dd","yyyy-MM-dd");
+break;
+case MONTH:
+calculatedDate=StatsUtils.parseDate(date,"yyyy-MM","yyyy-MM-dd");
+break;
+case YEAR:
+calculatedDate=date;
+break;
+}
+if (calculatedDate == null) {
+AppLog.w(AppLog.T.STATS,"A call to update stats is made but date received cannot be parsed!! " + date);
+return;
+}
+final String blogId=StatsUtils.getBlogId(getLocalTableBlogID());
+Intent intent=new Intent(getActivity(),StatsService.class);
+intent.putExtra(StatsService.ARG_BLOG_ID,blogId);
+intent.putExtra(StatsService.ARG_PERIOD,getTimeframe());
+intent.putExtra(StatsService.ARG_DATE,date);
+intent.putExtra(StatsService.ARG_UPDATE_GRAPH,false);
+getActivity().startService(intent);
+}
