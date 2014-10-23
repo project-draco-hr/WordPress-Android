@@ -1,0 +1,21 @@
+{
+  if (!isUserDataValid()) {
+    return;
+  }
+  LoginAndFetchBlogListAbstract loginAndFetchBlogList;
+  mUsername=EditTextUtils.getText(mUsernameEditText).trim();
+  mPassword=EditTextUtils.getText(mPasswordEditText).trim();
+  if (isWPComLogin()) {
+    loginAndFetchBlogList=new LoginAndFetchBlogListWPCom(mUsername,mPassword);
+  }
+ else {
+    String url=EditTextUtils.getText(mUrlEditText).trim();
+    LoginAndFecthBlogListWPOrg loginAndFecthBlogListWPOrg=new LoginAndFecthBlogListWPOrg(mUsername,mPassword,url);
+    if (mHttpUsername != null && mHttpPassword != null) {
+      loginAndFecthBlogListWPOrg.setHttpCredentials(mHttpUsername,mHttpPassword);
+    }
+    loginAndFetchBlogList=loginAndFecthBlogListWPOrg;
+  }
+  startProgress(isWPComLogin() ? getString(R.string.signing_in) : getString(R.string.connecting_wpcom));
+  loginAndFetchBlogList.execute(signInCallback);
+}
