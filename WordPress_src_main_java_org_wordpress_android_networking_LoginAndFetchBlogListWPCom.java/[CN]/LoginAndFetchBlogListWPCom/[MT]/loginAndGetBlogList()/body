@@ -1,0 +1,43 @@
+{
+  WordPress.requestQueue.add(makeOAuthRequest(mUsername,mPassword,new Oauth.Listener(){
+    @SuppressLint("CommitPrefEdits") @Override public void onResponse(    final Oauth.Token token){
+      SimperiumUtils.configureSimperium(WordPress.getContext(),token.toString());
+      SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
+      SharedPreferences.Editor editor=settings.edit();
+      editor.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mUsername);
+      editor.putString(WordPress.WPCOM_PASSWORD_PREFERENCE,mPassword);
+      editor.commit();
+      new Thread(){
+        @Override public void run(){
+          mSetupBlog.getBlogList(mCallback);
+        }
+      }
+.start();
+    }
+  }
+,new Oauth.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      int errorMsgId=R.string.nux_cannot_log_in;
+      JSONObject errorObject=VolleyUtils.volleyErrorToJSON(volleyError);
+      if (errorObject != null) {
+        try {
+          String error=(String)errorObject.get("error");
+          String errorDescription=(String)errorObject.get("error_description");
+          if (error != null && error.equals("invalid_request")) {
+            if (errorDescription.contains("Incorrect username or password.")) {
+              errorMsgId=R.string.username_or_password_incorrect;
+            }
+            if (errorDescription.contains("This account has two step authentication enabled.")) {
+              errorMsgId=R.string.account_two_step_auth_enabled;
+            }
+          }
+        }
+ catch (        JSONException e) {
+          AppLog.e(T.NUX,e);
+        }
+      }
+      mCallback.onError(errorMsgId,false,false);
+    }
+  }
+));
+}
