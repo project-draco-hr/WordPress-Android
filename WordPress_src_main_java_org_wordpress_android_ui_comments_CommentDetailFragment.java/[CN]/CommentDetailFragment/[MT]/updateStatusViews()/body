@@ -46,7 +46,9 @@ commentActionCount++;
 setModerateButtonForStatus(mComment.getStatusEnum());
 mBtnModerateComment.setOnClickListener(new View.OnClickListener(){
 @Override public void onClick(View v){
-if (!hasComment()) return;
+if (!hasComment() || !isAdded() || !NetworkUtils.checkConnection(getActivity())) {
+return;
+}
 CommentStatus newStatus=CommentStatus.APPROVED;
 if (mComment.getStatusEnum() == CommentStatus.APPROVED) {
 newStatus=CommentStatus.UNAPPROVED;
