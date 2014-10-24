@@ -1,18 +1,54 @@
 {
-  final SummaryModel[] dataToShowOnGraph=getDataToShowOnGraph(mVisitsData);
-  SummaryModel modelTapped=dataToShowOnGraph[itemPosition];
-  for (int i=0; i < mRadioGroup.getChildCount(); i++) {
-    View o=mRadioGroup.getChildAt(i);
-    if (o instanceof RadioButton) {
-      RadioButton currentBtm=(RadioButton)o;
-      OverviewLabel overviewItem=(OverviewLabel)currentBtm.getTag();
+  final VisitModel[] dataToShowOnGraph=getDataToShowOnGraph(mVisitsData);
+  String date=mStatsDate[itemPosition];
+  if (date == null) {
+    AppLog.w(AppLog.T.STATS,"A call to update stats is made but a null date is received!!");
+    return;
+  }
+switch (getTimeframe()) {
+case DAY:
+    mDateTextView.setText(StatsUtils.parseDate(date,"yyyy-MM-dd","MMMM d"));
+  break;
+case WEEK:
+try {
+  SimpleDateFormat sdf;
+  Calendar c;
+  final Date parsedDate;
+  sdf=new SimpleDateFormat("yyyy'W'MM'W'dd");
+  parsedDate=sdf.parse(date);
+  c=Calendar.getInstance();
+  c.setTime(parsedDate);
+  c.set(Calendar.DAY_OF_WEEK,c.getFirstDayOfWeek() + 1);
+  String startDateLabel=StatsUtils.msToString(c.getTimeInMillis(),"MMMM dd");
+  c.add(Calendar.DAY_OF_WEEK,+6);
+  String endDateLabel=StatsUtils.msToString(c.getTimeInMillis(),"MMMM dd");
+  mDateTextView.setText(startDateLabel + " - " + endDateLabel);
+}
+ catch (ParseException e) {
+  AppLog.e(AppLog.T.UTILS,e);
+  mDateTextView.setText("");
+}
+break;
+case MONTH:
+mDateTextView.setText(StatsUtils.msToString(StatsUtils.toMs(date),"MMMM"));
+break;
+case YEAR:
+mDateTextView.setText(StatsUtils.parseDate(date,"yyyy-MM-dd","yyyy"));
+break;
+}
+VisitModel modelTapped=dataToShowOnGraph[itemPosition];
+for (int i=0; i < mRadioGroup.getChildCount(); i++) {
+View o=mRadioGroup.getChildAt(i);
+if (o instanceof RadioButton) {
+RadioButton currentBtm=(RadioButton)o;
+OverviewLabel overviewItem=(OverviewLabel)currentBtm.getTag();
 switch (overviewItem) {
 case VIEWS:
-        currentBtm.setText(overviewItem.getLabel() + " - " + modelTapped.getViews());
-      break;
+currentBtm.setText(overviewItem.getLabel() + " - " + modelTapped.getViews());
+break;
 case VISITORS:
-    currentBtm.setText(overviewItem.getLabel() + " - " + modelTapped.getVisitors());
-  break;
+currentBtm.setText(overviewItem.getLabel() + " - " + modelTapped.getVisitors());
+break;
 case REBLOGS:
 currentBtm.setText(overviewItem.getLabel() + " - " + modelTapped.getReblogs());
 break;
