@@ -21,9 +21,7 @@ statusTextResId=R.string.comment_status_trash;
 statusColor=getActivity().getResources().getColor(R.color.comment_status_spam);
 break;
 }
-int commentActionCount=0;
 if (mNote != null && canLike()) {
-commentActionCount++;
 mBtnLikeComment.setVisibility(View.VISIBLE);
 toggleLikeButton(mNote.hasLikedComment());
 }
@@ -42,7 +40,6 @@ AniUtils.fadeIn(mTxtStatus);
 mTxtStatus.setVisibility(View.GONE);
 }
 if (canModerate()) {
-commentActionCount++;
 setModerateButtonForStatus(mComment.getStatusEnum());
 mBtnModerateComment.setOnClickListener(new View.OnClickListener(){
 @Override public void onClick(View v){
@@ -64,7 +61,6 @@ mBtnModerateComment.setVisibility(View.VISIBLE);
 mBtnModerateComment.setVisibility(View.GONE);
 }
 if (canMarkAsSpam()) {
-commentActionCount++;
 mBtnSpamComment.setVisibility(View.VISIBLE);
 if (mComment.getStatusEnum() == CommentStatus.SPAM) {
 mBtnSpamComment.setText(R.string.mnu_comment_unspam);
@@ -77,30 +73,10 @@ mBtnSpamComment.setText(R.string.mnu_comment_spam);
 mBtnSpamComment.setVisibility(View.GONE);
 }
 if (canTrash()) {
-commentActionCount++;
 mBtnTrashComment.setVisibility(View.VISIBLE);
 }
  else {
 mBtnTrashComment.setVisibility(View.GONE);
-}
-if (canEdit()) {
-commentActionCount++;
-mBtnEditComment.setVisibility(View.VISIBLE);
-}
- else {
-mBtnEditComment.setVisibility(View.GONE);
-}
-if (commentActionCount > 3) {
-if (commentActionCount >= 4 && canEdit()) {
-mBtnEditComment.setVisibility(View.GONE);
-}
-if (commentActionCount == 5 && canMarkAsSpam()) {
-mBtnSpamComment.setVisibility(View.GONE);
-}
-mBtnMore.setVisibility(View.VISIBLE);
-}
- else {
-mBtnMore.setVisibility(View.GONE);
 }
 mLayoutButtons.setVisibility(View.VISIBLE);
 }
