@@ -5,7 +5,8 @@
     Object[] userBlogs=(Object[])client.call("wp.getUsersBlogs",params);
     if (userBlogs == null) {
       mErrorMsgId=R.string.xmlrpc_error;
-      return null;
+      callback.onError(mErrorMsgId,false,false);
+      return;
     }
     Arrays.sort(userBlogs,BlogUtils.BlogNameComparator);
     List<Map<String,Object>> userBlogList=new ArrayList<Map<String,Object>>();
@@ -40,5 +41,5 @@ catch (  IOException e) {
     AppLog.e(T.NUX,"Exception received from XMLRPC call wp.getUsersBlogs",e);
     mErrorMsgId=R.string.no_site_error;
   }
-  return null;
+  callback.onError(mErrorMsgId,isHttpAuthRequired(),isErroneousSslCertificates());
 }
