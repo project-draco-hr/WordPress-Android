@@ -2,7 +2,7 @@
   final VisitModel[] dataToShowOnGraph=getDataToShowOnGraph(mVisitsData);
   String date=mStatsDate[itemPosition];
   if (date == null) {
-    AppLog.w(AppLog.T.STATS,"A call to update stats is made but a null date is received!!");
+    AppLog.w(AppLog.T.STATS,"Cannot update the area below the graph if a null date is passed!!");
     return;
   }
 switch (getTimeframe()) {
@@ -18,7 +18,8 @@ try {
   parsedDate=sdf.parse(date);
   c=Calendar.getInstance();
   c.setTime(parsedDate);
-  c.set(Calendar.DAY_OF_WEEK,c.getFirstDayOfWeek() + 1);
+  c.setFirstDayOfWeek(Calendar.MONDAY);
+  c.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY);
   String startDateLabel=StatsUtils.msToString(c.getTimeInMillis(),"MMMM dd");
   c.add(Calendar.DAY_OF_WEEK,+6);
   String endDateLabel=StatsUtils.msToString(c.getTimeInMillis(),"MMMM dd");

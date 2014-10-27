@@ -1,5 +1,5 @@
 {
-  AppLog.e(AppLog.T.STATS," Tapped bar date " + mStatsDate[tappedBar]);
+  AppLog.d(AppLog.T.STATS," Tapped bar date " + mStatsDate[tappedBar]);
   updateOverviewAreaBelowTheGraph(tappedBar);
   if (!NetworkUtils.isNetworkAvailable(getActivity())) {
     return;
@@ -12,7 +12,8 @@
   String calculatedDate=null;
   try {
     SimpleDateFormat sdf;
-    Calendar c;
+    Calendar c=Calendar.getInstance();
+    c.setFirstDayOfWeek(Calendar.MONDAY);
     final Date parsedDate;
 switch (getTimeframe()) {
 case DAY:
@@ -21,16 +22,14 @@ case DAY:
 case WEEK:
   sdf=new SimpleDateFormat("yyyy'W'MM'W'dd");
 parsedDate=sdf.parse(date);
-c=Calendar.getInstance();
 c.setTime(parsedDate);
-c.set(Calendar.DAY_OF_WEEK,c.getFirstDayOfWeek());
-c.add(Calendar.DAY_OF_WEEK,+7);
+c.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY);
+c.add(Calendar.DAY_OF_WEEK,+6);
 calculatedDate=StatsUtils.msToString(c.getTimeInMillis(),"yyyy-MM-dd");
 break;
 case MONTH:
 sdf=new SimpleDateFormat("yyyy-MM");
 parsedDate=sdf.parse(date);
-c=Calendar.getInstance();
 c.setTime(parsedDate);
 c.set(Calendar.DAY_OF_MONTH,c.getActualMaximum(Calendar.DAY_OF_MONTH));
 calculatedDate=StatsUtils.msToString(c.getTimeInMillis(),"yyyy-MM-dd");
@@ -38,7 +37,6 @@ break;
 case YEAR:
 sdf=new SimpleDateFormat("yyyy-MM-dd");
 parsedDate=sdf.parse(date);
-c=Calendar.getInstance();
 c.setTime(parsedDate);
 c.set(Calendar.MONTH,Calendar.DECEMBER);
 c.set(Calendar.DAY_OF_MONTH,31);

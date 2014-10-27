@@ -6,13 +6,27 @@
   if (dataJSON.length() == 0) {
     return new VisitModel[0];
   }
-  HashMap<String,Integer> columnsMapping=getDataModelColumnIndexes(visitsData);
-  int viewsColumnIndex=columnsMapping.get(OverviewLabel.VIEWS.getRestApiFieldName()).intValue();
-  int visitorsColumnIndex=columnsMapping.get(OverviewLabel.VISITORS.getRestApiFieldName()).intValue();
-  int likesColumnIndex=columnsMapping.get(OverviewLabel.LIKES.getRestApiFieldName()).intValue();
-  int reblogsColumnIndex=columnsMapping.get(OverviewLabel.REBLOGS.getRestApiFieldName()).intValue();
-  int commentsColumnIndex=columnsMapping.get(OverviewLabel.COMMENTS.getRestApiFieldName()).intValue();
-  int periodColumnIndex=columnsMapping.get("period").intValue();
+  HashMap<String,Integer> columnsMapping=new HashMap<String,Integer>(6);
+  final JSONArray fieldsJSON=visitsData.getFieldsJSON();
+  if (visitsData == null || fieldsJSON == null) {
+    return new VisitModel[0];
+  }
+  try {
+    for (int i=0; i < fieldsJSON.length(); i++) {
+      final String field=fieldsJSON.getString(i);
+      columnsMapping.put(field,i);
+    }
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.STATS,"Cannot read the fields indexes from the JSON response",e);
+    return new VisitModel[0];
+  }
+  int viewsColumnIndex=columnsMapping.get(OverviewLabel.VIEWS.getRestApiFieldName());
+  int visitorsColumnIndex=columnsMapping.get(OverviewLabel.VISITORS.getRestApiFieldName());
+  int likesColumnIndex=columnsMapping.get(OverviewLabel.LIKES.getRestApiFieldName());
+  int reblogsColumnIndex=columnsMapping.get(OverviewLabel.REBLOGS.getRestApiFieldName());
+  int commentsColumnIndex=columnsMapping.get(OverviewLabel.COMMENTS.getRestApiFieldName());
+  int periodColumnIndex=columnsMapping.get("period");
   int numPoints=Math.min(getNumOfPoints(),dataJSON.length());
   int currentPointIndex=numPoints - 1;
   VisitModel[] visitModels=new VisitModel[numPoints];

@@ -5,18 +5,15 @@
     setupEmptyGraph();
     return;
   }
-  int barToHighlight=-1;
-  if (mGraphView != null) {
-    barToHighlight=mGraphView.getHighlightBar();
-  }
   final VisitModel[] dataToShowOnGraph=getDataToShowOnGraph(visitsData);
   final String[] horLabels=new String[dataToShowOnGraph.length];
   mStatsDate=new String[dataToShowOnGraph.length];
   GraphView.GraphViewData[] views=new GraphView.GraphViewData[dataToShowOnGraph.length];
   boolean isEmptyGraph=true;
+  OverviewLabel selectedStatsType=overviewItems[mSelectedButtonIndex];
   for (int i=0; i < dataToShowOnGraph.length; i++) {
     int currentItemValue=0;
-switch (overviewItems[mSelectedButtonIndex]) {
+switch (selectedStatsType) {
 case VIEWS:
       currentItemValue=dataToShowOnGraph[i].getViews();
     break;
@@ -62,12 +59,12 @@ mGraphView.addSeries(mCurrentSeriesOnScreen);
 mGraphView.getGraphViewStyle().setNumHorizontalLabels(dataToShowOnGraph.length);
 mGraphView.setHorizontalLabels(horLabels);
 mGraphView.setGestureListener(this);
-}
 if (barToHighlight != -1) {
 mGraphView.highlightBar(barToHighlight);
 }
  else {
 mGraphView.highlightBar(dataToShowOnGraph.length - 1);
+}
 }
 }
 int barSelectedOnGraph=barToHighlight != -1 ? barToHighlight : dataToShowOnGraph.length - 1;
