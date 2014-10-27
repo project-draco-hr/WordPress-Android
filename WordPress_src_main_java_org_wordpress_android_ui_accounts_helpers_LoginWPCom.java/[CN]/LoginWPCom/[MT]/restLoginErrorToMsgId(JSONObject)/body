@@ -1,0 +1,21 @@
+{
+  int errorMsgId=org.wordpress.android.R.string.nux_cannot_log_in;
+  if (errorObject != null) {
+    try {
+      String error=(String)errorObject.get("error");
+      String errorDescription=(String)errorObject.get("error_description");
+      if (error != null && error.equals("invalid_request")) {
+        if (errorDescription.contains("Incorrect username or password.")) {
+          errorMsgId=org.wordpress.android.R.string.username_or_password_incorrect;
+        }
+        if (errorDescription.contains("This account has two step authentication enabled.")) {
+          errorMsgId=org.wordpress.android.R.string.account_two_step_auth_enabled;
+        }
+      }
+    }
+ catch (    JSONException e) {
+      AppLog.e(T.NUX,e);
+    }
+  }
+  return errorMsgId;
+}
