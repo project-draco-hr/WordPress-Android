@@ -1,0 +1,41 @@
+{
+  if (jsonObject == null) {
+    if (resultListener != null) {
+      resultListener.onUpdateResult(UpdateResult.FAILED);
+    }
+    return;
+  }
+  final Handler handler=new Handler();
+  new Thread(){
+    @Override public void run(){
+      ReaderPost updatedPost=ReaderPost.fromJson(jsonObject);
+      boolean hasChanges=!originalPost.isSamePost(updatedPost);
+      if (hasChanges) {
+        AppLog.d(T.READER,"post updated");
+        if (originalPost.hasFeaturedImage()) {
+          updatedPost.setFeaturedImage(originalPost.getFeaturedImage());
+        }
+        if (originalPost.hasFeaturedVideo()) {
+          updatedPost.setFeaturedVideo(originalPost.getFeaturedVideo());
+          updatedPost.isVideoPress=originalPost.isVideoPress;
+        }
+        updatedPost.timestamp=originalPost.timestamp;
+        updatedPost.setPublished(originalPost.getPublished());
+        ReaderPostTable.addOrUpdatePost(updatedPost);
+      }
+      if (handlePostLikes(updatedPost,jsonObject)) {
+        hasChanges=true;
+      }
+      if (resultListener != null) {
+        final UpdateResult result=(hasChanges ? UpdateResult.CHANGED : UpdateResult.UNCHANGED);
+        handler.post(new Runnable(){
+          public void run(){
+            resultListener.onUpdateResult(result);
+          }
+        }
+);
+      }
+    }
+  }
+.start();
+}
