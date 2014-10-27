@@ -1,6 +1,6 @@
 {
   if (listener == null) {
-    throw new IllegalArgumentException("ImageScanListener is required");
+    throw new IllegalArgumentException("HtmlScannerListener is required");
   }
   if (!mContentContainsImages) {
     listener.onScanCompleted();
@@ -9,9 +9,9 @@
   Matcher imgMatcher=IMG_TAG_PATTERN.matcher(mContent);
   while (imgMatcher.find()) {
     String imageTag=mContent.substring(imgMatcher.start(),imgMatcher.end());
-    String imageUrl=getSrcAttrValue(imageTag);
+    String imageUrl=ReaderHtmlUtils.getSrcAttrValue(imageTag);
     if (!TextUtils.isEmpty(imageUrl)) {
-      listener.onImageFound(imageTag,imageUrl,imgMatcher.start(),imgMatcher.end());
+      listener.onTagFound(imageTag,imageUrl,imgMatcher.start(),imgMatcher.end());
     }
   }
   listener.onScanCompleted();
