@@ -1,0 +1,20 @@
+{
+  WordPress.getRestClientUtils().get("me/sites",new Listener(){
+    @Override public void onResponse(    JSONObject response){
+      if (response != null) {
+        List<Map<String,Object>> userBlogListReceiver=convertJSONObjectToSiteList(response,false);
+        callback.onSuccess(userBlogListReceiver);
+      }
+ else {
+        callback.onSuccess(null);
+      }
+    }
+  }
+,new ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      JSONObject errorObject=VolleyUtils.volleyErrorToJSON(volleyError);
+      callback.onError(LoginAndFetchBlogListWPCom.restLoginErrorToMsgId(errorObject),false,false);
+    }
+  }
+);
+}
