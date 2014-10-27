@@ -7,11 +7,6 @@
     finish();
     return;
   }
-  Bundle extras=getIntent().getExtras();
-  if (extras != null && extras.getBoolean(NotificationsActivity.FROM_NOTIFICATION_EXTRA)) {
-    startNotificationsActivity(extras);
-    return;
-  }
   if (WordPress.shouldRestoreSelectedActivity && WordPress.getCurrentBlog() != null && !(this instanceof PagesActivity)) {
     WordPress.shouldRestoreSelectedActivity=false;
     ActivityId lastActivity=ActivityId.getActivityIdFromName(AppPrefs.getLastActivityStr());
@@ -34,6 +29,7 @@
   FragmentManager fm=getFragmentManager();
   fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
   mPostList=(PostsListFragment)fm.findFragmentById(R.id.postList);
+  Bundle extras=getIntent().getExtras();
   if (extras != null) {
     mIsPage=extras.getBoolean(EXTRA_VIEW_PAGES);
     showErrorDialogIfNeeded(extras);
