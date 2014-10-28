@@ -1,0 +1,22 @@
+{
+  if (mActivityRef.get() == null) {
+    return;
+  }
+  mIsUpdatingStats=false;
+  mPullToRefreshHelper.setRefreshing(false);
+  AppLog.d(AppLog.T.STATS,"The REST response: " + response.toString());
+  mRestResponse=response.toString();
+  mRestResponseParsed=new PostViewsModel(response);
+  ThreadPoolExecutor parseResponseExecutor=(ThreadPoolExecutor)Executors.newFixedThreadPool(1);
+  parseResponseExecutor.submit(new Thread(){
+    @Override public void run(){
+      final boolean post=mHandler.post(new Runnable(){
+        @Override public void run(){
+          updateGraph(-1);
+        }
+      }
+);
+    }
+  }
+);
+}

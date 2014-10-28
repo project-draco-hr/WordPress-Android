@@ -5,10 +5,22 @@
     StatsViewHolder viewHolder=new StatsViewHolder(rowView);
     rowView.setTag(viewHolder);
   }
-  TopPostModel currentRowData=list.get(position);
+  final TopPostModel currentRowData=list.get(position);
   StatsViewHolder holder=(StatsViewHolder)rowView.getTag();
   holder.setEntryTextOrLink(currentRowData.getUrl(),currentRowData.getTitle());
   holder.totalsTextView.setText(FormatUtils.formatDecimal(currentRowData.getViews()));
+  holder.totalsTextView.setPaintFlags(holder.totalsTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+  holder.totalsTextView.setTextColor(getResources().getColor(R.color.wordpress_blue));
+  holder.totalsTextView.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View view){
+      AppLog.w(AppLog.T.STATS,currentRowData.getPostId() + "");
+      Intent statsPostViewIntent=new Intent(getActivity(),StatsSinglePostDetailsActivity.class);
+      statsPostViewIntent.putExtra(StatsActivity.ARG_LOCAL_TABLE_BLOG_ID,getLocalTableBlogID());
+      statsPostViewIntent.putExtra(StatsSinglePostDetailsActivity.ARG_REMOTE_POST_ID,currentRowData.getPostId());
+      getActivity().startActivity(statsPostViewIntent);
+    }
+  }
+);
   holder.networkImageView.setVisibility(View.GONE);
   return rowView;
 }

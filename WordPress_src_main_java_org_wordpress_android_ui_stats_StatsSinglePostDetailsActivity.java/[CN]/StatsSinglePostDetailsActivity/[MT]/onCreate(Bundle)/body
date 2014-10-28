@@ -1,0 +1,42 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.stats_activity_details);
+  if (savedInstanceState == null) {
+  }
+  ActionBar actionBar=getActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
+  mPullToRefreshHelper=new PullToRefreshHelper(this,(PullToRefreshLayout)findViewById(R.id.ptr_layout),new PullToRefreshHelper.RefreshListener(){
+    @Override public void onRefreshStarted(    View view){
+      if (!NetworkUtils.checkConnection(getBaseContext())) {
+        mPullToRefreshHelper.setRefreshing(false);
+        return;
+      }
+      refreshStats();
+    }
+  }
+);
+  mGraphContainer=(LinearLayout)findViewById(R.id.stats_bar_chart_fragment_container);
+  mWholeResponse=(TextView)findViewById(R.id.stats_all_response);
+  if (savedInstanceState != null) {
+    mLocalBlogID=savedInstanceState.getInt(StatsActivity.ARG_LOCAL_TABLE_BLOG_ID,-1);
+    mRemotePostID=savedInstanceState.getString(ARG_REMOTE_POST_ID,null);
+    mRestResponse=savedInstanceState.getString(ARG_REST_RESPONSE,null);
+  }
+ else   if (getIntent() != null) {
+    Bundle extras=getIntent().getExtras();
+    mLocalBlogID=extras.getInt(StatsActivity.ARG_LOCAL_TABLE_BLOG_ID,-1);
+    mRemotePostID=extras.getString(ARG_REMOTE_POST_ID,null);
+    mRestResponse=extras.getString(ARG_REST_RESPONSE,null);
+  }
+  setTitle(getString(R.string.stats));
+  setupEmptyGraph();
+  if (mRestResponse == null) {
+    refreshStats();
+  }
+ else {
+    mRestResponseParsed=new PostViewsModel(mRestResponse);
+    updateGraph(-1);
+  }
+}

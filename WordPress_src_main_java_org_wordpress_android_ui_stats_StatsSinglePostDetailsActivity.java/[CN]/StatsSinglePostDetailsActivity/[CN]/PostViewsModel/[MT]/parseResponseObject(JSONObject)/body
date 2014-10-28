@@ -1,0 +1,42 @@
+{
+  try {
+    JSONArray dataJSON=response.getJSONArray("data");
+    if (dataJSON != null) {
+      HashMap<String,Integer> columnsMapping=new HashMap<String,Integer>(2);
+      JSONArray fieldsJSON=response.getJSONArray("fields");
+      try {
+        for (int i=0; i < fieldsJSON.length(); i++) {
+          final String field=fieldsJSON.getString(i);
+          columnsMapping.put(field,i);
+        }
+      }
+ catch (      JSONException e) {
+        AppLog.e(AppLog.T.STATS,"Cannot read the fields indexes from the JSON response",e);
+        throw e;
+      }
+      VisitModel[] visitModels=new VisitModel[dataJSON.length()];
+      int viewsColumnIndex=columnsMapping.get("views");
+      int periodColumnIndex=columnsMapping.get("period");
+      for (int i=0; i < dataJSON.length(); i++) {
+        try {
+          JSONArray currentDayData=dataJSON.getJSONArray(i);
+          VisitModel currentVisitModel=new VisitModel();
+          currentVisitModel.setPeriod(currentDayData.getString(periodColumnIndex));
+          currentVisitModel.setViews(currentDayData.getInt(viewsColumnIndex));
+          visitModels[i]=currentVisitModel;
+        }
+ catch (        JSONException e) {
+          AppLog.e(AppLog.T.STATS,"Cannot create the Visit at index " + i,e);
+        }
+      }
+      mDayViews=visitModels;
+    }
+ else {
+      mDayViews=null;
+    }
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.STATS,e);
+    mDayViews=null;
+  }
+}
