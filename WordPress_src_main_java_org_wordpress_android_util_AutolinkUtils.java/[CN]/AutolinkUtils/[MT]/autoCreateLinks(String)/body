@@ -1,0 +1,26 @@
+{
+  if (text == null) {
+    return null;
+  }
+  Pattern urlPattern=Pattern.compile("((http|https|ftp|mailto):\\S+)");
+  Matcher matcher=urlPattern.matcher(text);
+  StringBuffer stringBuffer=new StringBuffer();
+  while (matcher.find()) {
+    String url=matcher.group(1);
+    boolean blacklisted=false;
+    for (    Pattern providerPattern : PROVIDERS) {
+      Matcher providerMatcher=providerPattern.matcher(url);
+      if (providerMatcher.matches()) {
+        blacklisted=true;
+      }
+    }
+    if (!blacklisted) {
+      matcher.appendReplacement(stringBuffer,"<a href=\"" + url + "\">"+ url+ "</a>");
+    }
+ else {
+      matcher.appendReplacement(stringBuffer,url);
+    }
+  }
+  matcher.appendTail(stringBuffer);
+  return stringBuffer.toString();
+}
