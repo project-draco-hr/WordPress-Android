@@ -1,0 +1,27 @@
+{
+  List<NameValuePair> parameters=new ArrayList<NameValuePair>();
+  parameters.add(new BasicNameValuePair("url",sourceUrl));
+  String fullUrl=oembedRequestUrl + URLEncodedUtils.format(parameters,HTTP.UTF_8);
+  StringRequest req=new StringRequest(Request.Method.GET,fullUrl,new Listener<String>(){
+    @Override public void onResponse(    String response){
+      String output=null;
+      try {
+        JSONObject jsonObject=new JSONObject(response);
+        output=jsonObject.getString("html");
+      }
+ catch (      JSONException e) {
+        callback.onFailure(e);
+      }
+      if (output != null) {
+        callback.onSuccess(sourceUrl,output);
+      }
+    }
+  }
+,new ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+      callback.onFailure(error);
+    }
+  }
+);
+  WordPress.requestQueue.add(req);
+}
