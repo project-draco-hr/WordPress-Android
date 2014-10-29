@@ -19,24 +19,28 @@
 );
   mGraphContainer=(LinearLayout)findViewById(R.id.stats_bar_chart_fragment_container);
   mWholeResponse=(TextView)findViewById(R.id.stats_all_response);
+  mStatsDateTextView=(TextView)findViewById(R.id.stats_summary_date);
+  mStatsViewsCountTextView=(TextView)findViewById(R.id.stats_visitors_and_views_best_ever_views_count);
+  setTitle(getString(R.string.stats));
+  setupEmptyGraph();
   if (savedInstanceState != null) {
     mLocalBlogID=savedInstanceState.getInt(StatsActivity.ARG_LOCAL_TABLE_BLOG_ID,-1);
     mRemotePostID=savedInstanceState.getString(ARG_REMOTE_POST_ID,null);
     mRestResponse=savedInstanceState.getString(ARG_REST_RESPONSE,null);
+    mSelectedBarGraphIndex=savedInstanceState.getInt(ARG_SELECTED_GRAPH_BAR,-1);
   }
  else   if (getIntent() != null) {
     Bundle extras=getIntent().getExtras();
     mLocalBlogID=extras.getInt(StatsActivity.ARG_LOCAL_TABLE_BLOG_ID,-1);
     mRemotePostID=extras.getString(ARG_REMOTE_POST_ID,null);
     mRestResponse=extras.getString(ARG_REST_RESPONSE,null);
+    mSelectedBarGraphIndex=extras.getInt(ARG_SELECTED_GRAPH_BAR,-1);
   }
-  setTitle(getString(R.string.stats));
-  setupEmptyGraph();
   if (mRestResponse == null) {
     refreshStats();
   }
  else {
     mRestResponseParsed=new PostViewsModel(mRestResponse);
-    updateGraph(-1);
+    updateUI();
   }
 }

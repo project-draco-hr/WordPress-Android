@@ -1,18 +1,16 @@
 {
   if (mVisitsData == null) {
-    setupEmptyGraph();
+    setupEmptyUI();
     return;
   }
   final VisitModel[] dataToShowOnGraph=getDataToShowOnGraph(mVisitsData);
   if (dataToShowOnGraph == null || dataToShowOnGraph.length == 0) {
-    setupEmptyGraph();
+    setupEmptyUI();
     return;
   }
-  int barSelectedOnGraph=mSelectedBarGraphBarIndex != -1 ? mSelectedBarGraphBarIndex : dataToShowOnGraph.length - 1;
   final String[] horLabels=new String[dataToShowOnGraph.length];
   mStatsDate=new String[dataToShowOnGraph.length];
   GraphView.GraphViewData[] views=new GraphView.GraphViewData[dataToShowOnGraph.length];
-  boolean isEmptyGraph=true;
   OverviewLabel selectedStatsType=overviewItems[mSelectedOverviewItemIndex];
   for (int i=0; i < dataToShowOnGraph.length; i++) {
     int currentItemValue=0;
@@ -37,17 +35,10 @@ views[i]=new GraphView.GraphViewData(i,currentItemValue);
 String currentItemStatsDate=dataToShowOnGraph[i].getPeriod();
 horLabels[i]=getDateLabel(currentItemStatsDate);
 mStatsDate[i]=currentItemStatsDate;
-if (currentItemValue > 0) {
-isEmptyGraph=false;
-}
 }
 mCurrentSeriesOnScreen=new GraphViewSeries(views);
 mCurrentSeriesOnScreen.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views);
 mCurrentSeriesOnScreen.getStyle().padding=DisplayUtils.dpToPx(getActivity(),1);
-if (isEmptyGraph) {
-setupEmptyGraph();
-}
- else {
 if (mGraphContainer.getChildCount() >= 1 && mGraphContainer.getChildAt(0) instanceof GraphView) {
 mGraphView=(StatsBarGraph)mGraphContainer.getChildAt(0);
 }
@@ -56,14 +47,12 @@ mGraphContainer.removeAllViews();
 mGraphView=new StatsBarGraph(getActivity());
 mGraphContainer.addView(mGraphView);
 }
-if (mGraphView != null) {
 mGraphView.removeAllSeries();
 mGraphView.addSeries(mCurrentSeriesOnScreen);
 mGraphView.getGraphViewStyle().setNumHorizontalLabels(dataToShowOnGraph.length);
 mGraphView.setHorizontalLabels(horLabels);
 mGraphView.setGestureListener(this);
+int barSelectedOnGraph=mSelectedBarGraphBarIndex != -1 ? mSelectedBarGraphBarIndex : dataToShowOnGraph.length - 1;
 mGraphView.highlightBar(barSelectedOnGraph);
-}
-}
 updateUIBelowTheGraph(barSelectedOnGraph);
 }

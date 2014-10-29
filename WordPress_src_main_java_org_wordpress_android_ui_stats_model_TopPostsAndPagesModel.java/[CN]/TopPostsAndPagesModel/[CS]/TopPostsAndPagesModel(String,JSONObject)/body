@@ -1,0 +1,26 @@
+{
+  this.blogID=blogID;
+  JSONArray postViewsArray;
+  JSONObject jDaysObject=response.getJSONObject("days");
+  Iterator<String> keys=jDaysObject.keys();
+  if (keys.hasNext()) {
+    String key=keys.next();
+    JSONObject jDateObject=jDaysObject.getJSONObject(key);
+    postViewsArray=jDateObject.getJSONArray("postviews");
+  }
+ else {
+    postViewsArray=new JSONArray();
+  }
+  ArrayList<TopPostModel> list=new ArrayList<TopPostModel>(postViewsArray.length());
+  for (int i=0; i < postViewsArray.length(); i++) {
+    try {
+      JSONObject postObject=postViewsArray.getJSONObject(i);
+      TopPostModel currentModel=new TopPostModel(blogID,postObject);
+      list.add(currentModel);
+    }
+ catch (    JSONException e) {
+      AppLog.e(AppLog.T.STATS,"Unexpected TopPostModel object in top posts and pages array" + "at position " + i + " Response: "+ response.toString(),e);
+    }
+  }
+  this.topPostsAndPages=list;
+}
