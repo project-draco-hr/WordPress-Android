@@ -4,17 +4,17 @@
     return;
   }
   setIsUpdating(true,updateAction);
-  ReaderActions.ActionListener listener=new ReaderActions.ActionListener(){
-    @Override public void onActionResult(    boolean succeeded){
+  ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
+    @Override public void onUpdateResult(    ReaderActions.UpdateResult result){
       if (!isAdded()) {
         return;
       }
       setIsUpdating(false,updateAction);
-      if (succeeded) {
+      if (result.isNewOrChanged()) {
         refreshPosts();
       }
     }
   }
 ;
-  ReaderPostActions.requestPostsForBlog(mCurrentBlogId,mCurrentBlogUrl,updateAction,listener);
+  ReaderPostActions.requestPostsForBlog(mCurrentBlogId,mCurrentBlogUrl,updateAction,resultListener);
 }
