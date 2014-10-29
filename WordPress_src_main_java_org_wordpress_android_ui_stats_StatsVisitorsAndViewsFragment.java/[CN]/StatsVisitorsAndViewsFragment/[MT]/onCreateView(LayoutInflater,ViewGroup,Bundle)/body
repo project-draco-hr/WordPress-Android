@@ -1,9 +1,7 @@
 {
   View view=inflater.inflate(R.layout.stats_visitors_and_views_fragment,container,false);
-  setRetainInstance(true);
   mDateTextView=(TextView)view.findViewById(R.id.stats_summary_date);
   mGraphContainer=(LinearLayout)view.findViewById(R.id.stats_bar_chart_fragment_container);
-  setupEmptyGraph();
   mRadioGroup=(RadioGroup)view.findViewById(R.id.stats_pager_tabs);
   int dp8=DisplayUtils.dpToPx(view.getContext(),8);
   int dp80=DisplayUtils.dpToPx(view.getContext(),80);
@@ -18,11 +16,12 @@
     rb.setText(overviewItems[i].getLabel());
     rb.setTag(overviewItems[i]);
     mRadioGroup.addView(rb);
-    if (i == 0) {
+    if (i == mSelectedOverviewItemIndex) {
       rb.setChecked(true);
     }
   }
   mRadioGroup.setVisibility(View.VISIBLE);
+  updateUI();
   mRadioGroup.setOnCheckedChangeListener(this);
   return view;
 }

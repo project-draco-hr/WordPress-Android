@@ -1,6 +1,10 @@
 {
   final StatsTimeframe selectedTimeframe=(StatsTimeframe)mTimeframeSpinnerAdapter.getItem(itemPosition);
-  AppLog.e(T.STATS,"NEW TIME FRAME : " + selectedTimeframe.getLabel());
+  if (mCurrentTimeframe == selectedTimeframe) {
+    AppLog.d(T.STATS,"The selected TIME FRAME is already active: " + selectedTimeframe.getLabel());
+    return true;
+  }
+  AppLog.d(T.STATS,"NEW TIME FRAME : " + selectedTimeframe.getLabel());
   mCurrentTimeframe=selectedTimeframe;
   if (NetworkUtils.isNetworkAvailable(this)) {
     loadStatsFragments(true);
