@@ -1,0 +1,18 @@
+{
+  AppLog.i(AppLog.T.SUGGESTION,"updating suggestions for blogId: " + remoteBlogId);
+  RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      handleSuggestionsUpdatedResponse(remoteBlogId,jsonObject);
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(AppLog.T.SUGGESTION,volleyError);
+    }
+  }
+;
+  AppLog.d(AppLog.T.SUGGESTION,"suggestion service > updating suggestions for siteId: " + remoteBlogId);
+  String path="/users/suggest" + "?site_id=" + remoteBlogId;
+  WordPress.getRestClientUtils().get(path,listener,errorListener);
+}

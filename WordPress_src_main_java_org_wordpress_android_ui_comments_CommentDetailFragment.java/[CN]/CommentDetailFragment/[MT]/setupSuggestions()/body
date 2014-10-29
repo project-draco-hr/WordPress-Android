@@ -1,0 +1,21 @@
+{
+  final Context context=getActivity().getApplicationContext();
+  mSuggestionAdapter=new SuggestionAdapter(context);
+  mEditReply.setAdapter(mSuggestionAdapter);
+  mEditReply.setTokenizer(new SuggestionTokenizer());
+  mEditReply.setThreshold(1);
+  Intent intent=new Intent(context,SuggestionService.class);
+  ServiceConnection connection=new ServiceConnection(){
+    public void onServiceConnected(    ComponentName className,    IBinder binder){
+      SuggestionService.SuggestionBinder b=(SuggestionService.SuggestionBinder)binder;
+      mSuggestionService=b.getService();
+      List<Suggestion> suggestions=mSuggestionService.suggestionList(mRemoteBlogId);
+      mSuggestionAdapter.setSuggestionList(suggestions);
+    }
+    public void onServiceDisconnected(    ComponentName className){
+      mSuggestionService=null;
+    }
+  }
+;
+  context.bindService(intent,connection,Context.BIND_AUTO_CREATE);
+}

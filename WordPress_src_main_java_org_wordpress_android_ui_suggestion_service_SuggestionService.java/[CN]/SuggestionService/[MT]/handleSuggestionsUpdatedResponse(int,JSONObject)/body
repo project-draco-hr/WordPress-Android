@@ -1,0 +1,19 @@
+{
+  new Thread(){
+    @Override public void run(){
+      if (jsonObject == null) {
+        return;
+      }
+      JSONArray jsonSuggestions=jsonObject.optJSONArray("suggestions");
+      List<Suggestion> suggestions=Suggestion.suggestionListFromJSON(jsonSuggestions);
+      if (suggestions != null) {
+        mCache.put(remoteBlogId,suggestions);
+        LocalBroadcastManager lbm=LocalBroadcastManager.getInstance(WordPress.getContext());
+        Intent intent=new Intent(SuggestionService.ACTION_SUGGESTIONS_LIST_UPDATED);
+        intent.putExtra(SuggestionService.SUGGESTIONS_LIST_UPDATED_EXTRA,remoteBlogId);
+        lbm.sendBroadcast(intent);
+      }
+    }
+  }
+.start();
+}
