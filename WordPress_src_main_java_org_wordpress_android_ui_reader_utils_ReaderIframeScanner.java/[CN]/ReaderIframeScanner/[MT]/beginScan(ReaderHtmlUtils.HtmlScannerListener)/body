@@ -1,0 +1,14 @@
+{
+  if (listener == null) {
+    throw new IllegalArgumentException("HtmlScannerListener is required");
+  }
+  Matcher matcher=IFRAME_TAG_PATTERN.matcher(mContent);
+  while (matcher.find()) {
+    String tag=mContent.substring(matcher.start(),matcher.end());
+    String src=ReaderHtmlUtils.getSrcAttrValue(tag);
+    if (!TextUtils.isEmpty(src)) {
+      listener.onTagFound(tag,src,matcher.start(),matcher.end());
+    }
+  }
+  listener.onScanCompleted();
+}

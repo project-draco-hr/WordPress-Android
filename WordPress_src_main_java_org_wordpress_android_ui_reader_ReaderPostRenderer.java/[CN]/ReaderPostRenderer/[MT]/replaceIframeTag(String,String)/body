@@ -1,0 +1,22 @@
+{
+  int width=ReaderHtmlUtils.getWidthAttrValue(tag);
+  int height=ReaderHtmlUtils.getHeightAttrValue(tag);
+  int newHeight;
+  int newWidth;
+  if (width > 0 && height > 0) {
+    float ratio=((float)height / (float)width);
+    newWidth=mResourceVars.videoWidthPx;
+    newHeight=(int)(newWidth * ratio);
+  }
+ else {
+    newWidth=mResourceVars.videoWidthPx;
+    newHeight=mResourceVars.videoHeightPx;
+  }
+  String newTag=new StringBuilder("<iframe src='").append(src).append("'").append(" frameborder='0' allowfullscreen='true' allowtransparency='true'").append(" width='").append(pxToDp(newWidth)).append("'").append(" height='").append(pxToDp(newHeight)).append("' />").toString();
+  int start=mRenderBuilder.indexOf(tag);
+  if (start == -1) {
+    AppLog.w(AppLog.T.READER,"reader renderer > iframe not found in builder");
+    return;
+  }
+  mRenderBuilder.replace(start,start + tag.length(),newTag);
+}

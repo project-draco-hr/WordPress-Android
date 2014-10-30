@@ -1,0 +1,16 @@
+{
+  if (posts == null || posts.size() == 0) {
+    return ReaderActions.UpdateResult.UNCHANGED;
+  }
+  boolean hasChanges=false;
+  for (  ReaderPost post : posts) {
+    ReaderPost existingPost=getPost(post.blogId,post.postId,true);
+    if (existingPost == null) {
+      return ReaderActions.UpdateResult.HAS_NEW;
+    }
+ else     if (!hasChanges && !post.isSamePost(existingPost)) {
+      hasChanges=true;
+    }
+  }
+  return (hasChanges ? ReaderActions.UpdateResult.CHANGED : ReaderActions.UpdateResult.UNCHANGED);
+}
