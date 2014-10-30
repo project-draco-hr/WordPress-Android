@@ -40,7 +40,15 @@
     refreshStats();
   }
  else {
-    mRestResponseParsed=new PostViewsModel(mRestResponse);
+    try {
+      mRestResponseParsed=new PostViewsModel(mRestResponse);
+    }
+ catch (    JSONException e) {
+      AppLog.e(AppLog.T.STATS,"Cannot parse the JSON response",e);
+      mRestResponseParsed=null;
+      mRestResponse=null;
+      mSelectedBarGraphIndex=-1;
+    }
     updateUI();
   }
 }
