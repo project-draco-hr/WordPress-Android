@@ -1,7 +1,7 @@
 {
   final VisitModel[] dataToShowOnGraph=getDataToShowOnGraph();
   if (dataToShowOnGraph == null || dataToShowOnGraph.length == 0) {
-    setupEmptyGraph();
+    setupEmptyUI(false);
     return;
   }
   final String[] horLabels=new String[dataToShowOnGraph.length];
@@ -38,4 +38,32 @@
   if (mRestResponseParsed.getOriginalResponse() != null) {
     mWholeResponse.setText(mRestResponseParsed.getOriginalResponse().toString());
   }
+  mMonthsAndYearsList.setVisibility(View.VISIBLE);
+  List<PostViewsModel.Year> years=mRestResponseParsed.getYears();
+  Integer[] allMonths=new Integer[years.size() * 13];
+  for (int i=0; i < years.size(); i++) {
+    PostViewsModel.Year currentYear=years.get(i);
+    int correctPositionOfTheYearLabel=i * 13;
+    allMonths[correctPositionOfTheYearLabel]=Integer.parseInt(currentYear.getLabel());
+    int[] currentMonths=currentYear.getMonths();
+    int startPositionForMonths=correctPositionOfTheYearLabel + 1;
+    for (int j=0; j < 12; j++) {
+      allMonths[startPositionForMonths + j]=currentMonths[j];
+    }
+  }
+  StatsUIHelper.reloadLinearLayout(this,new TemporaryAdapter(this,allMonths,mRestResponseParsed.getHighestMonth()),mMonthsAndYearsList,allMonths.length);
+  mAveragesList.setVisibility(View.VISIBLE);
+  List<PostViewsModel.Average> averages=mRestResponseParsed.getAverages();
+  Integer[] allAverages=new Integer[averages.size() * 13];
+  for (int i=0; i < averages.size(); i++) {
+    PostViewsModel.Average currentAverage=averages.get(i);
+    int correctPositionOfTheAverageLabel=i * 13;
+    allAverages[correctPositionOfTheAverageLabel]=Integer.parseInt(currentAverage.getLabel());
+    int[] currentAverages=currentAverage.getMonths();
+    int startPositionForAverages=correctPositionOfTheAverageLabel + 1;
+    for (int j=0; j < 12; j++) {
+      allAverages[startPositionForAverages + j]=currentAverages[j];
+    }
+  }
+  StatsUIHelper.reloadLinearLayout(this,new TemporaryAdapter(this,allAverages,mRestResponseParsed.getHighestDayAverage()),mAveragesList,allAverages.length);
 }

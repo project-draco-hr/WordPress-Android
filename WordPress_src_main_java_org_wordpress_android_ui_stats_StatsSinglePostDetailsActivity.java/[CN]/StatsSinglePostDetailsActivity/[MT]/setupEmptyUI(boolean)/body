@@ -1,9 +1,12 @@
 {
-  mSelectedBarGraphIndex=-1;
   Context context=mGraphContainer.getContext();
   if (context != null) {
     LayoutInflater inflater=LayoutInflater.from(context);
     View emptyBarGraphView=inflater.inflate(R.layout.stats_bar_graph_empty,mGraphContainer,false);
+    if (isLoading) {
+      final TextView emptyLabel=(TextView)emptyBarGraphView.findViewById(R.id.stats_bar_graph_empty_label);
+      emptyLabel.setText("Loading...");
+    }
     if (emptyBarGraphView != null) {
       mGraphContainer.removeAllViews();
       mGraphContainer.addView(emptyBarGraphView);
@@ -12,5 +15,7 @@
   mWholeResponse.setText("");
   mStatsDateTextView.setText("");
   mStatsViewsCountTextView.setText("0");
+  mMonthsAndYearsList.setVisibility(View.GONE);
+  mAveragesList.setVisibility(View.GONE);
   return;
 }

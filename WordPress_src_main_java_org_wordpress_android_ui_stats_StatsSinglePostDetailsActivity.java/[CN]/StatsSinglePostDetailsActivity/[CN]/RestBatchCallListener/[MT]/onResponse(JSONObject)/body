@@ -4,21 +4,18 @@
   }
   mIsUpdatingStats=false;
   mPullToRefreshHelper.setRefreshing(false);
-  AppLog.d(AppLog.T.STATS,"The REST response: " + response.toString());
-  mRestResponse=response.toString();
-  mSelectedBarGraphIndex=-1;
-  try {
-    mRestResponseParsed=new PostViewsModel(response);
-  }
- catch (  JSONException e) {
-    AppLog.e(AppLog.T.STATS,"Cannot parse the JSON response",e);
-    mRestResponseParsed=null;
-    mRestResponse=null;
-    mSelectedBarGraphIndex=-1;
-  }
   ThreadPoolExecutor parseResponseExecutor=(ThreadPoolExecutor)Executors.newFixedThreadPool(1);
   parseResponseExecutor.submit(new Thread(){
     @Override public void run(){
+      AppLog.d(AppLog.T.STATS,"The REST response: " + response.toString());
+      mSelectedBarGraphIndex=-1;
+      try {
+        mRestResponseParsed=new PostViewsModel(response);
+      }
+ catch (      JSONException e) {
+        AppLog.e(AppLog.T.STATS,"Cannot parse the JSON response",e);
+        resetModelVariables();
+      }
       final boolean post=mHandler.post(new Runnable(){
         @Override public void run(){
           updateUI();

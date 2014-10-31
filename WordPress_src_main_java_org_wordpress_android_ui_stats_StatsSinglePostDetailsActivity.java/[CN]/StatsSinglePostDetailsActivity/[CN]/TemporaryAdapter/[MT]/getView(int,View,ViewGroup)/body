@@ -1,0 +1,23 @@
+{
+  View rowView=convertView;
+  if (rowView == null) {
+    rowView=inflater.inflate(R.layout.stats_list_cell,null);
+    StatsViewHolder viewHolder=new StatsViewHolder(rowView);
+    rowView.setTag(viewHolder);
+  }
+  int currentRowData=list[position];
+  StatsViewHolder holder=(StatsViewHolder)rowView.getTag();
+  if (position == 0 || (position % 13) == 0) {
+    holder.entryTextView.setText("" + currentRowData);
+    holder.totalsTextView.setText("");
+  }
+ else {
+    holder.entryTextView.setText("" + (position % 13));
+    if (currentRowData == mValueToHighlight) {
+      holder.totalsTextView.setTextColor(Color.BLUE);
+    }
+    holder.totalsTextView.setText(FormatUtils.formatDecimal(currentRowData));
+  }
+  holder.networkImageView.setVisibility(View.GONE);
+  return rowView;
+}
