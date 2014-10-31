@@ -1,6 +1,10 @@
 {
   if (response.getBitmap() != null) {
-    setImageBitmap(response.getBitmap());
+    Bitmap bitmap=response.getBitmap();
+    if (mImageType == ImageType.AVATAR) {
+      bitmap=ImageUtils.getCircularBitmap(bitmap);
+    }
+    setImageBitmap(bitmap);
     if (!isCached && allowFadeIn && canFadeInImageType(mImageType))     fadeIn();
     if (mImageListener != null) {
       mImageListener.onImageLoaded(true);
