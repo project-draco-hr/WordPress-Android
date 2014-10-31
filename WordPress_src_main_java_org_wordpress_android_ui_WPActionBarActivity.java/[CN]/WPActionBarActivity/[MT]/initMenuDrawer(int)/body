@@ -9,14 +9,18 @@
   mDrawerListView.setAdapter(mAdapter);
   mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
     public void onItemClick(    AdapterView<?> parent,    View view,    int position,    long id){
+      drawerLayout.closeDrawer(Gravity.LEFT);
       int menuPosition=position - mDrawerListView.getHeaderViewsCount();
-      if (menuPosition < 0 || menuPosition >= mAdapter.getCount())       return;
+      if (menuPosition < 0 || menuPosition >= mAdapter.getCount()) {
+        return;
+      }
       MenuDrawerItem item=mAdapter.getItem(menuPosition);
       if (item.hasItemId()) {
         ActivityId.trackLastActivity(WPActionBarActivity.this,item.getItemId());
       }
-      if (!item.isSelected())       item.selectItem();
-      drawerLayout.closeDrawer(Gravity.LEFT);
+      if (!item.isSelected()) {
+        item.selectItem();
+      }
     }
   }
 );
@@ -33,7 +37,6 @@
   ActionBar actionBar=getSupportActionBar();
   actionBar.setDisplayHomeAsUpEnabled(true);
   actionBar.setHomeButtonEnabled(true);
-  mDrawerToggle.syncState();
   if (blogSelection != -1 && mBlogSpinner != null) {
     mBlogSpinner.setSelection(blogSelection);
   }
