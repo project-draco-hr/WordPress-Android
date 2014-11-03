@@ -1,0 +1,22 @@
+{
+  setBlogId(blogId);
+  setDate(StatsUtils.toMs(date));
+  setGroupId(groupJSON.getString("group"));
+  setName(groupJSON.getString("name"));
+  setTotal(groupJSON.getInt("total"));
+  if (groupJSON.has("icon") && !groupJSON.getString("icon").equals("null")) {
+    setIcon(groupJSON.getString("icon"));
+  }
+  if (groupJSON.has("url") && !groupJSON.getString("url").equals("null")) {
+    setUrl(groupJSON.getString("url"));
+  }
+ else {
+    JSONArray resultsJSON=groupJSON.getJSONArray("results");
+    results=new ArrayList<ReferrerResultModel>(resultsJSON.length());
+    for (int i=0; i < resultsJSON.length(); i++) {
+      JSONObject currentResultJSON=resultsJSON.getJSONObject(i);
+      ReferrerResultModel rm=new ReferrerResultModel(blogId,date,currentResultJSON);
+      results.add(rm);
+    }
+  }
+}

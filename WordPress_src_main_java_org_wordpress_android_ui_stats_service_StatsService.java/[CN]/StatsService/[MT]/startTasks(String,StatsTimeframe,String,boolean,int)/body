@@ -16,8 +16,12 @@
         broadcastSectionUpdating(StatsSectionEnum.VISITS);
       }
       TopPostsAndPagesCallListener topPostsAndPagesListener=new TopPostsAndPagesCallListener(mServiceBlogId,mServiceRequestedTimeframe);
-      final String topPostsAndPagesPath=String.format("/sites/%s/stats/top-posts?period=%s&max=11&date=%s",mServiceBlogId,period,mServiceRequestedDate);
+      final String topPostsAndPagesPath=String.format("/sites/%s/stats/top-posts?period=%s&date=%s",mServiceBlogId,period,mServiceRequestedDate);
       statsNetworkRequests.add(restClientUtils.get(topPostsAndPagesPath,topPostsAndPagesListener,topPostsAndPagesListener));
+      broadcastSectionUpdating(StatsSectionEnum.TOP_POSTS);
+      ReferrersCallListener referrersListener=new ReferrersCallListener(mServiceBlogId,mServiceRequestedTimeframe);
+      final String referrersPath=String.format("/sites/%s/stats/referrers?period=%s&date=%s",mServiceBlogId,period,mServiceRequestedDate);
+      statsNetworkRequests.add(restClientUtils.get(referrersPath,referrersListener,referrersListener));
       broadcastSectionUpdating(StatsSectionEnum.TOP_POSTS);
       numberOfNetworkCalls=statsNetworkRequests.size();
     }

@@ -1,0 +1,29 @@
+{
+  this.blogID=blogID;
+  this.period=response.getString("period");
+  this.date=response.getString("date");
+  JSONObject jDaysObject=response.getJSONObject("days");
+  if (jDaysObject == null || jDaysObject.length() == 0) {
+    return;
+  }
+  JSONArray jGroupsArray;
+  Iterator<String> keys=jDaysObject.keys();
+  String key=keys.next();
+  JSONObject firstDayObject=jDaysObject.getJSONObject(key);
+  this.otherViews=firstDayObject.optInt("other_views");
+  this.totalViews=firstDayObject.optInt("total_views");
+  jGroupsArray=firstDayObject.getJSONArray("groups");
+  if (jGroupsArray != null) {
+    groups=new ArrayList<ReferrerGroupModel>(jGroupsArray.length());
+    for (int i=0; i < jGroupsArray.length(); i++) {
+      try {
+        JSONObject currentGroupJSON=jGroupsArray.getJSONObject(i);
+        ReferrerGroupModel currentGroupModel=new ReferrerGroupModel(blogID,date,currentGroupJSON);
+        groups.add(currentGroupModel);
+      }
+ catch (      JSONException e) {
+        AppLog.e(AppLog.T.STATS,"Unexpected ReferrerGroupModel object referrers" + "at position " + i + " Response: "+ response.toString(),e);
+      }
+    }
+  }
+}
