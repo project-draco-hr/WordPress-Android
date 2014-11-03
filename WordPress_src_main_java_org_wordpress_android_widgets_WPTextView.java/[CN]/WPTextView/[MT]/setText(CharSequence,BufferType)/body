@@ -1,0 +1,19 @@
+{
+  if (!mFixWidowWordEnabled) {
+    super.setText(text,type);
+    return;
+  }
+  Spannable out;
+  int lastSpace=text.toString().lastIndexOf(' ');
+  if (lastSpace != -1 && lastSpace < text.length() - 1) {
+    CharSequence tmpText=replaceCharacter(text,lastSpace,"\u00A0");
+    out=new SpannableString(tmpText);
+    if (text instanceof Spanned) {
+      TextUtils.copySpansFrom((Spanned)text,0,text.length(),null,out,0);
+    }
+  }
+ else {
+    out=new SpannableString(text);
+  }
+  super.setText(out,type);
+}
