@@ -10,6 +10,7 @@
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
   mViewPager=(ReaderViewPager)findViewById(R.id.viewpager);
+  mProgress=(ProgressBar)findViewById(R.id.progress_loading);
   final String title;
   if (savedInstanceState != null) {
     title=savedInstanceState.getString(ReaderConstants.ARG_TITLE);
@@ -45,17 +46,7 @@
     @Override public void onPageSelected(    int position){
       super.onPageSelected(position);
       onRequestFullScreen(false);
-      if (hasPagerAdapter()) {
-        Fragment fragment=getPagerAdapter().getFragmentAtPosition(position);
-        if (fragment instanceof ReaderPostDetailFragment) {
-          AnalyticsTracker.track(AnalyticsTracker.Stat.READER_OPENED_ARTICLE);
-        }
- else         if (fragment instanceof ReaderPostPagerEndFragment) {
-          if (getPagerAdapter().canRequestMostPosts()) {
-            getPagerAdapter().requestMorePosts();
-          }
-        }
-      }
+      AnalyticsTracker.track(AnalyticsTracker.Stat.READER_OPENED_ARTICLE);
     }
     @Override public void onPageScrollStateChanged(    int state){
       super.onPageScrollStateChanged(state);
