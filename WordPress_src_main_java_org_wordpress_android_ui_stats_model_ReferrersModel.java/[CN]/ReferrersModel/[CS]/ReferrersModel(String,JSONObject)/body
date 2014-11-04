@@ -3,8 +3,8 @@
   this.period=response.getString("period");
   this.date=response.getString("date");
   JSONObject jDaysObject=response.getJSONObject("days");
-  if (jDaysObject == null || jDaysObject.length() == 0) {
-    return;
+  if (jDaysObject.length() == 0) {
+    throw new JSONException("Invalid document returned from the REST API");
   }
   JSONArray jGroupsArray;
   Iterator<String> keys=jDaysObject.keys();
@@ -12,7 +12,7 @@
   JSONObject firstDayObject=jDaysObject.getJSONObject(key);
   this.otherViews=firstDayObject.optInt("other_views");
   this.totalViews=firstDayObject.optInt("total_views");
-  jGroupsArray=firstDayObject.getJSONArray("groups");
+  jGroupsArray=firstDayObject.optJSONArray("groups");
   if (jGroupsArray != null) {
     groups=new ArrayList<ReferrerGroupModel>(jGroupsArray.length());
     for (int i=0; i < jGroupsArray.length(); i++) {
@@ -22,7 +22,7 @@
         groups.add(currentGroupModel);
       }
  catch (      JSONException e) {
-        AppLog.e(AppLog.T.STATS,"Unexpected ReferrerGroupModel object referrers" + "at position " + i + " Response: "+ response.toString(),e);
+        AppLog.e(AppLog.T.STATS,"Unexpected ReferrerGroupModel object " + "at position " + i + " Response: "+ response.toString(),e);
       }
     }
   }
