@@ -1,5 +1,11 @@
 {
-  View view=inflater.inflate(R.layout.stats_list_fragment,container,false);
+  View view;
+  if (isExpandableList()) {
+    view=inflater.inflate(R.layout.stats_expandable_list_fragment,container,false);
+  }
+ else {
+    view=inflater.inflate(R.layout.stats_list_fragment,container,false);
+  }
   TextView titleTextView=(TextView)view.findViewById(R.id.stats_pager_title);
   titleTextView.setText(getTitle().toUpperCase(Locale.getDefault()));
   TextView entryLabel=(TextView)view.findViewById(R.id.stats_list_entry_label);
@@ -7,10 +13,10 @@
   TextView totalsLabel=(TextView)view.findViewById(R.id.stats_list_totals_label);
   totalsLabel.setText(getTotalsLabelResId());
   mEmptyLabel=(TextView)view.findViewById(R.id.stats_list_empty_text);
-  mTopPostList=(LinearLayout)view.findViewById(R.id.stats_list_linearlayout);
-  mTopPostList.setVisibility(View.INVISIBLE);
+  mList=(LinearLayout)view.findViewById(R.id.stats_list_linearlayout);
+  mList.setVisibility(View.VISIBLE);
   mListContainer=(LinearLayout)view.findViewById(R.id.stats_list_header_container);
-  if (mTopPostsAndPagesModel != null) {
+  if (mDatamodel != null) {
     updateUI();
   }
  else {
