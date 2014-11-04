@@ -27,6 +27,10 @@
       final String clicksPath=String.format("/sites/%s/stats/clicks?period=%s&date=%s",mServiceBlogId,period,mServiceRequestedDate);
       statsNetworkRequests.add(restClientUtils.get(clicksPath,clicksListener,clicksListener));
       broadcastSectionUpdating(StatsSectionEnum.CLICKS);
+      GeoviewsCallListener countriesListener=new GeoviewsCallListener(mServiceBlogId,mServiceRequestedTimeframe);
+      final String countriesPath=String.format("/sites/%s/stats/country-views?period=%s&date=%s",mServiceBlogId,period,mServiceRequestedDate);
+      statsNetworkRequests.add(restClientUtils.get(countriesPath,countriesListener,countriesListener));
+      broadcastSectionUpdating(StatsSectionEnum.GEO_VIEWS);
       numberOfNetworkCalls=statsNetworkRequests.size();
     }
   }
