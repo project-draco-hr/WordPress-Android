@@ -1,6 +1,11 @@
 {
   if (response.getBitmap() != null) {
-    setImageBitmap(response.getBitmap());
+    Bitmap bitmap=response.getBitmap();
+    if (mImageType == ImageType.AVATAR) {
+      new CircularizeBitmapTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,bitmap);
+      return;
+    }
+    setImageBitmap(bitmap);
     if (!isCached && allowFadeIn && canFadeInImageType(mImageType))     fadeIn();
     if (mImageListener != null) {
       mImageListener.onImageLoaded(true);
