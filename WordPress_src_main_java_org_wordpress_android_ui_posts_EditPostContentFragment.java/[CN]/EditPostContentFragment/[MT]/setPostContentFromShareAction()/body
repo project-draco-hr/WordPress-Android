@@ -6,13 +6,8 @@
     if (title != null) {
       mTitleEditText.setText(title);
     }
-    if (text.contains("youtube_gdata")) {
-      mContentEditText.setText(text);
-    }
- else {
-      text=text.replaceAll("((http|https|ftp|mailto):\\S+)","<a href=\"$1\">$1</a>");
-      mContentEditText.setText(WPHtml.fromHtml(StringUtils.addPTags(text),getActivity(),mActivity.getPost(),getMaximumThumbnailWidth()));
-    }
+    text=AutolinkUtils.autoCreateLinks(text);
+    mContentEditText.setText(WPHtml.fromHtml(StringUtils.addPTags(text),getActivity(),mActivity.getPost(),getMaximumThumbnailWidth()));
   }
   if (intent.hasExtra(Intent.EXTRA_STREAM)) {
     String action=intent.getAction();
