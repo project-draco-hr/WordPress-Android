@@ -1,0 +1,21 @@
+{
+  if (mServiceBlogId == null || !mServiceBlogId.equals(mRequestBlogId)) {
+    return;
+  }
+  parseResponseExecutor.submit(new Thread(){
+    @Override public void run(){
+      if (mServiceBlogId == null || !mServiceBlogId.equals(mRequestBlogId)) {
+        return;
+      }
+      numberOfFinishedNetworkCalls++;
+      AppLog.e(T.STATS,this.getClass().getName() + " responded with an Error");
+      if (volleyError != null) {
+        AppLog.e(T.STATS,"Error details: \n" + volleyError.getMessage(),volleyError);
+      }
+      mResponseObjectModel=volleyError;
+      notifySectionUpdated();
+      checkAllRequestsFinished();
+    }
+  }
+);
+}
