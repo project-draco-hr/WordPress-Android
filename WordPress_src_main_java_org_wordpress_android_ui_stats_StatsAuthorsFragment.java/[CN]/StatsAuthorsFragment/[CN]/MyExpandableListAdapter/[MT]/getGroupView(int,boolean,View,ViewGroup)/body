@@ -1,0 +1,17 @@
+{
+  if (convertView == null) {
+    convertView=inflater.inflate(R.layout.stats_list_cell,parent,false);
+    convertView.setTag(new StatsViewHolder(convertView));
+  }
+  final StatsViewHolder holder=(StatsViewHolder)convertView.getTag();
+  AuthorModel group=(AuthorModel)getGroup(groupPosition);
+  String name=group.getName();
+  int total=group.getViews();
+  String icon=group.getAvatar();
+  int children=getChildrenCount(groupPosition);
+  holder.entryTextView.setText(name);
+  holder.totalsTextView.setText(FormatUtils.formatDecimal(total));
+  holder.showNetworkImage(icon);
+  holder.chevronImageView.setVisibility(children > 0 ? View.VISIBLE : View.GONE);
+  return convertView;
+}

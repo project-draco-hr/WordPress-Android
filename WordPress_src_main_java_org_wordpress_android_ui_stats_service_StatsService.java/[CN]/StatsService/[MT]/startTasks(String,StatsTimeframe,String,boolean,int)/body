@@ -31,6 +31,10 @@
       final String countriesPath=String.format("/sites/%s/stats/country-views?period=%s&date=%s",mServiceBlogId,period,mServiceRequestedDate);
       statsNetworkRequests.add(restClientUtils.get(countriesPath,countriesListener,countriesListener));
       broadcastSectionUpdating(StatsSectionEnum.GEO_VIEWS);
+      AuthorsCallListener authorsListener=new AuthorsCallListener(mServiceBlogId,mServiceRequestedTimeframe);
+      final String authorsPath=String.format("/sites/%s/stats/top-authors?period=%s&date=%s",mServiceBlogId,period,mServiceRequestedDate);
+      statsNetworkRequests.add(restClientUtils.get(authorsPath,authorsListener,authorsListener));
+      broadcastSectionUpdating(StatsSectionEnum.AUTHORS);
       numberOfNetworkCalls=statsNetworkRequests.size();
     }
   }
