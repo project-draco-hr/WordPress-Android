@@ -1,0 +1,27 @@
+{
+  if (mDatamodel == null) {
+    showEmptyUI(true);
+    return;
+  }
+  CommentsModel commentsModel=(CommentsModel)mDatamodel;
+  ArrayAdapter adapter=null;
+  if (mSelectedButtonIndex == 0) {
+    List<AuthorModel> authors=commentsModel.getAuthors();
+    if (authors != null && authors.size() > 0) {
+      adapter=new AuthorsAdapter(getActivity(),authors);
+    }
+  }
+ else {
+    List<TopPostModel> posts=commentsModel.getPosts();
+    if (posts != null && posts.size() > 0) {
+      adapter=new TopPostsAndPagesAdapter(getActivity(),posts);
+    }
+  }
+  if (adapter != null) {
+    StatsUIHelper.reloadLinearLayout(getActivity(),adapter,mList);
+    showEmptyUI(false);
+  }
+ else {
+    showEmptyUI(true);
+  }
+}

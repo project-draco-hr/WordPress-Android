@@ -39,6 +39,10 @@
       final String videoPlaysPath=String.format("/sites/%s/stats/video-plays?period=%s&date=%s",mServiceBlogId,period,mServiceRequestedDate);
       statsNetworkRequests.add(restClientUtils.get(videoPlaysPath,videoPlaysListener,videoPlaysListener));
       broadcastSectionUpdating(StatsEndpointsEnum.VIDEO_PLAYS);
+      RestListener commentsListener=new RestListener(StatsEndpointsEnum.COMMENTS,mServiceBlogId,mServiceRequestedTimeframe);
+      final String commentsPath=String.format("/sites/%s/stats/comments",mServiceBlogId);
+      statsNetworkRequests.add(restClientUtils.get(commentsPath,commentsListener,commentsListener));
+      broadcastSectionUpdating(StatsEndpointsEnum.COMMENTS);
       numberOfNetworkCalls=statsNetworkRequests.size();
     }
   }
