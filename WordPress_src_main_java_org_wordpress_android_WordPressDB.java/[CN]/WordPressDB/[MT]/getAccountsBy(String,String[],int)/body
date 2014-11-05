@@ -2,12 +2,16 @@
   if (db == null) {
     return new Vector<Map<String,Object>>();
   }
+  String limitStr=null;
+  if (limit == 0) {
+    limitStr=String.valueOf(limit);
+  }
   String[] baseFields=new String[]{"id","blogName","username","blogId","url","password"};
   String[] allFields=baseFields;
   if (extraFields != null) {
     allFields=(String[])ArrayUtils.addAll(baseFields,extraFields);
   }
-  Cursor c=db.query(SETTINGS_TABLE,allFields,byString,null,null,null,null,limit);
+  Cursor c=db.query(SETTINGS_TABLE,allFields,byString,null,null,null,null,limitStr);
   int numRows=c.getCount();
   c.moveToFirst();
   List<Map<String,Object>> accounts=new Vector<Map<String,Object>>();
