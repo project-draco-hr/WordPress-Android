@@ -1,8 +1,8 @@
 {
-  this.blogID=blogID;
-  this.period=response.getString("period");
-  this.date=response.getString("date");
-  JSONArray postViewsArray;
+  this.mBlogID=blogID;
+  this.mPeriod=response.getString("period");
+  this.mDate=response.getString("date");
+  JSONArray postViewsArray=null;
   JSONObject jDaysObject=response.getJSONObject("days");
   if (jDaysObject.length() == 0) {
     throw new JSONException("Invalid document returned from the REST API");
@@ -10,10 +10,10 @@
   Iterator<String> keys=jDaysObject.keys();
   if (keys.hasNext()) {
     String key=keys.next();
-    JSONObject jDateObject=jDaysObject.getJSONObject(key);
-    postViewsArray=jDateObject.getJSONArray("postviews");
+    JSONObject jDateObject=jDaysObject.optJSONObject(key);
+    postViewsArray=(jDateObject != null) ? jDateObject.getJSONArray("postviews") : null;
   }
- else {
+  if (postViewsArray == null) {
     postViewsArray=new JSONArray();
   }
   ArrayList<TopPostModel> list=new ArrayList<TopPostModel>(postViewsArray.length());
@@ -27,5 +27,5 @@
       AppLog.e(AppLog.T.STATS,"Unexpected TopPostModel object in top posts and pages array" + "at position " + i + " Response: "+ response.toString(),e);
     }
   }
-  this.topPostsAndPages=list;
+  this.mTopPostsAndPages=list;
 }

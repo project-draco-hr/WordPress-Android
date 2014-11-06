@@ -25,6 +25,21 @@ break;
 case COMMENTS:
 model=new CommentsModel(mRequestBlogId,response);
 break;
+case FOLLOWERS:
+model=new FollowersModel(mRequestBlogId,response);
+break;
+case COMMENT_FOLLOWERS:
+model=new CommentFollowersModel(mRequestBlogId,response);
+break;
+case TAGS_AND_CATEGORIES:
+JSONArray outerTags=response.getJSONArray("tags");
+ArrayList<TagsModel> tagsParsed=new ArrayList<TagsModel>(outerTags.length());
+for (int i=0; i < outerTags.length(); i++) {
+JSONObject current=outerTags.getJSONObject(i);
+tagsParsed.add(new TagsModel(mRequestBlogId,current));
+}
+model=tagsParsed;
+break;
 }
 return model;
 }

@@ -1,0 +1,22 @@
+{
+  this.mBlogID=blogID;
+  this.mPage=response.getInt("page");
+  this.mPages=response.getInt("pages");
+  this.mTotal=response.getInt("total");
+  this.mTotalEmail=response.getInt("total_email");
+  this.mTotalWPCom=response.getInt("total_wpcom");
+  JSONArray subscribersJSONArray=response.optJSONArray("subscribers");
+  if (subscribersJSONArray != null) {
+    mSubscribers=new ArrayList<FollowerModel>(subscribersJSONArray.length());
+    for (int i=0; i < subscribersJSONArray.length(); i++) {
+      JSONObject currentAuthorJSON=subscribersJSONArray.getJSONObject(i);
+      try {
+        FollowerModel currentFollower=new FollowerModel(mBlogID,currentAuthorJSON);
+        mSubscribers.add(currentFollower);
+      }
+ catch (      JSONException e) {
+        AppLog.e(AppLog.T.STATS,"Unexpected Follower object " + "at position " + i + " Response: "+ response.toString(),e);
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
-  this.blogID=blogID;
-  this.period=response.getString("period");
-  this.date=response.getString("date");
+  this.mBlogID=blogID;
+  this.mPeriod=response.getString("period");
+  this.mDate=response.getString("date");
   JSONObject jDaysObject=response.getJSONObject("days");
   if (jDaysObject.length() == 0) {
     throw new JSONException("Invalid document returned from the REST API");
@@ -10,16 +10,16 @@
   Iterator<String> keys=jDaysObject.keys();
   String key=keys.next();
   JSONObject firstDayObject=jDaysObject.getJSONObject(key);
-  this.otherViews=firstDayObject.optInt("other_views");
-  this.totalViews=firstDayObject.optInt("total_views");
+  this.mOtherViews=firstDayObject.optInt("other_views");
+  this.mTotalViews=firstDayObject.optInt("total_views");
   jGroupsArray=firstDayObject.optJSONArray("groups");
   if (jGroupsArray != null) {
-    groups=new ArrayList<ReferrerGroupModel>(jGroupsArray.length());
+    mGroups=new ArrayList<ReferrerGroupModel>(jGroupsArray.length());
     for (int i=0; i < jGroupsArray.length(); i++) {
       try {
         JSONObject currentGroupJSON=jGroupsArray.getJSONObject(i);
-        ReferrerGroupModel currentGroupModel=new ReferrerGroupModel(blogID,date,currentGroupJSON);
-        groups.add(currentGroupModel);
+        ReferrerGroupModel currentGroupModel=new ReferrerGroupModel(blogID,mDate,currentGroupJSON);
+        mGroups.add(currentGroupModel);
       }
  catch (      JSONException e) {
         AppLog.e(AppLog.T.STATS,"Unexpected ReferrerGroupModel object " + "at position " + i + " Response: "+ response.toString(),e);
