@@ -1,0 +1,12 @@
+{
+  String blogId=blogMap.get("blogId").toString();
+  String xmlRpcUrl=blogMap.get("url").toString();
+  int intBlogId=StringUtils.stringToInt(blogId,-1);
+  if (intBlogId == -1) {
+    AppLog.e(T.NUX,"Can't refresh blog content - invalid blogId: " + blogId);
+    return;
+  }
+  int blogLocalId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogIdAndXmlRpcUrl(intBlogId,xmlRpcUrl);
+  Blog firstBlog=WordPress.wpDB.instantiateBlogByLocalId(blogLocalId);
+  new ApiHelper.RefreshBlogContentTask(firstBlog,null).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,false);
+}

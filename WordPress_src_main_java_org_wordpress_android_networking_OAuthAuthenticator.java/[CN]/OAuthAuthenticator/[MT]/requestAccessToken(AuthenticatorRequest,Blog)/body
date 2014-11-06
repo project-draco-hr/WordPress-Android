@@ -1,5 +1,4 @@
 {
-  Oauth oauth=new Oauth(BuildConfig.OAUTH_APP_ID,BuildConfig.OAUTH_APP_SECRET,BuildConfig.OAUTH_REDIRECT_URI);
   String username;
   String password;
   final SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
@@ -17,24 +16,6 @@
       password=blog.getDotcom_password();
     }
   }
-  Request oauthRequest=oauth.makeRequest(username,password,new Oauth.Listener(){
-    @Override public void onResponse(    Oauth.Token token){
-      if (blog == null) {
-        settings.edit().putString(WordPress.ACCESS_TOKEN_PREFERENCE,token.toString()).commit();
-      }
- else {
-        blog.setApi_key(token.toString());
-        WordPress.wpDB.saveBlog(blog);
-      }
-      SimperiumUtils.configureSimperium(WordPress.getContext(),token.toString());
-      request.sendWithAccessToken(token);
-    }
-  }
-,new Oauth.ErrorListener(){
-    @Override public void onErrorResponse(    VolleyError error){
-      request.abort(error);
-    }
-  }
-);
+  Request oauthRequest=makeRequest(username,password,request,blog);
   WordPress.requestQueue.add(oauthRequest);
 }

@@ -24,7 +24,6 @@
         return;
       }
       endProgress();
-      SetupBlog setupBlog=new SetupBlog();
       try {
         JSONObject details=createSiteResponse.getJSONObject("blog_details");
         String blogName=details.getString("blogname");
@@ -34,7 +33,7 @@
         final SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(getActivity());
         String username=settings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,"");
         String password=WordPressDB.decryptPassword(settings.getString(WordPress.WPCOM_PASSWORD_PREFERENCE,null));
-        setupBlog.addOrUpdateBlog(blogName,xmlRpcUrl,homeUrl,blogId,username,password,true);
+        BlogUtils.addOrUpdateBlog(blogName,xmlRpcUrl,homeUrl,blogId,username,password,null,null,true,true);
         ToastUtils.showToast(getActivity(),R.string.new_blog_wpcom_created);
       }
  catch (      JSONException e) {

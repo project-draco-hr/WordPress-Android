@@ -1,0 +1,21 @@
+{
+  WordPress.requestQueue.add(makeOAuthRequest(mUsername,mPassword,new Oauth.Listener(){
+    @SuppressLint("CommitPrefEdits") @Override public void onResponse(    final Oauth.Token token){
+      SimperiumUtils.configureSimperium(WordPress.getContext(),token.toString());
+      SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
+      SharedPreferences.Editor editor=settings.edit();
+      editor.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mUsername);
+      editor.putString(WordPress.WPCOM_PASSWORD_PREFERENCE,mPassword);
+      editor.putString(WordPress.ACCESS_TOKEN_PREFERENCE,token.toString());
+      editor.commit();
+      mCallback.onSuccess();
+    }
+  }
+,new Oauth.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      JSONObject errorObject=VolleyUtils.volleyErrorToJSON(volleyError);
+      mCallback.onError(restLoginErrorToMsgId(errorObject),false,false);
+    }
+  }
+));
+}
