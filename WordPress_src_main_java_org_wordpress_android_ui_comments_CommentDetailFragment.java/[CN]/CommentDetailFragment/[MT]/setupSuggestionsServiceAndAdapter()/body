@@ -1,28 +1,8 @@
 {
   if (!isAdded())   return;
-  Blog blog=WordPress.wpDB.getBlogForDotComBlogId(Integer.toString(mRemoteBlogId));
-  if (!blog.isDotcomFlag()) {
-    return;
-  }
   final Context context=getActivity();
-  mSuggestionAdapter=new SuggestionAdapter(context);
-  mEditReply.setAdapter(mSuggestionAdapter);
-  mEditReply.setTokenizer(new SuggestionTokenizer());
-  mEditReply.setThreshold(1);
-  List<Suggestion> suggestions=SuggestionTable.getSuggestionsForSite(mRemoteBlogId);
-  if (suggestions.isEmpty()) {
-    Intent intent=new Intent(context,SuggestionService.class);
-    ServiceConnection connection=new ServiceConnection(){
-      @Override public void onServiceConnected(      ComponentName className,      IBinder binder){
-        SuggestionService.SuggestionBinder b=(SuggestionService.SuggestionBinder)binder;
-        SuggestionService suggestionService=b.getService();
-        suggestionService.updateSuggestions(mRemoteBlogId);
-      }
-      @Override public void onServiceDisconnected(      ComponentName componentName){
-      }
-    }
-;
-    context.bindService(intent,connection,Context.BIND_AUTO_CREATE);
+  mSuggestionAdapter=SuggestionUtils.setupSuggestions(mRemoteBlogId,context);
+  if (mSuggestionAdapter != null) {
+    mEditReply.setAdapter(mSuggestionAdapter);
   }
-  mSuggestionAdapter.setSuggestionList(suggestions);
 }
