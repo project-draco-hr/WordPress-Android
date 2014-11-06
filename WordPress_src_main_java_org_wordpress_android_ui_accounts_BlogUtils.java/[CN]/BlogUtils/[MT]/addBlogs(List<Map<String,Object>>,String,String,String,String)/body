@@ -1,0 +1,16 @@
+{
+  boolean retValue=false;
+  for (  Map<String,Object> blogMap : blogList) {
+    String blogName=StringUtils.unescapeHTML(blogMap.get("blogName").toString());
+    String xmlrpc=blogMap.get("xmlrpc").toString();
+    String homeUrl=blogMap.get("url").toString();
+    String blogId=blogMap.get("blogid").toString();
+    boolean isVisible=true;
+    if (blogMap.containsKey("isVisible")) {
+      isVisible=MapUtils.getMapBool(blogMap,"isVisible");
+    }
+    boolean isAdmin=MapUtils.getMapBool(blogMap,"isAdmin");
+    retValue|=addOrUpdateBlog(blogName,xmlrpc,homeUrl,blogId,username,password,httpUsername,httpPassword,isAdmin,isVisible);
+  }
+  return retValue;
+}

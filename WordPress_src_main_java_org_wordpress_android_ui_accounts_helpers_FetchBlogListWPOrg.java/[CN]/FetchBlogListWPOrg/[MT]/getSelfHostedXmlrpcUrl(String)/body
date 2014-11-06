@@ -1,0 +1,39 @@
+{
+  String xmlrpcUrl;
+  url=UrlUtils.convertUrlToPunycodeIfNeeded(url);
+  url=UrlUtils.addUrlSchemeIfNeeded(url,false);
+  if (!URLUtil.isValidUrl(url)) {
+    mErrorMsgId=org.wordpress.android.R.string.invalid_url_message;
+    return null;
+  }
+  String rsdUrl;
+  try {
+    rsdUrl=getRsdUrl(url);
+  }
+ catch (  SSLHandshakeException e) {
+    if (!UrlUtils.getDomainFromUrl(url).endsWith("wordpress.com")) {
+      mErroneousSslCertificate=true;
+    }
+    AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
+    return null;
+  }
+  try {
+    if (rsdUrl != null) {
+      xmlrpcUrl=ApiHelper.getXMLRPCUrl(rsdUrl);
+      if (xmlrpcUrl == null) {
+        xmlrpcUrl=rsdUrl.replace("?rsd","");
+      }
+    }
+ else {
+      xmlrpcUrl=getXmlrpcByUserEnteredPath(url);
+    }
+  }
+ catch (  SSLHandshakeException e) {
+    if (!UrlUtils.getDomainFromUrl(url).endsWith("wordpress.com")) {
+      mErroneousSslCertificate=true;
+    }
+    AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
+    return null;
+  }
+  return xmlrpcUrl;
+}
