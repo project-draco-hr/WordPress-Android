@@ -1,0 +1,42 @@
+{
+  new Thread(){
+    @Override public void run(){
+      final ReaderBlogIdPostIdList idList;
+      if (mIsSinglePostView) {
+        idList=new ReaderBlogIdPostIdList();
+        idList.add(new ReaderBlogIdPostId(blogId,postId));
+      }
+ else {
+        int maxPosts=ReaderConstants.READER_MAX_POSTS_TO_DISPLAY;
+switch (getPostListType()) {
+case TAG_FOLLOWED:
+case TAG_PREVIEW:
+          idList=ReaderPostTable.getBlogIdPostIdsWithTag(getCurrentTag(),maxPosts);
+        break;
+case BLOG_PREVIEW:
+      idList=ReaderPostTable.getBlogIdPostIdsInBlog(blogId,maxPosts);
+    break;
+default :
+  return;
+}
+}
+final int currentPosition=mViewPager.getCurrentItem();
+final int newPosition=idList.indexOf(blogId,postId);
+runOnUiThread(new Runnable(){
+@Override public void run(){
+AppLog.d(AppLog.T.READER,"reader pager > creating adapter");
+PostPagerAdapter adapter=new PostPagerAdapter(getFragmentManager(),idList);
+mViewPager.setAdapter(adapter);
+if (adapter.isValidPosition(newPosition)) {
+  mViewPager.setCurrentItem(newPosition);
+}
+ else if (adapter.isValidPosition(currentPosition)) {
+  mViewPager.setCurrentItem(currentPosition);
+}
+}
+}
+);
+}
+}
+.start();
+}

@@ -1,0 +1,22 @@
+{
+  String xmlrpcUrl=null;
+  if (mSelfHostedUrl != null && mSelfHostedUrl.length() != 0) {
+    xmlrpcUrl=getSelfHostedXmlrpcUrl(mSelfHostedUrl);
+  }
+  if (xmlrpcUrl == null) {
+    if (!mHttpAuthRequired && mErrorMsgId == 0) {
+      mErrorMsgId=org.wordpress.android.R.string.no_site_error;
+    }
+    callback.onError(mErrorMsgId,mHttpAuthRequired,mErroneousSslCertificate);
+    return;
+  }
+  URI xmlrpcUri;
+  try {
+    xmlrpcUri=URI.create(xmlrpcUrl);
+    getBlogList(xmlrpcUri,callback);
+  }
+ catch (  Exception e) {
+    mErrorMsgId=org.wordpress.android.R.string.no_site_error;
+    callback.onError(mErrorMsgId,mHttpAuthRequired,mErroneousSslCertificate);
+  }
+}

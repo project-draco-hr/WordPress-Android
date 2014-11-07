@@ -1,0 +1,83 @@
+{
+  String xmlRpcUrl;
+  if (!UrlUtils.isValidUrlAndHostNotNull(baseUrl)) {
+    AppLog.e(T.NUX,"invalid URL: " + baseUrl);
+    mErrorMsgId=org.wordpress.android.R.string.invalid_url_message;
+    return null;
+  }
+  URI uri=URI.create(baseUrl);
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(uri,mHttpUsername,mHttpPassword);
+  try {
+    client.call("system.listMethods");
+    xmlRpcUrl=baseUrl;
+    return xmlRpcUrl;
+  }
+ catch (  XMLRPCException e) {
+    AppLog.i(T.NUX,"system.listMethods failed on: " + baseUrl);
+    if (isHTTPAuthErrorMessage(e)) {
+      return null;
+    }
+  }
+catch (  SSLHandshakeException e) {
+    if (!UrlUtils.getDomainFromUrl(baseUrl).endsWith("wordpress.com")) {
+      mErroneousSslCertificate=true;
+    }
+    AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
+    return null;
+  }
+catch (  SSLPeerUnverifiedException e) {
+    if (!UrlUtils.getDomainFromUrl(baseUrl).endsWith("wordpress.com")) {
+      mErroneousSslCertificate=true;
+    }
+    AppLog.w(T.NUX,"SSLPeerUnverifiedException failed. Erroneous SSL certificate detected.");
+    return null;
+  }
+catch (  IOException e) {
+    AppLog.i(T.NUX,"system.listMethods failed on: " + baseUrl);
+    if (isHTTPAuthErrorMessage(e)) {
+      return null;
+    }
+  }
+catch (  XmlPullParserException e) {
+    AppLog.i(T.NUX,"system.listMethods failed on: " + baseUrl);
+    if (isHTTPAuthErrorMessage(e)) {
+      return null;
+    }
+  }
+  String guessURL=baseUrl;
+  if (guessURL.substring(guessURL.length() - 1,guessURL.length()).equals("/")) {
+    guessURL=guessURL.substring(0,guessURL.length() - 1);
+  }
+  guessURL+="/xmlrpc.php";
+  uri=URI.create(guessURL);
+  client=XMLRPCFactory.instantiate(uri,mHttpUsername,mHttpPassword);
+  try {
+    client.call("system.listMethods");
+    xmlRpcUrl=guessURL;
+    return xmlRpcUrl;
+  }
+ catch (  XMLRPCException e) {
+    AppLog.e(T.NUX,"system.listMethods failed on: " + guessURL,e);
+  }
+catch (  SSLHandshakeException e) {
+    if (!UrlUtils.getDomainFromUrl(baseUrl).endsWith("wordpress.com")) {
+      mErroneousSslCertificate=true;
+    }
+    AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
+    return null;
+  }
+catch (  SSLPeerUnverifiedException e) {
+    if (!UrlUtils.getDomainFromUrl(baseUrl).endsWith("wordpress.com")) {
+      mErroneousSslCertificate=true;
+    }
+    AppLog.w(T.NUX,"SSLPeerUnverifiedException failed. Erroneous SSL certificate detected.");
+    return null;
+  }
+catch (  IOException e) {
+    AppLog.e(T.NUX,"system.listMethods failed on: " + guessURL,e);
+  }
+catch (  XmlPullParserException e) {
+    AppLog.e(T.NUX,"system.listMethods failed on: " + guessURL,e);
+  }
+  return null;
+}
