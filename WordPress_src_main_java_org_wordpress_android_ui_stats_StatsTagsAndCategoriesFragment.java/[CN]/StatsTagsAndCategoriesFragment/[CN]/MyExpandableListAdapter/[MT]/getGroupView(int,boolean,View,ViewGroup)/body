@@ -1,0 +1,24 @@
+{
+  if (convertView == null) {
+    convertView=inflater.inflate(R.layout.stats_list_cell,parent,false);
+    convertView.setTag(new StatsViewHolder(convertView));
+  }
+  final StatsViewHolder holder=(StatsViewHolder)convertView.getTag();
+  TagsModel group=(TagsModel)getGroup(groupPosition);
+  StringBuilder groupName=new StringBuilder();
+  List<TagModel> tags=group.getTags();
+  for (int i=0; i < tags.size(); i++) {
+    TagModel currentTag=tags.get(i);
+    groupName.append(currentTag.getName());
+    if (i < (tags.size() - 1)) {
+      groupName.append(" | ");
+    }
+  }
+  int total=group.getViews();
+  int children=getChildrenCount(groupPosition);
+  holder.entryTextView.setText(groupName);
+  holder.totalsTextView.setText(FormatUtils.formatDecimal(total));
+  holder.networkImageView.setImageResource(R.drawable.format_bar_button_link_selector);
+  holder.chevronImageView.setVisibility(children > 0 ? View.VISIBLE : View.GONE);
+  return convertView;
+}
