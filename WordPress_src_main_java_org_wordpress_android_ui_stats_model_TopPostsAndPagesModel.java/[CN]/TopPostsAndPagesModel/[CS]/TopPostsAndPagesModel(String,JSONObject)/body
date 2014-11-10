@@ -16,11 +16,15 @@
   if (postViewsArray == null) {
     postViewsArray=new JSONArray();
   }
-  ArrayList<TopPostModel> list=new ArrayList<TopPostModel>(postViewsArray.length());
+  ArrayList<SingleItemModel> list=new ArrayList<SingleItemModel>(postViewsArray.length());
   for (int i=0; i < postViewsArray.length(); i++) {
     try {
       JSONObject postObject=postViewsArray.getJSONObject(i);
-      TopPostModel currentModel=new TopPostModel(blogID,postObject);
+      String itemID=postObject.getString("id");
+      String itemTitle=postObject.getString("title");
+      int itemTotal=postObject.getInt("views");
+      String itemURL=postObject.getString("href");
+      SingleItemModel currentModel=new SingleItemModel(blogID,mDate,itemID,itemTitle,itemTotal,itemURL,null);
       list.add(currentModel);
     }
  catch (    JSONException e) {

@@ -5,18 +5,18 @@
     StatsViewHolder viewHolder=new StatsViewHolder(rowView);
     rowView.setTag(viewHolder);
   }
-  final TopPostModel currentRowData=list.get(position);
+  final SingleItemModel currentRowData=list.get(position);
   StatsViewHolder holder=(StatsViewHolder)rowView.getTag();
   holder.setEntryTextOrLink(currentRowData.getUrl(),currentRowData.getTitle());
-  holder.totalsTextView.setText(FormatUtils.formatDecimal(currentRowData.getViews()));
+  holder.totalsTextView.setText(FormatUtils.formatDecimal(currentRowData.getTotals()));
   holder.totalsTextView.setPaintFlags(holder.totalsTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
   holder.totalsTextView.setTextColor(getResources().getColor(R.color.wordpress_blue));
   holder.totalsTextView.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View view){
-      AppLog.w(AppLog.T.STATS,currentRowData.getPostId() + "");
+      AppLog.w(AppLog.T.STATS,currentRowData.getItemID() + "");
       Intent statsPostViewIntent=new Intent(getActivity(),StatsSinglePostDetailsActivity.class);
       statsPostViewIntent.putExtra(StatsActivity.ARG_LOCAL_TABLE_BLOG_ID,getLocalTableBlogID());
-      statsPostViewIntent.putExtra(StatsSinglePostDetailsActivity.ARG_REMOTE_POST_ID,currentRowData.getPostId());
+      statsPostViewIntent.putExtra(StatsSinglePostDetailsActivity.ARG_REMOTE_POST_ID,currentRowData.getItemID());
       getActivity().startActivity(statsPostViewIntent);
     }
   }

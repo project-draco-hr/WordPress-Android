@@ -12,10 +12,13 @@
   }
  else {
     JSONArray resultsJSON=groupJSON.getJSONArray("results");
-    mResults=new ArrayList<ReferrerResultModel>(resultsJSON.length());
+    mResults=new ArrayList<SingleItemModel>(resultsJSON.length());
     for (int i=0; i < resultsJSON.length(); i++) {
       JSONObject currentResultJSON=resultsJSON.getJSONObject(i);
-      ReferrerResultModel rm=new ReferrerResultModel(blogId,date,currentResultJSON);
+      String name=currentResultJSON.getString("name");
+      int totals=currentResultJSON.getInt("views");
+      String icon=currentResultJSON.optString("icon");
+      SingleItemModel rm=new SingleItemModel(blogId,date,null,name,totals,null,icon);
       mResults.add(rm);
     }
   }
