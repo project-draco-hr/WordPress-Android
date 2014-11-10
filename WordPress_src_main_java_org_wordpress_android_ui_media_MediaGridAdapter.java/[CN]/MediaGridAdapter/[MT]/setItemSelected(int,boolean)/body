@@ -1,11 +1,14 @@
 {
   Cursor cursor=(Cursor)getItem(position);
-  String mediaId=cursor.getString(cursor.getColumnIndex("mediaId"));
-  if (selected) {
-    mCheckedItems.add(mediaId);
-  }
+  int columnIndex=cursor.getColumnIndex("mediaId");
+  if (columnIndex != -1) {
+    String mediaId=cursor.getString(columnIndex);
+    if (selected) {
+      mCheckedItems.add(mediaId);
+    }
  else {
-    mCheckedItems.remove(mediaId);
+      mCheckedItems.remove(mediaId);
+    }
+    notifyDataSetChanged();
   }
-  notifyDataSetChanged();
 }

@@ -1,0 +1,22 @@
+{
+  final String blogId=String.valueOf(WordPress.getCurrentBlog().getLocalTableBlogId());
+  List<String> sanitizedIds=new ArrayList<String>(ids.size());
+  getFragmentManager().popBackStack();
+  for (  String currentID : ids) {
+    if (MediaUtils.canDeleteMedia(blogId,currentID))     sanitizedIds.add(currentID);
+  }
+  if (isAdded() && sanitizedIds.size() != ids.size()) {
+    if (ids.size() == 1) {
+      Toast.makeText(getActivity(),R.string.wait_until_upload_completes,Toast.LENGTH_LONG).show();
+    }
+ else {
+      Toast.makeText(getActivity(),R.string.cannot_delete_multi_media_items,Toast.LENGTH_LONG).show();
+    }
+  }
+  WordPress.wpDB.setMediaFilesMarkedForDelete(blogId,sanitizedIds);
+  clearCheckedItems();
+  refreshMediaFromDB();
+  if (isAdded()) {
+    getActivity().startService(new Intent(getActivity(),MediaDeleteService.class));
+  }
+}
