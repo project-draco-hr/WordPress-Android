@@ -1,6 +1,12 @@
 {
-  Intent intent=new Intent();
-  intent.putExtra(RESULT_IDS,(Serializable)mGridAdapter.getCheckedItems());
-  setResult(RESULT_OK,intent);
-  finish();
+  if (mIsSelectOneItem) {
+    Intent intent=new Intent();
+    intent.putStringArrayListExtra(RESULT_IDS,mGridAdapter.getCheckedItems());
+    setResult(RESULT_OK,intent);
+    finish();
+  }
+ else {
+    mGridAdapter.toggleItemSelected(position);
+    updateMenuTitle(mGridAdapter.getCheckedItems().size());
+  }
 }
