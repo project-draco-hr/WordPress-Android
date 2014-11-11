@@ -1,12 +1,14 @@
 {
   super.onCreate(savedInstanceState);
-  ArrayList<String> checkedItems=new ArrayList<String>();
+  ArrayList<String> selectedItems=new ArrayList<String>();
   mFilteredItems=getIntent().getStringArrayListExtra(PARAM_FILTERED_IDS);
   mIsSelectOneItem=getIntent().getBooleanExtra(PARAM_SELECT_ONE_ITEM,false);
   ArrayList<String> prevSelectedItems=getIntent().getStringArrayListExtra(PARAM_SELECTED_IDS);
-  if (prevSelectedItems != null)   checkedItems.addAll(prevSelectedItems);
+  if (prevSelectedItems != null) {
+    selectedItems.addAll(prevSelectedItems);
+  }
   if (savedInstanceState != null) {
-    checkedItems.addAll(savedInstanceState.getStringArrayList(STATE_SELECTED_ITEMS));
+    selectedItems.addAll(savedInstanceState.getStringArrayList(STATE_SELECTED_ITEMS));
     mFilteredItems=savedInstanceState.getStringArrayList(STATE_FILTERED_ITEMS);
     mIsSelectOneItem=savedInstanceState.getBoolean(STATE_IS_SELECT_ONE_ITEM,mIsSelectOneItem);
   }
@@ -23,9 +25,10 @@
   }
  else {
     mActionMode=startActionMode(this);
-    mActionMode.setTitle(checkedItems.size() + " " + getString(R.string.items_selected));
+    mActionMode.setTitle(String.format(getString(R.string.cab_selected),mGridAdapter.getSelectedItems().size()));
   }
-  mGridAdapter=new MediaGridAdapter(this,null,0,checkedItems,MediaImageLoader.getInstance());
+  mGridAdapter=new MediaGridAdapter(this,null,0,MediaImageLoader.getInstance());
+  mGridAdapter.setSelectedItems(selectedItems);
   mGridAdapter.setCallback(this);
   mGridView.setAdapter(mGridAdapter);
 }

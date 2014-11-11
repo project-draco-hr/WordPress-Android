@@ -1,10 +1,11 @@
 {
   if (savedInstanceState == null)   return;
   boolean isInMultiSelectMode=savedInstanceState.getBoolean(BUNDLE_IN_MULTI_SELECT_MODE);
-  if (savedInstanceState.containsKey(BUNDLE_CHECKED_STATES)) {
-    mCheckedItems=savedInstanceState.getStringArrayList(BUNDLE_CHECKED_STATES);
+  if (savedInstanceState.containsKey(BUNDLE_SELECTED_STATES)) {
+    ArrayList selectedItems=savedInstanceState.getStringArrayList(BUNDLE_SELECTED_STATES);
+    mGridAdapter.setSelectedItems(selectedItems);
     if (isInMultiSelectMode) {
-      multiSelectChange(mCheckedItems.size());
+      setFilterSpinnerVisible(mGridAdapter.getSelectedItems().size() == 0);
       mPullToRefreshHelper.setEnabled(false);
     }
   }
