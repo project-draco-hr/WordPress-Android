@@ -1,0 +1,24 @@
+{
+  if (!isAdded())   return;
+  final android.support.v7.app.ActionBar actionBar=((ActionBarActivity)getActivity()).getSupportActionBar();
+  final Toolbar toolbar=(Toolbar)getActivity().findViewById(R.id.toolbar);
+  if (actionBar == null || toolbar == null) {
+    return;
+  }
+  if (getPostListType().equals(ReaderPostListType.TAG_FOLLOWED)) {
+    actionBar.setDisplayShowTitleEnabled(false);
+    actionBar.setDisplayHomeAsUpEnabled(false);
+    Object spinnerTag="reader-spinner";
+    Spinner spinner=(Spinner)toolbar.findViewWithTag(spinnerTag);
+    if (spinner == null) {
+      spinner=new Spinner(getActivity());
+      spinner.setTag(spinnerTag);
+      toolbar.addView(spinner);
+      spinner.setAdapter(getSpinnerAdapter());
+    }
+  }
+ else {
+    actionBar.setDisplayShowTitleEnabled(true);
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
+}
