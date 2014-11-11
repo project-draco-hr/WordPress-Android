@@ -33,12 +33,30 @@ model=new CommentFollowersModel(mRequestBlogId,response);
 break;
 case TAGS_AND_CATEGORIES:
 JSONArray outerTags=response.getJSONArray("tags");
+if (outerTags == null) {
+break;
+}
 ArrayList<TagsModel> tagsParsed=new ArrayList<TagsModel>(outerTags.length());
 for (int i=0; i < outerTags.length(); i++) {
 JSONObject current=outerTags.getJSONObject(i);
 tagsParsed.add(new TagsModel(mRequestBlogId,current));
 }
 model=tagsParsed;
+break;
+case PUBLICIZE:
+JSONArray services=response.getJSONArray("services");
+if (services == null || services.length() == 0) {
+break;
+}
+ArrayList<SingleItemModel> servicesParsed=new ArrayList<SingleItemModel>(services.length());
+for (int i=0; i < services.length(); i++) {
+JSONObject current=services.getJSONObject(i);
+String serviceName=current.getString("service");
+int followers=current.getInt("followers");
+SingleItemModel currentItem=new SingleItemModel(mRequestBlogId,mServiceRequestedDate,null,serviceName,followers,null,null);
+servicesParsed.add(currentItem);
+}
+model=servicesParsed;
 break;
 }
 return model;
