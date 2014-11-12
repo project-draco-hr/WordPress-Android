@@ -1,7 +1,16 @@
 {
   if (mSpinnerAdapter == null) {
     AppLog.d(T.READER,"reader post list > creating spinner adapter");
-    mSpinnerAdapter=new ReaderTagSpinnerAdapter(getActivity());
+    ReaderInterfaces.DataLoadedListener dataListener=new ReaderInterfaces.DataLoadedListener(){
+      @Override public void onDataLoaded(      boolean isEmpty){
+        if (isAdded()) {
+          AppLog.d(T.READER,"reader post list > spinner adapter loaded");
+          selectTagInSpinner(getCurrentTag());
+        }
+      }
+    }
+;
+    mSpinnerAdapter=new ReaderTagSpinnerAdapter(getActivity(),dataListener);
   }
   return mSpinnerAdapter;
 }
