@@ -2,15 +2,15 @@
   final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
   if (currentBlog == null) {
     AppLog.w(T.STATS,"Current blog is null. This should never happen here.");
-    mPullToRefreshHelper.setRefreshing(false);
+    mSwipeToRefreshHelper.setRefreshing(false);
     return;
   }
   if (!NetworkUtils.isNetworkAvailable(this)) {
-    mPullToRefreshHelper.setRefreshing(false);
+    mSwipeToRefreshHelper.setRefreshing(false);
     return;
   }
   if (mIsUpdatingStats) {
-    mPullToRefreshHelper.setRefreshing(false);
+    mSwipeToRefreshHelper.setRefreshing(false);
     AppLog.w(T.STATS,"stats are already updating, refresh cancelled");
     return;
   }
@@ -24,7 +24,7 @@
         currentBlog.setDotcom_username(username);
         currentBlog.setDotcom_password(password);
         WordPress.wpDB.saveBlog(currentBlog);
-        mPullToRefreshHelper.setRefreshing(true);
+        mSwipeToRefreshHelper.setRefreshing(true);
       }
  else {
         startWPComLoginActivity();
@@ -43,7 +43,7 @@
     return;
   }
   if (!currentBlog.isDotcomFlag() && !currentBlog.hasValidJetpackCredentials() && !WordPress.hasValidWPComCredentials(this)) {
-    mPullToRefreshHelper.setRefreshing(false);
+    mSwipeToRefreshHelper.setRefreshing(false);
     AppLog.w(T.STATS,"Jetpack blog with no wpcom credentials");
     return;
   }
