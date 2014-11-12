@@ -8,11 +8,14 @@
  else {
     mPostListType=ReaderTypes.DEFAULT_POST_LIST_TYPE;
   }
-  if (mPostListType.isPreviewType()) {
-    setContentView(R.layout.reader_activity_post_list);
-  }
- else {
-    createMenuDrawer(R.layout.reader_activity_post_list);
+  if (mPostListType.isPreviewType() && mDrawerToggle != null) {
+    mDrawerToggle.setDrawerIndicatorEnabled(false);
+    mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        onBackPressed();
+      }
+    }
+);
   }
 switch (mPostListType) {
 case TAG_PREVIEW:
