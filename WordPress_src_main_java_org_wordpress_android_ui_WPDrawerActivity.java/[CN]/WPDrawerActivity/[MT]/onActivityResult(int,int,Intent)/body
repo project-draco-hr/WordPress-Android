@@ -2,33 +2,31 @@
   super.onActivityResult(requestCode,resultCode,data);
 switch (requestCode) {
 case ADD_ACCOUNT_REQUEST:
-    mNewBlogActivityRunning=false;
-  if (resultCode == RESULT_OK) {
-    getBlogNames();
-    setupCurrentBlog();
-    WordPress.registerForCloudMessaging(this);
-    showReaderIfNoBlog();
-  }
+    if (resultCode == RESULT_OK) {
+      getBlogNames();
+      setupCurrentBlog();
+      WordPress.registerForCloudMessaging(this);
+      showReaderIfNoBlog();
+    }
  else {
-    finish();
-  }
-break;
+      finish();
+    }
+  break;
 case SETTINGS_REQUEST:
 if (resultCode != PreferencesActivity.RESULT_SIGNED_OUT) {
-initMenuDrawer();
-String[] blogNames=getBlogNames();
-if (blogNames.length >= 1) {
-  setupCurrentBlog();
-}
-if (data != null && data.getBooleanExtra(PreferencesActivity.CURRENT_BLOG_CHANGED,true)) {
-  blogChanged();
-}
-WordPress.registerForCloudMessaging(this);
+  initMenuDrawer();
+  String[] blogNames=getBlogNames();
+  if (blogNames.length >= 1) {
+    setupCurrentBlog();
+  }
+  if (data != null && data.getBooleanExtra(PreferencesActivity.CURRENT_BLOG_CHANGED,true)) {
+    blogChanged();
+  }
+  WordPress.registerForCloudMessaging(this);
 }
 break;
 case AUTHENTICATE_REQUEST:
 if (resultCode == RESULT_CANCELED) {
-mReauthCanceled=true;
 Intent i=new Intent(this,SignInActivity.class);
 startActivityForResult(i,ADD_ACCOUNT_REQUEST);
 }
