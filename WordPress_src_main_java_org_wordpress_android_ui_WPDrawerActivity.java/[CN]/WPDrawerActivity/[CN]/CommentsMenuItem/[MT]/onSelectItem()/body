@@ -1,0 +1,12 @@
+{
+  if (WordPress.getCurrentBlog() == null)   return;
+  if (!(WPDrawerActivity.this instanceof CommentsActivity)) {
+    mShouldFinish=true;
+    AnalyticsTracker.track(AnalyticsTracker.Stat.OPENED_COMMENTS);
+  }
+  Intent intent=new Intent(WPDrawerActivity.this,CommentsActivity.class);
+  intent.putExtra("id",WordPress.getCurrentBlog().getLocalTableBlogId());
+  intent.putExtra("isNew",true);
+  intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+  startActivity(intent);
+}

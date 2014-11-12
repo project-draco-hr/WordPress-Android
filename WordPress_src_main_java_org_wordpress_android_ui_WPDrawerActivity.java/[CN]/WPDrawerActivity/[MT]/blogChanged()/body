@@ -1,0 +1,23 @@
+{
+  WordPress.wpDB.updateLastBlogId(WordPress.getCurrentLocalTableBlogId());
+  Iterator<MenuDrawerItem> itemIterator=mMenuItems.iterator();
+  while (itemIterator.hasNext()) {
+    MenuDrawerItem item=itemIterator.next();
+    if (item.isSelected() && !item.isVisible()) {
+      if (mAdapter.getCount() > 0) {
+        mAdapter.getItem(0).selectItem();
+      }
+      if (item.hasItemId()) {
+        ActivityId.trackLastActivity(WPDrawerActivity.this,item.getItemId());
+      }
+      break;
+    }
+  }
+  refreshCurrentBlogContent();
+  if (shouldUpdateCurrentBlogStatsInBackground()) {
+    WordPress.sUpdateCurrentBlogStats.forceRun();
+  }
+  if (WordPress.getCurrentBlog() != null) {
+    onBlogChanged();
+  }
+}
