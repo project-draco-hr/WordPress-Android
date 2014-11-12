@@ -1,6 +1,13 @@
 {
-  Intent intent=new Intent();
-  intent.putExtra(RESULT_IDS,mGridAdapter.getCheckedItems());
-  setResult(RESULT_OK,intent);
-  finish();
+  if (mIsSelectOneItem) {
+    mGridAdapter.setItemSelected(position,true);
+    Intent intent=new Intent();
+    intent.putStringArrayListExtra(RESULT_IDS,mGridAdapter.getSelectedItems());
+    setResult(RESULT_OK,intent);
+    finish();
+  }
+ else {
+    mGridAdapter.toggleItemSelected(position);
+    mActionMode.setTitle(String.format(getString(R.string.cab_selected),mGridAdapter.getSelectedItems().size()));
+  }
 }
