@@ -1,19 +1,25 @@
 {
-  View view=super.getView(position,convertView,parent);
-  MenuDrawerItem item=getItem(position);
-  boolean isSelected=item.isSelected();
-  TextView titleTextView=(TextView)view.findViewById(R.id.menu_row_title);
-  titleTextView.setText(item.getTitleRes());
-  titleTextView.setSelected(isSelected);
-  ImageView iconImageView=(ImageView)view.findViewById(R.id.menu_row_icon);
-  iconImageView.setImageResource(item.getIconRes());
-  view.findViewById(R.id.menu_row_badge).setVisibility(View.GONE);
-  if (isSelected) {
-    view.setBackgroundResource(R.color.md__itemBackground);
+  final DrawerItemViewHolder holder;
+  if (convertView == null || !(convertView.getTag() instanceof DrawerItemViewHolder)) {
+    convertView=super.getView(position,convertView,parent);
+    holder=new DrawerItemViewHolder(convertView);
+    convertView.setTag(holder);
   }
  else {
-    view.setBackgroundResource(R.drawable.md_list_selector);
+    holder=(DrawerItemViewHolder)convertView.getTag();
   }
-  item.configureView(view);
-  return view;
+  MenuDrawerItem item=getItem(position);
+  boolean isSelected=item.isSelected();
+  holder.txtTitle.setText(item.getTitleRes());
+  holder.txtTitle.setSelected(isSelected);
+  holder.imgIcon.setImageResource(item.getIconRes());
+  holder.txtBadge.setVisibility(View.GONE);
+  if (isSelected) {
+    convertView.setBackgroundResource(R.color.md__itemBackground);
+  }
+ else {
+    convertView.setBackgroundResource(R.drawable.md_list_selector);
+  }
+  item.configureView(convertView);
+  return convertView;
 }
