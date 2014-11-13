@@ -1,18 +1,15 @@
 {
   View view=super.getView(position,convertView,parent);
   MenuDrawerItem item=getItem(position);
+  boolean isSelected=item.isSelected();
   TextView titleTextView=(TextView)view.findViewById(R.id.menu_row_title);
   titleTextView.setText(item.getTitleRes());
+  titleTextView.setSelected(isSelected);
   ImageView iconImageView=(ImageView)view.findViewById(R.id.menu_row_icon);
   iconImageView.setImageResource(item.getIconRes());
   view.findViewById(R.id.menu_row_badge).setVisibility(View.GONE);
-  if (item.isSelected()) {
-    int bottom=view.getPaddingBottom();
-    int top=view.getPaddingTop();
-    int right=view.getPaddingRight();
-    int left=view.getPaddingLeft();
-    view.setBackgroundResource(R.color.blue_dark);
-    view.setPadding(left,top,right,bottom);
+  if (isSelected) {
+    view.setBackgroundResource(R.color.md__itemBackground);
   }
  else {
     view.setBackgroundResource(R.drawable.md_list_selector);
