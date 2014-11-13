@@ -1,21 +1,21 @@
 {
-  View view=super.getView(position,convertView,parent);
-  MenuDrawerItem item=getItem(position);
-  TextView titleTextView=(TextView)view.findViewById(R.id.menu_row_title);
-  titleTextView.setText(item.getTitleRes());
-  ImageView iconImageView=(ImageView)view.findViewById(R.id.menu_row_icon);
-  iconImageView.setImageResource(item.getIconRes());
-  view.findViewById(R.id.menu_row_badge).setVisibility(View.GONE);
-  if (item.isSelected()) {
-    int bottom=view.getPaddingBottom();
-    int top=view.getPaddingTop();
-    int right=view.getPaddingRight();
-    int left=view.getPaddingLeft();
-    view.setBackgroundResource(R.color.blue_dark);
-    view.setPadding(left,top,right,bottom);
+  final View view=super.getView(position,convertView,parent);
+  final TextView txtTitle=(TextView)view.findViewById(R.id.menu_row_title);
+  final TextView txtBadge=(TextView)view.findViewById(R.id.menu_row_badge);
+  final ImageView imgIcon=(ImageView)view.findViewById(R.id.menu_row_icon);
+  final MenuDrawerItem item=getItem(position);
+  boolean isSelected=item.isSelected();
+  txtTitle.setText(item.getTitleRes());
+  txtTitle.setSelected(isSelected);
+  imgIcon.setImageResource(item.getIconRes());
+  txtBadge.setVisibility(View.GONE);
+  if (isSelected) {
+    view.setBackgroundResource(R.color.md__background_selected);
+    imgIcon.setColorFilter(iconTintSelected);
   }
  else {
-    view.setBackgroundResource(R.drawable.md_list_selector);
+    view.setBackgroundResource(R.color.md__background);
+    imgIcon.setColorFilter(iconTint);
   }
   item.configureView(view);
   return view;
