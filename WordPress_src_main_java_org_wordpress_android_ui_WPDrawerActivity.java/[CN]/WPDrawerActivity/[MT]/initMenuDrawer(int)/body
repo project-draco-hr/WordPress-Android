@@ -1,14 +1,19 @@
 {
   mDrawerLayout=(DrawerLayout)findViewById(R.id.drawer_layout);
   mDrawerListView=(ListView)findViewById(R.id.left_drawer);
-  mAdapter=new MenuAdapter(this);
-  if (mDrawerHeaderView != null) {
-    mDrawerListView.removeHeaderView(mDrawerHeaderView);
-  }
+  View header=getLayoutInflater().inflate(R.layout.menu_drawer_header,mDrawerListView,false);
+  mDrawerListView.addHeaderView(header,null,false);
+  mBlogSpinner=(Spinner)findViewById(R.id.blog_spinner);
   String[] blogNames=getBlogNames();
   if (blogNames.length > 1) {
-    addBlogSpinner(blogNames);
+    mBlogSpinner.setVisibility(View.VISIBLE);
+    mBlogSpinner.setOnItemSelectedListener(mItemSelectedListener);
+    populateBlogSpinner(blogNames);
   }
+ else {
+    mBlogSpinner.setVisibility(View.GONE);
+  }
+  mAdapter=new MenuAdapter(this);
   mDrawerListView.setAdapter(mAdapter);
   mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
     public void onItemClick(    AdapterView<?> parent,    View view,    int position,    long id){
