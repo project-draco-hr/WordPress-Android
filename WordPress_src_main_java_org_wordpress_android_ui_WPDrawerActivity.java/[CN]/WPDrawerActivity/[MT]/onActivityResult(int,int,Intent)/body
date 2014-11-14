@@ -5,6 +5,9 @@ case ADD_ACCOUNT_REQUEST:
     if (resultCode == RESULT_OK) {
       getBlogNames();
       setupCurrentBlog();
+      if (mDrawerListView != null) {
+        initMenuDrawer();
+      }
       WordPress.registerForCloudMessaging(this);
       showReaderIfNoBlog();
     }
@@ -13,7 +16,7 @@ case ADD_ACCOUNT_REQUEST:
     }
   break;
 case SETTINGS_REQUEST:
-if (resultCode != PreferencesActivity.RESULT_SIGNED_OUT) {
+if (mDrawerListView != null && resultCode != PreferencesActivity.RESULT_SIGNED_OUT) {
   initMenuDrawer();
   String[] blogNames=getBlogNames();
   if (blogNames.length >= 1) {
