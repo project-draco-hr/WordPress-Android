@@ -20,8 +20,8 @@
   if (connected) {
     String username=preferences.getString(WordPress.WPCOM_USERNAME_PREFERENCE,null);
     mMixpanel.identify(username);
-    mMixpanel.getPeople().identify(username);
     try {
+      mMixpanel.getPeople().identify(username);
       JSONObject jsonObj=new JSONObject();
       jsonObj.put("$username",username);
       jsonObj.put("$first_name",username);
@@ -29,6 +29,8 @@
     }
  catch (    JSONException e) {
       AppLog.e(AppLog.T.UTILS,e);
+    }
+catch (    OutOfMemoryError outOfMemoryError) {
     }
     retrieveAndRegisterEmailAddressIfApplicable();
   }
