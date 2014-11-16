@@ -47,18 +47,19 @@ mProgress.setVisibility(View.GONE);
 mSwipeToRefreshHelper=new SwipeToRefreshHelper(getActivity(),(SwipeRefreshLayout)rootView.findViewById(R.id.ptr_layout),new RefreshListener(){
 @Override public void onRefreshStarted(){
 if (getActivity() == null || !NetworkUtils.checkConnection(getActivity())) {
-mSwipeToRefreshHelper.setRefreshing(false);
+showSwipeToRefreshProgress(false);
 return;
 }
 switch (getPostListType()) {
 case TAG_FOLLOWED:
 case TAG_PREVIEW:
-updatePostsWithTag(getCurrentTag(),RequestDataAction.LOAD_NEWER,ReaderTypes.RefreshType.MANUAL);
+updatePostsWithTag(getCurrentTag(),RequestDataAction.LOAD_NEWER,RefreshType.MANUAL);
 break;
 case BLOG_PREVIEW:
 updatePostsInCurrentBlog(RequestDataAction.LOAD_NEWER);
 break;
 }
+showSwipeToRefreshProgress(true);
 }
 }
 );
