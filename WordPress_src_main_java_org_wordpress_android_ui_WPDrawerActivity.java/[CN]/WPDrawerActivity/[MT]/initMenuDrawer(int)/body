@@ -30,7 +30,9 @@
   mDrawerListView.setAdapter(mDrawerAdapter);
   mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
     public void onItemClick(    AdapterView<?> parent,    View view,    int position,    long id){
-      mDrawerLayout.closeDrawer(GravityCompat.START);
+      if (!isStaticMenuDrawer()) {
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+      }
       int menuPosition=position - mDrawerListView.getHeaderViewsCount();
       if (menuPosition < 0 || menuPosition >= mDrawerAdapter.getCount()) {
         return;
@@ -45,16 +47,27 @@
     }
   }
 );
-  mDrawerToggle=new ActionBarDrawerToggle(this,mDrawerLayout,mToolbar,R.string.open_drawer,R.string.close_drawer){
-    public void onDrawerClosed(    View view){
-      invalidateOptionsMenu();
-    }
-    public void onDrawerOpened(    View drawerView){
-      invalidateOptionsMenu();
-    }
+  if (isStaticMenuDrawer()) {
+    mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+    mDrawerLayout.setScrimColor(getResources().getColor(R.color.transparent));
+    mDrawerToggle=null;
+    ViewGroup layoutContainer=(ViewGroup)findViewById(R.id.activity_container);
+    int drawerWidth=getResources().getDimensionPixelSize(R.dimen.menu_drawer_width);
+    layoutContainer.setPadding(drawerWidth,0,0,0);
   }
+ else {
+    mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+    mDrawerToggle=new ActionBarDrawerToggle(this,mDrawerLayout,mToolbar,R.string.open_drawer,R.string.close_drawer){
+      public void onDrawerClosed(      View view){
+        invalidateOptionsMenu();
+      }
+      public void onDrawerOpened(      View drawerView){
+        invalidateOptionsMenu();
+      }
+    }
 ;
-  mDrawerToggle.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
+    mDrawerToggle.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
+  }
   if (blogSelection != -1 && mBlogSpinner != null) {
     mBlogSpinner.setSelection(blogSelection);
   }
