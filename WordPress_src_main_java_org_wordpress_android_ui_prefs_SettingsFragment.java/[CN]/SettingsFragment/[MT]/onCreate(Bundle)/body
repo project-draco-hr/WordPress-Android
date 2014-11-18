@@ -3,8 +3,7 @@
   if (savedInstanceState == null) {
     AnalyticsTracker.track(AnalyticsTracker.Stat.OPENED_SETTINGS);
   }
-  addPreferencesFromResource(R.xml.preferences);
-  mNotificationsGroup=(PreferenceGroup)findPreference("wp_pref_notifications_category");
+  addPreferencesFromResource(R.xml.settings);
   OnPreferenceChangeListener preferenceChangeListener=new OnPreferenceChangeListener(){
     @Override public boolean onPreferenceChange(    Preference preference,    Object newValue){
       if (newValue != null) {
@@ -19,10 +18,12 @@
   if (mTaglineTextPreference != null) {
     mTaglineTextPreference.setOnPreferenceChangeListener(preferenceChangeListener);
   }
-  Preference signOutPreference=findPreference("wp_pref_sign_out");
-  signOutPreference.setOnPreferenceClickListener(signOutPreferenceClickListener);
-  Preference resetAutoShare=findPreference("wp_reset_share_pref");
-  resetAutoShare.setOnPreferenceClickListener(resetAUtoSharePreferenceClickListener);
+  findPreference("wp_pref_manage_notifications").setOnPreferenceClickListener(notificationPreferenceClickListener);
+  findPreference("wp_pref_app_about").setOnPreferenceClickListener(launchActivitiyClickListener);
+  findPreference("wp_pref_open_source_licenses").setOnPreferenceClickListener(launchActivitiyClickListener);
+  findPreference("wp_pref_help_and_support").setOnPreferenceClickListener(launchActivitiyClickListener);
+  findPreference("wp_pref_sign_out").setOnPreferenceClickListener(signOutPreferenceClickListener);
+  findPreference("wp_reset_share_pref").setOnPreferenceClickListener(resetAUtoSharePreferenceClickListener);
   mSettings=PreferenceManager.getDefaultSharedPreferences(getActivity());
   initNotifications();
   if (AppLockManager.getInstance().isAppLockFeatureEnabled()) {
