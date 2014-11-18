@@ -2,25 +2,6 @@
   super.onCreate(savedInstanceState);
   ProfilingUtils.split("PostsActivity.onCreate");
   ProfilingUtils.dump();
-  if (WordPress.wpDB == null) {
-    Toast.makeText(this,R.string.fatal_db_error,Toast.LENGTH_LONG).show();
-    finish();
-    return;
-  }
-  if (WordPress.shouldRestoreSelectedActivity && WordPress.getCurrentBlog() != null && !(this instanceof PagesActivity)) {
-    WordPress.shouldRestoreSelectedActivity=false;
-    ActivityId lastActivity=ActivityId.getActivityIdFromName(AppPrefs.getLastActivityStr());
-    if (lastActivity.autoRestoreMapper() != ActivityId.UNKNOWN) {
-      for (      MenuDrawerItem item : mMenuItems) {
-        if (item.hasItemId() && item.getItemId() == lastActivity.autoRestoreMapper() && !item.isSelected() && item.isVisible()) {
-          mFirstLaunch=true;
-          item.selectItem();
-          finish();
-          return;
-        }
-      }
-    }
-  }
   createMenuDrawer(R.layout.posts);
   setSupportActionBar(getToolbar());
   ActionBar actionBar=getSupportActionBar();

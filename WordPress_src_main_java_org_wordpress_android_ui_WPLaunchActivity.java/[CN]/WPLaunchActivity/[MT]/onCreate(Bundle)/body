@@ -1,0 +1,17 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.activity_launch);
+  if (WordPress.wpDB == null) {
+    ToastUtils.showToast(this,R.string.fatal_db_error,ToastUtils.Duration.LONG);
+    finish();
+    return;
+  }
+  String lastActivityStr=AppPrefs.getLastActivityStr();
+  ActivityId id=ActivityId.getActivityIdFromName(lastActivityStr);
+  Intent intent=WPActivityUtils.getIntentForActivityId(this,id);
+  if (intent == null) {
+    intent=new Intent(this,PostsActivity.class);
+  }
+  startActivity(intent);
+  finish();
+}
