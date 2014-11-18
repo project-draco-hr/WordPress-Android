@@ -1,0 +1,18 @@
+{
+  List<Suggestion> suggestions=new ArrayList<Suggestion>();
+  String[] args={Integer.toString(siteId)};
+  Cursor c=getReadableDb().rawQuery("SELECT * FROM " + SUGGESTIONS_TABLE + " WHERE site_id=? ORDER BY user_login ASC",args);
+  try {
+    if (c.moveToFirst()) {
+      do {
+        Suggestion comment=getSuggestionFromCursor(c);
+        suggestions.add(comment);
+      }
+ while (c.moveToNext());
+    }
+    return suggestions;
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+}

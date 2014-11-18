@@ -1,0 +1,19 @@
+{
+  final SuggestionViewHolder holder;
+  if (convertView == null || convertView.getTag() == null) {
+    convertView=mInflater.inflate(R.layout.suggestion_list_row,parent,false);
+    holder=new SuggestionViewHolder(convertView);
+    convertView.setTag(holder);
+  }
+ else {
+    holder=(SuggestionViewHolder)convertView.getTag();
+  }
+  Suggestion suggestion=getItem(position);
+  if (suggestion != null) {
+    String avatarUrl=PhotonUtils.fixAvatar(suggestion.getImageUrl(),mAvatarSz);
+    holder.imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
+    holder.txtUserLogin.setText("@" + suggestion.getUserLogin());
+    holder.txtDisplayName.setText(suggestion.getDisplayName());
+  }
+  return convertView;
+}

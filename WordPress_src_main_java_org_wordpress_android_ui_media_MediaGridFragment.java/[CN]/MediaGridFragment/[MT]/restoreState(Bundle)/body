@@ -1,14 +1,13 @@
 {
   if (savedInstanceState == null)   return;
   boolean isInMultiSelectMode=savedInstanceState.getBoolean(BUNDLE_IN_MULTI_SELECT_MODE);
-  if (savedInstanceState.containsKey(BUNDLE_CHECKED_STATES)) {
-    mCheckedItems.addAll(savedInstanceState.getStringArrayList(BUNDLE_CHECKED_STATES));
+  if (savedInstanceState.containsKey(BUNDLE_SELECTED_STATES)) {
+    ArrayList selectedItems=savedInstanceState.getStringArrayList(BUNDLE_SELECTED_STATES);
+    mGridAdapter.setSelectedItems(selectedItems);
     if (isInMultiSelectMode) {
-      mListener.onMultiSelectChange(mCheckedItems.size());
-      onMultiSelectChange(mCheckedItems.size());
+      setFilterSpinnerVisible(mGridAdapter.getSelectedItems().size() == 0);
       mPullToRefreshHelper.setEnabled(false);
     }
-    mGridView.setMultiSelectModeActive(isInMultiSelectMode);
   }
   mGridView.setSelection(savedInstanceState.getInt(BUNDLE_SCROLL_POSITION,0));
   mHasRetrievedAllMedia=savedInstanceState.getBoolean(BUNDLE_HAS_RETREIEVED_ALL_MEDIA,false);
