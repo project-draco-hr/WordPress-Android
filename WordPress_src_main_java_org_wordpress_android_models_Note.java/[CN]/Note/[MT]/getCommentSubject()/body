@@ -1,11 +1,13 @@
 {
-  JSONArray subjectArray=mNoteJSON.optJSONArray("subject");
-  if (subjectArray != null) {
-    String commentSubject=JSONUtil.queryJSON(subjectArray,"subject[1].text","");
-    if (commentSubject != null && commentSubject.length() > MAX_COMMENT_PREVIEW_LENGTH) {
-      commentSubject=commentSubject.substring(0,MAX_COMMENT_PREVIEW_LENGTH - 1);
+synchronized (mNoteJSON) {
+    JSONArray subjectArray=mNoteJSON.optJSONArray("subject");
+    if (subjectArray != null) {
+      String commentSubject=JSONUtil.queryJSON(subjectArray,"subject[1].text","");
+      if (commentSubject != null && commentSubject.length() > MAX_COMMENT_PREVIEW_LENGTH) {
+        commentSubject=commentSubject.substring(0,MAX_COMMENT_PREVIEW_LENGTH - 1);
+      }
+      return commentSubject;
     }
-    return commentSubject;
   }
   return "";
 }
