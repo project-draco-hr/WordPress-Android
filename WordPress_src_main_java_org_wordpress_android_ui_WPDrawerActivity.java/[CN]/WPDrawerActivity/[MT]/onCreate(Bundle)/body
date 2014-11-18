@@ -13,4 +13,16 @@
   mMenuItems.add(new QuickPhotoMenuItem());
   mMenuItems.add(new QuickVideoMenuItem());
   mMenuItems.add(new ViewSiteMenuItem());
+  if (getIntent() != null && getIntent().getBooleanExtra(OPENED_FROM_DRAWER,false)) {
+    hideActivityContainer(false);
+    getIntent().putExtra(OPENED_FROM_DRAWER,false);
+    new Handler().postDelayed(new Runnable(){
+      @Override public void run(){
+        if (!isFinishing()) {
+          showActivityContainer(true);
+        }
+      }
+    }
+,OPENED_FROM_DRAWER_DELAY);
+  }
 }
