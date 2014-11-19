@@ -4,7 +4,7 @@
   }
   SQLiteDatabase db=ReaderDatabase.getWritableDb();
   db.beginTransaction();
-  SQLiteStatement stmt=db.compileStatement("INSERT OR REPLACE INTO tbl_comments (" + COLUMN_NAMES + ") VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15)");
+  SQLiteStatement stmt=db.compileStatement("INSERT OR REPLACE INTO tbl_comments (" + COLUMN_NAMES + ") VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16)");
   try {
     for (    ReaderComment comment : comments) {
       stmt.bindLong(1,comment.blogId);
@@ -22,6 +22,7 @@
       stmt.bindString(13,comment.getText());
       stmt.bindLong(14,comment.numLikes);
       stmt.bindLong(15,SqlUtils.boolToSql(comment.isLikedByCurrentUser));
+      stmt.bindLong(16,comment.pageNumber);
       stmt.execute();
     }
     db.setTransactionSuccessful();

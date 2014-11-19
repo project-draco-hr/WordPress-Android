@@ -1,0 +1,18 @@
+{
+  Map<String,Object> properties=new HashMap<String,Object>();
+  String normalizedSourceName="post-list";
+  if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
+    normalizedSourceName="shared-from-external-app";
+  }
+  if (EditPostContentFragment.NEW_MEDIA_GALLERY.equals(action) || EditPostContentFragment.NEW_MEDIA_POST.equals(action)) {
+    normalizedSourceName="media-library";
+  }
+  if (intent != null && intent.hasExtra(EXTRA_IS_QUICKPRESS)) {
+    normalizedSourceName="quick-press";
+  }
+  if (intent != null && intent.getIntExtra("quick-media",-1) > -1) {
+    normalizedSourceName="quick-media";
+  }
+  properties.put("created_post_source",normalizedSourceName);
+  AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_CREATED_POST,properties);
+}

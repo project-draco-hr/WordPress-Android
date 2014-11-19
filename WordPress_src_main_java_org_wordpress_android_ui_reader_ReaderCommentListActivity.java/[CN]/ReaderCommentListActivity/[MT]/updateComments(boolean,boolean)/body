@@ -1,0 +1,41 @@
+{
+  if (mIsUpdatingComments) {
+    AppLog.w(T.READER,"reader comments > already updating comments");
+    return;
+  }
+  if (!NetworkUtils.isNetworkAvailable(this)) {
+    AppLog.w(T.READER,"reader comments > no connection, update canceled");
+    return;
+  }
+  mIsUpdatingComments=true;
+  mHasUpdatedComments=true;
+  int pageNumber;
+  if (requestNextPage) {
+    int prevPage=ReaderCommentTable.getLastPageNumberForPost(mPost.blogId,mPost.postId);
+    pageNumber=prevPage + 1;
+  }
+ else {
+    pageNumber=1;
+  }
+  if (showProgress) {
+    showProgress();
+  }
+  ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
+    @Override public void onUpdateResult(    ReaderActions.UpdateResult result){
+      mIsUpdatingComments=false;
+      if (!isFinishing()) {
+        hideProgress();
+        if (result.isNewOrChanged()) {
+          retainTopmostComment();
+          refreshComments();
+        }
+ else {
+          mListView.setEmptyView(findViewById(R.id.text_empty));
+        }
+      }
+    }
+  }
+;
+  AppLog.d(T.READER,"reader comments > updateComments, page " + pageNumber);
+  ReaderCommentActions.updateCommentsForPost(getPost(),pageNumber,resultListener);
+}

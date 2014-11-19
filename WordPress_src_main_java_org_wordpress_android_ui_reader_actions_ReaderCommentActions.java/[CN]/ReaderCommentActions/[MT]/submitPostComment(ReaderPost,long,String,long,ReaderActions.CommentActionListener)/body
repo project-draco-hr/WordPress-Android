@@ -1,10 +1,20 @@
 {
-  if (post == null || TextUtils.isEmpty(commentText))   return null;
+  if (post == null || TextUtils.isEmpty(commentText)) {
+    return null;
+  }
+  final int pageNumber;
+  if (replyToCommentId != 0) {
+    pageNumber=ReaderCommentTable.getPageNumberForComment(post.blogId,post.postId,replyToCommentId);
+  }
+ else {
+    pageNumber=ReaderCommentTable.getLastPageNumberForPost(post.blogId,post.postId);
+  }
   ReaderComment newComment=new ReaderComment();
   newComment.commentId=fakeCommentId;
   newComment.postId=post.postId;
   newComment.blogId=post.blogId;
   newComment.parentId=replyToCommentId;
+  newComment.pageNumber=pageNumber;
   newComment.setText(commentText);
   String published=DateTimeUtils.nowUTC().toString();
   newComment.setPublished(published);
@@ -29,8 +39,11 @@
       ReaderCommentTable.deleteComment(post,fakeCommentId);
       AppLog.i(T.READER,"comment succeeded");
       ReaderComment newComment=ReaderComment.fromJson(jsonObject,post.blogId);
+      newComment.pageNumber=pageNumber;
       ReaderCommentTable.addOrUpdateComment(newComment);
-      if (actionListener != null)       actionListener.onActionResult(true,newComment);
+      if (actionListener != null) {
+        actionListener.onActionResult(true,newComment);
+      }
     }
   }
 ;
@@ -39,7 +52,9 @@
       ReaderCommentTable.deleteComment(post,fakeCommentId);
       AppLog.w(T.READER,"comment failed");
       AppLog.e(T.READER,volleyError);
-      if (actionListener != null)       actionListener.onActionResult(false,null);
+      if (actionListener != null) {
+        actionListener.onActionResult(false,null);
+      }
     }
   }
 ;
