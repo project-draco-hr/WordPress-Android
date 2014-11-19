@@ -1,13 +1,15 @@
 {
-  try {
-    Note note=bucket.get(key);
-    if (note.isCommentType()) {
-      note.setLocalStatus(null);
-      note.save();
+  if (type == Bucket.ChangeType.MODIFY) {
+    try {
+      Note note=bucket.get(key);
+      if (note.isCommentType()) {
+        note.setLocalStatus(null);
+        note.save();
+      }
     }
-  }
- catch (  BucketObjectMissingException e) {
-    AppLog.e(AppLog.T.NOTIFS,"Could not create note after receiving change.");
+ catch (    BucketObjectMissingException e) {
+      AppLog.e(AppLog.T.NOTIFS,"Could not create note after receiving change.");
+    }
   }
   refreshNotes();
 }
