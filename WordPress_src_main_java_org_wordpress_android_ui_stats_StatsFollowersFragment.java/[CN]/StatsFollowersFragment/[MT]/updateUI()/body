@@ -1,0 +1,33 @@
+{
+  mRadioGroup.setVisibility(View.VISIBLE);
+  mTotalsLabel.setVisibility(View.VISIBLE);
+  if (mDatamodel == null) {
+    showEmptyUI(true);
+    mTotalsLabel.setText(getTotalFollowersLabel(0));
+    return;
+  }
+  FollowersModel followersModel=(FollowersModel)mDatamodel;
+  ArrayAdapter adapter=null;
+  if (mSelectedButtonIndex == 0) {
+    List<FollowerModel> mSubscribers=followersModel.getFollowers();
+    if (mSubscribers != null && mSubscribers.size() > 0) {
+      adapter=new DotComFollowerAdapter(getActivity(),mSubscribers);
+    }
+  }
+ else {
+  }
+  if (adapter != null) {
+    StatsUIHelper.reloadLinearLayout(getActivity(),adapter,mList);
+    showEmptyUI(false);
+    if (mSelectedButtonIndex == 0) {
+      mTotalsLabel.setText(getTotalFollowersLabel(followersModel.getTotalWPCom()));
+    }
+ else {
+      mTotalsLabel.setText(getTotalFollowersLabel(followersModel.getTotalEmail()));
+    }
+  }
+ else {
+    showEmptyUI(true);
+    mTotalsLabel.setText(getTotalFollowersLabel(0));
+  }
+}

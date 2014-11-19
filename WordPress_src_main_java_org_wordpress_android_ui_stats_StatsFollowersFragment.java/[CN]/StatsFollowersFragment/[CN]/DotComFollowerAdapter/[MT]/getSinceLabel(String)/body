@@ -1,0 +1,48 @@
+{
+  Date currentDateTime=new Date(StatsUtils.getCurrentDateTimeMsTZ(getLocalTableBlogID()));
+  try {
+    SimpleDateFormat from=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    Date date=from.parse(dataSubscribed);
+    long currentDifference=Math.abs(StatsUtils.getDateDiff(date,currentDateTime,TimeUnit.SECONDS));
+    if (currentDifference <= 45) {
+      return "seconds ago";
+    }
+    if (currentDifference < 90) {
+      return "a minute ago";
+    }
+    if (currentDifference <= 2700) {
+      long minutes=this.roundUp(currentDifference,60);
+      return minutes + " minutes";
+    }
+    if (currentDifference <= 5400) {
+      return "an hour ago";
+    }
+    if (currentDifference <= 79200) {
+      long hours=this.roundUp(currentDifference,60 * 60);
+      return hours + " hours";
+    }
+    if (currentDifference <= 129600) {
+      return "A day";
+    }
+    if (currentDifference <= 2160000) {
+      long days=this.roundUp(currentDifference,86400);
+      return days + " days";
+    }
+    if (currentDifference <= 3888000) {
+      return "A month";
+    }
+    if (currentDifference <= 29808000) {
+      long months=this.roundUp(currentDifference,2678400);
+      return months + " months";
+    }
+    if (currentDifference <= 47260800) {
+      return "A year";
+    }
+    long years=this.roundUp(currentDifference,31536000);
+    return years + " years";
+  }
+ catch (  ParseException e) {
+    AppLog.e(AppLog.T.STATS,e);
+  }
+  return "";
+}

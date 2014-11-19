@@ -12,7 +12,8 @@
   String requestedDate=intent.getStringExtra(ARG_DATE);
   if (requestedDate == null) {
     AppLog.w(T.STATS,"StatsService is started with a NULL date on this blogID - " + mServiceBlogId + ". Using current date!!!");
-    requestedDate=StatsUtils.getCurrentDate();
+    int localTableBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(Integer.parseInt(mServiceBlogId));
+    requestedDate=StatsUtils.getCurrentDateTZ(localTableBlogId);
   }
   boolean updateGraph=intent.getBooleanExtra(ARG_UPDATE_GRAPH,true);
   if (mServiceBlogId == null) {
