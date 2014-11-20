@@ -1,0 +1,17 @@
+{
+  super.onResume();
+  mPullToRefreshHelper.registerReceiver(this);
+  mIsInFront=true;
+  if (mRestResponse == null) {
+    refreshStats();
+  }
+ else {
+    ThreadPoolExecutor parseResponseExecutor=(ThreadPoolExecutor)Executors.newFixedThreadPool(1);
+    parseResponseExecutor.submit(new Thread(){
+      @Override public void run(){
+        notifySectionUpdated();
+      }
+    }
+);
+  }
+}

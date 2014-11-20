@@ -1,0 +1,52 @@
+{
+  if (ctx == null || mLinearLayout == null || mAdapter == null || mGroupIdToExpandedMap == null) {
+    return;
+  }
+  int groupCount=Math.min(mAdapter.getGroupCount(),maxNumberOfItemsToshow);
+  if (groupCount == 0) {
+    mLinearLayout.removeAllViews();
+    return;
+  }
+  int numExistingGroupViews=mLinearLayout.getChildCount();
+  int altRowColor=ctx.getResources().getColor(R.color.stats_alt_row);
+  if (groupCount < numExistingGroupViews) {
+    int numToRemove=numExistingGroupViews - groupCount;
+    mLinearLayout.removeViews(groupCount,numToRemove);
+    numExistingGroupViews=groupCount;
+  }
+  for (int i=0; i < groupCount; i++) {
+    boolean isExpanded=mGroupIdToExpandedMap.get(i);
+    int bgColor=(i % 2 == 1 ? altRowColor : Color.TRANSPARENT);
+    final View groupView;
+    if (i < numExistingGroupViews) {
+      View convertView=mLinearLayout.getChildAt(i);
+      groupView=mAdapter.getGroupView(i,isExpanded,convertView,mLinearLayout);
+      groupView.setBackgroundColor(bgColor);
+    }
+ else {
+      groupView=mAdapter.getGroupView(i,isExpanded,null,mLinearLayout);
+      groupView.setBackgroundColor(bgColor);
+      mLinearLayout.addView(groupView);
+    }
+    if (isExpanded) {
+      StatsUIHelper.showChildViews(mAdapter,mLinearLayout,i,groupView,false);
+    }
+    final int groupPosition=i;
+    groupView.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        if (mAdapter.getChildrenCount(groupPosition) == 0) {
+          return;
+        }
+        boolean shouldExpand=!mGroupIdToExpandedMap.get(groupPosition);
+        mGroupIdToExpandedMap.put(groupPosition,shouldExpand);
+        if (shouldExpand) {
+          StatsUIHelper.showChildViews(mAdapter,mLinearLayout,groupPosition,groupView,true);
+        }
+ else {
+          StatsUIHelper.hideChildViews(groupView,true);
+        }
+      }
+    }
+);
+  }
+}

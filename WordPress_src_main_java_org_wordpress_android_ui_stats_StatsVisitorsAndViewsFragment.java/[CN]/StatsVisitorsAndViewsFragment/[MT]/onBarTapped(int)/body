@@ -52,11 +52,8 @@ if (calculatedDate == null) {
 AppLog.w(AppLog.T.STATS,"A call to request new stats stats is made but date received cannot be parsed!! " + date);
 return;
 }
+if (mListener != null) {
 final String blogId=StatsUtils.getBlogId(getLocalTableBlogID());
-Intent intent=new Intent(getActivity(),StatsService.class);
-intent.putExtra(StatsService.ARG_BLOG_ID,blogId);
-intent.putExtra(StatsService.ARG_PERIOD,getTimeframe());
-intent.putExtra(StatsService.ARG_DATE,calculatedDate);
-intent.putExtra(StatsService.ARG_UPDATE_GRAPH,false);
-getActivity().startService(intent);
+mListener.onDateChanged(blogId,getTimeframe(),calculatedDate,false);
+}
 }

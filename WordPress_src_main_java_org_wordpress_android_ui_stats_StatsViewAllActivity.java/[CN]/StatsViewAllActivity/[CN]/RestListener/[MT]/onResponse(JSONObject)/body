@@ -1,0 +1,29 @@
+{
+  if (mActivityRef.get() == null || mActivityRef.get().isFinishing()) {
+    return;
+  }
+  mIsUpdatingStats=false;
+  mPullToRefreshHelper.setRefreshing(false);
+  ThreadPoolExecutor parseResponseExecutor=(ThreadPoolExecutor)Executors.newFixedThreadPool(1);
+  parseResponseExecutor.submit(new Thread(){
+    @Override public void run(){
+      if (response != null) {
+        try {
+          AppLog.d(AppLog.T.STATS,response.toString());
+          mRestResponse=parseResponse(response);
+        }
+ catch (        JSONException e) {
+          AppLog.e(AppLog.T.STATS,e);
+        }
+catch (        RemoteException e) {
+          AppLog.e(AppLog.T.STATS,e);
+        }
+catch (        OperationApplicationException e) {
+          AppLog.e(AppLog.T.STATS,e);
+        }
+      }
+      notifySectionUpdated();
+    }
+  }
+);
+}

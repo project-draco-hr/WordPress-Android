@@ -1,0 +1,14 @@
+{
+  if (mIsUpdatingStats) {
+    return;
+  }
+  mIsUpdatingStats=true;
+  final RestClientUtils restClientUtils=WordPress.getRestClientUtilsV1_1();
+  final String blogId=StatsUtils.getBlogId(mLocalBlogID);
+  final String singlePostRestPath=getRestPath();
+  AppLog.d(AppLog.T.STATS,"Enqueuing the following Stats request " + singlePostRestPath);
+  RestListener vListener=new RestListener(this,getRestEndpointName(),blogId,mTimeframe);
+  restClientUtils.get(singlePostRestPath,vListener,vListener);
+  mPullToRefreshHelper.setRefreshing(true);
+  return;
+}

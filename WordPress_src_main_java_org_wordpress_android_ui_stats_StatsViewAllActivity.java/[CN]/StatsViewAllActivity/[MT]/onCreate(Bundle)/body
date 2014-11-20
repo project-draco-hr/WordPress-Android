@@ -1,0 +1,45 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.stats_activity_view_all);
+  if (savedInstanceState == null) {
+  }
+  ActionBar actionBar=getActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
+  outerContainer=(LinearLayout)findViewById(R.id.stats_fragment_container);
+  mPullToRefreshHelper=new PullToRefreshHelper(this,(PullToRefreshLayout)findViewById(R.id.ptr_layout),new PullToRefreshHelper.RefreshListener(){
+    @Override public void onRefreshStarted(    View view){
+      if (!NetworkUtils.checkConnection(getBaseContext())) {
+        mPullToRefreshHelper.setRefreshing(false);
+        return;
+      }
+      refreshStats();
+    }
+  }
+);
+  setTitle(getString(R.string.stats));
+  if (savedInstanceState != null) {
+    mLocalBlogID=savedInstanceState.getInt(StatsActivity.ARG_LOCAL_TABLE_BLOG_ID,-1);
+    mRestResponse=savedInstanceState.getSerializable(StatsAbstractFragment.ARG_REST_RESPONSE);
+    mTimeframe=(StatsTimeframe)savedInstanceState.getSerializable(StatsAbstractFragment.ARGS_TIMEFRAME);
+    mDate=savedInstanceState.getString(StatsAbstractFragment.ARGS_START_DATE);
+    int ordinal=savedInstanceState.getInt(StatsAbstractFragment.ARGS_VIEW_TYPE,-1);
+    mStatsViewType=StatsViewType.values()[ordinal];
+  }
+ else   if (getIntent() != null) {
+    Bundle extras=getIntent().getExtras();
+    mLocalBlogID=extras.getInt(StatsActivity.ARG_LOCAL_TABLE_BLOG_ID,-1);
+    mTimeframe=(StatsTimeframe)extras.getSerializable(StatsAbstractFragment.ARGS_TIMEFRAME);
+    mDate=extras.getString(StatsAbstractFragment.ARGS_START_DATE);
+    mRestResponse=extras.getSerializable(StatsAbstractFragment.ARG_REST_RESPONSE);
+    int ordinal=extras.getInt(StatsAbstractFragment.ARGS_VIEW_TYPE,-1);
+    mStatsViewType=StatsViewType.values()[ordinal];
+    refreshStats();
+  }
+  FragmentManager fm=getFragmentManager();
+  FragmentTransaction ft=fm.beginTransaction();
+  fragment=getInnerFragment();
+  ft.replace(R.id.stats_single_view_fragment,fragment,fragment.TAG);
+  ft.commit();
+}

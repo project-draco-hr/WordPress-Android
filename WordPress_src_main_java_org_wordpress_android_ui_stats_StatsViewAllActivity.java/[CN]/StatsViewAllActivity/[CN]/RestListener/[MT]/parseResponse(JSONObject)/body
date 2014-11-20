@@ -1,0 +1,60 @@
+{
+  Serializable model=null;
+switch (mEndpointName) {
+case TOP_POSTS:
+    model=new TopPostsAndPagesModel(mRequestBlogId,response);
+  break;
+case REFERRERS:
+model=new ReferrersModel(mRequestBlogId,response);
+break;
+case CLICKS:
+model=new ClicksModel(mRequestBlogId,response);
+break;
+case GEO_VIEWS:
+model=new GeoviewsModel(mRequestBlogId,response);
+break;
+case AUTHORS:
+model=new AuthorsModel(mRequestBlogId,response);
+break;
+case VIDEO_PLAYS:
+model=new VideoPlaysModel(mRequestBlogId,response);
+break;
+case COMMENTS:
+model=new CommentsModel(mRequestBlogId,response);
+break;
+case FOLLOWERS:
+model=new FollowersModel(mRequestBlogId,response);
+break;
+case COMMENT_FOLLOWERS:
+model=new CommentFollowersModel(mRequestBlogId,response);
+break;
+case TAGS_AND_CATEGORIES:
+JSONArray outerTags=response.getJSONArray("tags");
+if (outerTags == null) {
+break;
+}
+ArrayList<TagsModel> tagsParsed=new ArrayList<TagsModel>(outerTags.length());
+for (int i=0; i < outerTags.length(); i++) {
+JSONObject current=outerTags.getJSONObject(i);
+tagsParsed.add(new TagsModel(mRequestBlogId,current));
+}
+model=tagsParsed;
+break;
+case PUBLICIZE:
+JSONArray services=response.getJSONArray("services");
+if (services == null || services.length() == 0) {
+break;
+}
+ArrayList<SingleItemModel> servicesParsed=new ArrayList<SingleItemModel>(services.length());
+for (int i=0; i < services.length(); i++) {
+JSONObject current=services.getJSONObject(i);
+String serviceName=current.getString("service");
+int followers=current.getInt("followers");
+SingleItemModel currentItem=new SingleItemModel(mRequestBlogId,mDate,null,serviceName,followers,null,null);
+servicesParsed.add(currentItem);
+}
+model=servicesParsed;
+break;
+}
+return model;
+}
