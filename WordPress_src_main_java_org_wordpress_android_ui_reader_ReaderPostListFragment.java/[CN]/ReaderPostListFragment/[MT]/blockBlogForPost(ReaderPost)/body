@@ -1,5 +1,5 @@
 {
-  if (post == null || !hasPostAdapter()) {
+  if (post == null || !hasPostRecycler()) {
     return;
   }
   if (!NetworkUtils.checkConnection(getActivity())) {
@@ -16,7 +16,7 @@
 ;
   final ReaderBlogActions.BlockedBlogResult blockResult=ReaderBlogActions.blockBlogFromReader(post.blogId,actionListener);
   AnalyticsTracker.track(AnalyticsTracker.Stat.READER_BLOCKED_BLOG);
-  final int position=getPostAdapter().indexOfPost(post);
+  final int position=getPostRecycler().indexOfPost(post);
   Animation.AnimationListener aniListener=new Animation.AnimationListener(){
     @Override public void onAnimationStart(    Animation animation){
     }
@@ -24,13 +24,12 @@
     }
     @Override public void onAnimationEnd(    Animation animation){
       if (isAdded()) {
-        getPostAdapter().removePost(position);
-        getPostAdapter().refresh();
+        getPostRecycler().removePost(position);
+        getPostRecycler().refresh();
       }
     }
   }
 ;
-  ReaderAnim.animateListItem(mListView,position,ReaderAnim.AnimateListItemStyle.SHRINK,aniListener);
   UndoBarController.UndoListener undoListener=new UndoBarController.UndoListener(){
     @Override public void onUndo(    Parcelable parcelable){
       ReaderBlogActions.undoBlockBlogFromReader(blockResult);
