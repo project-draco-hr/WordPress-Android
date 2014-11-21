@@ -5,62 +5,28 @@
     AppLog.w(AppLog.T.STATS,"Cannot update the area below the graph if a null date is passed!!");
     return;
   }
-switch (getTimeframe()) {
-case DAY:
-    mDateTextView.setText(StatsUtils.parseDate(date,"yyyy-MM-dd","MMMM d"));
-  break;
-case WEEK:
-try {
-  SimpleDateFormat sdf;
-  Calendar c;
-  final Date parsedDate;
-  sdf=new SimpleDateFormat("yyyy'W'MM'W'dd");
-  parsedDate=sdf.parse(date);
-  c=Calendar.getInstance();
-  c.setTime(parsedDate);
-  c.setFirstDayOfWeek(Calendar.MONDAY);
-  c.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY);
-  String startDateLabel=StatsUtils.msToString(c.getTimeInMillis(),"MMMM dd");
-  c.add(Calendar.DAY_OF_WEEK,+6);
-  String endDateLabel=StatsUtils.msToString(c.getTimeInMillis(),"MMMM dd");
-  mDateTextView.setText(startDateLabel + " - " + endDateLabel);
-}
- catch (ParseException e) {
-  AppLog.e(AppLog.T.UTILS,e);
-  mDateTextView.setText("");
-}
-break;
-case MONTH:
-mDateTextView.setText(StatsUtils.parseDate(date,"yyyy-MM-dd","MMMM"));
-break;
-case YEAR:
-mDateTextView.setText(StatsUtils.parseDate(date,"yyyy-MM-dd","yyyy"));
-break;
-}
-VisitModel modelTapped=dataToShowOnGraph[itemPosition];
-for (int i=0; i < mRadioGroup.getChildCount(); i++) {
-View o=mRadioGroup.getChildAt(i);
-if (o instanceof RadioButton) {
-RadioButton currentBtm=(RadioButton)o;
-if (i == mSelectedOverviewItemIndex) {
-currentBtm.setChecked(true);
-}
-OverviewLabel overviewItem=(OverviewLabel)currentBtm.getTag();
+  mDateTextView.setText(StatsUIHelper.getDateForDisplayInLabels(date,getTimeframe()));
+  VisitModel modelTapped=dataToShowOnGraph[itemPosition];
+  for (int i=0; i < mRadioGroup.getChildCount(); i++) {
+    View o=mRadioGroup.getChildAt(i);
+    if (o instanceof RadioButton) {
+      RadioButton currentBtm=(RadioButton)o;
+      if (i == mSelectedOverviewItemIndex) {
+        currentBtm.setChecked(true);
+      }
+      OverviewLabel overviewItem=(OverviewLabel)currentBtm.getTag();
 switch (overviewItem) {
 case VIEWS:
-currentBtm.setText(overviewItem.getLabel() + " - " + modelTapped.getViews());
-break;
+        currentBtm.setText(overviewItem.getLabel() + "\n" + modelTapped.getViews());
+      break;
 case VISITORS:
-currentBtm.setText(overviewItem.getLabel() + " - " + modelTapped.getVisitors());
-break;
-case REBLOGS:
-currentBtm.setText(overviewItem.getLabel() + " - " + modelTapped.getReblogs());
-break;
+    currentBtm.setText(overviewItem.getLabel() + "\n" + modelTapped.getVisitors());
+  break;
 case LIKES:
-currentBtm.setText(overviewItem.getLabel() + " - " + modelTapped.getLikes());
+currentBtm.setText(overviewItem.getLabel() + "\n" + modelTapped.getLikes());
 break;
 case COMMENTS:
-currentBtm.setText(overviewItem.getLabel() + " - " + modelTapped.getComments());
+currentBtm.setText(overviewItem.getLabel() + "\n" + modelTapped.getComments());
 break;
 }
 }
