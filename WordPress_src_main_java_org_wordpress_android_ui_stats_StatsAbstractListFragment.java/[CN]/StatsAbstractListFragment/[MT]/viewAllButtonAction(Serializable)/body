@@ -11,7 +11,13 @@
   viewAllIntent.putExtra(StatsAbstractFragment.ARGS_TIMEFRAME,getTimeframe());
   viewAllIntent.putExtra(StatsAbstractFragment.ARGS_VIEW_TYPE,getViewType().ordinal());
   viewAllIntent.putExtra(StatsAbstractFragment.ARGS_START_DATE,getStartDate());
-  viewAllIntent.putExtra(StatsAbstractFragment.ARGS_IS_SINGLE_VIEW,true);
+  viewAllIntent.putExtra(ARGS_IS_SINGLE_VIEW,true);
   viewAllIntent.putExtra(StatsAbstractFragment.ARG_REST_RESPONSE,restResponse);
+  if (mRadioGroup.getVisibility() == View.VISIBLE) {
+    int radioButtonID=mRadioGroup.getCheckedRadioButtonId();
+    View radioButton=mRadioGroup.findViewById(radioButtonID);
+    int idx=mRadioGroup.indexOfChild(radioButton);
+    viewAllIntent.putExtra(ARGS_OUTER_PAGER_SELECTED_BUTTON_INDEX,idx);
+  }
   getActivity().startActivity(viewAllIntent);
 }

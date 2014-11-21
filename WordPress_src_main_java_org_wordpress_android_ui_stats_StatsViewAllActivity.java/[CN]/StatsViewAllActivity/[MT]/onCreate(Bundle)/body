@@ -26,6 +26,7 @@
     mDate=savedInstanceState.getString(StatsAbstractFragment.ARGS_START_DATE);
     int ordinal=savedInstanceState.getInt(StatsAbstractFragment.ARGS_VIEW_TYPE,-1);
     mStatsViewType=StatsViewType.values()[ordinal];
+    mOuterPagerSelectedButtonIndex=savedInstanceState.getInt(StatsAbstractListFragment.ARGS_OUTER_PAGER_SELECTED_BUTTON_INDEX,-1);
   }
  else   if (getIntent() != null) {
     Bundle extras=getIntent().getExtras();
@@ -35,13 +36,16 @@
     mRestResponse=extras.getSerializable(StatsAbstractFragment.ARG_REST_RESPONSE);
     int ordinal=extras.getInt(StatsAbstractFragment.ARGS_VIEW_TYPE,-1);
     mStatsViewType=StatsViewType.values()[ordinal];
+    mOuterPagerSelectedButtonIndex=extras.getInt(StatsAbstractListFragment.ARGS_OUTER_PAGER_SELECTED_BUTTON_INDEX,-1);
     refreshStats();
   }
   TextView dateTextView=(TextView)findViewById(R.id.stats_summary_date);
   dateTextView.setText(StatsUIHelper.getDateForDisplayInLabels(mDate,mTimeframe));
   FragmentManager fm=getFragmentManager();
   FragmentTransaction ft=fm.beginTransaction();
-  fragment=getInnerFragment();
-  ft.replace(R.id.stats_single_view_fragment,fragment,"ViewAll-" + getInnerFragmentTAG());
-  ft.commit();
+  if (fm.findFragmentByTag("ViewAll-" + getInnerFragmentTAG()) == null) {
+    fragment=getInnerFragment();
+    ft.replace(R.id.stats_single_view_fragment,fragment,"ViewAll-" + getInnerFragmentTAG());
+    ft.commit();
+  }
 }
