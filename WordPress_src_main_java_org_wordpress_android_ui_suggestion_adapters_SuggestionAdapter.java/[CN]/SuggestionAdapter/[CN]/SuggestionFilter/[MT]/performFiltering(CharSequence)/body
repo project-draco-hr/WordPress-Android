@@ -1,0 +1,21 @@
+{
+  FilterResults results=new FilterResults();
+  if (mOrigSuggestionList == null) {
+    results.values=null;
+    results.count=0;
+  }
+ else   if (constraint == null || constraint.length() == 0) {
+    results.values=mOrigSuggestionList;
+    results.count=mOrigSuggestionList.size();
+  }
+ else {
+    List<Suggestion> nSuggestionList=new ArrayList<Suggestion>();
+    for (    Suggestion suggestion : mOrigSuggestionList) {
+      String lowerCaseConstraint=constraint.toString().toLowerCase();
+      if (suggestion.getUserLogin().toLowerCase().startsWith(lowerCaseConstraint) || suggestion.getDisplayName().toLowerCase().startsWith(lowerCaseConstraint) || suggestion.getDisplayName().toLowerCase().contains(" " + lowerCaseConstraint))       nSuggestionList.add(suggestion);
+    }
+    results.values=nSuggestionList;
+    results.count=nSuggestionList.size();
+  }
+  return results;
+}

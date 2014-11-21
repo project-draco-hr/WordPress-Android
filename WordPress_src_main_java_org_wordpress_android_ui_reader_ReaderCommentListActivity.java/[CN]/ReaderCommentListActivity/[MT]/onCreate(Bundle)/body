@@ -21,7 +21,7 @@
   }
   mListView=(WPListView)findViewById(android.R.id.list);
   mCommentBox=(ViewGroup)findViewById(R.id.layout_comment_box);
-  mEditComment=(EditText)mCommentBox.findViewById(R.id.edit_comment);
+  mEditComment=(SuggestionAutoCompleteText)mCommentBox.findViewById(R.id.edit_comment);
   mImgSubmitComment=(ImageView)mCommentBox.findViewById(R.id.image_post_comment);
   if (!loadPost()) {
     ToastUtils.showToast(this,R.string.reader_toast_err_get_post);
@@ -35,4 +35,9 @@
     setReplyToCommentId(savedInstanceState.getLong(KEY_REPLY_TO_COMMENT_ID));
   }
   refreshComments();
+  mSuggestionServiceConnectionManager=new SuggestionServiceConnectionManager(this,(int)mBlogId);
+  mSuggestionAdapter=SuggestionUtils.setupSuggestions((int)mBlogId,this,mSuggestionServiceConnectionManager,mPost.isWP());
+  if (mSuggestionAdapter != null) {
+    mEditComment.setAdapter(mSuggestionAdapter);
+  }
 }
