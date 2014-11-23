@@ -1,0 +1,27 @@
+{
+  String prefix="Stats for %s";
+switch (timeframe) {
+case DAY:
+    return String.format(prefix,StatsUtils.parseDate(date,"yyyy-MM-dd","MMMM d"));
+case WEEK:
+  try {
+    SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+    final Date parsedDate=sdf.parse(date);
+    Calendar c=Calendar.getInstance();
+    c.setTime(parsedDate);
+    String endDateLabel=StatsUtils.msToString(c.getTimeInMillis(),"MMMM dd");
+    c.add(Calendar.DAY_OF_WEEK,-6);
+    String startDateLabel=StatsUtils.msToString(c.getTimeInMillis(),"MMMM dd");
+    return String.format(prefix,startDateLabel + " - " + endDateLabel);
+  }
+ catch (  ParseException e) {
+    AppLog.e(AppLog.T.UTILS,e);
+    return "";
+  }
+case MONTH:
+return String.format(prefix,StatsUtils.parseDate(date,"yyyy-MM-dd","MMMM"));
+case YEAR:
+return String.format(prefix,StatsUtils.parseDate(date,"yyyy-MM-dd","yyyy"));
+}
+return "";
+}
