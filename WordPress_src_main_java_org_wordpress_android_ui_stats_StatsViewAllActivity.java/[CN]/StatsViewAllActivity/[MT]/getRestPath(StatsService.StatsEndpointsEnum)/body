@@ -1,8 +1,8 @@
 {
   final String blogId=StatsUtils.getBlogId(mLocalBlogID);
   String endpointPath="";
-switch (mStatsViewType) {
-case TOP_POSTS_AND_PAGES:
+switch (restEndpoint) {
+case TOP_POSTS:
     endpointPath="top-posts";
   break;
 case REFERRERS:
@@ -11,7 +11,7 @@ break;
 case CLICKS:
 endpointPath="clicks";
 break;
-case GEOVIEWS:
+case GEO_VIEWS:
 endpointPath="country-views";
 break;
 case AUTHORS:
@@ -29,8 +29,14 @@ break;
 case PUBLICIZE:
 endpointPath="publicize";
 break;
-case FOLLOWERS:
+case FOLLOWERS_WPCOM:
 endpointPath="followers";
+return String.format("/sites/%s/stats/%s?type=wpcom&period=%s&date=%s&max=%s",blogId,endpointPath,mTimeframe.getLabelForRestCall(),mDate,100);
+case FOLLOWERS_EMAIL:
+endpointPath="followers";
+return String.format("/sites/%s/stats/%s?type=email&period=%s&date=%s&max=%s",blogId,endpointPath,mTimeframe.getLabelForRestCall(),mDate,100);
+case COMMENT_FOLLOWERS:
+endpointPath="comment-followers";
 break;
 }
 return String.format("/sites/%s/stats/%s?period=%s&date=%s&max=%s",blogId,endpointPath,mTimeframe.getLabelForRestCall(),mDate,100);

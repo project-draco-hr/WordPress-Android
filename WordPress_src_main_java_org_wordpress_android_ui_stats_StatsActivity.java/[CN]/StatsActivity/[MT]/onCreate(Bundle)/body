@@ -30,7 +30,7 @@
         AppLog.w(T.STATS,"stats are already updating, refresh cancelled");
         return;
       }
-      refreshStats(mCurrentTimeframe,StatsUtils.getCurrentDateTZ(mLocalBlogID));
+      refreshStats(mCurrentTimeframe,StatsUtils.getCurrentDateTZ(mLocalBlogID),true);
     }
   }
 );
@@ -41,6 +41,7 @@
     mResultCode=savedInstanceState.getInt(SAVED_WP_LOGIN_STATE);
     mLocalBlogID=savedInstanceState.getInt(ARG_LOCAL_TABLE_BLOG_ID);
     mCurrentTimeframe=(StatsTimeframe)savedInstanceState.getSerializable(SAVED_STATS_TIMEFRAME);
+    mRequestedDate=savedInstanceState.getString(SAVED_STATS_REQUESTED_DATE);
   }
  else   if (getIntent() != null) {
     needToRefreshStats=true;
@@ -51,6 +52,7 @@
  else {
       mCurrentTimeframe=StatsTimeframe.DAY;
     }
+    mRequestedDate=StatsUtils.getCurrentDateTZ(mLocalBlogID);
   }
   final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
   if (currentBlog == null) {
@@ -59,8 +61,7 @@
     finish();
     return;
   }
-  String date=StatsUtils.getCurrentDateTZ(mLocalBlogID);
-  loadStatsFragments(false,true,date);
+  loadStatsFragments(false,true);
   ScrollViewExt scrollView=(ScrollViewExt)findViewById(R.id.scroll_view_stats);
   if (scrollView != null) {
     scrollView.setScrollViewListener(this);
@@ -74,7 +75,7 @@
   }
   selectTimeframeInActionBar(mCurrentTimeframe);
   if (needToRefreshStats) {
-    refreshStats(mCurrentTimeframe,date);
+    refreshStats(mCurrentTimeframe,mRequestedDate,true);
     mPullToRefreshHelper.setRefreshing(true);
   }
 }

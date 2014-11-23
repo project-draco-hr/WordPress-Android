@@ -1,29 +1,38 @@
 {
   mRadioGroup.setVisibility(View.VISIBLE);
   mTotalsLabel.setVisibility(View.VISIBLE);
-  if (mDatamodel == null) {
+  if (mDatamodels == null) {
     showEmptyUI(true);
     mTotalsLabel.setText(getTotalFollowersLabel(0));
     return;
   }
-  FollowersModel followersModel=(FollowersModel)mDatamodel;
+  FollowersModel followersWPCOMModel=(FollowersModel)mDatamodels[0];
+  FollowersModel followersEmailModel=(FollowersModel)mDatamodels[1];
   ArrayAdapter adapter=null;
   if (mSelectedButtonIndex == 0) {
-    List<FollowerModel> mSubscribers=followersModel.getFollowers();
-    if (mSubscribers != null && mSubscribers.size() > 0) {
-      adapter=new DotComFollowerAdapter(getActivity(),mSubscribers);
+    if (followersWPCOMModel != null) {
+      List<FollowerModel> mSubscribers=followersWPCOMModel.getFollowers();
+      if (mSubscribers != null && mSubscribers.size() > 0) {
+        adapter=new DotComFollowerAdapter(getActivity(),mSubscribers);
+      }
     }
   }
  else {
+    if (followersEmailModel != null) {
+      List<FollowerModel> mSubscribers=followersEmailModel.getFollowers();
+      if (mSubscribers != null && mSubscribers.size() > 0) {
+        adapter=new DotComFollowerAdapter(getActivity(),mSubscribers);
+      }
+    }
   }
   if (adapter != null) {
     StatsUIHelper.reloadLinearLayout(getActivity(),adapter,mList,getMaxNumberOfItemsToShowInList());
     showEmptyUI(false);
     if (mSelectedButtonIndex == 0) {
-      mTotalsLabel.setText(getTotalFollowersLabel(followersModel.getTotalWPCom()));
+      mTotalsLabel.setText(getTotalFollowersLabel(followersWPCOMModel.getTotalWPCom()));
     }
  else {
-      mTotalsLabel.setText(getTotalFollowersLabel(followersModel.getTotalEmail()));
+      mTotalsLabel.setText(getTotalFollowersLabel(followersEmailModel.getTotalEmail()));
     }
   }
  else {

@@ -5,10 +5,14 @@
   mIsUpdatingStats=true;
   final RestClientUtils restClientUtils=WordPress.getRestClientUtilsV1_1();
   final String blogId=StatsUtils.getBlogId(mLocalBlogID);
-  final String singlePostRestPath=getRestPath();
-  AppLog.d(AppLog.T.STATS,"Enqueuing the following Stats request " + singlePostRestPath);
-  RestListener vListener=new RestListener(this,getRestEndpointName(),blogId,mTimeframe);
-  restClientUtils.get(singlePostRestPath,vListener,vListener);
+  StatsService.StatsEndpointsEnum[] sections=getRestEndpointNames();
+  for (int i=0; i < sections.length; i++) {
+    StatsService.StatsEndpointsEnum currentSection=sections[i];
+    String singlePostRestPath=getRestPath(currentSection);
+    RestListener vListener=new RestListener(this,currentSection,blogId,mTimeframe);
+    restClientUtils.get(singlePostRestPath,vListener,vListener);
+    AppLog.d(AppLog.T.STATS,"Enqueuing the following Stats request " + singlePostRestPath);
+  }
   mPullToRefreshHelper.setRefreshing(true);
   return;
 }
