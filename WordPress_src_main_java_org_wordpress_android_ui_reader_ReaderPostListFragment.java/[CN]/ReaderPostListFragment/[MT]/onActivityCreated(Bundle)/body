@@ -3,7 +3,12 @@
   setHasOptionsMenu(true);
   setupActionBar();
   boolean adapterAlreadyExists=hasPostRecycler();
-  mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+  if (DisplayUtils.isLandscape(getActivity())) {
+    mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL));
+  }
+ else {
+    mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+  }
   mRecyclerView.setAdapter(getPostRecycler());
   if (!adapterAlreadyExists && getPostListType().isTagType()) {
     boolean isRecreated=(savedInstanceState != null);
