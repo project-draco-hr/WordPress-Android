@@ -3,15 +3,15 @@
   setContentView(R.layout.stats_activity_view_all);
   if (savedInstanceState == null) {
   }
-  ActionBar actionBar=getActionBar();
+  ActionBar actionBar=getSupportActionBar();
   if (actionBar != null) {
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
   outerContainer=(LinearLayout)findViewById(R.id.stats_fragment_container);
-  mPullToRefreshHelper=new PullToRefreshHelper(this,(PullToRefreshLayout)findViewById(R.id.ptr_layout),new PullToRefreshHelper.RefreshListener(){
-    @Override public void onRefreshStarted(    View view){
+  mSwipeToRefreshHelper=new SwipeToRefreshHelper(this,(SwipeRefreshLayout)findViewById(R.id.ptr_layout),new SwipeToRefreshHelper.RefreshListener(){
+    @Override public void onRefreshStarted(){
       if (!NetworkUtils.checkConnection(getBaseContext())) {
-        mPullToRefreshHelper.setRefreshing(false);
+        mSwipeToRefreshHelper.setRefreshing(false);
         return;
       }
       refreshStats();
