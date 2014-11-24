@@ -1,0 +1,46 @@
+{
+  super.onCreate(savedInstanceState);
+  if (savedInstanceState == null) {
+    AnalyticsTracker.track(AnalyticsTracker.Stat.OPENED_SETTINGS);
+  }
+  addPreferencesFromResource(R.xml.settings);
+  OnPreferenceChangeListener preferenceChangeListener=new OnPreferenceChangeListener(){
+    @Override public boolean onPreferenceChange(    Preference preference,    Object newValue){
+      if (newValue != null) {
+        preference.setSummary(newValue.toString());
+      }
+      ActivityUtils.hideKeyboard(getActivity());
+      return true;
+    }
+  }
+;
+  mTaglineTextPreference=(WPEditTextPreference)findPreference("wp_pref_post_signature");
+  if (mTaglineTextPreference != null) {
+    mTaglineTextPreference.setOnPreferenceChangeListener(preferenceChangeListener);
+  }
+  findPreference("wp_pref_manage_notifications").setOnPreferenceClickListener(notificationPreferenceClickListener);
+  findPreference("wp_pref_app_about").setOnPreferenceClickListener(launchActivitiyClickListener);
+  findPreference("wp_pref_open_source_licenses").setOnPreferenceClickListener(launchActivitiyClickListener);
+  findPreference("wp_pref_help_and_support").setOnPreferenceClickListener(launchActivitiyClickListener);
+  findPreference("wp_pref_passlock_enabled").setOnPreferenceChangeListener(passcodeCheckboxChangeListener);
+  findPreference("wp_pref_sign_out").setOnPreferenceClickListener(signOutPreferenceClickListener);
+  findPreference("wp_reset_share_pref").setOnPreferenceClickListener(resetAUtoSharePreferenceClickListener);
+  mSettings=PreferenceManager.getDefaultSharedPreferences(getActivity());
+  initNotifications();
+  if (AppLockManager.getInstance().isAppLockFeatureEnabled()) {
+    final CheckBoxPreference passcodeEnabledCheckBoxPreference=(CheckBoxPreference)findPreference("wp_pref_passlock_enabled");
+    passcodeEnabledCheckBoxPreference.setOnPreferenceClickListener(new OnPreferenceClickListener(){
+      @Override public boolean onPreferenceClick(      Preference preference){
+        passcodeEnabledCheckBoxPreference.setChecked(AppLockManager.getInstance().getCurrentAppLock().isPasswordLocked());
+        return false;
+      }
+    }
+);
+  }
+ else {
+    PreferenceScreen rootScreen=(PreferenceScreen)findPreference("wp_pref_root");
+    PreferenceGroup passcodeGroup=(PreferenceGroup)findPreference("wp_passcode_lock_category");
+    rootScreen.removePreference(passcodeGroup);
+  }
+  displayPreferences();
+}

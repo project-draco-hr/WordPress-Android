@@ -1,0 +1,14 @@
+{
+  WordPress.wpDB.updateLastBlogId(WordPress.getCurrentLocalTableBlogId());
+  if (mDrawerAdapter != null && !mDrawerAdapter.hasSelectedItem(this) && mDrawerAdapter.getCount() > 0) {
+    DrawerItem drawerItem=(DrawerItem)mDrawerAdapter.getItem(0);
+    drawerItemSelected(drawerItem);
+  }
+  refreshCurrentBlogContent();
+  if (shouldUpdateCurrentBlogStatsInBackground()) {
+    WordPress.sUpdateCurrentBlogStats.forceRun();
+  }
+  if (WordPress.getCurrentBlog() != null) {
+    onBlogChanged();
+  }
+}

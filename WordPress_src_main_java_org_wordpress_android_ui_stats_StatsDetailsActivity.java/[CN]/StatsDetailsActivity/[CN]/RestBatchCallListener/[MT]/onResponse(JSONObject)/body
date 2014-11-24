@@ -1,0 +1,83 @@
+{
+  if (mActivityRef.get() == null) {
+    return;
+  }
+  mIsUpdatingStats=false;
+  mSwipeToRefreshHelper.setRefreshing(false);
+  AppLog.d(AppLog.T.STATS,"The REST response: " + response.toString());
+  ThreadPoolExecutor parseResponseExecutor=(ThreadPoolExecutor)Executors.newFixedThreadPool(1);
+  parseResponseExecutor.submit(new Thread(){
+    @Override public void run(){
+      parseTopPostsAndPagesResponse(response);
+      parseReferrersResponse(response);
+      parseClicksResponse(response);
+      parseSearchEngineTermsResponse(response);
+      parseViewAndVisitorsResponse(response);
+      final boolean post=mHandler.post(new Runnable(){
+        @Override public void run(){
+          ((TextView)findViewById(R.id.stats_visitors_and_views_today_visitors_count)).setText(FormatUtils.formatDecimal(mVisitorsCount));
+          ((TextView)findViewById(R.id.stats_visitors_and_views_today_views_count)).setText(FormatUtils.formatDecimal(mViewsCount));
+          ((TextView)findViewById(R.id.stats_visitors_and_views_best_ever_views_count)).setText(String.format("%.2f",mViewsPerVisitor));
+          final LinearLayout linearLayoutTopPostsAndPages=(LinearLayout)findViewById(R.id.stats_top_posts_and_pages_listview);
+          final TextView emptyTextViewTopPostsAndPages=(TextView)findViewById(R.id.stats_top_posts_and_pages_empty_text);
+          if (mTopPostsAndPagesAdapter != null) {
+            mTopPostsAndPagesAdapter.notifyDataSetChanged();
+            StatsUIHelper.reloadLinearLayout(mActivityRef.get(),mTopPostsAndPagesAdapter,linearLayoutTopPostsAndPages);
+          }
+          if (mTopPostsAndPagesAdapter == null || mTopPostsAndPages.size() == 0) {
+            emptyTextViewTopPostsAndPages.setVisibility(View.VISIBLE);
+            linearLayoutTopPostsAndPages.setVisibility(View.GONE);
+          }
+ else {
+            emptyTextViewTopPostsAndPages.setVisibility(View.GONE);
+            linearLayoutTopPostsAndPages.setVisibility(View.VISIBLE);
+          }
+          final LinearLayout linearLayoutReferrers=(LinearLayout)findViewById(R.id.stats_referrers_list_listview);
+          final TextView emptyTextViewReferrers=(TextView)findViewById(R.id.stats_referrers_list_empty_text);
+          if (mReferrersAdapter != null) {
+            mReferrersAdapter.notifyDataSetChanged();
+            StatsUIHelper.reloadGroupViews(mActivityRef.get(),mReferrersAdapter,mReferrerGroupIdToExpandedMap,linearLayoutReferrers);
+          }
+          if (mReferrersAdapter == null || mReferrerGroups.size() == 0) {
+            emptyTextViewReferrers.setVisibility(View.VISIBLE);
+            linearLayoutReferrers.setVisibility(View.GONE);
+          }
+ else {
+            emptyTextViewReferrers.setVisibility(View.GONE);
+            linearLayoutReferrers.setVisibility(View.VISIBLE);
+          }
+          final LinearLayout linearLayoutClicks=(LinearLayout)findViewById(R.id.stats_clicks_list_listview);
+          final TextView emptyTextViewClicks=(TextView)findViewById(R.id.stats_clicks_list_empty_text);
+          if (mClicksAdapter != null) {
+            mClicksAdapter.notifyDataSetChanged();
+            StatsUIHelper.reloadGroupViews(mActivityRef.get(),mClicksAdapter,mClickGroupIdToExpandedMap,linearLayoutClicks);
+          }
+          if (mClicksAdapter == null || mClickGroups.size() == 0) {
+            emptyTextViewClicks.setVisibility(View.VISIBLE);
+            linearLayoutClicks.setVisibility(View.GONE);
+          }
+ else {
+            emptyTextViewClicks.setVisibility(View.GONE);
+            linearLayoutClicks.setVisibility(View.VISIBLE);
+          }
+          final LinearLayout linearLayoutSearch=(LinearLayout)findViewById(R.id.stats_searchengine_list_listview);
+          final TextView emptyTextViewSearch=(TextView)findViewById(R.id.stats_searchengine_list_empty_text);
+          if (mSearchEngineAdapter != null) {
+            mSearchEngineAdapter.notifyDataSetChanged();
+            StatsUIHelper.reloadLinearLayout(mActivityRef.get(),mSearchEngineAdapter,linearLayoutSearch);
+          }
+          if (mSearchEngineAdapter == null || mSearchEngineTerms.size() == 0) {
+            emptyTextViewSearch.setVisibility(View.VISIBLE);
+            linearLayoutSearch.setVisibility(View.GONE);
+          }
+ else {
+            emptyTextViewSearch.setVisibility(View.GONE);
+            linearLayoutSearch.setVisibility(View.VISIBLE);
+          }
+        }
+      }
+);
+    }
+  }
+);
+}

@@ -2,20 +2,14 @@
   if (!isAdded() || mIsUpdating == isUpdating) {
     return;
   }
-switch (updateAction) {
-case LOAD_OLDER:
-    if (isUpdating) {
-      showLoadingProgress();
-    }
- else {
-      hideLoadingProgress();
-    }
-  break;
-default :
-if (hasPullToRefresh()) {
-  mPullToRefreshHelper.setRefreshing(isUpdating);
-}
-break;
-}
-mIsUpdating=isUpdating;
+  if (updateAction == RequestDataAction.LOAD_OLDER) {
+    showLoadingProgress(isUpdating);
+  }
+ else   if (isUpdating && isPostListEmpty()) {
+    showSwipeToRefreshProgress(true);
+  }
+ else   if (!isUpdating) {
+    showSwipeToRefreshProgress(false);
+  }
+  mIsUpdating=isUpdating;
 }

@@ -3,15 +3,15 @@
   setContentView(R.layout.empty_listview);
   mListScrollPositionManager=new ListScrollPositionManager(getListView(),false);
   setTitle(getString(R.string.blogs_visibility));
-  ActionBar actionBar=getActionBar();
+  ActionBar actionBar=getSupportActionBar();
   if (actionBar != null) {
     actionBar.setHomeButtonEnabled(true);
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
-  mPullToRefreshHelper=new PullToRefreshHelper(this,(PullToRefreshLayout)findViewById(R.id.ptr_layout),new RefreshListener(){
-    @Override public void onRefreshStarted(    View view){
+  mSwipeToRefreshHelper=new SwipeToRefreshHelper(this,(SwipeRefreshLayout)findViewById(R.id.ptr_layout),new RefreshListener(){
+    @Override public void onRefreshStarted(){
       if (!NetworkUtils.checkConnection(getBaseContext())) {
-        mPullToRefreshHelper.setRefreshing(false);
+        mSwipeToRefreshHelper.setRefreshing(false);
         return;
       }
       new UpdateBlogTask(getApplicationContext()).execute();
@@ -22,4 +22,5 @@
   if (NetworkUtils.isNetworkAvailable(this) && savedInstanceState == null) {
     refreshBlogs();
   }
+  getListView().setOnItemClickListener(this);
 }

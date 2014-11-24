@@ -21,7 +21,7 @@
     }
   }
 );
-  TextView textView=(TextView)getActivity().findViewById(R.id.title_empty);
+  TextView textView=(TextView)getView().findViewById(R.id.title_empty);
   if (textView != null) {
     if (mIsPage) {
       textView.setText(getText(R.string.pages_empty_list));
@@ -30,11 +30,16 @@
       textView.setText(getText(R.string.posts_empty_list));
     }
   }
-  initPullToRefreshHelper();
-  mPullToRefreshHelper.registerReceiver(getActivity());
+  initSwipeToRefreshHelper();
   WordPress.setOnPostUploadedListener(this);
+  ImageButton fabButton=(ImageButton)getView().findViewById(R.id.fab_button);
+  fabButton.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      newPost();
+    }
+  }
+);
   if (NetworkUtils.isNetworkAvailable(getActivity())) {
     ((PostsActivity)getActivity()).requestPosts();
-    ;
   }
 }

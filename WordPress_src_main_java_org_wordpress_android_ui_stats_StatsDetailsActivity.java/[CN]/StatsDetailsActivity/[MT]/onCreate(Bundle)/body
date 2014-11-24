@@ -1,0 +1,53 @@
+{
+  super.onCreate(savedInstanceState);
+  if (StatsUIHelper.shouldLoadSplitLayout(this)) {
+    setContentView(R.layout.stats_activity_details_split);
+  }
+ else {
+    setContentView(R.layout.stats_activity_details);
+  }
+  if (WordPress.wpDB == null) {
+    Toast.makeText(this,R.string.fatal_db_error,Toast.LENGTH_LONG).show();
+    finish();
+    return;
+  }
+  if (savedInstanceState == null) {
+  }
+  mAltRowColor=getResources().getColor(R.color.stats_alt_row);
+  ActionBar actionBar=getSupportActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
+  mSwipeToRefreshHelper=new SwipeToRefreshHelper(this,(SwipeRefreshLayout)findViewById(R.id.ptr_layout),new SwipeToRefreshHelper.RefreshListener(){
+    @Override public void onRefreshStarted(){
+      if (!NetworkUtils.checkConnection(getBaseContext())) {
+        mSwipeToRefreshHelper.setRefreshing(false);
+        return;
+      }
+      refreshStats();
+    }
+  }
+);
+  if (getIntent() != null) {
+    Bundle extras=getIntent().getExtras();
+    if (extras != null && extras.containsKey(StatsActivity.STATS_DETAILS_DATE)) {
+      String date=extras.getString(StatsActivity.STATS_DETAILS_DATE);
+      mStatsDate=date;
+    }
+    mLocalBlogID=getIntent().getIntExtra(StatsActivity.ARG_LOCAL_TABLE_BLOG_ID,-1);
+  }
+  setTitle(getString(R.string.stats));
+  ((TextView)findViewById(R.id.stats_views_visitors_date)).setText(StatsUtils.parseDate(mStatsDate,"yyyy-MM-dd","EEEE, MMMM d, yyyy"));
+  mTopPostsAndPagesAdapter=new TopPostsAndPagesAdapter(this,mTopPostsAndPages);
+  TextView topPostsAndPagesEmptyTextView=((TextView)findViewById(R.id.stats_top_posts_and_pages_empty_text));
+  setupEmptyLabel(topPostsAndPagesEmptyTextView,R.string.stats_empty_top_posts_title,R.string.stats_empty_top_posts_desc);
+  mReferrersAdapter=new ReferrersAdapter(this,mReferrerGroups);
+  TextView referrersEmptyTextView=((TextView)findViewById(R.id.stats_referrers_list_empty_text));
+  setupEmptyLabel(referrersEmptyTextView,R.string.stats_empty_referrers_title,R.string.stats_empty_referrers_desc);
+  mClicksAdapter=new ClicksAdapter(this,mClickGroups);
+  TextView clicksEmptyLabel=((TextView)findViewById(R.id.stats_clicks_list_empty_text));
+  setupEmptyLabel(clicksEmptyLabel,R.string.stats_empty_clicks_title,R.string.stats_empty_clicks_desc);
+  mSearchEngineAdapter=new SearchEngineAdapter(this,mSearchEngineTerms);
+  TextView seEmptyLabel=((TextView)findViewById(R.id.stats_searchengine_list_empty_text));
+  setupEmptyLabel(seEmptyLabel,R.string.stats_empty_search_engine_terms_title,R.string.stats_empty_search_engine_terms_desc);
+}

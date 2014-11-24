@@ -1,17 +1,17 @@
 {
   super.onCreate(savedInstanceState);
   setContentView(R.layout.reader_activity_userlist);
+  setTitle(null);
+  Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
+  setSupportActionBar(toolbar);
+  getSupportActionBar().setDisplayShowTitleEnabled(true);
+  getSupportActionBar().setDisplayHomeAsUpEnabled(true);
   long blogId=getIntent().getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
   long postId=getIntent().getLongExtra(ReaderConstants.ARG_POST_ID,0);
   long commentId=getIntent().getLongExtra(ReaderConstants.ARG_COMMENT_ID,0);
   if (savedInstanceState != null) {
     mListState=savedInstanceState.getParcelable(LIST_STATE);
   }
-  final ViewGroup rootView=(ViewGroup)findViewById(R.id.layout_container);
-  int displayHeight=DisplayUtils.getDisplayPixelHeight(this);
-  boolean isLandscape=DisplayUtils.isLandscape(this);
-  int maxHeight=displayHeight - (displayHeight / (isLandscape ? 5 : 3));
-  rootView.getLayoutParams().height=maxHeight;
   getListView().setAdapter(getAdapter());
   loadUsers(blogId,postId,commentId);
 }
