@@ -1,15 +1,19 @@
 {
-  mRadioGroup.setVisibility(View.VISIBLE);
+  mTopPagerRadioGroup.setVisibility(View.VISIBLE);
   mTotalsLabel.setVisibility(View.VISIBLE);
   if (mDatamodels == null) {
     showEmptyUI(true);
     mTotalsLabel.setText(getTotalFollowersLabel(0));
     return;
   }
+  if (isErrorResponse(mTopPagerSelectedButtonIndex)) {
+    showErrorUI(mDatamodels[mTopPagerSelectedButtonIndex]);
+    return;
+  }
   FollowersModel followersWPCOMModel=(FollowersModel)mDatamodels[0];
   FollowersModel followersEmailModel=(FollowersModel)mDatamodels[1];
   ArrayAdapter adapter=null;
-  if (mSelectedButtonIndex == 0) {
+  if (mTopPagerSelectedButtonIndex == 0) {
     if (followersWPCOMModel != null) {
       List<FollowerModel> mSubscribers=followersWPCOMModel.getFollowers();
       if (mSubscribers != null && mSubscribers.size() > 0) {
@@ -28,7 +32,7 @@
   if (adapter != null) {
     StatsUIHelper.reloadLinearLayout(getActivity(),adapter,mList,getMaxNumberOfItemsToShowInList());
     showEmptyUI(false);
-    if (mSelectedButtonIndex == 0) {
+    if (mTopPagerSelectedButtonIndex == 0) {
       mTotalsLabel.setText(getTotalFollowersLabel(followersWPCOMModel.getTotalWPCom()));
     }
  else {

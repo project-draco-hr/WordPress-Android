@@ -1,8 +1,12 @@
 {
-  mRadioGroup.setVisibility(View.VISIBLE);
+  mTopPagerRadioGroup.setVisibility(View.VISIBLE);
   if (mDatamodels == null) {
     showEmptyUI(true);
     mTotalsLabel.setVisibility(View.GONE);
+    return;
+  }
+  if (isErrorResponse(mTopPagerSelectedButtonIndex)) {
+    showErrorUI(mDatamodels[mTopPagerSelectedButtonIndex]);
     return;
   }
   if (mDatamodels[1] != null) {
@@ -13,10 +17,10 @@
     mTotalsLabel.setVisibility(View.GONE);
   }
   ArrayAdapter adapter=null;
-  if (mSelectedButtonIndex == 0 && hasAuthors()) {
+  if (mTopPagerSelectedButtonIndex == 0 && hasAuthors()) {
     adapter=new AuthorsAdapter(getActivity(),getAuthors());
   }
- else   if (mSelectedButtonIndex == 1 && hasPosts()) {
+ else   if (mTopPagerSelectedButtonIndex == 1 && hasPosts()) {
     adapter=new TopPostsAndPagesAdapter(getActivity(),getPosts());
   }
   if (adapter != null) {

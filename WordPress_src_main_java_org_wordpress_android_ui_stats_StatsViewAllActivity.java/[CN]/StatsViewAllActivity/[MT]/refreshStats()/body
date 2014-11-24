@@ -2,6 +2,11 @@
   if (mIsUpdatingStats) {
     return;
   }
+  if (!NetworkUtils.isNetworkAvailable(this)) {
+    mPullToRefreshHelper.setRefreshing(false);
+    AppLog.w(AppLog.T.STATS,getInnerFragmentTAG() + " > no connection, update canceled");
+    return;
+  }
   mIsUpdatingStats=true;
   final RestClientUtils restClientUtils=WordPress.getRestClientUtilsV1_1();
   final String blogId=StatsUtils.getBlogId(mLocalBlogID);
