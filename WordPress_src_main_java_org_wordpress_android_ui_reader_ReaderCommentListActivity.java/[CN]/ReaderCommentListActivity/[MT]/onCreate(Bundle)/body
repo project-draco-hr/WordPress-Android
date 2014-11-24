@@ -23,7 +23,11 @@
   mCommentBox=(ViewGroup)findViewById(R.id.layout_comment_box);
   mEditComment=(SuggestionAutoCompleteText)mCommentBox.findViewById(R.id.edit_comment);
   mImgSubmitComment=(ImageView)mCommentBox.findViewById(R.id.image_post_comment);
-  loadPost();
+  if (!loadPost()) {
+    ToastUtils.showToast(this,R.string.reader_toast_err_get_post);
+    finish();
+    return;
+  }
   int height=getResources().getDimensionPixelSize(R.dimen.margin_medium);
   ReaderUtils.addListViewHeader(mListView,height);
   mListView.setAdapter(getCommentAdapter());
