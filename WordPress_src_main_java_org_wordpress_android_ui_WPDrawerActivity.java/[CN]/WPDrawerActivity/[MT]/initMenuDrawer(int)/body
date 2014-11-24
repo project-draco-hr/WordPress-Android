@@ -43,20 +43,9 @@
   mDrawerListView.setAdapter(mDrawerAdapter);
   mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
     public void onItemClick(    AdapterView<?> parent,    View view,    int position,    long id){
-      if (mDrawerLayout != null) {
-        mDrawerLayout.closeDrawer(GravityCompat.START);
-      }
       int menuPosition=position - mDrawerListView.getHeaderViewsCount();
-      if (menuPosition < 0 || menuPosition >= mDrawerAdapter.getCount()) {
-        return;
-      }
-      MenuDrawerItem item=(MenuDrawerItem)mDrawerAdapter.getItem(menuPosition);
-      if (item.hasItemId()) {
-        ActivityId.trackLastActivity(WPDrawerActivity.this,item.getItemId());
-      }
-      if (!item.isSelected()) {
-        item.selectItem();
-      }
+      DrawerItem item=(DrawerItem)mDrawerAdapter.getItem(menuPosition);
+      drawerItemSelected(item);
     }
   }
 );
