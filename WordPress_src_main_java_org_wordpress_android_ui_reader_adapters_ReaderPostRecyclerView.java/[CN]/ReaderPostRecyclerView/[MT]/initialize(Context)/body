@@ -1,0 +1,31 @@
+{
+  if (!isInEditMode()) {
+    ItemAnimator animator=new DefaultItemAnimator();
+    animator.setSupportsChangeAnimations(true);
+    setItemAnimator(animator);
+    boolean isGridView;
+    int screenSize=getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
+switch (screenSize) {
+case Configuration.SCREENLAYOUT_SIZE_XLARGE:
+      isGridView=true;
+    break;
+case Configuration.SCREENLAYOUT_SIZE_LARGE:
+  isGridView=DisplayUtils.isLandscape(context);
+break;
+case Configuration.SCREENLAYOUT_SIZE_NORMAL:
+float density=context.getResources().getDisplayMetrics().density;
+isGridView=DisplayUtils.isLandscape(context) && (density >= 2.0f);
+break;
+default :
+isGridView=false;
+break;
+}
+if (isGridView) {
+setLayoutManager(new StaggeredGridLayoutManager(GRID_SPAN_COUNT,StaggeredGridLayoutManager.VERTICAL));
+}
+ else {
+setLayoutManager(new LinearLayoutManager(context));
+}
+addItemDecoration(new DividerItemDecoration(context,isGridView));
+}
+}
