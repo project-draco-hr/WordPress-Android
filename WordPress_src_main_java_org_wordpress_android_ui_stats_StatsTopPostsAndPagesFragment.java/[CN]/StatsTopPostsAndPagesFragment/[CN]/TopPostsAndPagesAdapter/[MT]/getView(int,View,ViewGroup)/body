@@ -7,11 +7,9 @@
   }
   final SingleItemModel currentRowData=list.get(position);
   StatsViewHolder holder=(StatsViewHolder)rowView.getTag();
-  holder.setEntryTextOrLink(currentRowData.getUrl(),currentRowData.getTitle());
-  holder.totalsTextView.setText(FormatUtils.formatDecimal(currentRowData.getTotals()));
-  holder.totalsTextView.setPaintFlags(holder.totalsTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-  holder.totalsTextView.setTextColor(getResources().getColor(R.color.wordpress_blue));
-  holder.totalsTextView.setOnClickListener(new View.OnClickListener(){
+  holder.entryTextView.setText(currentRowData.getTitle());
+  holder.entryTextView.setTextColor(getResources().getColor(R.color.wordpress_blue));
+  holder.entryTextView.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View view){
       AppLog.w(AppLog.T.STATS,currentRowData.getItemID() + "");
       Intent statsPostViewIntent=new Intent(getActivity(),StatsSinglePostDetailsActivity.class);
@@ -21,6 +19,25 @@
     }
   }
 );
+  holder.entryTextView.setBackgroundResource(R.drawable.list_bg_selector);
+  holder.entryTextView.setTextColor(getResources().getColor(R.color.wordpress_blue));
+  holder.imgMore.setVisibility(View.VISIBLE);
+  holder.imgMore.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View view){
+      PopupMenu popup=new PopupMenu(context,view);
+      MenuItem menuItem=popup.getMenu().add(getString(R.string.view_in_browser));
+      menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener(){
+        @Override public boolean onMenuItemClick(        MenuItem item){
+          WPWebViewActivity.openURL(context,currentRowData.getUrl());
+          return true;
+        }
+      }
+);
+      popup.show();
+    }
+  }
+);
+  holder.totalsTextView.setText(FormatUtils.formatDecimal(currentRowData.getTotals()));
   holder.networkImageView.setVisibility(View.GONE);
   return rowView;
 }
