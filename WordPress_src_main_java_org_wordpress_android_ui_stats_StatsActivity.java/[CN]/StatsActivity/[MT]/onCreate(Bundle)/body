@@ -66,12 +66,36 @@
   if (scrollView != null) {
     scrollView.setScrollViewListener(this);
   }
-  if (!mNoMenuDrawer && actionBar.getNavigationMode() != ActionBar.NAVIGATION_MODE_LIST) {
-    StatsTimeframe[] timeframes={StatsTimeframe.DAY,StatsTimeframe.WEEK,StatsTimeframe.MONTH,StatsTimeframe.YEAR};
-    mTimeframeSpinnerAdapter=new TimeframeSpinnerAdapter(this,timeframes);
-    actionBar.setDisplayShowTitleEnabled(false);
-    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-    actionBar.setListNavigationCallbacks(mTimeframeSpinnerAdapter,this);
+  if (!mNoMenuDrawer && actionBar != null && mSpinner == null) {
+    final Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
+    if (toolbar != null) {
+      View view=View.inflate(this,R.layout.reader_spinner,toolbar);
+      mSpinner=(Spinner)view.findViewById(R.id.action_bar_spinner);
+      StatsTimeframe[] timeframes={StatsTimeframe.DAY,StatsTimeframe.WEEK,StatsTimeframe.MONTH,StatsTimeframe.YEAR};
+      mTimeframeSpinnerAdapter=new TimeframeSpinnerAdapter(this,timeframes);
+      actionBar.setDisplayShowTitleEnabled(false);
+      mSpinner.setAdapter(mTimeframeSpinnerAdapter);
+      mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+        @Override public void onItemSelected(        AdapterView<?> parent,        View view,        int position,        long id){
+          final StatsTimeframe selectedTimeframe=(StatsTimeframe)mTimeframeSpinnerAdapter.getItem(position);
+          if (mCurrentTimeframe == selectedTimeframe) {
+            AppLog.d(T.STATS,"The selected TIME FRAME is already active: " + selectedTimeframe.getLabel());
+            return;
+          }
+          AppLog.d(T.STATS,"NEW TIME FRAME : " + selectedTimeframe.getLabel());
+          mCurrentTimeframe=selectedTimeframe;
+          if (NetworkUtils.isNetworkAvailable(StatsActivity.this)) {
+            String date=StatsUtils.getCurrentDateTZ(mLocalBlogID);
+            loadStatsFragments(true,true);
+            refreshStats(selectedTimeframe,date,true);
+            mSwipeToRefreshHelper.setRefreshing(true);
+          }
+        }
+        @Override public void onNothingSelected(        AdapterView<?> parent){
+        }
+      }
+);
+    }
   }
   selectTimeframeInActionBar(mCurrentTimeframe);
   if (needToRefreshStats) {
