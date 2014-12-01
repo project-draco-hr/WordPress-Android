@@ -1,17 +1,8 @@
 {
   final ReaderComment comment=mComments.get(position);
-  final CommentHolder holder;
-  if (convertView == null) {
-    convertView=mInflater.inflate(R.layout.reader_listitem_comment,parent,false);
-    holder=new CommentHolder(convertView,isPrivatePost());
-    convertView.setTag(holder);
-  }
- else {
-    holder=(CommentHolder)convertView.getTag();
-  }
   holder.txtAuthor.setText(comment.getAuthorName());
   holder.imgAvatar.setImageUrl(PhotonUtils.fixAvatar(comment.getAuthorAvatar(),mAvatarSz),WPNetworkImageView.ImageType.AVATAR);
-  CommentUtils.displayHtmlComment(holder.txtText,comment.getText(),parent.getWidth());
+  CommentUtils.displayHtmlComment(holder.txtText,comment.getText(),holder.itemView.getWidth());
   java.util.Date dtPublished=DateTimeUtils.iso8601ToJavaDate(comment.getPublished());
   holder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(dtPublished));
   if (comment.hasAuthorBlogId()) {
@@ -38,15 +29,15 @@
     holder.spacerIndent.setVisibility(View.GONE);
   }
   if (mHighlightCommentId == comment.commentId) {
-    convertView.setBackgroundColor(mBgColorHighlight);
+    holder.itemView.setBackgroundColor(mBgColorHighlight);
     holder.progress.setVisibility(mShowProgressForHighlightedComment ? View.VISIBLE : View.GONE);
   }
  else   if (comment.authorId == mPost.authorId) {
-    convertView.setBackgroundColor(mBgColorHighlight);
+    holder.itemView.setBackgroundColor(mBgColorHighlight);
     holder.progress.setVisibility(View.GONE);
   }
  else {
-    convertView.setBackgroundColor(mBgColorNormal);
+    holder.itemView.setBackgroundColor(mBgColorNormal);
     holder.progress.setVisibility(View.GONE);
   }
   if (mReplyListener != null) {
@@ -60,8 +51,7 @@
     holder.imgReply.setOnClickListener(replyClickListener);
   }
   showLikeStatus(holder,comment,position);
-  if (mMoreCommentsExist && mDataRequestedListener != null && (position >= getCount() - 1)) {
+  if (mMoreCommentsExist && mDataRequestedListener != null && (position >= getItemCount() - 1)) {
     mDataRequestedListener.onRequestData();
   }
-  return convertView;
 }
