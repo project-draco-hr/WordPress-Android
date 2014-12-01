@@ -7,17 +7,16 @@
     AppLog.w(AppLog.T.STATS,getInnerFragmentTAG() + " > no connection, update canceled");
     return;
   }
+  mSwipeToRefreshHelper.setRefreshing(true);
   mIsUpdatingStats=true;
   final RestClientUtils restClientUtils=WordPress.getRestClientUtilsV1_1();
   final String blogId=StatsUtils.getBlogId(mLocalBlogID);
   StatsService.StatsEndpointsEnum[] sections=getRestEndpointNames();
   for (int i=0; i < sections.length; i++) {
     StatsService.StatsEndpointsEnum currentSection=sections[i];
-    String singlePostRestPath=getRestPath(currentSection);
+    String singlePostRestPath=getRestPath(currentSection,1);
     RestListener vListener=new RestListener(this,currentSection,blogId,mTimeframe);
     restClientUtils.get(singlePostRestPath,vListener,vListener);
     AppLog.d(AppLog.T.STATS,"Enqueuing the following Stats request " + singlePostRestPath);
   }
-  mSwipeToRefreshHelper.setRefreshing(true);
-  return;
 }

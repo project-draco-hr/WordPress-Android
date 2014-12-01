@@ -35,7 +35,6 @@
   }
 );
   setTitle(R.string.stats);
-  boolean needToRefreshStats=false;
   if (savedInstanceState != null) {
     mNavPosition=savedInstanceState.getInt(SAVED_NAV_POSITION);
     mResultCode=savedInstanceState.getInt(SAVED_WP_LOGIN_STATE);
@@ -44,7 +43,6 @@
     mRequestedDate=savedInstanceState.getString(SAVED_STATS_REQUESTED_DATE);
   }
  else   if (getIntent() != null) {
-    needToRefreshStats=true;
     mLocalBlogID=getIntent().getIntExtra(ARG_LOCAL_TABLE_BLOG_ID,-1);
     if (getIntent().hasExtra(SAVED_STATS_TIMEFRAME)) {
       mCurrentTimeframe=(StatsTimeframe)getIntent().getSerializableExtra(SAVED_STATS_TIMEFRAME);
@@ -86,9 +84,9 @@
           mCurrentTimeframe=selectedTimeframe;
           if (NetworkUtils.isNetworkAvailable(StatsActivity.this)) {
             String date=StatsUtils.getCurrentDateTZ(mLocalBlogID);
-            loadStatsFragments(true,true);
             refreshStats(selectedTimeframe,date,true);
             mSwipeToRefreshHelper.setRefreshing(true);
+            loadStatsFragments(true,true);
           }
         }
         @Override public void onNothingSelected(        AdapterView<?> parent){
@@ -98,8 +96,4 @@
     }
   }
   selectTimeframeInActionBar(mCurrentTimeframe);
-  if (needToRefreshStats) {
-    refreshStats(mCurrentTimeframe,mRequestedDate,true);
-    mSwipeToRefreshHelper.setRefreshing(true);
-  }
 }

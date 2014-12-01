@@ -7,7 +7,6 @@
   if (actionBar != null) {
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
-  outerContainer=(LinearLayout)findViewById(R.id.stats_fragment_container);
   mSwipeToRefreshHelper=new SwipeToRefreshHelper(this,(SwipeRefreshLayout)findViewById(R.id.ptr_layout),new SwipeToRefreshHelper.RefreshListener(){
     @Override public void onRefreshStarted(){
       if (!NetworkUtils.checkConnection(getBaseContext())) {
@@ -18,33 +17,33 @@
     }
   }
 );
-  setTitle(getString(R.string.stats));
   if (savedInstanceState != null) {
     mLocalBlogID=savedInstanceState.getInt(StatsActivity.ARG_LOCAL_TABLE_BLOG_ID,-1);
     mRestResponse=(Serializable[])savedInstanceState.getSerializable(StatsAbstractFragment.ARG_REST_RESPONSE);
     mTimeframe=(StatsTimeframe)savedInstanceState.getSerializable(StatsAbstractFragment.ARGS_TIMEFRAME);
     mDate=savedInstanceState.getString(StatsAbstractFragment.ARGS_START_DATE);
-    int ordinal=savedInstanceState.getInt(StatsAbstractFragment.ARGS_VIEW_TYPE,-1);
+    int ordinal=savedInstanceState.getInt(StatsAbstractFragment.ARGS_VIEW_TYPE,0);
     mStatsViewType=StatsViewType.values()[ordinal];
-    mOuterPagerSelectedButtonIndex=savedInstanceState.getInt(StatsAbstractListFragment.ARGS_TOP_PAGER_SELECTED_BUTTON_INDEX,-1);
+    mOuterPagerSelectedButtonIndex=savedInstanceState.getInt(StatsAbstractListFragment.ARGS_TOP_PAGER_SELECTED_BUTTON_INDEX,0);
   }
  else   if (getIntent() != null) {
     Bundle extras=getIntent().getExtras();
     mLocalBlogID=extras.getInt(StatsActivity.ARG_LOCAL_TABLE_BLOG_ID,-1);
     mTimeframe=(StatsTimeframe)extras.getSerializable(StatsAbstractFragment.ARGS_TIMEFRAME);
     mDate=extras.getString(StatsAbstractFragment.ARGS_START_DATE);
-    int ordinal=extras.getInt(StatsAbstractFragment.ARGS_VIEW_TYPE,-1);
+    int ordinal=extras.getInt(StatsAbstractFragment.ARGS_VIEW_TYPE,0);
     mStatsViewType=StatsViewType.values()[ordinal];
-    mOuterPagerSelectedButtonIndex=extras.getInt(StatsAbstractListFragment.ARGS_TOP_PAGER_SELECTED_BUTTON_INDEX,-1);
-    refreshStats();
+    mOuterPagerSelectedButtonIndex=extras.getInt(StatsAbstractListFragment.ARGS_TOP_PAGER_SELECTED_BUTTON_INDEX,0);
   }
   TextView dateTextView=(TextView)findViewById(R.id.stats_summary_date);
-  dateTextView.setText(getDateForDisplayInLabels(mDate,mTimeframe));
+  dateTextView.setVisibility(View.GONE);
+  setTitle(getDateForDisplayInLabels(mDate,mTimeframe));
   FragmentManager fm=getFragmentManager();
   FragmentTransaction ft=fm.beginTransaction();
-  if (fm.findFragmentByTag("ViewAll-" + getInnerFragmentTAG()) == null) {
-    fragment=getInnerFragment();
-    ft.replace(R.id.stats_single_view_fragment,fragment,"ViewAll-" + getInnerFragmentTAG());
+  mFragment=(StatsAbstractListFragment)fm.findFragmentByTag("ViewAll-" + getInnerFragmentTAG());
+  if (mFragment == null) {
+    mFragment=getInnerFragment();
+    ft.replace(R.id.stats_single_view_fragment,mFragment,"ViewAll-" + getInnerFragmentTAG());
     ft.commit();
   }
 }

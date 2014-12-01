@@ -2,6 +2,9 @@
   if (mActivityRef.get() == null || mActivityRef.get().isFinishing()) {
     return;
   }
+  if (!mFragment.isAdded()) {
+    return;
+  }
   mIsUpdatingStats=false;
   mSwipeToRefreshHelper.setRefreshing(false);
   ThreadPoolExecutor parseResponseExecutor=(ThreadPoolExecutor)Executors.newFixedThreadPool(1);
@@ -10,7 +13,7 @@
       if (response != null) {
         try {
           AppLog.d(AppLog.T.STATS,response.toString());
-          Serializable resp=parseResponse(response);
+          final Serializable resp=StatsUtils.parseResponse(mEndpointName,mRequestBlogId,response);
           notifySectionUpdated(mEndpointName,resp);
         }
  catch (        JSONException e) {
