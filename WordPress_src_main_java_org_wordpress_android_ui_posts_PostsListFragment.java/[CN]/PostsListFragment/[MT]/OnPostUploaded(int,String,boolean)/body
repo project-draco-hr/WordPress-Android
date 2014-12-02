@@ -7,7 +7,7 @@
     sameBlogId=false;
   }
   if (!NetworkUtils.checkConnection(getActivity())) {
-    mPullToRefreshHelper.setRefreshing(false);
+    mSwipeToRefreshHelper.setRefreshing(false);
     return;
   }
   if (!TextUtils.isEmpty(postId)) {
@@ -23,7 +23,7 @@
         if (!isAdded() || !reloadPosts) {
           return;
         }
-        mPullToRefreshHelper.setRefreshing(false);
+        mSwipeToRefreshHelper.setRefreshing(false);
         getPostListAdapter().loadPosts();
         mOnSinglePostLoadedListener.onSinglePostLoaded();
       }
@@ -36,11 +36,11 @@
         if (errorType != ErrorType.TASK_CANCELLED) {
           ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_pages : R.string.error_refresh_posts,Duration.LONG);
         }
-        mPullToRefreshHelper.setRefreshing(false);
+        mSwipeToRefreshHelper.setRefreshing(false);
       }
     }
 );
-    mPullToRefreshHelper.setRefreshing(true);
+    mSwipeToRefreshHelper.setRefreshing(true);
     mIsFetchingPosts=true;
     mCurrentFetchSinglePostTask.execute(apiArgs);
   }

@@ -5,7 +5,7 @@
   }
   final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
   if (mStatsDate == null || currentBlog == null || !NetworkUtils.isNetworkAvailable(this)) {
-    mPullToRefreshHelper.setRefreshing(false);
+    mSwipeToRefreshHelper.setRefreshing(false);
     int errorMessageId=(mStatsDate == null || currentBlog == null) ? R.string.error_refresh_stats : R.string.connection_error;
     ToastUtils.showToast(this,this.getString(errorMessageId),ToastUtils.Duration.LONG);
     return;
@@ -23,5 +23,5 @@
   RestBatchCallListener listener=new RestBatchCallListener(this,blogId,viewAndVisitorsPath,topPostsAndPagesPath,referrersPath,clicksPath,searchEngineTermsPath);
   restClientUtils.get(path,listener,listener);
   mIsUpdatingStats=true;
-  mPullToRefreshHelper.setRefreshing(true);
+  mSwipeToRefreshHelper.setRefreshing(true);
 }

@@ -1,6 +1,6 @@
 {
-  final ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.reader_fragment_post_list,container,false);
-  mListView=(WPListView)rootView.findViewById(android.R.id.list);
+  final ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.reader_fragment_post_cards,container,false);
+  mRecyclerView=(ReaderPostRecyclerView)rootView.findViewById(R.id.recycler_view);
   mNewPostsBar=(TextView)rootView.findViewById(R.id.text_new_posts);
   mNewPostsBar.setVisibility(View.GONE);
   mNewPostsBar.setOnClickListener(new View.OnClickListener(){
@@ -17,6 +17,7 @@ case TAG_PREVIEW:
   mTagInfoView=(ViewGroup)inflater.inflate(R.layout.reader_tag_info_view,container,false);
 rootView.addView(mTagInfoView);
 ReaderUtils.layoutBelow(rootView,R.id.ptr_layout,mTagInfoView.getId());
+setHeaderViewElevation(mTagInfoView);
 break;
 case BLOG_PREVIEW:
 mBlogInfoView=new ReaderBlogInfoView(container.getContext());
@@ -24,41 +25,25 @@ rootView.addView(mBlogInfoView);
 ReaderUtils.layoutBelow(rootView,R.id.ptr_layout,mBlogInfoView.getId());
 break;
 }
-if (getPostListType().isPreviewType()) {
-ReaderUtils.addListViewHeader(mListView,0);
-}
 mEmptyView=rootView.findViewById(R.id.empty_view);
-mListView.setOnScrollListener(this);
-mListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-@Override public void onItemClick(AdapterView<?> adapterView,View view,int position,long id){
-position-=mListView.getHeaderViewsCount();
-if (position >= 0 && mPostSelectedListener != null) {
-ReaderPost post=(ReaderPost)getPostAdapter().getItem(position);
-if (post != null) {
-AnalyticsTracker.track(AnalyticsTracker.Stat.READER_OPENED_ARTICLE);
-mPostSelectedListener.onPostSelected(post.blogId,post.postId);
-}
-}
-}
-}
-);
 mProgress=(ProgressBar)rootView.findViewById(R.id.progress_footer);
 mProgress.setVisibility(View.GONE);
-mPullToRefreshHelper=new PullToRefreshHelper(getActivity(),(PullToRefreshLayout)rootView.findViewById(R.id.ptr_layout),new RefreshListener(){
-@Override public void onRefreshStarted(View view){
+mSwipeToRefreshHelper=new SwipeToRefreshHelper(getActivity(),(SwipeRefreshLayout)rootView.findViewById(R.id.ptr_layout),new RefreshListener(){
+@Override public void onRefreshStarted(){
 if (getActivity() == null || !NetworkUtils.checkConnection(getActivity())) {
-mPullToRefreshHelper.setRefreshing(false);
+showSwipeToRefreshProgress(false);
 return;
 }
 switch (getPostListType()) {
 case TAG_FOLLOWED:
 case TAG_PREVIEW:
-updatePostsWithTag(getCurrentTag(),RequestDataAction.LOAD_NEWER,ReaderTypes.RefreshType.MANUAL);
+updatePostsWithTag(getCurrentTag(),RequestDataAction.LOAD_NEWER,RefreshType.MANUAL);
 break;
 case BLOG_PREVIEW:
 updatePostsInCurrentBlog(RequestDataAction.LOAD_NEWER);
 break;
 }
+showSwipeToRefreshProgress(true);
 }
 }
 );

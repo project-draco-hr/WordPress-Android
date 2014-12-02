@@ -1,14 +1,10 @@
 {
-  if (isFullScreenSupported()) {
-    getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
-  }
   super.onCreate(savedInstanceState);
   setContentView(R.layout.reader_activity_post_pager);
-  ActionBar actionBar=getActionBar();
-  if (actionBar != null) {
-    actionBar.setDisplayShowTitleEnabled(true);
-    actionBar.setDisplayHomeAsUpEnabled(true);
-  }
+  mToolbar=(Toolbar)findViewById(R.id.toolbar);
+  setSupportActionBar(mToolbar);
+  getSupportActionBar().setDisplayShowTitleEnabled(true);
+  getSupportActionBar().setDisplayHomeAsUpEnabled(true);
   mViewPager=(ReaderViewPager)findViewById(R.id.viewpager);
   mProgress=(ProgressBar)findViewById(R.id.progress_loading);
   final String title;
@@ -45,13 +41,11 @@
   mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
     @Override public void onPageSelected(    int position){
       super.onPageSelected(position);
-      onRequestFullScreen(false);
       AnalyticsTracker.track(AnalyticsTracker.Stat.READER_OPENED_ARTICLE);
     }
     @Override public void onPageScrollStateChanged(    int state){
       super.onPageScrollStateChanged(state);
       if (state == ViewPager.SCROLL_STATE_DRAGGING) {
-        onRequestFullScreen(false);
         ReaderPostDetailFragment fragment=getActiveDetailFragment();
         if (fragment != null) {
           fragment.pauseWebView();

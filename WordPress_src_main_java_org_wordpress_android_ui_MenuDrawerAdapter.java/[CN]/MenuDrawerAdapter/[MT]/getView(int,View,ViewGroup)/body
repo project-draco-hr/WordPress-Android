@@ -1,0 +1,28 @@
+{
+  final DrawerViewHolder holder;
+  if (convertView == null || !(convertView.getTag() instanceof DrawerViewHolder)) {
+    convertView=mInflater.inflate(R.layout.menu_drawer_row,parent,false);
+    holder=new DrawerViewHolder(convertView);
+  }
+ else {
+    holder=(DrawerViewHolder)convertView.getTag();
+  }
+  DrawerItem item=mItems.get(position);
+  int badgeCount=item.getBadgeCount();
+  holder.txtTitle.setText(item.getTitleResId());
+  holder.imgIcon.setImageResource(item.getIconResId());
+  if (badgeCount > 0) {
+    holder.txtBadge.setVisibility(View.VISIBLE);
+    holder.txtBadge.setText(String.valueOf(badgeCount));
+  }
+ else {
+    holder.txtBadge.setVisibility(View.GONE);
+  }
+  if (item.isSelected(parent.getContext())) {
+    convertView.setBackgroundResource(R.color.md__background_selected);
+  }
+ else {
+    convertView.setBackgroundResource(0);
+  }
+  return convertView;
+}

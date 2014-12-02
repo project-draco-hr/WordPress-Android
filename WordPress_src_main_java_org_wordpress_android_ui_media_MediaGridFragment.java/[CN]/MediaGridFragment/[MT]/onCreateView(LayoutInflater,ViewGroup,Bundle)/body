@@ -26,16 +26,16 @@
     }
   }
 );
-  mPullToRefreshHelper=new PullToRefreshHelper(getActivity(),(PullToRefreshLayout)view.findViewById(R.id.ptr_layout),new RefreshListener(){
-    @Override public void onRefreshStarted(    View view){
+  mSwipeToRefreshHelper=new SwipeToRefreshHelper(getActivity(),(SwipeRefreshLayout)view.findViewById(R.id.ptr_layout),new RefreshListener(){
+    @Override public void onRefreshStarted(){
       if (getActivity() == null || !NetworkUtils.checkConnection(getActivity())) {
-        mPullToRefreshHelper.setRefreshing(false);
+        mSwipeToRefreshHelper.setRefreshing(false);
         return;
       }
       refreshMediaFromServer(0,false);
     }
   }
-,LinearLayout.class);
+);
   restoreState(savedInstanceState);
   setupSpinnerAdapter();
   return view;
