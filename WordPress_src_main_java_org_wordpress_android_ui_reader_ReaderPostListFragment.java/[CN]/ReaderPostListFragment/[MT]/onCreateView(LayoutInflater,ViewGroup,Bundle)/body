@@ -1,7 +1,10 @@
 {
   final ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.reader_fragment_post_cards,container,false);
   mRecyclerView=(ReaderRecyclerView)rootView.findViewById(R.id.recycler_view);
-  mRecyclerView.addItemDecoration(new PostItemDecoration(container.getContext()));
+  Context context=container.getContext();
+  int spacingHorizontal=context.getResources().getDimensionPixelSize(R.dimen.reader_card_spacing);
+  int spacingVertical=context.getResources().getDimensionPixelSize(R.dimen.reader_card_spacing_vertical);
+  mRecyclerView.addItemDecoration(new ReaderItemDecoration(spacingHorizontal,spacingVertical));
   mNewPostsBar=(TextView)rootView.findViewById(R.id.text_new_posts);
   mNewPostsBar.setVisibility(View.GONE);
   mNewPostsBar.setOnClickListener(new View.OnClickListener(){
@@ -21,7 +24,7 @@ ReaderUtils.layoutBelow(rootView,R.id.ptr_layout,mTagInfoView.getId());
 setHeaderViewElevation(mTagInfoView);
 break;
 case BLOG_PREVIEW:
-mBlogInfoView=new ReaderBlogInfoView(container.getContext());
+mBlogInfoView=new ReaderBlogInfoView(context);
 rootView.addView(mBlogInfoView);
 ReaderUtils.layoutBelow(rootView,R.id.ptr_layout,mBlogInfoView.getId());
 break;
