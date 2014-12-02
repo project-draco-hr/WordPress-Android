@@ -1,6 +1,12 @@
 {
-  View txtEmpty=findViewById(R.id.text_empty);
-  if (hasCommentAdapter() && getCommentAdapter().isEmpty()) {
+  TextView txtEmpty=(TextView)findViewById(R.id.text_empty);
+  boolean isEmpty=hasCommentAdapter() && getCommentAdapter().isEmpty();
+  if (isEmpty && !NetworkUtils.isNetworkAvailable(this)) {
+    txtEmpty.setText(R.string.no_network_message);
+    txtEmpty.setVisibility(View.VISIBLE);
+  }
+ else   if (isEmpty && mHasUpdatedComments) {
+    txtEmpty.setText(R.string.reader_empty_comments);
     txtEmpty.setVisibility(View.VISIBLE);
   }
  else {

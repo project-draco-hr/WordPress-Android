@@ -8,7 +8,6 @@
     return;
   }
   mIsUpdatingComments=true;
-  mHasUpdatedComments=true;
   int pageNumber;
   if (requestNextPage) {
     int prevPage=ReaderCommentTable.getLastPageNumberForPost(mPost.blogId,mPost.postId);
@@ -23,11 +22,15 @@
   ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
     @Override public void onUpdateResult(    ReaderActions.UpdateResult result){
       mIsUpdatingComments=false;
+      mHasUpdatedComments=true;
       if (!isFinishing()) {
         hideProgress();
         if (result.isNewOrChanged()) {
           mRestorePosition=getCurrentPosition();
           refreshComments();
+        }
+ else {
+          checkEmptyView();
         }
       }
     }

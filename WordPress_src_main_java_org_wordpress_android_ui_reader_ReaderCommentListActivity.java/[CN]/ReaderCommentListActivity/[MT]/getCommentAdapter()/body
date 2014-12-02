@@ -1,6 +1,13 @@
 {
   if (mCommentAdapter == null) {
-    ReaderInterfaces.DataLoadedListener dataLoadedListener=new ReaderInterfaces.DataLoadedListener(){
+    mCommentAdapter=new ReaderCommentAdapter(WPActivityUtils.getThemedContext(this),getPost());
+    mCommentAdapter.setReplyListener(new ReaderCommentAdapter.RequestReplyListener(){
+      @Override public void onRequestReply(      long commentId){
+        setReplyToCommentId(commentId);
+      }
+    }
+);
+    mCommentAdapter.setDataLoadedListener(new ReaderInterfaces.DataLoadedListener(){
       @Override public void onDataLoaded(      boolean isEmpty){
         if (!isFinishing()) {
           if (isEmpty || !mHasUpdatedComments) {
@@ -14,14 +21,8 @@
         }
       }
     }
-;
-    ReaderCommentAdapter.RequestReplyListener replyListener=new ReaderCommentAdapter.RequestReplyListener(){
-      @Override public void onRequestReply(      long commentId){
-        setReplyToCommentId(commentId);
-      }
-    }
-;
-    ReaderActions.DataRequestedListener dataRequestedListener=new ReaderActions.DataRequestedListener(){
+);
+    mCommentAdapter.setDataRequestedListener(new ReaderActions.DataRequestedListener(){
       @Override public void onRequestData(){
         if (!mIsUpdatingComments) {
           AppLog.i(T.READER,"reader comments > requesting next page of comments");
@@ -29,12 +30,7 @@
         }
       }
     }
-;
-    Context context=WPActivityUtils.getThemedContext(this);
-    mCommentAdapter=new ReaderCommentAdapter(context,getPost());
-    mCommentAdapter.setReplyListener(replyListener);
-    mCommentAdapter.setDataLoadedListener(dataLoadedListener);
-    mCommentAdapter.setDataRequestedListener(dataRequestedListener);
+);
   }
   return mCommentAdapter;
 }
