@@ -1,0 +1,37 @@
+{
+  if (mActivityRef.get() == null || mActivityRef.get().isFinishing()) {
+    return;
+  }
+  final String workingText=followData.getFollowingText();
+  final String followText=followData.getFollowText();
+  final String unfollowText=followData.getFollowingHoverText();
+  final PopupMenu popup=new PopupMenu(mActivityRef.get(),anchor);
+  final MenuItem menuItem;
+  if (followData.isRestCallInProgress == true) {
+    menuItem=popup.getMenu().add(workingText);
+  }
+ else {
+    menuItem=popup.getMenu().add(followData.isFollowing() ? unfollowText : followText);
+  }
+  menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener(){
+    @Override public boolean onMenuItemClick(    MenuItem item){
+      item.setTitle(workingText);
+      item.setOnMenuItemClickListener(null);
+      final RestClientUtils restClientUtils=WordPress.getRestClientUtils();
+      final String restPath;
+      if (!followData.isFollowing()) {
+        restPath=String.format("/sites/%s/follows/new",followData.getSiteID());
+      }
+ else {
+        restPath=String.format("/sites/%s/follows/mine/delete",followData.getSiteID());
+      }
+      followData.isRestCallInProgress=true;
+      FollowRestListener vListener=new FollowRestListener(mActivityRef.get(),followData);
+      restClientUtils.post(restPath,vListener,vListener);
+      AppLog.d(AppLog.T.STATS,"Enqueuing the following REST request " + restPath);
+      return true;
+    }
+  }
+);
+  popup.show();
+}

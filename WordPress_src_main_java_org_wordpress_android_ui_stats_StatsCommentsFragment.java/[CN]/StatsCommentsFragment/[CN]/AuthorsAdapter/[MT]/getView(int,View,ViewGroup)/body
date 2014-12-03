@@ -6,10 +6,25 @@
     rowView.setTag(viewHolder);
   }
   final AuthorModel currentRowData=list.get(position);
-  StatsViewHolder holder=(StatsViewHolder)rowView.getTag();
+  final StatsViewHolder holder=(StatsViewHolder)rowView.getTag();
   holder.entryTextView.setText(currentRowData.getName());
   holder.totalsTextView.setText(FormatUtils.formatDecimal(currentRowData.getViews()));
   holder.showNetworkImage(currentRowData.getAvatar());
+  final FollowDataModel followData=currentRowData.getFollowData();
+  if (followData == null) {
+    holder.imgMore.setVisibility(View.GONE);
+    holder.imgMore.setOnClickListener(null);
+  }
+ else {
+    holder.imgMore.setVisibility(View.VISIBLE);
+    holder.imgMore.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        FollowHelper fh=new FollowHelper(context);
+        fh.showPopup(holder.imgMore,followData);
+      }
+    }
+);
+  }
   holder.networkImageView.setVisibility(View.VISIBLE);
   return rowView;
 }

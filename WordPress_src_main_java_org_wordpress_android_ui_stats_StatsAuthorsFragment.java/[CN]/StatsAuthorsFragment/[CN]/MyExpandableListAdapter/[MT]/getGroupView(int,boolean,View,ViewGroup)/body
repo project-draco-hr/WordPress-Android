@@ -12,6 +12,21 @@
   holder.entryTextView.setText(name);
   holder.totalsTextView.setText(FormatUtils.formatDecimal(total));
   holder.showNetworkImage(icon);
+  final FollowDataModel followData=group.getFollowData();
+  if (followData == null) {
+    holder.imgMore.setVisibility(View.GONE);
+    holder.imgMore.setOnClickListener(null);
+  }
+ else {
+    holder.imgMore.setVisibility(View.VISIBLE);
+    holder.imgMore.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        FollowHelper fh=new FollowHelper(activity);
+        fh.showPopup(holder.imgMore,followData);
+      }
+    }
+);
+  }
   holder.chevronImageView.setVisibility(children > 0 ? View.VISIBLE : View.GONE);
   return convertView;
 }

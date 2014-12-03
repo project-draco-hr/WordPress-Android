@@ -6,7 +6,7 @@
     rowView.setTag(viewHolder);
   }
   final FollowerModel currentRowData=list.get(position);
-  StatsViewHolder holder=(StatsViewHolder)rowView.getTag();
+  final StatsViewHolder holder=(StatsViewHolder)rowView.getTag();
   if (mTopPagerSelectedButtonIndex == 0) {
     holder.setEntryTextOrLink(currentRowData.getURL(),currentRowData.getLabel());
   }
@@ -15,6 +15,21 @@
   }
   holder.totalsTextView.setText(getSinceLabel(currentRowData.getDateSubscribed()));
   holder.showNetworkImage(currentRowData.getAvatar());
+  final FollowDataModel followData=currentRowData.getFollowData();
+  if (followData == null) {
+    holder.imgMore.setVisibility(View.GONE);
+    holder.imgMore.setOnClickListener(null);
+  }
+ else {
+    holder.imgMore.setVisibility(View.VISIBLE);
+    holder.imgMore.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        FollowHelper fh=new FollowHelper(context);
+        fh.showPopup(holder.imgMore,followData);
+      }
+    }
+);
+  }
   holder.networkImageView.setVisibility(View.VISIBLE);
   return rowView;
 }
