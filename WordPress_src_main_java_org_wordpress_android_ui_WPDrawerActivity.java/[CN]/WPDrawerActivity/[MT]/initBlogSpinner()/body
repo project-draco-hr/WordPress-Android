@@ -1,15 +1,22 @@
 {
+  TextView txtBlogName=(TextView)findViewById(R.id.text_header_blog_name);
   mBlogSpinner=(Spinner)findViewById(R.id.blog_spinner);
-  View divider=findViewById(R.id.blog_spinner_divider);
   String[] blogNames=getBlogNames();
   if (blogNames.length > 1) {
+    txtBlogName.setVisibility(View.GONE);
     mBlogSpinner.setVisibility(View.VISIBLE);
-    divider.setVisibility(View.VISIBLE);
     mBlogSpinner.setOnItemSelectedListener(mItemSelectedListener);
     populateBlogSpinner(blogNames);
   }
- else {
+ else   if (blogNames.length == 1) {
+    txtBlogName.setVisibility(View.VISIBLE);
+    txtBlogName.setText(blogNames[0]);
     mBlogSpinner.setVisibility(View.GONE);
-    divider.setVisibility(View.GONE);
+    mBlogSpinner.setOnItemSelectedListener(null);
+  }
+ else {
+    txtBlogName.setVisibility(View.GONE);
+    mBlogSpinner.setVisibility(View.GONE);
+    mBlogSpinner.setOnItemSelectedListener(null);
   }
 }
