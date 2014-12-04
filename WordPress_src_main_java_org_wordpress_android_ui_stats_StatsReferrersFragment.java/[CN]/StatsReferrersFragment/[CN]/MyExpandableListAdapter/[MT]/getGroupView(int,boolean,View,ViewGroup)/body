@@ -10,7 +10,15 @@
   String url=group.getUrl();
   String icon=group.getIcon();
   int children=getChildrenCount(groupPosition);
-  holder.setEntryTextOrLink(url,name);
+  if (children > 0) {
+    holder.entryTextView.setText(name);
+    StatsUIHelper.setEntryTextViewClickListener(convertView,holder.entryTextView);
+  }
+ else {
+    holder.entryTextView.setOnClickListener(null);
+    holder.setEntryTextOrLink(url,name);
+  }
+  holder.entryTextView.setTextColor(getResources().getColor(R.color.stats_link_text_color));
   holder.totalsTextView.setText(FormatUtils.formatDecimal(total));
   if (StringUtils.isNotBlank(icon)) {
     holder.showNetworkImage(icon);
