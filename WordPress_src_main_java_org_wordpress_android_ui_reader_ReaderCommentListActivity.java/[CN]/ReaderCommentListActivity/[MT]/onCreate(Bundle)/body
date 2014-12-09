@@ -8,7 +8,7 @@
   if (savedInstanceState != null) {
     mBlogId=savedInstanceState.getLong(ReaderConstants.ARG_BLOG_ID);
     mPostId=savedInstanceState.getLong(ReaderConstants.ARG_POST_ID);
-    mTopMostCommentId=savedInstanceState.getLong(KEY_TOPMOST_COMMENT_ID);
+    mRestorePosition=savedInstanceState.getInt(ReaderConstants.KEY_RESTORE_POSITION);
     mHasUpdatedComments=savedInstanceState.getBoolean(KEY_HAS_UPDATED_COMMENTS);
   }
  else {
@@ -18,7 +18,10 @@
       ReaderCommentTable.purgeExcessCommentsForPost(mBlogId,mPostId);
     }
   }
-  mListView=(ListView)findViewById(android.R.id.list);
+  mRecyclerView=(ReaderRecyclerView)findViewById(R.id.recycler_view);
+  int spacingHorizontal=getResources().getDimensionPixelSize(R.dimen.reader_detail_margin);
+  int spacingVertical=DisplayUtils.dpToPx(this,1);
+  mRecyclerView.addItemDecoration(new ReaderRecyclerView.ReaderItemDecoration(spacingHorizontal,spacingVertical));
   mCommentBox=(ViewGroup)findViewById(R.id.layout_comment_box);
   mEditComment=(SuggestionAutoCompleteText)mCommentBox.findViewById(R.id.edit_comment);
   mEditComment.getAutoSaveTextHelper().setUniqueId(String.format("%r%d%d",WordPress.getLoggedInUsername(this,null),mPostId,mBlogId));
@@ -28,9 +31,8 @@
     finish();
     return;
   }
-  int height=getResources().getDimensionPixelSize(R.dimen.margin_medium);
-  ReaderUtils.addListViewHeader(mListView,height);
-  mListView.setAdapter(getCommentAdapter());
+  mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+  mRecyclerView.setAdapter(getCommentAdapter());
   if (savedInstanceState != null) {
     setReplyToCommentId(savedInstanceState.getLong(KEY_REPLY_TO_COMMENT_ID));
   }
