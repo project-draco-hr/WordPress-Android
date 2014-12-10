@@ -1,15 +1,8 @@
 {
   mGroupIdToExpandedMap.clear();
-  String volleyErrorMsg=null;
-  if (error instanceof VolleyError) {
-    volleyErrorMsg=((VolleyError)error).getMessage();
-  }
-  String label;
-  if (volleyErrorMsg == null) {
-    label="<b>" + getString(R.string.error_refresh_stats) + "</b>";
-  }
- else {
-    label="<b>" + getString(R.string.error_refresh_stats) + "</b> "+ getString(getEmptyLabelDescResId());
+  String label="<b>" + getString(R.string.error_refresh_stats) + "</b>";
+  if (error instanceof NoConnectionError) {
+    label+="<br/>" + getString(R.string.no_network_message);
   }
   if (label.contains("<")) {
     mEmptyLabel.setText(Html.fromHtml(label));
