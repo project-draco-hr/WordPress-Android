@@ -7,7 +7,9 @@
     getListFragment().setCommentIsModerating(comment.commentID,true);
     CommentActions.moderateComment(accountId,comment,newStatus,new CommentActions.CommentActionListener(){
       @Override public void onActionResult(      boolean succeeded){
-        if (isFinishing())         return;
+        if (isFinishing() || !hasListFragment()) {
+          return;
+        }
         getListFragment().setCommentIsModerating(comment.commentID,false);
         if (succeeded) {
           updateMenuDrawer();
@@ -27,7 +29,9 @@
       @Override public void onHide(      Parcelable parcelable){
         CommentActions.moderateComment(accountId,comment,newStatus,new CommentActions.CommentActionListener(){
           @Override public void onActionResult(          boolean succeeded){
-            if (isFinishing())             return;
+            if (isFinishing() || !hasListFragment()) {
+              return;
+            }
             getListFragment().setCommentIsModerating(comment.commentID,false);
             if (!succeeded) {
               getListFragment().loadComments();
