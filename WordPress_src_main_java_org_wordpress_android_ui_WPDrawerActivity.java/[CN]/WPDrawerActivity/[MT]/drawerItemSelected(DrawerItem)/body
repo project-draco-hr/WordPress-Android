@@ -47,17 +47,13 @@ intent=WPActivityUtils.getIntentForActivityId(this,activityId);
 break;
 case VIEW_SITE:
 mShouldFinish=true;
+AnalyticsTracker.track(AnalyticsTracker.Stat.OPENED_VIEW_SITE);
 intent=WPActivityUtils.getIntentForActivityId(this,activityId);
 break;
 case QUICK_PHOTO:
 mShouldFinish=false;
 intent=new Intent(WPDrawerActivity.this,EditPostActivity.class);
 intent.putExtra("quick-media",DeviceUtils.getInstance().hasCamera(getApplicationContext()) ? Constants.QUICK_POST_PHOTO_CAMERA : Constants.QUICK_POST_PHOTO_LIBRARY);
-break;
-case QUICK_VIDEO:
-mShouldFinish=false;
-intent=new Intent(WPDrawerActivity.this,EditPostActivity.class);
-intent.putExtra("quick-media",DeviceUtils.getInstance().hasCamera(getApplicationContext()) ? Constants.QUICK_POST_VIDEO_CAMERA : Constants.QUICK_POST_VIDEO_LIBRARY);
 break;
 default :
 mShouldFinish=false;
@@ -79,12 +75,9 @@ getSupportActionBar().setTitle(null);
 }
 }
 closeDrawer();
-hideActivityContainer(true);
+hideActivityView();
 new Handler().postDelayed(new Runnable(){
 @Override public void run(){
-intent.putExtra(OPENED_FROM_DRAWER,true);
-intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-intent.putExtra(OPENED_FROM_DRAWER,true);
 intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 startActivity(intent);
 }

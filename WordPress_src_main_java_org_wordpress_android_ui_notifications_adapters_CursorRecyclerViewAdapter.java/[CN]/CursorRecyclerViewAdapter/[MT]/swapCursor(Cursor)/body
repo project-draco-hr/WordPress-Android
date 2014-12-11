@@ -1,0 +1,24 @@
+{
+  if (newCursor == mCursor) {
+    return null;
+  }
+  final Cursor oldCursor=mCursor;
+  if (oldCursor != null && mDataSetObserver != null) {
+    oldCursor.unregisterDataSetObserver(mDataSetObserver);
+  }
+  mCursor=newCursor;
+  if (mCursor != null) {
+    if (mDataSetObserver != null) {
+      mCursor.registerDataSetObserver(mDataSetObserver);
+    }
+    mRowIdColumn=newCursor.getColumnIndexOrThrow("_id");
+    mDataValid=true;
+    notifyDataSetChanged();
+  }
+ else {
+    mRowIdColumn=-1;
+    mDataValid=false;
+    notifyDataSetChanged();
+  }
+  return oldCursor;
+}
