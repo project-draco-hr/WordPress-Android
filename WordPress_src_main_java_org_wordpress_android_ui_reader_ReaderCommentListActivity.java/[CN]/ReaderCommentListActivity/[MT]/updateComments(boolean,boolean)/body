@@ -8,7 +8,6 @@
     return;
   }
   mIsUpdatingComments=true;
-  mHasUpdatedComments=true;
   int pageNumber;
   if (requestNextPage) {
     int prevPage=ReaderCommentTable.getLastPageNumberForPost(mPost.blogId,mPost.postId);
@@ -23,14 +22,15 @@
   ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
     @Override public void onUpdateResult(    ReaderActions.UpdateResult result){
       mIsUpdatingComments=false;
+      mHasUpdatedComments=true;
       if (!isFinishing()) {
         hideProgress();
         if (result.isNewOrChanged()) {
-          retainTopmostComment();
+          mRestorePosition=getCurrentPosition();
           refreshComments();
         }
  else {
-          mListView.setEmptyView(findViewById(R.id.text_empty));
+          checkEmptyView();
         }
       }
     }
