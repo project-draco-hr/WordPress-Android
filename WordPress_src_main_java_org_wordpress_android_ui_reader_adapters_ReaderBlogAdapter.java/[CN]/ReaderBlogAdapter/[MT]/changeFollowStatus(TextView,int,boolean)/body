@@ -20,11 +20,11 @@ return;
 }
 ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
 @Override public void onActionResult(boolean succeeded){
-Context context=txtFollow.getContext();
+Context context=textView.getContext();
 if (!succeeded && context != null) {
 int resId=(isAskingToFollow ? R.string.reader_toast_err_follow_blog : R.string.reader_toast_err_unfollow_blog);
 ToastUtils.showToast(context,resId);
-ReaderUtils.showFollowStatus(txtFollow,!isAskingToFollow);
+ReaderUtils.showFollowStatus(textView,!isAskingToFollow);
 checkFollowStatus();
 }
 }
@@ -34,8 +34,7 @@ if (ReaderBlogActions.performFollowAction(blogId,blogUrl,isAskingToFollow,action
 if (getBlogType() == ReaderBlogType.FOLLOWED) {
 mFollowedBlogs.get(position).isFollowing=isAskingToFollow;
 }
-ReaderUtils.showFollowStatus(txtFollow,isAskingToFollow);
-notifyDataSetChanged();
+notifyItemChanged(position);
 if (mFollowListener != null) {
 mFollowListener.onFollowBlogChanged();
 }
