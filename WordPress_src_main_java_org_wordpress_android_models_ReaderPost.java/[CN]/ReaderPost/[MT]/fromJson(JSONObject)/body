@@ -66,12 +66,6 @@
     post.isPrivate=JSONUtil.getBool(jsonSite,"is_private");
     post.isJetpack=JSONUtil.getBool(jsonSite,"jetpack");
   }
-  if (!post.hasFeaturedImage() && post.hasAttachments()) {
-    post.featuredImage=new ImageSizeMap(post.attachmentsJson).getLargestImageUrl(ReaderConstants.MIN_FEATURED_IMAGE_WIDTH);
-  }
-  if (!post.hasFeaturedImage() && post.hasText() && post.text.contains("<img")) {
-    post.featuredImage=new ReaderImageScanner(post.text,post.isPrivate).getLargestImage(ReaderConstants.MIN_FEATURED_IMAGE_WIDTH);
-  }
   if (!post.hasFeaturedImage()) {
     JSONObject jsonMedia=json.optJSONObject("featured_media");
     if (jsonMedia != null && jsonMedia.length() > 0) {
@@ -87,6 +81,12 @@
         }
       }
     }
+  }
+  if (!post.hasFeaturedImage() && post.hasAttachments()) {
+    post.featuredImage=new ImageSizeMap(post.attachmentsJson).getLargestImageUrl(ReaderConstants.MIN_FEATURED_IMAGE_WIDTH);
+  }
+  if (!post.hasFeaturedImage() && post.hasText() && post.text.contains("<img")) {
+    post.featuredImage=new ReaderImageScanner(post.text,post.isPrivate).getLargestImage(ReaderConstants.MIN_FEATURED_IMAGE_WIDTH);
   }
   return post;
 }
