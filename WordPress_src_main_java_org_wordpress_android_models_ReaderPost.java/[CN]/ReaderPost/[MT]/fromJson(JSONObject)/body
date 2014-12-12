@@ -64,7 +64,7 @@
     }
     if (!post.hasFeaturedImage()) {
       ReaderImageScanner scanner=new ReaderImageScanner(post.text,post.isPrivate);
-      post.featuredImage=scanner.getBestFeaturedImage();
+      post.featuredImage=scanner.getLargestImage(ReaderConstants.MIN_FEATURED_IMAGE_WIDTH);
     }
   }
   if (!post.hasTitle() && post.hasExcerpt()) {
@@ -75,8 +75,11 @@
   }
   assignTagsFromJson(post,json.optJSONObject("tags"));
   JSONObject jsonAttachments=json.optJSONObject("attachments");
-  if (jsonAttachments != null) {
+  if (jsonAttachments != null && jsonAttachments.length() > 0) {
     post.attachmentsJson=jsonAttachments.toString();
+    if (!post.hasFeaturedImage()) {
+      post.featuredImage=new ImageSizeMap(post.attachmentsJson).getLargestImageUrl(ReaderConstants.MIN_FEATURED_IMAGE_WIDTH);
+    }
   }
   JSONObject jsonSite=JSONUtil.getJSONChild(json,"meta/data/site");
   if (jsonSite != null) {
