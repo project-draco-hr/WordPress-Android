@@ -19,7 +19,10 @@
 );
   if (savedInstanceState != null) {
     mLocalBlogID=savedInstanceState.getInt(StatsActivity.ARG_LOCAL_TABLE_BLOG_ID,-1);
-    mRestResponse=(Serializable[])savedInstanceState.getSerializable(StatsAbstractFragment.ARG_REST_RESPONSE);
+    Serializable oldData=savedInstanceState.getSerializable(StatsAbstractFragment.ARG_REST_RESPONSE);
+    if (oldData != null && oldData instanceof Serializable[]) {
+      mRestResponse=(Serializable[])oldData;
+    }
     mTimeframe=(StatsTimeframe)savedInstanceState.getSerializable(StatsAbstractFragment.ARGS_TIMEFRAME);
     mDate=savedInstanceState.getString(StatsAbstractFragment.ARGS_START_DATE);
     int ordinal=savedInstanceState.getInt(StatsAbstractFragment.ARGS_VIEW_TYPE,0);
