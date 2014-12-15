@@ -1,5 +1,5 @@
 {
-  if (TextUtils.isEmpty(jsonString)) {
+  if (TextUtils.isEmpty(jsonString) || jsonString.equals(EMPTY_JSON)) {
     return;
   }
   try {
@@ -11,7 +11,7 @@
     while (it.hasNext()) {
       JSONObject jsonAttach=json.optJSONObject(it.next());
       if (jsonAttach != null && JSONUtil.getString(jsonAttach,"mime_type").startsWith("image")) {
-        String normUrl=UrlUtils.normalizeUrl(UrlUtils.removeQuery(JSONUtil.getString(json,"URL")));
+        String normUrl=UrlUtils.normalizeUrl(UrlUtils.removeQuery(JSONUtil.getString(jsonAttach,"URL")));
         int width=jsonAttach.optInt("width");
         int height=jsonAttach.optInt("height");
         this.put(normUrl,new ImageSize(width,height));
