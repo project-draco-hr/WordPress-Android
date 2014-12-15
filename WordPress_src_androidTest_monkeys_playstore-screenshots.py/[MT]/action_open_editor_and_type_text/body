@@ -1,0 +1,21 @@
+def action_open_editor_and_type_text(device, serialno):
+    print 'open editor'
+    for i in range(3):
+        device.press('KEYCODE_DPAD_UP')
+    device.press('KEYCODE_DPAD_DOWN')
+    device.press('KEYCODE_DPAD_DOWN')
+    device.press('KEYCODE_DPAD_DOWN')
+    device.press('KEYCODE_ENTER')
+    time.sleep(1)
+    device.press('KEYCODE_DPAD_RIGHT')
+    device.press('KEYCODE_ENTER')
+    time.sleep(1)
+    device.press('KEYCODE_TAB')
+    device.press('KEYCODE_DPAD_DOWN')
+    for word in settings.example_post_content.split():
+        device.type(word)
+        device.press('KEYCODE_SPACE')
+    viewclient = ViewClient(device, serialno)
+    view = viewclient.findViewWithText(settings.example_post_content)
+    view.touch()
+    time.sleep(1)
