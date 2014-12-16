@@ -6,8 +6,10 @@
  else {
     view=inflater.inflate(R.layout.stats_list_fragment,container,false);
   }
-  TextView titleTextView=(TextView)view.findViewById(R.id.stats_module_title);
-  titleTextView.setText(getTitle().toUpperCase(Locale.getDefault()));
+  mModuleTitleTextView=(TextView)view.findViewById(R.id.stats_module_title);
+  mModuleTitleTextView.setText(getTitle().toUpperCase(Locale.getDefault()));
+  mModuleTitleTextPlaceholderTextView=(TextView)view.findViewById(R.id.stats_module_title_placeholder);
+  mModuleTitleTextPlaceholderTextView.setText("               ");
   TextView entryLabel=(TextView)view.findViewById(R.id.stats_list_entry_label);
   entryLabel.setText(getEntryLabelResId());
   TextView totalsLabel=(TextView)view.findViewById(R.id.stats_list_totals_label);
@@ -22,5 +24,15 @@
   mPaginationGoBackButton=(Button)view.findViewById(R.id.stats_pagination_go_back);
   mPaginationGoForwardButton=(Button)view.findViewById(R.id.stats_pagination_go_forward);
   mPaginationText=(TextView)view.findViewById(R.id.stats_pagination_text);
-  return view;
+switch (getViewType()) {
+case COMMENTS:
+case TAGS_AND_CATEGORIES:
+case PUBLICIZE:
+case FOLLOWERS:
+    mModuleTitleTextView.setTextColor(getResources().getColor(R.color.stats_text_color));
+  break;
+default :
+break;
+}
+return view;
 }

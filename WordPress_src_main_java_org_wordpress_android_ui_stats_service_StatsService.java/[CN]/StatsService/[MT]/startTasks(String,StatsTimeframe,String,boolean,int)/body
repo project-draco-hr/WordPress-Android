@@ -9,7 +9,7 @@
       String period=timeframe.getLabelForRestCall();
       AppLog.i(T.STATS,"Update started for blogID - " + blogId + " with the following period: "+ period+ " on the following date: "+ mServiceRequestedDate);
       broadcastUpdate(true);
-      if (updateGraph) {
+      if (updateAlltimeStats) {
         RestListener vListener=new RestListener(StatsEndpointsEnum.VISITS,mServiceBlogId,mServiceRequestedTimeframe);
         final String visitsPath=String.format("/sites/%s/stats/visits?unit=%s&quantity=10&date=%s",mServiceBlogId,period,mServiceRequestedDate);
         statsNetworkRequests.add(restClientUtils.get(visitsPath,vListener,vListener));
@@ -32,24 +32,26 @@
       RestListener videoPlaysListener=new RestListener(StatsEndpointsEnum.VIDEO_PLAYS,mServiceBlogId,mServiceRequestedTimeframe);
       final String videoPlaysPath=String.format("/sites/%s/stats/video-plays?period=%s&date=%s&max=%s",mServiceBlogId,period,mServiceRequestedDate,12);
       statsNetworkRequests.add(restClientUtils.get(videoPlaysPath,videoPlaysListener,videoPlaysListener));
-      RestListener commentsListener=new RestListener(StatsEndpointsEnum.COMMENTS,mServiceBlogId,mServiceRequestedTimeframe);
-      final String commentsPath=String.format("/sites/%s/stats/comments",mServiceBlogId);
-      statsNetworkRequests.add(restClientUtils.get(commentsPath,commentsListener,commentsListener));
-      RestListener commentFollowersListener=new RestListener(StatsEndpointsEnum.COMMENT_FOLLOWERS,mServiceBlogId,mServiceRequestedTimeframe);
-      final String commentFollowersPath=String.format("/sites/%s/stats/comment-followers?max=%s",mServiceBlogId,12);
-      statsNetworkRequests.add(restClientUtils.get(commentFollowersPath,commentFollowersListener,commentFollowersListener));
-      RestListener followersListener=new RestListener(StatsEndpointsEnum.FOLLOWERS_WPCOM,mServiceBlogId,mServiceRequestedTimeframe);
-      final String followersPath=String.format("/sites/%s/stats/followers?type=wpcom&max=%s",mServiceBlogId,12);
-      statsNetworkRequests.add(restClientUtils.get(followersPath,followersListener,followersListener));
-      RestListener followersEmailListener=new RestListener(StatsEndpointsEnum.FOLLOWERS_EMAIL,mServiceBlogId,mServiceRequestedTimeframe);
-      final String followersEmailPath=String.format("/sites/%s/stats/followers?type=email&max=%s",mServiceBlogId,12);
-      statsNetworkRequests.add(restClientUtils.get(followersEmailPath,followersEmailListener,followersEmailListener));
-      RestListener tagsListener=new RestListener(StatsEndpointsEnum.TAGS_AND_CATEGORIES,mServiceBlogId,mServiceRequestedTimeframe);
-      final String tagsPath=String.format("/sites/%s/stats/tags?max=%s",mServiceBlogId,12);
-      statsNetworkRequests.add(restClientUtils.get(tagsPath,tagsListener,tagsListener));
-      RestListener publicizeListener=new RestListener(StatsEndpointsEnum.PUBLICIZE,mServiceBlogId,mServiceRequestedTimeframe);
-      final String publicizePath=String.format("/sites/%s/stats/publicize?max=%s",mServiceBlogId,12);
-      statsNetworkRequests.add(restClientUtils.get(publicizePath,publicizeListener,publicizeListener));
+      if (updateAlltimeStats) {
+        RestListener commentsListener=new RestListener(StatsEndpointsEnum.COMMENTS,mServiceBlogId,mServiceRequestedTimeframe);
+        final String commentsPath=String.format("/sites/%s/stats/comments",mServiceBlogId);
+        statsNetworkRequests.add(restClientUtils.get(commentsPath,commentsListener,commentsListener));
+        RestListener commentFollowersListener=new RestListener(StatsEndpointsEnum.COMMENT_FOLLOWERS,mServiceBlogId,mServiceRequestedTimeframe);
+        final String commentFollowersPath=String.format("/sites/%s/stats/comment-followers?max=%s",mServiceBlogId,12);
+        statsNetworkRequests.add(restClientUtils.get(commentFollowersPath,commentFollowersListener,commentFollowersListener));
+        RestListener followersListener=new RestListener(StatsEndpointsEnum.FOLLOWERS_WPCOM,mServiceBlogId,mServiceRequestedTimeframe);
+        final String followersPath=String.format("/sites/%s/stats/followers?type=wpcom&max=%s",mServiceBlogId,12);
+        statsNetworkRequests.add(restClientUtils.get(followersPath,followersListener,followersListener));
+        RestListener followersEmailListener=new RestListener(StatsEndpointsEnum.FOLLOWERS_EMAIL,mServiceBlogId,mServiceRequestedTimeframe);
+        final String followersEmailPath=String.format("/sites/%s/stats/followers?type=email&max=%s",mServiceBlogId,12);
+        statsNetworkRequests.add(restClientUtils.get(followersEmailPath,followersEmailListener,followersEmailListener));
+        RestListener tagsListener=new RestListener(StatsEndpointsEnum.TAGS_AND_CATEGORIES,mServiceBlogId,mServiceRequestedTimeframe);
+        final String tagsPath=String.format("/sites/%s/stats/tags?max=%s",mServiceBlogId,12);
+        statsNetworkRequests.add(restClientUtils.get(tagsPath,tagsListener,tagsListener));
+        RestListener publicizeListener=new RestListener(StatsEndpointsEnum.PUBLICIZE,mServiceBlogId,mServiceRequestedTimeframe);
+        final String publicizePath=String.format("/sites/%s/stats/publicize?max=%s",mServiceBlogId,12);
+        statsNetworkRequests.add(restClientUtils.get(publicizePath,publicizeListener,publicizeListener));
+      }
       numberOfNetworkCalls=statsNetworkRequests.size();
     }
   }

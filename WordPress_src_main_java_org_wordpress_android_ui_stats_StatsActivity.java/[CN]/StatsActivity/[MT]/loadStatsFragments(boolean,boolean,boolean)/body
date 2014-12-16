@@ -2,7 +2,7 @@
   FragmentManager fm=getFragmentManager();
   FragmentTransaction ft=fm.beginTransaction();
   StatsAbstractFragment fragment;
-  if (includeBarGraphFragment) {
+  if (loadGraphFragment) {
     if (fm.findFragmentByTag(StatsVisitorsAndViewsFragment.TAG) == null || forceRecreationOfFragments) {
       fragment=StatsAbstractFragment.newInstance(StatsViewType.GRAPH_AND_SUMMARY,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
       ft.replace(R.id.stats_visitors_and_views_container,fragment,StatsVisitorsAndViewsFragment.TAG);
@@ -32,21 +32,23 @@
     fragment=StatsAbstractFragment.newInstance(StatsViewType.VIDEO_PLAYS,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
     ft.replace(R.id.stats_video_container,fragment,StatsVideoplaysFragment.TAG);
   }
-  if (fm.findFragmentByTag(StatsCommentsFragment.TAG) == null || forceRecreationOfFragments) {
-    fragment=StatsAbstractFragment.newInstance(StatsViewType.COMMENTS,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
-    ft.replace(R.id.stats_comments_container,fragment,StatsCommentsFragment.TAG);
-  }
-  if (fm.findFragmentByTag(StatsTagsAndCategoriesFragment.TAG) == null || forceRecreationOfFragments) {
-    fragment=StatsAbstractFragment.newInstance(StatsViewType.TAGS_AND_CATEGORIES,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
-    ft.replace(R.id.stats_tags_and_categories_container,fragment,StatsTagsAndCategoriesFragment.TAG);
-  }
-  if (fm.findFragmentByTag(StatsPublicizeFragment.TAG) == null || forceRecreationOfFragments) {
-    fragment=StatsAbstractFragment.newInstance(StatsViewType.PUBLICIZE,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
-    ft.replace(R.id.stats_publicize_container,fragment,StatsPublicizeFragment.TAG);
-  }
-  if (fm.findFragmentByTag(StatsFollowersFragment.TAG) == null || forceRecreationOfFragments) {
-    fragment=StatsAbstractFragment.newInstance(StatsViewType.FOLLOWERS,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
-    ft.replace(R.id.stats_followers_container,fragment,StatsFollowersFragment.TAG);
+  if (loadAlltimeFragmets) {
+    if (fm.findFragmentByTag(StatsCommentsFragment.TAG) == null || forceRecreationOfFragments) {
+      fragment=StatsAbstractFragment.newInstance(StatsViewType.COMMENTS,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
+      ft.replace(R.id.stats_comments_container,fragment,StatsCommentsFragment.TAG);
+    }
+    if (fm.findFragmentByTag(StatsTagsAndCategoriesFragment.TAG) == null || forceRecreationOfFragments) {
+      fragment=StatsAbstractFragment.newInstance(StatsViewType.TAGS_AND_CATEGORIES,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
+      ft.replace(R.id.stats_tags_and_categories_container,fragment,StatsTagsAndCategoriesFragment.TAG);
+    }
+    if (fm.findFragmentByTag(StatsPublicizeFragment.TAG) == null || forceRecreationOfFragments) {
+      fragment=StatsAbstractFragment.newInstance(StatsViewType.PUBLICIZE,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
+      ft.replace(R.id.stats_publicize_container,fragment,StatsPublicizeFragment.TAG);
+    }
+    if (fm.findFragmentByTag(StatsFollowersFragment.TAG) == null || forceRecreationOfFragments) {
+      fragment=StatsAbstractFragment.newInstance(StatsViewType.FOLLOWERS,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
+      ft.replace(R.id.stats_followers_container,fragment,StatsFollowersFragment.TAG);
+    }
   }
   ft.commit();
 }
