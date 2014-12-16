@@ -1,6 +1,16 @@
 {
   if (mAdapter == null) {
-    mAdapter=new ReaderUserAdapter(this,mDataLoadedListener);
+    mAdapter=new ReaderUserAdapter(this);
+    mAdapter.setDataLoadedListener(new ReaderInterfaces.DataLoadedListener(){
+      @Override public void onDataLoaded(      boolean isEmpty){
+        if (!isEmpty && mRestorePosition > 0) {
+          mRecyclerView.scrollToPosition(mRestorePosition);
+        }
+        mRestorePosition=0;
+      }
+    }
+);
+    mRecyclerView.setAdapter(mAdapter);
   }
   return mAdapter;
 }
