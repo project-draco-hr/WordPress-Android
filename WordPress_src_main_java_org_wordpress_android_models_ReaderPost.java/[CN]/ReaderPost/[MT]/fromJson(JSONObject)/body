@@ -47,9 +47,28 @@
  else {
     post.timestamp=DateTimeUtils.iso8601ToTimestamp(post.published);
   }
+  if (!post.hasTitle() && post.hasExcerpt()) {
+    post.title=extractTitle(post.excerpt,50);
+  }
+  if (post.hasTitle() && post.title.contains("<") && post.title.contains(">")) {
+    post.title=HtmlUtils.stripHtml(post.title);
+  }
+  assignTagsFromJson(post,json.optJSONObject("tags"));
+  JSONObject jsonAttachments=json.optJSONObject("attachments");
+  if (jsonAttachments != null && jsonAttachments.length() > 0) {
+    post.attachmentsJson=jsonAttachments.toString();
+  }
+  JSONObject jsonSite=JSONUtil.getJSONChild(json,"meta/data/site");
+  if (jsonSite != null) {
+    post.blogId=jsonSite.optInt("ID");
+    post.blogName=JSONUtil.getString(jsonSite,"name");
+    post.setBlogUrl(JSONUtil.getString(jsonSite,"URL"));
+    post.isPrivate=JSONUtil.getBool(jsonSite,"is_private");
+    post.isJetpack=JSONUtil.getBool(jsonSite,"jetpack");
+  }
   if (!post.hasFeaturedImage()) {
     JSONObject jsonMedia=json.optJSONObject("featured_media");
-    if (jsonMedia != null) {
+    if (jsonMedia != null && jsonMedia.length() > 0) {
       String mediaUrl=JSONUtil.getString(jsonMedia,"uri");
       if (!TextUtils.isEmpty(mediaUrl)) {
         String type=JSONUtil.getString(jsonMedia,"type");
@@ -62,29 +81,12 @@
         }
       }
     }
-    if (!post.hasFeaturedImage()) {
-      ReaderImageScanner scanner=new ReaderImageScanner(post.text,post.isPrivate);
-      post.featuredImage=scanner.getBestFeaturedImage();
-    }
   }
-  if (!post.hasTitle() && post.hasExcerpt()) {
-    post.title=extractTitle(post.excerpt,50);
+  if (!post.hasFeaturedImage() && post.hasAttachments()) {
+    post.featuredImage=new ImageSizeMap(post.attachmentsJson).getLargestImageUrl(ReaderConstants.MIN_FEATURED_IMAGE_WIDTH);
   }
-  if (post.hasTitle() && post.title.contains("<") && post.title.contains(">")) {
-    post.title=HtmlUtils.stripHtml(post.title);
-  }
-  assignTagsFromJson(post,json.optJSONObject("tags"));
-  JSONObject jsonAttachments=json.optJSONObject("attachments");
-  if (jsonAttachments != null) {
-    post.attachmentsJson=jsonAttachments.toString();
-  }
-  JSONObject jsonSite=JSONUtil.getJSONChild(json,"meta/data/site");
-  if (jsonSite != null) {
-    post.blogId=jsonSite.optInt("ID");
-    post.blogName=JSONUtil.getString(jsonSite,"name");
-    post.setBlogUrl(JSONUtil.getString(jsonSite,"URL"));
-    post.isPrivate=JSONUtil.getBool(jsonSite,"is_private");
-    post.isJetpack=JSONUtil.getBool(jsonSite,"jetpack");
+  if (!post.hasFeaturedImage() && post.hasText() && post.text.contains("<img")) {
+    post.featuredImage=new ReaderImageScanner(post.text,post.isPrivate).getLargestImage(ReaderConstants.MIN_FEATURED_IMAGE_WIDTH);
   }
   return post;
 }
