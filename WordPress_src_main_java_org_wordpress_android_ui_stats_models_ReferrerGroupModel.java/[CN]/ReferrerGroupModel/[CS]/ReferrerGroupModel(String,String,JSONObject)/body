@@ -12,14 +12,25 @@
   }
  else {
     JSONArray resultsJSON=groupJSON.getJSONArray("results");
-    mResults=new ArrayList<SingleItemModel>(resultsJSON.length());
+    mResults=new ArrayList<>();
     for (int i=0; i < resultsJSON.length(); i++) {
       JSONObject currentResultJSON=resultsJSON.getJSONObject(i);
-      String name=currentResultJSON.getString("name");
-      int totals=currentResultJSON.getInt("views");
-      String icon=currentResultJSON.optString("icon");
-      SingleItemModel rm=new SingleItemModel(blogId,date,null,name,totals,null,icon);
-      mResults.add(rm);
+      if (currentResultJSON.has("children")) {
+        JSONArray currentResultChildensJSON=currentResultJSON.getJSONArray("children");
+        for (int j=0; j < currentResultChildensJSON.length(); j++) {
+          JSONObject currentChild=currentResultChildensJSON.getJSONObject(j);
+          mResults.add(getChildren(blogId,date,currentChild));
+        }
+      }
+ else {
+        mResults.add(getChildren(blogId,date,currentResultJSON));
+      }
     }
+    Collections.sort(mResults,new java.util.Comparator<SingleItemModel>(){
+      public int compare(      SingleItemModel o1,      SingleItemModel o2){
+        return o2.getTotals() - o1.getTotals();
+      }
+    }
+);
   }
 }
