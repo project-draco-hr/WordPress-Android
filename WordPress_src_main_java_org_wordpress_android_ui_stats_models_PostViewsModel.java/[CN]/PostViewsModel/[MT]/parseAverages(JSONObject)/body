@@ -2,16 +2,14 @@
   try {
     JSONObject averagesJSON=response.getJSONObject("averages");
     String[] orderedKeys=orderKeys(averagesJSON.keys(),averagesJSON.length());
-    for (int j=0; j < orderedKeys.length; j++) {
+    for (    String currentJSONKey : orderedKeys) {
       Average currentAverage=new Average();
-      String currentJSONKey=orderedKeys[j];
       currentAverage.setLabel(currentJSONKey);
       JSONObject currentAverageJSONObj=averagesJSON.getJSONObject(currentJSONKey);
       currentAverage.setOverall(currentAverageJSONObj.getInt("overall"));
       JSONObject monthsJSON=currentAverageJSONObj.getJSONObject("months");
       String[] orderedMonthsKeys=orderKeys(monthsJSON.keys(),monthsJSON.length());
-      for (int i=0; i < orderedMonthsKeys.length; i++) {
-        String currentMonthKey=orderedMonthsKeys[i];
+      for (      String currentMonthKey : orderedMonthsKeys) {
         int currentMonthVisits=monthsJSON.getInt(currentMonthKey);
         int currentMonthIndex=Integer.parseInt(currentMonthKey) - 1;
         currentAverage.getMonths()[currentMonthIndex]=currentMonthVisits;
