@@ -1,0 +1,10 @@
+def list_devices():
+    devices = []
+    process = Popen('adb devices -l', stdout=PIPE, shell=True)
+    for line in iter(process.stdout.readline, ''):
+        split = line.split()
+        if ((len(split) <= 1) or (split[0] == 'List')):
+            continue
+        devices.append({'name': split[3].replace('model:', ''), 'serialno': split[0], })
+    process.communicate()
+    return devices
