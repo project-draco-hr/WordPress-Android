@@ -1,18 +1,9 @@
 {
-  ActionBar actionBar=getSupportActionBar();
-  if (actionBar == null) {
-    return;
-  }
-  if (mTimeframeSpinnerAdapter == null) {
+  if (mTimeframeSpinnerAdapter == null || mSpinner == null) {
     return;
   }
   int position=mTimeframeSpinnerAdapter.getIndexOfTimeframe(mCurrentTimeframe);
-  if (position == -1 || position == actionBar.getSelectedNavigationIndex()) {
-    return;
+  if (position > -1 && position != mSpinner.getSelectedItemPosition()) {
+    mSpinner.setSelection(position);
   }
-  if (actionBar.getNavigationMode() != ActionBar.NAVIGATION_MODE_LIST) {
-    AppLog.w(T.STATS,"stats activity  > unexpected ActionBar navigation mode");
-    return;
-  }
-  actionBar.setSelectedNavigationItem(position);
 }

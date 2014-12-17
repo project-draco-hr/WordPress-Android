@@ -7,8 +7,19 @@
   }
   final FollowerModel currentRowData=list.get(position);
   final StatsViewHolder holder=(StatsViewHolder)rowView.getTag();
+  holder.entryTextView.setTextColor(context.getResources().getColor(R.color.stats_text_color));
+  holder.entryTextView.setOnClickListener(null);
   if (mTopPagerSelectedButtonIndex == 0) {
-    holder.setEntryTextOrLink(currentRowData.getURL(),currentRowData.getLabel());
+    holder.entryTextView.setText(currentRowData.getLabel());
+    if (!TextUtils.isEmpty(currentRowData.getURL()) && UrlUtils.isValidUrlAndHostNotNull(currentRowData.getURL())) {
+      holder.entryTextView.setOnClickListener(new View.OnClickListener(){
+        @Override public void onClick(        View view){
+          ReaderActivityLauncher.showReaderBlogPreview(context,0L,currentRowData.getURL());
+        }
+      }
+);
+      holder.entryTextView.setTextColor(context.getResources().getColor(R.color.wordpress_blue));
+    }
   }
  else {
     holder.entryTextView.setText(currentRowData.getLabel());
