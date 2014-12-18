@@ -2,7 +2,7 @@
   if (isFinishing()) {
     return;
   }
-  AlertDialog.Builder builder=new AlertDialog.Builder(currentActivity);
+  AlertDialog.Builder builder=new AlertDialog.Builder(this);
   final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
   if (currentBlog == null) {
     AppLog.e(T.STATS,"The blog with local_blog_id " + mLocalBlogID + " cannot be loaded from the DB.");
@@ -15,7 +15,7 @@
       public void onClick(      DialogInterface dialog,      int id){
         String stringToLoad=currentBlog.getAdminUrl() + "plugin-install.php?tab=search&s=jetpack+by+wordpress.com" + "&plugin-search-input=Search+Plugins";
         String authURL=WPWebViewActivity.getBlogLoginUrl(currentBlog);
-        Intent jetpackIntent=new Intent(currentActivity,WPWebViewActivity.class);
+        Intent jetpackIntent=new Intent(StatsActivity.this,WPWebViewActivity.class);
         jetpackIntent.putExtra(WPWebViewActivity.AUTHENTICATION_USER,currentBlog.getUsername());
         jetpackIntent.putExtra(WPWebViewActivity.AUTHENTICATION_PASSWD,currentBlog.getPassword());
         jetpackIntent.putExtra(WPWebViewActivity.URL_TO_LOAD,stringToLoad);
