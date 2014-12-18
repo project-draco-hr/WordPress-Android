@@ -15,13 +15,11 @@
     }
   }
 ;
-  if (!ReaderBlogActions.performFollowAction(post,isAskingToFollow,actionListener)) {
-    return;
+  if (ReaderBlogActions.performFollowAction(post,isAskingToFollow,actionListener)) {
+    ReaderPost updatedPost=ReaderPostTable.getPost(post.blogId,post.postId,true);
+    if (updatedPost != null) {
+      mPosts.set(position,updatedPost);
+      copyBlogFollowStatus(updatedPost);
+    }
   }
-  ReaderPost updatedPost=ReaderPostTable.getPost(post.blogId,post.postId,true);
-  if (updatedPost != null) {
-    mPosts.set(position,updatedPost);
-  }
-  ReaderUtils.showFollowStatus(txtFollow,isAskingToFollow);
-  updateFollowStatusOnPostsForBlog(post.blogId,post.getBlogUrl(),isAskingToFollow);
 }
