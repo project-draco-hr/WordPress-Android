@@ -1,17 +1,21 @@
 {
+  if (!isAdded()) {
+    return;
+  }
   mTopPagerRadioGroup.setVisibility(View.VISIBLE);
   if (mDatamodels == null) {
     showHideNoResultsUI(true);
     mTotalsLabel.setVisibility(View.GONE);
     return;
   }
-  if (isErrorResponse(mTopPagerSelectedButtonIndex)) {
-    showErrorUI(mDatamodels[mTopPagerSelectedButtonIndex]);
+  if (isErrorResponse()) {
+    showErrorUI();
     return;
   }
   if (mDatamodels[1] != null) {
     mTotalsLabel.setVisibility(View.VISIBLE);
-    mTotalsLabel.setText(mTotalLabel + " " + ((CommentFollowersModel)mDatamodels[1]).getTotal());
+    int totalNumberOfFollowers=((CommentFollowersModel)mDatamodels[1]).getTotal();
+    mTotalsLabel.setText(getString(R.string.stats_comments_total_comments_followers,FormatUtils.formatDecimal(totalNumberOfFollowers)));
   }
  else {
     mTotalsLabel.setVisibility(View.GONE);
