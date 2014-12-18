@@ -3,15 +3,14 @@
   if (post == null) {
     return;
   }
-  ReaderAnim.animateFollowButton(holder.txtFollow);
   final boolean isAskingToFollow=!post.isFollowedByCurrentUser;
+  ReaderAnim.animateFollowButton(txtFollow,isAskingToFollow);
   ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
     @Override public void onActionResult(    boolean succeeded){
       if (!succeeded) {
-        Context context=holder.txtTitle.getContext();
         int resId=(isAskingToFollow ? R.string.reader_toast_err_follow_blog : R.string.reader_toast_err_unfollow_blog);
-        ToastUtils.showToast(context,resId);
-        ReaderUtils.showFollowStatus(holder.txtFollow,!isAskingToFollow);
+        ToastUtils.showToast(txtFollow.getContext(),resId);
+        ReaderUtils.showFollowStatus(txtFollow,!isAskingToFollow);
       }
     }
   }
@@ -23,6 +22,6 @@
   if (updatedPost != null) {
     mPosts.set(position,updatedPost);
   }
-  ReaderUtils.showFollowStatus(holder.txtFollow,isAskingToFollow);
+  ReaderUtils.showFollowStatus(txtFollow,isAskingToFollow);
   updateFollowStatusOnPostsForBlog(post.blogId,post.getBlogUrl(),isAskingToFollow);
 }
