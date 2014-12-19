@@ -5,7 +5,10 @@
   mProgressLoadMore.setVisibility(View.GONE);
   mSwipeToRefreshHelper=new SwipeToRefreshHelper(getActivity(),(SwipeRefreshLayout)view.findViewById(R.id.ptr_layout),new RefreshListener(){
     @Override public void onRefreshStarted(){
-      if (getActivity() == null || !NetworkUtils.checkConnection(getActivity())) {
+      if (!isAdded()) {
+        return;
+      }
+      if (!NetworkUtils.checkConnection(getActivity())) {
         mSwipeToRefreshHelper.setRefreshing(false);
         return;
       }

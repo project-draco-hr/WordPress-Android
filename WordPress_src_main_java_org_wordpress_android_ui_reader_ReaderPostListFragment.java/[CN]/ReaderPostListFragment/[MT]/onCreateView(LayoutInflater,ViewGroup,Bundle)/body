@@ -32,7 +32,10 @@ mProgress=(ProgressBar)rootView.findViewById(R.id.progress_footer);
 mProgress.setVisibility(View.GONE);
 mSwipeToRefreshHelper=new SwipeToRefreshHelper(getActivity(),(SwipeRefreshLayout)rootView.findViewById(R.id.ptr_layout),new RefreshListener(){
 @Override public void onRefreshStarted(){
-if (getActivity() == null || !NetworkUtils.checkConnection(getActivity())) {
+if (!isAdded()) {
+return;
+}
+if (!NetworkUtils.checkConnection(getActivity())) {
 showSwipeToRefreshProgress(false);
 return;
 }
