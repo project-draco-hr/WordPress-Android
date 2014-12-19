@@ -1,29 +1,9 @@
 {
   View view=super.onCreateView(inflater,container,savedInstanceState);
-  int dp4=DisplayUtils.dpToPx(view.getContext(),4);
-  int dp80=DisplayUtils.dpToPx(view.getContext(),80);
   Resources res=container.getContext().getResources();
   String[] titles={res.getString(R.string.stats_followers_wpcom_selector),res.getString(R.string.stats_followers_email_selector)};
-  for (int i=0; i < titles.length; i++) {
-    RadioButton rb=(RadioButton)inflater.inflate(R.layout.stats_radio_button,null,false);
-    RadioGroup.LayoutParams params=new RadioGroup.LayoutParams(RadioGroup.LayoutParams.MATCH_PARENT,RadioGroup.LayoutParams.WRAP_CONTENT);
-    params.weight=1;
-    rb.setTypeface((TypefaceCache.getTypeface(view.getContext())));
-    if (i == 0) {
-      params.setMargins(0,0,dp4,0);
-    }
- else {
-      params.setMargins(dp4,0,0,0);
-    }
-    rb.setMinimumWidth(dp80);
-    rb.setGravity(Gravity.CENTER);
-    rb.setLayoutParams(params);
-    rb.setText(titles[i]);
-    mTopPagerRadioGroup.addView(rb);
-    if (i == mTopPagerSelectedButtonIndex)     rb.setChecked(true);
-  }
-  mTopPagerRadioGroup.setVisibility(View.VISIBLE);
-  mTopPagerRadioGroup.setOnCheckedChangeListener(this);
+  setupTopModulePager(inflater,view,titles);
+  mTopPagerContainer.setVisibility(View.VISIBLE);
   mTotalsLabel.setVisibility(View.VISIBLE);
   mTotalsLabel.setText("");
   return view;
