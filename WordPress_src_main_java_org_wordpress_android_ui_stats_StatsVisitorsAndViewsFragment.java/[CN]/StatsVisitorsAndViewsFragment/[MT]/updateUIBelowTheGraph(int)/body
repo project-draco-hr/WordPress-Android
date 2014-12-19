@@ -7,33 +7,26 @@
   }
   mDateTextView.setText(getDateForDisplayInLabels(date,getTimeframe()));
   VisitModel modelTapped=dataToShowOnGraph[itemPosition];
-  for (int i=0; i < mRadioGroup.getChildCount(); i++) {
-    View o=mRadioGroup.getChildAt(i);
-    if (o instanceof RadioButton) {
-      RadioButton currentBtm=(RadioButton)o;
-      if (i == mSelectedOverviewItemIndex) {
-        currentBtm.setChecked(true);
-      }
-      TextDrawable currentTextDrawable=new TextDrawable(getActivity());
+  for (int i=0; i < mModuleButtonsContainer.getChildCount(); i++) {
+    View o=mModuleButtonsContainer.getChildAt(i);
+    if (o instanceof CheckedTextView) {
+      CheckedTextView currentBtm=(CheckedTextView)o;
       OverviewLabel overviewItem=(OverviewLabel)currentBtm.getTag();
+      String labelPrefix=overviewItem.getLabel() + "\n";
 switch (overviewItem) {
 case VIEWS:
-        currentTextDrawable.setText(FormatUtils.formatDecimal(modelTapped.getViews()));
+        currentBtm.setText(labelPrefix + FormatUtils.formatDecimal(modelTapped.getViews()));
       break;
 case VISITORS:
-    currentTextDrawable.setText(FormatUtils.formatDecimal(modelTapped.getVisitors()));
+    currentBtm.setText(labelPrefix + FormatUtils.formatDecimal(modelTapped.getVisitors()));
   break;
 case LIKES:
-currentTextDrawable.setText(FormatUtils.formatDecimal(modelTapped.getLikes()));
+currentBtm.setText(labelPrefix + FormatUtils.formatDecimal(modelTapped.getLikes()));
 break;
 case COMMENTS:
-currentTextDrawable.setText(FormatUtils.formatDecimal(modelTapped.getComments()));
+currentBtm.setText(labelPrefix + FormatUtils.formatDecimal(modelTapped.getComments()));
 break;
 }
-currentTextDrawable.setTextColor(getResources().getColorStateList(R.color.stats_visitors_and_views_button_text_color));
-currentTextDrawable.setTypeface((TypefaceCache.getTypeface(getActivity())));
-currentTextDrawable.setTextSize(TypedValue.COMPLEX_UNIT_PX,getResources().getDimensionPixelSize(R.dimen.text_sz_medium));
-currentBtm.setCompoundDrawablesWithIntrinsicBounds(null,null,currentTextDrawable,null);
 }
 }
 }

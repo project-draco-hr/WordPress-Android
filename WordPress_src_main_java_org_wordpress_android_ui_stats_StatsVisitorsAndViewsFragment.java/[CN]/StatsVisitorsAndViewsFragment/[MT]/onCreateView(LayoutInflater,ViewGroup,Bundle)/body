@@ -2,26 +2,30 @@
   View view=inflater.inflate(R.layout.stats_visitors_and_views_fragment,container,false);
   mDateTextView=(TextView)view.findViewById(R.id.stats_summary_date);
   mGraphContainer=(LinearLayout)view.findViewById(R.id.stats_bar_chart_fragment_container);
-  mRadioGroup=(RadioGroup)view.findViewById(R.id.stats_pager_tabs);
+  mModuleButtonsContainer=(LinearLayout)view.findViewById(R.id.stats_pager_tabs);
   for (int i=0; i < overviewItems.length; i++) {
-    RadioButton rb=(RadioButton)inflater.inflate(R.layout.stats_visitors_and_views_radio_button,null,false);
-    RadioGroup.LayoutParams params=new RadioGroup.LayoutParams(RadioGroup.LayoutParams.MATCH_PARENT,RadioGroup.LayoutParams.WRAP_CONTENT);
+    CheckedTextView rb=(CheckedTextView)inflater.inflate(R.layout.stats_visitors_and_views_button,null,false);
+    LinearLayout.LayoutParams params=new LinearLayout.LayoutParams(RadioGroup.LayoutParams.MATCH_PARENT,RadioGroup.LayoutParams.WRAP_CONTENT);
+    params.weight=1;
     rb.setTypeface((TypefaceCache.getTypeface(view.getContext())));
+    params.setMargins(0,0,0,0);
+    rb.setGravity(Gravity.CENTER);
     rb.setLayoutParams(params);
     rb.setText(overviewItems[i].getLabel());
     rb.setTag(overviewItems[i]);
-    mRadioGroup.addView(rb);
-    if (i == mSelectedOverviewItemIndex) {
-      rb.setChecked(true);
+    rb.setChecked(i == mSelectedOverviewItemIndex);
+    rb.setOnClickListener(TopButtonsOnClickListener);
+    if (i == (overviewItems.length - 1)) {
+      rb.setBackgroundResource(R.drawable.stats_visitors_and_views_button_latest_selector);
     }
+    mModuleButtonsContainer.addView(rb);
   }
-  mRadioGroup.setVisibility(View.VISIBLE);
+  mModuleButtonsContainer.setVisibility(View.VISIBLE);
   if (mVisitsData != null) {
     updateUI();
   }
  else {
     setupNoResultsUI(true);
   }
-  mRadioGroup.setOnCheckedChangeListener(this);
   return view;
 }
