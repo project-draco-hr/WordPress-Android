@@ -2,9 +2,10 @@
   if (tagName == null) {
     return "";
   }
-  String sanitized=tagName.trim().replace("&","").replace("#","").replace(" ","-").replace(".","-");
-  while (sanitized.contains("--")) {
-    sanitized=sanitized.replace("--","-");
+  String s=tagName.trim().replaceAll("&[^\\s]*;","").replace(".","-").replaceAll("\\s+","-").replaceAll("[^A-Za-z0-9\\-]","").trim();
+  while (s.contains("--"))   s=s.replace("--","-");
+  if (!s.equals(tagName)) {
+    AppLog.d(AppLog.T.READER,"tag " + tagName + " sanitized to "+ s);
   }
-  return sanitized.trim();
+  return s;
 }
