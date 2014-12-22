@@ -3,7 +3,7 @@
   mRecyclerView=(ReaderRecyclerView)rootView.findViewById(R.id.recycler_view);
   Context context=container.getContext();
   int spacingHorizontal=context.getResources().getDimensionPixelSize(R.dimen.reader_card_spacing);
-  int spacingVertical=context.getResources().getDimensionPixelSize(R.dimen.reader_card_spacing_vertical);
+  int spacingVertical=context.getResources().getDimensionPixelSize(R.dimen.reader_card_gutters);
   mRecyclerView.addItemDecoration(new ReaderItemDecoration(spacingHorizontal,spacingVertical));
   mNewPostsBar=(TextView)rootView.findViewById(R.id.text_new_posts);
   mNewPostsBar.setVisibility(View.GONE);
@@ -14,19 +14,17 @@
     }
   }
 );
+  ViewGroup header=(ViewGroup)rootView.findViewById(R.id.frame_header);
 switch (getPostListType()) {
-case TAG_FOLLOWED:
-    break;
 case TAG_PREVIEW:
-  mTagInfoView=(ViewGroup)inflater.inflate(R.layout.reader_tag_info_view,container,false);
-rootView.addView(mTagInfoView);
-ReaderUtils.layoutBelow(rootView,R.id.ptr_layout,mTagInfoView.getId());
-setHeaderViewElevation(mTagInfoView);
+    mTagInfoView=(ViewGroup)inflater.inflate(R.layout.reader_tag_info_view,container,false);
+  header.addView(mTagInfoView);
+header.setVisibility(View.INVISIBLE);
 break;
 case BLOG_PREVIEW:
 mBlogInfoView=new ReaderBlogInfoView(context);
-rootView.addView(mBlogInfoView);
-ReaderUtils.layoutBelow(rootView,R.id.ptr_layout,mBlogInfoView.getId());
+header.addView(mBlogInfoView);
+header.setVisibility(View.INVISIBLE);
 break;
 }
 mEmptyView=rootView.findViewById(R.id.empty_view);
@@ -34,7 +32,10 @@ mProgress=(ProgressBar)rootView.findViewById(R.id.progress_footer);
 mProgress.setVisibility(View.GONE);
 mSwipeToRefreshHelper=new SwipeToRefreshHelper(getActivity(),(SwipeRefreshLayout)rootView.findViewById(R.id.ptr_layout),new RefreshListener(){
 @Override public void onRefreshStarted(){
-if (getActivity() == null || !NetworkUtils.checkConnection(getActivity())) {
+if (!isAdded()) {
+return;
+}
+if (!NetworkUtils.checkConnection(getActivity())) {
 showSwipeToRefreshProgress(false);
 return;
 }
