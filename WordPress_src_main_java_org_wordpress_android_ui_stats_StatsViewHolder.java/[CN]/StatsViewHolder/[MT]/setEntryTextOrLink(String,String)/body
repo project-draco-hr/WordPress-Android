@@ -1,0 +1,41 @@
+{
+  if (entryTextView == null) {
+    return;
+  }
+  entryTextView.setText(linkName);
+  if (TextUtils.isEmpty(linkURL)) {
+    entryTextView.setTextColor(entryTextView.getContext().getResources().getColor(R.color.stats_text_color));
+    rowContent.setClickable(false);
+    return;
+  }
+  rowContent.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View view){
+      String url=linkURL;
+      AppLog.d(AppLog.T.UTILS,"Tapped on the Link: " + url);
+      if (url.startsWith("https://wordpress.com/my-stats") || url.startsWith("http://wordpress.com/my-stats")) {
+        url=UrlUtils.makeHttps(url);
+        if (url.contains("?")) {
+          if (!url.contains("?no-chrome") && !url.contains("&no-chrome")) {
+            url+="&no-chrome";
+          }
+        }
+ else {
+          url+="?no-chrome";
+        }
+        AppLog.d(AppLog.T.UTILS,"Opening the Authenticated in-app browser : " + url);
+        SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(view.getContext());
+        String statsAuthenticatedUser=settings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,null);
+        String statsAuthenticatedPassword=WordPressDB.decryptPassword(settings.getString(WordPress.WPCOM_PASSWORD_PREFERENCE,null));
+        if (org.apache.commons.lang.StringUtils.isEmpty(statsAuthenticatedPassword) || org.apache.commons.lang.StringUtils.isEmpty(statsAuthenticatedUser)) {
+        }
+        WPWebViewActivity.openUrlByUsingWPCOMCredentials(view.getContext(),url,statsAuthenticatedUser,statsAuthenticatedPassword);
+      }
+ else       if (url.startsWith("https") || url.startsWith("http")) {
+        AppLog.d(AppLog.T.UTILS,"Opening the in-app browser: " + url);
+        WPWebViewActivity.openURL(view.getContext(),url);
+      }
+    }
+  }
+);
+  entryTextView.setTextColor(entryTextView.getContext().getResources().getColor(R.color.stats_link_text_color));
+}
