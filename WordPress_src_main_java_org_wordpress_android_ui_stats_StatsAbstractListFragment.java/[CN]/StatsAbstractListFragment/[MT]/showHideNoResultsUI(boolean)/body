@@ -1,5 +1,4 @@
 {
-  mModuleTitleTextPlaceholderTextView.setVisibility(View.GONE);
   mModuleTitleTextView.setVisibility(View.VISIBLE);
   if (showNoResultsUI) {
     mGroupIdToExpandedMap.clear();
@@ -24,6 +23,12 @@
   }
  else {
     mEmptyLabel.setVisibility(View.GONE);
+    if (mListContainer.getVisibility() != View.VISIBLE) {
+      Animation expand=new ScaleAnimation(1.0f,1.0f,0.0f,1.0f);
+      expand.setDuration(3 * StatsUIHelper.ANIM_DURATION);
+      expand.setInterpolator(StatsUIHelper.getInterpolator());
+      mListContainer.startAnimation(expand);
+    }
     mListContainer.setVisibility(View.VISIBLE);
     mList.setVisibility(View.VISIBLE);
     if (!isSingleView() && isViewAllOptionAvailable()) {
