@@ -11,9 +11,6 @@ case RECOMMENDED:
 blogUrl=blog.getBlogUrl();
 break;
 case FOLLOWED:
-if (position >= mRecommendedBlogs.size()) {
-return;
-}
 ReaderBlog info=mFollowedBlogs.get(position);
 blogId=info.blogId;
 blogUrl=info.getUrl();
@@ -23,16 +20,17 @@ return;
 }
 ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
 @Override public void onActionResult(boolean succeeded){
-Context context=textView.getContext();
+Context context=txtFollow.getContext();
 if (!succeeded && context != null) {
 int resId=(isAskingToFollow ? R.string.reader_toast_err_follow_blog : R.string.reader_toast_err_unfollow_blog);
 ToastUtils.showToast(context,resId);
-ReaderUtils.showFollowStatus(textView,!isAskingToFollow);
+ReaderUtils.showFollowStatus(txtFollow,!isAskingToFollow);
 checkFollowStatus();
 }
 }
 }
 ;
+ReaderAnim.animateFollowButton(txtFollow,isAskingToFollow);
 if (ReaderBlogActions.performFollowAction(blogId,blogUrl,isAskingToFollow,actionListener)) {
 if (getBlogType() == ReaderBlogType.FOLLOWED) {
 mFollowedBlogs.get(position).isFollowing=isAskingToFollow;
