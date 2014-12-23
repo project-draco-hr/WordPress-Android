@@ -1,0 +1,19 @@
+{
+  if (!isAdded() || !hasPost()) {
+    return;
+  }
+  boolean isAskingToLike=!mPost.isLikedByCurrentUser;
+  ReaderIconCountView likeCount=(ReaderIconCountView)getView().findViewById(R.id.count_likes);
+  likeCount.setSelected(isAskingToLike);
+  ReaderAnim.animateLikeButton(likeCount.getImageView(),isAskingToLike);
+  if (!ReaderPostActions.performLikeAction(mPost,isAskingToLike)) {
+    likeCount.setSelected(!isAskingToLike);
+    return;
+  }
+  mPost=ReaderPostTable.getPost(mBlogId,mPostId,false);
+  refreshLikes();
+  refreshIconBarCounts(true);
+  if (isAskingToLike) {
+    AnalyticsTracker.track(AnalyticsTracker.Stat.READER_LIKED_ARTICLE);
+  }
+}
