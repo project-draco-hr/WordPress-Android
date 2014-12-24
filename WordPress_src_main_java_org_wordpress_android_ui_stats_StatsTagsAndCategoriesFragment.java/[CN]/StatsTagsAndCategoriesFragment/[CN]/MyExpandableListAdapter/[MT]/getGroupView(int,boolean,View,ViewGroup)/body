@@ -1,0 +1,38 @@
+{
+  if (convertView == null) {
+    convertView=inflater.inflate(R.layout.stats_list_cell,parent,false);
+    StatsViewHolder viewHolder=new StatsViewHolder(convertView);
+    convertView.setTag(viewHolder);
+    ViewGroup.LayoutParams params=viewHolder.networkImageView.getLayoutParams();
+    params.width=DisplayUtils.dpToPx(convertView.getContext(),12);
+    params.height=params.width;
+    viewHolder.networkImageView.setLayoutParams(params);
+  }
+  final StatsViewHolder holder=(StatsViewHolder)convertView.getTag();
+  TagsModel group=(TagsModel)getGroup(groupPosition);
+  StringBuilder groupName=new StringBuilder();
+  List<TagModel> tags=group.getTags();
+  for (int i=0; i < tags.size(); i++) {
+    TagModel currentTag=tags.get(i);
+    groupName.append(currentTag.getName());
+    if (i < (tags.size() - 1)) {
+      groupName.append(" | ");
+    }
+  }
+  int total=group.getViews();
+  int children=getChildrenCount(groupPosition);
+  if (children > 0) {
+    holder.setEntryText(groupName.toString(),getResources().getColor(R.color.stats_link_text_color));
+  }
+ else {
+    holder.setEntryTextOrLink(tags.get(0).getLink(),groupName.toString());
+  }
+  holder.totalsTextView.setText(FormatUtils.formatDecimal(total));
+  holder.chevronImageView.setVisibility(children > 0 ? View.VISIBLE : View.GONE);
+  if (children == 0) {
+    holder.networkImageView.setVisibility(View.VISIBLE);
+    int drawableResource=groupName.toString().equalsIgnoreCase("uncategorized") ? R.drawable.stats_icon_categories : R.drawable.stats_icon_tags;
+    holder.networkImageView.setImageDrawable(getResources().getDrawable(drawableResource));
+  }
+  return convertView;
+}

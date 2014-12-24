@@ -1,0 +1,27 @@
+{
+  this.mBlogID=blogID;
+  this.mPeriod=response.getString("period");
+  this.mDate=response.getString("date");
+  JSONObject jDaysObject=response.getJSONObject("days");
+  if (jDaysObject.length() == 0) {
+    throw new JSONException("Invalid document returned from the REST API");
+  }
+  Iterator<String> keys=jDaysObject.keys();
+  String key=keys.next();
+  JSONObject firstDayObject=jDaysObject.getJSONObject(key);
+  this.mOtherPlays=firstDayObject.getInt("other_plays");
+  this.mTotalPlays=firstDayObject.getInt("total_plays");
+  JSONArray playsJSONArray=firstDayObject.optJSONArray("plays");
+  if (playsJSONArray != null) {
+    mPlays=new ArrayList<>(playsJSONArray.length());
+    for (int i=0; i < playsJSONArray.length(); i++) {
+      JSONObject currentVideoplaysJSON=playsJSONArray.getJSONObject(i);
+      String postId=String.valueOf(currentVideoplaysJSON.getInt("post_id"));
+      String title=currentVideoplaysJSON.getString("title");
+      int views=currentVideoplaysJSON.getInt("plays");
+      String url=currentVideoplaysJSON.getString("url");
+      SingleItemModel currentPost=new SingleItemModel(blogID,mDate,postId,title,views,url,null);
+      mPlays.add(currentPost);
+    }
+  }
+}

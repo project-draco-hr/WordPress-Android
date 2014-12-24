@@ -5,16 +5,26 @@
     return START_NOT_STICKY;
   }
   final String blogId=StringUtils.notNullStr(intent.getStringExtra(ARG_BLOG_ID));
-  final String currentServiceBlogId=getServiceBlogId();
-  if (currentServiceBlogId == null) {
-    startTasks(blogId,startId);
+  StatsTimeframe period=StatsTimeframe.DAY;
+  if (intent.hasExtra(ARG_PERIOD)) {
+    period=(StatsTimeframe)intent.getSerializableExtra(ARG_PERIOD);
   }
- else   if (blogId.equals(currentServiceBlogId)) {
-    AppLog.i(T.STATS,"StatsService is already running on this blogID - " + currentServiceBlogId);
+  String requestedDate=intent.getStringExtra(ARG_DATE);
+  if (requestedDate == null) {
+    AppLog.w(T.STATS,"StatsService is started with a NULL date on this blogID - " + mServiceBlogId + ". Using current date!!!");
+    int localTableBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(Integer.parseInt(mServiceBlogId));
+    requestedDate=StatsUtils.getCurrentDateTZ(localTableBlogId);
+  }
+  boolean updateAlltimeStats=intent.getBooleanExtra(ARG_UPDATE_ALLTIME_STATS,true);
+  if (mServiceBlogId == null) {
+    startTasks(blogId,period,requestedDate,updateAlltimeStats,startId);
+  }
+ else   if (blogId.equals(mServiceBlogId) && mServiceRequestedTimeframe == period && requestedDate.equals(mServiceRequestedDate)) {
+    AppLog.i(T.STATS,"StatsService is already running on this blogID - " + mServiceBlogId + " for the same period and the same date.");
   }
  else {
     stopRefresh();
-    startTasks(blogId,startId);
+    startTasks(blogId,period,requestedDate,updateAlltimeStats,startId);
   }
   this.mServiceStartId=startId;
   return START_NOT_STICKY;

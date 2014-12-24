@@ -1,0 +1,18 @@
+{
+  View rowView=convertView;
+  if (rowView == null) {
+    rowView=inflater.inflate(R.layout.stats_list_cell,parent,false);
+    StatsViewHolder viewHolder=new StatsViewHolder(rowView);
+    rowView.setTag(viewHolder);
+  }
+  final GeoviewModel currentRowData=list.get(position);
+  StatsViewHolder holder=(StatsViewHolder)rowView.getTag();
+  String entry=currentRowData.getCountryFullName();
+  String imageUrl=currentRowData.getImageUrl();
+  int total=currentRowData.getViews();
+  holder.setEntryText(entry);
+  holder.totalsTextView.setText(FormatUtils.formatDecimal(total));
+  holder.networkImageView.setImageUrl(PhotonUtils.fixAvatar(imageUrl,mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.SITE_AVATAR);
+  holder.networkImageView.setVisibility(View.VISIBLE);
+  return rowView;
+}

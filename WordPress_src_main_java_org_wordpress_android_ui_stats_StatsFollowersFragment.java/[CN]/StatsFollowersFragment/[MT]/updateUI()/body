@@ -1,0 +1,72 @@
+{
+  if (!isAdded()) {
+    return;
+  }
+  mTopPagerContainer.setVisibility(View.VISIBLE);
+  mTotalsLabel.setVisibility(View.VISIBLE);
+  if (mDatamodels == null) {
+    showHideNoResultsUI(true);
+    mTotalsLabel.setText(getTotalFollowersLabel(0));
+    return;
+  }
+  if (isErrorResponse()) {
+    showErrorUI();
+    return;
+  }
+  final FollowersModel followersModel=(FollowersModel)mDatamodels[mTopPagerSelectedButtonIndex];
+  if (followersModel != null && followersModel.getFollowers() != null && followersModel.getFollowers().size() > 0) {
+    ArrayAdapter adapter=new DotComFollowerAdapter(getActivity(),followersModel.getFollowers());
+    StatsUIHelper.reloadLinearLayout(getActivity(),adapter,mList,getMaxNumberOfItemsToShowInList());
+    showHideNoResultsUI(false);
+    if (isSingleView()) {
+      if (followersModel.getPages() > 1) {
+        mPaginationContainer.setVisibility(View.VISIBLE);
+        mPaginationText.setText(String.format(getString(R.string.stats_pagination_label),followersModel.getPage(),followersModel.getPages()));
+        mPaginationGoBackButton.setEnabled(true);
+        mPaginationGoForwardButton.setEnabled(true);
+        if (followersModel.getPage() == 1) {
+          mPaginationGoBackButton.setVisibility(View.INVISIBLE);
+        }
+ else {
+          mPaginationGoBackButton.setVisibility(View.VISIBLE);
+          mPaginationGoBackButton.setOnClickListener(new View.OnClickListener(){
+            @Override public void onClick(            View v){
+              mPaginationGoBackButton.setEnabled(false);
+              mPaginationGoForwardButton.setEnabled(false);
+              mMoreDataListener.onMoreDataRequested(getSectionToUpdate()[mTopPagerSelectedButtonIndex],followersModel.getPage() - 1);
+            }
+          }
+);
+        }
+        if (followersModel.getPage() == followersModel.getPages()) {
+          mPaginationGoForwardButton.setVisibility(View.INVISIBLE);
+        }
+ else {
+          mPaginationGoForwardButton.setVisibility(View.VISIBLE);
+          mPaginationGoForwardButton.setOnClickListener(new View.OnClickListener(){
+            @Override public void onClick(            View v){
+              mPaginationGoBackButton.setEnabled(false);
+              mPaginationGoForwardButton.setEnabled(false);
+              mMoreDataListener.onMoreDataRequested(getSectionToUpdate()[mTopPagerSelectedButtonIndex],followersModel.getPage() + 1);
+            }
+          }
+);
+        }
+      }
+ else {
+        mPaginationContainer.setVisibility(View.INVISIBLE);
+      }
+    }
+    if (mTopPagerSelectedButtonIndex == 0) {
+      mTotalsLabel.setText(getTotalFollowersLabel(followersModel.getTotalWPCom()));
+    }
+ else {
+      mTotalsLabel.setText(getTotalFollowersLabel(followersModel.getTotalEmail()));
+    }
+  }
+ else {
+    showHideNoResultsUI(true);
+    mPaginationContainer.setVisibility(View.GONE);
+    mTotalsLabel.setText(getTotalFollowersLabel(0));
+  }
+}

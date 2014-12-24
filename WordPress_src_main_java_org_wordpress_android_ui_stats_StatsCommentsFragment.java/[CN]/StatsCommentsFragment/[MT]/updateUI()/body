@@ -1,0 +1,37 @@
+{
+  if (!isAdded()) {
+    return;
+  }
+  mTopPagerContainer.setVisibility(View.VISIBLE);
+  if (mDatamodels == null) {
+    showHideNoResultsUI(true);
+    mTotalsLabel.setVisibility(View.GONE);
+    return;
+  }
+  if (isErrorResponse()) {
+    showErrorUI();
+    return;
+  }
+  if (mDatamodels[1] != null) {
+    mTotalsLabel.setVisibility(View.VISIBLE);
+    int totalNumberOfFollowers=((CommentFollowersModel)mDatamodels[1]).getTotal();
+    mTotalsLabel.setText(getString(R.string.stats_comments_total_comments_followers,FormatUtils.formatDecimal(totalNumberOfFollowers)));
+  }
+ else {
+    mTotalsLabel.setVisibility(View.GONE);
+  }
+  ArrayAdapter adapter=null;
+  if (mTopPagerSelectedButtonIndex == 0 && hasAuthors()) {
+    adapter=new AuthorsAdapter(getActivity(),getAuthors());
+  }
+ else   if (mTopPagerSelectedButtonIndex == 1 && hasPosts()) {
+    adapter=new PostsAndPagesAdapter(getActivity(),getLocalTableBlogID(),getPosts());
+  }
+  if (adapter != null) {
+    StatsUIHelper.reloadLinearLayout(getActivity(),adapter,mList,getMaxNumberOfItemsToShowInList());
+    showHideNoResultsUI(false);
+  }
+ else {
+    showHideNoResultsUI(true);
+  }
+}

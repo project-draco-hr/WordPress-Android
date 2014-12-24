@@ -1,30 +1,25 @@
 {
   View view=inflater.inflate(R.layout.stats_visitors_and_views_fragment,container,false);
-  setRetainInstance(true);
-  TextView titleTextView=(TextView)view.findViewById(R.id.stats_pager_title);
-  titleTextView.setText(getTitle().toUpperCase(Locale.getDefault()));
-  mVisitorsToday=(TextView)view.findViewById(R.id.stats_visitors_and_views_today_visitors_count);
-  mVisitorsTodayLabel=(TextView)view.findViewById(R.id.stats_visitors_and_views_header_label);
-  mViewsToday=(TextView)view.findViewById(R.id.stats_visitors_and_views_today_views_count);
-  mViewsBestEver=(TextView)view.findViewById(R.id.stats_visitors_and_views_best_ever_views_count);
-  mViewsAllTime=(TextView)view.findViewById(R.id.stats_visitors_and_views_all_time_view_count);
-  mCommentsAllTime=(TextView)view.findViewById(R.id.stats_visitors_and_views_all_time_comment_count);
-  mRadioGroup=(RadioGroup)view.findViewById(R.id.stats_pager_tabs);
-  mRadioGroup.setVisibility(View.VISIBLE);
-  mRadioGroup.setOnCheckedChangeListener(this);
-  for (int i=0; i < TITLES.length; i++) {
-    RadioButton rb=(RadioButton)LayoutInflater.from(getActivity()).inflate(R.layout.stats_radio_button,null,false);
-    RadioGroup.LayoutParams params=new RadioGroup.LayoutParams(RadioGroup.LayoutParams.WRAP_CONTENT,RadioGroup.LayoutParams.WRAP_CONTENT);
-    int dp8=DisplayUtils.dpToPx(view.getContext(),8);
-    params.setMargins(0,0,dp8,0);
-    rb.setMinimumWidth(DisplayUtils.dpToPx(view.getContext(),80));
+  mDateTextView=(TextView)view.findViewById(R.id.stats_summary_date);
+  mGraphContainer=(LinearLayout)view.findViewById(R.id.stats_bar_chart_fragment_container);
+  mModuleButtonsContainer=(LinearLayout)view.findViewById(R.id.stats_pager_tabs);
+  for (int i=0; i < overviewItems.length; i++) {
+    CheckedTextView rb=(CheckedTextView)inflater.inflate(R.layout.stats_visitors_and_views_button,container,false);
+    LinearLayout.LayoutParams params=new LinearLayout.LayoutParams(RadioGroup.LayoutParams.MATCH_PARENT,RadioGroup.LayoutParams.WRAP_CONTENT);
+    params.weight=1;
+    rb.setTypeface((TypefaceCache.getTypeface(view.getContext())));
+    params.setMargins(0,0,0,0);
     rb.setGravity(Gravity.CENTER);
     rb.setLayoutParams(params);
-    rb.setText(TITLES[i]);
-    mRadioGroup.addView(rb);
-    if (i == mSelectedButtonIndex) {
-      rb.setChecked(true);
+    rb.setText(overviewItems[i].getLabel());
+    rb.setTag(overviewItems[i]);
+    rb.setChecked(i == mSelectedOverviewItemIndex);
+    rb.setOnClickListener(TopButtonsOnClickListener);
+    if (i == (overviewItems.length - 1)) {
+      rb.setBackgroundResource(R.drawable.stats_visitors_and_views_button_latest_selector);
     }
+    mModuleButtonsContainer.addView(rb);
   }
+  mModuleButtonsContainer.setVisibility(View.VISIBLE);
   return view;
 }

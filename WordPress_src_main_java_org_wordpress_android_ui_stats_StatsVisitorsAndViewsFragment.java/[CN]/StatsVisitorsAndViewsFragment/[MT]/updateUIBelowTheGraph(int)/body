@@ -1,0 +1,40 @@
+{
+  if (mVisitsData == null) {
+    setupNoResultsUI(false);
+    return;
+  }
+  if (mVisitsData instanceof VolleyError) {
+    setupNoResultsUI(false);
+    return;
+  }
+  final VisitModel[] dataToShowOnGraph=getDataToShowOnGraph((VisitsModel)mVisitsData);
+  String date=mStatsDate[itemPosition];
+  if (date == null) {
+    AppLog.w(AppLog.T.STATS,"Cannot update the area below the graph if a null date is passed!!");
+    return;
+  }
+  mDateTextView.setText(getDateForDisplayInLabels(date,getTimeframe()));
+  VisitModel modelTapped=dataToShowOnGraph[itemPosition];
+  for (int i=0; i < mModuleButtonsContainer.getChildCount(); i++) {
+    View o=mModuleButtonsContainer.getChildAt(i);
+    if (o instanceof CheckedTextView) {
+      CheckedTextView currentBtm=(CheckedTextView)o;
+      OverviewLabel overviewItem=(OverviewLabel)currentBtm.getTag();
+      String labelPrefix=overviewItem.getLabel() + "\n";
+switch (overviewItem) {
+case VIEWS:
+        currentBtm.setText(labelPrefix + FormatUtils.formatDecimal(modelTapped.getViews()));
+      break;
+case VISITORS:
+    currentBtm.setText(labelPrefix + FormatUtils.formatDecimal(modelTapped.getVisitors()));
+  break;
+case LIKES:
+currentBtm.setText(labelPrefix + FormatUtils.formatDecimal(modelTapped.getLikes()));
+break;
+case COMMENTS:
+currentBtm.setText(labelPrefix + FormatUtils.formatDecimal(modelTapped.getComments()));
+break;
+}
+}
+}
+}

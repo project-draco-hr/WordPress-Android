@@ -1,0 +1,35 @@
+{
+  mModuleTitleTextView.setVisibility(View.VISIBLE);
+  if (showNoResultsUI) {
+    mGroupIdToExpandedMap.clear();
+    String label;
+    if (getEmptyLabelDescResId() == NO_STRING_ID) {
+      label="<b>" + getString(getEmptyLabelTitleResId()) + "</b><br/><br/>";
+    }
+ else {
+      label="<b>" + getString(getEmptyLabelTitleResId()) + "</b><br/><br/>"+ getString(getEmptyLabelDescResId());
+    }
+    if (label.contains("<")) {
+      mEmptyLabel.setText(Html.fromHtml(label));
+    }
+ else {
+      mEmptyLabel.setText(label);
+    }
+    mEmptyLabel.setVisibility(View.VISIBLE);
+    mListContainer.setVisibility(View.GONE);
+    mList.setVisibility(View.GONE);
+    mViewAll.setVisibility(View.GONE);
+    mPaginationContainer.setVisibility(View.GONE);
+  }
+ else {
+    mEmptyLabel.setVisibility(View.GONE);
+    mListContainer.setVisibility(View.VISIBLE);
+    mList.setVisibility(View.VISIBLE);
+    if (!isSingleView() && isViewAllOptionAvailable()) {
+      configureViewAllButton();
+    }
+ else {
+      mViewAll.setVisibility(View.GONE);
+    }
+  }
+}

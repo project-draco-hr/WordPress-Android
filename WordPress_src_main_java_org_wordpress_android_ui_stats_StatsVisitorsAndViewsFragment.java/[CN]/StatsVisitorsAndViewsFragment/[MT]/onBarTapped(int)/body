@@ -1,0 +1,58 @@
+{
+  mSelectedBarGraphBarIndex=tappedBar;
+  updateUIBelowTheGraph(tappedBar);
+  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+    return;
+  }
+  String date=mStatsDate[tappedBar];
+  if (date == null) {
+    AppLog.w(AppLog.T.STATS,"A bar was tapped but a null date is received!!");
+    return;
+  }
+  String calculatedDate=null;
+  try {
+    SimpleDateFormat sdf;
+    Calendar c=Calendar.getInstance();
+    c.setFirstDayOfWeek(Calendar.MONDAY);
+    final Date parsedDate;
+switch (getTimeframe()) {
+case DAY:
+      calculatedDate=date;
+    break;
+case WEEK:
+  sdf=new SimpleDateFormat("yyyy'W'MM'W'dd");
+parsedDate=sdf.parse(date);
+c.setTime(parsedDate);
+c.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY);
+c.add(Calendar.DAY_OF_WEEK,+6);
+calculatedDate=StatsUtils.msToString(c.getTimeInMillis(),"yyyy-MM-dd");
+break;
+case MONTH:
+sdf=new SimpleDateFormat("yyyy-MM");
+parsedDate=sdf.parse(date);
+c.setTime(parsedDate);
+c.set(Calendar.DAY_OF_MONTH,c.getActualMaximum(Calendar.DAY_OF_MONTH));
+calculatedDate=StatsUtils.msToString(c.getTimeInMillis(),"yyyy-MM-dd");
+break;
+case YEAR:
+sdf=new SimpleDateFormat("yyyy-MM-dd");
+parsedDate=sdf.parse(date);
+c.setTime(parsedDate);
+c.set(Calendar.MONTH,Calendar.DECEMBER);
+c.set(Calendar.DAY_OF_MONTH,31);
+calculatedDate=StatsUtils.msToString(c.getTimeInMillis(),"yyyy-MM-dd");
+break;
+}
+}
+ catch (ParseException e) {
+AppLog.e(AppLog.T.UTILS,e);
+}
+if (calculatedDate == null) {
+AppLog.w(AppLog.T.STATS,"A call to request new stats stats is made but date received cannot be parsed!! " + date);
+return;
+}
+if (mListener != null) {
+final String blogId=StatsUtils.getBlogId(getLocalTableBlogID());
+mListener.onDateChanged(blogId,getTimeframe(),calculatedDate);
+}
+}

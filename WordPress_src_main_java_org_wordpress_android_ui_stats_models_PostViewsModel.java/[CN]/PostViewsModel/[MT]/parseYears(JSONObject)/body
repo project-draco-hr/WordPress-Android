@@ -1,0 +1,25 @@
+{
+  try {
+    JSONObject yearsJSON=response.getJSONObject("years");
+    String[] orderedKeys=orderKeys(yearsJSON.keys(),yearsJSON.length());
+    for (int j=0; j < orderedKeys.length; j++) {
+      Year currentYear=new Year();
+      String currentYearKey=orderedKeys[j];
+      currentYear.setLabel(currentYearKey);
+      JSONObject currentYearObj=yearsJSON.getJSONObject(currentYearKey);
+      int total=currentYearObj.getInt("total");
+      currentYear.setTotal(total);
+      JSONObject months=currentYearObj.getJSONObject("months");
+      String[] orderedMonthsKeys=orderKeys(months.keys(),months.length());
+      for (      String currentMonthKey : orderedMonthsKeys) {
+        int currentMonthVisits=months.getInt(currentMonthKey);
+        int currentMonthIndex=Integer.parseInt(currentMonthKey) - 1;
+        currentYear.getMonths()[currentMonthIndex]=currentMonthVisits;
+      }
+      mYears.add(currentYear);
+    }
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.STATS,"Cannot parse the Years section",e);
+  }
+}

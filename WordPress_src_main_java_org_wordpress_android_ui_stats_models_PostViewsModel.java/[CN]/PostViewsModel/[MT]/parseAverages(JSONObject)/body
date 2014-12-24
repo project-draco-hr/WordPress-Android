@@ -1,0 +1,23 @@
+{
+  try {
+    JSONObject averagesJSON=response.getJSONObject("averages");
+    String[] orderedKeys=orderKeys(averagesJSON.keys(),averagesJSON.length());
+    for (    String currentJSONKey : orderedKeys) {
+      Average currentAverage=new Average();
+      currentAverage.setLabel(currentJSONKey);
+      JSONObject currentAverageJSONObj=averagesJSON.getJSONObject(currentJSONKey);
+      currentAverage.setOverall(currentAverageJSONObj.getInt("overall"));
+      JSONObject monthsJSON=currentAverageJSONObj.getJSONObject("months");
+      String[] orderedMonthsKeys=orderKeys(monthsJSON.keys(),monthsJSON.length());
+      for (      String currentMonthKey : orderedMonthsKeys) {
+        int currentMonthVisits=monthsJSON.getInt(currentMonthKey);
+        int currentMonthIndex=Integer.parseInt(currentMonthKey) - 1;
+        currentAverage.getMonths()[currentMonthIndex]=currentMonthVisits;
+      }
+      mAverages.add(currentAverage);
+    }
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.STATS,"Cannot parse the Averages section",e);
+  }
+}

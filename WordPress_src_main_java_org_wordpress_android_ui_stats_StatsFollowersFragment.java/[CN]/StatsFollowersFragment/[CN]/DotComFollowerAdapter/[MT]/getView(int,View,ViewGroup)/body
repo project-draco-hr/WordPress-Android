@@ -1,0 +1,46 @@
+{
+  View rowView=convertView;
+  if (rowView == null) {
+    rowView=inflater.inflate(R.layout.stats_list_cell,parent,false);
+    StatsViewHolder viewHolder=new StatsViewHolder(rowView);
+    rowView.setTag(viewHolder);
+  }
+  final FollowerModel currentRowData=list.get(position);
+  final StatsViewHolder holder=(StatsViewHolder)rowView.getTag();
+  holder.entryTextView.setTextColor(context.getResources().getColor(R.color.stats_text_color));
+  holder.rowContent.setClickable(false);
+  if (mTopPagerSelectedButtonIndex == 0) {
+    holder.entryTextView.setText(currentRowData.getLabel());
+    if (!TextUtils.isEmpty(currentRowData.getURL())) {
+      holder.rowContent.setOnClickListener(new View.OnClickListener(){
+        @Override public void onClick(        View view){
+          ReaderActivityLauncher.showReaderBlogPreview(context,0L,currentRowData.getURL());
+        }
+      }
+);
+      holder.entryTextView.setTextColor(context.getResources().getColor(R.color.stats_link_text_color));
+    }
+  }
+ else {
+    holder.setEntryText(currentRowData.getLabel());
+  }
+  holder.totalsTextView.setText(getSinceLabel(currentRowData.getDateSubscribed()));
+  holder.networkImageView.setImageUrl(PhotonUtils.fixAvatar(currentRowData.getAvatar(),mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.AVATAR);
+  holder.networkImageView.setVisibility(View.VISIBLE);
+  final FollowDataModel followData=currentRowData.getFollowData();
+  if (followData == null) {
+    holder.imgMore.setVisibility(View.GONE);
+    holder.imgMore.setClickable(false);
+  }
+ else {
+    holder.imgMore.setVisibility(View.VISIBLE);
+    holder.imgMore.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        FollowHelper fh=new FollowHelper(context);
+        fh.showPopup(holder.imgMore,followData);
+      }
+    }
+);
+  }
+  return rowView;
+}

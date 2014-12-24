@@ -1,0 +1,24 @@
+{
+  setBlogId(blogId);
+  setDate(StatsUtils.toMs(date));
+  setGroupId(clickGroupJSON.getString("name"));
+  setName(clickGroupJSON.getString("name"));
+  setViews(clickGroupJSON.getInt("views"));
+  setIcon(JSONUtil.getString(clickGroupJSON,"icon"));
+  if (!TextUtils.isEmpty(JSONUtil.getString(clickGroupJSON,"url"))) {
+    setUrl(JSONUtil.getString(clickGroupJSON,"url"));
+  }
+ else {
+    JSONArray childrenJSON=clickGroupJSON.getJSONArray("children");
+    mClicks=new ArrayList<>(childrenJSON.length());
+    for (int i=0; i < childrenJSON.length(); i++) {
+      JSONObject currentResultJSON=childrenJSON.getJSONObject(i);
+      String name=currentResultJSON.getString("name");
+      int totals=currentResultJSON.getInt("views");
+      String icon=currentResultJSON.optString("icon");
+      String url=currentResultJSON.optString("url");
+      SingleItemModel rm=new SingleItemModel(blogId,date,null,name,totals,url,icon);
+      mClicks.add(rm);
+    }
+  }
+}

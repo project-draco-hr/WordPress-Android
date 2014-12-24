@@ -1,0 +1,59 @@
+{
+  if (mVisitsData == null) {
+    setupNoResultsUI(false);
+    return;
+  }
+  if (mVisitsData instanceof VolleyError) {
+    setupNoResultsUI(false);
+    return;
+  }
+  final VisitModel[] dataToShowOnGraph=getDataToShowOnGraph((VisitsModel)mVisitsData);
+  if (dataToShowOnGraph == null || dataToShowOnGraph.length == 0) {
+    setupNoResultsUI(false);
+    return;
+  }
+  final String[] horLabels=new String[dataToShowOnGraph.length];
+  mStatsDate=new String[dataToShowOnGraph.length];
+  GraphView.GraphViewData[] views=new GraphView.GraphViewData[dataToShowOnGraph.length];
+  OverviewLabel selectedStatsType=overviewItems[mSelectedOverviewItemIndex];
+  for (int i=0; i < dataToShowOnGraph.length; i++) {
+    int currentItemValue=0;
+switch (selectedStatsType) {
+case VIEWS:
+      currentItemValue=dataToShowOnGraph[i].getViews();
+    break;
+case VISITORS:
+  currentItemValue=dataToShowOnGraph[i].getVisitors();
+break;
+case LIKES:
+currentItemValue=dataToShowOnGraph[i].getLikes();
+break;
+case COMMENTS:
+currentItemValue=dataToShowOnGraph[i].getComments();
+break;
+}
+views[i]=new GraphView.GraphViewData(i,currentItemValue);
+String currentItemStatsDate=dataToShowOnGraph[i].getPeriod();
+horLabels[i]=getDateLabelForBarInGraph(currentItemStatsDate);
+mStatsDate[i]=currentItemStatsDate;
+}
+mCurrentSeriesOnScreen=new GraphViewSeries(views);
+mCurrentSeriesOnScreen.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views);
+mCurrentSeriesOnScreen.getStyle().padding=DisplayUtils.dpToPx(getActivity(),5);
+if (mGraphContainer.getChildCount() >= 1 && mGraphContainer.getChildAt(0) instanceof GraphView) {
+mGraphView=(StatsBarGraph)mGraphContainer.getChildAt(0);
+}
+ else {
+mGraphContainer.removeAllViews();
+mGraphView=new StatsBarGraph(getActivity());
+mGraphContainer.addView(mGraphView);
+}
+mGraphView.removeAllSeries();
+mGraphView.addSeries(mCurrentSeriesOnScreen);
+mGraphView.getGraphViewStyle().setNumHorizontalLabels(dataToShowOnGraph.length);
+mGraphView.setHorizontalLabels(horLabels);
+mGraphView.setGestureListener(this);
+int barSelectedOnGraph=mSelectedBarGraphBarIndex != -1 ? mSelectedBarGraphBarIndex : dataToShowOnGraph.length - 1;
+mGraphView.highlightBar(barSelectedOnGraph);
+updateUIBelowTheGraph(barSelectedOnGraph);
+}

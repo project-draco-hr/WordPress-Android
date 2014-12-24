@@ -1,0 +1,65 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.stats_activity_view_all);
+  if (savedInstanceState == null) {
+  }
+  ActionBar actionBar=getSupportActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
+  mSwipeToRefreshHelper=new SwipeToRefreshHelper(this,(SwipeRefreshLayout)findViewById(R.id.ptr_layout),new SwipeToRefreshHelper.RefreshListener(){
+    @Override public void onRefreshStarted(){
+      if (!NetworkUtils.checkConnection(getBaseContext())) {
+        mSwipeToRefreshHelper.setRefreshing(false);
+        return;
+      }
+      refreshStats();
+    }
+  }
+);
+  if (savedInstanceState != null) {
+    mLocalBlogID=savedInstanceState.getInt(StatsActivity.ARG_LOCAL_TABLE_BLOG_ID,-1);
+    Serializable oldData=savedInstanceState.getSerializable(StatsAbstractFragment.ARG_REST_RESPONSE);
+    if (oldData != null && oldData instanceof Serializable[]) {
+      mRestResponse=(Serializable[])oldData;
+    }
+    mTimeframe=(StatsTimeframe)savedInstanceState.getSerializable(StatsAbstractFragment.ARGS_TIMEFRAME);
+    mDate=savedInstanceState.getString(StatsAbstractFragment.ARGS_START_DATE);
+    int ordinal=savedInstanceState.getInt(StatsAbstractFragment.ARGS_VIEW_TYPE,0);
+    mStatsViewType=StatsViewType.values()[ordinal];
+    mOuterPagerSelectedButtonIndex=savedInstanceState.getInt(StatsAbstractListFragment.ARGS_TOP_PAGER_SELECTED_BUTTON_INDEX,0);
+  }
+ else   if (getIntent() != null) {
+    Bundle extras=getIntent().getExtras();
+    mLocalBlogID=extras.getInt(StatsActivity.ARG_LOCAL_TABLE_BLOG_ID,-1);
+    mTimeframe=(StatsTimeframe)extras.getSerializable(StatsAbstractFragment.ARGS_TIMEFRAME);
+    mDate=extras.getString(StatsAbstractFragment.ARGS_START_DATE);
+    int ordinal=extras.getInt(StatsAbstractFragment.ARGS_VIEW_TYPE,0);
+    mStatsViewType=StatsViewType.values()[ordinal];
+    mOuterPagerSelectedButtonIndex=extras.getInt(StatsAbstractListFragment.ARGS_TOP_PAGER_SELECTED_BUTTON_INDEX,0);
+  }
+  TextView dateTextView=(TextView)findViewById(R.id.stats_summary_date);
+switch (mStatsViewType) {
+case TOP_POSTS_AND_PAGES:
+case REFERRERS:
+case CLICKS:
+case GEOVIEWS:
+case AUTHORS:
+case VIDEO_PLAYS:
+    dateTextView.setText(getDateForDisplayInLabels(mDate,mTimeframe));
+  dateTextView.setVisibility(View.VISIBLE);
+break;
+default :
+dateTextView.setVisibility(View.GONE);
+break;
+}
+setTitle(R.string.stats);
+FragmentManager fm=getFragmentManager();
+FragmentTransaction ft=fm.beginTransaction();
+mFragment=(StatsAbstractListFragment)fm.findFragmentByTag("ViewAll-" + getInnerFragmentTAG());
+if (mFragment == null) {
+mFragment=getInnerFragment();
+ft.replace(R.id.stats_single_view_fragment,mFragment,"ViewAll-" + getInnerFragmentTAG());
+ft.commit();
+}
+}

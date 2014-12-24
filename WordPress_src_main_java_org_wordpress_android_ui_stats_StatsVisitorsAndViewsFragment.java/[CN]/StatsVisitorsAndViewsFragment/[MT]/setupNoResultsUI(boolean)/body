@@ -1,0 +1,26 @@
+{
+  mSelectedBarGraphBarIndex=-1;
+  Context context=mGraphContainer.getContext();
+  if (context != null) {
+    LayoutInflater inflater=LayoutInflater.from(context);
+    View emptyBarGraphView=inflater.inflate(R.layout.stats_bar_graph_empty,mGraphContainer,false);
+    if (isLoading) {
+      final TextView emptyLabel=(TextView)emptyBarGraphView.findViewById(R.id.stats_bar_graph_empty_label);
+      emptyLabel.setText("");
+    }
+    if (emptyBarGraphView != null) {
+      mGraphContainer.removeAllViews();
+      mGraphContainer.addView(emptyBarGraphView);
+    }
+  }
+  mDateTextView.setText("");
+  for (int i=0; i < mModuleButtonsContainer.getChildCount(); i++) {
+    View o=mModuleButtonsContainer.getChildAt(i);
+    if (o instanceof CheckedTextView) {
+      CheckedTextView currentBtm=(CheckedTextView)o;
+      OverviewLabel overviewItem=(OverviewLabel)currentBtm.getTag();
+      String labelPrefix=overviewItem.getLabel() + "\n 0";
+      currentBtm.setText(labelPrefix);
+    }
+  }
+}

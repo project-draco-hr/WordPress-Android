@@ -1,0 +1,24 @@
+{
+  if (convertView == null) {
+    convertView=inflater.inflate(R.layout.stats_list_cell,parent,false);
+    convertView.setTag(new StatsViewHolder(convertView));
+  }
+  final StatsViewHolder holder=(StatsViewHolder)convertView.getTag();
+  ClickGroupModel group=(ClickGroupModel)getGroup(groupPosition);
+  String name=group.getName();
+  int total=group.getViews();
+  String url=group.getUrl();
+  String icon=group.getIcon();
+  int children=getChildrenCount(groupPosition);
+  if (children > 0) {
+    holder.setEntryText(name,getResources().getColor(R.color.stats_link_text_color));
+  }
+ else {
+    holder.setEntryTextOrLink(url,name);
+  }
+  holder.totalsTextView.setText(FormatUtils.formatDecimal(total));
+  holder.networkImageView.setImageUrl(PhotonUtils.fixAvatar(icon,mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.STATS_SITE_AVATAR);
+  holder.networkImageView.setVisibility(View.VISIBLE);
+  holder.chevronImageView.setVisibility(children > 0 ? View.VISIBLE : View.GONE);
+  return convertView;
+}

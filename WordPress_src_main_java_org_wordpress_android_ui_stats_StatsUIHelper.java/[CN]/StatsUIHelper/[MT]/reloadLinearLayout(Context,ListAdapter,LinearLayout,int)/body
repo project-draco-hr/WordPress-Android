@@ -1,0 +1,33 @@
+{
+  if (ctx == null || linearLayout == null || adapter == null) {
+    return;
+  }
+  int count=Math.min(adapter.getCount(),maxNumberOfItemsToshow);
+  if (count == 0) {
+    linearLayout.removeAllViews();
+    return;
+  }
+  int numExistingViews=linearLayout.getChildCount();
+  if (count < numExistingViews) {
+    int numToRemove=numExistingViews - count;
+    linearLayout.removeViews(count,numToRemove);
+    numExistingViews=count;
+  }
+  int bgColor=Color.TRANSPARENT;
+  for (int i=0; i < count; i++) {
+    final View view;
+    if (i < numExistingViews) {
+      View convertView=linearLayout.getChildAt(i);
+      view=adapter.getView(i,convertView,linearLayout);
+      view.setBackgroundColor(bgColor);
+      setViewBackgroundWithoutResettingPadding(view,i == 0 ? 0 : R.drawable.stats_list_item_background);
+    }
+ else {
+      view=adapter.getView(i,null,linearLayout);
+      view.setBackgroundColor(bgColor);
+      setViewBackgroundWithoutResettingPadding(view,i == 0 ? 0 : R.drawable.stats_list_item_background);
+      linearLayout.addView(view);
+    }
+  }
+  linearLayout.invalidate();
+}

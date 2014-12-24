@@ -1,0 +1,33 @@
+{
+  if (convertView == null) {
+    convertView=inflater.inflate(R.layout.stats_list_cell,parent,false);
+    convertView.setTag(new StatsViewHolder(convertView));
+  }
+  final StatsViewHolder holder=(StatsViewHolder)convertView.getTag();
+  AuthorModel group=(AuthorModel)getGroup(groupPosition);
+  String name=group.getName();
+  int total=group.getViews();
+  String icon=group.getAvatar();
+  int children=getChildrenCount(groupPosition);
+  holder.setEntryText(name,getResources().getColor(R.color.stats_link_text_color));
+  holder.totalsTextView.setText(FormatUtils.formatDecimal(total));
+  holder.networkImageView.setImageUrl(PhotonUtils.fixAvatar(icon,mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.AVATAR);
+  holder.networkImageView.setVisibility(View.VISIBLE);
+  final FollowDataModel followData=group.getFollowData();
+  if (followData == null) {
+    holder.imgMore.setVisibility(View.GONE);
+    holder.imgMore.setClickable(false);
+  }
+ else {
+    holder.imgMore.setVisibility(View.VISIBLE);
+    holder.imgMore.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        FollowHelper fh=new FollowHelper(activity);
+        fh.showPopup(holder.imgMore,followData);
+      }
+    }
+);
+  }
+  holder.chevronImageView.setVisibility(children > 0 ? View.VISIBLE : View.GONE);
+  return convertView;
+}

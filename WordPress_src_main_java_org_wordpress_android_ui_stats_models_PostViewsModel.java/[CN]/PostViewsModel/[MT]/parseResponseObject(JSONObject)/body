@@ -1,0 +1,46 @@
+{
+  mDate=response.getString("date");
+  mHighestDayAverage=response.getInt("highest_day_average");
+  mHighestWeekAverage=response.getInt("highest_week_average");
+  mHighestMonth=response.getInt("highest_month");
+  mYears=new LinkedList<>();
+  mAverages=new LinkedList<>();
+  mWeeks=new LinkedList<>();
+  JSONArray dataJSON=response.getJSONArray("data");
+  if (dataJSON != null) {
+    JSONArray fieldsJSON=response.getJSONArray("fields");
+    try {
+      fieldColumnsMapping=new HashMap<>(2);
+      for (int i=0; i < fieldsJSON.length(); i++) {
+        final String field=fieldsJSON.getString(i);
+        fieldColumnsMapping.put(field,i);
+      }
+    }
+ catch (    JSONException e) {
+      AppLog.e(AppLog.T.STATS,"Cannot read the fields indexes from the JSON response",e);
+      throw e;
+    }
+    VisitModel[] visitModels=new VisitModel[dataJSON.length()];
+    int viewsColumnIndex=fieldColumnsMapping.get("views");
+    int periodColumnIndex=fieldColumnsMapping.get("period");
+    for (int i=0; i < dataJSON.length(); i++) {
+      try {
+        JSONArray currentDayData=dataJSON.getJSONArray(i);
+        VisitModel currentVisitModel=new VisitModel();
+        currentVisitModel.setPeriod(currentDayData.getString(periodColumnIndex));
+        currentVisitModel.setViews(currentDayData.getInt(viewsColumnIndex));
+        visitModels[i]=currentVisitModel;
+      }
+ catch (      JSONException e) {
+        AppLog.e(AppLog.T.STATS,"Cannot create the Visit at index " + i,e);
+      }
+    }
+    mDayViews=visitModels;
+  }
+ else {
+    mDayViews=null;
+  }
+  parseYears(response);
+  parseAverages(response);
+  parseWeeks(response);
+}

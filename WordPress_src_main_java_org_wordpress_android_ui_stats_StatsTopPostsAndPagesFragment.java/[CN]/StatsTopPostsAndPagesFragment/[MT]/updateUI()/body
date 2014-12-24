@@ -1,0 +1,18 @@
+{
+  if (!isAdded()) {
+    return;
+  }
+  if (isErrorResponse()) {
+    showErrorUI();
+    return;
+  }
+  if (hasTopPostsAndPages()) {
+    List<SingleItemModel> postViews=((TopPostsAndPagesModel)mDatamodels[0]).getTopPostsAndPages();
+    ArrayAdapter adapter=new PostsAndPagesAdapter(getActivity(),getLocalTableBlogID(),postViews);
+    StatsUIHelper.reloadLinearLayout(getActivity(),adapter,mList,getMaxNumberOfItemsToShowInList());
+    showHideNoResultsUI(false);
+  }
+ else {
+    showHideNoResultsUI(true);
+  }
+}

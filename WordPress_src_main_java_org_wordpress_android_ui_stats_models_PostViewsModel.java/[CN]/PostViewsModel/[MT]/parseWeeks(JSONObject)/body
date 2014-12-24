@@ -1,0 +1,41 @@
+{
+  try {
+    JSONArray weeksJSON=response.getJSONArray("weeks");
+    for (int i=0; i < weeksJSON.length(); i++) {
+      Week currentWeek=new Week();
+      JSONObject currentWeekJSON=weeksJSON.getJSONObject(i);
+      currentWeek.setTotal(currentWeekJSON.getInt("total"));
+      try {
+        if (i == 0) {
+          currentWeek.setChange(0);
+        }
+ else {
+          currentWeek.setChange(currentWeekJSON.getInt("change"));
+        }
+      }
+ catch (      JSONException e) {
+        AppLog.w(AppLog.T.STATS,"Cannot parse the change value in weeks section. Trying to understand the meaning: 42!!");
+        String aProblematicValue=currentWeekJSON.get("change").toString();
+        if (aProblematicValue.contains("infinity")) {
+          currentWeek.setChange(Integer.MAX_VALUE);
+        }
+ else {
+          currentWeek.setChange(0);
+        }
+      }
+      currentWeek.setAverage(currentWeekJSON.getInt("average"));
+      JSONArray daysJSON=currentWeekJSON.getJSONArray("days");
+      for (int j=0; j < daysJSON.length(); j++) {
+        Day currentDay=new Day();
+        JSONObject dayJSON=daysJSON.getJSONObject(j);
+        currentDay.setCount(dayJSON.getInt("count"));
+        currentDay.setDay(dayJSON.getString("day"));
+        currentWeek.getDays().add(currentDay);
+      }
+      mWeeks.add(currentWeek);
+    }
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.STATS,"Cannot parse the Weeks section",e);
+  }
+}

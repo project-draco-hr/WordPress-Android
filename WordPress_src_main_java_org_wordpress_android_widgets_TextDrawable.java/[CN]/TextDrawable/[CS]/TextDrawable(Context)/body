@@ -1,0 +1,56 @@
+{
+  super();
+  mResources=context.getResources();
+  mTextBounds=new Rect();
+  mTextPaint=new TextPaint(Paint.ANTI_ALIAS_FLAG);
+  mTextPaint.density=mResources.getDisplayMetrics().density;
+  mTextPaint.setDither(true);
+  int textSize=15;
+  ColorStateList textColor=null;
+  int styleIndex=-1;
+  int typefaceIndex=-1;
+  TypedArray a=context.getTheme().obtainStyledAttributes(themeAttributes);
+  int appearanceId=a.getResourceId(0,-1);
+  a.recycle();
+  TypedArray ap=null;
+  if (appearanceId != -1) {
+    ap=context.obtainStyledAttributes(appearanceId,appearanceAttributes);
+  }
+  if (ap != null) {
+    for (int i=0; i < ap.getIndexCount(); i++) {
+      int attr=ap.getIndex(i);
+switch (attr) {
+case 0:
+        textSize=a.getDimensionPixelSize(attr,textSize);
+      break;
+case 1:
+    typefaceIndex=a.getInt(attr,typefaceIndex);
+  break;
+case 2:
+styleIndex=a.getInt(attr,styleIndex);
+break;
+case 3:
+textColor=a.getColorStateList(attr);
+break;
+default :
+break;
+}
+}
+ap.recycle();
+}
+setTextColor(textColor != null ? textColor : ColorStateList.valueOf(0xFF000000));
+setRawTextSize(textSize);
+Typeface tf=null;
+switch (typefaceIndex) {
+case SANS:
+tf=Typeface.SANS_SERIF;
+break;
+case SERIF:
+tf=Typeface.SERIF;
+break;
+case MONOSPACE:
+tf=Typeface.MONOSPACE;
+break;
+}
+setTypeface(tf,styleIndex);
+}
