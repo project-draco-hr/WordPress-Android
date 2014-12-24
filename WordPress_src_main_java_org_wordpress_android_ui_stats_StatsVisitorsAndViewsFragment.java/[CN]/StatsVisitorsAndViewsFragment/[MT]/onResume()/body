@@ -2,4 +2,11 @@
   super.onResume();
   LocalBroadcastManager lbm=LocalBroadcastManager.getInstance(getActivity());
   lbm.registerReceiver(mReceiver,new IntentFilter(StatsService.ACTION_STATS_SECTION_UPDATED));
+  if (mVisitsData != null) {
+    updateUI();
+  }
+ else {
+    setupNoResultsUI(true);
+    mMoreDataListener.onRefreshRequested(new StatsService.StatsEndpointsEnum[]{StatsService.StatsEndpointsEnum.VISITS});
+  }
 }
