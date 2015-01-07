@@ -1,0 +1,10 @@
+{
+  Date dtNow=new Date();
+  int diff=DateTimeUtils.minutesBetween(dtNow,mLastTimeUpdatedFollowed);
+  if (diff > 0 && diff < MINUTES_BETWEEN_FOLLOWED_UPDATES) {
+    return;
+  }
+  mLastTimeUpdatedFollowed=dtNow;
+  AppLog.d(T.READER,"reader post list > updating tags and blogs");
+  ReaderUpdateService.startService(this,EnumSet.of(UpdateTask.TAGS,UpdateTask.FOLLOWED_BLOGS));
+}
