@@ -1,0 +1,43 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.stats_activity_single_post_details);
+  if (savedInstanceState == null) {
+  }
+  ActionBar actionBar=getSupportActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
+  mSwipeToRefreshHelper=new SwipeToRefreshHelper(this,(SwipeRefreshLayout)findViewById(R.id.ptr_layout),new SwipeToRefreshHelper.RefreshListener(){
+    @Override public void onRefreshStarted(){
+      if (!NetworkUtils.checkConnection(getBaseContext())) {
+        mSwipeToRefreshHelper.setRefreshing(false);
+        return;
+      }
+      refreshStats();
+    }
+  }
+);
+  mStatsForLabel=(TextView)findViewById(R.id.stats_summary_title);
+  mGraphContainer=(LinearLayout)findViewById(R.id.stats_bar_chart_fragment_container);
+  mWholeResponse=(TextView)findViewById(R.id.stats_all_response);
+  mStatsViewsLabel=(TextView)findViewById(R.id.stats_views_label);
+  mStatsViewsTotals=(TextView)findViewById(R.id.stats_views_totals);
+  mMonthsAndYearsList=(LinearLayout)findViewById(R.id.stats_months_years_list_linearlayout);
+  mAveragesList=(LinearLayout)findViewById(R.id.stats_averages_list_linearlayout);
+  if (savedInstanceState != null) {
+    mRemotePostItem=(SingleItemModel)savedInstanceState.getSerializable(ARG_REMOTE_POST_OBJECT);
+    mRestResponseParsed=(PostViewsModel)savedInstanceState.getSerializable(ARG_REST_RESPONSE);
+    mSelectedBarGraphIndex=savedInstanceState.getInt(ARG_SELECTED_GRAPH_BAR,-1);
+  }
+ else   if (getIntent() != null) {
+    Bundle extras=getIntent().getExtras();
+    mRemotePostItem=(SingleItemModel)extras.getSerializable(ARG_REMOTE_POST_OBJECT);
+    mRestResponseParsed=(PostViewsModel)extras.getSerializable(ARG_REST_RESPONSE);
+    mSelectedBarGraphIndex=extras.getInt(ARG_SELECTED_GRAPH_BAR,-1);
+  }
+  String prefix=getString(R.string.stats_for);
+  mStatsForLabel.setText(String.format(prefix,mRemotePostItem.getTitle()));
+  setTitle(R.string.stats);
+  mYearsIdToExpandedMap=new SparseBooleanArray();
+  mAveragesIdToExpandedMap=new SparseBooleanArray();
+}

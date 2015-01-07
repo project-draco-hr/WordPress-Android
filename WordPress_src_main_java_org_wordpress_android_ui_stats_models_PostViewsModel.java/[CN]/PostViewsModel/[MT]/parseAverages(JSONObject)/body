@@ -3,17 +3,27 @@
     JSONObject averagesJSON=response.getJSONObject("averages");
     String[] orderedKeys=orderKeys(averagesJSON.keys(),averagesJSON.length());
     for (    String currentJSONKey : orderedKeys) {
-      Average currentAverage=new Average();
+      Year currentAverage=new Year();
       currentAverage.setLabel(currentJSONKey);
       JSONObject currentAverageJSONObj=averagesJSON.getJSONObject(currentJSONKey);
-      currentAverage.setOverall(currentAverageJSONObj.getInt("overall"));
+      currentAverage.setTotal(currentAverageJSONObj.getInt("overall"));
       JSONObject monthsJSON=currentAverageJSONObj.getJSONObject("months");
-      String[] orderedMonthsKeys=orderKeys(monthsJSON.keys(),monthsJSON.length());
-      for (      String currentMonthKey : orderedMonthsKeys) {
+      Iterator<String> monthsKeys=monthsJSON.keys();
+      List<Month> monthsList=new ArrayList<>(monthsJSON.length());
+      while (monthsKeys.hasNext()) {
+        String currentMonthKey=monthsKeys.next();
         int currentMonthVisits=monthsJSON.getInt(currentMonthKey);
-        int currentMonthIndex=Integer.parseInt(currentMonthKey) - 1;
-        currentAverage.getMonths()[currentMonthIndex]=currentMonthVisits;
+        monthsList.add(new Month(currentMonthKey,currentMonthVisits));
       }
+      Collections.sort(monthsList,new java.util.Comparator<Month>(){
+        public int compare(        Month o1,        Month o2){
+          int v1=Integer.parseInt(o1.getMonth());
+          int v2=Integer.parseInt(o2.getMonth());
+          return v1 - v2;
+        }
+      }
+);
+      currentAverage.setMonths(monthsList);
       mAverages.add(currentAverage);
     }
   }

@@ -1,0 +1,15 @@
+{
+  if (convertView == null) {
+    convertView=inflater.inflate(R.layout.stats_list_cell,parent,false);
+    convertView.setTag(new StatsViewHolder(convertView));
+  }
+  final StatsViewHolder holder=(StatsViewHolder)convertView.getTag();
+  PostViewsModel.Year year=(PostViewsModel.Year)getGroup(groupPosition);
+  String name=year.getLabel();
+  int total=year.getTotal();
+  holder.setEntryText(name,getResources().getColor(R.color.stats_link_text_color));
+  holder.totalsTextView.setText(FormatUtils.formatDecimal(total));
+  holder.networkImageView.setVisibility(View.GONE);
+  holder.chevronImageView.setVisibility(getChildrenCount(groupPosition) > 0 ? View.VISIBLE : View.GONE);
+  return convertView;
+}

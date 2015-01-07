@@ -1,0 +1,19 @@
+{
+  final PostViewsModel.Month currentMonth=(PostViewsModel.Month)getChild(groupPosition,childPosition);
+  if (convertView == null) {
+    convertView=inflater.inflate(R.layout.stats_list_cell,parent,false);
+    StatsViewHolder viewHolder=new StatsViewHolder(convertView);
+    convertView.setTag(viewHolder);
+  }
+  final StatsViewHolder holder=(StatsViewHolder)convertView.getTag();
+  holder.setEntryText(StatsUtils.parseDate(currentMonth.getMonth(),"MM","MMM"));
+  holder.rowContent.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View view){
+    }
+  }
+);
+  holder.totalsTextView.setText(FormatUtils.formatDecimal(currentMonth.getCount()));
+  holder.networkImageView.setVisibility(View.GONE);
+  holder.imgMore.setVisibility(View.GONE);
+  return convertView;
+}

@@ -1,0 +1,48 @@
+{
+  final VisitModel[] dataToShowOnGraph=getDataToShowOnGraph();
+  if (dataToShowOnGraph == null || dataToShowOnGraph.length == 0) {
+    setupEmptyUI(false);
+    return;
+  }
+  final String[] horLabels=new String[dataToShowOnGraph.length];
+  String[] mStatsDate=new String[dataToShowOnGraph.length];
+  GraphView.GraphViewData[] views=new GraphView.GraphViewData[dataToShowOnGraph.length];
+  for (int i=0; i < dataToShowOnGraph.length; i++) {
+    int currentItemValue=0;
+    currentItemValue=dataToShowOnGraph[i].getViews();
+    views[i]=new GraphView.GraphViewData(i,currentItemValue);
+    String currentItemStatsDate=dataToShowOnGraph[i].getPeriod();
+    horLabels[i]=StatsUtils.parseDate(currentItemStatsDate,"yyyy-MM-dd","MMM d");
+    mStatsDate[i]=currentItemStatsDate;
+  }
+  mCurrentSeriesOnScreen=new GraphViewSeries(views);
+  mCurrentSeriesOnScreen.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views);
+  mCurrentSeriesOnScreen.getStyle().padding=DisplayUtils.dpToPx(this,5);
+  if (mGraphContainer.getChildCount() >= 1 && mGraphContainer.getChildAt(0) instanceof GraphView) {
+    mGraphView=(StatsBarGraph)mGraphContainer.getChildAt(0);
+  }
+ else {
+    mGraphContainer.removeAllViews();
+    mGraphView=new StatsBarGraph(this);
+    mGraphContainer.addView(mGraphView);
+  }
+  mGraphView.removeAllSeries();
+  mGraphView.addSeries(mCurrentSeriesOnScreen);
+  mGraphView.getGraphViewStyle().setNumHorizontalLabels(dataToShowOnGraph.length);
+  mGraphView.setHorizontalLabels(horLabels);
+  mGraphView.setGestureListener(this);
+  mSelectedBarGraphIndex=(mSelectedBarGraphIndex != -1) ? mSelectedBarGraphIndex : dataToShowOnGraph.length - 1;
+  mGraphView.highlightBar(mSelectedBarGraphIndex);
+  setMainViewsLabel(StatsUtils.parseDate(mStatsDate[mSelectedBarGraphIndex],"yyyy-MM-dd","MMM d"),dataToShowOnGraph[mSelectedBarGraphIndex].getViews());
+  if (mRestResponseParsed.getOriginalResponse() != null) {
+    mWholeResponse.setText(mRestResponseParsed.getOriginalResponse().toString());
+  }
+  mMonthsAndYearsList.setVisibility(View.VISIBLE);
+  List<PostViewsModel.Year> years=mRestResponseParsed.getYears();
+  MonthsAndYearsListAdapter monthsAndYearsListAdapter=new MonthsAndYearsListAdapter(this,years);
+  StatsUIHelper.reloadGroupViews(this,monthsAndYearsListAdapter,mYearsIdToExpandedMap,mMonthsAndYearsList);
+  mAveragesList.setVisibility(View.VISIBLE);
+  List<PostViewsModel.Year> averages=mRestResponseParsed.getAverages();
+  MonthsAndYearsListAdapter averagesListAdapter=new MonthsAndYearsListAdapter(this,averages);
+  StatsUIHelper.reloadGroupViews(this,averagesListAdapter,mAveragesIdToExpandedMap,mAveragesList);
+}
