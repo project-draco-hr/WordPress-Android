@@ -8,16 +8,16 @@
   String[] mStatsDate=new String[dataToShowOnGraph.length];
   GraphView.GraphViewData[] views=new GraphView.GraphViewData[dataToShowOnGraph.length];
   for (int i=0; i < dataToShowOnGraph.length; i++) {
-    int currentItemValue=0;
-    currentItemValue=dataToShowOnGraph[i].getViews();
+    int currentItemValue=dataToShowOnGraph[i].getViews();
     views[i]=new GraphView.GraphViewData(i,currentItemValue);
     String currentItemStatsDate=dataToShowOnGraph[i].getPeriod();
     horLabels[i]=StatsUtils.parseDate(currentItemStatsDate,"yyyy-MM-dd","MMM d");
     mStatsDate[i]=currentItemStatsDate;
   }
-  mCurrentSeriesOnScreen=new GraphViewSeries(views);
+  GraphViewSeries mCurrentSeriesOnScreen=new GraphViewSeries(views);
   mCurrentSeriesOnScreen.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views);
   mCurrentSeriesOnScreen.getStyle().padding=DisplayUtils.dpToPx(this,5);
+  StatsBarGraph mGraphView;
   if (mGraphContainer.getChildCount() >= 1 && mGraphContainer.getChildAt(0) instanceof GraphView) {
     mGraphView=(StatsBarGraph)mGraphContainer.getChildAt(0);
   }
@@ -33,7 +33,7 @@
   mGraphView.setGestureListener(this);
   mSelectedBarGraphIndex=(mSelectedBarGraphIndex != -1) ? mSelectedBarGraphIndex : dataToShowOnGraph.length - 1;
   mGraphView.highlightBar(mSelectedBarGraphIndex);
-  setMainViewsLabel(StatsUtils.parseDate(mStatsDate[mSelectedBarGraphIndex],"yyyy-MM-dd","MMM d"),dataToShowOnGraph[mSelectedBarGraphIndex].getViews());
+  setMainViewsLabel(StatsUtils.parseDate(mStatsDate[mSelectedBarGraphIndex],"yyyy-MM-dd",UNDER_THE_GRAPH_DATE_LABEL_FORMAT),dataToShowOnGraph[mSelectedBarGraphIndex].getViews());
   mMonthsAndYearsList.setVisibility(View.VISIBLE);
   List<PostViewsModel.Year> years=mRestResponseParsed.getYears();
   MonthsAndYearsListAdapter monthsAndYearsListAdapter=new MonthsAndYearsListAdapter(this,years,mRestResponseParsed.getHighestMonth());
@@ -45,5 +45,5 @@
   mRecentWeeksList.setVisibility(View.VISIBLE);
   List<PostViewsModel.Week> recentWeeks=mRestResponseParsed.getWeeks();
   RecentWeeksListAdapter recentWeeksListAdapter=new RecentWeeksListAdapter(this,recentWeeks,mRestResponseParsed.getHighestWeekAverage());
-  StatsUIHelper.reloadGroupViews(this,recentWeeksListAdapter,mAveragesIdToExpandedMap,mRecentWeeksList);
+  StatsUIHelper.reloadGroupViews(this,recentWeeksListAdapter,mRecentWeeksIdToExpandedMap,mRecentWeeksList);
 }
