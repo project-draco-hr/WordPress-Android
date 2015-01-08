@@ -1,19 +1,19 @@
 {
-  final PostViewsModel.Month currentMonth=(PostViewsModel.Month)getChild(groupPosition,childPosition);
+  final PostViewsModel.Day currentDay=(PostViewsModel.Day)getChild(groupPosition,childPosition);
   if (convertView == null) {
     convertView=inflater.inflate(R.layout.stats_list_cell,parent,false);
     StatsViewHolder viewHolder=new StatsViewHolder(convertView);
     convertView.setTag(viewHolder);
   }
   final StatsViewHolder holder=(StatsViewHolder)convertView.getTag();
-  holder.setEntryText(StatsUtils.parseDate(currentMonth.getMonth(),"MM","MMM"));
+  holder.setEntryText(StatsUtils.parseDate(currentDay.getDay(),"yyyy-MM-dd","EEE, MMMM dd"));
   holder.rowContent.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View view){
     }
   }
 );
-  holder.totalsTextView.setText(FormatUtils.formatDecimal(currentMonth.getCount()));
-  if (currentMonth.getCount() == maxReachedValue) {
+  holder.totalsTextView.setText(FormatUtils.formatDecimal(currentDay.getCount()));
+  if (currentDay.getCount() == maxReachedValue) {
     holder.networkImageView.setVisibility(View.VISIBLE);
     holder.networkImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_like_active));
     holder.totalsTextView.setTextColor(getResources().getColor(R.color.calypso_orange));

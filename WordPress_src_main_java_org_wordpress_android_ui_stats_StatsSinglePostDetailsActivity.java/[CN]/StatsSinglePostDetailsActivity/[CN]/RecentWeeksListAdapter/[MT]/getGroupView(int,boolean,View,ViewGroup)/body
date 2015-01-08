@@ -4,17 +4,24 @@
     convertView.setTag(new StatsViewHolder(convertView));
   }
   final StatsViewHolder holder=(StatsViewHolder)convertView.getTag();
-  PostViewsModel.Year year=(PostViewsModel.Year)getGroup(groupPosition);
-  String name=year.getLabel();
-  int total=year.getTotal();
+  PostViewsModel.Week week=(PostViewsModel.Week)getGroup(groupPosition);
+  int total=week.getTotal();
   int numberOfChilds=getChildrenCount(groupPosition);
   boolean shouldShowTheTrophyIcon=false;
   for (int i=0; i < numberOfChilds; i++) {
-    PostViewsModel.Month currentChild=(PostViewsModel.Month)getChild(groupPosition,i);
+    PostViewsModel.Day currentChild=(PostViewsModel.Day)getChild(groupPosition,i);
     if (currentChild.getCount() == maxReachedValue) {
       shouldShowTheTrophyIcon=true;
-      break;
     }
+  }
+  String name;
+  PostViewsModel.Day firstChild=(PostViewsModel.Day)getChild(groupPosition,0);
+  if (numberOfChilds > 1) {
+    PostViewsModel.Day lastChild=(PostViewsModel.Day)getChild(groupPosition,getChildrenCount(groupPosition) - 1);
+    name=StatsUtils.parseDate(firstChild.getDay(),"yyyy-MM-dd","MMMM dd") + " - " + StatsUtils.parseDate(lastChild.getDay(),"yyyy-MM-dd","MMMM dd");
+  }
+ else {
+    name=StatsUtils.parseDate(firstChild.getDay(),"yyyy-MM-dd","MMMM dd");
   }
   if (shouldShowTheTrophyIcon) {
     holder.setEntryText(name,getResources().getColor(R.color.calypso_orange));

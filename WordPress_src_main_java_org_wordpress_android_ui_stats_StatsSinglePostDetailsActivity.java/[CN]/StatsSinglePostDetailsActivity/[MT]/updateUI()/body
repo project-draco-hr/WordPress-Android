@@ -34,15 +34,16 @@
   mSelectedBarGraphIndex=(mSelectedBarGraphIndex != -1) ? mSelectedBarGraphIndex : dataToShowOnGraph.length - 1;
   mGraphView.highlightBar(mSelectedBarGraphIndex);
   setMainViewsLabel(StatsUtils.parseDate(mStatsDate[mSelectedBarGraphIndex],"yyyy-MM-dd","MMM d"),dataToShowOnGraph[mSelectedBarGraphIndex].getViews());
-  if (mRestResponseParsed.getOriginalResponse() != null) {
-    mWholeResponse.setText(mRestResponseParsed.getOriginalResponse().toString());
-  }
   mMonthsAndYearsList.setVisibility(View.VISIBLE);
   List<PostViewsModel.Year> years=mRestResponseParsed.getYears();
-  MonthsAndYearsListAdapter monthsAndYearsListAdapter=new MonthsAndYearsListAdapter(this,years);
+  MonthsAndYearsListAdapter monthsAndYearsListAdapter=new MonthsAndYearsListAdapter(this,years,mRestResponseParsed.getHighestMonth());
   StatsUIHelper.reloadGroupViews(this,monthsAndYearsListAdapter,mYearsIdToExpandedMap,mMonthsAndYearsList);
   mAveragesList.setVisibility(View.VISIBLE);
   List<PostViewsModel.Year> averages=mRestResponseParsed.getAverages();
-  MonthsAndYearsListAdapter averagesListAdapter=new MonthsAndYearsListAdapter(this,averages);
+  MonthsAndYearsListAdapter averagesListAdapter=new MonthsAndYearsListAdapter(this,averages,mRestResponseParsed.getHighestDayAverage());
   StatsUIHelper.reloadGroupViews(this,averagesListAdapter,mAveragesIdToExpandedMap,mAveragesList);
+  mRecentWeeksList.setVisibility(View.VISIBLE);
+  List<PostViewsModel.Week> recentWeeks=mRestResponseParsed.getWeeks();
+  RecentWeeksListAdapter recentWeeksListAdapter=new RecentWeeksListAdapter(this,recentWeeks,mRestResponseParsed.getHighestWeekAverage());
+  StatsUIHelper.reloadGroupViews(this,recentWeeksListAdapter,mAveragesIdToExpandedMap,mRecentWeeksList);
 }
