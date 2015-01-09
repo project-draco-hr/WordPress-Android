@@ -5,21 +5,22 @@
       notifyDataSetChanged();
     }
  else {
-      ReaderPostList newPosts=new ReaderPostList();
+      int index;
+      int addIndex=0;
       for (      ReaderPost post : allPosts) {
-        int index=mPosts.indexOfPost(post);
+        index=mPosts.indexOfPost(post);
         if (index == -1) {
-          newPosts.add(post);
+          mPosts.add(addIndex,post);
+          notifyItemInserted(addIndex);
+          addIndex++;
         }
- else         if (!post.isSamePost(mPosts.get(index))) {
-          mPosts.set(index,post);
-          notifyItemChanged(index);
+ else {
+          addIndex=index + 1;
+          if (!post.isSamePost(mPosts.get(index))) {
+            mPosts.set(index,post);
+            notifyItemChanged(index);
+          }
         }
-      }
-      if (newPosts.size() > 0) {
-        int firstIndex=(isLoadingOlderPosts ? mPosts.size() : 0);
-        mPosts.addAll(firstIndex,newPosts);
-        notifyItemRangeInserted(firstIndex,newPosts.size());
       }
     }
   }
