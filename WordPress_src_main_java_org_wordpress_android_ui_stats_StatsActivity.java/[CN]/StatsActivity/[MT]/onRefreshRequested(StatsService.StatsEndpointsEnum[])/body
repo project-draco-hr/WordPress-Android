@@ -10,25 +10,7 @@ synchronized (fragmentsRefreshListSynchObj) {
         fragmentsRefreshList.add(current);
       }
     }
-    if (fragmentsRefreshListTimer != null) {
-      fragmentsRefreshListTimer.cancel();
-    }
-    fragmentsRefreshListTimer=new Timer();
-    fragmentsRefreshListTimer.schedule(new TimerTask(){
-      @Override public void run(){
-synchronized (fragmentsRefreshListSynchObj) {
-          if (fragmentsRefreshList.contains(StatsService.StatsEndpointsEnum.VISITS)) {
-            refreshStats(mCurrentTimeframe,mRequestedDate,true,true);
-          }
- else {
-            refreshStats(mCurrentTimeframe,mRequestedDate,false,true);
-          }
-          fragmentsRefreshList.clear();
-          fragmentsRefreshListTimer.cancel();
-          fragmentsRefreshListTimer=null;
-        }
-      }
-    }
-,500);
+    mUpdateStatsHandler.removeCallbacks(mUpdateStatsRequestedRunnable);
+    mUpdateStatsHandler.postDelayed(mUpdateStatsRequestedRunnable,500);
   }
 }
