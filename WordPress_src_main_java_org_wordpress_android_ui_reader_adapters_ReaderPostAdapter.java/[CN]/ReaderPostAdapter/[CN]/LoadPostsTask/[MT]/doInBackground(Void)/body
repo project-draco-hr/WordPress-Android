@@ -1,5 +1,6 @@
 {
   final int numExisting;
+  final ReaderPostList tmpPosts;
 switch (getPostListType()) {
 case TAG_PREVIEW:
 case TAG_FOLLOWED:
@@ -13,12 +14,18 @@ break;
 default :
 return false;
 }
-if (mPosts.isSameList(tmpPosts)) {
+mCanRequestMorePosts=(numExisting < ReaderConstants.READER_MAX_POSTS_TO_DISPLAY);
+for (ReaderPost post : tmpPosts) {
+int index=mPosts.indexOfPost(post);
+if (index == -1) {
+newPosts.add(post);
+}
+}
+if (newPosts.size() == 0) {
 return false;
 }
-mCanRequestMorePosts=(numExisting < ReaderConstants.READER_MAX_POSTS_TO_DISPLAY);
 String currentTagName=(mCurrentTag != null ? mCurrentTag.getTagName() : "");
-for (ReaderPost post : tmpPosts) {
+for (ReaderPost post : newPosts) {
 post.getPostAvatarForDisplay(mAvatarSz);
 post.getFeaturedImageForDisplay(mPhotonWidth,mPhotonHeight);
 post.getDatePublished();
