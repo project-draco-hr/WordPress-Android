@@ -16,15 +16,16 @@
     requestedDate=StatsUtils.getCurrentDateTZ(localTableBlogId);
   }
   boolean updateAlltimeStats=intent.getBooleanExtra(ARG_UPDATE_ALLTIME_STATS,true);
+  boolean updateGraphStats=intent.getBooleanExtra(ARG_UPDATE_GRAPH_STATS,true);
   if (mServiceBlogId == null) {
-    startTasks(blogId,period,requestedDate,updateAlltimeStats,startId);
+    startTasks(blogId,period,requestedDate,updateGraphStats,updateAlltimeStats,startId);
   }
  else   if (blogId.equals(mServiceBlogId) && mServiceRequestedTimeframe == period && requestedDate.equals(mServiceRequestedDate)) {
     AppLog.i(T.STATS,"StatsService is already running on this blogID - " + mServiceBlogId + " for the same period and the same date.");
   }
  else {
     stopRefresh();
-    startTasks(blogId,period,requestedDate,updateAlltimeStats,startId);
+    startTasks(blogId,period,requestedDate,updateGraphStats,updateAlltimeStats,startId);
   }
   this.mServiceStartId=startId;
   return START_NOT_STICKY;

@@ -19,7 +19,6 @@
  else {
     createMenuDrawer(R.layout.stats_activity);
   }
-  mFragmentContainer=(LinearLayout)findViewById(R.id.stats_fragment_container);
   mSwipeToRefreshHelper=new SwipeToRefreshHelper(this,(SwipeRefreshLayout)findViewById(R.id.ptr_layout),new RefreshListener(){
     @Override public void onRefreshStarted(){
       if (!NetworkUtils.checkConnection(getBaseContext())) {
@@ -33,7 +32,7 @@
       mRequestedDate=StatsUtils.getCurrentDateTZ(mLocalBlogID);
       loadStatsFragments(false,true,true);
       emptyDataModelInFragments(true,true);
-      refreshStats(mCurrentTimeframe,mRequestedDate,true);
+      refreshStats(mCurrentTimeframe,mRequestedDate,true,true);
     }
   }
 );
@@ -88,7 +87,7 @@
           if (NetworkUtils.isNetworkAvailable(StatsActivity.this)) {
             String date=StatsUtils.getCurrentDateTZ(mLocalBlogID);
             mSwipeToRefreshHelper.setRefreshing(true);
-            refreshStats(selectedTimeframe,date,true);
+            refreshStats(selectedTimeframe,date,true,true);
             emptyDataModelInFragments(true,false);
             loadStatsFragments(false,true,false);
           }
