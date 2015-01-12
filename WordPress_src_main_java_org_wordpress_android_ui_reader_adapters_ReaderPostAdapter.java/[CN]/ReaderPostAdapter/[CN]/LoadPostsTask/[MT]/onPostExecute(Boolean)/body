@@ -1,7 +1,28 @@
 {
   if (result) {
-    mPosts=(ReaderPostList)tmpPosts.clone();
-    notifyDataSetChanged();
+    if (mPosts.size() == 0) {
+      mPosts.addAll(allPosts);
+      notifyDataSetChanged();
+    }
+ else {
+      int index;
+      int addIndex=0;
+      for (      ReaderPost post : allPosts) {
+        index=mPosts.indexOfPost(post);
+        if (index == -1) {
+          mPosts.add(addIndex,post);
+          notifyItemInserted(addIndex);
+          addIndex++;
+        }
+ else {
+          addIndex=index + 1;
+          if (!post.isSamePost(mPosts.get(index))) {
+            mPosts.set(index,post);
+            notifyItemChanged(index);
+          }
+        }
+      }
+    }
   }
   if (mDataLoadedListener != null) {
     mDataLoadedListener.onDataLoaded(isEmpty());
