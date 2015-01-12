@@ -3,26 +3,19 @@
 switch (getPostListType()) {
 case TAG_PREVIEW:
 case TAG_FOLLOWED:
-    tmpPosts=ReaderPostTable.getPostsWithTag(mCurrentTag,MAX_ROWS,EXCLUDE_TEXT_COLUMN);
+    allPosts=ReaderPostTable.getPostsWithTag(mCurrentTag,MAX_ROWS,EXCLUDE_TEXT_COLUMN);
   numExisting=ReaderPostTable.getNumPostsWithTag(mCurrentTag);
 break;
 case BLOG_PREVIEW:
-tmpPosts=ReaderPostTable.getPostsInBlog(mCurrentBlogId,MAX_ROWS,EXCLUDE_TEXT_COLUMN);
+allPosts=ReaderPostTable.getPostsInBlog(mCurrentBlogId,MAX_ROWS,EXCLUDE_TEXT_COLUMN);
 numExisting=ReaderPostTable.getNumPostsInBlog(mCurrentBlogId);
 break;
 default :
 return false;
 }
-if (mPosts.isSameList(tmpPosts)) {
+if (mPosts.isSameList(allPosts)) {
 return false;
 }
 mCanRequestMorePosts=(numExisting < ReaderConstants.READER_MAX_POSTS_TO_DISPLAY);
-String currentTagName=(mCurrentTag != null ? mCurrentTag.getTagName() : "");
-for (ReaderPost post : tmpPosts) {
-post.getPostAvatarForDisplay(mAvatarSz);
-post.getFeaturedImageForDisplay(mPhotonWidth,mPhotonHeight);
-post.getDatePublished();
-post.getTagForDisplay(currentTagName);
-}
 return true;
 }
