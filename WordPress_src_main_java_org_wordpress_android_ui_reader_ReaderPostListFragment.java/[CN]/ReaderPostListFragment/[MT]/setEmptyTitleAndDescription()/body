@@ -7,9 +7,6 @@
   if (isUpdating()) {
     titleResId=R.string.reader_empty_posts_in_tag_updating;
   }
- else   if (!NetworkUtils.isNetworkAvailable(getActivity())) {
-    titleResId=R.string.connection_error;
-  }
  else   if (getPostListType() == ReaderPostListType.BLOG_PREVIEW) {
     titleResId=R.string.reader_empty_posts_in_blog;
   }
@@ -36,15 +33,12 @@ titleResId=R.string.reader_empty_posts_in_tag;
 break;
 }
 }
- else if (getPostListType().isTagType()) {
+ else {
 titleResId=R.string.reader_empty_posts_in_tag;
 }
- else {
-return;
-}
 TextView titleView=(TextView)mEmptyView.findViewById(R.id.title_empty);
-TextView descriptionView=(TextView)mEmptyView.findViewById(R.id.description_empty);
 titleView.setText(getString(titleResId));
+TextView descriptionView=(TextView)mEmptyView.findViewById(R.id.description_empty);
 if (descriptionResId == 0) {
 descriptionView.setVisibility(View.INVISIBLE);
 }
