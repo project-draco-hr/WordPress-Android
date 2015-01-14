@@ -5,6 +5,7 @@
   final String url=currentItem.getUrl();
   final long blogID=Long.parseLong(currentItem.getBlogID());
   final long itemID=Long.parseLong(currentItem.getItemID());
+  final String postType=currentItem.getPostType();
   imgMore.setVisibility(View.VISIBLE);
   imgMore.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View view){
@@ -13,11 +14,20 @@
       MenuItem menuItem=popup.getMenu().add(ctx.getString(R.string.stats_view));
       menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener(){
         @Override public boolean onMenuItemClick(        MenuItem item){
-          if (itemID == 0) {
+          if (postType.equals("post") || postType.equals("page")) {
+            if (itemID == 0) {
+              ReaderActivityLauncher.showReaderBlogPreview(ctx,blogID,url);
+            }
+ else {
+              ReaderActivityLauncher.showReaderPostDetail(ctx,blogID,itemID);
+            }
+          }
+ else           if (postType.equals("homepage")) {
             ReaderActivityLauncher.showReaderBlogPreview(ctx,blogID,url);
           }
  else {
-            ReaderActivityLauncher.showReaderPostDetail(ctx,blogID,itemID);
+            AppLog.d(AppLog.T.UTILS,"Opening the in-app browser: " + url);
+            WPWebViewActivity.openURL(ctx,url);
           }
           return true;
         }
