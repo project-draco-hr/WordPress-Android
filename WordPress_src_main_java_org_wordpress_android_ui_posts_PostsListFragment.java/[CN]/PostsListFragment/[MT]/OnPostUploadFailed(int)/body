@@ -1,0 +1,15 @@
+{
+  mSwipeToRefreshHelper.setRefreshing(true);
+  if (!isAdded()) {
+    return;
+  }
+  if (WordPress.getCurrentBlog() == null || WordPress.getCurrentBlog().getLocalTableBlogId() != localBlogId) {
+    return;
+  }
+  if (!NetworkUtils.checkConnection(getActivity())) {
+    mSwipeToRefreshHelper.setRefreshing(false);
+    return;
+  }
+  mSwipeToRefreshHelper.setRefreshing(false);
+  getPostListAdapter().loadPosts();
+}
