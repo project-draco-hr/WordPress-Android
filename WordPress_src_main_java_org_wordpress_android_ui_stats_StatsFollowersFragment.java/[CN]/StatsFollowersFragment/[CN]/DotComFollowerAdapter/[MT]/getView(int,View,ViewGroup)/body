@@ -13,8 +13,14 @@
   if (mTopPagerSelectedButtonIndex == 0 && !TextUtils.isEmpty(currentRowData.getURL())) {
     boolean openInReader=true;
     if (followData == null) {
-      String domain=UrlUtils.getDomainFromUrl(currentRowData.getURL());
-      openInReader=dotComUserDomains.contains(domain);
+      String normURL=UrlUtils.normalizeUrl(currentRowData.getURL()).toLowerCase();
+      if (normURL.startsWith("http://")) {
+        normURL=normURL.substring(7);
+      }
+ else       if (normURL.startsWith("https://")) {
+        normURL=normURL.substring(8);
+      }
+      openInReader=dotComUserBlogsURL.contains(normURL);
     }
     if (openInReader) {
       holder.entryTextView.setText(currentRowData.getLabel());

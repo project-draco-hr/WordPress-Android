@@ -9,14 +9,20 @@
  else {
     mTopPagerSelectedButtonIndex=getArguments().getInt(ARGS_TOP_PAGER_SELECTED_BUTTON_INDEX,0);
   }
-  ThreadPoolExecutor domainsListCreatorExecutor=(ThreadPoolExecutor)Executors.newFixedThreadPool(1);
-  domainsListCreatorExecutor.submit(new Thread(){
+  ThreadPoolExecutor blogsListCreatorExecutor=(ThreadPoolExecutor)Executors.newFixedThreadPool(1);
+  blogsListCreatorExecutor.submit(new Thread(){
     @Override public void run(){
       List<Map<String,Object>> dotComUserBlogs=WordPress.wpDB.getAccountsBy("dotcomFlag=1",new String[]{"homeURL"});
       for (      Map<String,Object> blog : dotComUserBlogs) {
         if (blog != null && blog.get("homeURL") != null) {
-          String domainURL=UrlUtils.getDomainFromUrl(blog.get("homeURL").toString());
-          dotComUserDomains.add(domainURL);
+          String normURL=UrlUtils.normalizeUrl(blog.get("homeURL").toString()).toLowerCase();
+          if (normURL.toLowerCase().startsWith("http://")) {
+            normURL=normURL.substring(7);
+          }
+ else           if (normURL.startsWith("https://")) {
+            normURL=normURL.substring(8);
+          }
+          dotComUserBlogsURL.add(normURL);
         }
       }
     }
