@@ -1,5 +1,5 @@
 {
-  LoggedInputStream loggedInputStream=null;
+  mLoggedInputStream=null;
   try {
     preparePostMethod(method,params,tempFile);
     HttpResponse response=mClient.execute(mPostMethod);
@@ -10,8 +10,8 @@
       throw new XMLRPCException("HTTP status code: " + statusCode + " was returned AND no response from the server.");
     }
     if (statusCode == HttpStatus.SC_OK) {
-      loggedInputStream=new LoggedInputStream(entity.getContent());
-      return XMLRPCClient.parseXMLRPCResponse(loggedInputStream,entity);
+      mLoggedInputStream=new LoggedInputStream(entity.getContent());
+      return XMLRPCClient.parseXMLRPCResponse(mLoggedInputStream,entity);
     }
     String statusLineReasonPhrase=StringUtils.notNullStr(response.getStatusLine().getReasonPhrase());
     try {
@@ -40,8 +40,8 @@
     throw new XMLRPCException("HTTP status code: " + statusCode + " was returned. "+ statusLineReasonPhrase);
   }
  catch (  XMLRPCFault e) {
-    if (loggedInputStream != null) {
-      AppLog.w(T.API,"Response document received from the server: " + loggedInputStream.getResponseDocument());
+    if (mLoggedInputStream != null) {
+      AppLog.w(T.API,"Response document received from the server: " + mLoggedInputStream.getResponseDocument());
     }
 switch (e.getFaultCode()) {
 case 403:
@@ -57,22 +57,22 @@ throw e;
 }
 catch (XmlPullParserException e) {
 AppLog.e(T.API,"Error while parsing the XML-RPC response document received from the server.",e);
-if (loggedInputStream != null) {
-AppLog.e(T.API,"Response document received from the server: " + loggedInputStream.getResponseDocument());
+if (mLoggedInputStream != null) {
+AppLog.e(T.API,"Response document received from the server: " + mLoggedInputStream.getResponseDocument());
 }
 checkXMLRPCErrorMessage(e);
 throw e;
 }
 catch (NumberFormatException e) {
 AppLog.e(T.API,"Error while parsing the XML-RPC response document received from the server.",e);
-if (loggedInputStream != null) {
-AppLog.e(T.API,"Response document received from the server: " + loggedInputStream.getResponseDocument());
+if (mLoggedInputStream != null) {
+AppLog.e(T.API,"Response document received from the server: " + mLoggedInputStream.getResponseDocument());
 }
 throw new XMLRPCException("The response received contains an invalid number. " + e.getMessage());
 }
 catch (XMLRPCException e) {
-if (loggedInputStream != null) {
-AppLog.e(T.API,"Response document received from the server: " + loggedInputStream.getResponseDocument());
+if (mLoggedInputStream != null) {
+AppLog.e(T.API,"Response document received from the server: " + mLoggedInputStream.getResponseDocument());
 }
 checkXMLRPCErrorMessage(e);
 throw e;
@@ -97,11 +97,14 @@ broadcastAction(WordPress.BROADCAST_ACTION_XMLRPC_INVALID_SSL_CERTIFICATE);
 }
 throw e;
 }
+catch (IOException e) {
+throw e;
+}
  finally {
 deleteTempFile(method,tempFile);
 try {
-if (loggedInputStream != null) {
-loggedInputStream.close();
+if (mLoggedInputStream != null) {
+mLoggedInputStream.close();
 }
 }
  catch (Exception e) {
