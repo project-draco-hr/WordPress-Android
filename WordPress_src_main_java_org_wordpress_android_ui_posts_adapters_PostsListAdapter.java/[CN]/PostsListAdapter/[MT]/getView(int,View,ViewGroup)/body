@@ -26,7 +26,10 @@
   }
  else {
     wrapper.getStatus().setVisibility(View.VISIBLE);
-    if (post.isLocalDraft()) {
+    if (post.isUploading()) {
+      formattedStatus=mContext.getResources().getString(R.string.post_uploading);
+    }
+ else     if (post.isLocalDraft()) {
       formattedStatus=mContext.getResources().getString(R.string.local_draft);
     }
  else     if (post.hasLocalChanges()) {
@@ -50,7 +53,7 @@ default :
 break;
 }
 }
-if (post.isLocalDraft() || post.getStatusEnum() == PostStatus.DRAFT || post.hasLocalChanges()) {
+if (post.isLocalDraft() || post.getStatusEnum() == PostStatus.DRAFT || post.hasLocalChanges() || post.isUploading()) {
 wrapper.getStatus().setTextColor(mContext.getResources().getColor(R.color.orange_dark));
 }
  else {
