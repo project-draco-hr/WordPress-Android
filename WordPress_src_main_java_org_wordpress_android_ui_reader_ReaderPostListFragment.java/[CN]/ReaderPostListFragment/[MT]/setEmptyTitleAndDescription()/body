@@ -3,7 +3,7 @@
     return;
   }
   int titleResId;
-  int descriptionResId=-1;
+  int descriptionResId=0;
   if (isUpdating()) {
     titleResId=R.string.reader_empty_posts_in_tag_updating;
   }
@@ -13,12 +13,9 @@
  else   if (getPostListType() == ReaderPostListType.BLOG_PREVIEW) {
     titleResId=R.string.reader_empty_posts_in_blog;
   }
- else {
-    if (getSpinnerAdapter() == null) {
-      return;
-    }
+ else   if (getPostListType() == ReaderPostListType.TAG_FOLLOWED && getSpinnerAdapter() != null) {
     int tagIndex=getSpinnerAdapter().getIndexOfTag(mCurrentTag);
-    final String tagId;
+    String tagId;
     if (tagIndex > -1) {
       ReaderTag tag=(ReaderTag)getSpinnerAdapter().getItem(tagIndex);
       tagId=tag.getStringIdFromEndpoint();
@@ -39,10 +36,16 @@ titleResId=R.string.reader_empty_posts_in_tag;
 break;
 }
 }
-TextView titleView=(TextView)getView().findViewById(R.id.title_empty);
-TextView descriptionView=(TextView)getView().findViewById(R.id.description_empty);
+ else if (getPostListType().isTagType()) {
+titleResId=R.string.reader_empty_posts_in_tag;
+}
+ else {
+return;
+}
+TextView titleView=(TextView)mEmptyView.findViewById(R.id.title_empty);
+TextView descriptionView=(TextView)mEmptyView.findViewById(R.id.description_empty);
 titleView.setText(getString(titleResId));
-if (descriptionResId == -1) {
+if (descriptionResId == 0) {
 descriptionView.setVisibility(View.INVISIBLE);
 }
  else {
