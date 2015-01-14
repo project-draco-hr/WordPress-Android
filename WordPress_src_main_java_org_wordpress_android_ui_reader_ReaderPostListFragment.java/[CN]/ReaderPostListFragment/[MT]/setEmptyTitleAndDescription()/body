@@ -1,0 +1,52 @@
+{
+  if (!isAdded()) {
+    return;
+  }
+  int titleResId;
+  int descriptionResId=-1;
+  if (isUpdating()) {
+    titleResId=R.string.reader_empty_posts_in_tag_updating;
+  }
+ else   if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+    titleResId=R.string.connection_error;
+  }
+ else   if (getPostListType() == ReaderPostListType.BLOG_PREVIEW) {
+    titleResId=R.string.reader_empty_posts_in_blog;
+  }
+ else {
+    if (getSpinnerAdapter() == null) {
+      return;
+    }
+    int tagIndex=getSpinnerAdapter().getIndexOfTag(mCurrentTag);
+    final String tagId;
+    if (tagIndex > -1) {
+      ReaderTag tag=(ReaderTag)getSpinnerAdapter().getItem(tagIndex);
+      tagId=tag.getStringIdFromEndpoint();
+    }
+ else {
+      tagId="";
+    }
+switch (tagId) {
+case ReaderTag.TAG_ID_FOLLOWING:
+      titleResId=R.string.reader_empty_followed_blogs_title;
+    descriptionResId=R.string.reader_empty_followed_blogs_description;
+  break;
+case ReaderTag.TAG_ID_LIKED:
+titleResId=R.string.reader_empty_posts_liked;
+break;
+default :
+titleResId=R.string.reader_empty_posts_in_tag;
+break;
+}
+}
+TextView titleView=(TextView)getView().findViewById(R.id.title_empty);
+TextView descriptionView=(TextView)getView().findViewById(R.id.description_empty);
+titleView.setText(getString(titleResId));
+if (descriptionResId == -1) {
+descriptionView.setVisibility(View.INVISIBLE);
+}
+ else {
+descriptionView.setText(getString(descriptionResId));
+descriptionView.setVisibility(View.VISIBLE);
+}
+}
