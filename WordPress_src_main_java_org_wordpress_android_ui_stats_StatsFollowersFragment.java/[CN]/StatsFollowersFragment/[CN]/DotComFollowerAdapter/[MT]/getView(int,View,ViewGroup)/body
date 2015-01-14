@@ -9,17 +9,37 @@
   final StatsViewHolder holder=(StatsViewHolder)rowView.getTag();
   holder.entryTextView.setTextColor(context.getResources().getColor(R.color.stats_text_color));
   holder.rowContent.setClickable(false);
-  if (mTopPagerSelectedButtonIndex == 0) {
-    holder.entryTextView.setText(currentRowData.getLabel());
-    if (!TextUtils.isEmpty(currentRowData.getURL())) {
+  final FollowDataModel followData=currentRowData.getFollowData();
+  if (mTopPagerSelectedButtonIndex == 0 && !TextUtils.isEmpty(currentRowData.getURL())) {
+    boolean openInReader=true;
+    if (followData == null) {
+      openInReader=false;
+      String normURL=UrlUtils.normalizeUrl(currentRowData.getURL());
+      if (normURL.toLowerCase().startsWith("http://")) {
+        normURL=normURL.substring(7).toLowerCase();
+      }
+ else       if (normURL.toLowerCase().startsWith("https://")) {
+        normURL=normURL.substring(8).toLowerCase();
+      }
+      for (      String currentBlogURL : dotComUserBlogsURL) {
+        if (currentBlogURL.equals(normURL)) {
+          openInReader=true;
+        }
+      }
+    }
+    if (openInReader) {
+      holder.entryTextView.setText(currentRowData.getLabel());
       holder.rowContent.setOnClickListener(new View.OnClickListener(){
         @Override public void onClick(        View view){
           ReaderActivityLauncher.showReaderBlogPreview(context,0L,currentRowData.getURL());
         }
       }
 );
-      holder.entryTextView.setTextColor(context.getResources().getColor(R.color.stats_link_text_color));
     }
+ else {
+      holder.setEntryTextOrLink(currentRowData.getURL(),currentRowData.getLabel());
+    }
+    holder.entryTextView.setTextColor(context.getResources().getColor(R.color.stats_link_text_color));
   }
  else {
     holder.setEntryText(currentRowData.getLabel());
@@ -27,7 +47,6 @@
   holder.totalsTextView.setText(getSinceLabel(currentRowData.getDateSubscribed()));
   holder.networkImageView.setImageUrl(PhotonUtils.fixAvatar(currentRowData.getAvatar(),mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.AVATAR);
   holder.networkImageView.setVisibility(View.VISIBLE);
-  final FollowDataModel followData=currentRowData.getFollowData();
   if (followData == null) {
     holder.imgMore.setVisibility(View.GONE);
     holder.imgMore.setClickable(false);
