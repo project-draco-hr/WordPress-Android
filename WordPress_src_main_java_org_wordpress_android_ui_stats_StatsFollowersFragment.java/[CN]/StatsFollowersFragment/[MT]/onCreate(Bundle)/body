@@ -15,13 +15,7 @@
       List<Map<String,Object>> dotComUserBlogs=WordPress.wpDB.getAccountsBy("dotcomFlag=1",new String[]{"homeURL"});
       for (      Map<String,Object> blog : dotComUserBlogs) {
         if (blog != null && blog.get("homeURL") != null) {
-          String normURL=UrlUtils.normalizeUrl(blog.get("homeURL").toString()).toLowerCase();
-          if (normURL.toLowerCase().startsWith("http://")) {
-            normURL=normURL.substring(7);
-          }
- else           if (normURL.startsWith("https://")) {
-            normURL=normURL.substring(8);
-          }
+          String normURL=normalizeAndRemoveScheme(blog.get("homeURL").toString());
           dotComUserBlogsURL.add(normURL);
         }
       }
