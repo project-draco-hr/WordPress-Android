@@ -9,13 +9,23 @@
       JSONObject currentYearObj=yearsJSON.getJSONObject(currentYearKey);
       int total=currentYearObj.getInt("total");
       currentYear.setTotal(total);
-      JSONObject months=currentYearObj.getJSONObject("months");
-      String[] orderedMonthsKeys=orderKeys(months.keys(),months.length());
-      for (      String currentMonthKey : orderedMonthsKeys) {
-        int currentMonthVisits=months.getInt(currentMonthKey);
-        int currentMonthIndex=Integer.parseInt(currentMonthKey) - 1;
-        currentYear.getMonths()[currentMonthIndex]=currentMonthVisits;
+      JSONObject monthsJSON=currentYearObj.getJSONObject("months");
+      Iterator<String> monthsKeys=monthsJSON.keys();
+      List<Month> monthsList=new ArrayList<>(monthsJSON.length());
+      while (monthsKeys.hasNext()) {
+        String currentMonthKey=monthsKeys.next();
+        int currentMonthVisits=monthsJSON.getInt(currentMonthKey);
+        monthsList.add(new Month(currentMonthKey,currentMonthVisits));
       }
+      Collections.sort(monthsList,new java.util.Comparator<Month>(){
+        public int compare(        Month o1,        Month o2){
+          int v1=Integer.parseInt(o1.getMonth());
+          int v2=Integer.parseInt(o2.getMonth());
+          return v1 - v2;
+        }
+      }
+);
+      currentYear.setMonths(monthsList);
       mYears.add(currentYear);
     }
   }
