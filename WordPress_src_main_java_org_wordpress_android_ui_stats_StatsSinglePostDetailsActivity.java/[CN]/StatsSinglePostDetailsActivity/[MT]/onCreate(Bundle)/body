@@ -25,18 +25,24 @@
   mAveragesList=(LinearLayout)findViewById(R.id.stats_averages_list_linearlayout);
   mRecentWeeksList=(LinearLayout)findViewById(R.id.stats_recent_weeks_list_linearlayout);
   if (savedInstanceState != null) {
-    mRemotePostItem=(SingleItemModel)savedInstanceState.getSerializable(ARG_REMOTE_POST_OBJECT);
+    mRemotePostItem=(PostModel)savedInstanceState.getSerializable(ARG_REMOTE_POST_OBJECT);
     mRestResponseParsed=(PostViewsModel)savedInstanceState.getSerializable(ARG_REST_RESPONSE);
     mSelectedBarGraphIndex=savedInstanceState.getInt(ARG_SELECTED_GRAPH_BAR,-1);
   }
  else   if (getIntent() != null) {
     Bundle extras=getIntent().getExtras();
-    mRemotePostItem=(SingleItemModel)extras.getSerializable(ARG_REMOTE_POST_OBJECT);
+    mRemotePostItem=(PostModel)extras.getSerializable(ARG_REMOTE_POST_OBJECT);
     mRestResponseParsed=(PostViewsModel)extras.getSerializable(ARG_REST_RESPONSE);
     mSelectedBarGraphIndex=extras.getInt(ARG_SELECTED_GRAPH_BAR,-1);
   }
-  String prefix=getString(R.string.stats_for);
-  mStatsForLabel.setText(String.format(prefix,mRemotePostItem.getTitle()));
+  mStatsForLabel.setText(mRemotePostItem.getTitle());
+  mStatsForLabel.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      final Context ctx=v.getContext();
+      StatsUtils.openPostInReaderOrInAppWebview(ctx,mRemotePostItem);
+    }
+  }
+);
   setTitle(R.string.stats);
   mYearsIdToExpandedMap=new SparseBooleanArray();
   mAveragesIdToExpandedMap=new SparseBooleanArray();
