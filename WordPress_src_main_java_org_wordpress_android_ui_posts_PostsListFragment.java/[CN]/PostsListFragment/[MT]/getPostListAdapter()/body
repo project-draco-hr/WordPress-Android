@@ -14,6 +14,17 @@
         if (getListView().getEmptyView() == null) {
           getListView().setEmptyView(getView().findViewById(R.id.empty_view));
         }
+        if (postCount == 0 && !isRefreshing()) {
+          TextView textView=(TextView)getView().findViewById(R.id.title_empty);
+          if (textView != null) {
+            if (mIsPage) {
+              textView.setText(getText(R.string.pages_empty_list));
+            }
+ else {
+              textView.setText(getText(R.string.posts_empty_list));
+            }
+          }
+        }
         if (postCount == 0 && mCanLoadMorePosts) {
           if (isAdded() && NetworkUtils.isNetworkAvailable(getActivity())) {
             setRefreshing(true);
