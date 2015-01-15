@@ -8,7 +8,7 @@
       mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary_dark));
     }
     mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,GravityCompat.START);
-    mDrawerToggle=new ActionBarDrawerToggle(this,mDrawerLayout,mToolbar,R.string.open_drawer,R.string.close_drawer){
+    mDrawerToggle=new ActionBarDrawerToggle(this,mDrawerLayout,getToolbar(),R.string.open_drawer,R.string.close_drawer){
       public void onDrawerClosed(      View view){
         invalidateOptionsMenu();
       }
@@ -45,4 +45,17 @@
 );
   initBlogSpinner();
   updateMenuDrawer();
+  getToolbar().setNavigationOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      if (isFinishing())       return;
+      FragmentManager fm=getFragmentManager();
+      if (fm.getBackStackEntryCount() > 0) {
+        fm.popBackStack();
+      }
+ else {
+        toggleDrawer();
+      }
+    }
+  }
+);
 }
