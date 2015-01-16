@@ -3,7 +3,12 @@
     CommentAdapter.DataLoadedListener dataLoadedListener=new CommentAdapter.DataLoadedListener(){
       @Override public void onDataLoaded(      boolean isEmpty){
         if (!isAdded())         return;
-        showEmptyView(isEmpty);
+        if (getCommentAdapter().getCount() > 0) {
+          showEmptyView(false,R.string.loading_comments);
+        }
+ else         if (!mIsUpdatingComments) {
+          showEmptyView(isEmpty,R.string.comments_empty_list);
+        }
       }
     }
 ;
