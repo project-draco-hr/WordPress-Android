@@ -15,12 +15,15 @@
           getListView().setEmptyView(getView().findViewById(R.id.empty_view));
         }
         if (postCount == 0 && !isRefreshing()) {
-          displayNoContentMessage();
+          setEmptyViewMessage(MessageId.NO_CONTENT);
         }
         if (postCount == 0 && mCanLoadMorePosts) {
           if (isAdded() && NetworkUtils.isNetworkAvailable(getActivity())) {
             setRefreshing(true);
             requestPosts(false);
+          }
+ else {
+            setEmptyViewMessage(MessageId.NETWORK_ERROR);
           }
         }
  else         if (mShouldSelectFirstPost) {
