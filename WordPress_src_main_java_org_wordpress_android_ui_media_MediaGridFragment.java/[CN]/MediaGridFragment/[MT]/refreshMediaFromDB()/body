@@ -1,6 +1,13 @@
 {
   setFilter(mFilter);
-  if (mGridAdapter.getDataCount() == 0 && !mHasRetrievedAllMedia && isAdded() && NetworkUtils.isNetworkAvailable(getActivity())) {
-    refreshMediaFromServer(0,true);
+  if (isAdded() && mGridAdapter.getDataCount() == 0) {
+    if (NetworkUtils.isNetworkAvailable(getActivity())) {
+      if (!mHasRetrievedAllMedia) {
+        refreshMediaFromServer(0,true);
+      }
+    }
+ else {
+      showEmptyViewWithMessage(MessageId.NETWORK_ERROR);
+    }
   }
 }
