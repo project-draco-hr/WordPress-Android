@@ -11,7 +11,7 @@
     }
     mOldMediaSyncOffset=offset;
     mIsRefreshing=true;
-    setFilter(mFilter,MessageId.LOADING);
+    updateEmptyView(MessageId.LOADING);
     mListener.onMediaItemListDownloadStart();
     mGridAdapter.setRefreshing(true);
     List<Object> apiArgs=new ArrayList<Object>();
@@ -26,8 +26,10 @@
           getActivity().runOnUiThread(new Runnable(){
             @Override public void run(){
               refreshSpinnerAdapter();
-              setFilter(mFilter);
-              if (!auto)               mGridView.setSelection(0);
+              updateEmptyView(MessageId.NO_CONTENT);
+              if (!auto) {
+                mGridView.setSelection(0);
+              }
               mListener.onMediaItemListDownloaded();
               mGridAdapter.setRefreshing(false);
               mSwipeToRefreshHelper.setRefreshing(false);
@@ -54,10 +56,10 @@
               mGridAdapter.setRefreshing(false);
               mSwipeToRefreshHelper.setRefreshing(false);
               if (errorType == ApiHelper.ErrorType.NO_UPLOAD_FILES_CAP) {
-                setFilter(mFilter,MessageId.PERMISSION_ERROR);
+                updateEmptyView(MessageId.PERMISSION_ERROR);
               }
  else {
-                setFilter(mFilter,MessageId.NETWORK_ERROR);
+                updateEmptyView(MessageId.NETWORK_ERROR);
               }
             }
           }

@@ -1,3 +1,22 @@
 {
-  setFilter(filter,MessageId.NO_CONTENT);
+  mFilter=filter;
+  Cursor cursor=filterItems(mFilter);
+  if (filter != Filter.CUSTOM_DATE || cursor == null || cursor.getCount() == 0) {
+    mResultView.setVisibility(View.GONE);
+  }
+  if (cursor != null && cursor.getCount() != 0) {
+    mGridAdapter.swapCursor(cursor);
+    hideEmptyView();
+  }
+ else {
+    mGridAdapter.changeCursor(null);
+    if (filter != Filter.CUSTOM_DATE) {
+      if (MessageId.isTypeError(mEmptyViewMessage)) {
+        showEmptyViewWithMessage(MessageId.getEnumFromString(mEmptyViewMessage));
+      }
+ else {
+        showEmptyViewWithMessage(MessageId.NO_CONTENT);
+      }
+    }
+  }
 }
