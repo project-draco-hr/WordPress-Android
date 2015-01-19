@@ -4,10 +4,10 @@
   }
   if (!NetworkUtils.checkConnection(getActivity())) {
     mSwipeToRefreshHelper.setRefreshing(false);
-    setEmptyViewMessage(MessageId.NETWORK_ERROR);
+    updateEmptyView(MessageType.NETWORK_ERROR);
     return;
   }
-  setEmptyViewMessage(MessageId.LOADING);
+  updateEmptyView(MessageType.LOADING);
   int postCount=getPostListAdapter().getRemotePostCount() + POSTS_REQUEST_COUNT;
   if (!loadMore) {
     mCanLoadMorePosts=true;
@@ -52,11 +52,12 @@
 switch (errorType) {
 case UNAUTHORIZED:
           ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_unauthorized_pages : R.string.error_refresh_unauthorized_posts,Duration.LONG);
-        setEmptyViewMessage(MessageId.PERMISSION_ERROR);
+        updateEmptyView(MessageType.PERMISSION_ERROR);
       return;
 default :
     ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_pages : R.string.error_refresh_posts,Duration.LONG);
-  return;
+  updateEmptyView(MessageType.GENERIC_ERROR);
+return;
 }
 }
 }

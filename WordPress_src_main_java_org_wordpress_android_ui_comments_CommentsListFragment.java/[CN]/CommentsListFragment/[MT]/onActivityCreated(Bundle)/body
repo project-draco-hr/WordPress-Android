@@ -4,12 +4,12 @@
   getCommentAdapter().loadComments();
   Bundle extras=getActivity().getIntent().getExtras();
   mHasAutoRefreshedComments=extras.getBoolean(CommentsActivity.KEY_AUTO_REFRESHED);
-  mEmptyViewMessage=extras.getString(CommentsActivity.KEY_EMPTY_VIEW_MESSAGE);
+  mEmptyViewMessageType=MessageType.getEnumFromString(extras.getString(CommentsActivity.KEY_EMPTY_VIEW_MESSAGE));
   if (!NetworkUtils.isNetworkAvailable(getActivity())) {
-    showEmptyViewWithMessage(MessageId.NETWORK_ERROR);
+    updateEmptyView(MessageType.NETWORK_ERROR);
     return;
   }
-  showEmptyViewWithMessage(MessageId.getEnumFromString(mEmptyViewMessage));
+  updateEmptyView(mEmptyViewMessageType);
   if (!mHasAutoRefreshedComments) {
     updateComments(false);
     mSwipeToRefreshHelper.setRefreshing(true);
