@@ -1,8 +1,37 @@
 {
-  if (mGridAdapter.getDataCount() == 0) {
-    showEmptyViewWithMessage(messageType);
-  }
+  if (mEmptyView != null) {
+    if (mGridAdapter.getDataCount() == 0) {
+      int stringId=0;
+switch (messageType) {
+case LOADING:
+        stringId=R.string.loading_media;
+      break;
+case NO_CONTENT:
+    stringId=R.string.media_empty_list;
+  break;
+case NETWORK_ERROR:
+if (mEmptyViewMessageType == MessageType.NO_CONTENT_CUSTOM_DATE) {
+  mEmptyView.setVisibility(View.VISIBLE);
+  return;
+}
+stringId=R.string.network_error;
+break;
+case PERMISSION_ERROR:
+stringId=R.string.media_error_no_permission;
+break;
+case GENERIC_ERROR:
+stringId=R.string.error_refresh_media;
+break;
+case NO_CONTENT_CUSTOM_DATE:
+stringId=R.string.media_empty_list_custom_date;
+break;
+}
+mEmptyViewTitle.setText(getText(stringId));
+mEmptyViewMessageType=messageType;
+mEmptyView.setVisibility(View.VISIBLE);
+}
  else {
-    hideEmptyView();
-  }
+mEmptyView.setVisibility(View.GONE);
+}
+}
 }
