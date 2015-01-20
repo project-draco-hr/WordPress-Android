@@ -33,9 +33,7 @@
     pullParser.require(XmlPullParser.START_TAG,null,TAG_PARAM);
     pullParser.nextTag();
     Object obj=XMLRPCSerializer.deserialize(pullParser);
-    if (entity != null) {
-      entity.consumeContent();
-    }
+    consumeHttpEntity(entity);
     return obj;
   }
  else   if (tag.equals(TAG_FAULT)) {
@@ -43,15 +41,11 @@
     Map<String,Object> map=(Map<String,Object>)XMLRPCSerializer.deserialize(pullParser);
     String faultString=(String)map.get(TAG_FAULT_STRING);
     int faultCode=(Integer)map.get(TAG_FAULT_CODE);
-    if (entity != null) {
-      entity.consumeContent();
-    }
+    consumeHttpEntity(entity);
     throw new XMLRPCFault(faultString,faultCode);
   }
  else {
-    if (entity != null) {
-      entity.consumeContent();
-    }
+    consumeHttpEntity(entity);
     throw new XMLRPCException("Bad tag <" + tag + "> in XMLRPC response - neither <params> nor <fault>");
   }
 }
