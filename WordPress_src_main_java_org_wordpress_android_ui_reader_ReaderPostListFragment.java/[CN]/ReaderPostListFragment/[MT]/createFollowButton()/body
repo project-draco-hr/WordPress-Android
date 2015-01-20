@@ -1,0 +1,25 @@
+{
+  if (!isAdded()) {
+    return;
+  }
+  Toolbar toolbar=(Toolbar)getActivity().findViewById(R.id.toolbar);
+  if (toolbar == null) {
+    return;
+  }
+  LayoutInflater inflater=getActivity().getLayoutInflater();
+  View followView=inflater.inflate(R.layout.reader_toolbar_follow_button,toolbar,false);
+  mFollowButton=(TextView)followView.findViewById(R.id.text_follow);
+  toolbar.addView(followView);
+  updateFollowButton();
+  mFollowButton.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      if (getPostListType() == ReaderPostListType.BLOG_PREVIEW) {
+        toggleBlogFollowStatus();
+      }
+ else {
+        toggleTagFollowStatus();
+      }
+    }
+  }
+);
+}

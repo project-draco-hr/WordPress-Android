@@ -1,0 +1,16 @@
+{
+  if (!isAdded() || mFollowButton == null) {
+    return;
+  }
+  final boolean isAskingToFollow=!ReaderBlogTable.isFollowedBlog(mCurrentBlogId,mCurrentBlogUrl);
+  ReaderActions.ActionListener followListener=new ReaderActions.ActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      if (!succeeded && isAdded()) {
+        ReaderUtils.showFollowStatus(mFollowButton,!isAskingToFollow);
+      }
+    }
+  }
+;
+  ReaderAnim.animateFollowButton(mFollowButton,isAskingToFollow);
+  ReaderBlogActions.performFollowAction(mCurrentBlogId,mCurrentBlogUrl,isAskingToFollow,followListener);
+}
