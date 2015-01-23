@@ -1,19 +1,30 @@
 {
   if (intent == null) {
-    AppLog.d(T.STATS,"StatsService was killed and restarted with a null intent.");
+    AppLog.e(T.STATS,"StatsService was killed and restarted with a null intent.");
     stopRefresh();
     return START_NOT_STICKY;
   }
-  final String blogId=StringUtils.notNullStr(intent.getStringExtra(ARG_BLOG_ID));
+  final String blogId=intent.getStringExtra(ARG_BLOG_ID);
+  if (org.apache.commons.lang.StringUtils.isBlank(blogId)) {
+    AppLog.e(T.STATS,"StatsService was started with a blank blog_id ");
+    return START_NOT_STICKY;
+  }
   StatsTimeframe period=StatsTimeframe.DAY;
   if (intent.hasExtra(ARG_PERIOD)) {
     period=(StatsTimeframe)intent.getSerializableExtra(ARG_PERIOD);
   }
   String requestedDate=intent.getStringExtra(ARG_DATE);
   if (requestedDate == null) {
-    AppLog.w(T.STATS,"StatsService is started with a NULL date on this blogID - " + mServiceBlogId + ". Using current date!!!");
-    int localTableBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(Integer.parseInt(mServiceBlogId));
-    requestedDate=StatsUtils.getCurrentDateTZ(localTableBlogId);
+    AppLog.w(T.STATS,"StatsService is started with a NULL date on this blogID - " + blogId + ". Using current date!!!");
+    try {
+      int parsedBlogID=Integer.parseInt(blogId);
+      int localTableBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(parsedBlogID);
+      requestedDate=StatsUtils.getCurrentDateTZ(localTableBlogId);
+    }
+ catch (    NumberFormatException e) {
+      AppLog.e(T.STATS,"StatsService was started with a blog_id that cannot be casted to int " + blogId,e);
+      return START_NOT_STICKY;
+    }
   }
   boolean updateAlltimeStats=intent.getBooleanExtra(ARG_UPDATE_ALLTIME_STATS,true);
   boolean updateGraphStats=intent.getBooleanExtra(ARG_UPDATE_GRAPH_STATS,true);
