@@ -1,11 +1,35 @@
 {
+  if (mAnimateFromManualRefresh) {
+    mAnimateFromAutoRefresh=false;
+    if (mPostsListAdapter == null || mPostsListAdapter.getCount() == 0) {
+      if (!MessageType.isError(mEmptyViewMessage) && !MessageType.isError(messageType)) {
+        if (mEmptyViewMessage == MessageType.NO_CONTENT && messageType == MessageType.LOADING) {
+          mEmptyViewAnimationHandler.showLoadingSequence();
+        }
+ else {
+          mEmptyViewAnimationHandler.showNoContentSequence();
+        }
+        return;
+      }
+    }
+    mAnimateFromManualRefresh=false;
+  }
+ else   if (mAnimateFromAutoRefresh) {
+    if (mEmptyViewMessage == MessageType.LOADING && messageType == MessageType.NO_CONTENT) {
+      mEmptyViewAnimationHandler.showNoContentSequence();
+      return;
+    }
+    mAnimateFromAutoRefresh=false;
+  }
   if (mEmptyView != null) {
     int stringId=0;
-    if (messageType == MessageType.NO_CONTENT) {
-      mEmptyViewImage.setVisibility(View.VISIBLE);
-    }
+    if (!mEmptyViewAnimationHandler.isBetweenSequences()) {
+      if (messageType == MessageType.NO_CONTENT) {
+        mEmptyViewImage.setVisibility(View.VISIBLE);
+      }
  else {
-      mEmptyViewImage.setVisibility(View.GONE);
+        mEmptyViewImage.setVisibility(View.GONE);
+      }
     }
 switch (messageType) {
 case LOADING:
@@ -25,5 +49,6 @@ stringId=mIsPage ? R.string.error_refresh_pages : R.string.error_refresh_posts;
 break;
 }
 mEmptyViewTitle.setText(getText(stringId));
+mEmptyViewMessage=messageType;
 }
 }
