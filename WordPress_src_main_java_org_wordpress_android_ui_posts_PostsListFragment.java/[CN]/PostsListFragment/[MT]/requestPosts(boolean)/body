@@ -26,7 +26,12 @@
       mCurrentFetchPostsTask=null;
       mIsFetchingPosts=false;
       if (!isAdded())       return;
-      mSwipeToRefreshHelper.setRefreshing(false);
+      if (mEmptyViewAnimationHandler.isAnimating() || mEmptyViewAnimationHandler.isBetweenSequences()) {
+        mOverrideSwipeRefreshLayout=true;
+      }
+ else {
+        mSwipeToRefreshHelper.setRefreshing(false);
+      }
       if (mProgressFooterView != null) {
         mProgressFooterView.setVisibility(View.GONE);
       }
