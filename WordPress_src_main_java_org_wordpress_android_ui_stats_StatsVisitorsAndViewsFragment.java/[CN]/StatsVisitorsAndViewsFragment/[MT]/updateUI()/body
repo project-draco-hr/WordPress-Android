@@ -6,7 +6,7 @@
     setupNoResultsUI(false);
     return;
   }
-  if (mVisitsData instanceof VolleyError) {
+  if (mVisitsData instanceof VolleyError || mVisitsData instanceof StatsError) {
     setupNoResultsUI(false);
     return;
   }
@@ -56,7 +56,17 @@ mGraphView.addSeries(mCurrentSeriesOnScreen);
 mGraphView.getGraphViewStyle().setNumHorizontalLabels(dataToShowOnGraph.length);
 mGraphView.setHorizontalLabels(horLabels);
 mGraphView.setGestureListener(this);
-int barSelectedOnGraph=mSelectedBarGraphBarIndex != -1 ? mSelectedBarGraphBarIndex : dataToShowOnGraph.length - 1;
-mGraphView.highlightBar(barSelectedOnGraph);
+int barSelectedOnGraph;
+if (mSelectedBarGraphBarIndex == -1) {
+barSelectedOnGraph=dataToShowOnGraph.length - 1;
+}
+ else if (mSelectedBarGraphBarIndex < dataToShowOnGraph.length) {
+barSelectedOnGraph=mSelectedBarGraphBarIndex;
+}
+ else {
+barSelectedOnGraph=dataToShowOnGraph.length - 1;
+mSelectedBarGraphBarIndex=barSelectedOnGraph;
+}
 updateUIBelowTheGraph(barSelectedOnGraph);
+mGraphView.highlightBar(barSelectedOnGraph);
 }
