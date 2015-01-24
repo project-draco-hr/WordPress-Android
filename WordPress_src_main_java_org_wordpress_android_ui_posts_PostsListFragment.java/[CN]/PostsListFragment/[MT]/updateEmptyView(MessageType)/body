@@ -1,25 +1,22 @@
 {
-  if (mAnimateFromManualRefresh) {
-    mAnimateFromAutoRefresh=false;
-    if (mPostsListAdapter == null || mPostsListAdapter.getCount() == 0) {
-      if (!MessageType.isError(mEmptyViewMessage) && !MessageType.isError(messageType)) {
-        if (mEmptyViewMessage == MessageType.NO_CONTENT && messageType == MessageType.LOADING) {
-          mEmptyViewAnimationHandler.showLoadingSequence();
-        }
- else {
-          mEmptyViewAnimationHandler.showNoContentSequence();
-        }
+  if (mPostsListAdapter != null && mPostsListAdapter.getCount() == 0) {
+    if (mEmptyViewMessage == MessageType.NO_CONTENT && messageType == MessageType.LOADING) {
+      if (mSwipedToRefresh) {
+        mSwipedToRefresh=false;
+        mEmptyViewAnimationHandler.showLoadingSequence();
         return;
       }
     }
-    mAnimateFromManualRefresh=false;
-  }
- else   if (mAnimateFromAutoRefresh) {
-    if (mEmptyViewMessage == MessageType.LOADING && messageType == MessageType.NO_CONTENT) {
+ else     if (mEmptyViewMessage == MessageType.LOADING && messageType == MessageType.NO_CONTENT) {
       mEmptyViewAnimationHandler.showNoContentSequence();
       return;
     }
-    mAnimateFromAutoRefresh=false;
+  }
+ else {
+    if (mKeepSwipeRefreshLayoutVisible) {
+      mSwipeToRefreshHelper.setRefreshing(false);
+      mKeepSwipeRefreshLayoutVisible=false;
+    }
   }
   if (mEmptyView != null) {
     int stringId=0;
