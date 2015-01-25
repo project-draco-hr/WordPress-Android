@@ -1,38 +1,3 @@
 {
-  if (TextUtils.isEmpty(imageUrl)) {
-    return "";
-  }
-  int schemePos=imageUrl.indexOf("://");
-  if (schemePos == -1) {
-    return imageUrl;
-  }
-  imageUrl=UrlUtils.removeQuery(imageUrl);
-  if (imageUrl.endsWith(".gif")) {
-    return imageUrl;
-  }
-  if (isMshotsUrl(imageUrl)) {
-    return imageUrl + "?w=" + width+ "&h="+ height;
-  }
-  final String query;
-  if (width > 0 && height > 0) {
-    query="?resize=" + width + ","+ height;
-  }
- else   if (width > 0) {
-    query="?w=" + width;
-  }
- else   if (height > 0) {
-    query="?h=" + height;
-  }
- else {
-    query="";
-  }
-  if (imageUrl.contains(".wp.com")) {
-    if (imageUrl.contains("i0.wp.com") || imageUrl.contains("i1.wp.com") || imageUrl.contains("i2.wp.com"))     return imageUrl + query;
-  }
-  if (UrlUtils.isHttps(imageUrl)) {
-    return "https://i0.wp.com/" + imageUrl.substring(schemePos + 3,imageUrl.length()) + query;
-  }
- else {
-    return "http://i0.wp.com/" + imageUrl.substring(schemePos + 3,imageUrl.length()) + query;
-  }
+  return getPhotonImageUrl(imageUrl,width,height,Quality.MEDIUM);
 }
