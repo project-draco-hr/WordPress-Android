@@ -1,38 +1,15 @@
 {
-  super.onCreate(null);
-  AppLog.i(T.NOTIFS,"Creating NotificationsActivity");
+  super.onCreate(savedInstanceState);
+  AppLog.i(AppLog.T.NOTIFS,"Creating NotificationsActivity");
   createMenuDrawer(R.layout.notifications_activity);
-  if (savedInstanceState == null) {
-    AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATIONS_ACCESSED);
-  }
-  FragmentManager fragmentManager=getFragmentManager();
-  if (mNotesListFragment == null) {
-    mNotesListFragment=(NotificationsListFragment)fragmentManager.findFragmentByTag(TAG_LIST_VIEW);
-  }
   ActionBar actionBar=getSupportActionBar();
   if (actionBar != null) {
     actionBar.setDisplayShowTitleEnabled(true);
     actionBar.setTitle(getResources().getString(R.string.notifications));
   }
-  fragmentManager.addOnBackStackChangedListener(mOnBackStackChangedListener);
-  mNotesListFragment.setOnNoteClickListener(new NoteClickListener());
+  if (savedInstanceState == null) {
+    getFragmentManager().beginTransaction().add(R.id.notifications_container,new NotificationsListFragment()).commit();
+    AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATIONS_ACCESSED);
+  }
   GCMIntentService.clearNotificationsMap();
-  if (savedInstanceState != null) {
-    mHasPerformedInitialUpdate=savedInstanceState.getBoolean(KEY_INITIAL_UPDATE);
-    if (savedInstanceState.getString(KEY_REPLY_TEXT) != null) {
-      mRestoredReplyText=savedInstanceState.getString(KEY_REPLY_TEXT);
-    }
-    if (savedInstanceState.getString(NOTE_ID_EXTRA) != null) {
-      openNoteForNoteId(savedInstanceState.getString(NOTE_ID_EXTRA));
-    }
-    if (savedInstanceState.containsKey(KEY_LIST_SCROLL_POSITION)) {
-      mNotesListFragment.setRestoredListPosition(savedInstanceState.getInt(KEY_LIST_SCROLL_POSITION,RecyclerView.NO_POSITION));
-    }
-  }
- else {
-    launchWithNoteId();
-  }
-  if (SimperiumUtils.isUserNotAuthorized()) {
-    AuthenticationDialogUtils.showAuthErrorDialog(this,R.string.sign_in_again,R.string.simperium_connection_error);
-  }
 }
