@@ -5,7 +5,7 @@
     return START_NOT_STICKY;
   }
   final String blogId=intent.getStringExtra(ARG_BLOG_ID);
-  if (org.apache.commons.lang.StringUtils.isBlank(blogId)) {
+  if (TextUtils.isEmpty(blogId)) {
     AppLog.e(T.STATS,"StatsService was started with a blank blog_id ");
     return START_NOT_STICKY;
   }
@@ -16,15 +16,9 @@
   String requestedDate=intent.getStringExtra(ARG_DATE);
   if (requestedDate == null) {
     AppLog.w(T.STATS,"StatsService is started with a NULL date on this blogID - " + blogId + ". Using current date!!!");
-    try {
-      int parsedBlogID=Integer.parseInt(blogId);
-      int localTableBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(parsedBlogID);
-      requestedDate=StatsUtils.getCurrentDateTZ(localTableBlogId);
-    }
- catch (    NumberFormatException e) {
-      AppLog.e(T.STATS,"StatsService was started with a blog_id that cannot be casted to int " + blogId,e);
-      return START_NOT_STICKY;
-    }
+    int parsedBlogID=Integer.parseInt(blogId);
+    int localTableBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(parsedBlogID);
+    requestedDate=StatsUtils.getCurrentDateTZ(localTableBlogId);
   }
   boolean updateAlltimeStats=intent.getBooleanExtra(ARG_UPDATE_ALLTIME_STATS,true);
   boolean updateGraphStats=intent.getBooleanExtra(ARG_UPDATE_GRAPH_STATS,true);
