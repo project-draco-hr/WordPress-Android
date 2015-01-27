@@ -1,14 +1,16 @@
 {
-  this.mServiceBlogId=null;
-  this.mServiceRequestedTimeframe=StatsTimeframe.DAY;
-  this.mServiceRequestedDate=null;
-  this.mServiceStartId=0;
-  for (  Request<JSONObject> req : statsNetworkRequests) {
-    if (req != null && !req.hasHadResponseDelivered() && !req.isCanceled()) {
-      req.cancel();
+synchronized (mStatsNetworkRequests) {
+    this.mServiceBlogId=null;
+    this.mServiceRequestedTimeframe=StatsTimeframe.DAY;
+    this.mServiceRequestedDate=null;
+    this.mServiceStartId=0;
+    for (    Request<JSONObject> req : mStatsNetworkRequests) {
+      if (req != null && !req.hasHadResponseDelivered() && !req.isCanceled()) {
+        req.cancel();
+      }
     }
+    mStatsNetworkRequests.clear();
+    mNumberOfFinishedNetworkCalls=0;
+    mNumberOfNetworkCalls=0;
   }
-  statsNetworkRequests.clear();
-  numberOfFinishedNetworkCalls=0;
-  numberOfNetworkCalls=0;
 }
