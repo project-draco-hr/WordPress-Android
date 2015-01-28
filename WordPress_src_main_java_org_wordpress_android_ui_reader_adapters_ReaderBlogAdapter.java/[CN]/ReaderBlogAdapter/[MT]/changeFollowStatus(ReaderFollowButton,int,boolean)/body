@@ -20,17 +20,17 @@ return;
 }
 ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
 @Override public void onActionResult(boolean succeeded){
-Context context=txtFollow.getContext();
+Context context=followButton.getContext();
 if (!succeeded && context != null) {
 int resId=(isAskingToFollow ? R.string.reader_toast_err_follow_blog : R.string.reader_toast_err_unfollow_blog);
 ToastUtils.showToast(context,resId);
-ReaderUtils.showFollowStatus(txtFollow,!isAskingToFollow);
+followButton.setIsFollowed(!isAskingToFollow,false);
 checkFollowStatus();
 }
 }
 }
 ;
-ReaderAnim.animateFollowButton(txtFollow,isAskingToFollow);
+followButton.setIsFollowed(isAskingToFollow,true);
 if (ReaderBlogActions.performFollowAction(blogId,blogUrl,isAskingToFollow,actionListener)) {
 if (getBlogType() == ReaderBlogType.FOLLOWED) {
 mFollowedBlogs.get(position).isFollowing=isAskingToFollow;
