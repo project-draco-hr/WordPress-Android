@@ -1,12 +1,14 @@
 {
   if (noteId == null)   return;
-  if (SimperiumUtils.getNotesBucket() != null) {
-    try {
-      Note note=SimperiumUtils.getNotesBucket().get(noteId);
+  SimperiumUtils.getNoteAsync(noteId,new SimperiumUtils.NoteLoadedCallback(){
+    @Override public void onNoteLoaded(    Note note){
       setNote(note);
+      reloadNoteBlocks();
     }
- catch (    BucketObjectMissingException e) {
-      e.printStackTrace();
+    @Override public void onError(){
+      if (!isAdded())       return;
+      ToastUtils.showToast(getActivity(),R.string.error_generic);
     }
   }
+);
 }
