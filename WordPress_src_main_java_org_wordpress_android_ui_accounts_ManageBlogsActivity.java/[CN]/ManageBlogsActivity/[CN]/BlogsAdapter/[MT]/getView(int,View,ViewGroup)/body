@@ -1,8 +1,22 @@
 {
-  LayoutInflater inflater=(LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-  View rowView=inflater.inflate(mResource,parent,false);
-  CheckedTextView nameView=(CheckedTextView)rowView.findViewById(R.id.blog_name);
-  nameView.setText(BlogUtils.getBlogNameFromAccountMap(getItem(position)));
-  nameView.setChecked(!MapUtils.getMapBool(getItem(position),"isHidden"));
-  return rowView;
+  final BlogItemViewHolder holder;
+  if (convertView == null) {
+    convertView=mInflater.inflate(mResource,parent,false);
+    holder=new BlogItemViewHolder(convertView);
+    convertView.setTag(holder);
+  }
+ else {
+    holder=(BlogItemViewHolder)convertView.getTag();
+  }
+  holder.nameView.setText(BlogUtils.getBlogNameFromAccountMap(getItem(position)));
+  holder.urlView.setText(BlogUtils.getHostNameFromAccountMap(getItem(position)));
+  holder.checkBox.setChecked(!MapUtils.getMapBool(getItem(position),"isHidden"));
+  convertView.setOnClickListener(new OnClickListener(){
+    @Override public void onClick(    View v){
+      holder.checkBox.setChecked(!holder.checkBox.isChecked());
+      setItemChecked(position,holder.checkBox.isChecked());
+    }
+  }
+);
+  return convertView;
 }
