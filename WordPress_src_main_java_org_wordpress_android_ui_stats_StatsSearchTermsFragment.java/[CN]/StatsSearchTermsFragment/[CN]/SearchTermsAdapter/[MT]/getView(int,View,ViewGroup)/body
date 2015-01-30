@@ -1,0 +1,20 @@
+{
+  View rowView=convertView;
+  if (rowView == null) {
+    rowView=inflater.inflate(R.layout.stats_list_cell,parent,false);
+    StatsViewHolder viewHolder=new StatsViewHolder(rowView);
+    rowView.setTag(viewHolder);
+  }
+  final SearchTermModel currentRowData=list.get(position);
+  StatsViewHolder holder=(StatsViewHolder)rowView.getTag();
+  String term=currentRowData.getTitle();
+  if (currentRowData.isEncriptedTerms()) {
+    holder.setEntryTextOrLink(UNKNOWN_SEARCH_TERMS_HELP_PAGE,getString(R.string.stats_search_terms_unknown_search_terms));
+  }
+ else {
+    holder.setEntryText(term,getResources().getColor(R.color.stats_text_color));
+  }
+  holder.totalsTextView.setText(FormatUtils.formatDecimal(currentRowData.getTotals()));
+  holder.networkImageView.setVisibility(View.GONE);
+  return rowView;
+}

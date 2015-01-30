@@ -4,14 +4,14 @@
   }
   if (!NetworkUtils.isNetworkAvailable(this)) {
     mSwipeToRefreshHelper.setRefreshing(false);
-    AppLog.w(AppLog.T.STATS,getInnerFragmentTAG() + " > no connection, update canceled");
+    AppLog.w(AppLog.T.STATS,"ViewAll on " + mFragment.getTag() + " > no connection, update canceled");
     return;
   }
   mSwipeToRefreshHelper.setRefreshing(true);
   mIsUpdatingStats=true;
   final RestClientUtils restClientUtils=WordPress.getRestClientUtilsV1_1();
   final String blogId=StatsUtils.getBlogId(mLocalBlogID);
-  StatsService.StatsEndpointsEnum[] sections=getRestEndpointNames();
+  StatsService.StatsEndpointsEnum[] sections=mFragment.getSectionToUpdate();
   for (int i=0; i < sections.length; i++) {
     StatsService.StatsEndpointsEnum currentSection=sections[i];
     String singlePostRestPath=getRestPath(currentSection,1);
