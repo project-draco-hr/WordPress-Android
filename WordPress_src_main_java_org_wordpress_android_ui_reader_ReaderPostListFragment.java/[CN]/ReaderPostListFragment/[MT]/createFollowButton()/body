@@ -6,10 +6,16 @@
   if (toolbar == null) {
     return;
   }
-  LayoutInflater inflater=getActivity().getLayoutInflater();
-  View followView=inflater.inflate(R.layout.reader_toolbar_follow_button,toolbar,false);
-  mFollowButton=(TextView)followView.findViewById(R.id.text_follow);
-  toolbar.addView(followView);
+  Context context=toolbar.getContext();
+  int padding=context.getResources().getDimensionPixelSize(R.dimen.margin_small);
+  int paddingRight=context.getResources().getDimensionPixelSize(R.dimen.reader_card_content_padding);
+  int marginRight=context.getResources().getDimensionPixelSize(R.dimen.reader_card_spacing);
+  mFollowButton=new ReaderFollowButton(context);
+  mFollowButton.setPadding(padding,padding,paddingRight,padding);
+  Toolbar.LayoutParams params=new Toolbar.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT,Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+  params.setMargins(0,0,marginRight,0);
+  mFollowButton.setLayoutParams(params);
+  toolbar.addView(mFollowButton);
   updateFollowButton();
   mFollowButton.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
