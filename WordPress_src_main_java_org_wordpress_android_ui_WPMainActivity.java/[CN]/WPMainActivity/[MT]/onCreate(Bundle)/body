@@ -1,8 +1,8 @@
 {
   super.onCreate(savedInstanceState);
   setContentView(R.layout.activity_main);
-  Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
-  setSupportActionBar(toolbar);
+  mToolbar=(Toolbar)findViewById(R.id.toolbar);
+  setSupportActionBar(mToolbar);
   mViewPager=(WPMainViewPager)findViewById(R.id.viewpager_main);
   mTabAdapter=new WPMainTabAdapter(getFragmentManager());
   mViewPager.setAdapter(mTabAdapter);
@@ -11,16 +11,11 @@
   mTabs.setSelectedIndicatorColors(getResources().getColor(R.color.tab_indicator));
   mTabs.setDistributeEvenly(true);
   mTabs.setViewPager(mViewPager);
+  mTabs.setOnPageChangeListener(this);
   if (savedInstanceState == null) {
     int position=AppPrefs.getMainTabIndex();
     if (mTabAdapter.isValidPosition(position) && position != mViewPager.getCurrentItem()) {
       mViewPager.setCurrentItem(position);
     }
   }
-  mTabs.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
-    @Override public void onPageSelected(    int position){
-      AppPrefs.setMainTabIndex(position);
-    }
-  }
-);
 }
