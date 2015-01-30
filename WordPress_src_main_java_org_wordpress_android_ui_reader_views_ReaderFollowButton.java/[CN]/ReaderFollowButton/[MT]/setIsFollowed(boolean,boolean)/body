@@ -1,0 +1,25 @@
+{
+  if (isFollowed == mIsFollowed && mTextFollow.isSelected() == isFollowed) {
+    return;
+  }
+  mIsFollowed=isFollowed;
+  if (animateChanges) {
+    ObjectAnimator anim=ObjectAnimator.ofFloat(mTextFollow,View.SCALE_Y,1f,0f);
+    anim.setRepeatMode(ValueAnimator.REVERSE);
+    anim.setRepeatCount(1);
+    anim.addListener(new AnimatorListenerAdapter(){
+      @Override public void onAnimationRepeat(      Animator animation){
+        updateFollowText();
+      }
+    }
+);
+    AnimatorSet set=new AnimatorSet();
+    set.play(anim);
+    set.setDuration(200);
+    set.setInterpolator(new AccelerateDecelerateInterpolator());
+    set.start();
+  }
+ else {
+    updateFollowText();
+  }
+}
