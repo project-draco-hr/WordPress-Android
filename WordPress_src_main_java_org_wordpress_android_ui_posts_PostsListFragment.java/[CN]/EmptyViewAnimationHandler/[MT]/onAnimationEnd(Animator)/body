@@ -2,39 +2,32 @@
   if (!isAdded()) {
     return;
   }
-  mAnimationStage++;
-  if (mIsInLoadingPhase) {
+  mAnimationStage=mAnimationStage.next();
 switch (mAnimationStage) {
-case 2:
-      startAnimation(mEmptyViewTitle,"translationY",0,mSlideDistance);
-    break;
-case 3:
-  startAnimation(mEmptyViewTitle,"alpha",1f,0.1f);
+case SLIDE_TEXT_UP:
+    startAnimation(mEmptyViewTitle,"translationY",0,mSlideDistance);
+  break;
+case FADE_OUT_NO_CONTENT_TEXT:
+startAnimation(mEmptyViewTitle,"alpha",1f,0.1f);
 break;
-case 4:
+case FADE_IN_LOADING_TEXT:
 mEmptyViewTitle.setText(mIsPage ? R.string.loading_pages : R.string.loading_posts);
 startAnimation(mEmptyViewTitle,"alpha",0.1f,1f);
 break;
-default :
-return;
-}
-}
- else {
-switch (mAnimationStage) {
-case 2:
+case FADE_IN_NO_CONTENT_TEXT:
 mSwipeToRefreshHelper.setRefreshing(false);
 mKeepSwipeRefreshLayoutVisible=false;
 mEmptyViewTitle.setText(mIsPage ? R.string.pages_empty_list : R.string.posts_empty_list);
 mEmptyViewMessage=MessageType.NO_CONTENT;
 startAnimation(mEmptyViewTitle,"alpha",0.1f,1f);
 break;
-case 3:
+case SLIDE_TEXT_DOWN:
 startAnimation(mEmptyViewTitle,"translationY",mSlideDistance,0);
 if (!mHasDisplayedLoadingSequence) {
 mEmptyViewImage.setVisibility(View.INVISIBLE);
 }
 break;
-case 4:
+case FADE_IN_IMAGE:
 if (!mHasDisplayedLoadingSequence) {
 AniUtils.startAnimation(mEmptyViewImage,android.R.anim.fade_in,ANIMATION_DURATION);
 mEmptyViewImage.setVisibility(View.VISIBLE);
@@ -45,6 +38,5 @@ startAnimation(mEmptyViewImage,"alpha",0f,1f);
 break;
 default :
 return;
-}
 }
 }
