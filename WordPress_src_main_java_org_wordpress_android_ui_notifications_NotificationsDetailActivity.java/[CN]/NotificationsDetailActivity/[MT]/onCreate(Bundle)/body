@@ -12,9 +12,6 @@
       ToastUtils.showToast(this,R.string.error_notification_open);
       return;
     }
-    if (!getIntent().getBooleanExtra(NotificationsListFragment.NOTE_INSTANT_REPLY_EXTRA,false)) {
-      getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-    }
     if (SimperiumUtils.getNotesBucket() != null) {
       try {
         Note note=SimperiumUtils.getNotesBucket().get(noteId);
@@ -36,6 +33,9 @@
   }
  else   if (savedInstanceState.containsKey(ARG_TITLE) && getSupportActionBar() != null) {
     getSupportActionBar().setTitle(StringUtils.notNullStr(savedInstanceState.getString(ARG_TITLE)));
+  }
+  if (!getIntent().getBooleanExtra(NotificationsListFragment.NOTE_INSTANT_REPLY_EXTRA,false)) {
+    getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
   }
   GCMIntentService.clearNotificationsMap();
 }
