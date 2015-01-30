@@ -4,15 +4,6 @@
   Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
   setSupportActionBar(toolbar);
   mViewPager=(WPMainViewPager)findViewById(R.id.viewpager_main);
-  mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
-    @Override public void onPageSelected(    int position){
-      super.onPageSelected(position);
-    }
-    @Override public void onPageScrollStateChanged(    int state){
-      super.onPageScrollStateChanged(state);
-    }
-  }
-);
   mTabAdapter=new WPTabAdapter(getFragmentManager());
   mViewPager.setAdapter(mTabAdapter);
   mTabs=(SlidingTabLayout)findViewById(R.id.sliding_tabs);
@@ -20,4 +11,16 @@
   mTabs.setSelectedIndicatorColors(getResources().getColor(R.color.tab_indicator));
   mTabs.setDistributeEvenly(true);
   mTabs.setViewPager(mViewPager);
+  if (savedInstanceState == null) {
+    int position=AppPrefs.getMainTabIndex();
+    if (mTabAdapter.isValidPosition(position) && position != mViewPager.getCurrentItem()) {
+      mViewPager.setCurrentItem(position);
+    }
+  }
+  mTabs.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+    @Override public void onPageSelected(    int position){
+      AppPrefs.setMainTabIndex(position);
+    }
+  }
+);
 }
