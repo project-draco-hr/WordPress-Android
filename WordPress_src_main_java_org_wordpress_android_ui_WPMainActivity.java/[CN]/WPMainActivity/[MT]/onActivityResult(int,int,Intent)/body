@@ -3,14 +3,17 @@
 switch (requestCode) {
 case RequestCodes.READER_SUBS:
 case RequestCodes.READER_REBLOG:
-    handleReaderActivityResult(requestCode,resultCode,data);
-  break;
+    ReaderPostListFragment readerFragment=getReaderListFragment();
+  if (readerFragment != null) {
+    readerFragment.handleActivityResult(requestCode,resultCode,data);
+  }
+break;
 case RequestCodes.ADD_ACCOUNT:
 if (resultCode == RESULT_OK) {
-  WordPress.registerForCloudMessaging(this);
+WordPress.registerForCloudMessaging(this);
 }
  else {
-  finish();
+finish();
 }
 break;
 case RequestCodes.REAUTHENTICATE:
