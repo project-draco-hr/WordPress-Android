@@ -5,5 +5,26 @@ case ReaderConstants.INTENT_READER_SUBS:
 case ReaderConstants.INTENT_READER_REBLOG:
     handleReaderActivityResult(requestCode,resultCode,data);
   break;
+case ADD_ACCOUNT_REQUEST:
+if (resultCode == RESULT_OK) {
+  WordPress.registerForCloudMessaging(this);
+}
+ else {
+  finish();
+}
+break;
+case AUTHENTICATE_REQUEST:
+if (resultCode == RESULT_CANCELED) {
+showSignIn();
+}
+ else {
+WordPress.registerForCloudMessaging(this);
+}
+break;
+case SETTINGS_REQUEST:
+if (showSignInIfRequired()) {
+WordPress.registerForCloudMessaging(this);
+}
+break;
 }
 }
