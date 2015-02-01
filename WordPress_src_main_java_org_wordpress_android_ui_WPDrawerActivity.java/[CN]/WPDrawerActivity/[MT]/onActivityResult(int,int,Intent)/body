@@ -1,7 +1,7 @@
 {
   super.onActivityResult(requestCode,resultCode,data);
 switch (requestCode) {
-case ADD_ACCOUNT_REQUEST:
+case RequestCodes.ADD_ACCOUNT:
     if (resultCode == RESULT_OK) {
       getBlogNames();
       setupCurrentBlog();
@@ -15,7 +15,7 @@ case ADD_ACCOUNT_REQUEST:
       finish();
     }
   break;
-case SETTINGS_REQUEST:
+case RequestCodes.SETTINGS:
 if (mDrawerListView != null && resultCode != SettingsActivity.RESULT_SIGNED_OUT) {
   initBlogSpinner();
   String[] blogNames=getBlogNames();
@@ -28,10 +28,10 @@ if (mDrawerListView != null && resultCode != SettingsActivity.RESULT_SIGNED_OUT)
   WordPress.registerForCloudMessaging(this);
 }
 break;
-case AUTHENTICATE_REQUEST:
+case RequestCodes.REAUTHENTICATE:
 if (resultCode == RESULT_CANCELED) {
 Intent i=new Intent(this,SignInActivity.class);
-startActivityForResult(i,ADD_ACCOUNT_REQUEST);
+startActivityForResult(i,RequestCodes.ADD_ACCOUNT);
 }
  else {
 WordPress.registerForCloudMessaging(this);
