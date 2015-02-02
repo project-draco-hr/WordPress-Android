@@ -1,0 +1,17 @@
+{
+  JSONArray subjectRanges=queryJSON("subject[0].ranges",new JSONArray());
+  if (subjectRanges != null) {
+    for (int i=0; i < subjectRanges.length(); i++) {
+      try {
+        JSONObject rangeItem=subjectRanges.getJSONObject(i);
+        if (rangeItem.has("type") && rangeItem.optString("type").equals("noticon")) {
+          return rangeItem.optString("value","");
+        }
+      }
+ catch (      JSONException e) {
+        return "";
+      }
+    }
+  }
+  return "";
+}
