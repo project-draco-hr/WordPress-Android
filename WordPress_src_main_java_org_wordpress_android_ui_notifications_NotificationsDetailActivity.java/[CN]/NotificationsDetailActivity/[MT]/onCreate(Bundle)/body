@@ -1,0 +1,40 @@
+{
+  super.onCreate(savedInstanceState);
+  AppLog.i(AppLog.T.NOTIFS,"Creating NotificationsDetailActivity");
+  setContentView(R.layout.notifications_detail_activity);
+  ActionBar actionBar=getSupportActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
+  if (savedInstanceState == null) {
+    String noteId=getIntent().getStringExtra(NotificationsListFragment.NOTE_ID_EXTRA);
+    if (noteId == null) {
+      ToastUtils.showToast(this,R.string.error_notification_open);
+      return;
+    }
+    if (SimperiumUtils.getNotesBucket() != null) {
+      try {
+        Note note=SimperiumUtils.getNotesBucket().get(noteId);
+        if (note.isUnread()) {
+          note.markAsRead();
+        }
+        Fragment detailFragment=getDetailFragmentForNote(note);
+        getFragmentManager().beginTransaction().add(R.id.notifications_detail_container,detailFragment).commit();
+        if (getSupportActionBar() != null) {
+          getSupportActionBar().setTitle(note.getTitle());
+        }
+      }
+ catch (      BucketObjectMissingException e) {
+        AppLog.e(AppLog.T.NOTIFS,"Note could not be found.");
+        ToastUtils.showToast(this,R.string.error_notification_open);
+      }
+    }
+  }
+ else   if (savedInstanceState.containsKey(ARG_TITLE) && getSupportActionBar() != null) {
+    getSupportActionBar().setTitle(StringUtils.notNullStr(savedInstanceState.getString(ARG_TITLE)));
+  }
+  if (!getIntent().getBooleanExtra(NotificationsListFragment.NOTE_INSTANT_REPLY_EXTRA,false)) {
+    getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+  }
+  GCMIntentService.clearNotificationsMap();
+}
