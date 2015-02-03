@@ -1,10 +1,8 @@
 {
   super.onActivityCreated(savedInstanceState);
   setHasOptionsMenu(false);
-  boolean adapterAlreadyExists=hasPostAdapter();
   mRecyclerView.setAdapter(getPostAdapter());
-  if (!adapterAlreadyExists && getPostListType().isTagType()) {
-    boolean isRecreated=(savedInstanceState != null);
+  if (getPostListType().isTagType()) {
     getPostAdapter().setCurrentTag(mCurrentTag);
   }
   if (getPostListType().isPreviewType()) {
@@ -17,6 +15,7 @@ case BLOG_PREVIEW:
 break;
 case TAG_PREVIEW:
 updateTagPreviewHeader();
+updateCurrentTagIfTime();
 animateHeader();
 break;
 }

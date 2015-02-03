@@ -2,6 +2,14 @@
   if (!isAdded()) {
     return;
   }
+  if (mLastFollowedUpdate != null) {
+    Date dtNow=new Date();
+    int minutes=DateTimeUtils.minutesBetween(dtNow,mLastFollowedUpdate);
+    if (minutes < 60) {
+      return;
+    }
+  }
   AppLog.d(AppLog.T.READER,"updating reader followed tags and blogs");
   ReaderUpdateService.startService(getActivity(),EnumSet.of(ReaderUpdateService.UpdateTask.TAGS,ReaderUpdateService.UpdateTask.FOLLOWED_BLOGS));
+  mLastFollowedUpdate=new Date();
 }

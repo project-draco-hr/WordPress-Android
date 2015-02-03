@@ -4,13 +4,15 @@
   }
 switch (requestCode) {
 case RequestCodes.READER_SUBS:
-    if (data.getBooleanExtra(ReaderSubsActivity.KEY_TAGS_CHANGED,false)) {
-      String lastAddedTag=data.getStringExtra(ReaderSubsActivity.KEY_LAST_ADDED_TAG_NAME);
-      doTagsChanged(lastAddedTag);
-    }
- else     if (data.getBooleanExtra(ReaderSubsActivity.KEY_BLOGS_CHANGED,false)) {
-      if (getPostListType().isTagType() && ReaderTag.TAG_NAME_FOLLOWING.equals(getCurrentTagName())) {
-        updatePostsWithTag(getCurrentTag(),ReaderActions.RequestDataAction.LOAD_NEWER,ReaderRefreshType.AUTOMATIC);
+    if (getPostListType() == ReaderPostListType.TAG_FOLLOWED) {
+      if (data.getBooleanExtra(ReaderSubsActivity.KEY_TAGS_CHANGED,false)) {
+        String lastAddedTag=data.getStringExtra(ReaderSubsActivity.KEY_LAST_ADDED_TAG_NAME);
+        doTagsChanged(lastAddedTag);
+      }
+ else       if (data.getBooleanExtra(ReaderSubsActivity.KEY_BLOGS_CHANGED,false)) {
+        if (ReaderTag.TAG_NAME_FOLLOWING.equals(getCurrentTagName())) {
+          updatePostsWithTag(getCurrentTag(),ReaderActions.RequestDataAction.LOAD_NEWER,ReaderRefreshType.AUTOMATIC);
+        }
       }
     }
   break;
