@@ -1,0 +1,13 @@
+{
+  AppLog.d(T.READER,"reader post list > onVisibilityChanged " + isVisible);
+  if (isVisible) {
+    if (!isUpdating() && getPostListType() == ReaderPostListType.TAG_FOLLOWED && ReaderTagTable.shouldAutoUpdateTag(getCurrentTag())) {
+      updatePostsWithTag(getCurrentTag(),RequestDataAction.LOAD_NEWER,ReaderRefreshType.AUTOMATIC);
+    }
+    startUpdater();
+    registerReceiver();
+  }
+ else {
+    unregisterReceiver();
+  }
+}

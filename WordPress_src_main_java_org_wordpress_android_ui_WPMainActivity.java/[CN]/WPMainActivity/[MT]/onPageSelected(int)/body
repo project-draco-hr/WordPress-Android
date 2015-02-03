@@ -1,3 +1,12 @@
 {
   AppPrefs.setMainTabIndex(position);
+  Fragment previousFragment=mTabAdapter.getFragment(mPreviousPosition);
+  if (previousFragment instanceof FragmentVisibilityListener) {
+    ((FragmentVisibilityListener)previousFragment).onVisibilityChanged(false);
+  }
+  Fragment thisFragment=mTabAdapter.getFragment(position);
+  if (thisFragment instanceof FragmentVisibilityListener) {
+    ((FragmentVisibilityListener)thisFragment).onVisibilityChanged(true);
+  }
+  mPreviousPosition=position;
 }
