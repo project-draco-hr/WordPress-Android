@@ -1,28 +1,12 @@
 {
   View view=inflater.inflate(R.layout.notifications_fragment_notes_list,container,false);
   mRecyclerView=(RecyclerView)view.findViewById(R.id.recycler_view_notes);
+  mLinearLayoutManager=new LinearLayoutManager(getActivity());
+  mRecyclerView.setLayoutManager(mLinearLayoutManager);
   RecyclerView.ItemAnimator animator=new DefaultItemAnimator();
   animator.setSupportsChangeAnimations(true);
   mRecyclerView.setItemAnimator(animator);
-  mLinearLayoutManager=new LinearLayoutManager(getActivity());
-  mRecyclerView.setLayoutManager(mLinearLayoutManager);
-  mBucket=SimperiumUtils.getNotesBucket();
-  if (mBucket != null) {
-    if (mNotesAdapter == null) {
-      mNotesAdapter=new NotesAdapter(getActivity(),mBucket);
-      mNotesAdapter.setOnNoteClickListener(new OnNoteClickListener(){
-        @Override public void onClickNote(        String noteId){
-          if (TextUtils.isEmpty(noteId))           return;
-          openNote(noteId,getActivity(),false);
-        }
-      }
-);
-    }
-    mRecyclerView.setAdapter(mNotesAdapter);
-  }
- else {
-    ToastUtils.showToast(getActivity(),R.string.error_refresh_notifications);
-  }
   mEmptyTextView=(TextView)view.findViewById(R.id.empty_view);
+  createBucketAndAdapter();
   return view;
 }

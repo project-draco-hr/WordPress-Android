@@ -1,0 +1,20 @@
+{
+  if (mBucket == null) {
+    mBucket=SimperiumUtils.getNotesBucket();
+    if (mBucket == null) {
+      ToastUtils.showToast(getActivity(),R.string.error_refresh_notifications);
+      return;
+    }
+  }
+  if (mNotesAdapter == null) {
+    mNotesAdapter=new NotesAdapter(getActivity(),mBucket);
+    mNotesAdapter.setOnNoteClickListener(new OnNoteClickListener(){
+      @Override public void onClickNote(      String noteId){
+        if (TextUtils.isEmpty(noteId))         return;
+        openNote(noteId,getActivity(),false);
+      }
+    }
+);
+  }
+  mRecyclerView.setAdapter(mNotesAdapter);
+}
