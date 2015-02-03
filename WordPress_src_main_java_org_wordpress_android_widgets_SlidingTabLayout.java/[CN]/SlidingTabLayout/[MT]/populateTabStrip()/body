@@ -1,9 +1,10 @@
 {
   final PagerAdapter adapter=mViewPager.getAdapter();
   final View.OnClickListener tabClickListener=new TabClickListener();
+  boolean showIcons=(mIcons != null && mIcons.length == adapter.getCount() && mTabViewIconViewId != 0);
   for (int i=0; i < adapter.getCount(); i++) {
     View tabView=null;
-    if (mUseIcons) {
+    if (showIcons) {
       tabView=LayoutInflater.from(getContext()).inflate(mTabViewLayoutId,mTabStrip,false);
       ImageView imgIcon=(ImageView)tabView.findViewById(mTabViewIconViewId);
       imgIcon.setImageDrawable(getContext().getResources().getDrawable(mIcons[i]));
@@ -14,13 +15,13 @@
         tabView=LayoutInflater.from(getContext()).inflate(mTabViewLayoutId,mTabStrip,false);
         tabTitleView=(TextView)tabView.findViewById(mTabViewTextViewId);
       }
-      if (tabView == null) {
+ else {
         tabView=createDefaultTabView(getContext());
-      }
-      if (tabTitleView == null && TextView.class.isInstance(tabView)) {
         tabTitleView=(TextView)tabView;
       }
-      tabTitleView.setText(adapter.getPageTitle(i));
+      if (tabTitleView != null) {
+        tabTitleView.setText(adapter.getPageTitle(i));
+      }
     }
     if (mDistributeEvenly) {
       LinearLayout.LayoutParams lp=(LinearLayout.LayoutParams)tabView.getLayoutParams();
