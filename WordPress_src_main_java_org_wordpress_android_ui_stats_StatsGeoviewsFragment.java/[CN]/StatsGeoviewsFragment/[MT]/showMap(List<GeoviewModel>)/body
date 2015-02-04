@@ -1,0 +1,31 @@
+{
+  if (!isAdded()) {
+    return;
+  }
+  mTopPagerContainer.removeAllViews();
+  mTopPagerContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
+    @Override public void onGlobalLayout(){
+      mTopPagerContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+      String dataToLoad="";
+      for (int i=0; i < countries.size(); i++) {
+        final GeoviewModel currentCountry=countries.get(i);
+        dataToLoad+="['" + currentCountry.getCountryFullName() + "',"+ currentCountry.getViews()+ "],";
+      }
+      String label=getResources().getString(getTotalsLabelResId());
+      String html_value="<html>\n" + "  <head>\n" + "    <script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>\n"+ "    <script type=\"text/javascript\">\n"+ "      google.load(\"visualization\", \"1\", {packages:[\"geochart\"]});\n"+ "      google.setOnLoadCallback(drawRegionsMap);\n"+ "\n"+ "      function drawRegionsMap() {\n"+ "\n"+ "        var data = google.visualization.arrayToDataTable(["+ "['Country', '" + label + "'],"+ dataToLoad+ "        ]);"+ "\n"+ "        var options = {"+ "legend: 'none',"+ "keepAspectRatio: true,"+ "region: 'world',"+ "enableRegionInteractivity: true,"+ "};\n"+ "\n"+ "        var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));\n"+ "\n"+ "        chart.draw(data, options);\n"+ "      }\n"+ "    </script>\n"+ "  </head>\n"+ "  <body>\n"+ "    <div id=\"regions_div\" style=\"width: 100%; height: 100%;\"></div>\n"+ "  </body>\n"+ "</html>";
+      WebView webView=new WebView(getActivity());
+      mTopPagerContainer.addView(webView);
+      int width=mTopPagerContainer.getWidth();
+      int height=width * 3 / 4;
+      LinearLayout.LayoutParams params=(LinearLayout.LayoutParams)webView.getLayoutParams();
+      params.width=WebView.LayoutParams.MATCH_PARENT;
+      params.height=height;
+      webView.setLayoutParams(params);
+      webView.getSettings().setJavaScriptEnabled(true);
+      webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+      webView.loadData(html_value,"text/html","UTF-8");
+    }
+  }
+);
+  mTopPagerContainer.setVisibility(View.VISIBLE);
+}
