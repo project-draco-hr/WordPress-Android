@@ -1,0 +1,19 @@
+{
+  int maxResults=1;
+  Address address=null;
+  List<Address> addresses=null;
+  Geocoder gcd=getGeocoder(context);
+  if (gcd == null) {
+    return null;
+  }
+  try {
+    addresses=gcd.getFromLocationName(locationName,maxResults);
+  }
+ catch (  IOException e) {
+    AppLog.e(AppLog.T.UTILS,"Failed to get coordinates from location",e);
+  }
+  if (addresses != null && addresses.size() > 0) {
+    address=addresses.get(0);
+  }
+  return address;
+}
