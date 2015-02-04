@@ -1,4 +1,7 @@
 {
+  if (mTabStrip.getChildCount() > 0) {
+    mTabStrip.removeAllViews();
+  }
   final PagerAdapter adapter=mViewPager.getAdapter();
   final View.OnClickListener tabClickListener=new TabClickListener();
   boolean showIcons=(mIcons != null && mIcons.length == adapter.getCount() && mTabViewIconViewId != 0);
@@ -8,6 +11,12 @@
       tabView=LayoutInflater.from(getContext()).inflate(mTabViewLayoutId,mTabStrip,false);
       ImageView imgIcon=(ImageView)tabView.findViewById(mTabViewIconViewId);
       imgIcon.setImageDrawable(getContext().getResources().getDrawable(mIcons[i]));
+      if (mTabBadgeViewId != 0) {
+        View badgeView=tabView.findViewById(mTabBadgeViewId);
+        if (badgeView != null) {
+          badgeView.setVisibility(mBadges[i] ? View.VISIBLE : View.GONE);
+        }
+      }
     }
  else {
       TextView tabTitleView=null;
