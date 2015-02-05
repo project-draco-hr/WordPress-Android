@@ -1,0 +1,17 @@
+{
+  if (data != null) {
+    List<MediaItem> selectedContent=data.getParcelableArrayListExtra(MediaPickerActivity.SELECTED_CONTENT_RESULTS_KEY);
+    if (selectedContent != null && selectedContent.size() > 0) {
+      for (      MediaItem selectedItem : selectedContent) {
+        if (selectedItem.getSource().getHost() == null) {
+          if (!addMedia(selectedItem.getSource(),null,getActivity())) {
+            Toast.makeText(getActivity(),getResources().getText(R.string.gallery_error),Toast.LENGTH_SHORT).show();
+          }
+        }
+ else {
+          addExistingMediaToEditor(selectedItem.getTag());
+        }
+      }
+    }
+  }
+}
