@@ -1,0 +1,34 @@
+{
+  if (convertView == null) {
+    convertView=inflater.inflate(R.layout.media_item_wp_video,parent,false);
+  }
+  if (convertView != null) {
+    MediaItem mediaItem=mMediaItems.get(position);
+    Uri imageSource=mediaItem.getPreviewSource();
+    ImageView imageView=(ImageView)convertView.findViewById(R.id.wp_video_view_background);
+    if (imageView != null) {
+      if (imageSource != null) {
+        Bitmap imageBitmap=null;
+        if (cache != null) {
+          imageBitmap=cache.getBitmap(imageSource.toString());
+        }
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        if (imageBitmap == null) {
+          imageView.setImageResource(R.color.grey_medium);
+          MediaUtils.BackgroundDownloadWebImage bgDownload=new MediaUtils.BackgroundDownloadWebImage(imageView);
+          imageView.setTag(bgDownload);
+          bgDownload.execute(mediaItem.getPreviewSource());
+        }
+ else {
+          org.wordpress.mediapicker.MediaUtils.fadeInImage(imageView,imageBitmap);
+        }
+      }
+ else {
+        imageView.setTag(null);
+        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        imageView.setImageResource(R.drawable.video_thumbnail);
+      }
+    }
+  }
+  return convertView;
+}

@@ -1,0 +1,39 @@
+{
+  if (cursor.moveToFirst()) {
+    do {
+      int attachmentIdColumnIndex=cursor.getColumnIndex(WordPressDB.COLUMN_NAME_MEDIA_ID);
+      int fileUrlColumnIndex=cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_URL);
+      int filePathColumnIndex=cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_PATH);
+      int thumbnailColumnIndex=cursor.getColumnIndex(WordPressDB.COLUMN_NAME_THUMBNAIL_URL);
+      String id="";
+      if (attachmentIdColumnIndex != -1) {
+        id=String.valueOf(cursor.getInt(attachmentIdColumnIndex));
+      }
+      MediaItem newContent=new MediaItem();
+      newContent.setTag(id);
+      newContent.setTitle("");
+      if (fileUrlColumnIndex != -1) {
+        String fileUrl=cursor.getString(fileUrlColumnIndex);
+        if (fileUrl != null) {
+          newContent.setSource(Uri.parse(fileUrl));
+          newContent.setPreviewSource(Uri.parse(fileUrl));
+        }
+ else         if (filePathColumnIndex != -1) {
+          String filePath=cursor.getString(filePathColumnIndex);
+          if (filePath != null) {
+            newContent.setSource(Uri.parse(filePath));
+            newContent.setPreviewSource(Uri.parse(filePath));
+          }
+        }
+      }
+      if (thumbnailColumnIndex != -1) {
+        String preview=cursor.getString(thumbnailColumnIndex);
+        if (preview != null) {
+          newContent.setPreviewSource(Uri.parse(preview));
+        }
+      }
+      mMediaItems.add(newContent);
+    }
+ while (cursor.moveToNext());
+  }
+}
