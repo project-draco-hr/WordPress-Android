@@ -1,5 +1,5 @@
 {
-  WordPress.requestQueue.add(makeOAuthRequest(mUsername,mPassword,new Oauth.Listener(){
+  WordPress.requestQueue.add(makeOAuthRequest(mUsername,mPassword,mTwoStepCode,new Oauth.Listener(){
     @SuppressLint("CommitPrefEdits") @Override public void onResponse(    final Oauth.Token token){
       SimperiumUtils.configureSimperium(WordPress.getContext(),token.toString());
       SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
@@ -14,7 +14,8 @@
 ,new Oauth.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
       JSONObject errorObject=VolleyUtils.volleyErrorToJSON(volleyError);
-      mCallback.onError(restLoginErrorToMsgId(errorObject),false,false);
+      int errorMsgId=restLoginErrorToMsgId(errorObject);
+      mCallback.onError(errorMsgId,errorMsgId == R.string.account_two_step_auth_enabled,false,false);
     }
   }
 ));
