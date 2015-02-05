@@ -2,10 +2,6 @@
   if (!isAdded()) {
     return;
   }
-  if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-    mTopPagerContainer.setVisibility(View.GONE);
-    return;
-  }
   int dp4=DisplayUtils.dpToPx(mTopPagerContainer.getContext(),4);
   LinearLayout.LayoutParams layoutParams=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
   layoutParams.setMargins(0,0,dp4,0);
@@ -13,7 +9,7 @@
   mTopPagerContainer.removeAllViews();
   mTopPagerContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
     @Override public void onGlobalLayout(){
-      mTopPagerContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+      mTopPagerContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);
       StringBuilder dataToLoad=new StringBuilder();
       for (int i=0; i < countries.size(); i++) {
         final GeoviewModel currentCountry=countries.get(i);
