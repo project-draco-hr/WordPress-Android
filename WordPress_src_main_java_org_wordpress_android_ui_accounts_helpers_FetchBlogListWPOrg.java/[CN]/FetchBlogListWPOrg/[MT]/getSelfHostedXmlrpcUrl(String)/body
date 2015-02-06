@@ -8,7 +8,7 @@
   }
   String rsdUrl;
   try {
-    rsdUrl=getRsdUrl(url);
+    rsdUrl=UrlUtils.addUrlSchemeIfNeeded(getRsdUrl(url),false);
   }
  catch (  SSLHandshakeException e) {
     if (!UrlUtils.getDomainFromUrl(url).endsWith("wordpress.com")) {
@@ -19,13 +19,13 @@
   }
   try {
     if (rsdUrl != null) {
-      xmlrpcUrl=ApiHelper.getXMLRPCUrl(rsdUrl);
+      xmlrpcUrl=UrlUtils.addUrlSchemeIfNeeded(ApiHelper.getXMLRPCUrl(rsdUrl),false);
       if (xmlrpcUrl == null) {
-        xmlrpcUrl=rsdUrl.replace("?rsd","");
+        xmlrpcUrl=UrlUtils.addUrlSchemeIfNeeded(rsdUrl.replace("?rsd",""),false);
       }
     }
  else {
-      xmlrpcUrl=getXmlrpcByUserEnteredPath(url);
+      xmlrpcUrl=UrlUtils.addUrlSchemeIfNeeded(getXmlrpcByUserEnteredPath(url),false);
     }
   }
  catch (  SSLHandshakeException e) {
