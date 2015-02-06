@@ -1,0 +1,15 @@
+{
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      setCurrentUser(ReaderUser.fromJson(jsonObject));
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.READER,volleyError);
+    }
+  }
+;
+  WordPress.getRestClientUtils().get("me",listener,errorListener);
+}
