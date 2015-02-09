@@ -1,7 +1,7 @@
 {
   if (mBlogInfoView != null && mBlogInfoView.isEmpty()) {
     AppLog.d(T.READER,"reader post list > loading blogInfo");
-    mBlogInfoView.loadBlogInfo(mCurrentBlogId,mCurrentBlogUrl,new ReaderBlogInfoView.BlogInfoListener(){
+    ReaderBlogInfoView.BlogInfoListener listener=new ReaderBlogInfoView.BlogInfoListener(){
       @Override public void onBlogInfoLoaded(      ReaderBlog blogInfo){
         if (isAdded()) {
           mCurrentBlogId=blogInfo.blogId;
@@ -22,6 +22,12 @@
         }
       }
     }
-);
+;
+    if (mCurrentFeedId != 0) {
+      mBlogInfoView.loadFeedInfo(mCurrentFeedId,listener);
+    }
+ else {
+      mBlogInfoView.loadBlogInfo(mCurrentBlogId,mCurrentBlogUrl,listener);
+    }
   }
 }
