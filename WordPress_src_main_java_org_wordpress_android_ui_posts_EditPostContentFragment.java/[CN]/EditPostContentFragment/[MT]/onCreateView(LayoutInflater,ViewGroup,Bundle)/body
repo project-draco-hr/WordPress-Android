@@ -50,42 +50,5 @@
   mStrikeToggleButton.setOnClickListener(mFormatBarButtonClickListener);
   mBquoteToggleButton.setOnClickListener(mFormatBarButtonClickListener);
   moreButton.setOnClickListener(mFormatBarButtonClickListener);
-  Post post=mActivity.getPost();
-  if (post != null) {
-    if (!TextUtils.isEmpty(post.getContent())) {
-      if (post.isLocalDraft()) {
-        new LoadPostContentTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,post.getContent().replaceAll("\uFFFC",""));
-      }
- else {
-        mContentEditText.setText(post.getContent().replaceAll("\uFFFC",""));
-      }
-    }
-    if (!TextUtils.isEmpty(post.getTitle())) {
-      mTitleEditText.setText(post.getTitle());
-    }
-    postSettingsButton.setText(post.isPage() ? R.string.page_settings : R.string.post_settings);
-  }
-  String action=mActivity.getIntent().getAction();
-  mQuickMediaType=mActivity.getIntent().getIntExtra("quick-media",-1);
-  if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
-    setPostContentFromShareAction();
-  }
- else   if (NEW_MEDIA_GALLERY.equals(action)) {
-    prepareMediaGallery();
-  }
- else   if (NEW_MEDIA_POST.equals(action)) {
-    prepareMediaPost();
-  }
- else   if (mQuickMediaType >= 0) {
-    if (mQuickMediaType == Constants.QUICK_POST_PHOTO_CAMERA) {
-      launchCamera();
-    }
- else     if (mQuickMediaType == Constants.QUICK_POST_PHOTO_LIBRARY) {
-      launchPictureLibrary();
-    }
-    if (post != null) {
-      post.setQuickPostType(Post.QUICK_MEDIA_TYPE_PHOTO);
-    }
-  }
   return rootView;
 }

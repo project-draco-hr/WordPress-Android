@@ -1,0 +1,38 @@
+{
+  Post post=getPost();
+  if (post != null) {
+    if (!TextUtils.isEmpty(post.getContent())) {
+      if (post.isLocalDraft()) {
+        new LoadPostContentTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,post.getContent().replaceAll("\uFFFC",""));
+      }
+ else {
+        mEditPostContentFragment.setContent(post.getContent().replaceAll("\uFFFC",""));
+      }
+    }
+    if (!TextUtils.isEmpty(post.getTitle())) {
+      mEditPostContentFragment.setTitle(post.getTitle());
+    }
+  }
+  String action=getIntent().getAction();
+  int quickMediaType=getIntent().getIntExtra("quick-media",-1);
+  if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
+    setPostContentFromShareAction();
+  }
+ else   if (NEW_MEDIA_GALLERY.equals(action)) {
+    prepareMediaGallery();
+  }
+ else   if (NEW_MEDIA_POST.equals(action)) {
+    prepareMediaPost();
+  }
+ else   if (quickMediaType >= 0) {
+    if (quickMediaType == Constants.QUICK_POST_PHOTO_CAMERA) {
+      launchCamera();
+    }
+ else     if (quickMediaType == Constants.QUICK_POST_PHOTO_LIBRARY) {
+      launchPictureLibrary();
+    }
+    if (post != null) {
+      post.setQuickPostType(Post.QUICK_MEDIA_TYPE_PHOTO);
+    }
+  }
+}

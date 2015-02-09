@@ -1,0 +1,43 @@
+{
+  if (WordPress.getCurrentBlog() == null) {
+    return;
+  }
+  EditText editText=mEditPostContentFragment.getContentEditText();
+  String blogId=String.valueOf(WordPress.getCurrentBlog().getLocalTableBlogId());
+  WPImageSpan imageSpan=MediaUtils.prepareWPImageSpan(this,blogId,mediaId);
+  if (imageSpan == null) {
+    return;
+  }
+  int selectionStart=editText.getSelectionStart();
+  int selectionEnd=editText.getSelectionEnd();
+  if (selectionStart > selectionEnd) {
+    int temp=selectionEnd;
+    selectionEnd=selectionStart;
+    selectionStart=temp;
+  }
+  int line, column=0;
+  if (editText.getLayout() != null) {
+    line=editText.getLayout().getLineForOffset(selectionStart);
+    column=editText.getSelectionStart() - editText.getLayout().getLineStart(line);
+  }
+  Editable s=editText.getText();
+  if (s != null) {
+    WPImageSpan[] gallerySpans=s.getSpans(selectionStart,selectionEnd,WPImageSpan.class);
+    if (gallerySpans.length != 0) {
+      s.insert(selectionEnd,"\n\n");
+      selectionStart=selectionStart + 2;
+      selectionEnd=selectionEnd + 2;
+    }
+ else     if (column != 0) {
+      s.insert(selectionEnd,"\n");
+      selectionStart=selectionStart + 1;
+      selectionEnd=selectionEnd + 1;
+    }
+    s.insert(selectionStart," ");
+    s.setSpan(imageSpan,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    AlignmentSpan.Standard as=new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER);
+    s.setSpan(as,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    s.insert(selectionEnd + 1,"\n\n");
+  }
+  loadWPImageSpanThumbnail(imageSpan);
+}

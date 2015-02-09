@@ -1,0 +1,35 @@
+{
+  Intent intent=getIntent();
+  String text=intent.getStringExtra(Intent.EXTRA_TEXT);
+  String title=intent.getStringExtra(Intent.EXTRA_SUBJECT);
+  if (text != null) {
+    if (title != null) {
+      mEditPostContentFragment.setTitle(title);
+    }
+    text=AutolinkUtils.autoCreateLinks(text);
+    mEditPostContentFragment.setContent(WPHtml.fromHtml(StringUtils.addPTags(text),this,getPost(),getMaximumThumbnailWidthForEditor()));
+  }
+  if (intent.hasExtra(Intent.EXTRA_STREAM)) {
+    String action=intent.getAction();
+    String type=intent.getType();
+    ArrayList<Uri> sharedUris;
+    if (Intent.ACTION_SEND_MULTIPLE.equals(action)) {
+      sharedUris=intent.getParcelableArrayListExtra((Intent.EXTRA_STREAM));
+    }
+ else {
+      if (type != null && (type.startsWith("image") || type.startsWith("video"))) {
+        sharedUris=new ArrayList<Uri>();
+        sharedUris.add((Uri)intent.getParcelableExtra(Intent.EXTRA_STREAM));
+      }
+ else {
+        return;
+      }
+    }
+    if (sharedUris != null) {
+      List<Serializable> params=new Vector<Serializable>();
+      params.add(sharedUris);
+      params.add(type);
+      new ProcessAttachmentsTask(this).execute(params);
+    }
+  }
+}
