@@ -1,4 +1,11 @@
 {
+  String path="/read/feed/" + feedId + "/posts/?meta=site,likes";
+  if (updateAction == RequestDataAction.LOAD_OLDER) {
+    String dateOldest=ReaderPostTable.getOldestPubDateInFeed(feedId);
+    if (!TextUtils.isEmpty(dateOldest)) {
+      path+="&before=" + UrlUtils.urlEncode(dateOldest);
+    }
+  }
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       handleUpdatePostsResponse(null,jsonObject,resultListener);
@@ -15,6 +22,5 @@
   }
 ;
   AppLog.d(T.READER,"updating posts in feed " + feedId);
-  String path="/read/feed/" + feedId + "/posts/?meta=site,likes";
   WordPress.getRestClientUtilsV1_1().get(path,null,null,listener,errorListener);
 }
