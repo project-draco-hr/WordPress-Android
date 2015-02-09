@@ -1,19 +1,16 @@
 {
   if (holder instanceof BlogViewHolder) {
     final BlogViewHolder blogHolder=(BlogViewHolder)holder;
-    final boolean isFollowing;
 switch (getBlogType()) {
 case RECOMMENDED:
       final ReaderRecommendedBlog blog=mRecommendedBlogs.get(position);
-    isFollowing=ReaderBlogTable.isFollowedBlog(blog.blogId);
-  blogHolder.txtTitle.setText(blog.getTitle());
-blogHolder.txtDescription.setText(blog.getReason());
+    blogHolder.txtTitle.setText(blog.getTitle());
+  blogHolder.txtDescription.setText(blog.getReason());
 blogHolder.txtUrl.setText(UrlUtils.getDomainFromUrl(blog.getBlogUrl()));
 blogHolder.imgBlog.setImageUrl(blog.getImageUrl(),WPNetworkImageView.ImageType.BLAVATAR);
 break;
 case FOLLOWED:
 final ReaderBlog blogInfo=mFollowedBlogs.get(position);
-isFollowing=blogInfo.isFollowing;
 String domain=UrlUtils.getDomainFromUrl(blogInfo.getUrl());
 if (blogInfo.hasName()) {
 blogHolder.txtTitle.setText(blogInfo.getName());
@@ -24,17 +21,7 @@ blogHolder.txtTitle.setText(domain);
 blogHolder.txtUrl.setText(domain);
 blogHolder.imgBlog.setImageUrl(blogInfo.getImageUrl(),WPNetworkImageView.ImageType.BLAVATAR);
 break;
-default :
-isFollowing=false;
-break;
 }
-blogHolder.followButton.setIsFollowed(isFollowing);
-blogHolder.followButton.setOnClickListener(new View.OnClickListener(){
-@Override public void onClick(View view){
-changeFollowStatus((ReaderFollowButton)view,position,!isFollowing);
-}
-}
-);
 if (mClickListener != null) {
 blogHolder.itemView.setOnClickListener(new View.OnClickListener(){
 @Override public void onClick(View v){
