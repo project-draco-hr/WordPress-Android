@@ -1,0 +1,19 @@
+{
+  long blogId=ReaderBlogTable.getBlogIdFromUrl(blogUrl);
+  if (blogId != 0) {
+    return followBlogById(blogId,isAskingToFollow,actionListener);
+  }
+  ReaderActions.UpdateBlogInfoListener infoListener=new ReaderActions.UpdateBlogInfoListener(){
+    @Override public void onResult(    ReaderBlog blogInfo){
+      if (blogInfo != null && blogInfo.blogId != 0) {
+        followBlogById(blogInfo.blogId,isAskingToFollow,actionListener);
+      }
+ else       if (actionListener != null) {
+        followFeedByUrl(blogUrl,isAskingToFollow,actionListener);
+      }
+    }
+  }
+;
+  ReaderBlogActions.updateBlogInfo(0,blogUrl,infoListener);
+  return true;
+}

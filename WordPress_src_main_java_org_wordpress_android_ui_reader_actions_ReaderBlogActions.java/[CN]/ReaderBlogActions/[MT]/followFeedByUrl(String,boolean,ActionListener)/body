@@ -1,0 +1,47 @@
+{
+  if (TextUtils.isEmpty(feedUrl)) {
+    if (actionListener != null) {
+      actionListener.onActionResult(false);
+    }
+    return false;
+  }
+  final long feedId=ReaderBlogTable.getFeedIdFromUrl(feedUrl);
+  if (feedId != 0) {
+    ReaderBlogTable.setIsFollowedFeedId(feedId,isAskingToFollow);
+    ReaderPostTable.setFollowStatusForPostsInFeed(feedId,isAskingToFollow);
+  }
+  if (isAskingToFollow) {
+    AnalyticsTracker.track(AnalyticsTracker.Stat.READER_FOLLOWED_SITE);
+  }
+  final String actionName=(isAskingToFollow ? "follow" : "unfollow");
+  final String path="/read/following/mine/" + (isAskingToFollow ? "new" : "delete") + "?url="+ UrlUtils.urlEncode(feedUrl);
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      boolean success=isFollowActionSuccessful(jsonObject,isAskingToFollow);
+      if (success) {
+        AppLog.d(T.READER,"feed " + actionName + " succeeded");
+      }
+ else {
+        AppLog.w(T.READER,"feed " + actionName + " failed - "+ jsonToString(jsonObject)+ " - "+ path);
+        localRevertFollowFeedId(feedId,isAskingToFollow);
+      }
+      if (actionListener != null) {
+        actionListener.onActionResult(success);
+      }
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.w(T.READER,"feed " + actionName + " failed with error");
+      AppLog.e(T.READER,volleyError);
+      localRevertFollowFeedId(feedId,isAskingToFollow);
+      if (actionListener != null) {
+        actionListener.onActionResult(false);
+      }
+    }
+  }
+;
+  WordPress.getRestClientUtils().post(path,listener,errorListener);
+  return true;
+}

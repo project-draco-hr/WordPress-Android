@@ -1,0 +1,15 @@
+{
+  String feedUrl=ReaderBlogTable.getFeedUrlFromId(feedId);
+  if (!TextUtils.isEmpty(feedUrl)) {
+    return followFeedByUrl(feedUrl,isAskingToFollow,actionListener);
+  }
+  updateFeedInfo(feedId,new UpdateBlogInfoListener(){
+    @Override public void onResult(    ReaderBlog blogInfo){
+      if (blogInfo != null) {
+        followFeedByUrl(blogInfo.getFeedUrl(),isAskingToFollow,actionListener);
+      }
+    }
+  }
+);
+  return true;
+}
