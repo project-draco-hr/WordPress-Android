@@ -1,7 +1,9 @@
 {
   ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.signin_fragment,container,false);
+  mScrollView=(ScrollView)rootView.findViewById(R.id.sign_in_scroll_view);
   mUrlButtonLayout=(RelativeLayout)rootView.findViewById(R.id.url_button_layout);
   mTwoStepLayout=(RelativeLayout)rootView.findViewById(R.id.two_factor_layout);
+  mTwoStepFooter=(RelativeLayout)rootView.findViewById(R.id.two_step_footer);
   mUsernameLayout=(RelativeLayout)rootView.findViewById(R.id.nux_username_layout);
   mUsernameLayout.setOnClickListener(mOnLoginFormClickListener);
   mPasswordLayout=(RelativeLayout)rootView.findViewById(R.id.nux_password_layout);
@@ -12,9 +14,6 @@
   mPasswordEditText=(EditText)rootView.findViewById(R.id.nux_password);
   mPasswordEditText.addTextChangedListener(this);
   mPasswordEditText.setOnClickListener(mOnLoginFormClickListener);
-  mTwoStepMessage=(WPTextView)rootView.findViewById(R.id.two_factor_label_message);
-  mTwoStepEditText=(EditText)rootView.findViewById(R.id.nux_two_step);
-  mTwoStepEditText.addTextChangedListener(this);
   mUrlEditText=(EditText)rootView.findViewById(R.id.nux_url);
   mSignInButton=(WPTextView)rootView.findViewById(R.id.nux_sign_in_button);
   mSignInButton.setOnClickListener(mSignInClickListener);
@@ -50,11 +49,24 @@
 );
   mPasswordEditText.setOnEditorActionListener(mEditorAction);
   mUrlEditText.setOnEditorActionListener(mEditorAction);
-  TextView twoStepHelpButton=(TextView)rootView.findViewById(R.id.two_factor_help);
-  twoStepHelpButton.setText(Html.fromHtml("<u>" + getResources().getString(R.string.two_step_help) + "</u>"));
-  twoStepHelpButton.setOnClickListener(new OnClickListener(){
+  mTwoStepEditText=(EditText)rootView.findViewById(R.id.nux_two_step);
+  mTwoStepEditText.addTextChangedListener(this);
+  mTwoStepEditText.setOnKeyListener(new View.OnKeyListener(){
+    @Override public boolean onKey(    View v,    int keyCode,    KeyEvent event){
+      if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (keyCode == EditorInfo.IME_ACTION_DONE)) {
+        if (fieldsFilled()) {
+          signIn();
+        }
+      }
+      return false;
+    }
+  }
+);
+  WPTextView twoStepFooterButton=(WPTextView)rootView.findViewById(R.id.two_step_footer_button);
+  twoStepFooterButton.setText(Html.fromHtml(String.format(getString(R.string.two_step_footer_message),"<u>","</u>")));
+  twoStepFooterButton.setOnClickListener(new OnClickListener(){
     @Override public void onClick(    View v){
-      showTwoStepHelpDialog();
+      requestSMSTwoStepCode();
     }
   }
 );
