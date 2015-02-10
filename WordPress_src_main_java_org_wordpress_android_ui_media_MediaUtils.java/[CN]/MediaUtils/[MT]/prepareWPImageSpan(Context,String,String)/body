@@ -1,7 +1,9 @@
 {
   Cursor cursor=WordPress.wpDB.getMediaFile(blogId,mediaId);
   if (cursor == null || !cursor.moveToFirst()) {
-    if (cursor != null)     cursor.close();
+    if (cursor != null) {
+      cursor.close();
+    }
     return null;
   }
   String url=cursor.getString(cursor.getColumnIndex("fileURL"));
@@ -12,7 +14,7 @@
   String mimeType=cursor.getString(cursor.getColumnIndex("mimeType"));
   boolean isVideo=mimeType != null && mimeType.contains("video");
   Uri uri=Uri.parse(url);
-  WPImageSpan imageSpan=new WPImageSpan(context,isVideo ? R.drawable.media_movieclip : R.drawable.dashicon_format_image_big_grey,uri);
+  WPEditImageSpan imageSpan=new WPEditImageSpan(context,isVideo ? R.drawable.media_movieclip : R.drawable.dashicon_format_image_big_grey,uri);
   MediaFile mediaFile=imageSpan.getMediaFile();
   mediaFile.setMediaId(mediaId);
   mediaFile.setBlogId(blogId);
@@ -28,7 +30,7 @@
   mediaFile.setVideoPressShortCode(cursor.getString(cursor.getColumnIndex("videoPressShortcode")));
   mediaFile.setFileURL(cursor.getString(cursor.getColumnIndex("fileURL")));
   mediaFile.setVideo(isVideo);
-  mediaFile.save();
+  WordPress.wpDB.saveMediaFile(mediaFile);
   cursor.close();
   return imageSpan;
 }

@@ -1,8 +1,12 @@
 {
   MediaFile mediaFile=imageSpan.getMediaFile();
-  if (mediaFile == null)   return;
+  if (mediaFile == null) {
+    return;
+  }
   final String mediaId=mediaFile.getMediaId();
-  if (mediaId == null)   return;
+  if (mediaId == null) {
+    return;
+  }
   final EditText editText=mEditorFragment.getContentEditText();
   String imageURL;
   if (WordPress.getCurrentBlog() != null && WordPress.getCurrentBlog().isPhotonCapable()) {
@@ -12,7 +16,9 @@
  else {
     imageURL=mediaFile.getFileURL() != null ? mediaFile.getFileURL() : mediaFile.getThumbnailURL();
   }
-  if (imageURL == null)   return;
+  if (imageURL == null) {
+    return;
+  }
   WordPress.imageLoader.get(imageURL,new ImageLoader.ImageListener(){
     @Override public void onErrorResponse(    VolleyError arg0){
     }
@@ -49,7 +55,7 @@
           if (mediaId.equals(mediaFile.getMediaId()) && !is.isNetworkImageLoaded()) {
             int spanStart=s.getSpanStart(is);
             int spanEnd=s.getSpanEnd(is);
-            WPImageSpan imageSpan=new WPImageSpan(EditPostActivity.this,resizedBitmap,is.getImageSource());
+            WPEditImageSpan imageSpan=new WPEditImageSpan(EditPostActivity.this,resizedBitmap,is.getImageSource());
             imageSpan.setMediaFile(is.getMediaFile());
             imageSpan.setNetworkImageLoaded(true);
             s.removeSpan(is);

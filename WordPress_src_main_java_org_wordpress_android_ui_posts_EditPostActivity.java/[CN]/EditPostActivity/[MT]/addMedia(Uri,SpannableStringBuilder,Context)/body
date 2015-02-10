@@ -21,7 +21,7 @@
     }
     mediaTitle=ImageUtils.getTitleForWPImageSpan(context,imageUri.getEncodedPath());
   }
-  WPImageSpan is=new WPImageSpan(context,thumbnailBitmap,imageUri);
+  WPEditImageSpan is=new WPEditImageSpan(context,thumbnailBitmap,imageUri);
   MediaFile mediaFile=is.getMediaFile();
   mediaFile.setPostID(getPost().getLocalTablePostId());
   mediaFile.setTitle(mediaTitle);
@@ -30,7 +30,7 @@
   if (imageUri.getEncodedPath() != null) {
     mediaFile.setVideo(imageUri.getEncodedPath().contains("video"));
   }
-  mediaFile.save();
+  WordPress.wpDB.saveMediaFile(mediaFile);
   if (ssb != null) {
     ssb.append(" ");
     ssb.setSpan(is,ssb.length() - 1,ssb.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
