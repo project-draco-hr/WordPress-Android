@@ -1,9 +1,15 @@
 {
+  final StatsViewHolder holder;
   if (convertView == null) {
     convertView=inflater.inflate(R.layout.stats_list_cell,parent,false);
-    convertView.setTag(new StatsViewHolder(convertView));
+    holder=new StatsViewHolder(convertView);
+    holder.networkImageView.setErrorImageResId(R.drawable.stats_icon_default_site_avatar);
+    holder.networkImageView.setDefaultImageResId(R.drawable.stats_icon_default_site_avatar);
+    convertView.setTag(holder);
   }
-  final StatsViewHolder holder=(StatsViewHolder)convertView.getTag();
+ else {
+    holder=(StatsViewHolder)convertView.getTag();
+  }
   ClickGroupModel group=(ClickGroupModel)getGroup(groupPosition);
   String name=group.getName();
   int total=group.getViews();
@@ -17,7 +23,7 @@
     holder.setEntryTextOrLink(url,name);
   }
   holder.totalsTextView.setText(FormatUtils.formatDecimal(total));
-  holder.networkImageView.setImageUrl(GravatarUtils.fixGravatarUrl(icon,mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.STATS_SITE_AVATAR);
+  holder.networkImageView.setImageUrl(GravatarUtils.fixGravatarUrl(icon,mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.BLAVATAR);
   holder.networkImageView.setVisibility(View.VISIBLE);
   if (children == 0) {
     holder.showLinkIcon();
