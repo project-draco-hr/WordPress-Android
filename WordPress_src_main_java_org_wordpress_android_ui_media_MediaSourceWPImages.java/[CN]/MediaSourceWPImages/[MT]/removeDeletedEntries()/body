@@ -1,6 +1,5 @@
 {
   AsyncTask<List<MediaItem>,Void,Void> backgroundCheck=new AsyncTask<List<MediaItem>,Void,Void>(){
-    final ArrayList<MediaItem> removedMedia=new ArrayList<>();
     @Override protected Void doInBackground(    List<MediaItem>[] params){
       for (      MediaItem mediaItem : params[0]) {
         try {
@@ -9,8 +8,8 @@
           connection.setRequestMethod("GET");
           connection.connect();
           int responseCode=connection.getResponseCode();
-          if (responseCode == 404) {
-            removedMedia.add(mediaItem);
+          if (responseCode != 404) {
+            mVerifiedItems.add(mediaItem);
           }
         }
  catch (        MalformedURLException e) {
@@ -22,10 +21,8 @@ catch (        IOException ioException) {
       return null;
     }
     @Override public void onPostExecute(    Void result){
-      for (      MediaItem deletedItem : removedMedia) {
-        mMediaItems.remove(deletedItem);
-      }
-      if (removedMedia.size() > 0 && mListener != null) {
+      if (mVerifiedItems.size() > 0 && mListener != null) {
+        mListener.onMediaAdded(MediaSourceWPImages.this,mVerifiedItems);
       }
     }
   }
