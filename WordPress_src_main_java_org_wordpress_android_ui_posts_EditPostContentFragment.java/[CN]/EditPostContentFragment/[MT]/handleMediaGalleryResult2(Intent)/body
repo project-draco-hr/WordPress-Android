@@ -1,2 +1,27 @@
 {
+  if (data != null) {
+    List<MediaItem> selectedContent=data.getParcelableArrayListExtra(MediaPickerActivity.SELECTED_CONTENT_RESULTS_KEY);
+    if (selectedContent != null && selectedContent.size() > 0) {
+      for (      MediaItem content : selectedContent) {
+        Uri source=content.getSource();
+        final String id=content.getTag();
+        if (source != null && id != null) {
+          final String sourceString=source.toString();
+          if (sourceString.contains("wordpress.com")) {
+            mGalleryIds.add(id);
+          }
+ else           if (MediaUtils.isValidImage(sourceString)) {
+            queueFileForUpload(sourceString);
+            addMedia(source,null,getActivity());
+          }
+        }
+      }
+      if (mUploadingMedia.size() > 0) {
+        ToastUtils.showToast(getActivity(),"Gallery creation pending " + mUploadingMedia.size() + " uploads",ToastUtils.Duration.SHORT);
+      }
+ else {
+        createGallery();
+      }
+    }
+  }
 }

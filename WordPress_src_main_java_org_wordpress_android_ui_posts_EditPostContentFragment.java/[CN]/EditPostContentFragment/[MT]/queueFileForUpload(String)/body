@@ -1,0 +1,30 @@
+{
+  if (path == null || path.equals("")) {
+    Toast.makeText(getActivity(),"Error opening file",Toast.LENGTH_SHORT).show();
+    return;
+  }
+  Blog blog=WordPress.getCurrentBlog();
+  File file=new File(path);
+  if (!file.exists())   return;
+  String mimeType=MediaUtils.getMediaFileMimeType(file);
+  String fileName=MediaUtils.getMediaFileName(file,mimeType);
+  MediaFile mediaFile=new MediaFile();
+  mediaFile.setBlogId(String.valueOf(blog.getLocalTableBlogId()));
+  mediaFile.setFileName(fileName);
+  mediaFile.setFilePath(path);
+  mediaFile.setUploadState("queued");
+  mediaFile.setDateCreatedGMT(System.currentTimeMillis());
+  mediaFile.setMediaId(String.valueOf(System.currentTimeMillis()));
+  if (mimeType != null && mimeType.startsWith("image")) {
+    BitmapFactory.Options bfo=new BitmapFactory.Options();
+    bfo.inJustDecodeBounds=true;
+    BitmapFactory.decodeFile(path,bfo);
+    mediaFile.setWidth(bfo.outWidth);
+    mediaFile.setHeight(bfo.outHeight);
+  }
+  if (!TextUtils.isEmpty(mimeType))   mediaFile.setMimeType(mimeType);
+  mediaFile.save();
+  mUploadingMedia.add(mediaFile.getMediaId());
+  mIdToPath.put(mediaFile.getMediaId(),path);
+  startMediaUploadService();
+}
