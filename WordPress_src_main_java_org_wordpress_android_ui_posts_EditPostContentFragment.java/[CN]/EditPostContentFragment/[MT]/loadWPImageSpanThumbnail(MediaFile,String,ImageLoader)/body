@@ -1,23 +1,13 @@
 {
-  if (mediaFile == null) {
+  if (mediaFile == null || imageURL == null) {
     return;
   }
   final String mediaId=mediaFile.getMediaId();
   if (mediaId == null) {
     return;
   }
-  String imageURL;
-  if (WordPress.getCurrentBlog() != null && WordPress.getCurrentBlog().isPhotonCapable()) {
-    String photonUrl=mediaFile.getFileURL();
-    imageURL=StringUtils.getPhotonUrl(photonUrl,getMaximumThumbnailWidthForEditor());
-  }
- else {
-    imageURL=mediaFile.getFileURL() != null ? mediaFile.getFileURL() : mediaFile.getThumbnailURL();
-  }
-  if (imageURL == null) {
-    return;
-  }
-  WordPress.imageLoader.get(imageURL,new ImageLoader.ImageListener(){
+  final int maxThumbWidth=ImageUtils.getMaximumThumbnailWidthForEditor(getActivity());
+  imageLoader.get(imageURL,new ImageLoader.ImageListener(){
     @Override public void onErrorResponse(    VolleyError arg0){
     }
     @Override public void onResponse(    ImageLoader.ImageContainer container,    boolean arg1){
@@ -29,21 +19,20 @@
         return;
       }
       Bitmap resizedBitmap;
-      int maxWidth=getMaximumThumbnailWidthForEditor();
       try {
-        resizedBitmap=ImageUtils.getScaledBitmapAtLongestSide(downloadedBitmap,maxWidth);
+        resizedBitmap=ImageUtils.getScaledBitmapAtLongestSide(downloadedBitmap,maxThumbWidth);
       }
  catch (      OutOfMemoryError er) {
         CrashlyticsUtils.setInt(ExtraKey.IMAGE_WIDTH,downloadedBitmap.getWidth());
         CrashlyticsUtils.setInt(ExtraKey.IMAGE_HEIGHT,downloadedBitmap.getHeight());
-        CrashlyticsUtils.setFloat(ExtraKey.IMAGE_RESIZE_SCALE,((float)maxWidth) / downloadedBitmap.getWidth());
+        CrashlyticsUtils.setFloat(ExtraKey.IMAGE_RESIZE_SCALE,((float)maxThumbWidth) / downloadedBitmap.getWidth());
         CrashlyticsUtils.logException(er,ExceptionType.SPECIFIC,T.POSTS);
         return;
       }
       if (resizedBitmap == null) {
         return;
       }
-      final EditText editText=mEditorFragment.getContentEditText();
+      final EditText editText=mContentEditText;
       Editable s=editText.getText();
       if (s == null)       return;
       WPImageSpan[] spans=s.getSpans(0,s.length(),WPImageSpan.class);
@@ -54,7 +43,7 @@
           if (mediaId.equals(mediaFile.getMediaId()) && !is.isNetworkImageLoaded()) {
             int spanStart=s.getSpanStart(is);
             int spanEnd=s.getSpanEnd(is);
-            WPEditImageSpan imageSpan=new WPEditImageSpan(EditPostActivity.this,resizedBitmap,is.getImageSource());
+            WPEditImageSpan imageSpan=new WPEditImageSpan(getActivity(),resizedBitmap,is.getImageSource());
             imageSpan.setMediaFile(is.getMediaFile());
             imageSpan.setNetworkImageLoaded(true);
             s.removeSpan(is);
