@@ -1,20 +1,14 @@
 {
   if (isSignedIn && !isFinishing()) {
-    if (!mIsJetpackAuthRequest) {
-      WordPress.getRestClientUtils().get("me",new RestRequest.Listener(){
-        @Override public void onResponse(        JSONObject jsonObject){
-          WPComLoginActivity.this.setResult(RESULT_OK);
-          WordPress.registerForCloudMessaging(WPComLoginActivity.this);
-          ReaderUserActions.setCurrentUser(jsonObject);
-          finish();
-        }
+    WordPress.getRestClientUtils().get("me",new RestRequest.Listener(){
+      @Override public void onResponse(      JSONObject jsonObject){
+        WPComLoginActivity.this.setResult(RESULT_OK);
+        WordPress.registerForCloudMessaging(WPComLoginActivity.this);
+        ReaderUserActions.setCurrentUser(jsonObject);
+        finish();
       }
+    }
 ,null);
-    }
- else {
-      WPComLoginActivity.this.setResult(RESULT_OK);
-      finish();
-    }
   }
  else {
     if (mIsInvalidUsernameOrPassword) {
