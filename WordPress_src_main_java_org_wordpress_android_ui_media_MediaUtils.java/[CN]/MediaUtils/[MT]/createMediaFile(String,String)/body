@@ -13,9 +13,7 @@
   }
   String mimeType=cursor.getString(cursor.getColumnIndex("mimeType"));
   boolean isVideo=mimeType != null && mimeType.contains("video");
-  Uri uri=Uri.parse(url);
-  WPEditImageSpan imageSpan=new WPEditImageSpan(context,isVideo ? R.drawable.media_movieclip : R.drawable.dashicon_format_image_big_grey,uri);
-  MediaFile mediaFile=imageSpan.getMediaFile();
+  MediaFile mediaFile=new MediaFile();
   mediaFile.setMediaId(mediaId);
   mediaFile.setBlogId(blogId);
   mediaFile.setCaption(cursor.getString(cursor.getColumnIndex("caption")));
@@ -32,5 +30,5 @@
   mediaFile.setVideo(isVideo);
   WordPress.wpDB.saveMediaFile(mediaFile);
   cursor.close();
-  return imageSpan;
+  return mediaFile;
 }

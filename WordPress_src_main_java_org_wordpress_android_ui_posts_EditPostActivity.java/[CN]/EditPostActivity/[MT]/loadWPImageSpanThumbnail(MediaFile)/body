@@ -1,5 +1,4 @@
 {
-  MediaFile mediaFile=imageSpan.getMediaFile();
   if (mediaFile == null) {
     return;
   }
@@ -7,10 +6,9 @@
   if (mediaId == null) {
     return;
   }
-  final EditText editText=mEditorFragment.getContentEditText();
   String imageURL;
   if (WordPress.getCurrentBlog() != null && WordPress.getCurrentBlog().isPhotonCapable()) {
-    String photonUrl=imageSpan.getImageSource().toString();
+    String photonUrl=mediaFile.getFileURL();
     imageURL=StringUtils.getPhotonUrl(photonUrl,getMaximumThumbnailWidthForEditor());
   }
  else {
@@ -45,6 +43,7 @@
       if (resizedBitmap == null) {
         return;
       }
+      final EditText editText=mEditorFragment.getContentEditText();
       Editable s=editText.getText();
       if (s == null)       return;
       WPImageSpan[] spans=s.getSpans(0,s.length(),WPImageSpan.class);
