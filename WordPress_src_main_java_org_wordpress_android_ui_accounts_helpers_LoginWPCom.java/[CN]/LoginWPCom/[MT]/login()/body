@@ -2,12 +2,20 @@
   WordPress.requestQueue.add(makeOAuthRequest(mUsername,mPassword,new Oauth.Listener(){
     @SuppressLint("CommitPrefEdits") @Override public void onResponse(    final Oauth.Token token){
       SimperiumUtils.configureSimperium(WordPress.getContext(),token.toString());
-      SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
-      SharedPreferences.Editor editor=settings.edit();
-      editor.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mUsername);
-      editor.putString(WordPress.WPCOM_PASSWORD_PREFERENCE,mPassword);
-      editor.putString(WordPress.ACCESS_TOKEN_PREFERENCE,token.toString());
-      editor.commit();
+      if (mJetpackBlog != null) {
+        mJetpackBlog.setDotcom_username(mUsername);
+        mJetpackBlog.setDotcom_password(mPassword);
+        mJetpackBlog.setApi_key(token.toString());
+        WordPress.wpDB.saveBlog(mJetpackBlog);
+      }
+ else {
+        SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
+        SharedPreferences.Editor editor=settings.edit();
+        editor.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mUsername);
+        editor.putString(WordPress.WPCOM_PASSWORD_PREFERENCE,mPassword);
+        editor.putString(WordPress.ACCESS_TOKEN_PREFERENCE,token.toString());
+        editor.commit();
+      }
       mCallback.onSuccess();
     }
   }
