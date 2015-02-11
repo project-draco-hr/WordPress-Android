@@ -1,16 +1,21 @@
 {
   View rowView=convertView;
+  final StatsViewHolder holder;
   if (rowView == null) {
     rowView=inflater.inflate(R.layout.stats_list_cell,parent,false);
-    StatsViewHolder viewHolder=new StatsViewHolder(rowView);
-    rowView.setTag(viewHolder);
+    holder=new StatsViewHolder(rowView);
+    holder.networkImageView.setErrorImageResId(R.drawable.stats_icon_default_site_avatar);
+    holder.networkImageView.setDefaultImageResId(R.drawable.stats_icon_default_site_avatar);
+    rowView.setTag(holder);
+  }
+ else {
+    holder=(StatsViewHolder)rowView.getTag();
   }
   final SingleItemModel currentRowData=list.get(position);
-  StatsViewHolder holder=(StatsViewHolder)rowView.getTag();
   String serviceName=currentRowData.getTitle();
   holder.setEntryText(getServiceName(serviceName));
   holder.totalsTextView.setText(FormatUtils.formatDecimal(currentRowData.getTotals()));
-  holder.networkImageView.setImageUrl(getServiceImage(serviceName),WPNetworkImageView.ImageType.STATS_SITE_AVATAR);
+  holder.networkImageView.setImageUrl(GravatarUtils.fixGravatarUrl(getServiceImage(serviceName),mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.BLAVATAR);
   holder.networkImageView.setVisibility(View.VISIBLE);
   return rowView;
 }
