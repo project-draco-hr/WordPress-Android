@@ -9,8 +9,9 @@
   }
   boolean wasEmpty=(mBlogInfo == null);
   mBlogInfo=blogInfo;
-  final TextView txtBlogName=(TextView)findViewById(R.id.text_blog_name);
-  final TextView txtDescription=(TextView)findViewById(R.id.text_blog_description);
+  final TextView txtBlogName=(TextView)layoutInner.findViewById(R.id.text_blog_name);
+  final TextView txtDescription=(TextView)layoutInner.findViewById(R.id.text_blog_description);
+  final WPNetworkImageView imgBlavatar=(WPNetworkImageView)layoutInner.findViewById(R.id.image_blavatar);
   if (blogInfo.hasUrl()) {
     txtBlogName.setOnClickListener(new OnClickListener(){
       @Override public void onClick(      View v){
@@ -40,6 +41,11 @@
     txtDescription.setVisibility(View.GONE);
   }
   showFollowerCount(blogInfo.numSubscribers);
+  int blavatarSz=getResources().getDimensionPixelSize(R.dimen.blavatar_sz_large);
+  int imageResId=(blogInfo.isExternal() ? R.drawable.gravatar_placeholder : R.drawable.app_icon);
+  imgBlavatar.setDefaultImageResId(imageResId);
+  imgBlavatar.setErrorImageResId(imageResId);
+  imgBlavatar.setImageUrl(GravatarUtils.blavatarFromUrl(blogInfo.getUrl(),blavatarSz),ImageType.BLAVATAR);
   if (layoutInner.getVisibility() != View.VISIBLE) {
     if (animateIn) {
       new Handler().postDelayed(new Runnable(){
@@ -54,9 +60,6 @@
  else {
       layoutInner.setVisibility(View.VISIBLE);
     }
-  }
-  if (mImageMshot.getUrl() == null) {
-    loadMshotImage(blogInfo);
   }
   if (wasEmpty && mBlogInfoListener != null) {
     mBlogInfoListener.onBlogInfoLoaded(blogInfo);
