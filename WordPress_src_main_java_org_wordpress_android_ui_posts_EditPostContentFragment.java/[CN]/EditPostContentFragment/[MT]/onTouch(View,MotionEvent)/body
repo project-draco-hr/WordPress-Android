@@ -21,12 +21,14 @@
     if (layout != null) {
       int line=layout.getLineForVertical(y);
       int charPosition=layout.getOffsetForHorizontal(line,x);
-      Spannable s=mContentEditText.getText();
-      if (s == null)       return false;
-      WPImageSpan[] image_spans=s.getSpans(charPosition,charPosition,WPImageSpan.class);
-      if (image_spans.length != 0) {
-        final WPImageSpan span=image_spans[0];
-        MediaFile mediaFile=span.getMediaFile();
+      Spannable spannable=mContentEditText.getText();
+      if (spannable == null) {
+        return false;
+      }
+      WPImageSpan[] imageSpans=spannable.getSpans(charPosition,charPosition,WPImageSpan.class);
+      if (imageSpans.length != 0) {
+        final WPImageSpan imageSpan=imageSpans[0];
+        MediaFile mediaFile=imageSpan.getMediaFile();
         if (mediaFile == null)         return false;
         if (!mediaFile.isVideo()) {
           LayoutInflater factory=LayoutInflater.from(getActivity());
@@ -62,13 +64,19 @@
           titleText.setText(mediaFile.getTitle());
           caption.setText(mediaFile.getCaption());
           featuredCheckBox.setChecked(mediaFile.isFeatured());
-          if (mediaFile.isFeatured())           featuredInPostCheckBox.setVisibility(View.VISIBLE);
- else           featuredInPostCheckBox.setVisibility(View.GONE);
+          if (mediaFile.isFeatured()) {
+            featuredInPostCheckBox.setVisibility(View.VISIBLE);
+          }
+ else {
+            featuredInPostCheckBox.setVisibility(View.GONE);
+          }
           featuredInPostCheckBox.setChecked(mediaFile.isFeaturedInPost());
           alignmentSpinner.setSelection(mediaFile.getHorizontalAlignment(),true);
-          final int maxWidth=MediaUtils.getMinimumImageWidth(getActivity(),span.getImageSource());
+          final int maxWidth=MediaUtils.getMinimumImageWidth(getActivity(),imageSpan.getImageSource());
           seekBar.setMax(maxWidth / 10);
-          if (mediaFile.getWidth() != 0)           seekBar.setProgress(mediaFile.getWidth() / 10);
+          if (mediaFile.getWidth() != 0) {
+            seekBar.setProgress(mediaFile.getWidth() / 10);
+          }
           seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
             @Override public void onStopTrackingTouch(            SeekBar seekBar){
             }
@@ -99,43 +107,7 @@
             }
           }
 );
-          AlertDialog ad=new AlertDialog.Builder(getActivity()).setTitle(getString(R.string.image_settings)).setView(alertView).setPositiveButton(getString(R.string.ok),new DialogInterface.OnClickListener(){
-            public void onClick(            DialogInterface dialog,            int whichButton){
-              String title=(titleText.getText() != null) ? titleText.getText().toString() : "";
-              MediaFile mediaFile=span.getMediaFile();
-              if (mediaFile == null)               return;
-              mediaFile.setTitle(title);
-              mediaFile.setHorizontalAlignment(alignmentSpinner.getSelectedItemPosition());
-              mediaFile.setWidth(getEditTextIntegerClamped(imageWidthText,10,maxWidth));
-              String captionText=(caption.getText() != null) ? caption.getText().toString() : "";
-              mediaFile.setCaption(captionText);
-              mediaFile.setFeatured(featuredCheckBox.isChecked());
-              if (featuredCheckBox.isChecked()) {
-                Spannable contentSpannable=mContentEditText.getText();
-                WPImageSpan[] postImageSpans=contentSpannable.getSpans(0,contentSpannable.length(),WPImageSpan.class);
-                if (postImageSpans.length > 1) {
-                  for (                  WPImageSpan postImageSpan : postImageSpans) {
-                    if (postImageSpan != span) {
-                      MediaFile postMediaFile=postImageSpan.getMediaFile();
-                      postMediaFile.setFeatured(false);
-                      postMediaFile.setFeaturedInPost(false);
-                      WordPress.wpDB.saveMediaFile(postMediaFile);
-                    }
-                  }
-                }
-              }
-              mediaFile.setFeaturedInPost(featuredInPostCheckBox.isChecked());
-              WordPress.wpDB.saveMediaFile(mediaFile);
-            }
-          }
-).setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
-            public void onClick(            DialogInterface dialog,            int whichButton){
-              dialog.dismiss();
-            }
-          }
-).create();
-          ad.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-          ad.show();
+          showImageSettings(alertView,titleText,caption,imageWidthText,featuredCheckBox,featuredInPostCheckBox,maxWidth,alignmentSpinner,imageSpan);
           mScrollDetected=false;
           return true;
         }
@@ -145,7 +117,7 @@
         int selectionStart=mContentEditText.getSelectionStart();
         if (selectionStart >= 0 && mContentEditText.getSelectionEnd() >= selectionStart)         mContentEditText.setSelection(selectionStart,mContentEditText.getSelectionEnd());
       }
-      MediaGalleryImageSpan[] gallerySpans=s.getSpans(charPosition,charPosition,MediaGalleryImageSpan.class);
+      MediaGalleryImageSpan[] gallerySpans=spannable.getSpans(charPosition,charPosition,MediaGalleryImageSpan.class);
       if (gallerySpans.length > 0) {
         final MediaGalleryImageSpan gallerySpan=gallerySpans[0];
       }
