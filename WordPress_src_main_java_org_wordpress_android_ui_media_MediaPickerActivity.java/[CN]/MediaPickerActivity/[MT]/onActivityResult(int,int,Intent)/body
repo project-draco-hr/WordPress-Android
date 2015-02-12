@@ -2,16 +2,26 @@
   super.onActivityResult(requestCode,resultCode,data);
 switch (requestCode) {
 case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO:
-    break;
+    File f=new File(mCapturePath);
+  Uri imageUri=Uri.fromFile(f);
+if (MediaUtils.isValidImage(imageUri.toString())) {
+  MediaItem newImage=new MediaItem();
+  newImage.setSource(imageUri);
+  newImage.setPreviewSource(imageUri);
+  ArrayList<MediaItem> imageResult=new ArrayList<>();
+  imageResult.add(newImage);
+  finishWithResults(imageResult,ACTIVITY_RESULT_CODE_MEDIA_SELECTED);
+}
+break;
 case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO:
-  Uri videoUri=data.getData();
+Uri videoUri=data.getData();
 if (videoUri != null) {
-  MediaItem newVideo=new MediaItem();
-  newVideo.setSource(videoUri);
-  newVideo.setPreviewSource(videoUri);
-  ArrayList<MediaItem> videoResult=new ArrayList<>();
-  videoResult.add(newVideo);
-  finishWithResults(videoResult,ACTIVITY_RESULT_CODE_MEDIA_SELECTED);
+MediaItem newVideo=new MediaItem();
+newVideo.setSource(videoUri);
+newVideo.setPreviewSource(videoUri);
+ArrayList<MediaItem> videoResult=new ArrayList<>();
+videoResult.add(newVideo);
+finishWithResults(videoResult,ACTIVITY_RESULT_CODE_MEDIA_SELECTED);
 }
 break;
 default :
