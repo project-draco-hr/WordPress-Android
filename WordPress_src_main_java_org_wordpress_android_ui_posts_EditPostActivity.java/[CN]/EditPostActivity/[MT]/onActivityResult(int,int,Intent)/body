@@ -1,6 +1,6 @@
 {
   super.onActivityResult(requestCode,resultCode,data);
-  if (data != null || ((requestCode == MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO || requestCode == MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO))) {
+  if (data != null || ((requestCode == RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO || requestCode == RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO))) {
     Bundle extras;
 switch (requestCode) {
 case MediaGalleryActivity.REQUEST_CODE:
@@ -13,12 +13,12 @@ if (resultCode == Activity.RESULT_OK) {
   handleMediaGalleryPickerResult(data);
 }
 break;
-case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_PICTURE_LIBRARY:
+case RequestCode.ACTIVITY_REQUEST_CODE_PICTURE_LIBRARY:
 Uri imageUri=data.getData();
 fetchMedia(imageUri);
 AnalyticsTracker.track(Stat.EDITOR_ADDED_PHOTO_VIA_LOCAL_LIBRARY);
 break;
-case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO:
+case RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO:
 if (resultCode == Activity.RESULT_OK) {
 try {
 File f=new File(mMediaCapturePath);
@@ -41,11 +41,11 @@ WordPress.wpDB.deletePost(getPost());
 finish();
 }
 break;
-case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_VIDEO_LIBRARY:
+case RequestCode.ACTIVITY_REQUEST_CODE_VIDEO_LIBRARY:
 Uri videoUri=data.getData();
 fetchMedia(videoUri);
 break;
-case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO:
+case RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO:
 if (resultCode == Activity.RESULT_OK) {
 Uri capturedVideoUri=MediaUtils.getLastRecordedVideoUri(this);
 if (!addMedia(capturedVideoUri)) {
