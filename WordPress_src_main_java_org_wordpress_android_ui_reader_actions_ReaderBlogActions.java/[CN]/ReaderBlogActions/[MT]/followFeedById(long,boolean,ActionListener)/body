@@ -1,0 +1,18 @@
+{
+  ReaderBlog blogInfo=ReaderBlogTable.getFeedInfo(feedId);
+  if (blogInfo != null) {
+    return internalFollowFeed(blogInfo.feedId,blogInfo.getFeedUrl(),isAskingToFollow,actionListener);
+  }
+  updateFeedInfo(feedId,null,new UpdateBlogInfoListener(){
+    @Override public void onResult(    ReaderBlog blogInfo){
+      if (blogInfo != null) {
+        internalFollowFeed(blogInfo.feedId,blogInfo.getFeedUrl(),isAskingToFollow,actionListener);
+      }
+ else       if (actionListener != null) {
+        actionListener.onActionResult(false);
+      }
+    }
+  }
+);
+  return true;
+}

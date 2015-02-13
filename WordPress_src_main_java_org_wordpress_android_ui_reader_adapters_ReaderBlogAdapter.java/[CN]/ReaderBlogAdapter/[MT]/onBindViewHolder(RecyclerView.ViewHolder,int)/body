@@ -1,23 +1,16 @@
 {
   if (holder instanceof BlogViewHolder) {
     final BlogViewHolder blogHolder=(BlogViewHolder)holder;
-    final boolean isFollowing;
-    boolean isWordPress;
-    String blogImageUrl;
 switch (getBlogType()) {
 case RECOMMENDED:
       final ReaderRecommendedBlog blog=mRecommendedBlogs.get(position);
-    isFollowing=ReaderBlogTable.isFollowedBlog(blog.blogId,blog.getBlogUrl());
-  isWordPress=true;
-blogHolder.txtTitle.setText(blog.getTitle());
-blogHolder.txtDescription.setText(blog.getReason());
+    blogHolder.txtTitle.setText(blog.getTitle());
+  blogHolder.txtDescription.setText(blog.getReason());
 blogHolder.txtUrl.setText(UrlUtils.getDomainFromUrl(blog.getBlogUrl()));
-blogImageUrl=blog.getImageUrl();
+blogHolder.imgBlog.setImageUrl(blog.getImageUrl(),WPNetworkImageView.ImageType.BLAVATAR);
 break;
-default :
+case FOLLOWED:
 final ReaderBlog blogInfo=mFollowedBlogs.get(position);
-isFollowing=blogInfo.isFollowing;
-isWordPress=!blogInfo.isExternal();
 String domain=UrlUtils.getDomainFromUrl(blogInfo.getUrl());
 if (blogInfo.hasName()) {
 blogHolder.txtTitle.setText(blogInfo.getName());
@@ -26,19 +19,9 @@ blogHolder.txtTitle.setText(blogInfo.getName());
 blogHolder.txtTitle.setText(domain);
 }
 blogHolder.txtUrl.setText(domain);
-blogImageUrl=blogInfo.getImageUrl();
+blogHolder.imgBlog.setImageUrl(blogInfo.getImageUrl(),WPNetworkImageView.ImageType.BLAVATAR);
 break;
 }
-blogImageUrl=GravatarUtils.fixGravatarUrl(blogImageUrl,mBlavatarSz);
-blogHolder.imgBlog.setErrorImageResId(isWordPress ? R.drawable.app_icon : R.drawable.gravatar_placeholder);
-blogHolder.imgBlog.setImageUrl(blogImageUrl,WPNetworkImageView.ImageType.BLAVATAR);
-blogHolder.followButton.setIsFollowed(isFollowing);
-blogHolder.followButton.setOnClickListener(new View.OnClickListener(){
-@Override public void onClick(View view){
-changeFollowStatus((ReaderFollowButton)view,position,!isFollowing);
-}
-}
-);
 if (mClickListener != null) {
 blogHolder.itemView.setOnClickListener(new View.OnClickListener(){
 @Override public void onClick(View v){

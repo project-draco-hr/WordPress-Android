@@ -1,0 +1,21 @@
+{
+  ReaderActions.ActionListener followListener=new ReaderActions.ActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      if (isFinishing()) {
+        return;
+      }
+      hideAddUrlProgress();
+      if (succeeded) {
+        mEditAdd.setText(null);
+        EditTextUtils.hideSoftInput(mEditAdd);
+        showInfoToast(getString(R.string.reader_label_followed_blog));
+        getPageAdapter().refreshBlogFragments(ReaderBlogType.FOLLOWED);
+      }
+ else {
+        ToastUtils.showToast(ReaderSubsActivity.this,R.string.reader_toast_err_follow_blog);
+      }
+    }
+  }
+;
+  ReaderBlogActions.followFeedByUrl(normUrl,true,followListener);
+}
