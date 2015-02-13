@@ -1,12 +1,15 @@
 {
-  String feedUrl=ReaderBlogTable.getFeedUrlFromId(feedId);
-  if (!TextUtils.isEmpty(feedUrl)) {
-    return followFeedByUrl(feedUrl,isAskingToFollow,actionListener);
+  ReaderBlog blogInfo=ReaderBlogTable.getFeedInfo(feedId);
+  if (blogInfo != null) {
+    return internalFollowFeed(blogInfo.feedId,blogInfo.getFeedUrl(),isAskingToFollow,actionListener);
   }
-  updateFeedInfo(feedId,new UpdateBlogInfoListener(){
+  updateFeedInfo(feedId,null,new UpdateBlogInfoListener(){
     @Override public void onResult(    ReaderBlog blogInfo){
       if (blogInfo != null) {
-        followFeedByUrl(blogInfo.getFeedUrl(),isAskingToFollow,actionListener);
+        internalFollowFeed(blogInfo.feedId,blogInfo.getFeedUrl(),isAskingToFollow,actionListener);
+      }
+ else       if (actionListener != null) {
+        actionListener.onActionResult(false);
       }
     }
   }
