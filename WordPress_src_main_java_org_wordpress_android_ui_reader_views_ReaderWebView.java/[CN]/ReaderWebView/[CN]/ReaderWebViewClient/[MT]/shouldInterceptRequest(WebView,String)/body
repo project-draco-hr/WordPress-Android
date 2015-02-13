@@ -1,0 +1,15 @@
+{
+  if (!TextUtils.isEmpty(mToken) && isImageUrl(url)) {
+    HttpGet httpGet=new HttpGet(url);
+    httpGet.setHeader("Authorization","Bearer " + mToken);
+    try {
+      HttpResponse httpResponse=mClient.execute(httpGet);
+      InputStream responseInputStream=httpResponse.getEntity().getContent();
+      return new WebResourceResponse(httpResponse.getEntity().getContentType().toString(),"UTF-8",responseInputStream);
+    }
+ catch (    IOException e) {
+      AppLog.e(AppLog.T.READER,"Invalid reader detail request: " + e.getMessage());
+    }
+  }
+  return super.shouldInterceptRequest(view,url);
+}
