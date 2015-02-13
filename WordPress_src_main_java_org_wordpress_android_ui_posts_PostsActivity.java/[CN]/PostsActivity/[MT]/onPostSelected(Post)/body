@@ -5,6 +5,10 @@
   FragmentManager fm=getFragmentManager();
   ViewPostFragment viewPostFragment=(ViewPostFragment)fm.findFragmentById(R.id.postDetail);
   if (post != null) {
+    if (post.isUploading()) {
+      ToastUtils.showToast(this,R.string.toast_err_post_uploading,ToastUtils.Duration.SHORT);
+      return;
+    }
     WordPress.currentPost=post;
     if (viewPostFragment == null || !viewPostFragment.isInLayout()) {
       FragmentTransaction ft=fm.beginTransaction();
