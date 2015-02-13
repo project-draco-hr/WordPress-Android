@@ -1,5 +1,8 @@
 {
+  if (TextUtils.isEmpty(blogUrl)) {
+    return false;
+  }
   String sql="SELECT 1 FROM tbl_blog_info WHERE is_following!=0 AND blog_url=?";
-  String[] args={blogUrl};
+  String[] args={UrlUtils.normalizeUrl(blogUrl)};
   return SqlUtils.boolForQuery(ReaderDatabase.getReadableDb(),sql,args);
 }
