@@ -1,6 +1,19 @@
 {
   if (mActions == null) {
-    mActions=queryJSON("body[last].actions",new JSONObject());
+    long commentId=getCommentId();
+    JSONArray bodyArray=getBody();
+    for (int i=0; i < bodyArray.length(); i++) {
+      try {
+        JSONObject bodyItem=bodyArray.getJSONObject(i);
+        if (bodyItem.has("type") && bodyItem.optString("type").equals("comment") && commentId == JSONUtil.queryJSON(bodyItem,"meta.ids.comment",0)) {
+          mActions=JSONUtil.queryJSON(bodyItem,"actions",new JSONObject());
+          break;
+        }
+      }
+ catch (      JSONException e) {
+        break;
+      }
+    }
   }
   return mActions;
 }
