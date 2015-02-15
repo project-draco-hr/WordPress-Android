@@ -1,25 +1,29 @@
 {
   super.onActivityCreated(savedInstanceState);
-  setHasOptionsMenu(false);
+  setHasOptionsMenu(true);
+  setupActionBar();
+  boolean adapterAlreadyExists=hasPostAdapter();
   mRecyclerView.setAdapter(getPostAdapter());
-  if (getPostListType().isTagType()) {
+  if (!adapterAlreadyExists && getPostListType().isTagType()) {
+    boolean isRecreated=(savedInstanceState != null);
     getPostAdapter().setCurrentTag(mCurrentTag);
+    if (!isRecreated && ReaderTagTable.shouldAutoUpdateTag(mCurrentTag)) {
+      updatePostsWithTag(getCurrentTag(),RequestDataAction.LOAD_NEWER,RefreshType.AUTOMATIC);
+    }
   }
   if (getPostListType().isPreviewType()) {
     createFollowButton();
   }
 switch (getPostListType()) {
 case BLOG_PREVIEW:
-    loadBlogInfo();
+    loadBlogOrFeedInfo();
   animateHeader();
 break;
 case TAG_PREVIEW:
 updateTagPreviewHeader();
-updateCurrentTagIfTime();
 animateHeader();
 break;
 }
-getPostAdapter().setOnPostSelectedListener(this);
-getPostAdapter().setOnTagSelectedListener(this);
-getPostAdapter().setOnPostPopupListener(this);
+getPostAdapter().setOnTagSelectedListener(mOnTagSelectedListener);
+getPostAdapter().setOnPostPopupListener(mOnPostPopupListener);
 }
