@@ -1,14 +1,13 @@
 {
   super.onActivityCreated(savedInstanceState);
   setHasOptionsMenu(true);
-  setupActionBar();
   boolean adapterAlreadyExists=hasPostAdapter();
   mRecyclerView.setAdapter(getPostAdapter());
   if (!adapterAlreadyExists && getPostListType().isTagType()) {
     boolean isRecreated=(savedInstanceState != null);
     getPostAdapter().setCurrentTag(mCurrentTag);
     if (!isRecreated && ReaderTagTable.shouldAutoUpdateTag(mCurrentTag)) {
-      updatePostsWithTag(getCurrentTag(),RequestDataAction.LOAD_NEWER,RefreshType.AUTOMATIC);
+      updatePostsWithTag(getCurrentTag(),RequestDataAction.LOAD_NEWER,ReaderRefreshType.AUTOMATIC);
     }
   }
   if (getPostListType().isPreviewType()) {

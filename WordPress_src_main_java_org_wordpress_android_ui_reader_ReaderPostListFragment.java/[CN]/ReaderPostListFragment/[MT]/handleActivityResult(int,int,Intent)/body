@@ -1,0 +1,23 @@
+{
+  if (resultCode != Activity.RESULT_OK || data == null) {
+    return;
+  }
+switch (requestCode) {
+case RequestCodes.READER_SUBS:
+    if (getPostListType() == ReaderPostListType.TAG_FOLLOWED) {
+      if (data.getBooleanExtra(ReaderSubsActivity.KEY_TAGS_CHANGED,false)) {
+        String lastAddedTag=data.getStringExtra(ReaderSubsActivity.KEY_LAST_ADDED_TAG_NAME);
+        doTagsChanged(lastAddedTag);
+      }
+      if (getPostListType() == ReaderTypes.ReaderPostListType.TAG_FOLLOWED && ReaderTag.TAG_NAME_FOLLOWING.equals(getCurrentTagName())) {
+        refreshPosts();
+      }
+    }
+  break;
+case RequestCodes.READER_REBLOG:
+long blogId=data.getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
+long postId=data.getLongExtra(ReaderConstants.ARG_POST_ID,0);
+reloadPost(ReaderPostTable.getPost(blogId,postId,true));
+break;
+}
+}

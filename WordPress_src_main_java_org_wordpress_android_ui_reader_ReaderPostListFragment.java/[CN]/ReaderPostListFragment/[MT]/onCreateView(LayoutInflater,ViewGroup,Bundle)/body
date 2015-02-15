@@ -1,6 +1,9 @@
 {
   final ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.reader_fragment_post_cards,container,false);
   mRecyclerView=(ReaderRecyclerView)rootView.findViewById(R.id.recycler_view);
+  if (getPostListType() == ReaderPostListType.TAG_FOLLOWED) {
+    setupFragmentToolbar(rootView);
+  }
   Context context=container.getContext();
   int spacingHorizontal=context.getResources().getDimensionPixelSize(R.dimen.reader_card_spacing);
   int spacingVertical=context.getResources().getDimensionPixelSize(R.dimen.reader_card_gutters);
@@ -43,7 +46,7 @@ return;
 switch (getPostListType()) {
 case TAG_FOLLOWED:
 case TAG_PREVIEW:
-updatePostsWithTag(getCurrentTag(),RequestDataAction.LOAD_NEWER,RefreshType.MANUAL);
+updatePostsWithTag(getCurrentTag(),RequestDataAction.LOAD_NEWER,ReaderRefreshType.MANUAL);
 break;
 case BLOG_PREVIEW:
 updatePostsInCurrentBlogOrFeed(RequestDataAction.LOAD_NEWER);
