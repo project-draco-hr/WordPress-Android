@@ -1,0 +1,14 @@
+{
+  if (serviceEvent.getEvent() == ReaderUpdateService.ServiceEventEnum.FOLLOWED_BLOGS_CHANGED) {
+    ReaderPostListFragment listFragment=getListFragment();
+    if (listFragment == null) {
+      showListFragmentForTag(ReaderTag.getDefaultTag(),ReaderTypes.ReaderPostListType.TAG_FOLLOWED);
+    }
+ else     if (listFragment.getPostListType() == ReaderTypes.ReaderPostListType.TAG_FOLLOWED) {
+      listFragment.refreshTags();
+      if (listFragment.isPostAdapterEmpty()) {
+        listFragment.updateCurrentTag();
+      }
+    }
+  }
+}
