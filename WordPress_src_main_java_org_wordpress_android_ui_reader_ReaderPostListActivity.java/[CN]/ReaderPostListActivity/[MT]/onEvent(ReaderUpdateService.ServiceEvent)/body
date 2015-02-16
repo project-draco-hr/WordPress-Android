@@ -1,6 +1,7 @@
 {
-  if (serviceEvent.getEvent() == ReaderUpdateService.ServiceEventEnum.FOLLOWED_BLOGS_CHANGED) {
-    ReaderPostListFragment listFragment=getListFragment();
+  ReaderPostListFragment listFragment=getListFragment();
+switch (serviceEvent.getEvent()) {
+case FOLLOWED_TAGS_CHANGED:
     if (listFragment == null) {
       showListFragmentForTag(ReaderTag.getDefaultTag(),ReaderTypes.ReaderPostListType.TAG_FOLLOWED);
     }
@@ -10,5 +11,11 @@
         listFragment.updateCurrentTag();
       }
     }
-  }
+  break;
+case FOLLOWED_BLOGS_CHANGED:
+if (listFragment != null && listFragment.getPostListType() == ReaderTypes.ReaderPostListType.TAG_FOLLOWED && ReaderTag.TAG_NAME_FOLLOWING.equals(listFragment.getCurrentTagName())) {
+  listFragment.refreshPosts();
+}
+break;
+}
 }
