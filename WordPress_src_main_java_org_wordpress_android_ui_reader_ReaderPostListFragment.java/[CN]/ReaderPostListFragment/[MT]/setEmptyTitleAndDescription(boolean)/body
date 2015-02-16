@@ -4,12 +4,17 @@
   }
   int titleResId;
   int descriptionResId=0;
-  boolean isNetworkAvailable=NetworkUtils.isNetworkAvailable(getActivity());
-  if (isUpdating()) {
+  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+    titleResId=R.string.reader_empty_posts_no_connection;
+  }
+ else   if (requestFailed) {
+    titleResId=R.string.reader_empty_posts_request_failed;
+  }
+ else   if (isUpdating()) {
     titleResId=R.string.reader_empty_posts_in_tag_updating;
   }
  else   if (getPostListType() == ReaderPostListType.BLOG_PREVIEW) {
-    titleResId=(isNetworkAvailable ? R.string.reader_empty_posts_in_blog : R.string.no_network_title);
+    titleResId=R.string.reader_empty_posts_in_blog;
   }
  else   if (getPostListType() == ReaderPostListType.TAG_FOLLOWED && getSpinnerAdapter() != null) {
     int tagIndex=getSpinnerAdapter().getIndexOfTag(mCurrentTag);
@@ -30,12 +35,12 @@ case ReaderTag.TAG_ID_LIKED:
 titleResId=R.string.reader_empty_posts_liked;
 break;
 default :
-titleResId=(isNetworkAvailable ? R.string.reader_empty_posts_in_tag : R.string.no_network_title);
+titleResId=R.string.reader_empty_posts_in_tag;
 break;
 }
 }
  else {
-titleResId=(isNetworkAvailable ? R.string.reader_empty_posts_in_tag : R.string.no_network_title);
+titleResId=R.string.reader_empty_posts_in_tag;
 }
 TextView titleView=(TextView)mEmptyView.findViewById(R.id.title_empty);
 titleView.setText(getString(titleResId));
