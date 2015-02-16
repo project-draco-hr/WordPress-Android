@@ -21,8 +21,13 @@
     AnalyticsTracker.track(AnalyticsTracker.Stat.READER_ACCESSED);
     if (mPostListType == ReaderTypes.ReaderPostListType.BLOG_PREVIEW) {
       long blogId=intent.getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
-      String blogUrl=intent.getStringExtra(ReaderConstants.ARG_BLOG_URL);
-      showListFragmentForBlog(blogId,blogUrl);
+      long feedId=intent.getLongExtra(ReaderConstants.ARG_FEED_ID,0);
+      if (feedId != 0) {
+        showListFragmentForFeed(feedId);
+      }
+ else {
+        showListFragmentForBlog(blogId);
+      }
     }
  else {
       ReaderTag tag;
@@ -47,5 +52,8 @@ setTitle(R.string.reader_title_blog_preview);
 break;
 default :
 break;
+}
+if (isStaticMenuDrawer() && mPostListType.isPreviewType()) {
+hideDrawer();
 }
 }

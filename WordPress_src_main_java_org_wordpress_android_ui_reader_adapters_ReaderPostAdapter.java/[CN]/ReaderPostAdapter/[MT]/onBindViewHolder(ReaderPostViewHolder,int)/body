@@ -18,24 +18,19 @@
  else {
       holder.txtBlogName.setText(null);
     }
-    ReaderUtils.showFollowStatus(holder.txtFollow,post.isFollowedByCurrentUser);
-    holder.txtFollow.setOnClickListener(new View.OnClickListener(){
+    holder.followButton.setIsFollowed(post.isFollowedByCurrentUser);
+    holder.followButton.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
-        toggleFollow((TextView)v,position);
+        toggleFollow((ReaderFollowButton)v,position);
       }
     }
 );
-    if (!post.isExternal) {
-      holder.imgAvatar.setOnClickListener(new View.OnClickListener(){
-        @Override public void onClick(        View view){
-          ReaderActivityLauncher.showReaderBlogPreview(view.getContext(),post.blogId,post.getBlogUrl());
-        }
+    holder.imgAvatar.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        ReaderActivityLauncher.showReaderBlogPreview(view.getContext(),post);
       }
+    }
 );
-    }
- else {
-      holder.imgAvatar.setOnClickListener(null);
-    }
   }
   if (post.hasExcerpt()) {
     holder.txtText.setVisibility(View.VISIBLE);
