@@ -7,8 +7,8 @@
   if (!adapterAlreadyExists && getPostListType().isTagType()) {
     boolean isRecreated=(savedInstanceState != null);
     getPostAdapter().setCurrentTag(mCurrentTag);
-    if (!isRecreated) {
-      updateCurrentTagIfTime();
+    if (!isRecreated && ReaderTagTable.shouldAutoUpdateTag(mCurrentTag)) {
+      updatePostsWithTag(getCurrentTag(),RequestDataAction.LOAD_NEWER,RefreshType.AUTOMATIC);
     }
   }
   if (getPostListType().isPreviewType()) {
