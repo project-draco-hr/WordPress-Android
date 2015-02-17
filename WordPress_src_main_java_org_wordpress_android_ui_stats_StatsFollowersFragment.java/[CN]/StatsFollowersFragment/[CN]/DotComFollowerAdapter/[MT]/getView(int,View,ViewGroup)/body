@@ -13,17 +13,20 @@
   holder.entryTextView.setTextColor(context.getResources().getColor(R.color.stats_text_color));
   holder.rowContent.setClickable(false);
   final FollowDataModel followData=currentRowData.getFollowData();
-  if (mTopPagerSelectedButtonIndex == 0 && !TextUtils.isEmpty(currentRowData.getURL())) {
-    boolean openInReader=true;
+  if (mTopPagerSelectedButtonIndex == 0 && !(TextUtils.isEmpty(currentRowData.getURL()) && followData == null)) {
+    final int blogID;
     if (followData == null) {
       String normURL=normalizeAndRemoveScheme(currentRowData.getURL());
-      openInReader=dotComUserBlogsURL.contains(normURL);
+      blogID=userBlogs.containsKey(normURL) ? Integer.parseInt(userBlogs.get(normURL)) : Integer.MIN_VALUE;
     }
-    if (openInReader) {
+ else {
+      blogID=followData.getSiteID();
+    }
+    if (blogID > Integer.MIN_VALUE) {
       holder.entryTextView.setText(currentRowData.getLabel());
       holder.rowContent.setOnClickListener(new View.OnClickListener(){
         @Override public void onClick(        View view){
-          ReaderActivityLauncher.showReaderBlogPreview(context,currentRowData.getURL());
+          ReaderActivityLauncher.showReaderBlogPreview(context,blogID);
         }
       }
 );
