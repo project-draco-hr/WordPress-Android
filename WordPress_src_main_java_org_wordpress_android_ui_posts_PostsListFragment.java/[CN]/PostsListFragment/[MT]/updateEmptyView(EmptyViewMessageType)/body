@@ -1,13 +1,13 @@
 {
   if (mPostsListAdapter != null && mPostsListAdapter.getCount() == 0) {
-    if (mEmptyViewMessage == MessageType.NO_CONTENT && messageType == MessageType.LOADING) {
+    if (mEmptyViewMessage == EmptyViewMessageType.NO_CONTENT && emptyViewMessageType == EmptyViewMessageType.LOADING) {
       if (mSwipedToRefresh) {
         mSwipedToRefresh=false;
         mEmptyViewAnimationHandler.showLoadingSequence();
         return;
       }
     }
- else     if (mEmptyViewMessage == MessageType.LOADING && messageType == MessageType.NO_CONTENT) {
+ else     if (mEmptyViewMessage == EmptyViewMessageType.LOADING && emptyViewMessageType == EmptyViewMessageType.NO_CONTENT) {
       mEmptyViewAnimationHandler.showNoContentSequence();
       return;
     }
@@ -21,14 +21,14 @@
   if (mEmptyView != null) {
     int stringId=0;
     if (!mEmptyViewAnimationHandler.isBetweenSequences()) {
-      if (messageType == MessageType.NO_CONTENT) {
+      if (emptyViewMessageType == EmptyViewMessageType.NO_CONTENT) {
         mEmptyViewImage.setVisibility(View.VISIBLE);
       }
  else {
         mEmptyViewImage.setVisibility(View.GONE);
       }
     }
-switch (messageType) {
+switch (emptyViewMessageType) {
 case LOADING:
       stringId=mIsPage ? R.string.loading_pages : R.string.loading_posts;
     break;
@@ -46,6 +46,6 @@ stringId=mIsPage ? R.string.error_refresh_pages : R.string.error_refresh_posts;
 break;
 }
 mEmptyViewTitle.setText(getText(stringId));
-mEmptyViewMessage=messageType;
+mEmptyViewMessage=emptyViewMessageType;
 }
 }
