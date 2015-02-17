@@ -1,0 +1,25 @@
+{
+  if (TextUtils.isEmpty(blogUrl)) {
+    return;
+  }
+  long blogId=ReaderBlogTable.getBlogIdFromUrl(blogUrl);
+  if (blogId != 0) {
+    showReaderBlogPreview(context,blogId);
+    return;
+  }
+  final WeakReference<Context> weakContext=new WeakReference<>(context);
+  ReaderBlogActions.updateBlogInfo(0,blogUrl,new ReaderActions.UpdateBlogInfoListener(){
+    @Override public void onResult(    ReaderBlog blogInfo){
+      if (weakContext.get() == null) {
+        return;
+      }
+      if (blogInfo != null && blogInfo.blogId != 0) {
+        showReaderBlogPreview(weakContext.get(),blogInfo.blogId);
+      }
+ else {
+        ToastUtils.showToast(weakContext.get(),R.string.reader_toast_err_get_blog_info);
+      }
+    }
+  }
+);
+}

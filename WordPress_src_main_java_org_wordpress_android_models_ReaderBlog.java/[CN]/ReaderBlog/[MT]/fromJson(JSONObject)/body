@@ -21,6 +21,7 @@
   }
  else   if (jsonFeed != null) {
     blog.feedId=jsonFeed.optLong("feed_ID");
+    blog.setFeedUrl(JSONUtils.getString(jsonFeed,"feed_URL"));
     blog.setName(JSONUtils.getStringDecoded(jsonFeed,"name"));
     blog.setUrl(JSONUtils.getString(jsonFeed,"URL"));
     blog.numSubscribers=jsonFeed.optInt("subscribers_count");
@@ -28,13 +29,25 @@
   }
  else {
     blog.blogId=json.optLong("ID");
+    blog.feedId=json.optLong("feed_ID");
     blog.setName(JSONUtils.getStringDecoded(json,"name"));
     blog.setDescription(JSONUtils.getStringDecoded(json,"description"));
     blog.setUrl(JSONUtils.getString(json,"URL"));
+    blog.setFeedUrl(JSONUtils.getString(json,"feed_URL"));
     blog.isJetpack=JSONUtils.getBool(json,"jetpack");
     blog.isPrivate=JSONUtils.getBool(json,"is_private");
     blog.isFollowing=JSONUtils.getBool(json,"is_following");
     blog.numSubscribers=json.optInt("subscribers_count");
+  }
+  if (blog.blogId == 0 && blog.feedId != 0) {
+    blog.blogId=blog.feedId;
+  }
+  JSONObject jsonIcon=JSONUtil.getJSONChild(json,"icon");
+  if (jsonIcon != null) {
+    blog.setImageUrl(JSONUtil.getString(jsonIcon,"img"));
+    if (!blog.hasImageUrl()) {
+      blog.setImageUrl(JSONUtil.getString(jsonIcon,"ico"));
+    }
   }
   return blog;
 }
