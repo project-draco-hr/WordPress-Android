@@ -4,7 +4,13 @@
   }
   int titleResId;
   int descriptionResId=0;
-  if (isUpdating()) {
+  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+    titleResId=R.string.reader_empty_posts_no_connection;
+  }
+ else   if (requestFailed) {
+    titleResId=R.string.reader_empty_posts_request_failed;
+  }
+ else   if (isUpdating()) {
     titleResId=R.string.reader_empty_posts_in_tag_updating;
   }
  else   if (getPostListType() == ReaderPostListType.BLOG_PREVIEW) {
