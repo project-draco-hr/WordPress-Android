@@ -1,15 +1,11 @@
 {
-  if (isShowingLoadingAnimation() || isBetweenSequences()) {
-    mHasDisplayedLoadingSequence=true;
-  }
- else {
-    mHasDisplayedLoadingSequence=false;
-  }
+  mHasDisplayedLoadingSequence=(isShowingLoadingAnimation() || isBetweenSequences());
   if (isShowingLoadingAnimation()) {
     int delayTime=(mAnimationStage.stagesRemaining() * ANIMATION_DURATION) + MINIMUM_LOADING_DURATION;
     new Handler().postDelayed(new Runnable(){
       @Override public void run(){
         mAnimationStage=AnimationStage.FADE_OUT_LOADING_TEXT;
+        mListener.onSequenceStarted(EmptyViewMessageType.NO_CONTENT);
         startAnimation(mEmptyViewTitle,"alpha",1f,0.1f);
       }
     }
@@ -17,6 +13,7 @@
   }
  else {
     mAnimationStage=AnimationStage.FADE_OUT_LOADING_TEXT;
+    mListener.onSequenceStarted(EmptyViewMessageType.NO_CONTENT);
     startAnimation(mEmptyViewTitle,"alpha",1f,0.1f);
   }
 }
