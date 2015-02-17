@@ -1,7 +1,7 @@
 {
   String siteId=request.getSiteId();
   String token=null;
-  Blog blog=null;
+  Blog blog;
   SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
   if (siteId == null) {
     token=settings.getString(WordPress.ACCESS_TOKEN_PREFERENCE,null);
@@ -25,10 +25,5 @@
       }
     }
   }
-  if (token != null) {
-    request.sendWithAccessToken(token);
-  }
- else {
-    requestAccessToken(request,blog);
-  }
+  request.sendWithAccessToken(StringUtils.notNullStr(token));
 }
