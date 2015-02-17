@@ -2,11 +2,14 @@
   super.onActivityCreated(savedInstanceState);
   setUpListView();
   getCommentAdapter().loadComments();
-  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
-    return;
-  }
   Bundle extras=getActivity().getIntent().getExtras();
   mHasAutoRefreshedComments=extras.getBoolean(CommentsActivity.KEY_AUTO_REFRESHED);
+  mEmptyViewMessageType=EmptyViewMessageType.getEnumFromString(extras.getString(CommentsActivity.KEY_EMPTY_VIEW_MESSAGE));
+  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+    updateEmptyView(EmptyViewMessageType.NETWORK_ERROR);
+    return;
+  }
+  updateEmptyView(mEmptyViewMessageType);
   if (!mHasAutoRefreshedComments) {
     updateComments(false);
     mSwipeToRefreshHelper.setRefreshing(true);
