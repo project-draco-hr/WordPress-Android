@@ -63,9 +63,7 @@
     holder.txtTag.setVisibility(View.VISIBLE);
     holder.txtTag.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
-        if (mOnTagSelectedListener != null) {
-          mOnTagSelectedListener.onTagSelected(tagToDisplay);
-        }
+        EventBus.getDefault().post(new ReaderEvents.TagSelected(tagToDisplay));
       }
     }
 );
@@ -113,9 +111,7 @@
       holder.imgBtnReblog.setOnClickListener(new View.OnClickListener(){
         @Override public void onClick(        View v){
           ReaderAnim.animateReblogButton(holder.imgBtnReblog);
-          if (mReblogListener != null) {
-            mReblogListener.onRequestReblog(post,v);
-          }
+          EventBus.getDefault().post(new ReaderEvents.ReblogRequested(post));
         }
       }
 );
@@ -146,12 +142,10 @@
   if (mCanRequestMorePosts && mDataRequestedListener != null && (position >= getItemCount() - 1)) {
     mDataRequestedListener.onRequestData();
   }
-  if (mPostSelectedListener != null) {
-    holder.itemView.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View v){
-        mPostSelectedListener.onPostSelected(post.blogId,post.postId);
-      }
+  holder.itemView.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      EventBus.getDefault().post(new ReaderEvents.PostSelected(post));
     }
-);
   }
+);
 }
