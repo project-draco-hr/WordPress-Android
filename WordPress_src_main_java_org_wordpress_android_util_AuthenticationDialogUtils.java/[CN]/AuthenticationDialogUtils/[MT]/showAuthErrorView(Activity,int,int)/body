@@ -1,0 +1,20 @@
+{
+  final String ALERT_TAG="alert_ask_credentials";
+  if (activity.isFinishing()) {
+    return;
+  }
+  if (WordPress.getCurrentBlog() == null || (WordPress.getCurrentBlog() != null && WordPress.getCurrentBlog().isDotcomFlag())) {
+    Intent signInIntent=new Intent(activity,SignInActivity.class);
+    signInIntent.putExtra(SignInActivity.ARG_IS_AUTH_ERROR,true);
+    activity.startActivityForResult(signInIntent,WPComLoginActivity.REQUEST_CODE);
+    return;
+  }
+  if (activity.getFragmentManager().findFragmentByTag(ALERT_TAG) != null) {
+    return;
+  }
+  FragmentTransaction ft=activity.getFragmentManager().beginTransaction();
+  AuthErrorDialogFragment authAlert=new AuthErrorDialogFragment();
+  authAlert.setWPComTitleMessage(titleResId,messageResId);
+  ft.add(authAlert,ALERT_TAG);
+  ft.commitAllowingStateLoss();
+}

@@ -2,30 +2,19 @@
   AlertDialog.Builder b=new AlertDialog.Builder(getActivity());
   b.setTitle(mTitleId);
   b.setMessage(mMessageId);
-  if (mIsWPCom) {
-    b.setPositiveButton(R.string.sign_in,new DialogInterface.OnClickListener(){
-      @Override public void onClick(      DialogInterface dialog,      int which){
-        Intent authIntent=new Intent(getActivity(),SignInActivity.class);
-        getActivity().startActivityForResult(authIntent,WPComLoginActivity.REQUEST_CODE);
-      }
+  b.setCancelable(true);
+  b.setPositiveButton(R.string.settings,new DialogInterface.OnClickListener(){
+    @Override public void onClick(    DialogInterface dialog,    int which){
+      Intent settingsIntent=new Intent(getActivity(),BlogPreferencesActivity.class);
+      settingsIntent.putExtra("id",WordPress.getCurrentBlog().getLocalTableBlogId());
+      getActivity().startActivity(settingsIntent);
     }
-);
   }
- else {
-    b.setCancelable(true);
-    b.setPositiveButton(R.string.settings,new DialogInterface.OnClickListener(){
-      @Override public void onClick(      DialogInterface dialog,      int which){
-        Intent settingsIntent=new Intent(getActivity(),BlogPreferencesActivity.class);
-        settingsIntent.putExtra("id",WordPress.getCurrentBlog().getLocalTableBlogId());
-        getActivity().startActivity(settingsIntent);
-      }
-    }
 );
-    b.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener(){
-      @Override public void onClick(      DialogInterface dialog,      int which){
-      }
+  b.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener(){
+    @Override public void onClick(    DialogInterface dialog,    int which){
     }
-);
   }
+);
   return b.create();
 }
