@@ -4,8 +4,10 @@
   }
   if (!NetworkUtils.checkConnection(getActivity())) {
     mSwipeToRefreshHelper.setRefreshing(false);
+    updateEmptyView(EmptyViewMessageType.NETWORK_ERROR);
     return;
   }
+  updateEmptyView(EmptyViewMessageType.LOADING);
   int postCount=getPostListAdapter().getRemotePostCount() + POSTS_REQUEST_COUNT;
   if (!loadMore) {
     mCanLoadMorePosts=true;
@@ -24,7 +26,12 @@
       mCurrentFetchPostsTask=null;
       mIsFetchingPosts=false;
       if (!isAdded())       return;
-      mSwipeToRefreshHelper.setRefreshing(false);
+      if (mEmptyViewAnimationHandler.isShowingLoadingAnimation() || mEmptyViewAnimationHandler.isBetweenSequences()) {
+        mKeepSwipeRefreshLayoutVisible=true;
+      }
+ else {
+        mSwipeToRefreshHelper.setRefreshing(false);
+      }
       if (mProgressFooterView != null) {
         mProgressFooterView.setVisibility(View.GONE);
       }
@@ -49,11 +56,15 @@
       if (errorType != ErrorType.TASK_CANCELLED && errorType != ErrorType.NO_ERROR) {
 switch (errorType) {
 case UNAUTHORIZED:
-          ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_unauthorized_pages : R.string.error_refresh_unauthorized_posts,Duration.LONG);
-        return;
+          if (mEmptyView == null || mEmptyView.getVisibility() != View.VISIBLE) {
+            ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_unauthorized_pages : R.string.error_refresh_unauthorized_posts,Duration.LONG);
+          }
+        updateEmptyView(EmptyViewMessageType.PERMISSION_ERROR);
+      return;
 default :
-      ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_pages : R.string.error_refresh_posts,Duration.LONG);
-    return;
+    ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_pages : R.string.error_refresh_posts,Duration.LONG);
+  updateEmptyView(EmptyViewMessageType.GENERIC_ERROR);
+return;
 }
 }
 }

@@ -14,9 +14,10 @@
     @Override public void run(){
       List<Map<String,Object>> dotComUserBlogs=WordPress.wpDB.getAccountsBy("dotcomFlag=1",new String[]{"homeURL"});
       for (      Map<String,Object> blog : dotComUserBlogs) {
-        if (blog != null && blog.get("homeURL") != null) {
+        if (blog != null && blog.get("homeURL") != null && blog.get("blogId") != null) {
           String normURL=normalizeAndRemoveScheme(blog.get("homeURL").toString());
-          dotComUserBlogsURL.add(normURL);
+          Integer blogID=(Integer)blog.get("blogId");
+          userBlogs.put(normURL,blogID);
         }
       }
     }
