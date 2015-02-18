@@ -1,5 +1,11 @@
 {
-  List<Map<String,Object>> accounts=WordPress.wpDB.getAccountsBy("dotcomFlag=1",new String[]{"isHidden"});
+  List<Map<String,Object>> accounts;
+  if (mVisibleBlogsOnly) {
+    accounts=WordPress.wpDB.getVisibleDotComAccounts();
+  }
+ else {
+    accounts=WordPress.wpDB.getAccountsBy("dotcomFlag=1",new String[]{"isHidden"});
+  }
   mSites=new SiteList(accounts);
   return true;
 }
