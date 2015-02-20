@@ -1,4 +1,10 @@
 {
   super.onStart();
   EventBus.getDefault().register(this);
+  if (EventBus.getDefault().getStickyEvent(ReaderEvents.HasPurgedDatabase.class) == null) {
+    if (NetworkUtils.isNetworkAvailable(getActivity())) {
+      ReaderDatabase.purgeAsync();
+      EventBus.getDefault().postSticky(new ReaderEvents.HasPurgedDatabase());
+    }
+  }
 }
