@@ -23,6 +23,10 @@ case VIEWS:
 mViewsCheckbox.setChecked(false);
 mVisitorsCheckbox.setEnabled(true);
 mVisitorsCheckbox.setChecked(mIsCheckboxChecked);
+ImageView legendViews=(ImageView)mVisitorsAndViewsCheckBoxesContainer.findViewById(R.id.stats_label_views);
+legendViews.setBackgroundResource(R.color.stats_bar_graph_views);
+ImageView legendVisitors=(ImageView)mVisitorsAndViewsCheckBoxesContainer.findViewById(R.id.stats_label_visitors);
+legendVisitors.setBackgroundResource(R.color.stats_bar_graph_views_inner);
 break;
 case VISITORS:
 mVisitorsAndViewsCheckBoxesContainer.setVisibility(View.VISIBLE);
@@ -30,6 +34,10 @@ mViewsCheckbox.setEnabled(true);
 mViewsCheckbox.setChecked(mIsCheckboxChecked);
 mVisitorsCheckbox.setEnabled(false);
 mVisitorsCheckbox.setChecked(false);
+ImageView legendViews2=(ImageView)mVisitorsAndViewsCheckBoxesContainer.findViewById(R.id.stats_label_views);
+legendViews2.setBackgroundResource(R.color.stats_bar_graph_views_inner);
+ImageView legendVisitors2=(ImageView)mVisitorsAndViewsCheckBoxesContainer.findViewById(R.id.stats_label_visitors);
+legendVisitors2.setBackgroundResource(R.color.stats_bar_graph_views);
 break;
 default :
 mVisitorsAndViewsCheckBoxesContainer.setVisibility(View.GONE);
@@ -37,10 +45,10 @@ break;
 }
 final String[] horLabels=new String[dataToShowOnGraph.length];
 mStatsDate=new String[dataToShowOnGraph.length];
-GraphView.GraphViewData[] firstItems=new GraphView.GraphViewData[dataToShowOnGraph.length];
-GraphView.GraphViewData[] secondsItems=null;
+GraphView.GraphViewData[] mainSeriesItems=new GraphView.GraphViewData[dataToShowOnGraph.length];
+GraphView.GraphViewData[] secondarySeriesItems=null;
 if (mIsCheckboxChecked) {
-secondsItems=new GraphView.GraphViewData[dataToShowOnGraph.length];
+secondarySeriesItems=new GraphView.GraphViewData[dataToShowOnGraph.length];
 }
 for (int i=0; i < dataToShowOnGraph.length; i++) {
 int currentItemValue=0;
@@ -58,14 +66,14 @@ case COMMENTS:
 currentItemValue=dataToShowOnGraph[i].getComments();
 break;
 }
-firstItems[i]=new GraphView.GraphViewData(i,currentItemValue);
-if (mIsCheckboxChecked && secondsItems != null) {
+mainSeriesItems[i]=new GraphView.GraphViewData(i,currentItemValue);
+if (mIsCheckboxChecked && secondarySeriesItems != null) {
 switch (selectedStatsType) {
 case VIEWS:
-secondsItems[i]=new GraphView.GraphViewData(i,dataToShowOnGraph[i].getVisitors());
+secondarySeriesItems[i]=new GraphView.GraphViewData(i,dataToShowOnGraph[i].getVisitors());
 break;
 case VISITORS:
-secondsItems[i]=new GraphView.GraphViewData(i,dataToShowOnGraph[i].getViews());
+secondarySeriesItems[i]=new GraphView.GraphViewData(i,dataToShowOnGraph[i].getViews());
 break;
 }
 }
@@ -82,26 +90,26 @@ mGraphView=new StatsBarGraph(getActivity());
 mGraphContainer.addView(mGraphView);
 }
 mGraphView.removeAllSeries();
-GraphViewSeries mainSeriesOnScreen=new GraphViewSeries(firstItems);
-if (secondsItems != null) {
-GraphViewSeries secondarySeries=new GraphViewSeries(secondsItems);
+GraphViewSeries mainSeriesOnScreen=new GraphViewSeries(mainSeriesItems);
+if (secondarySeriesItems != null) {
+GraphViewSeries secondarySeries=new GraphViewSeries(secondarySeriesItems);
 if (selectedStatsType == OverviewLabel.VIEWS) {
 mainSeriesOnScreen.getStyle().padding=DisplayUtils.dpToPx(getActivity(),5);
 mainSeriesOnScreen.getStyle().highlightColor=getResources().getColor(R.color.calypso_orange_dark);
 mainSeriesOnScreen.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views);
 secondarySeries.getStyle().padding=DisplayUtils.dpToPx(getActivity(),8);
-secondarySeries.getStyle().color=getResources().getColor(R.color.reader_divider_grey);
-secondarySeries.getStyle().highlightColor=getResources().getColor(R.color.reader_divider_grey);
+secondarySeries.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views_inner);
+secondarySeries.getStyle().highlightColor=getResources().getColor(R.color.stats_bar_graph_views_inner_highlight);
 mGraphView.addSeries(mainSeriesOnScreen);
 mGraphView.addSeries(secondarySeries);
 }
  else {
 secondarySeries.getStyle().padding=DisplayUtils.dpToPx(getActivity(),5);
-secondarySeries.getStyle().highlightColor=getResources().getColor(R.color.calypso_orange_dark);
-secondarySeries.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views);
+secondarySeries.getStyle().highlightColor=getResources().getColor(R.color.stats_bar_graph_views_inner_highlight);
+secondarySeries.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views_inner);
 mainSeriesOnScreen.getStyle().padding=DisplayUtils.dpToPx(getActivity(),8);
-mainSeriesOnScreen.getStyle().highlightColor=getResources().getColor(R.color.reader_divider_grey);
-mainSeriesOnScreen.getStyle().color=getResources().getColor(R.color.reader_divider_grey);
+mainSeriesOnScreen.getStyle().highlightColor=getResources().getColor(R.color.calypso_orange_dark);
+mainSeriesOnScreen.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views);
 mGraphView.addSeries(secondarySeries);
 mGraphView.addSeries(mainSeriesOnScreen);
 }
