@@ -11,14 +11,14 @@
         AppLog.d(AppLog.T.READER,"reader service > followed topics changed");
         deleteTags(localTopics.getDeletions(serverTopics));
         ReaderTagTable.replaceTags(serverTopics);
-        postEvent(new ReaderEvents.FollowedTagsChanged());
+        EventBus.getDefault().post(new ReaderEvents.FollowedTagsChanged());
       }
       ReaderTagList serverRecommended=parseTags(jsonObject,"recommended",ReaderTagType.RECOMMENDED);
       ReaderTagList localRecommended=ReaderTagTable.getRecommendedTags(false);
       if (!serverRecommended.isSameList(localRecommended)) {
         AppLog.d(AppLog.T.READER,"reader service > recommended topics changed");
         ReaderTagTable.setRecommendedTags(serverRecommended);
-        postEvent(new ReaderEvents.RecommendedTagsChanged());
+        EventBus.getDefault().post(new ReaderEvents.RecommendedTagsChanged());
       }
       taskCompleted(UpdateTask.TAGS);
     }
