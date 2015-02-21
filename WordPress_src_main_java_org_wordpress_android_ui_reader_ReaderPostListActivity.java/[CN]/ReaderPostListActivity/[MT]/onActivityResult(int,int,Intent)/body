@@ -1,9 +1,5 @@
 {
   super.onActivityResult(requestCode,resultCode,data);
-  ReaderPostListFragment listFragment=getListFragment();
-  if (listFragment != null && listFragment.handleActivityResult(requestCode,resultCode,data)) {
-    return;
-  }
 switch (requestCode) {
 case WPComLoginActivity.REQUEST_CODE:
     if (resultCode == Activity.RESULT_OK) {
@@ -11,5 +7,12 @@ case WPComLoginActivity.REQUEST_CODE:
       EventBus.getDefault().removeStickyEvent(ReaderEvents.HasPerformedInitialUpdate.class);
     }
   break;
+case ReaderConstants.INTENT_READER_SUBS:
+case ReaderConstants.INTENT_READER_REBLOG:
+ReaderPostListFragment listFragment=getListFragment();
+if (listFragment != null) {
+listFragment.onActivityResult(requestCode,resultCode,data);
+}
+break;
 }
 }
