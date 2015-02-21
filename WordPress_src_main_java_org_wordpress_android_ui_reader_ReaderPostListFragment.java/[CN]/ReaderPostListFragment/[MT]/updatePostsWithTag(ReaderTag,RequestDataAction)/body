@@ -12,9 +12,6 @@
     AppLog.d(T.READER,"reader post list > empty followed tags, canceled update");
     return;
   }
-  if (refreshType == RefreshType.MANUAL && isCurrentTag(tag)) {
-    if (tag.isPostsILike() || tag.isBlogsIFollow())     refreshPosts();
-  }
   ReaderActions.UpdateResultListener resultListener=new ReaderActions.UpdateResultListener(){
     @Override public void onUpdateResult(    ReaderActions.UpdateResult result){
       if (!isAdded()) {
@@ -35,6 +32,9 @@
  else {
         boolean requestFailed=(result == ReaderActions.UpdateResult.FAILED);
         setEmptyTitleAndDescription(requestFailed);
+        if (updateAction == RequestDataAction.LOAD_NEWER && (tag.isPostsILike() || tag.isBlogsIFollow())) {
+          refreshPosts();
+        }
       }
     }
   }
