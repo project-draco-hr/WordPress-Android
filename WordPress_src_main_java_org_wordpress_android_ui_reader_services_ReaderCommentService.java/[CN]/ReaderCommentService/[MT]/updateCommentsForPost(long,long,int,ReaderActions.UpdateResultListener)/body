@@ -1,0 +1,18 @@
+{
+  String path="/sites/" + blogId + "/posts/"+ postId+ "/replies/"+ "?number="+ Integer.toString(ReaderConstants.READER_MAX_COMMENTS_TO_REQUEST)+ "&meta=likes"+ "&hierarchical=true"+ "&order=ASC"+ "&page="+ pageNumber;
+  RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      handleUpdateCommentsResponse(jsonObject,blogId,pageNumber,resultListener);
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(AppLog.T.READER,volleyError);
+      resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED);
+    }
+  }
+;
+  AppLog.d(AppLog.T.READER,"updating comments");
+  WordPress.getRestClientUtilsV1_1().get(path,null,null,listener,errorListener);
+}
