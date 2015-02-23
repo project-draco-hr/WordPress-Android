@@ -1,9 +1,12 @@
 {
+  AppLog.w(T.POSTS,"uploadFileHelper: " + params);
   if (mClient instanceof XMLRPCClient) {
     XMLRPCClient xmlrpcClient=(XMLRPCClient)mClient;
     xmlrpcClient.setOnBytesUploadedListener(new XMLRPCClient.OnBytesUploadedListener(){
       @Override public void onBytesUploaded(      long uploadedBytes){
-        if (tempFile.length() == 0)         return;
+        if (tempFile.length() == 0) {
+          return;
+        }
         float percentage=(uploadedBytes * 100) / tempFile.length();
         mPostUploadNotifier.updateNotificationProgress(percentage);
       }
@@ -11,6 +14,7 @@
 );
   }
   try {
+    AppLog.i(T.API,"wp.uploadFile: " + params);
     return mClient.call("wp.uploadFile",params,tempFile);
   }
  catch (  XMLRPCException e) {
@@ -29,6 +33,8 @@ catch (  XmlPullParserException e) {
     return null;
   }
  finally {
-    if (tempFile != null && tempFile.exists())     tempFile.delete();
+    if (tempFile != null && tempFile.exists()) {
+      tempFile.delete();
+    }
   }
 }
