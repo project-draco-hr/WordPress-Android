@@ -1,8 +1,15 @@
 {
+  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+    updateEmptyView(EmptyViewMessageType.NETWORK_ERROR);
+    setRefreshing(false);
+    return;
+  }
   if (WordPress.getCurrentBlog() == null || mFilter == Filter.CUSTOM_DATE) {
+    setRefreshing(false);
     return;
   }
   if (mSearchTerm != null && mSearchTerm.length() > 0) {
+    setRefreshing(false);
     return;
   }
   if (offset == 0 || !mIsRefreshing) {
@@ -11,6 +18,7 @@
     }
     mOldMediaSyncOffset=offset;
     mIsRefreshing=true;
+    updateEmptyView(EmptyViewMessageType.LOADING);
     mListener.onMediaItemListDownloadStart();
     mGridAdapter.setRefreshing(true);
     List<Object> apiArgs=new ArrayList<Object>();
@@ -25,8 +33,10 @@
           getActivity().runOnUiThread(new Runnable(){
             @Override public void run(){
               refreshSpinnerAdapter();
-              setFilter(mFilter);
-              if (!auto)               mGridView.setSelection(0);
+              updateEmptyView(EmptyViewMessageType.NO_CONTENT);
+              if (!auto) {
+                mGridView.setSelection(0);
+              }
               mListener.onMediaItemListDownloaded();
               mGridAdapter.setRefreshing(false);
               mSwipeToRefreshHelper.setRefreshing(false);
@@ -35,11 +45,17 @@
 );
         }
       }
-      @Override public void onFailure(      ApiHelper.ErrorType errorType,      String errorMessage,      Throwable throwable){
+      @Override public void onFailure(      final ApiHelper.ErrorType errorType,      String errorMessage,      Throwable throwable){
         if (errorType != ApiHelper.ErrorType.NO_ERROR) {
           if (getActivity() != null) {
-            String message=errorType == ApiHelper.ErrorType.NO_UPLOAD_FILES_CAP ? getString(R.string.media_error_no_permission) : getString(R.string.error_refresh_media);
-            ToastUtils.showToast(getActivity(),message,Duration.LONG);
+            if (errorType != ApiHelper.ErrorType.NO_UPLOAD_FILES_CAP) {
+              ToastUtils.showToast(getActivity(),getString(R.string.error_refresh_media),Duration.LONG);
+            }
+ else {
+              if (mEmptyView == null || mEmptyView.getVisibility() != View.VISIBLE) {
+                ToastUtils.showToast(getActivity(),getString(R.string.media_error_no_permission));
+              }
+            }
           }
           MediaGridAdapter adapter=(MediaGridAdapter)mGridView.getAdapter();
           mHasRetrievedAllMedia=true;
@@ -52,6 +68,12 @@
               mListener.onMediaItemListDownloaded();
               mGridAdapter.setRefreshing(false);
               mSwipeToRefreshHelper.setRefreshing(false);
+              if (errorType == ApiHelper.ErrorType.NO_UPLOAD_FILES_CAP) {
+                updateEmptyView(EmptyViewMessageType.PERMISSION_ERROR);
+              }
+ else {
+                updateEmptyView(EmptyViewMessageType.GENERIC_ERROR);
+              }
             }
           }
 );

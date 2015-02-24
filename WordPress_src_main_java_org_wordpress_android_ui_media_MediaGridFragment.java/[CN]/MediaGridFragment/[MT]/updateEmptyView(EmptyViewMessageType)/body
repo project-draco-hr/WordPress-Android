@@ -1,0 +1,37 @@
+{
+  if (mEmptyView != null) {
+    if (mGridAdapter.getDataCount() == 0) {
+      int stringId=0;
+switch (emptyViewMessageType) {
+case LOADING:
+        stringId=R.string.media_fetching;
+      break;
+case NO_CONTENT:
+    stringId=R.string.media_empty_list;
+  break;
+case NETWORK_ERROR:
+if (mEmptyViewMessageType == EmptyViewMessageType.NO_CONTENT_CUSTOM_DATE) {
+  mEmptyView.setVisibility(View.VISIBLE);
+  return;
+}
+stringId=R.string.no_network_message;
+break;
+case PERMISSION_ERROR:
+stringId=R.string.media_error_no_permission;
+break;
+case GENERIC_ERROR:
+stringId=R.string.error_refresh_media;
+break;
+case NO_CONTENT_CUSTOM_DATE:
+stringId=R.string.media_empty_list_custom_date;
+break;
+}
+mEmptyViewTitle.setText(getText(stringId));
+mEmptyViewMessageType=emptyViewMessageType;
+mEmptyView.setVisibility(View.VISIBLE);
+}
+ else {
+mEmptyView.setVisibility(View.GONE);
+}
+}
+}
