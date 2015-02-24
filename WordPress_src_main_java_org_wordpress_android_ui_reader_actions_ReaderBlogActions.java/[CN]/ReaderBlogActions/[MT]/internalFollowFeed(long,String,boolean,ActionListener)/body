@@ -13,7 +13,7 @@
     AnalyticsTracker.track(AnalyticsTracker.Stat.READER_FOLLOWED_SITE);
   }
   final String actionName=(isAskingToFollow ? "follow" : "unfollow");
-  final String path="/read/following/mine/" + (isAskingToFollow ? "new" : "delete") + "?url="+ UrlUtils.urlEncode(feedUrl);
+  final String path="read/following/mine/" + (isAskingToFollow ? "new" : "delete") + "?url="+ UrlUtils.urlEncode(feedUrl);
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       boolean success=isFollowActionSuccessful(jsonObject,isAskingToFollow);
@@ -41,6 +41,6 @@
     }
   }
 ;
-  WordPress.getRestClientUtils().post(path,listener,errorListener);
+  WordPress.getRestClientUtilsV1_1().post(path,listener,errorListener);
   return true;
 }
