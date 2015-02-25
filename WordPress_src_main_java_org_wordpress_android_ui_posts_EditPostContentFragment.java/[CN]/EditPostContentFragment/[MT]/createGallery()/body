@@ -3,14 +3,10 @@
     String galleryToast=getString(R.string.editor_toast_gallery_created_formatted,mGalleryIds.size());
     ToastUtils.showToast(getActivity(),galleryToast,ToastUtils.Duration.SHORT);
     MediaGallery newGallery=new MediaGallery();
-    newGallery.setIds(mGalleryIds);
-    String text=mContentEditText.getText().toString();
-    text=text + "[gallery columns=\"3\" ids=\"";
-    for (    String id : mGalleryIds) {
-      text+=id + ",";
-    }
-    text=text.substring(0,text.length() - 1) + "\"]";
-    mContentEditText.setText(text);
+    newGallery.setIds((ArrayList)mGalleryIds.clone());
+    Intent intent=new Intent(getActivity(),MediaGalleryPickerActivity.class);
+    intent.putExtra(MediaGalleryActivity.RESULT_MEDIA_GALLERY,newGallery);
+    handleMediaGalleryResult(intent);
     mGalleryIds.clear();
     mGalleryIds=null;
     mUploadingMedia=null;
