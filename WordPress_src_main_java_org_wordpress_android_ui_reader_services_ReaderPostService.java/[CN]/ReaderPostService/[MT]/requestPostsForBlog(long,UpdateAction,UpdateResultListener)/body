@@ -1,0 +1,24 @@
+{
+  String path="sites/" + blogId + "/posts/?meta=site,likes";
+  if (updateAction == UpdateAction.REQUEST_OLDER) {
+    String dateOldest=ReaderPostTable.getOldestPubDateInBlog(blogId);
+    if (!TextUtils.isEmpty(dateOldest)) {
+      path+="&before=" + UrlUtils.urlEncode(dateOldest);
+    }
+  }
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      handleUpdatePostsResponse(null,jsonObject,resultListener);
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(AppLog.T.READER,volleyError);
+      resultListener.onUpdateResult(UpdateResult.FAILED);
+    }
+  }
+;
+  AppLog.d(AppLog.T.READER,"updating posts in blog " + blogId);
+  WordPress.getRestClientUtilsV1_1().get(path,null,null,listener,errorListener);
+}
