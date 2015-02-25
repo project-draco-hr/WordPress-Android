@@ -15,14 +15,23 @@
   if (comments == null && !getActivity().isFinishing() && mErrorType != ErrorType.NO_ERROR) {
 switch (mErrorType) {
 case UNAUTHORIZED:
-      ToastUtils.showToast(getActivity(),getString(R.string.error_refresh_unauthorized_comments));
-    return;
+      if (mEmptyView == null || mEmptyView.getVisibility() != View.VISIBLE) {
+        ToastUtils.showToast(getActivity(),getString(R.string.error_refresh_unauthorized_comments));
+      }
+    updateEmptyView(EmptyViewMessageType.PERMISSION_ERROR);
+  return;
 default :
-  ToastUtils.showToast(getActivity(),getString(R.string.error_refresh_comments));
+ToastUtils.showToast(getActivity(),getString(R.string.error_refresh_comments));
+updateEmptyView(EmptyViewMessageType.GENERIC_ERROR);
 return;
 }
 }
-if (!getActivity().isFinishing() && comments != null && comments.size() > 0) {
+if (!getActivity().isFinishing()) {
+if (comments != null && comments.size() > 0) {
 getCommentAdapter().loadComments();
+}
+ else {
+updateEmptyView(EmptyViewMessageType.NO_CONTENT);
+}
 }
 }

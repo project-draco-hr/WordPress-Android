@@ -13,17 +13,20 @@
   holder.entryTextView.setTextColor(context.getResources().getColor(R.color.stats_text_color));
   holder.rowContent.setClickable(false);
   final FollowDataModel followData=currentRowData.getFollowData();
-  if (mTopPagerSelectedButtonIndex == 0 && !TextUtils.isEmpty(currentRowData.getURL())) {
-    boolean openInReader=true;
+  if (mTopPagerSelectedButtonIndex == 0 && !(TextUtils.isEmpty(currentRowData.getURL()) && followData == null)) {
+    final int blogID;
     if (followData == null) {
       String normURL=normalizeAndRemoveScheme(currentRowData.getURL());
-      openInReader=dotComUserBlogsURL.contains(normURL);
+      blogID=userBlogs.containsKey(normURL) ? userBlogs.get(normURL) : Integer.MIN_VALUE;
     }
-    if (openInReader) {
+ else {
+      blogID=followData.getSiteID();
+    }
+    if (blogID > Integer.MIN_VALUE) {
       holder.entryTextView.setText(currentRowData.getLabel());
       holder.rowContent.setOnClickListener(new View.OnClickListener(){
         @Override public void onClick(        View view){
-          ReaderActivityLauncher.showReaderBlogPreview(context,0L,currentRowData.getURL());
+          ReaderActivityLauncher.showReaderBlogPreview(context,blogID);
         }
       }
 );
@@ -37,7 +40,7 @@
     holder.setEntryText(currentRowData.getLabel());
   }
   holder.totalsTextView.setText(getSinceLabel(currentRowData.getDateSubscribed()));
-  holder.networkImageView.setImageUrl(PhotonUtils.fixAvatar(currentRowData.getAvatar(),mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.AVATAR);
+  holder.networkImageView.setImageUrl(GravatarUtils.fixGravatarUrl(currentRowData.getAvatar(),mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.AVATAR);
   holder.networkImageView.setVisibility(View.VISIBLE);
   if (followData == null) {
     holder.imgMore.setVisibility(View.GONE);
