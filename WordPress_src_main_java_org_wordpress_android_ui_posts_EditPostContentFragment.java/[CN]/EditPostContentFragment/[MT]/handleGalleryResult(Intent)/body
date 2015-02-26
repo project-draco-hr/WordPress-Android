@@ -14,14 +14,40 @@
           }
  else           if (MediaUtils.isValidImage(sourceString)) {
             queueFileForUpload(sourceString);
-            addMedia(source,null,getActivity());
             AnalyticsTracker.track(Stat.EDITOR_ADDED_PHOTO_VIA_LOCAL_LIBRARY);
           }
         }
       }
       if (mUploadingMedia.size() > 0) {
-        String galleryToast=getString(R.string.editor_toast_gallery_pending_formatted,mUploadingMedia.size());
-        ToastUtils.showToast(getActivity(),galleryToast,ToastUtils.Duration.SHORT);
+        MediaGallery gallery=new MediaGallery();
+        mPendingGalleryUploads.put(gallery.getUniqueId(),new ArrayList<>(mUploadingMedia));
+        Editable editatbleText=mContentEditText.getText();
+        if (editatbleText == null) {
+          return;
+        }
+        int selectionStart=mContentEditText.getSelectionStart();
+        int selectionEnd=mContentEditText.getSelectionEnd();
+        if (selectionStart > selectionEnd) {
+          int temp=selectionEnd;
+          selectionEnd=selectionStart;
+          selectionStart=temp;
+        }
+        int line, column=0;
+        if (mContentEditText.getLayout() != null) {
+          line=mContentEditText.getLayout().getLineForOffset(selectionStart);
+          column=mContentEditText.getSelectionStart() - mContentEditText.getLayout().getLineStart(line);
+        }
+        if (column != 0) {
+          editatbleText.insert(selectionEnd,"\n");
+          selectionStart=selectionStart + 1;
+          selectionEnd=selectionEnd + 1;
+        }
+        editatbleText.insert(selectionStart," ");
+        MediaGalleryImageSpan is=new MediaGalleryImageSpan(getActivity(),gallery);
+        editatbleText.setSpan(is,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        AlignmentSpan.Standard as=new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER);
+        editatbleText.setSpan(as,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        editatbleText.insert(selectionEnd + 1,"\n\n");
       }
  else {
         createGallery();
