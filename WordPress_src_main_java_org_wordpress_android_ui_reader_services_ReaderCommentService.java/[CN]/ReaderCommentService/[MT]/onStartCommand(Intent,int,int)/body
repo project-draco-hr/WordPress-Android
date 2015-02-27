@@ -1,0 +1,25 @@
+{
+  if (intent == null) {
+    return START_NOT_STICKY;
+  }
+  EventBus.getDefault().post(new ReaderEvents.UpdateCommentsStarted());
+  long blogId=intent.getLongExtra(ARG_BLOG_ID,0);
+  long postId=intent.getLongExtra(ARG_POST_ID,0);
+  boolean requestNextPage=intent.getBooleanExtra(ARG_NEXT_PAGE,false);
+  int pageNumber;
+  if (requestNextPage) {
+    int prevPage=ReaderCommentTable.getLastPageNumberForPost(blogId,postId);
+    pageNumber=prevPage + 1;
+  }
+ else {
+    pageNumber=1;
+  }
+  updateCommentsForPost(blogId,postId,pageNumber,new UpdateResultListener(){
+    @Override public void onUpdateResult(    UpdateResult result){
+      EventBus.getDefault().post(new ReaderEvents.UpdateCommentsEnded(result));
+      stopSelf();
+    }
+  }
+);
+  return START_NOT_STICKY;
+}
