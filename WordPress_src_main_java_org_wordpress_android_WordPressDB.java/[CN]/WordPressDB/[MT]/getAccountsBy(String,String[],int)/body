@@ -6,7 +6,7 @@
   if (limit != 0) {
     limitStr=String.valueOf(limit);
   }
-  String[] baseFields=new String[]{"id","blogName","username","blogId","url","password"};
+  String[] baseFields=new String[]{"id","blogName","username","blogId","url"};
   String[] allFields=baseFields;
   if (extraFields != null) {
     allFields=(String[])ArrayUtils.addAll(baseFields,extraFields);
@@ -21,17 +21,17 @@
     String username=c.getString(2);
     int blogId=c.getInt(3);
     String url=c.getString(4);
-    String password=c.getString(5);
-    if (password != null && !password.equals("") && id > 0) {
+    if (id > 0) {
       Map<String,Object> thisHash=new HashMap<String,Object>();
       thisHash.put("id",id);
       thisHash.put("blogName",blogName);
       thisHash.put("username",username);
       thisHash.put("blogId",blogId);
       thisHash.put("url",url);
+      int extraFieldsIndex=baseFields.length;
       if (extraFields != null) {
         for (int j=0; j < extraFields.length; ++j) {
-          thisHash.put(extraFields[j],c.getString(6 + j));
+          thisHash.put(extraFields[j],c.getString(extraFieldsIndex + j));
         }
       }
       accounts.add(thisHash);

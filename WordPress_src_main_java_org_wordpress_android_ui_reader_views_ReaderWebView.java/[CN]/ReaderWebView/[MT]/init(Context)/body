@@ -1,0 +1,13 @@
+{
+  if (!isInEditMode()) {
+    SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(context);
+    mToken=settings.getString(WordPress.ACCESS_TOKEN_PREFERENCE,"");
+    mReaderChromeClient=new ReaderWebChromeClient(this);
+    this.setWebChromeClient(mReaderChromeClient);
+    this.setWebViewClient(new ReaderWebViewClient(this));
+    this.getSettings().setUserAgentString(WordPress.getUserAgent());
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      CookieManager.getInstance().setAcceptThirdPartyCookies(this,true);
+    }
+  }
+}
