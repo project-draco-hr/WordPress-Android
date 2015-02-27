@@ -2,56 +2,56 @@
   if (data != null) {
     List<MediaItem> selectedContent=data.getParcelableArrayListExtra(MediaPickerActivity.SELECTED_CONTENT_RESULTS_KEY);
     if (selectedContent != null && selectedContent.size() > 0) {
-      mGalleryContentCount=selectedContent.size();
+      ArrayList<String> blogMediaIds=new ArrayList<>();
+      ArrayList<String> localMediaIds=new ArrayList<>();
       for (      MediaItem content : selectedContent) {
         Uri source=content.getSource();
         final String id=content.getTag();
         if (source != null && id != null) {
           final String sourceString=source.toString();
           if (sourceString.contains("wordpress.com")) {
-            mGalleryIds.add(id);
+            blogMediaIds.add(id);
             AnalyticsTracker.track(Stat.EDITOR_ADDED_PHOTO_VIA_WP_MEDIA_LIBRARY);
           }
  else           if (MediaUtils.isValidImage(sourceString)) {
-            queueFileForUpload(sourceString);
+            queueFileForUpload(sourceString,localMediaIds);
             AnalyticsTracker.track(Stat.EDITOR_ADDED_PHOTO_VIA_LOCAL_LIBRARY);
           }
         }
       }
-      if (mUploadingMedia.size() > 0) {
-        MediaGallery gallery=new MediaGallery();
-        mPendingGalleryUploads.put(gallery.getUniqueId(),new ArrayList<>(mUploadingMedia));
-        Editable editatbleText=mContentEditText.getText();
-        if (editatbleText == null) {
-          return;
-        }
-        int selectionStart=mContentEditText.getSelectionStart();
-        int selectionEnd=mContentEditText.getSelectionEnd();
-        if (selectionStart > selectionEnd) {
-          int temp=selectionEnd;
-          selectionEnd=selectionStart;
-          selectionStart=temp;
-        }
-        int line, column=0;
-        if (mContentEditText.getLayout() != null) {
-          line=mContentEditText.getLayout().getLineForOffset(selectionStart);
-          column=mContentEditText.getSelectionStart() - mContentEditText.getLayout().getLineStart(line);
-        }
-        if (column != 0) {
-          editatbleText.insert(selectionEnd,"\n");
-          selectionStart=selectionStart + 1;
-          selectionEnd=selectionEnd + 1;
-        }
-        editatbleText.insert(selectionStart," ");
-        MediaGalleryImageSpan is=new MediaGalleryImageSpan(getActivity(),gallery);
-        editatbleText.setSpan(is,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        AlignmentSpan.Standard as=new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER);
-        editatbleText.setSpan(as,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        editatbleText.insert(selectionEnd + 1,"\n\n");
+      MediaGallery gallery=new MediaGallery();
+      gallery.setIds(blogMediaIds);
+      if (localMediaIds.size() > 0) {
+        ToastUtils.showToast(getActivity(),"Gallery media upload in progress...",ToastUtils.Duration.SHORT);
+        mPendingGalleryUploads.put(gallery.getUniqueId(),new ArrayList<>(localMediaIds));
       }
- else {
-        createGallery();
+      Editable editableText=mContentEditText.getText();
+      if (editableText == null) {
+        return;
       }
+      int selectionStart=mContentEditText.getSelectionStart();
+      int selectionEnd=mContentEditText.getSelectionEnd();
+      if (selectionStart > selectionEnd) {
+        int temp=selectionEnd;
+        selectionEnd=selectionStart;
+        selectionStart=temp;
+      }
+      int line, column=0;
+      if (mContentEditText.getLayout() != null) {
+        line=mContentEditText.getLayout().getLineForOffset(selectionStart);
+        column=mContentEditText.getSelectionStart() - mContentEditText.getLayout().getLineStart(line);
+      }
+      if (column != 0) {
+        editableText.insert(selectionEnd,"\n");
+        selectionStart=selectionStart + 1;
+        selectionEnd=selectionEnd + 1;
+      }
+      editableText.insert(selectionStart," ");
+      MediaGalleryImageSpan is=new MediaGalleryImageSpan(getActivity(),gallery);
+      editableText.setSpan(is,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+      AlignmentSpan.Standard as=new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER);
+      editableText.setSpan(as,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+      editableText.insert(selectionEnd + 1,"\n\n");
     }
   }
 }
