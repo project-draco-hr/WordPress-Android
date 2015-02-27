@@ -1,36 +1,55 @@
 {
   if (data != null) {
-    List<MediaItem> selectedContent=data.getParcelableArrayListExtra(MediaPickerActivity.SELECTED_CONTENT_RESULTS_KEY);
+    final List<MediaItem> selectedContent=data.getParcelableArrayListExtra(MediaPickerActivity.SELECTED_CONTENT_RESULTS_KEY);
     if (selectedContent != null && selectedContent.size() > 0) {
       if (selectedContent.size() == 1) {
         addMedia(selectedContent.get(0).getSource(),null,getActivity());
       }
  else {
-        Editable editableText=mContentEditText.getText();
-        WPCollectionSpan collectionSpan=new WPCollectionSpan(getActivity(),ImageUtils.getWPImageSpanThumbnailFromFilePath(getActivity(),selectedContent.get(0).getSource().toString(),getMaximumThumbnailWidth()));
-        int selectionStart=mContentEditText.getSelectionStart();
-        int selectionEnd=mContentEditText.getSelectionEnd();
-        for (        final MediaItem selectedItem : selectedContent) {
-          collectionSpan.addContent(selectedItem.getSource().toString());
+        final Editable editableText=mContentEditText.getText();
+        final int selectionStart=mContentEditText.getSelectionStart();
+        final int selectionEnd=mContentEditText.getSelectionEnd();
+        final String previewSource=selectedContent.get(0).getSource().toString();
+        AsyncTask<String,String,WPCollectionSpan> background=new AsyncTask<String,String,WPCollectionSpan>(){
+          Bitmap bitmap=null;
+          int start, end;
+          @Override protected WPCollectionSpan doInBackground(          String... params){
+            if (previewSource.contains("wordpress.com")) {
+              try {
+                URL url=new URL(previewSource);
+                bitmap=BitmapFactory.decodeStream(url.openConnection().getInputStream());
+              }
+ catch (              MalformedURLException exception) {
+              }
+catch (              IOException ioException) {
+              }
+            }
+ else {
+              bitmap=ImageUtils.getWPImageSpanThumbnailFromFilePath(getActivity(),previewSource,getMaximumThumbnailWidth());
+            }
+            WPCollectionSpan collectionSpan=new WPCollectionSpan(getActivity(),bitmap);
+            for (            final MediaItem selectedItem : selectedContent) {
+              collectionSpan.addContent(selectedItem.getSource().toString());
+            }
+            start=selectionStart;
+            end=selectionEnd;
+            if (start > end) {
+              int temp=end;
+              end=start;
+              start=temp;
+            }
+            return collectionSpan;
+          }
+          @Override protected void onPostExecute(          WPCollectionSpan result){
+            if (editableText != null && result != null) {
+              editableText.insert(start," ");
+              editableText.setSpan(result,start,end + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+              editableText.insert(end + 1,"\n");
+            }
+          }
         }
-        if (selectionStart > selectionEnd) {
-          int temp=selectionEnd;
-          selectionEnd=selectionStart;
-          selectionStart=temp;
-        }
-        int line, column=0;
-        if (mContentEditText.getLayout() != null) {
-          line=mContentEditText.getLayout().getLineForOffset(selectionStart);
-          column=mContentEditText.getSelectionStart() - mContentEditText.getLayout().getLineStart(line);
-        }
-        if (column != 0) {
-          editableText.insert(selectionEnd,"\n");
-          selectionStart=selectionStart + 1;
-          selectionEnd=selectionEnd + 1;
-        }
-        editableText.insert(selectionStart," ");
-        editableText.setSpan(collectionSpan,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        editableText.insert(selectionStart,"\n");
+;
+        background.execute();
       }
     }
   }
