@@ -22,7 +22,11 @@
       MediaGallery gallery=new MediaGallery();
       gallery.setIds(blogMediaIds);
       if (localMediaIds.size() > 0) {
-        ToastUtils.showToast(getActivity(),"Gallery media upload in progress...",ToastUtils.Duration.SHORT);
+        NotificationManager notificationManager=(NotificationManager)getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationCompat.Builder builder=new NotificationCompat.Builder(getActivity().getApplicationContext());
+        builder.setSmallIcon(android.R.drawable.stat_sys_upload);
+        builder.setContentTitle("Uploading gallery");
+        notificationManager.notify(10,builder.build());
         mPendingGalleryUploads.put(gallery.getUniqueId(),new ArrayList<>(localMediaIds));
       }
       Editable editableText=mContentEditText.getText();
