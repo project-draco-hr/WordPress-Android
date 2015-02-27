@@ -33,6 +33,16 @@
         postContentEditable.insert(start,WPHtml.getGalleryShortcode(gallerySpan));
       }
     }
+    WPCollectionSpan[] replacementSpans=postContentEditable.getSpans(0,postContentEditable.length(),WPCollectionSpan.class);
+    if (replacementSpans.length != 0) {
+      for (      WPCollectionSpan replacementSpan : replacementSpans) {
+        List<String> replacementContent=replacementSpan.getContent();
+        for (        String contentString : replacementContent) {
+          int tagStart=postContentEditable.getSpanStart(replacementSpan);
+          postContentEditable.insert(tagStart,"<img android-uri=\"" + contentString + "\" />");
+        }
+      }
+    }
     WPImageSpan[] imageSpans=postContentEditable.getSpans(0,postContentEditable.length(),WPImageSpan.class);
     if (imageSpans.length != 0) {
       for (      WPImageSpan wpIS : imageSpans) {
