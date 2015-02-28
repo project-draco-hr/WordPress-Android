@@ -5,6 +5,7 @@ case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO:
     File file=new File(mCapturePath);
   Uri imageUri=Uri.fromFile(file);
 if (file.exists() && MediaUtils.isValidImage(imageUri.toString())) {
+  sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,imageUri));
   MediaItem newImage=new MediaItem();
   newImage.setSource(imageUri);
   newImage.setPreviewSource(imageUri);
@@ -16,6 +17,7 @@ break;
 case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO:
 Uri videoUri=data != null ? data.getData() : null;
 if (videoUri != null) {
+sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,videoUri));
 MediaItem newVideo=new MediaItem();
 newVideo.setSource(videoUri);
 newVideo.setPreviewSource(videoUri);
