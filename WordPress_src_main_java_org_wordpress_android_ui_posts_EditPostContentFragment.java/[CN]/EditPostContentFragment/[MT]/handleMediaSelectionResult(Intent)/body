@@ -2,8 +2,10 @@
   if (data != null) {
     final List<MediaItem> selectedContent=data.getParcelableArrayListExtra(MediaPickerActivity.SELECTED_CONTENT_RESULTS_KEY);
     if (selectedContent != null && selectedContent.size() > 0) {
-      if (selectedContent.size() == 1) {
-        addMedia(selectedContent.get(0).getSource(),null,getActivity());
+      if (selectedContent.size() == 1 || MediaUtils.isVideo(selectedContent.get(0).getSource().toString())) {
+        for (        MediaItem content : selectedContent) {
+          addMedia(content.getSource(),null,getActivity());
+        }
       }
  else {
         final Editable editableText=mContentEditText.getText();
