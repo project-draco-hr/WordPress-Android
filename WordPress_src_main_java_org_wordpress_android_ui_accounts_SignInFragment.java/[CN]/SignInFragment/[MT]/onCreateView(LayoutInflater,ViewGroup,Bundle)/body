@@ -1,10 +1,19 @@
 {
   ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.signin_fragment,container,false);
   mUrlButtonLayout=(RelativeLayout)rootView.findViewById(R.id.url_button_layout);
+  mTwoStepLayout=(RelativeLayout)rootView.findViewById(R.id.two_factor_layout);
+  mTwoStepFooter=(LinearLayout)rootView.findViewById(R.id.two_step_footer);
+  mUsernameLayout=(RelativeLayout)rootView.findViewById(R.id.nux_username_layout);
+  mUsernameLayout.setOnClickListener(mOnLoginFormClickListener);
+  mPasswordLayout=(RelativeLayout)rootView.findViewById(R.id.nux_password_layout);
+  mPasswordLayout.setOnClickListener(mOnLoginFormClickListener);
   mUsernameEditText=(EditText)rootView.findViewById(R.id.nux_username);
   mUsernameEditText.addTextChangedListener(this);
+  mUsernameEditText.setOnClickListener(mOnLoginFormClickListener);
   mPasswordEditText=(EditText)rootView.findViewById(R.id.nux_password);
   mPasswordEditText.addTextChangedListener(this);
+  mPasswordEditText.setOnClickListener(mOnLoginFormClickListener);
+  mJetpackAuthLabel=(WPTextView)rootView.findViewById(R.id.nux_jetpack_auth_label);
   mUrlEditText=(EditText)rootView.findViewById(R.id.nux_url);
   mSignInButton=(WPTextView)rootView.findViewById(R.id.nux_sign_in_button);
   mSignInButton.setOnClickListener(mSignInClickListener);
@@ -40,6 +49,27 @@
 );
   mPasswordEditText.setOnEditorActionListener(mEditorAction);
   mUrlEditText.setOnEditorActionListener(mEditorAction);
+  mTwoStepEditText=(EditText)rootView.findViewById(R.id.nux_two_step);
+  mTwoStepEditText.addTextChangedListener(this);
+  mTwoStepEditText.setOnKeyListener(new View.OnKeyListener(){
+    @Override public boolean onKey(    View v,    int keyCode,    KeyEvent event){
+      if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (keyCode == EditorInfo.IME_ACTION_DONE)) {
+        if (fieldsFilled()) {
+          signIn();
+        }
+      }
+      return false;
+    }
+  }
+);
+  WPTextView twoStepFooterButton=(WPTextView)rootView.findViewById(R.id.two_step_footer_button);
+  twoStepFooterButton.setText(Html.fromHtml("<u>" + getString(R.string.two_step_footer_button) + "</u>"));
+  twoStepFooterButton.setOnClickListener(new OnClickListener(){
+    @Override public void onClick(    View v){
+      requestSMSTwoStepCode();
+    }
+  }
+);
   mBottomButtonsLayout=(LinearLayout)rootView.findViewById(R.id.nux_bottom_buttons);
   initPasswordVisibilityButton(rootView,mPasswordEditText);
   initInfoButtons(rootView);

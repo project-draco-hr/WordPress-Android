@@ -24,21 +24,24 @@
   }
   String date=MediaUtils.getDate(cursor.getLong(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_DATE_CREATED_GMT)));
   if (mIsLocal) {
-    mDateView.setText("Added on: " + date);
+    mDateView.setText(getResources().getString(R.string.media_details_added_on) + " " + date);
   }
  else {
-    mDateView.setText("Uploaded on: " + date);
+    mDateView.setText(getResources().getString(R.string.media_details_uploaded_on) + " " + date);
   }
   String fileName=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_NAME));
-  mFileNameView.setText("File name: " + fileName);
+  mFileNameView.setText(getResources().getString(R.string.media_details_file_name) + " " + fileName);
   String fileURL=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_URL));
   if (fileURL != null) {
     String fileType=fileURL.replaceAll(".*\\.(\\w+)$","$1").toUpperCase();
-    mFileTypeView.setText("File type: " + fileType);
+    mFileTypeView.setText(getResources().getString(R.string.media_details_file_type) + " " + fileType);
     mFileTypeView.setVisibility(View.VISIBLE);
+    mFileUrlView.setText(getResources().getString(R.string.media_details_file_url) + " " + fileURL);
+    mFileUrlView.setVisibility(View.VISIBLE);
   }
  else {
     mFileTypeView.setVisibility(View.GONE);
+    mFileUrlView.setVisibility(View.GONE);
   }
   String imageUri=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_URL));
   if (imageUri == null)   imageUri=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_PATH));
@@ -57,7 +60,7 @@
     float screenHeight=getActivity().getResources().getDisplayMetrics().heightPixels;
     if (width > 0 && height > 0) {
       String dimensions=width + "x" + height;
-      mDimensionsView.setText("Dimensions: " + dimensions);
+      mDimensionsView.setText(getResources().getString(R.string.media_details_dimensions) + " " + dimensions);
       mDimensionsView.setVisibility(View.VISIBLE);
     }
  else {
