@@ -1,11 +1,15 @@
 {
   if (TextUtils.isEmpty(path)) {
-    Toast.makeText(getActivity(),"Error opening file",Toast.LENGTH_SHORT).show();
+    Toast.makeText(getActivity(),R.string.editor_toast_invalid_path,Toast.LENGTH_SHORT).show();
+    return;
+  }
+  File file=new File(path);
+  if (!file.exists()) {
+    Toast.makeText(getActivity(),R.string.file_not_found,Toast.LENGTH_SHORT).show();
     return;
   }
   Blog blog=WordPress.getCurrentBlog();
-  File file=new File(path);
-  if (!file.exists())   return;
+  long currentTime=System.currentTimeMillis();
   String mimeType=MediaUtils.getMediaFileMimeType(file);
   String fileName=MediaUtils.getMediaFileName(file,mimeType);
   MediaFile mediaFile=new MediaFile();
@@ -13,8 +17,8 @@
   mediaFile.setFileName(fileName);
   mediaFile.setFilePath(path);
   mediaFile.setUploadState("queued");
-  mediaFile.setDateCreatedGMT(System.currentTimeMillis());
-  mediaFile.setMediaId(String.valueOf(System.currentTimeMillis()));
+  mediaFile.setDateCreatedGMT(currentTime);
+  mediaFile.setMediaId(String.valueOf(currentTime));
   if (mimeType != null && mimeType.startsWith("image")) {
     BitmapFactory.Options bfo=new BitmapFactory.Options();
     bfo.inJustDecodeBounds=true;
@@ -22,8 +26,12 @@
     mediaFile.setWidth(bfo.outWidth);
     mediaFile.setHeight(bfo.outHeight);
   }
-  if (!TextUtils.isEmpty(mimeType))   mediaFile.setMimeType(mimeType);
+  if (!TextUtils.isEmpty(mimeType)) {
+    mediaFile.setMimeType(mimeType);
+  }
+  if (mediaIdOut != null) {
+    mediaIdOut.add(mediaFile.getMediaId());
+  }
   mediaFile.save();
-  mediaIdOut.add(mediaFile.getMediaId());
   startMediaUploadService();
 }
