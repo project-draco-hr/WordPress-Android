@@ -1,7 +1,7 @@
 {
   mSelectedBarGraphBarIndex=tappedBar;
   updateUIBelowTheGraph(tappedBar);
-  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+  if (!NetworkUtils.checkConnection(getActivity())) {
     return;
   }
   String date=mStatsDate[tappedBar];
@@ -25,22 +25,22 @@ parsedDate=sdf.parse(date);
 c.setTime(parsedDate);
 c.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY);
 c.add(Calendar.DAY_OF_WEEK,+6);
-calculatedDate=StatsUtils.msToString(c.getTimeInMillis(),"yyyy-MM-dd");
+calculatedDate=StatsUtils.msToString(c.getTimeInMillis(),StatsConstants.STATS_INPUT_DATE_FORMAT);
 break;
 case MONTH:
 sdf=new SimpleDateFormat("yyyy-MM");
 parsedDate=sdf.parse(date);
 c.setTime(parsedDate);
 c.set(Calendar.DAY_OF_MONTH,c.getActualMaximum(Calendar.DAY_OF_MONTH));
-calculatedDate=StatsUtils.msToString(c.getTimeInMillis(),"yyyy-MM-dd");
+calculatedDate=StatsUtils.msToString(c.getTimeInMillis(),StatsConstants.STATS_INPUT_DATE_FORMAT);
 break;
 case YEAR:
-sdf=new SimpleDateFormat("yyyy-MM-dd");
+sdf=new SimpleDateFormat(StatsConstants.STATS_INPUT_DATE_FORMAT);
 parsedDate=sdf.parse(date);
 c.setTime(parsedDate);
 c.set(Calendar.MONTH,Calendar.DECEMBER);
 c.set(Calendar.DAY_OF_MONTH,31);
-calculatedDate=StatsUtils.msToString(c.getTimeInMillis(),"yyyy-MM-dd");
+calculatedDate=StatsUtils.msToString(c.getTimeInMillis(),StatsConstants.STATS_INPUT_DATE_FORMAT);
 break;
 }
 }
@@ -55,4 +55,5 @@ if (mListener != null) {
 final String blogId=StatsUtils.getBlogId(getLocalTableBlogID());
 mListener.onDateChanged(blogId,getTimeframe(),calculatedDate);
 }
+AnalyticsTracker.track(AnalyticsTracker.Stat.STATS_TAPPED_BAR_CHART);
 }

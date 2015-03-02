@@ -1,4 +1,6 @@
 {
+  AppLog.d(T.POSTS,"updateNotificationWithError: " + mErrorMessage);
+  Builder notificationBuilder=new NotificationCompat.Builder(getApplicationContext());
   String postOrPage=(String)(isPage ? mContext.getResources().getText(R.string.page_id) : mContext.getResources().getText(R.string.post_id));
   Intent notificationIntent=new Intent(mContext,isPage ? PagesActivity.class : PostsActivity.class);
   notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK);
@@ -16,10 +18,13 @@
   if (isMediaError) {
     errorText=mContext.getResources().getText(R.string.media) + " " + mContext.getResources().getText(R.string.error);
   }
-  mNotificationBuilder.setSmallIcon(android.R.drawable.stat_notify_error);
-  mNotificationBuilder.setContentTitle((isMediaError) ? errorText : mContext.getResources().getText(R.string.upload_failed));
-  mNotificationBuilder.setContentText((isMediaError) ? mErrorMessage : postOrPage + " " + errorText+ ": "+ mErrorMessage);
-  mNotificationBuilder.setContentIntent(pendingIntent);
-  mNotificationBuilder.setAutoCancel(true);
-  mNotificationManager.notify(mNotificationId,mNotificationBuilder.build());
+  notificationBuilder.setSmallIcon(android.R.drawable.stat_notify_error);
+  notificationBuilder.setContentTitle((isMediaError) ? errorText : mContext.getResources().getText(R.string.upload_failed));
+  notificationBuilder.setContentText((isMediaError) ? mErrorMessage : postOrPage + " " + errorText+ ": "+ mErrorMessage);
+  notificationBuilder.setContentIntent(pendingIntent);
+  notificationBuilder.setAutoCancel(true);
+  if (mNotificationErrorId == 0) {
+    mNotificationErrorId=mNotificationId + (new Random()).nextInt();
+  }
+  mNotificationManager.notify(mNotificationErrorId,notificationBuilder.build());
 }

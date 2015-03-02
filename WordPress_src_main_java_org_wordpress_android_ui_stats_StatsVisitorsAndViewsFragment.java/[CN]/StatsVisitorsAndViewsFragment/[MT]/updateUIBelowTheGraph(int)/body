@@ -1,4 +1,7 @@
 {
+  if (!isAdded()) {
+    return;
+  }
   if (mVisitsData == null) {
     setupNoResultsUI(false);
     return;
@@ -8,6 +11,12 @@
     return;
   }
   final VisitModel[] dataToShowOnGraph=getDataToShowOnGraph((VisitsModel)mVisitsData);
+  if (dataToShowOnGraph.length == 0) {
+    return;
+  }
+  if (dataToShowOnGraph.length <= itemPosition || itemPosition == -1) {
+    itemPosition=dataToShowOnGraph.length - 1;
+  }
   String date=mStatsDate[itemPosition];
   if (date == null) {
     AppLog.w(AppLog.T.STATS,"Cannot update the area below the graph if a null date is passed!!");
@@ -17,22 +26,21 @@
   VisitModel modelTapped=dataToShowOnGraph[itemPosition];
   for (int i=0; i < mModuleButtonsContainer.getChildCount(); i++) {
     View o=mModuleButtonsContainer.getChildAt(i);
-    if (o instanceof CheckedTextView) {
-      CheckedTextView currentBtm=(CheckedTextView)o;
-      OverviewLabel overviewItem=(OverviewLabel)currentBtm.getTag();
-      String labelPrefix=overviewItem.getLabel() + "\n";
-switch (overviewItem) {
+    if (o instanceof LinearLayout && o.getTag() instanceof TabViewHolder) {
+      TabViewHolder tabViewHolder=(TabViewHolder)o.getTag();
+      tabViewHolder.updateBackGroundAndIcon();
+switch (tabViewHolder.labelItem) {
 case VIEWS:
-        currentBtm.setText(labelPrefix + FormatUtils.formatDecimal(modelTapped.getViews()));
+        tabViewHolder.value.setText(FormatUtils.formatDecimal(modelTapped.getViews()));
       break;
 case VISITORS:
-    currentBtm.setText(labelPrefix + FormatUtils.formatDecimal(modelTapped.getVisitors()));
+    tabViewHolder.value.setText(FormatUtils.formatDecimal(modelTapped.getVisitors()));
   break;
 case LIKES:
-currentBtm.setText(labelPrefix + FormatUtils.formatDecimal(modelTapped.getLikes()));
+tabViewHolder.value.setText(FormatUtils.formatDecimal(modelTapped.getLikes()));
 break;
 case COMMENTS:
-currentBtm.setText(labelPrefix + FormatUtils.formatDecimal(modelTapped.getComments()));
+tabViewHolder.value.setText(FormatUtils.formatDecimal(modelTapped.getComments()));
 break;
 }
 }

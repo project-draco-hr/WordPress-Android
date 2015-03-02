@@ -8,19 +8,20 @@
     boolean isRecreated=(savedInstanceState != null);
     getPostAdapter().setCurrentTag(mCurrentTag);
     if (!isRecreated && ReaderTagTable.shouldAutoUpdateTag(mCurrentTag)) {
-      updatePostsWithTag(getCurrentTag(),RequestDataAction.LOAD_NEWER,RefreshType.AUTOMATIC);
+      updatePostsWithTag(getCurrentTag(),UpdateAction.REQUEST_NEWER);
     }
+  }
+  if (getPostListType().isPreviewType()) {
+    createFollowButton();
   }
 switch (getPostListType()) {
 case BLOG_PREVIEW:
-    loadBlogInfo();
-  animateHeader();
+    loadBlogOrFeedInfo();
+  animateHeaderDelayed();
 break;
 case TAG_PREVIEW:
 updateTagPreviewHeader();
-animateHeader();
+animateHeaderDelayed();
 break;
 }
-getPostAdapter().setOnTagSelectedListener(mOnTagSelectedListener);
-getPostAdapter().setOnPostPopupListener(mOnPostPopupListener);
 }

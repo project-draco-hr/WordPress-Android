@@ -1,9 +1,18 @@
 {
-  SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(mContext);
-  SharedPreferences.Editor editor=settings.edit();
-  editor.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mUsername);
-  editor.putString(WordPress.WPCOM_PASSWORD_PREFERENCE,WordPressDB.encryptPassword(mPassword));
-  editor.commit();
+  LoginWPCom login=new LoginWPCom(mUsername,mPassword,null,false,null);
+  login.execute(new LoginAbstract.Callback(){
+    @Override public void onSuccess(){
+      try {
+        mResponseHandler.nextStep(new JSONObject("{\"success\":true}"));
+      }
+ catch (      JSONException e) {
+        AppLog.e(T.API,"Could not parse JSON in new user setup");
+      }
+    }
+    @Override public void onError(    int errorMessageId,    boolean twoStepCodeRequired,    boolean httpAuthRequired,    boolean erroneousSslCertificate){
+      mErrorListener.onErrorResponse(new VolleyError("Sign in failed."));
+    }
+  }
+);
   mResponseHandler.setStep(Step.AUTHENTICATE_USER);
-  WordPress.getRestClientUtils().get("me",mResponseHandler,mErrorListener);
 }

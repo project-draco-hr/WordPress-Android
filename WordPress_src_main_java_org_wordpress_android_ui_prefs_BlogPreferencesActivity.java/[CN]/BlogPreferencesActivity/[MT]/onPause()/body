@@ -1,6 +1,8 @@
 {
   super.onPause();
-  if (mBlogDeleted || mIsViewingAdmin)   return;
+  if (mBlogDeleted || mIsViewingAdmin) {
+    return;
+  }
   blog.setUsername(mUsernameET.getText().toString());
   blog.setPassword(mPasswordET.getText().toString());
   blog.setHttpuser(mHttpUsernameET.getText().toString());
@@ -17,7 +19,9 @@
  catch (    NumberFormatException e) {
       error=true;
     }
-    if (width == 0)     error=true;
+    if (width == 0) {
+      error=true;
+    }
     if (error) {
       AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(BlogPreferencesActivity.this);
       dialogBuilder.setTitle(getResources().getText(R.string.error));
@@ -37,11 +41,7 @@
   }
   blog.setMaxImageWidth(mImageWidthSpinner.getSelectedItem().toString());
   WordPress.wpDB.saveBlog(blog);
-  if (WordPress.getCurrentBlog().getLocalTableBlogId() == blog.getLocalTableBlogId())   WordPress.currentBlog=blog;
-  Bundle bundle=new Bundle();
-  bundle.putString("returnStatus","SAVE");
-  Intent mIntent=new Intent();
-  mIntent.putExtras(bundle);
-  setResult(RESULT_OK,mIntent);
-  finish();
+  if (WordPress.getCurrentBlog().getLocalTableBlogId() == blog.getLocalTableBlogId()) {
+    WordPress.currentBlog=blog;
+  }
 }

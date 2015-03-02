@@ -5,20 +5,14 @@
       showJetpackMissingAlert();
       return true;
     }
-    StatsUtils.StatsCredentials credentials=StatsUtils.getBlogStatsCredentials(mLocalBlogID);
-    if (credentials == null) {
+    String statsAuthenticatedUser=StatsUtils.getBlogStatsUsername(mLocalBlogID);
+    if (statsAuthenticatedUser == null) {
       Toast.makeText(this,R.string.jetpack_message_not_admin,Toast.LENGTH_LONG).show();
       return true;
     }
-    String statsAuthenticatedUser=credentials.getUsername();
-    String statsAuthenticatedPassword=credentials.getPassword();
     String addressToLoad="https://wordpress.com/my-stats/?no-chrome&blog=" + blogId + "&unit=1";
-    WPWebViewActivity.openUrlByUsingWPCOMCredentials(this,addressToLoad,statsAuthenticatedUser,statsAuthenticatedPassword);
+    WPWebViewActivity.openUrlByUsingWPCOMCredentials(this,addressToLoad,statsAuthenticatedUser);
     AnalyticsTracker.track(AnalyticsTracker.Stat.STATS_OPENED_WEB_VERSION);
-    return true;
-  }
- else   if (mNoMenuDrawer && item.getItemId() == android.R.id.home) {
-    onBackPressed();
     return true;
   }
   return super.onOptionsItemSelected(item);

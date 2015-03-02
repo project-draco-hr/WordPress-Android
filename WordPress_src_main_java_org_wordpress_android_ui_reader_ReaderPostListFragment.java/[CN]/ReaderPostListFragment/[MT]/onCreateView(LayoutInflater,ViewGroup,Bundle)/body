@@ -28,9 +28,10 @@ header.setVisibility(View.INVISIBLE);
 break;
 }
 mEmptyView=rootView.findViewById(R.id.empty_view);
+mEmptyView.findViewById(R.id.layout_box_images).setVisibility(shouldShowBoxAndPagesAnimation() ? View.VISIBLE : View.GONE);
 mProgress=(ProgressBar)rootView.findViewById(R.id.progress_footer);
 mProgress.setVisibility(View.GONE);
-mSwipeToRefreshHelper=new SwipeToRefreshHelper(getActivity(),(SwipeRefreshLayout)rootView.findViewById(R.id.ptr_layout),new RefreshListener(){
+mSwipeToRefreshHelper=new SwipeToRefreshHelper(getActivity(),(CustomSwipeRefreshLayout)rootView.findViewById(R.id.ptr_layout),new RefreshListener(){
 @Override public void onRefreshStarted(){
 if (!isAdded()) {
 return;
@@ -42,10 +43,10 @@ return;
 switch (getPostListType()) {
 case TAG_FOLLOWED:
 case TAG_PREVIEW:
-updatePostsWithTag(getCurrentTag(),RequestDataAction.LOAD_NEWER,RefreshType.MANUAL);
+updatePostsWithTag(getCurrentTag(),UpdateAction.REQUEST_NEWER);
 break;
 case BLOG_PREVIEW:
-updatePostsInCurrentBlog(RequestDataAction.LOAD_NEWER);
+updatePostsInCurrentBlogOrFeed(UpdateAction.REQUEST_NEWER);
 break;
 }
 showSwipeToRefreshProgress(true);

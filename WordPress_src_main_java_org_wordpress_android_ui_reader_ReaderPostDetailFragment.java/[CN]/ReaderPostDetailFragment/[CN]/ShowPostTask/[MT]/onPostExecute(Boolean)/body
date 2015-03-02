@@ -15,8 +15,8 @@
   mRenderer=new ReaderPostRenderer(mReaderWebView,mPost);
   mRenderer.beginRender();
   txtTitle.setText(mPost.hasTitle() ? mPost.getTitle() : getString(R.string.reader_untitled_post));
-  ReaderUtils.showFollowStatus(txtFollow,mPost.isFollowedByCurrentUser);
-  txtFollow.setOnClickListener(new View.OnClickListener(){
+  followButton.setIsFollowed(mPost.isFollowedByCurrentUser);
+  followButton.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View view){
       togglePostFollowed();
     }
@@ -49,10 +49,10 @@
   if (isBlogPreview()) {
     layoutDetailHeader.setVisibility(View.GONE);
   }
- else   if (!mPost.isExternal) {
+ else {
     imgAvatar.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
-        ReaderActivityLauncher.showReaderBlogPreview(v.getContext(),mPost.blogId,mPost.getBlogUrl());
+        ReaderActivityLauncher.showReaderBlogPreview(v.getContext(),mPost);
       }
     }
 );
