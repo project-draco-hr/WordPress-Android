@@ -1,0 +1,15 @@
+{
+  ContentValues dotComValues=new ContentValues();
+  dotComValues.put("password","");
+  db.update(SETTINGS_TABLE,dotComValues,"dotcomFlag=1",null);
+  ContentValues jetPackValues=new ContentValues();
+  jetPackValues.put("dotcom_username","");
+  jetPackValues.put("dotcom_password","");
+  db.update(SETTINGS_TABLE,jetPackValues,null,null);
+  if (this.context != null) {
+    SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this.context);
+    SharedPreferences.Editor editor=settings.edit();
+    editor.remove("wp_pref_wpcom_password");
+    editor.apply();
+  }
+}

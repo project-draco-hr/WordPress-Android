@@ -1,0 +1,21 @@
+{
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      if (jsonObject != null) {
+        final ReaderUser serverUser=ReaderUser.fromJson(jsonObject);
+        final ReaderUser localUser=ReaderUserTable.getCurrentUser();
+        if (serverUser != null && !serverUser.isSameUser(localUser)) {
+          setCurrentUser(serverUser);
+        }
+      }
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.READER,volleyError);
+    }
+  }
+;
+  WordPress.getRestClientUtilsV1_1().get("me",listener,errorListener);
+}

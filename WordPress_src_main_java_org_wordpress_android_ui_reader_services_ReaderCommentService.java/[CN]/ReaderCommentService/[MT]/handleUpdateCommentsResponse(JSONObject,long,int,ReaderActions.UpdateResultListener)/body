@@ -1,0 +1,39 @@
+{
+  if (jsonObject == null) {
+    resultListener.onUpdateResult(ReaderActions.UpdateResult.FAILED);
+    return;
+  }
+  new Thread(){
+    @Override public void run(){
+      final boolean hasNewComments;
+      ReaderDatabase.getWritableDb().beginTransaction();
+      try {
+        ReaderCommentList serverComments=new ReaderCommentList();
+        JSONArray jsonCommentList=jsonObject.optJSONArray("comments");
+        if (jsonCommentList != null) {
+          for (int i=0; i < jsonCommentList.length(); i++) {
+            JSONObject jsonComment=jsonCommentList.optJSONObject(i);
+            ReaderComment comment=ReaderComment.fromJson(jsonComment,blogId);
+            comment.pageNumber=pageNumber;
+            serverComments.add(comment);
+            JSONObject jsonLikes=JSONUtils.getJSONChild(jsonComment,"meta/data/likes");
+            if (jsonLikes != null) {
+              ReaderUserList likingUsers=ReaderUserList.fromJsonLikes(jsonLikes);
+              ReaderUserTable.addOrUpdateUsers(likingUsers);
+              ReaderLikeTable.setLikesForComment(comment,likingUsers.getUserIds());
+            }
+          }
+        }
+        hasNewComments=(serverComments.size() > 0);
+        ReaderCommentTable.addOrUpdateComments(serverComments);
+        ReaderDatabase.getWritableDb().setTransactionSuccessful();
+      }
+  finally {
+        ReaderDatabase.getWritableDb().endTransaction();
+      }
+      ReaderActions.UpdateResult result=(hasNewComments ? ReaderActions.UpdateResult.HAS_NEW : ReaderActions.UpdateResult.UNCHANGED);
+      resultListener.onUpdateResult(result);
+    }
+  }
+.start();
+}

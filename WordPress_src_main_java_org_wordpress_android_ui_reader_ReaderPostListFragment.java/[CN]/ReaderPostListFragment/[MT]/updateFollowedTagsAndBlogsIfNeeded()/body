@@ -1,0 +1,9 @@
+{
+  ReaderEvents.UpdatedFollowedTagsAndBlogs lastUpdateEvent=EventBus.getDefault().getStickyEvent(ReaderEvents.UpdatedFollowedTagsAndBlogs.class);
+  if (lastUpdateEvent != null && lastUpdateEvent.minutesSinceLastUpdate() < 120) {
+    return;
+  }
+  AppLog.d(T.READER,"reader post list > updating tags and blogs");
+  EventBus.getDefault().postSticky(new ReaderEvents.UpdatedFollowedTagsAndBlogs());
+  ReaderUpdateService.startService(getActivity(),EnumSet.of(ReaderUpdateService.UpdateTask.TAGS,ReaderUpdateService.UpdateTask.FOLLOWED_BLOGS));
+}

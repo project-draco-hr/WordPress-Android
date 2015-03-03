@@ -2,19 +2,25 @@
   WordPress.requestQueue.add(makeOAuthRequest(mUsername,mPassword,new Oauth.Listener(){
     @SuppressLint("CommitPrefEdits") @Override public void onResponse(    final Oauth.Token token){
       SimperiumUtils.configureSimperium(WordPress.getContext(),token.toString());
+      if (mJetpackBlog != null) {
+        mJetpackBlog.setApi_key(token.toString());
+        WordPress.wpDB.saveBlog(mJetpackBlog);
+      }
       SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
-      SharedPreferences.Editor editor=settings.edit();
-      editor.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mUsername);
-      editor.putString(WordPress.WPCOM_PASSWORD_PREFERENCE,mPassword);
-      editor.putString(WordPress.ACCESS_TOKEN_PREFERENCE,token.toString());
-      editor.commit();
+      if (mJetpackBlog == null || TextUtils.isEmpty(settings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,null))) {
+        SharedPreferences.Editor editor=settings.edit();
+        editor.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mUsername);
+        editor.putString(WordPress.ACCESS_TOKEN_PREFERENCE,token.toString());
+        editor.commit();
+      }
       mCallback.onSuccess();
     }
   }
 ,new Oauth.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
       JSONObject errorObject=VolleyUtils.volleyErrorToJSON(volleyError);
-      mCallback.onError(restLoginErrorToMsgId(errorObject),false,false);
+      int errorMsgId=restLoginErrorToMsgId(errorObject);
+      mCallback.onError(errorMsgId,errorMsgId == R.string.account_two_step_auth_enabled,false,false);
     }
   }
 ));

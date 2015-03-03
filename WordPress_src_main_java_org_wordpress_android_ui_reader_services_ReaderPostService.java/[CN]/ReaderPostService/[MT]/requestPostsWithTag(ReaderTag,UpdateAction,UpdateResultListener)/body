@@ -1,0 +1,33 @@
+{
+  String endpoint=getEndpointForTag(tag);
+  if (TextUtils.isEmpty(endpoint)) {
+    resultListener.onUpdateResult(UpdateResult.FAILED);
+    return;
+  }
+  StringBuilder sb=new StringBuilder(endpoint);
+  sb.append("?number=").append(ReaderConstants.READER_MAX_POSTS_TO_REQUEST);
+  sb.append("&order=DESC");
+  if (updateAction == UpdateAction.REQUEST_OLDER) {
+    String dateOldest=ReaderPostTable.getOldestPubDateWithTag(tag);
+    if (!TextUtils.isEmpty(dateOldest)) {
+      sb.append("&before=").append(UrlUtils.urlEncode(dateOldest));
+    }
+  }
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      if (updateAction == UpdateAction.REQUEST_NEWER) {
+        ReaderTagTable.setTagLastUpdated(tag);
+      }
+      handleUpdatePostsResponse(tag,jsonObject,resultListener);
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(AppLog.T.READER,volleyError);
+      resultListener.onUpdateResult(UpdateResult.FAILED);
+    }
+  }
+;
+  WordPress.getRestClientUtilsV1_1().get(sb.toString(),null,null,listener,errorListener);
+}
