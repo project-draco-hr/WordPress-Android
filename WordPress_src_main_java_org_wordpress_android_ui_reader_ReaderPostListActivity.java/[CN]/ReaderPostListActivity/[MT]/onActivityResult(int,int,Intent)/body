@@ -1,0 +1,18 @@
+{
+  super.onActivityResult(requestCode,resultCode,data);
+switch (requestCode) {
+case SignInActivity.REQUEST_CODE:
+    if (resultCode == Activity.RESULT_OK) {
+      removeListFragment();
+      EventBus.getDefault().removeStickyEvent(ReaderEvents.HasPerformedInitialUpdate.class);
+    }
+  break;
+case ReaderConstants.INTENT_READER_SUBS:
+case ReaderConstants.INTENT_READER_REBLOG:
+ReaderPostListFragment listFragment=getListFragment();
+if (listFragment != null) {
+listFragment.onActivityResult(requestCode,resultCode,data);
+}
+break;
+}
+}

@@ -1,0 +1,24 @@
+{
+switch (requestCode) {
+case ReaderConstants.INTENT_READER_SUBS:
+    if (data != null) {
+      boolean tagsChanged=data.getBooleanExtra(ReaderSubsActivity.KEY_TAGS_CHANGED,false);
+      boolean blogsChanged=data.getBooleanExtra(ReaderSubsActivity.KEY_BLOGS_CHANGED,false);
+      if (tagsChanged) {
+        String lastAddedTag=data.getStringExtra(ReaderSubsActivity.KEY_LAST_ADDED_TAG_NAME);
+        doTagsChanged(lastAddedTag);
+      }
+      if (blogsChanged && getPostListType() == ReaderTypes.ReaderPostListType.TAG_FOLLOWED && hasCurrentTag() && getCurrentTag().isBlogsIFollow()) {
+        refreshPosts();
+      }
+    }
+  break;
+case ReaderConstants.INTENT_READER_REBLOG:
+if (resultCode == Activity.RESULT_OK && data != null) {
+  long blogId=data.getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
+  long postId=data.getLongExtra(ReaderConstants.ARG_POST_ID,0);
+  reloadPost(ReaderPostTable.getPost(blogId,postId,true));
+}
+break;
+}
+}

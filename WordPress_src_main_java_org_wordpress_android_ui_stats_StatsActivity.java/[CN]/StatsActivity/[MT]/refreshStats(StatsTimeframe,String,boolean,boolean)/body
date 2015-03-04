@@ -13,12 +13,10 @@
   final String blogId=StatsUtils.getBlogId(mLocalBlogID);
   if (blogId != null) {
     if (!currentBlog.isDotcomFlag() && !currentBlog.hasValidJetpackCredentials() && mResultCode != RESULT_CANCELED) {
-      if (WordPress.hasValidWPComCredentials(this)) {
+      if (WordPress.hasDotComToken(this)) {
         SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
         String username=settings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,null);
-        String password=WordPressDB.decryptPassword(settings.getString(WordPress.WPCOM_PASSWORD_PREFERENCE,null));
         currentBlog.setDotcom_username(username);
-        currentBlog.setDotcom_password(password);
         WordPress.wpDB.saveBlog(currentBlog);
         mSwipeToRefreshHelper.setRefreshing(true);
       }
@@ -38,7 +36,7 @@
     }
     return;
   }
-  if (!currentBlog.isDotcomFlag() && !currentBlog.hasValidJetpackCredentials() && !WordPress.hasValidWPComCredentials(this)) {
+  if (!currentBlog.isDotcomFlag() && !currentBlog.hasValidJetpackCredentials() && !WordPress.hasDotComToken(this)) {
     mSwipeToRefreshHelper.setRefreshing(false);
     AppLog.w(T.STATS,"Jetpack blog with no wpcom credentials");
     return;

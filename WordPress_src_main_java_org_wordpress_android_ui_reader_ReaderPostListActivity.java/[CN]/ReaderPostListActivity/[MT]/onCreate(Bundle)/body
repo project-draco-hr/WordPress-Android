@@ -1,56 +1,5 @@
 {
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-    getWindow().setStatusBarColor(getResources().getColor(R.color.color_status_bar));
-  }
   super.onCreate(savedInstanceState);
-  setContentView(R.layout.reader_activity_post_list);
-  Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
-  if (toolbar != null) {
-    setSupportActionBar(toolbar);
-  }
-  getSupportActionBar().setDisplayShowTitleEnabled(true);
-  getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-  Intent intent=getIntent();
-  if (intent != null) {
-    if (intent.hasExtra(ReaderConstants.ARG_POST_LIST_TYPE)) {
-      mPostListType=(ReaderTypes.ReaderPostListType)intent.getSerializableExtra(ReaderConstants.ARG_POST_LIST_TYPE);
-    }
- else {
-      mPostListType=ReaderTypes.DEFAULT_POST_LIST_TYPE;
-    }
-switch (mPostListType) {
-case TAG_PREVIEW:
-      setTitle(R.string.reader_title_tag_preview);
-    break;
-case BLOG_PREVIEW:
-  setTitle(R.string.reader_title_blog_preview);
-break;
-}
-}
-if (savedInstanceState == null) {
-AnalyticsTracker.track(AnalyticsTracker.Stat.READER_ACCESSED);
-if (getPostListType() == ReaderTypes.ReaderPostListType.BLOG_PREVIEW) {
-long blogId=intent.getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
-long feedId=intent.getLongExtra(ReaderConstants.ARG_FEED_ID,0);
-if (feedId != 0) {
-showListFragmentForFeed(feedId);
-}
- else {
-showListFragmentForBlog(blogId);
-}
-}
- else {
-ReaderTag tag;
-if (intent.hasExtra(ReaderConstants.ARG_TAG)) {
-tag=(ReaderTag)intent.getSerializableExtra(ReaderConstants.ARG_TAG);
-}
- else {
-tag=AppPrefs.getReaderTag();
-}
-if (mPostListType == ReaderTypes.ReaderPostListType.TAG_FOLLOWED && !ReaderTagTable.tagExists(tag)) {
-tag=ReaderTag.getDefaultTag();
-}
-showListFragmentForTag(tag);
-}
-}
+  createMenuDrawer(R.layout.reader_activity_post_list);
+  readIntent(getIntent(),savedInstanceState);
 }

@@ -1,12 +1,8 @@
 {
-  try {
-    if (mBlog == null || url == null) {
-      return;
-    }
-    String postData=String.format("log=%s&pwd=%s&redirect_to=%s",URLEncoder.encode(mBlog.getUsername(),"UTF-8"),URLEncoder.encode(mBlog.getPassword(),"UTF-8"),URLEncoder.encode(url,"UTF-8"));
-    mWebView.postUrl(WordPress.getLoginUrl(mBlog),postData.getBytes());
+  if (!isAdded() || mBlog == null || url == null) {
+    return;
   }
- catch (  UnsupportedEncodingException e) {
-    AppLog.e(T.THEMES,e);
-  }
+  String authenticationUrl=WordPress.getLoginUrl(mBlog);
+  String postData=WPWebViewActivity.getAuthenticationPostData(authenticationUrl,url,mBlog.getUsername(),mBlog.getPassword(),WordPress.getDotComToken(getActivity()));
+  mWebView.postUrl(authenticationUrl,postData.getBytes());
 }
