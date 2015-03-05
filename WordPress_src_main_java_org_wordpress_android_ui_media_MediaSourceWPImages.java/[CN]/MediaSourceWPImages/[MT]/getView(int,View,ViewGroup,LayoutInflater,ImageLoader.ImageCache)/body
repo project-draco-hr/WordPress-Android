@@ -1,0 +1,32 @@
+{
+  if (convertView == null) {
+    convertView=inflater.inflate(R.layout.media_item_wp_image,parent,false);
+  }
+  if (convertView != null) {
+    MediaItem mediaItem=mVerifiedItems.get(position);
+    Uri imageSource=mediaItem.getPreviewSource();
+    ImageView imageView=(ImageView)convertView.findViewById(R.id.wp_image_view_background);
+    if (imageView != null) {
+      if (imageSource != null) {
+        Bitmap imageBitmap=null;
+        if (cache != null) {
+          imageBitmap=cache.getBitmap(imageSource.toString());
+        }
+        if (imageBitmap == null) {
+          imageView.setImageResource(R.color.grey_darken_10);
+          WordPressMediaUtils.BackgroundDownloadWebImage bgDownload=new WordPressMediaUtils.BackgroundDownloadWebImage(imageView);
+          imageView.setTag(bgDownload);
+          bgDownload.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,mediaItem.getPreviewSource());
+        }
+ else {
+          imageView.setImageBitmap(imageBitmap);
+        }
+      }
+ else {
+        imageView.setTag(null);
+        imageView.setImageResource(R.color.grey_darken_10);
+      }
+    }
+  }
+  return convertView;
+}
