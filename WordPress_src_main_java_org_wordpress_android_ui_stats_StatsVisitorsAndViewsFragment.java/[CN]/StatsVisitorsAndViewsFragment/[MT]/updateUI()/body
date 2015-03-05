@@ -15,18 +15,34 @@
     setupNoResultsUI(false);
     return;
   }
-  final String[] horLabels=new String[dataToShowOnGraph.length];
-  mStatsDate=new String[dataToShowOnGraph.length];
-  GraphView.GraphViewData[] views=new GraphView.GraphViewData[dataToShowOnGraph.length];
   OverviewLabel selectedStatsType=overviewItems[mSelectedOverviewItemIndex];
-  for (int i=0; i < dataToShowOnGraph.length; i++) {
-    int currentItemValue=0;
+  mLegendContainer.setVisibility(View.VISIBLE);
+  mLegendLabel.setText(StringUtils.capitalize(selectedStatsType.getLabel().toLowerCase()));
 switch (selectedStatsType) {
 case VIEWS:
-      currentItemValue=dataToShowOnGraph[i].getViews();
-    break;
+    mVisitorsCheckboxContainer.setVisibility(View.VISIBLE);
+  mVisitorsCheckbox.setEnabled(true);
+mVisitorsCheckbox.setChecked(mIsCheckboxChecked);
+break;
+default :
+mVisitorsCheckboxContainer.setVisibility(View.GONE);
+break;
+}
+final String[] horLabels=new String[dataToShowOnGraph.length];
+mStatsDate=new String[dataToShowOnGraph.length];
+GraphView.GraphViewData[] mainSeriesItems=new GraphView.GraphViewData[dataToShowOnGraph.length];
+GraphView.GraphViewData[] secondarySeriesItems=null;
+if (mIsCheckboxChecked && selectedStatsType == OverviewLabel.VIEWS) {
+secondarySeriesItems=new GraphView.GraphViewData[dataToShowOnGraph.length];
+}
+for (int i=0; i < dataToShowOnGraph.length; i++) {
+int currentItemValue=0;
+switch (selectedStatsType) {
+case VIEWS:
+currentItemValue=dataToShowOnGraph[i].getViews();
+break;
 case VISITORS:
-  currentItemValue=dataToShowOnGraph[i].getVisitors();
+currentItemValue=dataToShowOnGraph[i].getVisitors();
 break;
 case LIKES:
 currentItemValue=dataToShowOnGraph[i].getLikes();
@@ -35,14 +51,14 @@ case COMMENTS:
 currentItemValue=dataToShowOnGraph[i].getComments();
 break;
 }
-views[i]=new GraphView.GraphViewData(i,currentItemValue);
+mainSeriesItems[i]=new GraphView.GraphViewData(i,currentItemValue);
+if (mIsCheckboxChecked && secondarySeriesItems != null) {
+secondarySeriesItems[i]=new GraphView.GraphViewData(i,dataToShowOnGraph[i].getVisitors());
+}
 String currentItemStatsDate=dataToShowOnGraph[i].getPeriod();
 horLabels[i]=getDateLabelForBarInGraph(currentItemStatsDate);
 mStatsDate[i]=currentItemStatsDate;
 }
-mCurrentSeriesOnScreen=new GraphViewSeries(views);
-mCurrentSeriesOnScreen.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views);
-mCurrentSeriesOnScreen.getStyle().padding=DisplayUtils.dpToPx(getActivity(),5);
 if (mGraphContainer.getChildCount() >= 1 && mGraphContainer.getChildAt(0) instanceof GraphView) {
 mGraphView=(StatsBarGraph)mGraphContainer.getChildAt(0);
 }
@@ -52,8 +68,30 @@ mGraphView=new StatsBarGraph(getActivity());
 mGraphContainer.addView(mGraphView);
 }
 mGraphView.removeAllSeries();
-mGraphView.addSeries(mCurrentSeriesOnScreen);
+GraphViewSeries mainSeriesOnScreen=new GraphViewSeries(mainSeriesItems);
+mainSeriesOnScreen.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views);
+mainSeriesOnScreen.getStyle().highlightColor=getResources().getColor(R.color.orange_fire);
+mainSeriesOnScreen.getStyle().outerhighlightColor=getResources().getColor(R.color.stats_bar_graph_outer_highlight);
+mainSeriesOnScreen.getStyle().padding=DisplayUtils.dpToPx(getActivity(),5);
+mGraphView.addSeries(mainSeriesOnScreen);
+if (mIsCheckboxChecked && secondarySeriesItems != null && selectedStatsType == OverviewLabel.VIEWS) {
+GraphViewSeries secondarySeries=new GraphViewSeries(secondarySeriesItems);
+secondarySeries.getStyle().padding=DisplayUtils.dpToPx(getActivity(),10);
+secondarySeries.getStyle().color=getResources().getColor(R.color.stats_bar_graph_views_inner);
+secondarySeries.getStyle().highlightColor=getResources().getColor(R.color.orange_fire);
+mGraphView.addSeries(secondarySeries);
+}
+switch (selectedStatsType) {
+case VISITORS:
+double maxYValue=getMaxYValueForVisitorsAndView(dataToShowOnGraph);
+mGraphView.setManualYAxisBounds(maxYValue,0d);
+break;
+default :
+mGraphView.setManualYAxis(false);
+break;
+}
 mGraphView.getGraphViewStyle().setNumHorizontalLabels(dataToShowOnGraph.length);
+mGraphView.getGraphViewStyle().setMaxColumnWidth(DisplayUtils.dpToPx(getActivity(),StatsConstants.STATS_GRAPH_BAR_MAX_COLUMN_WIDTH_DP));
 mGraphView.setHorizontalLabels(horLabels);
 mGraphView.setGestureListener(this);
 int barSelectedOnGraph;
