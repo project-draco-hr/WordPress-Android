@@ -4,10 +4,11 @@
     apiArgs.add(WordPress.getCurrentBlog());
     ApiHelper.SyncMediaLibraryTask.Callback callback=new ApiHelper.SyncMediaLibraryTask.Callback(){
       @Override public void onSuccess(      int count){
-        mBlogMediaAvailable=true;
+        mBlogMediaStatus=1;
       }
       @Override public void onFailure(      final ApiHelper.ErrorType errorType,      String errorMessage,      Throwable throwable){
-        mBlogMediaAvailable=false;
+        mBlogMediaStatus=0;
+        ToastUtils.showToast(getActivity(),R.string.error_refresh_media,ToastUtils.Duration.SHORT);
       }
     }
 ;
@@ -15,6 +16,7 @@
     getMediaTask.execute(apiArgs);
   }
  else {
-    mBlogMediaAvailable=false;
+    mBlogMediaStatus=0;
+    ToastUtils.showToast(getActivity(),R.string.error_refresh_media,ToastUtils.Duration.SHORT);
   }
 }
