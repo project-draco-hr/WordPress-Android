@@ -1,0 +1,31 @@
+{
+  TranslateAnimation tabGoneAnimation=new TranslateAnimation(0,0,0,-mTabLayout.getHeight());
+  TranslateAnimation pagerGoneAnimation=new TranslateAnimation(0,0,0,-mTabLayout.getHeight());
+  tabGoneAnimation.setDuration(TAB_ANIMATION_DURATION_MS);
+  pagerGoneAnimation.setDuration(TAB_ANIMATION_DURATION_MS);
+  tabGoneAnimation.setAnimationListener(new Animation.AnimationListener(){
+    @Override public void onAnimationStart(    Animation animation){
+    }
+    @Override public void onAnimationEnd(    Animation animation){
+      mTabLayout.setVisibility(View.GONE);
+      mTabLayout.clearAnimation();
+    }
+    @Override public void onAnimationRepeat(    Animation animation){
+    }
+  }
+);
+  pagerGoneAnimation.setAnimationListener(new Animation.AnimationListener(){
+    @Override public void onAnimationStart(    Animation animation){
+      LinearLayout.LayoutParams newParams=new LinearLayout.LayoutParams(mViewPager.getWidth(),mViewPager.getHeight() + mTabLayout.getHeight());
+      mViewPager.setLayoutParams(newParams);
+    }
+    @Override public void onAnimationEnd(    Animation animation){
+      mViewPager.clearAnimation();
+    }
+    @Override public void onAnimationRepeat(    Animation animation){
+    }
+  }
+);
+  mTabLayout.startAnimation(tabGoneAnimation);
+  mViewPager.startAnimation(pagerGoneAnimation);
+}
