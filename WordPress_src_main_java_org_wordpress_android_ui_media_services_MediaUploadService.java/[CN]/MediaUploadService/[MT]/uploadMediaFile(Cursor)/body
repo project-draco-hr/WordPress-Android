@@ -1,11 +1,11 @@
 {
   if (!cursor.moveToFirst())   return;
   mUploadInProgress=true;
-  final String blogIdStr=cursor.getString((cursor.getColumnIndex("blogId")));
-  final String mediaId=cursor.getString(cursor.getColumnIndex("mediaId"));
-  String fileName=cursor.getString(cursor.getColumnIndex("fileName"));
-  String filePath=cursor.getString(cursor.getColumnIndex("filePath"));
-  String mimeType=cursor.getString(cursor.getColumnIndex("mimeType"));
+  final String blogIdStr=cursor.getString((cursor.getColumnIndex(WordPressDB.COLUMN_NAME_BLOG_ID)));
+  final String mediaId=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_MEDIA_ID));
+  String fileName=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_NAME));
+  String filePath=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_PATH));
+  String mimeType=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_MIME_TYPE));
   MediaFile mediaFile=new MediaFile();
   mediaFile.setBlogId(blogIdStr);
   mediaFile.setFileName(fileName);
@@ -14,7 +14,7 @@
   ApiHelper.UploadMediaTask task=new ApiHelper.UploadMediaTask(mContext,mediaFile,new ApiHelper.UploadMediaTask.Callback(){
     @Override public void onSuccess(    String id){
       WordPress.wpDB.deleteMediaFile(blogIdStr,mediaId);
-      sendUpdateBroadcast(mediaId,null);
+      sendUpdateBroadcast(mediaId,id);
       fetchMediaFile(id);
     }
     @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){

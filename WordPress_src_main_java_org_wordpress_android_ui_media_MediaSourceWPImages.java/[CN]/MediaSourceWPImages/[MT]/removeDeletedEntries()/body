@@ -1,0 +1,34 @@
+{
+  AsyncTask<List<MediaItem>,Void,Void> backgroundCheck=new AsyncTask<List<MediaItem>,Void,Void>(){
+    @Override protected Void doInBackground(    List<MediaItem>[] params){
+      for (      MediaItem mediaItem : params[0]) {
+        try {
+          URL mediaUrl=new URL(mediaItem.getSource().toString());
+          HttpURLConnection connection=(HttpURLConnection)mediaUrl.openConnection();
+          connection.setRequestMethod("GET");
+          connection.connect();
+          int responseCode=connection.getResponseCode();
+          if (responseCode == 200) {
+            mVerifiedItems.add(mediaItem);
+          }
+        }
+ catch (        MalformedURLException e) {
+        }
+catch (        IOException ioException) {
+        }
+        Thread.yield();
+      }
+      return null;
+    }
+    @Override public void onPostExecute(    Void result){
+      mLoading=false;
+      notifyLoadingStatus();
+      if (mVerifiedItems.size() > 0 && mListener != null) {
+        mListener.onMediaAdded(MediaSourceWPImages.this,mVerifiedItems);
+      }
+    }
+  }
+;
+  List<MediaItem> existingItems=new ArrayList<>(mMediaItems);
+  backgroundCheck.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,existingItems);
+}

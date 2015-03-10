@@ -1,0 +1,32 @@
+{
+  super.onActivityResult(requestCode,resultCode,data);
+switch (requestCode) {
+case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO:
+    File file=new File(mCapturePath);
+  Uri imageUri=Uri.fromFile(file);
+if (file.exists() && MediaUtils.isValidImage(imageUri.toString())) {
+  sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,imageUri));
+  MediaItem newImage=new MediaItem();
+  newImage.setSource(imageUri);
+  newImage.setPreviewSource(imageUri);
+  ArrayList<MediaItem> imageResult=new ArrayList<>();
+  imageResult.add(newImage);
+  finishWithResults(imageResult,ACTIVITY_RESULT_CODE_MEDIA_SELECTED);
+}
+break;
+case MediaUtils.RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO:
+Uri videoUri=data != null ? data.getData() : null;
+if (videoUri != null) {
+sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,videoUri));
+MediaItem newVideo=new MediaItem();
+newVideo.setSource(videoUri);
+newVideo.setPreviewSource(videoUri);
+ArrayList<MediaItem> videoResult=new ArrayList<>();
+videoResult.add(newVideo);
+finishWithResults(videoResult,ACTIVITY_RESULT_CODE_MEDIA_SELECTED);
+}
+break;
+default :
+break;
+}
+}
