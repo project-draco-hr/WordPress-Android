@@ -1,0 +1,59 @@
+{
+  if (mNosaraClient == null) {
+    return;
+  }
+  String eventName;
+switch (stat) {
+case APPLICATION_STARTED:
+    eventName="application_started";
+  break;
+case APPLICATION_OPENED:
+eventName="application_opened";
+break;
+case APPLICATION_CLOSED:
+eventName="application_closed";
+break;
+case READER_ACCESSED:
+eventName="reader_accessed";
+break;
+case READER_OPENED_ARTICLE:
+eventName="reader_opened_article";
+break;
+case READER_LIKED_ARTICLE:
+eventName="reader_liked_article";
+break;
+case READER_INFINITE_SCROLL:
+eventName="reader_infinite_scroll_performed";
+break;
+case NOTIFICATIONS_ACCESSED:
+eventName="notifications_accessed";
+break;
+case STATS_ACCESSED:
+eventName="stats_accessed";
+break;
+case STATS_VIEW_ALL_ACCESSED:
+eventName="stats_view_all_accessed";
+break;
+case STATS_SINGLE_POST_ACCESSED:
+eventName="stats_single_post_accessed";
+break;
+case STATS_OPENED_WEB_VERSION:
+eventName="stats_web_version_accessed";
+break;
+case STATS_TAPPED_BAR_CHART:
+eventName="stats_tapped_bar_chart";
+break;
+case STATS_SCROLLED_TO_BOTTOM:
+eventName="stats_scrolled_to_bottom";
+break;
+default :
+eventName=null;
+break;
+}
+if (shouldGenerateAnonID()) {
+mAnonID=getNewAnonID();
+}
+final String user=mAnonID != null ? mAnonID : mWpcomUserName;
+TracksClient.NosaraUserType userType=mAnonID != null ? TracksClient.NosaraUserType.ANON : TracksClient.NosaraUserType.WPCOM;
+mNosaraClient.track(EVENTS_PREFIX + "danilotest",user,userType);
+}
