@@ -1,5 +1,6 @@
 {
   super.onCreate(savedInstanceState);
+  Resources resources=getResources();
   if (savedInstanceState == null) {
     AnalyticsTracker.track(AnalyticsTracker.Stat.OPENED_SETTINGS);
   }
@@ -14,21 +15,22 @@
     }
   }
 ;
-  mTaglineTextPreference=(WPEditTextPreference)findPreference("wp_pref_post_signature");
+  mTaglineTextPreference=(WPEditTextPreference)findPreference(resources.getString(R.string.pref_key_post_sig));
   if (mTaglineTextPreference != null) {
     mTaglineTextPreference.setOnPreferenceChangeListener(preferenceChangeListener);
   }
-  findPreference("wp_pref_manage_notifications").setOnPreferenceClickListener(notificationPreferenceClickListener);
-  findPreference("wp_pref_app_about").setOnPreferenceClickListener(launchActivitiyClickListener);
-  findPreference("wp_pref_open_source_licenses").setOnPreferenceClickListener(launchActivitiyClickListener);
-  findPreference("wp_pref_help_and_support").setOnPreferenceClickListener(launchActivitiyClickListener);
-  findPreference("wp_pref_passlock_enabled").setOnPreferenceChangeListener(passcodeCheckboxChangeListener);
-  findPreference("wp_pref_sign_out").setOnPreferenceClickListener(signOutPreferenceClickListener);
-  findPreference("wp_reset_share_pref").setOnPreferenceClickListener(resetAUtoSharePreferenceClickListener);
+  findPreference(resources.getString(R.string.pref_key_notifications)).setOnPreferenceClickListener(notificationPreferenceClickListener);
+  findPreference(resources.getString(R.string.pref_key_language)).setOnPreferenceClickListener(languagePreferenceClickListener);
+  findPreference(resources.getString(R.string.pref_key_app_about)).setOnPreferenceClickListener(launchActivitiyClickListener);
+  findPreference(resources.getString(R.string.pref_key_oss_licenses)).setOnPreferenceClickListener(launchActivitiyClickListener);
+  findPreference(resources.getString(R.string.pref_key_help_and_support)).setOnPreferenceClickListener(launchActivitiyClickListener);
+  findPreference(resources.getString(R.string.pref_key_passlock)).setOnPreferenceChangeListener(passcodeCheckboxChangeListener);
+  findPreference(resources.getString(R.string.pref_key_signout)).setOnPreferenceClickListener(signOutPreferenceClickListener);
+  findPreference(resources.getString(R.string.pref_key_reset_shared_pref)).setOnPreferenceClickListener(resetAUtoSharePreferenceClickListener);
   mSettings=PreferenceManager.getDefaultSharedPreferences(getActivity());
   initNotifications();
   if (AppLockManager.getInstance().isAppLockFeatureEnabled()) {
-    final CheckBoxPreference passcodeEnabledCheckBoxPreference=(CheckBoxPreference)findPreference("wp_pref_passlock_enabled");
+    final CheckBoxPreference passcodeEnabledCheckBoxPreference=(CheckBoxPreference)findPreference(resources.getString(R.string.pref_key_passlock));
     passcodeEnabledCheckBoxPreference.setOnPreferenceClickListener(new OnPreferenceClickListener(){
       @Override public boolean onPreferenceClick(      Preference preference){
         passcodeEnabledCheckBoxPreference.setChecked(AppLockManager.getInstance().getCurrentAppLock().isPasswordLocked());
@@ -38,8 +40,8 @@
 );
   }
  else {
-    PreferenceScreen rootScreen=(PreferenceScreen)findPreference("wp_pref_root");
-    PreferenceGroup passcodeGroup=(PreferenceGroup)findPreference("wp_passcode_lock_category");
+    PreferenceScreen rootScreen=(PreferenceScreen)findPreference(resources.getString(R.string.pref_key_settings_root));
+    PreferenceGroup passcodeGroup=(PreferenceGroup)findPreference(resources.getString(R.string.pref_key_passlock_section));
     rootScreen.removePreference(passcodeGroup);
   }
   displayPreferences();
