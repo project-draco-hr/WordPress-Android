@@ -1,12 +1,20 @@
 {
   super.onCreate(savedInstanceState);
+  applyLocale();
   setContentView(R.layout.activity_launch);
   if (WordPress.wpDB == null) {
     ToastUtils.showToast(this,R.string.fatal_db_error,ToastUtils.Duration.LONG);
     finish();
     return;
   }
-  Intent intent=new Intent(this,WPMainActivity.class);
+  String lastActivityStr=AppPrefs.getLastActivityStr();
+  ActivityId id=ActivityId.getActivityIdFromName(lastActivityStr);
+  Intent intent=WPActivityUtils.getIntentForActivityId(this,id);
+  AppLog.v(T.UTILS,"WPLaunchActivity,  activityName: " + lastActivityStr + ", activityId: "+ id+ ", "+ "intent: "+ intent);
+  if (intent == null) {
+    AppLog.v(T.UTILS,"Launch default Activity: PostsActivity");
+    intent=new Intent(this,PostsActivity.class);
+  }
   startActivity(intent);
   finish();
 }

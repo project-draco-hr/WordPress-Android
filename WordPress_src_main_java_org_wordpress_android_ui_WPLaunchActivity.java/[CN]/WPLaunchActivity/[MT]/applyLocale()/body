@@ -1,0 +1,15 @@
+{
+  SharedPreferences sharedPreferences=PreferenceManager.getDefaultSharedPreferences(this);
+  if (sharedPreferences.contains(SettingsFragment.SETTINGS_PREFERENCES)) {
+    String locale=sharedPreferences.getString(SettingsFragment.SETTINGS_PREFERENCES,"");
+    if (!locale.equals(Locale.getDefault().getDisplayLanguage())) {
+      Resources resources=getResources();
+      Configuration conf=resources.getConfiguration();
+      conf.locale=new Locale(locale);
+      resources.updateConfiguration(conf,resources.getDisplayMetrics());
+      Intent refresh=new Intent(this,WPLaunchActivity.class);
+      startActivity(refresh);
+      finish();
+    }
+  }
+}
