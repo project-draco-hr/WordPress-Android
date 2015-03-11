@@ -6,18 +6,25 @@
   contactUsButton.setOnClickListener(new OnClickListener(){
     @Override public void onClick(    View v){
       Bundle extras=getIntent().getExtras();
+      Tag origin=Tag.ORIGIN_UNKNOWN;
       if (extras != null) {
         HelpshiftHelper.getInstance().addMetaData(MetadataKey.USER_ENTERED_URL,extras.getString(SignInFragment.ENTERED_URL_KEY));
         HelpshiftHelper.getInstance().addMetaData(MetadataKey.USER_ENTERED_USERNAME,extras.getString(SignInFragment.ENTERED_USERNAME_KEY));
+        origin=(Tag)extras.get(HelpshiftHelper.ORIGIN_KEY);
       }
-      HelpshiftHelper.getInstance().showConversation(HelpActivity.this);
+      HelpshiftHelper.getInstance().showConversation(HelpActivity.this,origin);
     }
   }
 );
   WPTextView faqbutton=(WPTextView)findViewById(R.id.faq_button);
   faqbutton.setOnClickListener(new OnClickListener(){
     @Override public void onClick(    View v){
-      HelpshiftHelper.getInstance().showFAQ(HelpActivity.this);
+      Bundle extras=getIntent().getExtras();
+      Tag origin=Tag.ORIGIN_UNKNOWN;
+      if (extras != null) {
+        origin=(Tag)extras.get(HelpshiftHelper.ORIGIN_KEY);
+      }
+      HelpshiftHelper.getInstance().showFAQ(HelpActivity.this,origin);
     }
   }
 );
