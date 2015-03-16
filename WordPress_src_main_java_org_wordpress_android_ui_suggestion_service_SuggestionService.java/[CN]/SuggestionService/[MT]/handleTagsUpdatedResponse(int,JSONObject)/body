@@ -1,0 +1,19 @@
+{
+  new Thread(){
+    @Override public void run(){
+      if (jsonObject == null) {
+        return;
+      }
+      JSONArray jsonTags=jsonObject.optJSONArray("tags");
+      List<Tag> tags=Tag.tagListFromJSON(jsonTags,remoteBlogId);
+      if (tags != null) {
+        SuggestionTable.insertTagsForSite(remoteBlogId,tags);
+        LocalBroadcastManager lbm=LocalBroadcastManager.getInstance(WordPress.getContext());
+        Intent intent=new Intent(SuggestionService.ACTION_TAGS_LIST_UPDATED);
+        intent.putExtra(SuggestionService.TAGS_LIST_UPDATED_EXTRA,remoteBlogId);
+        lbm.sendBroadcast(intent);
+      }
+    }
+  }
+.start();
+}
