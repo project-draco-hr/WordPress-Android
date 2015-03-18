@@ -1,25 +1,29 @@
 {
-  if (clickedSpan.shouldShowBlogPreview()) {
-    activity.showBlogPreviewActivity(clickedSpan.getSiteId());
-  }
- else   if (clickedSpan.getRangeType() == NoteBlockRangeType.POST) {
-    activity.showPostActivity(clickedSpan.getSiteId(),clickedSpan.getId());
-  }
- else   if (clickedSpan.getRangeType() == NoteBlockRangeType.COMMENT) {
-    activity.showPostActivity(clickedSpan.getSiteId(),clickedSpan.getPostId());
-  }
- else   if (clickedSpan.getRangeType() == NoteBlockRangeType.STAT) {
-    int localTableSiteId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId((int)clickedSpan.getSiteId());
-    if (localTableSiteId > 0) {
-      activity.showStatsActivityForSite(localTableSiteId);
-    }
- else     if (!TextUtils.isEmpty(clickedSpan.getUrl())) {
-      activity.showWebViewActivityForUrl(clickedSpan.getUrl());
-    }
-  }
- else {
-    if (!TextUtils.isEmpty(clickedSpan.getUrl())) {
-      activity.showWebViewActivityForUrl(clickedSpan.getUrl());
-    }
-  }
+switch (clickedSpan.getRangeType()) {
+case SITE:
+    activity.showBlogPreviewActivity(clickedSpan.getId());
+  break;
+case USER:
+activity.showBlogPreviewActivity(clickedSpan.getSiteId());
+break;
+case POST:
+activity.showPostActivity(clickedSpan.getSiteId(),clickedSpan.getId());
+break;
+case COMMENT:
+activity.showPostActivity(clickedSpan.getSiteId(),clickedSpan.getPostId());
+break;
+case STAT:
+int localTableSiteId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId((int)clickedSpan.getSiteId());
+if (localTableSiteId > 0) {
+activity.showStatsActivityForSite(localTableSiteId);
+}
+ else if (!TextUtils.isEmpty(clickedSpan.getUrl())) {
+activity.showWebViewActivityForUrl(clickedSpan.getUrl());
+}
+break;
+default :
+if (!TextUtils.isEmpty(clickedSpan.getUrl())) {
+activity.showWebViewActivityForUrl(clickedSpan.getUrl());
+}
+}
 }
