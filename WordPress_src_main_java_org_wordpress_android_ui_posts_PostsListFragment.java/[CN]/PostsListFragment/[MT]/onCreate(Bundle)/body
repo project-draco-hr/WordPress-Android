@@ -5,5 +5,9 @@
     if (extras != null) {
       mIsPage=extras.getBoolean(PostsActivity.EXTRA_VIEW_PAGES);
     }
+    Blog currentBlog=WordPress.getCurrentBlog();
+    if (!ServiceUtils.isServiceRunning(getActivity(),PostUploadService.class) && currentBlog != null) {
+      WordPress.wpDB.clearAllUploadingPosts(currentBlog.getLocalTableBlogId(),mIsPage);
+    }
   }
 }
