@@ -24,4 +24,25 @@
 );
   String htmlEditor=getHtmlEditor();
   mWebView.loadDataWithBaseURL("file:///android_asset/",htmlEditor,"text/html","utf-8","");
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+    WebView.setWebContentsDebuggingEnabled(true);
+  }
+  mWebView.postDelayed(new Runnable(){
+    @Override public void run(){
+      String htmlFile="";
+      try {
+        htmlFile=getStringFromAsset("example-content.html");
+        htmlFile=htmlFile.replace("\\","\\\\");
+        htmlFile=htmlFile.replace("\"","\\\"");
+        htmlFile=htmlFile.replace("'","\\'");
+        htmlFile=htmlFile.replace("\r","\\r");
+        htmlFile=htmlFile.replace("\n","\\n");
+      }
+ catch (      IOException e) {
+        AppLog.e(T.EDITOR,e.getMessage());
+      }
+      mWebView.loadUrl("JavaScript:ZSSEditor.getField('zss_field_content').setHTML('" + htmlFile + "');");
+    }
+  }
+,5000);
 }
