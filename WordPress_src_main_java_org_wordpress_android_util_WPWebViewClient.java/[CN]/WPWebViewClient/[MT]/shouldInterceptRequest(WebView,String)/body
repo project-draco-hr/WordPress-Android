@@ -1,5 +1,5 @@
 {
-  if (mIsPrivatePost && !TextUtils.isEmpty(mToken) && UrlUtils.isImageUrl(url)) {
+  if (mBlog != null && mBlog.isPrivate() && !TextUtils.isEmpty(mToken) && UrlUtils.isImageUrl(url)) {
     DefaultHttpClient client=new DefaultHttpClient();
     HttpGet httpGet=new HttpGet(url);
     httpGet.setHeader("Authorization","Bearer " + mToken);
@@ -9,7 +9,7 @@
       return new WebResourceResponse(httpResponse.getEntity().getContentType().toString(),"UTF-8",responseInputStream);
     }
  catch (    IOException e) {
-      AppLog.e(AppLog.T.READER,"Invalid reader detail request: " + e.getMessage());
+      AppLog.e(AppLog.T.POSTS,"Invalid post detail request: " + e.getMessage());
     }
   }
   return super.shouldInterceptRequest(view,url);
