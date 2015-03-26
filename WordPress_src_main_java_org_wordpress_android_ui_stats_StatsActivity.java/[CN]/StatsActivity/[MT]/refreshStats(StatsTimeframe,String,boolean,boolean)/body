@@ -12,7 +12,7 @@
   }
   final String blogId=StatsUtils.getBlogId(mLocalBlogID);
   if (blogId != null) {
-    if (!currentBlog.isDotcomFlag() && !currentBlog.hasValidJetpackCredentials() && mResultCode != RESULT_CANCELED) {
+    if (!currentBlog.isDotCom() && !currentBlog.hasValidJetpackCredentials() && mResultCode != RESULT_CANCELED) {
       if (WordPress.hasDotComToken(this)) {
         SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(this);
         String username=settings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,null);
@@ -27,7 +27,7 @@
     }
   }
  else {
-    if (!currentBlog.isDotcomFlag()) {
+    if (!currentBlog.isDotCom()) {
       new ApiHelper.RefreshBlogContentTask(currentBlog,new VerifyJetpackSettingsCallback()).execute(false);
     }
  else {
@@ -36,7 +36,7 @@
     }
     return;
   }
-  if (!currentBlog.isDotcomFlag() && !currentBlog.hasValidJetpackCredentials() && !WordPress.hasDotComToken(this)) {
+  if (!currentBlog.isDotCom() && !currentBlog.hasValidJetpackCredentials() && !WordPress.hasDotComToken(this)) {
     mSwipeToRefreshHelper.setRefreshing(false);
     AppLog.w(T.STATS,"Jetpack blog with no wpcom credentials");
     return;
