@@ -1,10 +1,9 @@
 {
   if (mIsPrivatePost && !TextUtils.isEmpty(mToken) && UrlUtils.isImageUrl(url)) {
-    DefaultHttpClient client=new DefaultHttpClient();
     HttpGet httpGet=new HttpGet(url);
     httpGet.setHeader("Authorization","Bearer " + mToken);
     try {
-      HttpResponse httpResponse=client.execute(httpGet);
+      HttpResponse httpResponse=getHttpClient().execute(httpGet);
       InputStream responseInputStream=httpResponse.getEntity().getContent();
       return new WebResourceResponse(httpResponse.getEntity().getContentType().toString(),"UTF-8",responseInputStream);
     }
