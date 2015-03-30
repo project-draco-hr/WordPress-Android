@@ -1,0 +1,77 @@
+{
+  Post post=getPost();
+  if (post == null) {
+    return;
+  }
+  String title=StringUtils.notNullStr((String)mEditorFragment.getTitle());
+  SpannableStringBuilder postContent;
+  if (mEditorFragment.getSpannedContent() != null) {
+    postContent=new SpannableStringBuilder(mEditorFragment.getSpannedContent());
+  }
+ else {
+    postContent=new SpannableStringBuilder(StringUtils.notNullStr((String)mEditorFragment.getContent()));
+  }
+  String content;
+  if (post.isLocalDraft()) {
+    CharacterStyle[] characterStyles=postContent.getSpans(0,postContent.length(),CharacterStyle.class);
+    for (    CharacterStyle characterStyle : characterStyles) {
+      if (characterStyle instanceof SuggestionSpan) {
+        postContent.removeSpan(characterStyle);
+      }
+    }
+    content=WPHtml.toHtml(postContent);
+    content=content.replace("<p><p>","<p>");
+    content=content.replace("</p></p>","</p>");
+    content=content.replace("<br><br>","<br>");
+    content=content.replace("</strong><strong>","").replace("</em><em>","").replace("</u><u>","").replace("</strike><strike>","").replace("</blockquote><blockquote>","");
+  }
+ else {
+    if (!isAutoSave) {
+      MediaGalleryImageSpan[] gallerySpans=postContent.getSpans(0,postContent.length(),MediaGalleryImageSpan.class);
+      for (      MediaGalleryImageSpan gallerySpan : gallerySpans) {
+        int start=postContent.getSpanStart(gallerySpan);
+        postContent.removeSpan(gallerySpan);
+        postContent.insert(start,WPHtml.getGalleryShortcode(gallerySpan));
+      }
+    }
+    WPImageSpan[] imageSpans=postContent.getSpans(0,postContent.length(),WPImageSpan.class);
+    if (imageSpans.length != 0) {
+      for (      WPImageSpan wpIS : imageSpans) {
+        MediaFile mediaFile=wpIS.getMediaFile();
+        if (mediaFile == null)         continue;
+        if (mediaFile.getMediaId() != null) {
+          updateMediaFileOnServer(wpIS);
+        }
+ else {
+          mediaFile.setFileName(wpIS.getImageSource().toString());
+          mediaFile.setFilePath(wpIS.getImageSource().toString());
+          WordPress.wpDB.saveMediaFile(mediaFile);
+        }
+        int tagStart=postContent.getSpanStart(wpIS);
+        if (!isAutoSave) {
+          postContent.removeSpan(wpIS);
+          if (mediaFile.getMediaId() != null && mediaFile.getMediaId().length() > 0) {
+            postContent.insert(tagStart,WPHtml.getContent(wpIS));
+          }
+ else {
+            postContent.insert(tagStart,"<img android-uri=\"" + wpIS.getImageSource().toString() + "\" />");
+          }
+        }
+      }
+    }
+    content=postContent.toString();
+  }
+  String moreTag="<!--more-->";
+  post.setTitle(title);
+  if (post.isLocalDraft() && content.contains(moreTag)) {
+    post.setDescription(content.substring(0,content.indexOf(moreTag)));
+    post.setMoreText(content.substring(content.indexOf(moreTag) + moreTag.length(),content.length()));
+  }
+ else {
+    post.setDescription(content);
+    post.setMoreText("");
+  }
+  if (!post.isLocalDraft()) {
+    post.setLocalChange(true);
+  }
+}

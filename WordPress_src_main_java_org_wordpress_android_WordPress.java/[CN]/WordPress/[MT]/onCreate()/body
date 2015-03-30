@@ -21,9 +21,9 @@
     AppLockManager.getInstance().getCurrentAppLock().setDisabledActivities(new String[]{"org.wordpress.android.ui.ShareIntentReceiverActivity"});
   }
   HelpshiftHelper.init(this);
-  AnalyticsTracker.init();
-  AnalyticsTracker.registerTracker(new AnalyticsTrackerMixpanel());
-  AnalyticsTracker.beginSession();
+  AnalyticsTracker.registerTracker(new AnalyticsTrackerMixpanel(getContext(),BuildConfig.MIXPANEL_TOKEN));
+  AnalyticsTracker.init(getContext());
+  AnalyticsUtils.refreshMetadata();
   AnalyticsTracker.track(Stat.APPLICATION_STARTED);
   registerForCloudMessaging(this);
   ApplicationLifecycleMonitor pnBackendMonitor=new ApplicationLifecycleMonitor();

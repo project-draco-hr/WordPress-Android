@@ -1,0 +1,54 @@
+{
+  try {
+    if (linkURL != null && !linkURL.equals("http://") && !linkURL.equals("")) {
+      if (mSelectionStart > mSelectionEnd) {
+        int temp=mSelectionEnd;
+        mSelectionEnd=mSelectionStart;
+        mSelectionStart=temp;
+      }
+      Editable editable=mContentEditText.getText();
+      if (editable == null) {
+        return;
+      }
+      if (mIsLocalDraft) {
+        if (linkText == null) {
+          if (mSelectionStart < mSelectionEnd) {
+            editable.delete(mSelectionStart,mSelectionEnd);
+          }
+          editable.insert(mSelectionStart,linkURL);
+          editable.setSpan(new URLSpan(linkURL),mSelectionStart,mSelectionStart + linkURL.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+          mContentEditText.setSelection(mSelectionStart + linkURL.length());
+        }
+ else {
+          if (mSelectionStart < mSelectionEnd) {
+            editable.delete(mSelectionStart,mSelectionEnd);
+          }
+          editable.insert(mSelectionStart,linkText);
+          editable.setSpan(new URLSpan(linkURL),mSelectionStart,mSelectionStart + linkText.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+          mContentEditText.setSelection(mSelectionStart + linkText.length());
+        }
+      }
+ else {
+        if (linkText == null) {
+          if (mSelectionStart < mSelectionEnd) {
+            editable.delete(mSelectionStart,mSelectionEnd);
+          }
+          String urlHTML="<a href=\"" + linkURL + "\">"+ linkURL+ "</a>";
+          editable.insert(mSelectionStart,urlHTML);
+          mContentEditText.setSelection(mSelectionStart + urlHTML.length());
+        }
+ else {
+          if (mSelectionStart < mSelectionEnd) {
+            editable.delete(mSelectionStart,mSelectionEnd);
+          }
+          String urlHTML="<a href=\"" + linkURL + "\">"+ linkText+ "</a>";
+          editable.insert(mSelectionStart,urlHTML);
+          mContentEditText.setSelection(mSelectionStart + urlHTML.length());
+        }
+      }
+    }
+  }
+ catch (  RuntimeException e) {
+    AppLog.e(T.POSTS,e);
+  }
+}
