@@ -4,11 +4,12 @@
   ProfilingUtils.start("WordPress.onCreate");
   AppLog.enableRecording(true);
   if (!PackageUtils.isDebugBuild()) {
-    Crashlytics.start(this);
+    Fabric.with(this,new Crashlytics());
   }
   versionName=PackageUtils.getVersionName(this);
   HelpshiftHelper.init(this);
   initWpDb();
+  enableHttpResponseCache(mContext);
   EventBus.TAG="WordPress-EVENT";
   EventBus.builder().logNoSubscriberMessages(false).sendNoSubscriberEvent(false).throwSubscriberException(true).installDefaultEventBus();
   RestClientUtils.setUserAgent(getUserAgent());
