@@ -45,10 +45,10 @@
     }
 switch (e.getFaultCode()) {
 case 403:
-      broadcastAction(WordPress.BROADCAST_ACTION_XMLRPC_INVALID_CREDENTIALS);
+      EventBus.getDefault().post(new CoreEvents.InvalidCredentialsDetected());
     break;
 case 425:
-  broadcastAction(WordPress.BROADCAST_ACTION_XMLRPC_TWO_FA_AUTH);
+  EventBus.getDefault().post(new CoreEvents.TwoFactorAuthenticationDetected());
 break;
 default :
 break;
@@ -83,7 +83,7 @@ AppLog.e(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected
 }
  else {
 AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
-broadcastAction(WordPress.BROADCAST_ACTION_XMLRPC_INVALID_SSL_CERTIFICATE);
+EventBus.getDefault().post(new CoreEvents.InvalidSslCertificateDetected());
 }
 throw e;
 }
@@ -93,7 +93,7 @@ AppLog.e(T.NUX,"SSLPeerUnverifiedException failed. Erroneous SSL certificate det
 }
  else {
 AppLog.w(T.NUX,"SSLPeerUnverifiedException failed. Erroneous SSL certificate detected.");
-broadcastAction(WordPress.BROADCAST_ACTION_XMLRPC_INVALID_SSL_CERTIFICATE);
+EventBus.getDefault().post(new CoreEvents.InvalidSslCertificateDetected());
 }
 throw e;
 }

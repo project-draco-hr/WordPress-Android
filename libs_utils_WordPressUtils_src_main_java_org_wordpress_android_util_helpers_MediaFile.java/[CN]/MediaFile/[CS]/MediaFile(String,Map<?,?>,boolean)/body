@@ -1,0 +1,36 @@
+{
+  setBlogId(blogId);
+  setMediaId(MapUtils.getMapStr(resultMap,"attachment_id"));
+  setPostID(MapUtils.getMapLong(resultMap,"parent"));
+  setTitle(MapUtils.getMapStr(resultMap,"title"));
+  setCaption(MapUtils.getMapStr(resultMap,"caption"));
+  setDescription(MapUtils.getMapStr(resultMap,"description"));
+  setVideoPressShortCode(MapUtils.getMapStr(resultMap,VIDEOPRESS_SHORTCODE_ID));
+  String link=MapUtils.getMapStr(resultMap,"link");
+  setFileName(new String(link).replaceAll("^.*/([A-Za-z0-9_-]+)\\.\\w+$","$1"));
+  String fileType=new String(link).replaceAll(".*\\.(\\w+)$","$1").toLowerCase();
+  String fileMimeType=MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileType);
+  setMimeType(fileMimeType);
+  String fileUrl=MapUtils.getMapStr(resultMap,"link");
+  if (isDotCom) {
+    fileUrl=fileUrl.replace("http:","https:");
+  }
+  setFileURL(fileUrl);
+  String thumbnailURL=MapUtils.getMapStr(resultMap,"thumbnail");
+  if (thumbnailURL.startsWith("http")) {
+    if (isDotCom) {
+      thumbnailURL=thumbnailURL.replace("http:","https:");
+    }
+    setThumbnailURL(thumbnailURL);
+  }
+  Date date=MapUtils.getMapDate(resultMap,"date_created_gmt");
+  if (date != null) {
+    setDateCreatedGMT(date.getTime());
+  }
+  Object meta=resultMap.get("metadata");
+  if (meta != null && meta instanceof Map) {
+    Map<?,?> metadata=(Map<?,?>)meta;
+    setWidth(MapUtils.getMapInt(metadata,"width"));
+    setHeight(MapUtils.getMapInt(metadata,"height"));
+  }
+}
