@@ -231,11 +231,21 @@ if (eventName == null) {
 AppLog.w(AppLog.T.STATS,"There is NO match for the event " + stat.name() + "stat");
 return;
 }
-if (shouldGenerateAnonID()) {
-mAnonID=getNewAnonID();
+final String user;
+final TracksClient.NosaraUserType userType;
+if (mWpcomUserName != null) {
+user=mWpcomUserName;
+userType=TracksClient.NosaraUserType.WPCOM;
 }
-final String user=mAnonID != null ? mAnonID : mWpcomUserName;
-TracksClient.NosaraUserType userType=mAnonID != null ? TracksClient.NosaraUserType.ANON : TracksClient.NosaraUserType.WPCOM;
+ else {
+if (getAnonID() == null) {
+user=generateNewAnonID();
+}
+ else {
+user=getAnonID();
+}
+userType=TracksClient.NosaraUserType.ANON;
+}
 if (properties != null && properties.size() > 0) {
 JSONObject propertiesToJSON=new JSONObject(properties);
 mNosaraClient.track(EVENTS_PREFIX + eventName,propertiesToJSON,user,userType);
