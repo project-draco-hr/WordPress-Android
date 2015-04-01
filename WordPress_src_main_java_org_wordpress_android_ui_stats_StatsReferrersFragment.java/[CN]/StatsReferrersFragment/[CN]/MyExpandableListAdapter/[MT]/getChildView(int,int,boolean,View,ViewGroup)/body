@@ -1,17 +1,29 @@
 {
-  final SingleItemModel children=(SingleItemModel)getChild(groupPosition,childPosition);
+  final ReferrerResultModel children=(ReferrerResultModel)getChild(groupPosition,childPosition);
   if (convertView == null) {
     convertView=inflater.inflate(R.layout.stats_list_cell,parent,false);
     StatsViewHolder viewHolder=new StatsViewHolder(convertView);
     convertView.setTag(viewHolder);
   }
   final StatsViewHolder holder=(StatsViewHolder)convertView.getTag();
-  String name=children.getTitle();
-  int total=children.getTotals();
+  String name=children.getName();
+  int total=children.getViews();
   holder.showLinkIcon();
-  holder.setEntryTextOrLink(children.getUrl(),name);
+  List<SingleItemModel> thirdLevelChildren=children.getChildren();
+  if (thirdLevelChildren != null && thirdLevelChildren.size() > 0) {
+    holder.setEntryTextOrLink(thirdLevelChildren.get(0).getUrl(),name);
+  }
+ else {
+    holder.setEntryTextOrLink(children.getUrl(),name);
+  }
   holder.totalsTextView.setText(FormatUtils.formatDecimal(total));
-  holder.networkImageView.setVisibility(View.GONE);
+  if (!TextUtils.isEmpty(children.getIcon())) {
+    holder.networkImageView.setImageUrl(GravatarUtils.fixGravatarUrl(children.getIcon(),mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.BLAVATAR);
+    holder.networkImageView.setVisibility(View.VISIBLE);
+  }
+ else {
+    holder.networkImageView.setVisibility(View.GONE);
+  }
   holder.imgMore.setVisibility(View.GONE);
   return convertView;
 }
