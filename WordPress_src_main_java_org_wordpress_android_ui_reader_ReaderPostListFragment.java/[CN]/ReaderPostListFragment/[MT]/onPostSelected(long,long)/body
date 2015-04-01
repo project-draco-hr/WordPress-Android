@@ -1,13 +1,20 @@
 {
   if (!isAdded())   return;
-  AnalyticsTracker.track(AnalyticsTracker.Stat.READER_OPENED_ARTICLE);
-switch (getPostListType()) {
+  ReaderPostListType type=getPostListType();
+  Map<String,Object> analyticsProperties=new HashMap<>();
+  analyticsProperties.put(READER_DETAIL_TYPE_KEY,READER_DETAIL_TYPE_NORMAL);
+switch (type) {
 case TAG_FOLLOWED:
 case TAG_PREVIEW:
-    ReaderActivityLauncher.showReaderPostPagerForTag(getActivity(),getCurrentTag(),getPostListType(),blogId,postId);
-  break;
+    if (type == ReaderPostListType.TAG_PREVIEW) {
+      analyticsProperties.put(READER_DETAIL_TYPE_KEY,READER_DETAIL_TYPE_TAG_PREVIEW);
+    }
+  ReaderActivityLauncher.showReaderPostPagerForTag(getActivity(),getCurrentTag(),getPostListType(),blogId,postId);
+break;
 case BLOG_PREVIEW:
+analyticsProperties.put(READER_DETAIL_TYPE_KEY,READER_DETAIL_TYPE_BLOG_PREVIEW);
 ReaderActivityLauncher.showReaderPostPagerForBlog(getActivity(),blogId,postId);
 break;
 }
+AnalyticsTracker.track(AnalyticsTracker.Stat.READER_OPENED_ARTICLE,analyticsProperties);
 }
