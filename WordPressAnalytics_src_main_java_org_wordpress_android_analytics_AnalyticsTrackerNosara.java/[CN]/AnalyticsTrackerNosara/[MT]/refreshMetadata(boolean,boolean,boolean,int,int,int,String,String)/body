@@ -2,10 +2,7 @@
   if (mNosaraClient == null) {
     return;
   }
-  boolean isWordPressComConnected=WordPress.hasDotComToken(WordPress.getContext());
-  if (isWordPressComConnected) {
-    SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
-    String username=preferences.getString(WordPress.WPCOM_USERNAME_PREFERENCE,null);
+  if (isWordPressComUser) {
     mWpcomUserName=username;
     if (getAnonID() != null) {
       mNosaraClient.trackAliasUser(mWpcomUserName,getAnonID());
@@ -18,11 +15,9 @@
       generateNewAnonID();
     }
   }
-  boolean jetpackUser=WordPress.wpDB.hasAnyJetpackBlogs();
-  int numBlogs=WordPress.wpDB.getVisibleAccounts().size();
   try {
     JSONObject properties=new JSONObject();
-    properties.put(JETPACK_USER,jetpackUser);
+    properties.put(JETPACK_USER,isJetpackUser);
     properties.put(NUMBER_OF_BLOGS,numBlogs);
     mNosaraClient.registerUserProperties(properties);
   }
