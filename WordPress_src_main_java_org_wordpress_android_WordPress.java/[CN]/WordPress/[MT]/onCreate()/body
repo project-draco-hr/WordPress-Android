@@ -4,11 +4,12 @@
   ProfilingUtils.start("WordPress.onCreate");
   AppLog.enableRecording(true);
   if (!PackageUtils.isDebugBuild()) {
-    Crashlytics.start(this);
+    Fabric.with(this,new Crashlytics());
   }
   versionName=PackageUtils.getVersionName(this);
   HelpshiftHelper.init(this);
   initWpDb();
+  enableHttpResponseCache(mContext);
   EventBus.TAG="WordPress-EVENT";
   EventBus.builder().logNoSubscriberMessages(false).sendNoSubscriberEvent(false).throwSubscriberException(true).installDefaultEventBus();
   RestClientUtils.setUserAgent(getUserAgent());
@@ -20,9 +21,10 @@
     AppLockManager.getInstance().getCurrentAppLock().setDisabledActivities(new String[]{"org.wordpress.android.ui.ShareIntentReceiverActivity"});
   }
   HelpshiftHelper.init(this);
-  AnalyticsTracker.init();
-  AnalyticsTracker.registerTracker(new AnalyticsTrackerMixpanel());
-  AnalyticsTracker.registerTracker(new AnalyticsTrackerNosara(this));
+  AnalyticsTracker.registerTracker(new AnalyticsTrackerMixpanel(getContext(),BuildConfig.MIXPANEL_TOKEN));
+  AnalyticsTracker.registerTracker(new AnalyticsTrackerNosara(getContext()));
+  AnalyticsTracker.init(getContext());
+  AnalyticsUtils.refreshMetadata();
   AnalyticsTracker.beginSession();
   AnalyticsTracker.track(Stat.APPLICATION_STARTED);
   registerForCloudMessaging(this);

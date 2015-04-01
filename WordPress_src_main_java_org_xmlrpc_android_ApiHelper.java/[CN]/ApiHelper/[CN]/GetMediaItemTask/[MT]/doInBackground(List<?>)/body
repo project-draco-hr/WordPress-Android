@@ -26,8 +26,9 @@ catch (  XmlPullParserException e) {
     setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
   }
   if (results != null && blogId != null) {
-    MediaFile mediaFile=new MediaFile(blogId,results);
-    mediaFile.save();
+    boolean isDotCom=(WordPress.getCurrentBlog() != null && WordPress.getCurrentBlog().isDotcomFlag());
+    MediaFile mediaFile=new MediaFile(blogId,results,isDotCom);
+    WordPress.wpDB.saveMediaFile(mediaFile);
     return mediaFile;
   }
  else {

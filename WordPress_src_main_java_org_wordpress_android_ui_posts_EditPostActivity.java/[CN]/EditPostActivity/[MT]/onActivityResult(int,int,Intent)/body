@@ -1,0 +1,71 @@
+{
+  super.onActivityResult(requestCode,resultCode,data);
+  if (data != null || ((requestCode == RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO || requestCode == RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO))) {
+    Bundle extras;
+switch (requestCode) {
+case MediaPickerActivity.ACTIVITY_REQUEST_CODE_MEDIA_SELECTION:
+      if (resultCode == MediaPickerActivity.ACTIVITY_RESULT_CODE_MEDIA_SELECTED) {
+        handleMediaSelectionResult(data);
+      }
+ else       if (resultCode == MediaPickerActivity.ACTIVITY_RESULT_CODE_GALLERY_CREATED) {
+        handleGalleryResult(data);
+      }
+    break;
+case MediaGalleryActivity.REQUEST_CODE:
+  if (resultCode == Activity.RESULT_OK) {
+    handleMediaGalleryResult(data);
+  }
+break;
+case MediaGalleryPickerActivity.REQUEST_CODE:
+AnalyticsTracker.track(Stat.EDITOR_ADDED_PHOTO_VIA_WP_MEDIA_LIBRARY);
+if (resultCode == Activity.RESULT_OK) {
+handleMediaGalleryPickerResult(data);
+}
+break;
+case RequestCode.ACTIVITY_REQUEST_CODE_PICTURE_LIBRARY:
+Uri imageUri=data.getData();
+fetchMedia(imageUri);
+AnalyticsTracker.track(Stat.EDITOR_ADDED_PHOTO_VIA_LOCAL_LIBRARY);
+break;
+case RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO:
+if (resultCode == Activity.RESULT_OK) {
+try {
+File f=new File(mMediaCapturePath);
+Uri capturedImageUri=Uri.fromFile(f);
+if (!addMedia(capturedImageUri)) {
+ToastUtils.showToast(this,R.string.gallery_error,Duration.SHORT);
+}
+this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+AnalyticsTracker.track(Stat.EDITOR_ADDED_PHOTO_VIA_LOCAL_LIBRARY);
+}
+ catch (RuntimeException e) {
+AppLog.e(T.POSTS,e);
+}
+catch (OutOfMemoryError e) {
+AppLog.e(T.POSTS,e);
+}
+}
+ else if (TextUtils.isEmpty(mEditorFragment.getContent())) {
+WordPress.wpDB.deletePost(getPost());
+finish();
+}
+break;
+case RequestCode.ACTIVITY_REQUEST_CODE_VIDEO_LIBRARY:
+Uri videoUri=data.getData();
+fetchMedia(videoUri);
+break;
+case RequestCode.ACTIVITY_REQUEST_CODE_TAKE_VIDEO:
+if (resultCode == Activity.RESULT_OK) {
+Uri capturedVideoUri=MediaUtils.getLastRecordedVideoUri(this);
+if (!addMedia(capturedVideoUri)) {
+ToastUtils.showToast(this,R.string.gallery_error,Duration.SHORT);
+}
+}
+ else if (TextUtils.isEmpty(mEditorFragment.getContent())) {
+WordPress.wpDB.deletePost(getPost());
+finish();
+}
+break;
+}
+}
+}

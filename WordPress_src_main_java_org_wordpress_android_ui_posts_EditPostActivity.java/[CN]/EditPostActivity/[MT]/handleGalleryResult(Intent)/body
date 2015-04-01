@@ -1,0 +1,40 @@
+{
+  if (data != null) {
+    List<MediaItem> selectedContent=data.getParcelableArrayListExtra(MediaPickerActivity.SELECTED_CONTENT_RESULTS_KEY);
+    if (selectedContent != null && selectedContent.size() > 0) {
+      ArrayList<String> blogMediaIds=new ArrayList<>();
+      ArrayList<String> localMediaIds=new ArrayList<>();
+      for (      MediaItem content : selectedContent) {
+        Uri source=content.getSource();
+        final String id=content.getTag();
+        if (source != null && id != null) {
+          final String sourceString=source.toString();
+          if (MediaUtils.isVideo(sourceString)) {
+            addMedia(source);
+          }
+ else           if (sourceString.contains("wordpress.com")) {
+            blogMediaIds.add(id);
+            AnalyticsTracker.track(Stat.EDITOR_ADDED_PHOTO_VIA_WP_MEDIA_LIBRARY);
+          }
+ else           if (MediaUtils.isValidImage(sourceString)) {
+            queueFileForUpload(sourceString,localMediaIds);
+            AnalyticsTracker.track(Stat.EDITOR_ADDED_PHOTO_VIA_LOCAL_LIBRARY);
+          }
+        }
+      }
+      MediaGallery gallery=new MediaGallery();
+      gallery.setIds(blogMediaIds);
+      if (localMediaIds.size() > 0) {
+        NotificationManager notificationManager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationCompat.Builder builder=new NotificationCompat.Builder(getApplicationContext());
+        builder.setSmallIcon(android.R.drawable.stat_sys_upload);
+        builder.setContentTitle("Uploading gallery");
+        notificationManager.notify(10,builder.build());
+        mPendingGalleryUploads.put(gallery.getUniqueId(),new ArrayList<>(localMediaIds));
+      }
+      if (localMediaIds.size() > 0 || blogMediaIds.size() > 0) {
+        mEditorFragment.appendGallery(gallery);
+      }
+    }
+  }
+}
