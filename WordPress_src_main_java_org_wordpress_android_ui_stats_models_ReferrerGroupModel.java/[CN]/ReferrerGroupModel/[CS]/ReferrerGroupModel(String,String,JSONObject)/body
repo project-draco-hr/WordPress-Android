@@ -8,11 +8,11 @@
   if (!TextUtils.isEmpty(JSONUtils.getString(groupJSON,"url"))) {
     setUrl(JSONUtils.getString(groupJSON,"url"));
   }
- else {
+  JSONArray resultsArray=groupJSON.optJSONArray("results");
+  if (resultsArray != null) {
     mResults=new ArrayList<>();
-    JSONArray resultsJSON=groupJSON.getJSONArray("results");
-    for (int i=0; i < resultsJSON.length(); i++) {
-      JSONObject currentResultJSON=resultsJSON.getJSONObject(i);
+    for (int i=0; i < resultsArray.length(); i++) {
+      JSONObject currentResultJSON=resultsArray.getJSONObject(i);
       ReferrerResultModel currentResultModel=new ReferrerResultModel(blogId,date,currentResultJSON);
       mResults.add(currentResultModel);
     }

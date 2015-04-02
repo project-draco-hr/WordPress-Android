@@ -1,24 +1,24 @@
 {
-  final ReferrerResultModel children=(ReferrerResultModel)getChild(groupPosition,childPosition);
+  final ReferrerResultModel currentReferrerResult=(ReferrerResultModel)getChild(groupPosition,childPosition);
   if (convertView == null) {
     convertView=inflater.inflate(R.layout.stats_list_cell,parent,false);
     StatsViewHolder viewHolder=new StatsViewHolder(convertView);
     convertView.setTag(viewHolder);
   }
   final StatsViewHolder holder=(StatsViewHolder)convertView.getTag();
-  String name=children.getName();
-  int total=children.getViews();
+  String name=currentReferrerResult.getName();
+  int views=currentReferrerResult.getViews();
   holder.showLinkIcon();
-  List<SingleItemModel> thirdLevelChildren=children.getChildren();
+  List<SingleItemModel> thirdLevelChildren=currentReferrerResult.getChildren();
   if (thirdLevelChildren != null && thirdLevelChildren.size() > 0) {
     holder.setEntryTextOrLink(thirdLevelChildren.get(0).getUrl(),name);
   }
  else {
-    holder.setEntryTextOrLink(children.getUrl(),name);
+    holder.setEntryTextOrLink(currentReferrerResult.getUrl(),name);
   }
-  holder.totalsTextView.setText(FormatUtils.formatDecimal(total));
-  if (!TextUtils.isEmpty(children.getIcon())) {
-    holder.networkImageView.setImageUrl(GravatarUtils.fixGravatarUrl(children.getIcon(),mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.BLAVATAR);
+  holder.totalsTextView.setText(FormatUtils.formatDecimal(views));
+  if (!TextUtils.isEmpty(currentReferrerResult.getIcon())) {
+    holder.networkImageView.setImageUrl(GravatarUtils.fixGravatarUrl(currentReferrerResult.getIcon(),mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.BLAVATAR);
     holder.networkImageView.setVisibility(View.VISIBLE);
   }
  else {
