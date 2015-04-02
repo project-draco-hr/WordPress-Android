@@ -1,0 +1,22 @@
+{
+  final String ACCESS_TOKEN_PREFERENCE="wp_pref_wpcom_access_token";
+  final String WPCOM_USERNAME_PREFERENCE="wp_pref_wpcom_username";
+  SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(context);
+  String oldAccessToken=settings.getString(ACCESS_TOKEN_PREFERENCE,null);
+  String oldUsername=settings.getString(WPCOM_USERNAME_PREFERENCE,null);
+  Account account=new Account();
+  account.setUserName(oldUsername);
+  if (oldAccessToken != null) {
+    account.setAccessToken(oldAccessToken);
+    account.setIsLoggedIn(true);
+    account.setIsWordPressComUser(true);
+  }
+  if (getNumVisibleAccounts() != 0) {
+    account.setIsLoggedIn(true);
+  }
+  AccountTable.save(account,db);
+  SharedPreferences.Editor editor=PreferenceManager.getDefaultSharedPreferences(context).edit();
+  editor.remove(WPCOM_USERNAME_PREFERENCE);
+  editor.remove(ACCESS_TOKEN_PREFERENCE);
+  editor.apply();
+}
