@@ -11,10 +11,10 @@
   if (extraFields != null) {
     allFields=(String[])ArrayUtils.addAll(baseFields,extraFields);
   }
-  Cursor c=db.query(SETTINGS_TABLE,allFields,byString,null,null,null,null,limitStr);
+  Cursor c=db.query(BLOGS_TABLE,allFields,byString,null,null,null,null,limitStr);
   int numRows=c.getCount();
   c.moveToFirst();
-  List<Map<String,Object>> accounts=new Vector<Map<String,Object>>();
+  List<Map<String,Object>> blogs=new Vector<Map<String,Object>>();
   for (int i=0; i < numRows; i++) {
     int id=c.getInt(0);
     String blogName=c.getString(1);
@@ -34,11 +34,11 @@
           thisHash.put(extraFields[j],c.getString(extraFieldsIndex + j));
         }
       }
-      accounts.add(thisHash);
+      blogs.add(thisHash);
     }
     c.moveToNext();
   }
   c.close();
-  Collections.sort(accounts,BlogUtils.BlogNameComparator);
-  return accounts;
+  Collections.sort(blogs,BlogUtils.BlogNameComparator);
+  return blogs;
 }
