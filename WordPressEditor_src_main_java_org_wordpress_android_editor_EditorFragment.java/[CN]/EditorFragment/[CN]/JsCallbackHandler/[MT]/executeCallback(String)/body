@@ -2,20 +2,10 @@
   if (callbackId.equals("callback-dom-loaded")) {
     mWebView.post(new Runnable(){
       public void run(){
-        String htmlFile="";
-        try {
-          htmlFile=getStringFromAsset("example-content.html");
-          htmlFile=htmlFile.replace("\\","\\\\");
-          htmlFile=htmlFile.replace("\"","\\\"");
-          htmlFile=htmlFile.replace("'","\\'");
-          htmlFile=htmlFile.replace("\r","\\r");
-          htmlFile=htmlFile.replace("\n","\\n");
-        }
- catch (        IOException e) {
-          AppLog.e(T.EDITOR,e.getMessage());
-        }
-        mWebView.loadUrl("javascript:ZSSEditor.getField('zss_field_title').setHTML('" + "I\\'m editing a post!" + "');");
-        mWebView.loadUrl("javascript:ZSSEditor.getField('zss_field_content').setHTML('" + htmlFile + "');");
+        String title="I'm editing a post!";
+        String contentHtml=getHtmlFromFile("example-content.html");
+        mWebView.loadUrl("javascript:ZSSEditor.getField('zss_field_title').setHTML('" + Utils.escapeHtml(title) + "');");
+        mWebView.loadUrl("javascript:ZSSEditor.getField('zss_field_content').setHTML('" + Utils.escapeHtml(contentHtml) + "');");
       }
     }
 );
