@@ -15,11 +15,21 @@
   mTabs.setViewPager(mViewPager);
   mTabs.setOnPageChangeListener(this);
   if (savedInstanceState == null) {
-    if (showSignInIfRequired()) {
-      int position=AppPrefs.getMainTabIndex();
-      if (mTabAdapter.isValidPosition(position) && position != mViewPager.getCurrentItem()) {
-        mViewPager.setCurrentItem(position);
+    if (WordPress.isSignedIn(this)) {
+      boolean openedFromPush=(getIntent() != null && getIntent().getBooleanExtra(ARG_OPENED_FROM_PUSH,false));
+      if (openedFromPush) {
+        getIntent().putExtra(ARG_OPENED_FROM_PUSH,false);
+        launchWithNoteId();
       }
+ else {
+        int position=AppPrefs.getMainTabIndex();
+        if (mTabAdapter.isValidPosition(position) && position != mViewPager.getCurrentItem()) {
+          mViewPager.setCurrentItem(position);
+        }
+      }
+    }
+ else {
+      showSignIn();
     }
   }
 }
