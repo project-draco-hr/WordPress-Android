@@ -12,6 +12,7 @@
         WordPress.wpDB.dangerouslyDeleteAllContent();
         WordPress.removeWpComUserRelatedData(WordPress.getContext());
         existingUsername=null;
+        WordPress.currentBlog=null;
       }
       SimperiumUtils.configureSimperium(WordPress.getContext(),token.toString());
       if (mJetpackBlog == null || TextUtils.isEmpty(existingUsername)) {
@@ -19,7 +20,7 @@
         editor.putString(WordPress.ACCESS_TOKEN_PREFERENCE,token.toString());
       }
       editor.remove(WordPress.IS_SIGNED_OUT_PREFERENCE);
-      editor.commit();
+      editor.apply();
       mCallback.onSuccess();
     }
   }
