@@ -1,4 +1,9 @@
 {
+  if (mIsCheckingNoteBadge) {
+    AppLog.v(AppLog.T.NOTIFS,"already checking note badge");
+    return;
+  }
+  mIsCheckingNoteBadge=true;
   new Thread(){
     @Override public void run(){
       final boolean hasUnreadNotes=SimperiumUtils.hasUnreadNotes();
@@ -7,9 +12,13 @@
         runOnUiThread(new Runnable(){
           @Override public void run(){
             mTabs.setBadge(WPMainTabAdapter.TAB_NOTIFS,hasUnreadNotes);
+            mIsCheckingNoteBadge=false;
           }
         }
 );
+      }
+ else {
+        mIsCheckingNoteBadge=false;
       }
     }
   }
