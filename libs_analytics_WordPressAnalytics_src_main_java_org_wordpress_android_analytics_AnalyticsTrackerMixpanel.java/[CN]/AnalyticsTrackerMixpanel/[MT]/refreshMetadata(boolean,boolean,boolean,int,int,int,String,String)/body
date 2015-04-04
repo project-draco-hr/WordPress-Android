@@ -1,0 +1,33 @@
+{
+  try {
+    JSONObject properties=new JSONObject();
+    properties.put(MIXPANEL_PLATFORM,"Android");
+    properties.put(MIXPANEL_SESSION_COUNT,sessionCount);
+    properties.put(DOTCOM_USER,isUserConnected);
+    properties.put(JETPACK_USER,isJetpackUser);
+    properties.put(MIXPANEL_NUMBER_OF_BLOGS,numBlogs);
+    properties.put(VERSION_CODE,versionCode);
+    mMixpanel.registerSuperProperties(properties);
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.UTILS,e);
+  }
+  if (isUserConnected) {
+    mMixpanel.identify(username);
+    try {
+      mMixpanel.getPeople().identify(username);
+      JSONObject jsonObj=new JSONObject();
+      jsonObj.put("$username",username);
+      if (email != null) {
+        jsonObj.put("$email",email);
+      }
+      jsonObj.put("$first_name",username);
+      mMixpanel.getPeople().set(jsonObj);
+    }
+ catch (    JSONException e) {
+      AppLog.e(AppLog.T.UTILS,e);
+    }
+catch (    OutOfMemoryError outOfMemoryError) {
+    }
+  }
+}
