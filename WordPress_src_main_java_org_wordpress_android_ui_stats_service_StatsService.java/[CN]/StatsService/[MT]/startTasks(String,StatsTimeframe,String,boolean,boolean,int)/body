@@ -8,7 +8,7 @@
       final RestClientUtils restClientUtils=WordPress.getRestClientUtilsV1_1();
       String period=timeframe.getLabelForRestCall();
       AppLog.i(T.STATS,"Update started for blogID - " + blogId + " with the following period: "+ period+ " on the following date: "+ mServiceRequestedDate);
-      broadcastUpdate(true);
+      EventBus.getDefault().post(new StatsEvents.UpdateStatusChanged(true));
 synchronized (mStatsNetworkRequests) {
         if (updateGraphStats) {
           RestListener vListener=new RestListener(StatsEndpointsEnum.VISITS,mServiceBlogId,mServiceRequestedTimeframe);

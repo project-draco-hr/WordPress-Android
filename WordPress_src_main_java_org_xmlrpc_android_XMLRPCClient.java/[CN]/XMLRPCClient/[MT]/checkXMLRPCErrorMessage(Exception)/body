@@ -1,7 +1,7 @@
 {
   String errorMessage=exception.getMessage().toLowerCase();
   if ((errorMessage.contains("code: 503") || errorMessage.contains("code 503")) && (errorMessage.contains("limit reached") || errorMessage.contains("login limit"))) {
-    broadcastAction(WordPress.BROADCAST_ACTION_XMLRPC_LOGIN_LIMIT);
+    EventBus.getDefault().post(new CoreEvents.LoginLimitDetected());
     return true;
   }
   return false;

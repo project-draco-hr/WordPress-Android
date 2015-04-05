@@ -12,11 +12,12 @@ catch (  IOException e) {
   wpDB.deleteAllAccounts();
   wpDB.updateLastBlogId(-1);
   currentBlog=null;
+  flushHttpCache();
   AnalyticsTracker.endSession(false);
   AnalyticsTracker.clearAllData();
   AbstractAppLock appLock=AppLockManager.getInstance().getCurrentAppLock();
   if (appLock != null) {
     appLock.setPassword(null);
   }
-  sendLocalBroadcast(context,BROADCAST_ACTION_SIGNOUT);
+  EventBus.getDefault().post(new CoreEvents.UserSignedOut());
 }

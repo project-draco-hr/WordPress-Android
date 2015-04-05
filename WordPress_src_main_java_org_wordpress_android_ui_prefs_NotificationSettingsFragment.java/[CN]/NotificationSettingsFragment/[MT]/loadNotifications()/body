@@ -1,6 +1,6 @@
 {
   AppLog.d(T.NOTIFS,"Preferences > loading notification settings");
-  PreferenceCategory notificationTypesCategory=(PreferenceCategory)findPreference("wp_pref_notification_types");
+  PreferenceCategory notificationTypesCategory=(PreferenceCategory)findPreference(getString(R.string.pref_notification_types));
   notificationTypesCategory.removeAll();
   SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(getActivity());
   String settingsJson=settings.getString(NotificationsUtils.WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,null);
@@ -25,7 +25,7 @@
         notificationTypesCategory.addPreference(typePreference);
       }
     }
-    PreferenceCategory selectBlogsCategory=(PreferenceCategory)findPreference("wp_pref_notification_blogs");
+    PreferenceCategory selectBlogsCategory=(PreferenceCategory)findPreference(getActivity().getString(R.string.pref_notification_blogs));
     selectBlogsCategory.removeAll();
     for (int i=0; i < mMutedBlogsList.size(); i++) {
       StringMap<?> blogMap=mMutedBlogsList.get(i);
@@ -47,6 +47,6 @@ catch (  Exception e) {
     AppLog.v(T.NOTIFS,"Failed to load notification settings.");
     return;
   }
-  CheckBoxPreference notificationsEnabledCheckBox=(CheckBoxPreference)findPreference("wp_pref_notifications_enabled");
+  CheckBoxPreference notificationsEnabledCheckBox=(CheckBoxPreference)findPreference(getString(R.string.pref_notifications_enabled));
   notificationsEnabledCheckBox.setOnPreferenceChangeListener(mNotificationsEnabledChangeListener);
 }
