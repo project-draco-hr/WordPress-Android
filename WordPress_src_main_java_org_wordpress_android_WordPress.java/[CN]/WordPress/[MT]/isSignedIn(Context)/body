@@ -1,6 +1,7 @@
 {
-  if (WordPress.hasDotComToken(context)) {
-    return true;
+  SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(context);
+  if (settings.contains(IS_SIGNED_OUT_PREFERENCE)) {
+    return false;
   }
-  return WordPress.wpDB.getNumVisibleAccounts() != 0;
+  return WordPress.hasDotComToken(context) || WordPress.wpDB.getNumVisibleAccounts() != 0;
 }
