@@ -36,6 +36,12 @@ synchronized (mStatsNetworkRequests) {
         RestListener searchTermsListener=new RestListener(StatsEndpointsEnum.SEARCH_TERMS,mServiceBlogId,mServiceRequestedTimeframe);
         final String searchTermsPath=String.format("/sites/%s/stats/search-terms?period=%s&date=%s&max=%s",mServiceBlogId,period,mServiceRequestedDate,12);
         mStatsNetworkRequests.add(restClientUtils.get(searchTermsPath,searchTermsListener,searchTermsListener));
+        String publishedDateQueryURL=StatsUtils.getPublishedEndpointPeriodDateParameters(mServiceRequestedTimeframe,mServiceRequestedDate);
+        if (publishedDateQueryURL != null) {
+          RestListener publishedPostsListener=new RestListener(StatsEndpointsEnum.PUBLISHED_POSTS,mServiceBlogId,mServiceRequestedTimeframe);
+          final String publishedPostsPath=String.format("/sites/%s/posts?number=%s%s",mServiceBlogId,10,publishedDateQueryURL);
+          mStatsNetworkRequests.add(restClientUtils.get(publishedPostsPath,publishedPostsListener,publishedPostsListener));
+        }
         if (updateAlltimeStats) {
           RestListener commentsListener=new RestListener(StatsEndpointsEnum.COMMENTS,mServiceBlogId,mServiceRequestedTimeframe);
           final String commentsPath=String.format("/sites/%s/stats/comments",mServiceBlogId);
