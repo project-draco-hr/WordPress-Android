@@ -2,17 +2,15 @@
   if (!isAdded())   return;
   ReaderPostListType type=getPostListType();
   Map<String,Object> analyticsProperties=new HashMap<>();
-  analyticsProperties.put(READER_DETAIL_TYPE_KEY,READER_DETAIL_TYPE_NORMAL);
 switch (type) {
 case TAG_FOLLOWED:
 case TAG_PREVIEW:
-    if (type == ReaderPostListType.TAG_PREVIEW) {
-      analyticsProperties.put(READER_DETAIL_TYPE_KEY,READER_DETAIL_TYPE_TAG_PREVIEW);
-    }
-  ReaderActivityLauncher.showReaderPostPagerForTag(getActivity(),getCurrentTag(),getPostListType(),blogId,postId);
+    String key=(type == ReaderPostListType.TAG_PREVIEW ? AnalyticsTracker.READER_DETAIL_TYPE_TAG_PREVIEW : AnalyticsTracker.READER_DETAIL_TYPE_NORMAL);
+  analyticsProperties.put(AnalyticsTracker.READER_DETAIL_TYPE_KEY,key);
+ReaderActivityLauncher.showReaderPostPagerForTag(getActivity(),getCurrentTag(),getPostListType(),blogId,postId);
 break;
 case BLOG_PREVIEW:
-analyticsProperties.put(READER_DETAIL_TYPE_KEY,READER_DETAIL_TYPE_BLOG_PREVIEW);
+analyticsProperties.put(AnalyticsTracker.READER_DETAIL_TYPE_KEY,AnalyticsTracker.READER_DETAIL_TYPE_BLOG_PREVIEW);
 ReaderActivityLauncher.showReaderPostPagerForBlog(getActivity(),blogId,postId);
 break;
 }
