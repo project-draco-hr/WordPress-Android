@@ -1,18 +1,25 @@
 {
   WordPress.requestQueue.add(makeOAuthRequest(mUsername,mPassword,new Oauth.Listener(){
     @SuppressLint("CommitPrefEdits") @Override public void onResponse(    final Oauth.Token token){
-      SimperiumUtils.configureSimperium(WordPress.getContext(),token.toString());
       if (mJetpackBlog != null) {
         mJetpackBlog.setApi_key(token.toString());
         WordPress.wpDB.saveBlog(mJetpackBlog);
       }
       Account account=AccountHelper.getDefaultAccount();
-      if (mJetpackBlog == null || TextUtils.isEmpty(account.getUserName())) {
+      if (StringUtils.equals(account.getUserName(),mUsername) && account.isUserTappedSignedOutButton()) {
+        account.setUserTappedSignedOutButton(false);
+        account.save();
+        WordPress.wpDB.dangerouslyDeleteAllContent();
+        WordPress.removeWpComUserRelatedData(WordPress.getContext());
+        WordPress.currentBlog=null;
+      }
+      if (mJetpackBlog == null) {
         account.setAccessToken(token.toString());
         account.setUserName(mUsername);
         account.save();
         account.fetchAccountDetails();
       }
+      SimperiumUtils.configureSimperium(WordPress.getContext(),token.toString());
       mCallback.onSuccess();
     }
   }
