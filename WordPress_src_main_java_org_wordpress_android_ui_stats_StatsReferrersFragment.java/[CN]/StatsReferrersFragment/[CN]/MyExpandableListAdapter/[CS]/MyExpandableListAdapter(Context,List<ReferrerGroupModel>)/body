@@ -1,4 +1,42 @@
 {
   this.groups=groups;
   this.inflater=LayoutInflater.from(context);
+  this.childs=new ArrayList<>(groups.size());
+  for (int i=0; i < groups.size(); i++) {
+    this.childs.add(null);
+  }
+  for (int i=0; i < groups.size(); i++) {
+    ReferrerGroupModel currentGroup=groups.get(i);
+    List<ReferrerResultModel> referrals=currentGroup.getResults();
+    if (referrals != null) {
+      List<MyChildModel> currentGroupChilds=new ArrayList<>();
+      for (      ReferrerResultModel refResult : referrals) {
+        List<SingleItemModel> thirdLevelChildren=refResult.getChildren();
+        if (thirdLevelChildren != null && thirdLevelChildren.size() > 0) {
+          for (          SingleItemModel currentThirdLevelChild : thirdLevelChildren) {
+            MyChildModel myChild=new MyChildModel();
+            if (!TextUtils.isEmpty(currentThirdLevelChild.getIcon())) {
+              myChild.icon=currentThirdLevelChild.getIcon();
+            }
+ else {
+              myChild.icon=refResult.getIcon();
+            }
+            myChild.url=currentThirdLevelChild.getUrl();
+            myChild.name=currentThirdLevelChild.getTitle();
+            myChild.views=currentThirdLevelChild.getTotals();
+            currentGroupChilds.add(myChild);
+          }
+        }
+ else {
+          MyChildModel myChild=new MyChildModel();
+          myChild.icon=refResult.getIcon();
+          myChild.url=refResult.getUrl();
+          myChild.name=refResult.getName();
+          myChild.views=refResult.getViews();
+          currentGroupChilds.add(myChild);
+        }
+      }
+      this.childs.set(i,currentGroupChilds);
+    }
+  }
 }

@@ -1,24 +1,20 @@
 {
-  final ReferrerResultModel currentReferrerResult=(ReferrerResultModel)getChild(groupPosition,childPosition);
+  final MyChildModel currentChild=(MyChildModel)getChild(groupPosition,childPosition);
   if (convertView == null) {
     convertView=inflater.inflate(R.layout.stats_list_cell,parent,false);
     StatsViewHolder viewHolder=new StatsViewHolder(convertView);
+    viewHolder.networkImageView.setErrorImageResId(R.drawable.stats_icon_default_site_avatar);
+    viewHolder.networkImageView.setDefaultImageResId(R.drawable.stats_icon_default_site_avatar);
     convertView.setTag(viewHolder);
   }
   final StatsViewHolder holder=(StatsViewHolder)convertView.getTag();
-  String name=currentReferrerResult.getName();
-  int views=currentReferrerResult.getViews();
+  String name=currentChild.name;
+  int views=currentChild.views;
   holder.showLinkIcon();
-  List<SingleItemModel> thirdLevelChildren=currentReferrerResult.getChildren();
-  if (thirdLevelChildren != null && thirdLevelChildren.size() > 0) {
-    holder.setEntryTextOrLink(thirdLevelChildren.get(0).getUrl(),name);
-  }
- else {
-    holder.setEntryTextOrLink(currentReferrerResult.getUrl(),name);
-  }
+  holder.setEntryTextOrLink(currentChild.url,name);
   holder.totalsTextView.setText(FormatUtils.formatDecimal(views));
-  if (!TextUtils.isEmpty(currentReferrerResult.getIcon())) {
-    holder.networkImageView.setImageUrl(GravatarUtils.fixGravatarUrl(currentReferrerResult.getIcon(),mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.BLAVATAR);
+  if (!TextUtils.isEmpty(currentChild.icon)) {
+    holder.networkImageView.setImageUrl(GravatarUtils.fixGravatarUrl(currentChild.icon,mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.BLAVATAR);
     holder.networkImageView.setVisibility(View.VISIBLE);
   }
  else {
