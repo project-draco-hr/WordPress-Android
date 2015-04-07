@@ -12,7 +12,7 @@
   ThreadPoolExecutor blogsListCreatorExecutor=(ThreadPoolExecutor)Executors.newFixedThreadPool(1);
   blogsListCreatorExecutor.submit(new Thread(){
     @Override public void run(){
-      List<Map<String,Object>> dotComUserBlogs=WordPress.wpDB.getAccountsBy("dotcomFlag=1",new String[]{"homeURL"});
+      List<Map<String,Object>> dotComUserBlogs=WordPress.wpDB.getBlogsBy("dotcomFlag=1",new String[]{"homeURL"});
       for (      Map<String,Object> blog : dotComUserBlogs) {
         if (blog != null && blog.get("homeURL") != null && blog.get("blogId") != null) {
           String normURL=normalizeAndRemoveScheme(blog.get("homeURL").toString());

@@ -1,0 +1,23 @@
+{
+  Account account=new Account();
+  String[] args={Long.toString(localId)};
+  Cursor c=getReadableDb().rawQuery("SELECT * FROM " + ACCOUNT_TABLE + " WHERE local_id=?",args);
+  try {
+    if (c.moveToFirst()) {
+      account.setIsWordPressComUser(SqlUtils.sqlToBool(c.getInt(c.getColumnIndex("is_wordpress_com_user"))));
+      account.setUserName(c.getString(c.getColumnIndex("user_name")));
+      account.setUserId(c.getLong(c.getColumnIndex("user_id")));
+      account.setDisplayName(c.getString(c.getColumnIndex("display_name")));
+      account.setProfileUrl(c.getString(c.getColumnIndex("profile_url")));
+      account.setAvatarUrl(c.getString(c.getColumnIndex("avatar_url")));
+      account.setPrimaryBlogId(c.getLong(c.getColumnIndex("primary_blog_id")));
+      account.setSiteCount(c.getInt(c.getColumnIndex("site_count")));
+      account.setVisibleSiteCount(c.getInt(c.getColumnIndex("visible_site_count")));
+      account.setAccessToken(c.getString(c.getColumnIndex("access_token")));
+    }
+    return account;
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+}
