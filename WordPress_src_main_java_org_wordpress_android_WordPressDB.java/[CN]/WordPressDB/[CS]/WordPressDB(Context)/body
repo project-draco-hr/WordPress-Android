@@ -1,7 +1,7 @@
 {
   this.context=ctx;
   db=ctx.openOrCreateDatabase(DATABASE_NAME,0,null);
-  db.execSQL(CREATE_TABLE_SETTINGS);
+  db.execSQL(CREATE_TABLE_BLOGS);
   db.execSQL(CREATE_TABLE_POSTS);
   db.execSQL(CREATE_TABLE_CATEGORIES);
   db.execSQL(CREATE_TABLE_QUICKPRESS_SHORTCUTS);
@@ -57,7 +57,7 @@ case 17:
 db.execSQL(ADD_PARENTID_IN_CATEGORIES);
 currentVersion++;
 case 18:
-db.execSQL(ADD_ACCOUNTS_ADMIN_FLAG);
+db.execSQL(ADD_BLOGS_ADMIN_FLAG);
 db.execSQL(ADD_MEDIA_FILE_URL);
 db.execSQL(ADD_MEDIA_THUMBNAIL_URL);
 db.execSQL(ADD_MEDIA_UNIQUE_ID);
@@ -68,7 +68,7 @@ currentVersion++;
 case 19:
 currentVersion++;
 case 20:
-db.execSQL(ADD_ACCOUNTS_HIDDEN_FLAG);
+db.execSQL(ADD_BLOGS_HIDDEN_FLAG);
 currentVersion++;
 case 21:
 db.execSQL(ADD_MEDIA_VIDEOPRESS_SHORTCODE);
@@ -90,6 +90,10 @@ db.execSQL(ADD_IS_UPLOADING);
 currentVersion++;
 case 28:
 removeDotComCredentials();
+currentVersion++;
+case 29:
+AccountTable.createTables(db);
+migratePreferencesToAccountTable(context);
 currentVersion++;
 }
 db.setVersion(DATABASE_VERSION);
