@@ -1,12 +1,12 @@
 {
-  List<Map<String,Object>> accounts;
+  List<Map<String,Object>> blogs;
   if (mVisibleBlogsOnly) {
-    accounts=WordPress.wpDB.getVisibleDotComBlogs();
+    blogs=WordPress.wpDB.getVisibleDotComBlogs();
   }
  else {
-    accounts=WordPress.wpDB.getBlogsBy("dotcomFlag=1",new String[]{"isHidden"});
+    blogs=WordPress.wpDB.getBlogsBy("dotcomFlag=1",new String[]{"isHidden"});
   }
-  accounts.addAll(WordPress.wpDB.getBlogsBy("dotcomFlag!=1",null));
-  mSites=new SiteList(accounts);
-  return true;
+  blogs.addAll(WordPress.wpDB.getBlogsBy("dotcomFlag!=1",null));
+  Collections.sort(blogs,BlogUtils.BlogNameComparator);
+  return new SiteList(blogs);
 }
