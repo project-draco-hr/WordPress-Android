@@ -1,0 +1,16 @@
+{
+  SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(context);
+  String oldAccessToken=settings.getString(DEPRECATED_ACCESS_TOKEN_PREFERENCE,null);
+  String oldUsername=settings.getString(DEPRECATED_WPCOM_USERNAME_PREFERENCE,null);
+  Account account=new Account();
+  account.setUserName(oldUsername);
+  if (oldAccessToken != null) {
+    account.setAccessToken(oldAccessToken);
+    account.setIsWordPressComUser(true);
+  }
+  AccountTable.save(account,db);
+  SharedPreferences.Editor editor=PreferenceManager.getDefaultSharedPreferences(context).edit();
+  editor.remove(DEPRECATED_WPCOM_USERNAME_PREFERENCE);
+  editor.remove(DEPRECATED_ACCESS_TOKEN_PREFERENCE);
+  editor.apply();
+}

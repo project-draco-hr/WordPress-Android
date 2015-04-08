@@ -1,6 +1,6 @@
 {
   if (mSystemService.getActiveNetworkInfo() == null) {
-    AlertUtil.showAlert(getActivity(),R.string.no_network_title,R.string.no_network_message);
+    AlertUtils.showAlert(getActivity(),R.string.no_network_title,R.string.no_network_message);
     return;
   }
   if (!isUserDataValid()) {
@@ -30,8 +30,7 @@
         String xmlRpcUrl=details.getString("xmlrpc");
         String homeUrl=details.getString("url");
         String blogId=details.getString("blogid");
-        final SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String username=settings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,"");
+        String username=AccountHelper.getDefaultAccount().getUserName();
         BlogUtils.addOrUpdateBlog(blogName,xmlRpcUrl,homeUrl,blogId,username,null,null,null,true,true);
         ToastUtils.showToast(getActivity(),R.string.new_blog_wpcom_created);
       }

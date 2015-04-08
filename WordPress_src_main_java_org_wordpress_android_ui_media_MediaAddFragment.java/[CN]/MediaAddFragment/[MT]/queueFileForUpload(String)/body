@@ -5,7 +5,9 @@
   }
   Blog blog=WordPress.getCurrentBlog();
   File file=new File(path);
-  if (!file.exists())   return;
+  if (!file.exists()) {
+    return;
+  }
   String mimeType=MediaUtils.getMediaFileMimeType(file);
   String fileName=MediaUtils.getMediaFileName(file,mimeType);
   MediaFile mediaFile=new MediaFile();
@@ -22,8 +24,10 @@
     mediaFile.setWidth(bfo.outWidth);
     mediaFile.setHeight(bfo.outHeight);
   }
-  if (!TextUtils.isEmpty(mimeType))   mediaFile.setMimeType(mimeType);
-  mediaFile.save();
+  if (!TextUtils.isEmpty(mimeType)) {
+    mediaFile.setMimeType(mimeType);
+  }
+  WordPress.wpDB.saveMediaFile(mediaFile);
   mCallback.onMediaAdded(mediaFile.getMediaId());
   startMediaUploadService();
 }

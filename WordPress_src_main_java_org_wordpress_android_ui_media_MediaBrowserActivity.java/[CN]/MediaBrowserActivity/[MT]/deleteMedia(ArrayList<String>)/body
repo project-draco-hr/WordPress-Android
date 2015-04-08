@@ -1,9 +1,9 @@
 {
   final String blogId=String.valueOf(WordPress.getCurrentBlog().getLocalTableBlogId());
-  Set<String> sanitizedIds=new HashSet<String>(ids.size());
+  Set<String> sanitizedIds=new HashSet<>(ids.size());
   getFragmentManager().popBackStack();
   for (  String currentID : ids) {
-    if (MediaUtils.canDeleteMedia(blogId,currentID)) {
+    if (WordPressMediaUtils.canDeleteMedia(blogId,currentID)) {
       sanitizedIds.add(currentID);
     }
   }
@@ -16,7 +16,7 @@
     }
   }
   WordPress.wpDB.setMediaFilesMarkedForDelete(blogId,sanitizedIds);
-  startService(new Intent(this,MediaDeleteService.class));
+  startMediaDeleteService();
   if (mMediaGridFragment != null) {
     mMediaGridFragment.clearSelectedItems();
     mMediaGridFragment.refreshMediaFromDB();

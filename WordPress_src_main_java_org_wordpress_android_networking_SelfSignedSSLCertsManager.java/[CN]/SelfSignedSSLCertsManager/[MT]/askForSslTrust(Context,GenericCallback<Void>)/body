@@ -23,19 +23,7 @@ catch (      IOException e) {
 );
   alert.setNeutralButton(R.string.ssl_certificate_details,new DialogInterface.OnClickListener(){
     public void onClick(    DialogInterface dialog,    int which){
-      Intent intent=new Intent(ctx,SSLCertsViewActivity.class);
-      try {
-        SelfSignedSSLCertsManager selfSignedSSLCertsManager=SelfSignedSSLCertsManager.getInstance(ctx);
-        String lastFailureChainDescription=selfSignedSSLCertsManager.getLastFailureChainDescription().replaceAll("\n","<br/>");
-        intent.putExtra(SSLCertsViewActivity.CERT_DETAILS_KEYS,lastFailureChainDescription);
-        ctx.startActivity(intent);
-      }
- catch (      GeneralSecurityException e) {
-        AppLog.e(T.API,e);
-      }
-catch (      IOException e) {
-        AppLog.e(T.API,e);
-      }
+      ActivityLauncher.viewSSLCerts(ctx);
     }
   }
 );

@@ -4,6 +4,7 @@
   setContentView(R.layout.notifications_detail_activity);
   ActionBar actionBar=getSupportActionBar();
   if (actionBar != null) {
+    actionBar.setElevation(0.0f);
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
   if (savedInstanceState == null) {
@@ -17,6 +18,7 @@
         Note note=SimperiumUtils.getNotesBucket().get(noteId);
         if (note.isUnread()) {
           note.markAsRead();
+          EventBus.getDefault().post(new NotificationEvents.NotificationsChanged());
         }
         Fragment detailFragment=getDetailFragmentForNote(note);
         getFragmentManager().beginTransaction().add(R.id.notifications_detail_container,detailFragment).commit();

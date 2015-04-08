@@ -1,14 +1,10 @@
 {
-  long wpcomUserID=AppPrefs.getCurrentUserId();
+  long wpcomUserID=AccountHelper.getDefaultAccount().getUserId();
   String userIDFromPN=extras.getString("user");
   if (userIDFromPN != null) {
-    if (wpcomUserID <= 0) {
-    }
- else {
-      if (!String.valueOf(wpcomUserID).equals(userIDFromPN)) {
-        AppLog.e(T.NOTIFS,"wpcom userId found in the app doesn't match with the ID in the PN. Aborting.");
-        return;
-      }
+    if (!String.valueOf(wpcomUserID).equals(userIDFromPN)) {
+      AppLog.e(T.NOTIFS,"wpcom userId found in the app doesn't match with the ID in the PN. Aborting.");
+      return;
     }
   }
   String title=StringEscapeUtils.unescapeHtml(extras.getString("title"));
@@ -49,7 +45,8 @@
   vibrate=prefs.getBoolean("wp_pref_notification_vibrate",false);
   light=prefs.getBoolean("wp_pref_notification_light",false);
   NotificationCompat.Builder mBuilder;
-  Intent resultIntent=new Intent(this,NotificationsActivity.class);
+  Intent resultIntent=new Intent(this,WPMainActivity.class);
+  resultIntent.putExtra(WPMainActivity.ARG_OPENED_FROM_PUSH,true);
   resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
   resultIntent.setAction("android.intent.action.MAIN");
   resultIntent.addCategory("android.intent.category.LAUNCHER");
@@ -60,7 +57,8 @@
     }
     String noteType=extras.getString("type");
     if (noteType != null && noteType.equals("c")) {
-      Intent commentReplyIntent=new Intent(this,NotificationsActivity.class);
+      Intent commentReplyIntent=new Intent(this,WPMainActivity.class);
+      commentReplyIntent.putExtra(WPMainActivity.ARG_OPENED_FROM_PUSH,true);
       commentReplyIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
       commentReplyIntent.setAction("android.intent.action.MAIN");
       commentReplyIntent.addCategory("android.intent.category.LAUNCHER");
@@ -115,5 +113,5 @@
   mBuilder.setContentIntent(pendingIntent);
   NotificationManager mNotificationManager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
   mNotificationManager.notify(PUSH_NOTIFICATION_ID,mBuilder.build());
-  broadcastNewNotification(context);
+  EventBus.getDefault().post(new NotificationEvents.NotificationsChanged());
 }

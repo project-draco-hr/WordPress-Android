@@ -10,6 +10,7 @@
   }
   ActionBar actionBar=getSupportActionBar();
   if (actionBar != null) {
+    actionBar.setElevation(0.0f);
     actionBar.setTitle(StringUtils.unescapeHTML(blog.getNameOrHostUrl()));
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
@@ -23,9 +24,18 @@
   mImageWidthSpinner=(Spinner)findViewById(R.id.maxImageWidth);
   Button removeBlogButton=(Button)findViewById(R.id.remove_account);
   if (blog.isDotcomFlag()) {
-    RelativeLayout credentialsRL=(RelativeLayout)findViewById(R.id.sectionContent);
+    View credentialsRL=findViewById(R.id.sectionContent);
     credentialsRL.setVisibility(View.GONE);
     removeBlogButton.setVisibility(View.GONE);
+  }
+ else {
+    removeBlogButton.setVisibility(View.VISIBLE);
+    removeBlogButton.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        removeBlog();
+      }
+    }
+);
   }
   loadSettingsForBlog();
 }

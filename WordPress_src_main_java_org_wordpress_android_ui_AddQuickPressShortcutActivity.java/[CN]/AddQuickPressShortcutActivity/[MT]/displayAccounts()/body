@@ -1,5 +1,5 @@
 {
-  accounts=WordPress.wpDB.getVisibleAccounts();
+  accounts=WordPress.wpDB.getVisibleBlogs();
   ListView listView=(ListView)findViewById(android.R.id.list);
   ImageView iv=new ImageView(this);
   iv.setBackgroundDrawable(getResources().getDrawable(R.drawable.list_divider));
@@ -24,12 +24,17 @@
       accountUsers[validBlogCtr]=curHash.get("username").toString();
       accountIDs[validBlogCtr]=(Integer)curHash.get("id");
       String url=curHash.get("url").toString();
-      blavatars[validBlogCtr]=GravatarUtils.blavatarFromUrl(url,60);
+      if (url != null) {
+        blavatars[validBlogCtr]=GravatarUtils.blavatarFromUrl(url,60);
+      }
+ else {
+        blavatars[validBlogCtr]="";
+      }
       accountNames.add(validBlogCtr,blogNames[i]);
       validBlogCtr++;
     }
     if (validBlogCtr < accounts.size()) {
-      accounts=WordPress.wpDB.getVisibleAccounts();
+      accounts=WordPress.wpDB.getVisibleBlogs();
     }
     setListAdapter(new HomeListAdapter());
     listView.setOnItemClickListener(new OnItemClickListener(){

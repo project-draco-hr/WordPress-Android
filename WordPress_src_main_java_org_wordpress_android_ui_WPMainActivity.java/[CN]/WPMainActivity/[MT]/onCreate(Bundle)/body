@@ -1,7 +1,5 @@
 {
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-    getWindow().setStatusBarColor(getResources().getColor(R.color.status_bar_tint));
-  }
+  setStatusBarColor();
   super.onCreate(savedInstanceState);
   setContentView(R.layout.activity_main);
   mViewPager=(WPMainViewPager)findViewById(R.id.viewpager_main);
@@ -15,11 +13,21 @@
   mTabs.setViewPager(mViewPager);
   mTabs.setOnPageChangeListener(this);
   if (savedInstanceState == null) {
-    if (showSignInIfRequired()) {
-      int position=AppPrefs.getMainTabIndex();
-      if (mTabAdapter.isValidPosition(position) && position != mViewPager.getCurrentItem()) {
-        mViewPager.setCurrentItem(position);
+    if (AccountHelper.isSignedIn()) {
+      boolean openedFromPush=(getIntent() != null && getIntent().getBooleanExtra(ARG_OPENED_FROM_PUSH,false));
+      if (openedFromPush) {
+        getIntent().putExtra(ARG_OPENED_FROM_PUSH,false);
+        launchWithNoteId();
       }
+ else {
+        int position=AppPrefs.getMainTabIndex();
+        if (mTabAdapter.isValidPosition(position) && position != mViewPager.getCurrentItem()) {
+          mViewPager.setCurrentItem(position);
+        }
+      }
+    }
+ else {
+      showSignIn();
     }
   }
 }
