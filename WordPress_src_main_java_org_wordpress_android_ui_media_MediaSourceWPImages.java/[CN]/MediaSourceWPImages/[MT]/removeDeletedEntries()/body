@@ -3,6 +3,7 @@
   for (  MediaItem mediaItem : existingItems) {
     final boolean callLoaded=existingItems.indexOf(mediaItem) == existingItems.size() - 1;
     AsyncTask<MediaItem,Void,MediaItem> backgroundCheck=new AsyncTask<MediaItem,Void,MediaItem>(){
+      int responseCode;
       @Override protected MediaItem doInBackground(      MediaItem[] params){
         MediaItem mediaItem=params[0];
         try {
@@ -10,23 +11,24 @@
           HttpURLConnection connection=(HttpURLConnection)mediaUrl.openConnection();
           connection.setRequestMethod("GET");
           connection.connect();
-          int responseCode=connection.getResponseCode();
-          if (responseCode == 200) {
-            mVerifiedItems.add(mediaItem);
-          }
+          responseCode=connection.getResponseCode();
         }
  catch (        IOException ioException) {
           Log.e("","Error reading from " + mediaItem.getSource() + "\nexception:"+ ioException);
+          return null;
         }
         return mediaItem;
       }
       @Override public void onPostExecute(      MediaItem result){
-        if (mListener != null) {
+        if (mListener != null && result != null) {
           List<MediaItem> resultList=new ArrayList<>();
           resultList.add(result);
-          mListener.onMediaAdded(MediaSourceWPImages.this,resultList);
+          if (responseCode == 200) {
+            mVerifiedItems.add(result);
+            mListener.onMediaAdded(MediaSourceWPImages.this,resultList);
+          }
           if (callLoaded) {
-            mListener.onMediaLoaded(mVerifiedItems.size() > 0);
+            mListener.onMediaLoaded(true);
           }
         }
       }
