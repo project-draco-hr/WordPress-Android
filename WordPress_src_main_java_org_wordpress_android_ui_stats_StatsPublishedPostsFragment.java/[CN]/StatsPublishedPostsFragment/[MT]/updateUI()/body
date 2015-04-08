@@ -1,0 +1,19 @@
+{
+  if (!isAdded()) {
+    return;
+  }
+  if (isErrorResponse()) {
+    showErrorUI();
+    return;
+  }
+  if (hasPublishedPostsAndPages()) {
+    List<PostModel> postViews=getPublishedPostsAndPages();
+    ArrayAdapter adapter=new PublishedPostsAndPagesAdapter(getActivity(),postViews);
+    StatsUIHelper.reloadLinearLayout(getActivity(),adapter,mList,getMaxNumberOfItemsToShowInList());
+    showHideNoResultsUI(false);
+    mModuleTitleTextView.setText(postViews.size() + " " + getTitle());
+  }
+ else {
+    showHideNoResultsUI(true);
+  }
+}
