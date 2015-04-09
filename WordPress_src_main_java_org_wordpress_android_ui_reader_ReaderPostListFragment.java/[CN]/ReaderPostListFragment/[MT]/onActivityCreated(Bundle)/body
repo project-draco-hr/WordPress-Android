@@ -1,10 +1,10 @@
 {
   super.onActivityCreated(savedInstanceState);
-  if (getPostListType().equals(ReaderPostListType.TAG_FOLLOWED)) {
-    mReaderToolbar=(Toolbar)getActivity().findViewById(R.id.toolbar_reader);
-    mReaderToolbar.setVisibility(View.VISIBLE);
-    mReaderToolbar.inflateMenu(R.menu.reader_list);
-    mReaderToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener(){
+  if (hasFragmentToolbar()) {
+    mFragmentToolbar=(Toolbar)getActivity().findViewById(R.id.toolbar_reader);
+    mFragmentToolbar.setVisibility(View.VISIBLE);
+    mFragmentToolbar.inflateMenu(R.menu.reader_list);
+    mFragmentToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener(){
       @Override public boolean onMenuItemClick(      MenuItem menuItem){
         if (menuItem.getItemId() == R.id.menu_tags) {
           ReaderActivityLauncher.showReaderSubsForResult(getActivity());
@@ -16,17 +16,17 @@
 );
     mRecyclerView.setScrollDirectionListener(new ScrollDirectionListener(){
       @Override public void onScrollUp(){
-        showReaderToolbar(true);
+        showFragmentToolbar(true);
       }
       @Override public void onScrollDown(){
-        showReaderToolbar(false);
+        showFragmentToolbar(false);
       }
       @Override public void onScrollCompleted(){
       }
     }
 );
     if (mSpinner == null) {
-      enableTagSpinner(mReaderToolbar);
+      enableTagSpinner(mFragmentToolbar);
     }
     selectTagInSpinner(getCurrentTag());
   }
