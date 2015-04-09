@@ -9,7 +9,7 @@
   }
 );
   mWebView.setWebChromeClient(new WebChromeClient(){
-    public boolean onConsoleMessage(    ConsoleMessage cm){
+    @Override public boolean onConsoleMessage(    ConsoleMessage cm){
       AppLog.d(T.EDITOR,cm.message() + " -- From line " + cm.lineNumber()+ " of "+ cm.sourceId());
       return true;
     }
@@ -17,13 +17,10 @@
       AppLog.d(T.EDITOR,message);
       return true;
     }
-    @Override public void onConsoleMessage(    String message,    int lineNumber,    String sourceId){
-      AppLog.d(T.EDITOR,message + " -- from line " + lineNumber+ " of "+ sourceId);
-    }
   }
 );
   String htmlEditor=getHtmlFromFile("android-editor.html");
-  mWebView.addJavascriptInterface(new JsCallbackHandler(),JS_CALLBACK_HANDLER);
+  mWebView.addJavascriptInterface(new JsCallbackHandler(this),JS_CALLBACK_HANDLER);
   mWebView.loadDataWithBaseURL("file:///android_asset/",htmlEditor,"text/html","utf-8","");
   enableWebDebugging(true);
 }
