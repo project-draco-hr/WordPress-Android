@@ -3,6 +3,11 @@ switch (callbackId) {
 case CALLBACK_DOM_LOADED:
     mJsCallbackListener.onDomLoaded();
   break;
+case CALLBACK_SELECTION_STYLE:
+Set<String> newStyleSet=Utils.splitDelimitedString(params,JS_CALLBACK_DELIMITER);
+mJsCallbackListener.onSelectionStyleChanged(Utils.getChangeMapFromSets(mPreviousStyleSet,newStyleSet));
+mPreviousStyleSet=newStyleSet;
+break;
 case CALLBACK_LOG:
 AppLog.d(AppLog.T.EDITOR,callbackId + ": " + params.substring(4));
 break;
