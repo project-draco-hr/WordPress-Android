@@ -1,12 +1,16 @@
 {
   Blog blog=WordPress.getCurrentBlog();
   if (blog != null) {
-    mLoading=true;
-    notifyLoadingStatus();
     Cursor videoCursor=WordPressMediaUtils.getWordPressMediaVideos(String.valueOf(blog.getLocalTableBlogId()));
     if (videoCursor != null) {
       addWordPressVideosFromCursor(videoCursor);
       videoCursor.close();
     }
+ else     if (mListener != null) {
+      mListener.onMediaLoaded(false);
+    }
+  }
+ else   if (mListener != null) {
+    mListener.onMediaLoaded(false);
   }
 }
