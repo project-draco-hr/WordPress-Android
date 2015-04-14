@@ -1,11 +1,12 @@
 {
   if (currentBlog == null || !wpDB.isDotComBlogVisible(currentBlog.getRemoteBlogId())) {
-    setCurrentBlogToLastActive();
-    List<Map<String,Object>> accounts=WordPress.wpDB.getVisibleBlogs();
-    if (currentBlog == null && accounts.size() > 0) {
-      int id=Integer.valueOf(accounts.get(0).get("id").toString());
-      setCurrentBlog(id);
-      wpDB.updateLastBlogId(id);
+    if (setCurrentBlogToLastActive() == null) {
+      List<Map<String,Object>> accounts=WordPress.wpDB.getVisibleBlogs();
+      if (accounts.size() > 0) {
+        int id=Integer.valueOf(accounts.get(0).get("id").toString());
+        setCurrentBlog(id);
+        wpDB.updateLastBlogId(id);
+      }
     }
   }
   return currentBlog;
