@@ -1,11 +1,13 @@
 {
-  SiteRecord site=getItem(position);
+  SitePickerActivity.SiteRecord site=getItem(position);
   holder.txtTitle.setText(site.blogName);
   holder.txtDomain.setText(site.hostName);
   holder.imgBlavatar.setImageUrl(site.blavatarUrl,WPNetworkImageView.ImageType.BLAVATAR);
   holder.itemView.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View view){
-      onItemSelected(getItem(position));
+      if (mSiteSelectedListener != null) {
+        mSiteSelectedListener.onSiteSelected(getItem(position));
+      }
     }
   }
 );
