@@ -8,7 +8,7 @@
       if (mSiteSelectedListener != null) {
         mSiteSelectedListener.onSiteClick(getItem(position));
       }
-      if (mEnableSelection) {
+      if (mIsMultiSelectEnabled) {
         toggleSelection(position);
       }
     }
@@ -16,19 +16,28 @@
 );
   holder.itemView.setOnLongClickListener(new View.OnLongClickListener(){
     @Override public boolean onLongClick(    View v){
-      if (mSiteLongPressListener != null) {
-        mSiteLongPressListener.onSiteLongClick(getItem(position));
-      }
-      if (!mEnableSelection) {
-        setEnableSelection(true);
+      if (!mIsMultiSelectEnabled) {
+        if (mMultiSelectListener != null) {
+          mMultiSelectListener.onMultiSelectEnabled();
+        }
+        setEnableMultiSelect(true);
         setItemSelected(position,true);
       }
       return true;
     }
   }
 );
-  boolean isSelected=mEnableSelection && isItemSelected(position);
+  boolean isSelected=mIsMultiSelectEnabled && isItemSelected(position);
   holder.layoutContainer.setBackgroundDrawable(isSelected ? mSelectedItemBackground : null);
+  boolean showFooter=mShowHiddenSites && !site.isHidden && isValidPosition(position + 1)&& mSites.get(position + 1).isHidden;
+  holder.txtFooter.setVisibility(showFooter ? View.VISIBLE : View.GONE);
+  if (showFooter) {
+    holder.txtFooter.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+      }
+    }
+);
+  }
   if (holder.isSiteHidden == null || holder.isSiteHidden != site.isHidden) {
     holder.isSiteHidden=site.isHidden;
     holder.txtTitle.setTextColor(site.isHidden ? mTextColorHidden : mTextColorNormal);

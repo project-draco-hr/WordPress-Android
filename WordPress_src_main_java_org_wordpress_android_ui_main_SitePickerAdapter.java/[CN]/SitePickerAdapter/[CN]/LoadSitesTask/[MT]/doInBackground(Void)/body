@@ -1,0 +1,13 @@
+{
+  List<Map<String,Object>> blogs;
+  if (mShowHiddenSites) {
+    blogs=WordPress.wpDB.getBlogsBy("dotcomFlag=1",new String[]{"isHidden"});
+  }
+ else {
+    blogs=WordPress.wpDB.getVisibleDotComBlogs();
+  }
+  blogs.addAll(WordPress.wpDB.getBlogsBy("dotcomFlag!=1",null));
+  SiteList sites=new SiteList(blogs);
+  Collections.sort(sites,SiteComparator);
+  return sites;
+}
