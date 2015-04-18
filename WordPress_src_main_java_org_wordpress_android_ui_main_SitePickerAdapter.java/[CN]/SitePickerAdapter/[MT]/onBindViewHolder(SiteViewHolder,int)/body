@@ -6,16 +6,33 @@
   holder.itemView.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View view){
       if (mSiteSelectedListener != null) {
-        mSiteSelectedListener.onSiteSelected(getItem(position));
+        mSiteSelectedListener.onSiteClick(getItem(position));
+      }
+      if (mEnableSelection) {
+        toggleSelection(position);
       }
     }
   }
 );
+  holder.itemView.setOnLongClickListener(new View.OnLongClickListener(){
+    @Override public boolean onLongClick(    View v){
+      if (mSiteLongPressListener != null) {
+        mSiteLongPressListener.onSiteLongClick(getItem(position));
+      }
+      if (!mEnableSelection) {
+        setEnableSelection(true);
+        setItemSelected(position,true);
+      }
+      return true;
+    }
+  }
+);
+  boolean isSelected=mEnableSelection && isItemSelected(position);
+  holder.layoutContainer.setBackgroundDrawable(isSelected ? mSelectedItemBackground : null);
   if (holder.isSiteHidden == null || holder.isSiteHidden != site.isHidden) {
     holder.isSiteHidden=site.isHidden;
-    int textColor=(site.isHidden ? mColorHidden : mColorNormal);
-    holder.txtTitle.setTextColor(textColor);
-    holder.txtDomain.setTextColor(textColor);
+    holder.txtTitle.setTextColor(site.isHidden ? mTextColorHidden : mTextColorNormal);
+    holder.txtDomain.setTextColor(site.isHidden ? mTextColorHidden : mTextColorNormal);
     holder.txtTitle.setTypeface(holder.txtTitle.getTypeface(),site.isHidden ? Typeface.NORMAL : Typeface.BOLD);
     holder.imgBlavatar.setAlpha(site.isHidden ? 0.5f : 1f);
   }
