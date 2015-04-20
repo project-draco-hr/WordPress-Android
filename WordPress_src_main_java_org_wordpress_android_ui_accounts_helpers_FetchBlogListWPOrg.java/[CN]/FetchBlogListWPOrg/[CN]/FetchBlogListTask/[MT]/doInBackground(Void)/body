@@ -1,12 +1,24 @@
 {
+  String xmlrpcUrl=null;
+  if (mSelfHostedUrl != null && mSelfHostedUrl.length() != 0) {
+    xmlrpcUrl=getSelfHostedXmlrpcUrl(mSelfHostedUrl);
+  }
+  if (xmlrpcUrl == null) {
+    if (!mHttpAuthRequired && mErrorMsgId == 0) {
+      mErrorMsgId=org.wordpress.android.R.string.no_site_error;
+    }
+    return null;
+  }
+  URI xmlrpcUri;
+  xmlrpcUri=URI.create(xmlrpcUrl);
   XMLRPCClientInterface client=XMLRPCFactory.instantiate(xmlrpcUri,mHttpUsername,mHttpPassword);
   Object[] params={mUsername,mPassword};
   try {
     Object[] userBlogs=(Object[])client.call("wp.getUsersBlogs",params);
     if (userBlogs == null) {
       mErrorMsgId=org.wordpress.android.R.string.xmlrpc_error;
-      callback.onError(mErrorMsgId,false,false,false,client.getResponse());
-      return;
+      mClientResponse=client.getResponse();
+      return null;
     }
     Arrays.sort(userBlogs,BlogUtils.BlogNameComparator);
     List<Map<String,Object>> userBlogList=new ArrayList<Map<String,Object>>();
@@ -18,8 +30,7 @@
         AppLog.e(T.NUX,"invalid data received from XMLRPC call wp.getUsersBlogs");
       }
     }
-    callback.onSuccess(userBlogList);
-    return;
+    return userBlogList;
   }
  catch (  XmlPullParserException parserException) {
     mErrorMsgId=org.wordpress.android.R.string.xmlrpc_error;
@@ -33,7 +44,7 @@ catch (  XMLRPCException xmlRpcException) {
     mErrorMsgId=org.wordpress.android.R.string.no_site_error;
   }
 catch (  SSLHandshakeException e) {
-    if (xmlrpcUri.getHost().endsWith("wordpress.com")) {
+    if (xmlrpcUri.getHost() != null && xmlrpcUri.getHost().endsWith("wordpress.com")) {
       mErroneousSslCertificate=true;
     }
     AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
@@ -42,5 +53,6 @@ catch (  IOException e) {
     AppLog.e(T.NUX,"Exception received from XMLRPC call wp.getUsersBlogs",e);
     mErrorMsgId=org.wordpress.android.R.string.no_site_error;
   }
-  callback.onError(mErrorMsgId,false,mHttpAuthRequired,mErroneousSslCertificate,client.getResponse());
+  mClientResponse=client.getResponse();
+  return null;
 }
