@@ -1,5 +1,5 @@
 {
-  SitePickerActivity.SiteRecord site=getItem(position);
+  SiteRecord site=getItem(position);
   holder.txtTitle.setText(site.blogName);
   holder.txtDomain.setText(site.hostName);
   holder.imgBlavatar.setImageUrl(site.blavatarUrl,WPNetworkImageView.ImageType.BLAVATAR);
@@ -16,6 +16,13 @@
 );
   holder.itemView.setOnLongClickListener(new View.OnLongClickListener(){
     @Override public boolean onLongClick(    View v){
+      if (!mIsMultiSelectEnabled && mCanEnableMultiSelect) {
+        if (mMultiSelectListener != null) {
+          mMultiSelectListener.onMultiSelectEnabled();
+        }
+        setEnableMultiSelect(true);
+        setItemSelected(position,true);
+      }
       return true;
     }
   }
