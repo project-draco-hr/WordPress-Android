@@ -1,5 +1,4 @@
 {
-  removeWpComUserRelatedData(context);
   try {
     SelfSignedSSLCertsManager.getInstance(context).emptyLocalKeyStoreFile();
   }
@@ -9,9 +8,13 @@
 catch (  IOException e) {
     AppLog.e(T.UTILS,"Error while cleaning the Local KeyStore File",e);
   }
-  wpDB.deleteAllAccounts();
+  SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(context);
+  SharedPreferences.Editor editor=settings.edit();
+  editor.putBoolean(IS_SIGNED_OUT_PREFERENCE,true);
+  editor.apply();
   wpDB.updateLastBlogId(-1);
   currentBlog=null;
+  flushHttpCache();
   AnalyticsTracker.endSession(false);
   AnalyticsTracker.clearAllData();
   AbstractAppLock appLock=AppLockManager.getInstance().getCurrentAppLock();
