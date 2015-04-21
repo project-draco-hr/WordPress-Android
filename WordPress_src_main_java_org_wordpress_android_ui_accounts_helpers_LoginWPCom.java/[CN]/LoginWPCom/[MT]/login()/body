@@ -5,22 +5,21 @@
         mJetpackBlog.setApi_key(token.toString());
         WordPress.wpDB.saveBlog(mJetpackBlog);
       }
-      SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
-      SharedPreferences.Editor editor=settings.edit();
-      String existingUsername=settings.getString(WordPress.WPCOM_USERNAME_PREFERENCE,null);
-      if (settings.contains(WordPress.IS_SIGNED_OUT_PREFERENCE) && existingUsername != null && !existingUsername.equals(mUsername)) {
+      Account account=AccountHelper.getDefaultAccount();
+      if (StringUtils.equals(account.getUserName(),mUsername) && account.isUserTappedSignedOutButton()) {
+        account.setUserTappedSignedOutButton(false);
+        account.save();
         WordPress.wpDB.dangerouslyDeleteAllContent();
         WordPress.removeWpComUserRelatedData(WordPress.getContext());
-        existingUsername=null;
         WordPress.currentBlog=null;
       }
-      SimperiumUtils.configureSimperium(WordPress.getContext(),token.toString());
-      if (mJetpackBlog == null || TextUtils.isEmpty(existingUsername)) {
-        editor.putString(WordPress.WPCOM_USERNAME_PREFERENCE,mUsername);
-        editor.putString(WordPress.ACCESS_TOKEN_PREFERENCE,token.toString());
+      if (mJetpackBlog == null) {
+        account.setAccessToken(token.toString());
+        account.setUserName(mUsername);
+        account.save();
+        account.fetchAccountDetails();
       }
-      editor.remove(WordPress.IS_SIGNED_OUT_PREFERENCE);
-      editor.apply();
+      SimperiumUtils.configureSimperium(WordPress.getContext(),token.toString());
       mCallback.onSuccess();
     }
   }

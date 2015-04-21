@@ -1,0 +1,46 @@
+{
+  super.onActivityResult(requestCode,resultCode,data);
+switch (requestCode) {
+case RequestCodes.READER_SUBS:
+case RequestCodes.READER_REBLOG:
+    ReaderPostListFragment readerFragment=getReaderListFragment();
+  if (readerFragment != null) {
+  }
+break;
+case RequestCodes.ADD_ACCOUNT:
+if (resultCode == RESULT_OK) {
+WordPress.registerForCloudMessaging(this);
+}
+ else {
+finish();
+}
+break;
+case RequestCodes.REAUTHENTICATE:
+if (resultCode == RESULT_CANCELED) {
+ActivityLauncher.showSignInForResult(this);
+}
+ else {
+WordPress.registerForCloudMessaging(this);
+}
+break;
+case RequestCodes.SETTINGS:
+if (AccountHelper.isSignedIn()) {
+WordPress.registerForCloudMessaging(this);
+}
+ else {
+ActivityLauncher.showSignInForResult(this);
+}
+break;
+case RequestCodes.SITE_PICKER:
+if (resultCode == RESULT_OK && data != null) {
+int localId=data.getIntExtra(SitePickerActivity.KEY_LOCAL_ID,0);
+Blog blog=WordPress.setCurrentBlog(localId);
+WordPress.wpDB.updateLastBlogId(localId);
+MySiteFragment mySiteFragment=getMySiteFragment();
+if (mySiteFragment != null) {
+mySiteFragment.setBlog(blog);
+}
+}
+break;
+}
+}

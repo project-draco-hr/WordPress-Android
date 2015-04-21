@@ -18,6 +18,7 @@
         Note note=SimperiumUtils.getNotesBucket().get(noteId);
         if (note.isUnread()) {
           note.markAsRead();
+          EventBus.getDefault().post(new NotificationEvents.NotificationsChanged());
         }
         Fragment detailFragment=getDetailFragmentForNote(note);
         getFragmentManager().beginTransaction().add(R.id.notifications_detail_container,detailFragment).commit();
