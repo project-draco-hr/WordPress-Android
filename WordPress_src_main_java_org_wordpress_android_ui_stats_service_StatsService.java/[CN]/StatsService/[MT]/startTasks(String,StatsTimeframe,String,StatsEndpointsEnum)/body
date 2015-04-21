@@ -1,0 +1,60 @@
+{
+  final RestClientUtils restClientUtils=WordPress.getRestClientUtilsV1_1();
+  String period=timeframe.getLabelForRestCall();
+  AppLog.i(T.STATS,"Update started for blogID - " + blogId + " with the following period: "+ period+ " on the following date: "+ date+ " for the following section: "+ sectionToUpdate.name());
+  EventBus.getDefault().post(new StatsEvents.UpdateStatusChanged(true));
+  RestListener vListener=new RestListener(sectionToUpdate,blogId,timeframe,date);
+  final String path;
+synchronized (mStatsNetworkRequests) {
+switch (sectionToUpdate) {
+case VISITS:
+      path=String.format("/sites/%s/stats/visits?unit=%s&quantity=10&date=%s",blogId,period,date);
+    break;
+case TOP_POSTS:
+  path=String.format("/sites/%s/stats/top-posts?period=%s&date=%s&max=%s",blogId,period,date,12);
+break;
+case REFERRERS:
+path=String.format("/sites/%s/stats/referrers?period=%s&date=%s&max=%s",blogId,period,date,12);
+break;
+case CLICKS:
+path=String.format("/sites/%s/stats/clicks?period=%s&date=%s&max=%s",blogId,period,date,12);
+break;
+case GEO_VIEWS:
+path=String.format("/sites/%s/stats/country-views?period=%s&date=%s&max=%s",blogId,period,date,12);
+break;
+case AUTHORS:
+path=String.format("/sites/%s/stats/top-authors?period=%s&date=%s&max=%s",blogId,period,date,12);
+break;
+case VIDEO_PLAYS:
+path=String.format("/sites/%s/stats/video-plays?period=%s&date=%s&max=%s",blogId,period,date,12);
+break;
+case COMMENTS:
+path=String.format("/sites/%s/stats/comments",blogId);
+break;
+case FOLLOWERS_WPCOM:
+path=String.format("/sites/%s/stats/followers?type=wpcom&max=%s",blogId,12);
+break;
+case FOLLOWERS_EMAIL:
+path=String.format("/sites/%s/stats/followers?type=email&max=%s",blogId,12);
+break;
+case COMMENT_FOLLOWERS:
+path=String.format("/sites/%s/stats/comment-followers?max=%s",blogId,12);
+break;
+case TAGS_AND_CATEGORIES:
+path=String.format("/sites/%s/stats/tags?max=%s",blogId,12);
+break;
+case PUBLICIZE:
+path=String.format("/sites/%s/stats/publicize?max=%s",blogId,12);
+break;
+case SEARCH_TERMS:
+path=String.format("/sites/%s/stats/search-terms?period=%s&date=%s&max=%s",blogId,period,date,12);
+break;
+default :
+AppLog.i(T.STATS,"Called an update of Stats of unknown section!?? " + sectionToUpdate.name());
+return;
+}
+Request<JSONObject> currentRequest=restClientUtils.get(path,vListener,vListener);
+currentRequest.setTag("StatsCall");
+mStatsNetworkRequests.add(currentRequest);
+}
+}

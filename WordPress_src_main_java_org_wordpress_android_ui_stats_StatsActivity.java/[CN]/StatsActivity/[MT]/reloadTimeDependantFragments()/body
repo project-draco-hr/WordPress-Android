@@ -1,0 +1,24 @@
+{
+  if (isFinishing()) {
+    return;
+  }
+  FragmentManager fm=getFragmentManager();
+  FragmentTransaction ft=fm.beginTransaction();
+  StatsAbstractFragment fragment;
+  updateTimeFrameAndDateInFragment(fm,StatsVisitorsAndViewsFragment.TAG,mCurrentTimeframe,mRequestedDate);
+  fragment=StatsAbstractFragment.newInstance(StatsViewType.TOP_POSTS_AND_PAGES,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
+  ft.replace(R.id.stats_top_posts_container,fragment,StatsTopPostsAndPagesFragment.TAG);
+  fragment=StatsAbstractFragment.newInstance(StatsViewType.REFERRERS,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
+  ft.replace(R.id.stats_referrers_container,fragment,StatsReferrersFragment.TAG);
+  fragment=StatsAbstractFragment.newInstance(StatsViewType.CLICKS,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
+  ft.replace(R.id.stats_clicks_container,fragment,StatsClicksFragment.TAG);
+  fragment=StatsAbstractFragment.newInstance(StatsViewType.GEOVIEWS,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
+  ft.replace(R.id.stats_geoviews_container,fragment,StatsGeoviewsFragment.TAG);
+  fragment=StatsAbstractFragment.newInstance(StatsViewType.AUTHORS,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
+  ft.replace(R.id.stats_top_authors_container,fragment,StatsAuthorsFragment.TAG);
+  fragment=StatsAbstractFragment.newInstance(StatsViewType.VIDEO_PLAYS,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
+  ft.replace(R.id.stats_video_container,fragment,StatsVideoplaysFragment.TAG);
+  fragment=StatsAbstractFragment.newInstance(StatsViewType.SEARCH_TERMS,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
+  ft.replace(R.id.stats_search_terms_container,fragment,StatsSearchTermsFragment.TAG);
+  ft.commitAllowingStateLoss();
+}

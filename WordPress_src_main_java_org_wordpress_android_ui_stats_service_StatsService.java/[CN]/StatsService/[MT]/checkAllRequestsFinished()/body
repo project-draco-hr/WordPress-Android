@@ -1,5 +1,14 @@
 {
-  if (isNetworkingDone()) {
-    stopService();
+synchronized (mStatsNetworkRequests) {
+    Iterator<Request<JSONObject>> it=mStatsNetworkRequests.iterator();
+    while (it.hasNext()) {
+      Request<JSONObject> req=it.next();
+      if (req.hasHadResponseDelivered() || req.isCanceled()) {
+        it.remove();
+      }
+    }
+    if (mStatsNetworkRequests.size() == 0) {
+      EventBus.getDefault().post(new StatsEvents.UpdateStatusChanged(false));
+    }
   }
 }
