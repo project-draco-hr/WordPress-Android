@@ -2,9 +2,11 @@
   WordPress.wpDB.getDatabase().beginTransaction();
   try {
     WordPress.wpDB.setAllDotComBlogsVisibility(true);
-    SitePickerAdapter.SiteList hiddenSites=getAdapter().getHiddenSites();
+    SiteList hiddenSites=getAdapter().getHiddenSites();
     for (    SiteRecord site : hiddenSites) {
-      WordPress.wpDB.setDotComBlogsVisibility(site.localId,false);
+      if (site.localId != mCurrentLocalId) {
+        WordPress.wpDB.setDotComBlogsVisibility(site.localId,false);
+      }
     }
     WordPress.wpDB.getDatabase().setTransactionSuccessful();
   }
