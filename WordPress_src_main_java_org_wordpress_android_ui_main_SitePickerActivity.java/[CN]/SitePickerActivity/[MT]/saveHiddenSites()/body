@@ -1,0 +1,14 @@
+{
+  WordPress.wpDB.getDatabase().beginTransaction();
+  try {
+    WordPress.wpDB.setAllDotComBlogsVisibility(true);
+    SitePickerAdapter.SiteList hiddenSites=getAdapter().getHiddenSites();
+    for (    SiteRecord site : hiddenSites) {
+      WordPress.wpDB.setDotComBlogsVisibility(site.localId,false);
+    }
+    WordPress.wpDB.getDatabase().setTransactionSuccessful();
+  }
+  finally {
+    WordPress.wpDB.getDatabase().endTransaction();
+  }
+}
