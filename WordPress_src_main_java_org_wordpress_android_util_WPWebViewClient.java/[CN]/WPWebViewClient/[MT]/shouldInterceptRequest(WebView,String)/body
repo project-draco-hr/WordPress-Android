@@ -1,16 +1,23 @@
 {
-  if (mBlog != null && mBlog.isPrivate() && !TextUtils.isEmpty(mToken) && UrlUtils.isImageUrl(url)) {
-    DefaultHttpClient client=new DefaultHttpClient();
-    HttpGet httpGet=new HttpGet(url);
-    httpGet.setHeader("Authorization","Bearer " + mToken);
+  if (mBlog != null && mBlog.isPrivate() && !TextUtils.isEmpty(mToken) && UrlUtils.isImageUrl(stringUrl)) {
     try {
-      HttpResponse httpResponse=client.execute(httpGet);
-      InputStream responseInputStream=httpResponse.getEntity().getContent();
-      return new WebResourceResponse(httpResponse.getEntity().getContentType().toString(),"UTF-8",responseInputStream);
+      URL url=new URL(stringUrl);
+      HttpURLConnection urlConnection=(HttpURLConnection)url.openConnection();
+      urlConnection.setRequestProperty("Authorization","Bearer " + mToken);
+      urlConnection.setReadTimeout(WPRestClient.REST_TIMEOUT_MS);
+      urlConnection.setConnectTimeout(WPRestClient.REST_TIMEOUT_MS);
+      WebResourceResponse response=new WebResourceResponse(urlConnection.getContentType(),urlConnection.getContentEncoding(),urlConnection.getInputStream());
+      return response;
     }
- catch (    IOException e) {
+ catch (    ClassCastException e) {
+      AppLog.e(AppLog.T.POSTS,"Invalid connection type - URL: " + stringUrl);
+    }
+catch (    MalformedURLException e) {
+      AppLog.e(AppLog.T.POSTS,"Malformed URL: " + stringUrl);
+    }
+catch (    IOException e) {
       AppLog.e(AppLog.T.POSTS,"Invalid post detail request: " + e.getMessage());
     }
   }
-  return super.shouldInterceptRequest(view,url);
+  return super.shouldInterceptRequest(view,stringUrl);
 }
