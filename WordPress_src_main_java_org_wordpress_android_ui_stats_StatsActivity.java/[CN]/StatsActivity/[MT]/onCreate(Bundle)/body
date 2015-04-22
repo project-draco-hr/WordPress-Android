@@ -27,6 +27,7 @@
         return;
       }
       mRequestedDate=StatsUtils.getCurrentDateTZ(mLocalBlogID);
+      checkCredentials();
       updateTimeframeAndDateAndStartRefreshOfFragments(true);
     }
   }
@@ -80,7 +81,12 @@
         AppLog.d(T.STATS,"NEW TIME FRAME : " + selectedTimeframe.getLabel());
         mCurrentTimeframe=selectedTimeframe;
         mRequestedDate=StatsUtils.getCurrentDateTZ(mLocalBlogID);
-        mSwipeToRefreshHelper.setRefreshing(true);
+        if (NetworkUtils.checkConnection(StatsActivity.this)) {
+          mSwipeToRefreshHelper.setRefreshing(true);
+        }
+ else {
+          mSwipeToRefreshHelper.setRefreshing(false);
+        }
         createFragments(true);
       }
       @Override public void onNothingSelected(      AdapterView<?> parent){

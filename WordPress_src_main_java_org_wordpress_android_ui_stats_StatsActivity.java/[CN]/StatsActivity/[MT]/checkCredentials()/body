@@ -1,0 +1,37 @@
+{
+  if (!NetworkUtils.checkConnection(this)) {
+    AppLog.w(AppLog.T.STATS,"StatsActivity > cannot validate credentials since no connection");
+    return;
+  }
+  final String blogId=StatsUtils.getBlogId(mLocalBlogID);
+  final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
+  if (blogId != null) {
+    if (!currentBlog.isDotcomFlag() && !currentBlog.hasValidJetpackCredentials() && mResultCode != RESULT_CANCELED) {
+      if (AccountHelper.getDefaultAccount().hasAccessToken()) {
+        String username=AccountHelper.getDefaultAccount().getUserName();
+        currentBlog.setDotcom_username(username);
+        WordPress.wpDB.saveBlog(currentBlog);
+        createFragments(true);
+      }
+ else {
+        startWPComLoginActivity();
+        return;
+      }
+    }
+  }
+ else {
+    if (!currentBlog.isDotcomFlag()) {
+      mSwipeToRefreshHelper.setRefreshing(true);
+      new ApiHelper.RefreshBlogContentTask(currentBlog,new VerifyJetpackSettingsCallback()).execute(false);
+    }
+ else {
+      Toast.makeText(this,R.string.error_refresh_stats,Toast.LENGTH_LONG).show();
+      AppLog.e(T.STATS,"blogID is null for a wpcom blog!! " + currentBlog.getHomeURL());
+      finish();
+    }
+  }
+  if (!currentBlog.isDotcomFlag() && !currentBlog.hasValidJetpackCredentials() && !AccountHelper.getDefaultAccount().hasAccessToken()) {
+    AppLog.w(T.STATS,"Jetpack blog with no wpcom credentials");
+    return;
+  }
+}
