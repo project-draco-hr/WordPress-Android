@@ -26,12 +26,14 @@
  else {
     requestedDate=intent.getStringExtra(ARG_DATE);
   }
+  final int maxResultsRequested=intent.getIntExtra(ARG_MAX_RESULTS,DEFAULT_NUMBER_OF_RESULTS);
+  final int pageRequested=intent.getIntExtra(ARG_PAGE_REQUESTED,-1);
   StatsEndpointsEnum[] sectionsToUpdate=(StatsEndpointsEnum[])intent.getSerializableExtra(ARG_SECTION);
   this.mServiceStartId=startId;
   for (  final StatsEndpointsEnum sectionToUpdate : sectionsToUpdate) {
     parseResponseExecutor.submit(new Thread(){
       @Override public void run(){
-        startTasks(blogId,period,requestedDate,sectionToUpdate);
+        startTasks(blogId,period,requestedDate,sectionToUpdate,maxResultsRequested,pageRequested);
       }
     }
 );

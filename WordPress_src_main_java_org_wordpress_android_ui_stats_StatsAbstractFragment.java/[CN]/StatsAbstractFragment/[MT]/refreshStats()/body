@@ -1,30 +1,3 @@
 {
-  if (!isAdded()) {
-    return;
-  }
-  AppLog.d(AppLog.T.STATS,this.getClass().getCanonicalName() + " > refreshStats");
-  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
-    AppLog.w(AppLog.T.STATS,this.getClass().getCanonicalName() + "--> no connection, update canceled");
-    return;
-  }
-  final String blogId=StatsUtils.getBlogId(getLocalTableBlogID());
-  final Blog currentBlog=WordPress.getBlog(getLocalTableBlogID());
-  if (blogId == null) {
-    AppLog.e(AppLog.T.STATS,"remote blogID is null: " + currentBlog.getHomeURL());
-    return;
-  }
-  if (currentBlog == null) {
-    AppLog.w(AppLog.T.STATS,"Current blog is null. This should never happen here.");
-    return;
-  }
-  if (!currentBlog.isDotcomFlag() && !currentBlog.hasValidJetpackCredentials()) {
-    AppLog.w(AppLog.T.STATS,"Current blog is a Jetpack blog without valid .com credentials stored");
-    return;
-  }
-  Intent intent=new Intent(getActivity(),StatsService.class);
-  intent.putExtra(StatsService.ARG_BLOG_ID,blogId);
-  intent.putExtra(StatsService.ARG_PERIOD,mStatsTimeframe);
-  intent.putExtra(StatsService.ARG_DATE,mDate);
-  intent.putExtra(StatsService.ARG_SECTION,getSectionsToUpdate());
-  getActivity().startService(intent);
+  refreshStats(-1,null);
 }
