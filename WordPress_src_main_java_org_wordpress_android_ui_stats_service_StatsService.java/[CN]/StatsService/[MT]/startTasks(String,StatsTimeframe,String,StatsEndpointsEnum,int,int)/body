@@ -67,9 +67,14 @@ default :
 AppLog.i(T.STATS,"Called an update of Stats of unknown section!?? " + sectionToUpdate.name());
 return;
 }
+if (checkIfRequestShouldBeEnqueued(restClientUtils,path)) {
 AppLog.d(AppLog.T.STATS,"Enqueuing the following Stats request " + path);
 Request<JSONObject> currentRequest=restClientUtils.get(path,vListener,vListener);
 currentRequest.setTag("StatsCall");
 mStatsNetworkRequests.add(currentRequest);
+}
+ else {
+AppLog.d(AppLog.T.STATS,"Stats request is already there:" + path);
+}
 }
 }
