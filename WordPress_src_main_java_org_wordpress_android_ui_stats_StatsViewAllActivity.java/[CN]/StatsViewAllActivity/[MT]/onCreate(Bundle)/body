@@ -12,6 +12,11 @@
     @Override public void onRefreshStarted(){
       if (!NetworkUtils.checkConnection(getBaseContext())) {
         mSwipeToRefreshHelper.setRefreshing(false);
+        mIsUpdatingStats=false;
+        return;
+      }
+      if (mIsUpdatingStats) {
+        AppLog.w(AppLog.T.STATS,"stats are already updating, refresh cancelled");
         return;
       }
       refreshStats();
