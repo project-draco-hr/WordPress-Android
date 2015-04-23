@@ -5,6 +5,10 @@
   }
   final String blogId=StatsUtils.getBlogId(mLocalBlogID);
   final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
+  if (currentBlog == null) {
+    AppLog.e(T.STATS,"The blog with local_blog_id " + mLocalBlogID + " cannot be loaded from the DB.");
+    return false;
+  }
   if (blogId != null) {
     if (!currentBlog.isDotcomFlag() && !currentBlog.hasValidJetpackCredentials() && mResultCode != RESULT_CANCELED) {
       if (AccountHelper.getDefaultAccount().hasAccessToken()) {
