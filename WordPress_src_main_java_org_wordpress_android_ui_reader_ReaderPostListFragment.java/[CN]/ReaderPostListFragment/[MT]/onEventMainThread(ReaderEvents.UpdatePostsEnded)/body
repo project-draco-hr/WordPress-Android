@@ -5,7 +5,10 @@
     return;
   }
   boolean showNewPostsBar;
-  if (event.getResult() == ReaderActions.UpdateResult.HAS_NEW && !isPostAdapterEmpty() && event.getAction() == UpdateAction.REQUEST_NEWER && getPostListType() == ReaderPostListType.TAG_FOLLOWED) {
+  if (isPostAdapterEmpty()) {
+    showNewPostsBar=false;
+  }
+ else   if (event.getResult() == ReaderActions.UpdateResult.HAS_NEW && event.getAction() == UpdateAction.REQUEST_NEWER && getPostListType() == ReaderPostListType.TAG_FOLLOWED) {
     long newestPostId=ReaderPostTable.getNewestPostIdWithTag(getCurrentTag());
     ReaderPost post=getPostAdapter().getItem(0);
     showNewPostsBar=(post != null && post.postId != newestPostId);
