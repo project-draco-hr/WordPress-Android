@@ -1,0 +1,15 @@
+{
+  try {
+    Intent intent=new Intent(context,SSLCertsViewActivity.class);
+    SelfSignedSSLCertsManager selfSignedSSLCertsManager=SelfSignedSSLCertsManager.getInstance(context);
+    String lastFailureChainDescription=selfSignedSSLCertsManager.getLastFailureChainDescription().replaceAll("\n","<br/>");
+    intent.putExtra(SSLCertsViewActivity.CERT_DETAILS_KEYS,lastFailureChainDescription);
+    context.startActivity(intent);
+  }
+ catch (  GeneralSecurityException e) {
+    AppLog.e(AppLog.T.API,e);
+  }
+catch (  IOException e) {
+    AppLog.e(AppLog.T.API,e);
+  }
+}

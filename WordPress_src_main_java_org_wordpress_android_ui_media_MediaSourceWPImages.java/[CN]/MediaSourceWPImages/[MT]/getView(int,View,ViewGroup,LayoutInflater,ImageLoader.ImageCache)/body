@@ -13,10 +13,10 @@
           imageBitmap=cache.getBitmap(imageSource.toString());
         }
         if (imageBitmap == null) {
-          imageView.setImageResource(R.color.grey_darken_10);
+          imageView.setImageDrawable(placeholderDrawable(convertView.getContext()));
           WordPressMediaUtils.BackgroundDownloadWebImage bgDownload=new WordPressMediaUtils.BackgroundDownloadWebImage(imageView);
           imageView.setTag(bgDownload);
-          bgDownload.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,mediaItem.getPreviewSource());
+          bgDownload.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR,mediaItem.getPreviewSource());
         }
  else {
           imageView.setImageBitmap(imageBitmap);

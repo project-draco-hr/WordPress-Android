@@ -1,0 +1,24 @@
+{
+  setBlogId(blogId);
+  setDate(StatsUtils.toMs(date));
+  setName(resultJSON.getString("name"));
+  setViews(resultJSON.getInt("views"));
+  setIcon(JSONUtils.getString(resultJSON,"icon"));
+  if (!TextUtils.isEmpty(JSONUtils.getString(resultJSON,"url"))) {
+    setUrl(JSONUtils.getString(resultJSON,"url"));
+  }
+  if (resultJSON.has("children")) {
+    JSONArray childrenJSON=resultJSON.getJSONArray("children");
+    mChildren=new ArrayList<>();
+    for (int i=0; i < childrenJSON.length(); i++) {
+      JSONObject currentChild=childrenJSON.getJSONObject(i);
+      mChildren.add(getChildren(blogId,date,currentChild));
+    }
+    Collections.sort(mChildren,new java.util.Comparator<SingleItemModel>(){
+      public int compare(      SingleItemModel o1,      SingleItemModel o2){
+        return o2.getTotals() - o1.getTotals();
+      }
+    }
+);
+  }
+}

@@ -1,0 +1,34 @@
+{
+  setStatusBarColor();
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.activity_main);
+  mViewPager=(WPMainViewPager)findViewById(R.id.viewpager_main);
+  mTabAdapter=new WPMainTabAdapter(getFragmentManager());
+  mViewPager.setAdapter(mTabAdapter);
+  mTabs=(SlidingTabLayout)findViewById(R.id.sliding_tabs);
+  mTabs.setSelectedIndicatorColors(getResources().getColor(R.color.tab_indicator));
+  mTabs.setDistributeEvenly(true);
+  Integer icons[]={R.drawable.main_tab_sites,R.drawable.main_tab_reader,R.drawable.main_tab_me,R.drawable.main_tab_notifications};
+  mTabs.setCustomTabView(R.layout.tab_icon,R.id.tab_icon,R.id.tab_badge,icons);
+  mTabs.setViewPager(mViewPager);
+  mTabs.setOnSingleTabClickListener(this);
+  mTabs.setOnPageChangeListener(this);
+  if (savedInstanceState == null) {
+    if (AccountHelper.isSignedIn()) {
+      boolean openedFromPush=(getIntent() != null && getIntent().getBooleanExtra(ARG_OPENED_FROM_PUSH,false));
+      if (openedFromPush) {
+        getIntent().putExtra(ARG_OPENED_FROM_PUSH,false);
+        launchWithNoteId();
+      }
+ else {
+        int position=AppPrefs.getMainTabIndex();
+        if (mTabAdapter.isValidPosition(position) && position != mViewPager.getCurrentItem()) {
+          mViewPager.setCurrentItem(position);
+        }
+      }
+    }
+ else {
+      ActivityLauncher.showSignInForResult(this);
+    }
+  }
+}
