@@ -4,6 +4,9 @@
       if (response != null) {
         try {
           mResponseObjectModel=StatsUtils.parseResponse(mEndpointName,mRequestBlogId,response);
+          int parsedBlogID=Integer.parseInt(mRequestBlogId);
+          int localTableBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(parsedBlogID);
+          StatsTable.insertStats(StatsService.this,localTableBlogId,mTimeframe,mDate,mEndpointName,-1,-1,response.toString(),System.currentTimeMillis());
         }
  catch (        JSONException e) {
           AppLog.e(AppLog.T.STATS,e);

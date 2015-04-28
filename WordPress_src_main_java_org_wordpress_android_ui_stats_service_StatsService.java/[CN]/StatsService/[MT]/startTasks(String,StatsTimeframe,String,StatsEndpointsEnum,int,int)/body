@@ -1,4 +1,19 @@
 {
+  String cachedStats=getCachedStats(blogId,timeframe,date,sectionToUpdate,maxResultsRequested,pageRequested);
+  if (cachedStats != null) {
+    AppLog.d(AppLog.T.STATS,"Stats read from the DB");
+    Serializable mResponseObjectModel;
+    try {
+      JSONObject response=new JSONObject(cachedStats);
+      mResponseObjectModel=StatsUtils.parseResponse(sectionToUpdate,blogId,response);
+      EventBus.getDefault().post(new StatsEvents.SectionUpdated(sectionToUpdate,blogId,timeframe,date,mResponseObjectModel));
+      checkAllRequestsFinished();
+      return;
+    }
+ catch (    JSONException e) {
+      AppLog.e(AppLog.T.STATS,e);
+    }
+  }
   final RestClientUtils restClientUtils=WordPress.getRestClientUtilsV1_1();
   String period=timeframe.getLabelForRestCall();
   EventBus.getDefault().post(new StatsEvents.UpdateStatusChanged(true));

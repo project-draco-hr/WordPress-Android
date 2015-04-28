@@ -1,0 +1,15 @@
+{
+  if (ctx == null) {
+    AppLog.e(AppLog.T.STATS,"Cannot purgeAll stats since the passed context is null. Context is required " + "to access the DB.");
+    return;
+  }
+  SQLiteDatabase db=StatsDatabaseHelper.getWritableDb(ctx);
+  db.beginTransaction();
+  try {
+    db.execSQL("DELETE FROM " + TABLE_NAME);
+    db.setTransactionSuccessful();
+  }
+  finally {
+    db.endTransaction();
+  }
+}

@@ -1,0 +1,25 @@
+{
+  if (ctx == null) {
+    AppLog.e(AppLog.T.STATS,"Cannot insert a null stats since the passed context is null. Context is required " + "to access the DB.");
+    return;
+  }
+  SQLiteDatabase db=StatsDatabaseHelper.getWritableDb(ctx);
+  db.beginTransaction();
+  SQLiteStatement stmt=db.compileStatement("INSERT INTO " + TABLE_NAME + " (blogID, type, timeframe, date, "+ "jsonData, maxResult, page, timestamp) VALUES (?1,?2,?3,?4,?5,?6,?7,?8)");
+  try {
+    stmt.bindLong(1,blogId);
+    stmt.bindLong(2,sectionToUpdate.ordinal());
+    stmt.bindLong(3,timeframe.ordinal());
+    stmt.bindString(4,date);
+    stmt.bindString(5,jsonResponse);
+    stmt.bindLong(6,maxResultsRequested);
+    stmt.bindLong(7,pageRequested);
+    stmt.bindLong(8,responseTimestamp);
+    stmt.execute();
+    db.setTransactionSuccessful();
+  }
+  finally {
+    db.endTransaction();
+    SqlUtils.closeStatement(stmt);
+  }
+}

@@ -1,0 +1,17 @@
+{
+  if (ctx == null) {
+    AppLog.e(AppLog.T.STATS,"Cannot delete a null stats since the passed context is null. Context is required " + "to access the DB.");
+    return false;
+  }
+  SQLiteDatabase db=StatsDatabaseHelper.getWritableDb(ctx);
+  try {
+    db.beginTransaction();
+    int rowDeleted=db.delete(TABLE_NAME,"blogID=? AND timestamp < ?",new String[]{Integer.toString(blogId),Long.toString(timestamp)});
+    db.setTransactionSuccessful();
+    AppLog.d(AppLog.T.STATS,"Old stats deleted");
+    return rowDeleted > 1;
+  }
+  finally {
+    db.endTransaction();
+  }
+}
