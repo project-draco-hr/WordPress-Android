@@ -1,8 +1,10 @@
 {
-  mActivity.runOnUiThread(new Runnable(){
+  final WPEditImageSpan imageSpan=createWPEditImageSpan(mActivity,mediaFile);
+  mEditorFragmentListener.saveMediaFile(mediaFile);
+  imageSpan.setMediaFile(mediaFile);
+  Handler handler=new Handler(Looper.getMainLooper());
+  final Runnable r=new Runnable(){
     @Override public void run(){
-      WPEditImageSpan imageSpan=createWPEditImageSpan(mActivity,mediaFile);
-      Log.e("","xyz appendMediaFile(mContent=" + mContent + ", start;end="+ start+ ";"+ end+ ")");
       int selectionStart=start;
       int selectionEnd=end;
       if (selectionStart > selectionEnd) {
@@ -31,20 +33,16 @@
         selectionStart=selectionStart + 1;
         selectionEnd=selectionEnd + 1;
       }
-      if (mediaFile.getFileURL() == null) {
-        mediaFile.setFileURL(imageUrl);
-      }
-      imageSpan.setMediaFile(mediaFile);
       s.insert(selectionStart," ");
       s.setSpan(imageSpan,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
       AlignmentSpan.Standard as=new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER);
       s.setSpan(as,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
       s.insert(selectionEnd + 1,"\n\n");
-      mEditorFragmentListener.saveMediaFile(mediaFile);
       if (mediaFile.getFileURL() != null && imageLoader != null) {
         loadWPImageSpanThumbnail(mediaFile,imageUrl,imageLoader);
       }
     }
   }
-);
+;
+  handler.postDelayed(r,1);
 }

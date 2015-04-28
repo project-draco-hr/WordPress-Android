@@ -13,21 +13,6 @@
     }
   }
 );
-  mContentEditText=(WPEditText)rootView.findViewById(R.id.post_content);
-  Parcelable[] spans=null;
-  if (savedInstanceState != null) {
-    spans=savedInstanceState.getParcelableArray("image-spans");
-    mContent=savedInstanceState.getString("content");
-    mContentEditText.setText(mContent);
-    mContentEditText.setSelection(savedInstanceState.getInt("start"),savedInstanceState.getInt("end"));
-    if (spans != null && spans.length > 0) {
-      Log.e("","xyz onCreateView(mContent=" + mContent + ", start;end="+ mContentEditText.getSelectionStart()+ ";"+ mContentEditText.getSelectionEnd()+ "), spans="+ spans.length);
-      for (      Parcelable s : spans) {
-        WPImageSpan editSpan=(WPImageSpan)s;
-        addMediaFile(editSpan.getMediaFile(),editSpan.getMediaFile().getFilePath(),mImageLoader,editSpan.getStartPosition(),editSpan.getEndPosition());
-      }
-    }
-  }
   mPostContentLinearLayout=(LinearLayout)rootView.findViewById(R.id.post_content_wrapper);
   mPostSettingsLinearLayout=(LinearLayout)rootView.findViewById(R.id.post_settings_wrapper);
   Button postSettingsButton=(Button)rootView.findViewById(R.id.post_settings_button);
@@ -46,6 +31,7 @@
   Button linkButton=(Button)rootView.findViewById(R.id.link);
   Button moreButton=(Button)rootView.findViewById(R.id.more);
   registerForContextMenu(mAddPictureButton);
+  mContentEditText=(WPEditText)rootView.findViewById(R.id.post_content);
   mContentEditText.setOnSelectionChangedListener(this);
   mContentEditText.setOnTouchListener(this);
   mContentEditText.addTextChangedListener(this);
@@ -66,5 +52,18 @@
   mBquoteToggleButton.setOnClickListener(mFormatBarButtonClickListener);
   moreButton.setOnClickListener(mFormatBarButtonClickListener);
   mEditorFragmentListener.onEditorFragmentInitialized();
+  Parcelable[] spans=null;
+  if (savedInstanceState != null) {
+    spans=savedInstanceState.getParcelableArray(KEY_IMAGE_SPANS);
+    mContent=savedInstanceState.getString(KEY_CONTENT);
+    mContentEditText.setText(mContent);
+    mContentEditText.setSelection(savedInstanceState.getInt(KEY_START),savedInstanceState.getInt(KEY_END));
+    if (spans != null && spans.length > 0) {
+      for (      Parcelable s : spans) {
+        WPImageSpan editSpan=(WPImageSpan)s;
+        addMediaFile(editSpan.getMediaFile(),editSpan.getMediaFile().getFilePath(),mImageLoader,editSpan.getStartPosition(),editSpan.getEndPosition());
+      }
+    }
+  }
   return rootView;
 }
