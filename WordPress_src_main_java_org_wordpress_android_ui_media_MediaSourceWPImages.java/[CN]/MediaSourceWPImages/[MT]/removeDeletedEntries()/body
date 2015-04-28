@@ -1,9 +1,8 @@
 {
-  List<MediaItem> existingItems=new ArrayList<>(mMediaItems);
-  for (  MediaItem mediaItem : existingItems) {
-    final boolean callLoaded=existingItems.indexOf(mediaItem) == existingItems.size() - 1;
+  final List<MediaItem> existingItems=new ArrayList<>(mMediaItems);
+  for (  final MediaItem mediaItem : existingItems) {
     LimitedBackgroundOperation<MediaItem,Void,MediaItem> backgroundCheck=new LimitedBackgroundOperation<MediaItem,Void,MediaItem>(){
-      int responseCode;
+      private int responseCode;
       @Override protected MediaItem performBackgroundOperation(      MediaItem[] params){
         MediaItem mediaItem=params[0];
         try {
@@ -25,9 +24,11 @@
           resultList.add(result);
           if (responseCode == 200) {
             mVerifiedItems.add(result);
-            mListener.onMediaAdded(MediaSourceWPImages.this,resultList);
+            if ((existingItems.size() - mVerifiedItems.size()) % 3 == 0) {
+              mListener.onMediaAdded(MediaSourceWPImages.this,resultList);
+            }
           }
-          if (callLoaded) {
+          if (existingItems.indexOf(mediaItem) == existingItems.size() - 1) {
             mListener.onMediaLoaded(true);
           }
         }
