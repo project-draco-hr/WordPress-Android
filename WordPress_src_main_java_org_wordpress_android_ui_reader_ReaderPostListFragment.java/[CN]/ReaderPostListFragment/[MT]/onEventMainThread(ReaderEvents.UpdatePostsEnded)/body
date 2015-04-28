@@ -4,24 +4,7 @@
   if (event.getReaderTag() != null && !isCurrentTag(event.getReaderTag())) {
     return;
   }
-  boolean showNewPostsBar;
-  if (isPostAdapterEmpty()) {
-    showNewPostsBar=false;
-  }
- else   if (event.getResult() == ReaderActions.UpdateResult.HAS_NEW && event.getAction() == UpdateAction.REQUEST_NEWER && getPostListType() == ReaderPostListType.TAG_FOLLOWED) {
-    if (mRecyclerView.canScrollUp()) {
-      showNewPostsBar=true;
-    }
- else {
-      long newestPostId=ReaderPostTable.getNewestPostIdWithTag(getCurrentTag());
-      ReaderPost post=getPostAdapter().getItem(0);
-      showNewPostsBar=(post != null && post.postId != newestPostId);
-    }
-  }
- else {
-    showNewPostsBar=false;
-  }
-  if (showNewPostsBar) {
+  if (event.getResult() == ReaderActions.UpdateResult.HAS_NEW && event.getAction() == UpdateAction.REQUEST_NEWER && getPostListType() == ReaderPostListType.TAG_FOLLOWED && !isPostAdapterEmpty() && mRecyclerView.canScrollUp()) {
     showNewPostsBar();
   }
  else   if (event.getResult().isNewOrChanged()) {
