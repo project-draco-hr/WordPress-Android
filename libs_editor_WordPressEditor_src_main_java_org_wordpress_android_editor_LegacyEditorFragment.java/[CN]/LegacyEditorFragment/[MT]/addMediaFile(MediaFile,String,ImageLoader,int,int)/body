@@ -1,0 +1,50 @@
+{
+  mActivity.runOnUiThread(new Runnable(){
+    @Override public void run(){
+      WPEditImageSpan imageSpan=createWPEditImageSpan(mActivity,mediaFile);
+      Log.e("","xyz appendMediaFile(mContent=" + mContent + ", start;end="+ start+ ";"+ end+ ")");
+      int selectionStart=start;
+      int selectionEnd=end;
+      if (selectionStart > selectionEnd) {
+        int temp=selectionEnd;
+        selectionEnd=selectionStart;
+        selectionStart=temp;
+      }
+      imageSpan.setPosition(selectionStart,selectionEnd);
+      int line, column=0;
+      if (mContentEditText.getLayout() != null) {
+        line=mContentEditText.getLayout().getLineForOffset(selectionStart);
+        column=selectionStart - mContentEditText.getLayout().getLineStart(line);
+      }
+      Editable s=mContentEditText.getText();
+      if (s == null) {
+        return;
+      }
+      WPImageSpan[] imageSpans=s.getSpans(selectionStart,selectionEnd,WPImageSpan.class);
+      if (imageSpans.length != 0) {
+        s.insert(selectionEnd,"\n\n");
+        selectionStart=selectionStart + 2;
+        selectionEnd=selectionEnd + 2;
+      }
+ else       if (column != 0) {
+        s.insert(selectionEnd,"\n");
+        selectionStart=selectionStart + 1;
+        selectionEnd=selectionEnd + 1;
+      }
+      if (mediaFile.getFileURL() == null) {
+        mediaFile.setFileURL(imageUrl);
+      }
+      imageSpan.setMediaFile(mediaFile);
+      s.insert(selectionStart," ");
+      s.setSpan(imageSpan,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+      AlignmentSpan.Standard as=new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER);
+      s.setSpan(as,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+      s.insert(selectionEnd + 1,"\n\n");
+      mEditorFragmentListener.saveMediaFile(mediaFile);
+      if (mediaFile.getFileURL() != null && imageLoader != null) {
+        loadWPImageSpanThumbnail(mediaFile,imageUrl,imageLoader);
+      }
+    }
+  }
+);
+}

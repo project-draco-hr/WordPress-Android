@@ -6,6 +6,7 @@
     actionBar.setElevation(0.0f);
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
+  FragmentManager fragmentManager=getFragmentManager();
   Bundle extras=getIntent().getExtras();
   String action=getIntent().getAction();
   if (savedInstanceState == null) {
@@ -39,14 +40,21 @@
       return;
     }
   }
- else   if (savedInstanceState.containsKey(STATE_KEY_ORIGINAL_POST)) {
-    try {
-      mPost=(Post)savedInstanceState.getSerializable(STATE_KEY_CURRENT_POST);
-      mOriginalPost=(Post)savedInstanceState.getSerializable(STATE_KEY_ORIGINAL_POST);
+ else {
+    if (savedInstanceState.containsKey(STATE_KEY_ORIGINAL_POST)) {
+      try {
+        mPost=(Post)savedInstanceState.getSerializable(STATE_KEY_CURRENT_POST);
+        mOriginalPost=(Post)savedInstanceState.getSerializable(STATE_KEY_ORIGINAL_POST);
+      }
+ catch (      ClassCastException e) {
+        mPost=null;
+      }
     }
- catch (    ClassCastException e) {
-      mPost=null;
-    }
+    mEditorFragment=(EditorFragmentAbstract)fragmentManager.getFragment(savedInstanceState,"test-fragment");
+  }
+  test=mEditorFragment == null;
+  if (!test) {
+    mEditorFragment.setImageLoader(WordPress.imageLoader);
   }
   if (WordPress.getCurrentBlog() == null) {
     showErrorAndFinish(R.string.blog_not_found);
@@ -60,7 +68,7 @@
     trackEditorCreatedPost(action,getIntent());
   }
   setTitle(StringUtils.unescapeHTML(WordPress.getCurrentBlog().getBlogName()));
-  mSectionsPagerAdapter=new SectionsPagerAdapter(getFragmentManager());
+  mSectionsPagerAdapter=new SectionsPagerAdapter(fragmentManager);
   mViewPager=(WPViewPager)findViewById(R.id.pager);
   mViewPager.setAdapter(mSectionsPagerAdapter);
   mViewPager.setOffscreenPageLimit(2);
