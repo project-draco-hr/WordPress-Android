@@ -1,40 +1,8 @@
 {
   if (result) {
-    if (mPosts.size() == 0) {
-      mPosts.addAll(allPosts);
-      notifyDataSetChanged();
-    }
- else {
-      boolean anyRemoved=false;
-      for (      ReaderPost post : mPosts) {
-        if (allPosts.indexOfPost(post) == -1) {
-          anyRemoved=true;
-          mPosts.clear();
-          mPosts.addAll(allPosts);
-          notifyDataSetChanged();
-          break;
-        }
-      }
-      if (!anyRemoved) {
-        int addIndex=0;
-        int index;
-        for (        ReaderPost post : allPosts) {
-          index=mPosts.indexOfPost(post);
-          if (index == -1) {
-            mPosts.add(addIndex,post);
-            notifyItemInserted(addIndex);
-            addIndex++;
-          }
- else {
-            addIndex=index + 1;
-            if (!post.isSamePost(mPosts.get(index))) {
-              mPosts.set(index,post);
-              notifyItemChanged(index);
-            }
-          }
-        }
-      }
-    }
+    mPosts.clear();
+    mPosts.addAll(allPosts);
+    notifyDataSetChanged();
   }
   if (mDataLoadedListener != null) {
     mDataLoadedListener.onDataLoaded(isEmpty());
