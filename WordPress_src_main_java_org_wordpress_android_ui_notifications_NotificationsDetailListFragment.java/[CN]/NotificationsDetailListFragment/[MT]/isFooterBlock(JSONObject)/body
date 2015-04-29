@@ -1,7 +1,10 @@
 {
   if (mNote == null || blockObject == null)   return false;
   if (mNote.isCommentType()) {
-    return (TextUtils.isEmpty(JSONUtils.queryJSON(blockObject,"type","")) && mNote.getCommentReplyId() == JSONUtils.queryJSON(blockObject,"ranges[1].id",0));
+    return (JSONUtils.queryJSON(blockObject,"type",null) == null && mNote.getCommentReplyId() == JSONUtils.queryJSON(blockObject,"ranges[1].id",0));
+  }
+ else   if (mNote.isFollowType() || mNote.isLikeType()) {
+    return JSONUtils.queryJSON(blockObject,"type",null) == null;
   }
   return false;
 }

@@ -1,12 +1,12 @@
 {
-  if (subject == null) {
+  if (blockObject == null) {
     return new SpannableStringBuilder();
   }
-  String text=subject.optString("text","");
+  String text=blockObject.optString("text","");
   SpannableStringBuilder spannableStringBuilder=new SpannableStringBuilder(text);
   boolean shouldLink=onNoteBlockTextClickListener != null;
-  addImageSpansForBlockMedia(textView,subject,spannableStringBuilder);
-  JSONArray rangesArray=subject.optJSONArray("ranges");
+  addImageSpansForBlockMedia(textView,blockObject,spannableStringBuilder);
+  JSONArray rangesArray=blockObject.optJSONArray("ranges");
   if (rangesArray != null) {
     JSONObject noticonRange=null;
     for (int i=0; i < rangesArray.length(); i++) {
@@ -20,7 +20,7 @@
         }
         continue;
       }
-      NoteBlockClickableSpan clickableSpan=new NoteBlockClickableSpan(WordPress.getContext(),rangeObject,shouldLink){
+      NoteBlockClickableSpan clickableSpan=new NoteBlockClickableSpan(WordPress.getContext(),rangeObject,shouldLink,isFooter){
         @Override public void onClick(        View widget){
           if (onNoteBlockTextClickListener != null) {
             onNoteBlockTextClickListener.onNoteBlockTextClicked(this);
