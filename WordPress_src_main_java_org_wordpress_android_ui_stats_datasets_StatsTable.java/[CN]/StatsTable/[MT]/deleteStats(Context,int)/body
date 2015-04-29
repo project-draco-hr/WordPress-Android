@@ -6,9 +6,9 @@
   SQLiteDatabase db=StatsDatabaseHelper.getWritableDb(ctx);
   try {
     db.beginTransaction();
-    int rowDeleted=db.delete(TABLE_NAME,"blogID=? AND timestamp < ?",new String[]{Integer.toString(blogId),Long.toString(timestamp)});
+    int rowDeleted=db.delete(TABLE_NAME,"blogID=?",new String[]{Integer.toString(blogId)});
     db.setTransactionSuccessful();
-    AppLog.d(AppLog.T.STATS,"Old stats for localBlogID " + blogId);
+    AppLog.d(AppLog.T.STATS,"Stats deleted for localBlogID " + blogId);
     return rowDeleted > 1;
   }
   finally {

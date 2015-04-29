@@ -8,7 +8,16 @@
   Cursor cursor=StatsDatabaseHelper.getReadableDb(ctx).rawQuery(sql,args);
   try {
     if (cursor != null && cursor.moveToFirst()) {
-      int timestamp=cursor.getInt(cursor.getColumnIndex("timestamp"));
+      long timestamp=cursor.getLong(cursor.getColumnIndex("timestamp"));
+      long currentTime=System.currentTimeMillis();
+      long deltaMS=currentTime - timestamp;
+      if (deltaMS < 0) {
+        return null;
+      }
+      deltaMS=deltaMS / 1000;
+      if ((deltaMS / 60) > CACHE_TTL_MINUTES) {
+        return null;
+      }
       String jsonData=(cursor.getString(cursor.getColumnIndex("jsonData")));
       return jsonData;
     }
