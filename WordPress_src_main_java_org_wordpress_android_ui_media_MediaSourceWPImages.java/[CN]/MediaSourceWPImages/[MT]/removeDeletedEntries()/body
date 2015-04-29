@@ -1,5 +1,6 @@
 {
   final List<MediaItem> existingItems=new ArrayList<>(mMediaItems);
+  final List<MediaItem> failedItems=new ArrayList<>();
   for (  final MediaItem mediaItem : existingItems) {
     LimitedBackgroundOperation<MediaItem,Void,MediaItem> backgroundCheck=new LimitedBackgroundOperation<MediaItem,Void,MediaItem>(){
       private int responseCode;
@@ -20,15 +21,18 @@
       }
       @Override public void performPostExecute(      MediaItem result){
         if (mListener != null && result != null) {
-          List<MediaItem> resultList=new ArrayList<>();
-          resultList.add(result);
           if (responseCode == 200) {
             mVerifiedItems.add(result);
+            List<MediaItem> resultList=new ArrayList<>();
+            resultList.add(result);
             if ((existingItems.size() - mVerifiedItems.size()) % 3 == 0) {
               mListener.onMediaAdded(MediaSourceWPImages.this,resultList);
             }
           }
-          if (existingItems.indexOf(mediaItem) == existingItems.size() - 1) {
+ else {
+            failedItems.add(result);
+          }
+          if ((failedItems.size() + mVerifiedItems.size()) == existingItems.size()) {
             mListener.onMediaLoaded(true);
           }
         }
