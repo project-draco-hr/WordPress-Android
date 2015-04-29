@@ -1,0 +1,25 @@
+{
+  WordPress.wpDB.getDatabase().beginTransaction();
+  try {
+    WordPress.wpDB.setAllDotComBlogsVisibility(true);
+    boolean skippedCurrentSite=false;
+    String currentSiteName=null;
+    SiteList hiddenSites=getAdapter().getHiddenSites();
+    for (    SiteRecord site : hiddenSites) {
+      if (site.localId == mCurrentLocalId) {
+        skippedCurrentSite=true;
+        currentSiteName=site.getBlogNameOrHostName();
+      }
+ else {
+        WordPress.wpDB.setDotComBlogsVisibility(site.localId,false);
+      }
+    }
+    if (skippedCurrentSite) {
+      ToastUtils.showToast(this,getString(R.string.site_picker_cant_hide_current_site,currentSiteName),ToastUtils.Duration.LONG);
+    }
+    WordPress.wpDB.getDatabase().setTransactionSuccessful();
+  }
+  finally {
+    WordPress.wpDB.getDatabase().endTransaction();
+  }
+}

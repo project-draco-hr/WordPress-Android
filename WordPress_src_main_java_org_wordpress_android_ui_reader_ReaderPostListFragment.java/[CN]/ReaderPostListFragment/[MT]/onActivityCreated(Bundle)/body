@@ -1,7 +1,38 @@
 {
   super.onActivityCreated(savedInstanceState);
-  setHasOptionsMenu(true);
-  setupActionBar();
+  if (hasFragmentToolbar()) {
+    mFragmentToolbar=(Toolbar)getActivity().findViewById(R.id.toolbar_reader);
+    mFragmentToolbar.setVisibility(View.VISIBLE);
+    mFragmentToolbar.inflateMenu(R.menu.reader_list);
+    mFragmentToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener(){
+      @Override public boolean onMenuItemClick(      MenuItem menuItem){
+        if (menuItem.getItemId() == R.id.menu_tags) {
+          ReaderActivityLauncher.showReaderSubsForResult(getActivity());
+          return true;
+        }
+        return false;
+      }
+    }
+);
+    mRecyclerView.setScrollDirectionListener(new ScrollDirectionListener(){
+      @Override public void onScrollUp(){
+        showFragmentToolbar(true);
+        checkSwipeToRefresh();
+      }
+      @Override public void onScrollDown(){
+        showFragmentToolbar(false);
+        checkSwipeToRefresh();
+      }
+      @Override public void onScrollCompleted(){
+        checkSwipeToRefresh();
+      }
+    }
+);
+    if (mSpinner == null) {
+      enableTagSpinner(mFragmentToolbar);
+    }
+    selectTagInSpinner(getCurrentTag());
+  }
   boolean adapterAlreadyExists=hasPostAdapter();
   mRecyclerView.setAdapter(getPostAdapter());
   if (!adapterAlreadyExists && getPostListType().isTagType()) {

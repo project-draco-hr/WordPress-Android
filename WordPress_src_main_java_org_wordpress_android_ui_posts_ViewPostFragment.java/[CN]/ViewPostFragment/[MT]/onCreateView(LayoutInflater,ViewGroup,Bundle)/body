@@ -15,17 +15,16 @@
   mEditComment=(SuggestionAutoCompleteText)mLayoutCommentBox.findViewById(R.id.edit_comment);
   mEditComment.setHint(R.string.reader_hint_comment_on_post);
   if (WordPress.currentPost != null && WordPress.getCurrentRemoteBlogId() != -1) {
-    mEditComment.getAutoSaveTextHelper().setUniqueId(String.format("%s%d%s",WordPress.getLoggedInUsername(getActivity(),WordPress.getCurrentBlog()),WordPress.getCurrentRemoteBlogId(),WordPress.currentPost.getRemotePostId()));
+    mEditComment.getAutoSaveTextHelper().setUniqueId(String.format("%s%d%s",AccountHelper.getCurrentUsernameForBlog(WordPress.getCurrentBlog()),WordPress.getCurrentRemoteBlogId(),WordPress.currentPost.getRemotePostId()));
   }
   ImageButton editPostButton=(ImageButton)v.findViewById(R.id.editPost);
   editPostButton.setOnClickListener(new ImageButton.OnClickListener(){
     public void onClick(    View v){
       if (WordPress.currentPost != null && !mParentActivity.isRefreshing()) {
         mOnDetailPostActionListener.onDetailPostAction(PostsActivity.POST_EDIT,WordPress.currentPost);
-        Intent i=new Intent(getActivity().getApplicationContext(),EditPostActivity.class);
-        i.putExtra(EditPostActivity.EXTRA_IS_PAGE,WordPress.currentPost.isPage());
-        i.putExtra(EditPostActivity.EXTRA_POSTID,WordPress.currentPost.getLocalTablePostId());
-        getActivity().startActivityForResult(i,PostsActivity.ACTIVITY_EDIT_POST);
+        long postId=WordPress.currentPost.getLocalTablePostId();
+        boolean isPage=WordPress.currentPost.isPage();
+        ActivityLauncher.editBlogPostOrPageForResult(getActivity(),postId,isPage);
       }
     }
   }

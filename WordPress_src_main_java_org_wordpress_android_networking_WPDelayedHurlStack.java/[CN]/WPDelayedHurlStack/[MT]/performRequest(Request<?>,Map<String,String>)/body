@@ -5,8 +5,8 @@
       String auth="Basic " + Base64.encodeToString(creds.getBytes(),Base64.DEFAULT);
       additionalHeaders.put("Authorization",auth);
     }
-    if (StringUtils.getHost(request.getUrl()).endsWith("files.wordpress.com") && mCtx != null && WordPress.getWPComAuthToken(mCtx) != null) {
-      additionalHeaders.put("Authorization","Bearer " + WordPress.getWPComAuthToken(mCtx));
+    if (StringUtils.getHost(request.getUrl()).endsWith("files.wordpress.com") && mCtx != null && AccountHelper.getDefaultAccount().hasAccessToken()) {
+      additionalHeaders.put("Authorization","Bearer " + AccountHelper.getDefaultAccount().getAccessToken());
     }
   }
   additionalHeaders.put("User-Agent",WordPress.getUserAgent());

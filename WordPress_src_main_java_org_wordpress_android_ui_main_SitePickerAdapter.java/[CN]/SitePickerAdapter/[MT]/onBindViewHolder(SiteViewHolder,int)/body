@@ -1,0 +1,33 @@
+{
+  SiteRecord site=getItem(position);
+  holder.txtTitle.setText(site.blogName);
+  holder.txtDomain.setText(site.hostName);
+  holder.imgBlavatar.setErrorImageResId(site.isDotCom ? R.drawable.blavatar_placeholder_com : R.drawable.blavatar_placeholder_org);
+  holder.imgBlavatar.setImageUrl(site.blavatarUrl,WPNetworkImageView.ImageType.BLAVATAR);
+  holder.itemView.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View view){
+      if (mIsMultiSelectEnabled) {
+        toggleSelection(position);
+      }
+ else       if (mSiteSelectedListener != null) {
+        mSiteSelectedListener.onSiteClick(getItem(position));
+      }
+    }
+  }
+);
+  if (site.localId == mCurrentLocalId) {
+    holder.layoutContainer.setBackgroundDrawable(mCurrentItemBackground);
+  }
+ else   if (mIsMultiSelectEnabled && isItemSelected(position)) {
+    holder.layoutContainer.setBackgroundDrawable(mSelectedItemBackground);
+  }
+ else {
+    holder.layoutContainer.setBackgroundDrawable(null);
+  }
+  if (holder.isSiteHidden == null || holder.isSiteHidden != site.isHidden) {
+    holder.isSiteHidden=site.isHidden;
+    holder.txtTitle.setTextColor(site.isHidden ? mTextColorHidden : mTextColorNormal);
+    holder.txtTitle.setTypeface(holder.txtTitle.getTypeface(),site.isHidden ? Typeface.NORMAL : Typeface.BOLD);
+    holder.imgBlavatar.setAlpha(site.isHidden ? 0.5f : 1f);
+  }
+}

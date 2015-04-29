@@ -1,6 +1,10 @@
 {
-  int itemId=item.getItemId();
-  if (itemId == R.id.menu_new_media) {
+  int i=item.getItemId();
+  if (i == android.R.id.home) {
+    onBackPressed();
+    return true;
+  }
+ else   if (i == R.id.menu_new_media) {
     View view=findViewById(R.id.menu_new_media);
     if (view != null) {
       int y_offset=getResources().getDimensionPixelSize(R.dimen.action_bar_spinner_y_offset);
@@ -14,7 +18,7 @@
     }
     return true;
   }
- else   if (itemId == R.id.menu_search) {
+ else   if (i == R.id.menu_search) {
     mSearchMenuItem=item;
     mSearchMenuItem.setOnActionExpandListener(this);
     mSearchMenuItem.expandActionView();
@@ -26,7 +30,7 @@
     }
     return true;
   }
- else   if (itemId == R.id.menu_edit_media) {
+ else   if (i == R.id.menu_edit_media) {
     String mediaId=mMediaItemFragment.getMediaId();
     FragmentManager fm=getFragmentManager();
     if (mMediaEditFragment == null || !mMediaEditFragment.isInLayout()) {
@@ -36,9 +40,6 @@
       ft.add(R.id.media_browser_container,mMediaEditFragment,MediaEditFragment.TAG);
       ft.addToBackStack(null);
       ft.commit();
-      if (getDrawerToggle() != null) {
-        getDrawerToggle().setDrawerIndicatorEnabled(false);
-      }
     }
  else {
       mMediaEditFragment.loadMedia(mediaId);
@@ -46,6 +47,7 @@
     if (mSearchView != null) {
       mSearchView.clearFocus();
     }
+    return true;
   }
   return super.onOptionsItemSelected(item);
 }
