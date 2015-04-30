@@ -10,6 +10,7 @@
   CommentTable.createTables(db);
   SuggestionTable.createTables(db);
   int currentVersion=db.getVersion();
+  boolean isNewInstall=(currentVersion == 0);
 switch (currentVersion) {
 case 0:
     currentVersion++;
@@ -93,7 +94,9 @@ removeDotComCredentials();
 currentVersion++;
 case 29:
 AccountTable.createTables(db);
+if (!isNewInstall) {
 migratePreferencesToAccountTable(context);
+}
 currentVersion++;
 }
 db.setVersion(DATABASE_VERSION);
