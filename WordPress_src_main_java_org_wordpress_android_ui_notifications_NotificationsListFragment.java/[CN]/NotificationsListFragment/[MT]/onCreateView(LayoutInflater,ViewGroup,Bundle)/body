@@ -1,7 +1,7 @@
 {
   View view=inflater.inflate(R.layout.notifications_fragment_notes_list,container,false);
   mRecyclerView=(RecyclerView)view.findViewById(R.id.recycler_view_notes);
-  mEmptyTextView=(TextView)view.findViewById(R.id.empty_view);
+  mEmptyView=(ViewGroup)view.findViewById(R.id.empty_view);
   RecyclerView.ItemAnimator animator=new DefaultItemAnimator();
   animator.setSupportsChangeAnimations(true);
   mRecyclerView.setItemAnimator(animator);
@@ -23,18 +23,10 @@
   }
  else {
     if (!AccountHelper.getDefaultAccount().isWordPressComUser()) {
-      showEmptyView(R.string.notifications_account_required);
-      int color=view.getResources().getColor(R.color.reader_hyperlink);
-      mEmptyTextView.setTextColor(color);
-      mEmptyTextView.setOnClickListener(new View.OnClickListener(){
-        @Override public void onClick(        View v){
-          ActivityLauncher.showSignInForResult(getActivity());
-        }
-      }
-);
+      showEmptyView(R.string.notifications_account_required,true);
     }
  else {
-      showEmptyView(R.string.error_refresh_notifications);
+      showEmptyView(R.string.error_refresh_notifications,false);
     }
   }
   return view;
