@@ -8,16 +8,9 @@
   addImageSpansForBlockMedia(textView,blockObject,spannableStringBuilder);
   JSONArray rangesArray=blockObject.optJSONArray("ranges");
   if (rangesArray != null) {
-    JSONObject noticonRange=null;
     for (int i=0; i < rangesArray.length(); i++) {
       JSONObject rangeObject=rangesArray.optJSONObject(i);
       if (rangeObject == null) {
-        continue;
-      }
-      if (NoteBlockRangeType.fromString(rangeObject.optString("type")) == NoteBlockRangeType.NOTICON) {
-        if (shouldAddNoticons) {
-          noticonRange=rangeObject;
-        }
         continue;
       }
       NoteBlockClickableSpan clickableSpan=new NoteBlockClickableSpan(WordPress.getContext(),rangeObject,shouldLink,isFooter){
@@ -36,13 +29,6 @@
           spannableStringBuilder.setSpan(styleSpan,indices[0],indices[1],Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         }
       }
-    }
-    if (noticonRange != null) {
-      NoticonTypefaceSpan noticonSpan=new NoticonTypefaceSpan(WordPress.getContext());
-      int[] indices=getIndicesForRange(noticonRange);
-      String noticonGlyph=noticonRange.optString("value"," ") + " ";
-      spannableStringBuilder.insert(indices[0],noticonGlyph);
-      spannableStringBuilder.setSpan(noticonSpan,indices[0],indices[0] + 2,Spannable.SPAN_INCLUSIVE_INCLUSIVE);
     }
   }
   return spannableStringBuilder;
