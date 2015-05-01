@@ -6,6 +6,19 @@
     actionBar.setHomeButtonEnabled(true);
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
+  if (savedInstanceState != null) {
+    mCurrentLocalId=savedInstanceState.getInt(KEY_LOCAL_ID);
+  }
+ else   if (getIntent() != null) {
+    mCurrentLocalId=getIntent().getIntExtra(KEY_LOCAL_ID,0);
+  }
+  Button btnAddSite=(Button)findViewById(R.id.btn_add);
+  btnAddSite.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      addSite();
+    }
+  }
+);
   RecyclerView recycler=(RecyclerView)findViewById(R.id.recycler_view);
   recycler.setLayoutManager(new LinearLayoutManager(this));
   recycler.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL_LIST));

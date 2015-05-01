@@ -6,30 +6,23 @@
   holder.imgBlavatar.setImageUrl(site.blavatarUrl,WPNetworkImageView.ImageType.BLAVATAR);
   holder.itemView.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View view){
-      if (mSiteSelectedListener != null) {
-        mSiteSelectedListener.onSiteClick(getItem(position));
-      }
       if (mIsMultiSelectEnabled) {
         toggleSelection(position);
       }
-    }
-  }
-);
-  holder.itemView.setOnLongClickListener(new View.OnLongClickListener(){
-    @Override public boolean onLongClick(    View v){
-      if (!mIsMultiSelectEnabled && mCanEnableMultiSelect) {
-        if (mMultiSelectListener != null) {
-          mMultiSelectListener.onMultiSelectEnabled();
-        }
-        setEnableMultiSelect(true);
-        setItemSelected(position,true);
+ else       if (mSiteSelectedListener != null) {
+        mSiteSelectedListener.onSiteClick(getItem(position));
       }
-      return true;
     }
   }
 );
-  if (mIsMultiSelectEnabled) {
-    holder.layoutContainer.setBackgroundDrawable(isItemSelected(position) ? mSelectedItemBackground : null);
+  if (site.localId == mCurrentLocalId) {
+    holder.layoutContainer.setBackgroundDrawable(mCurrentItemBackground);
+  }
+ else   if (mIsMultiSelectEnabled && isItemSelected(position)) {
+    holder.layoutContainer.setBackgroundDrawable(mSelectedItemBackground);
+  }
+ else {
+    holder.layoutContainer.setBackgroundDrawable(null);
   }
   if (holder.isSiteHidden == null || holder.isSiteHidden != site.isHidden) {
     holder.isSiteHidden=site.isHidden;
