@@ -1,6 +1,7 @@
 {
   View view=inflater.inflate(R.layout.notifications_fragment_notes_list,container,false);
   mRecyclerView=(RecyclerView)view.findViewById(R.id.recycler_view_notes);
+  mEmptyView=(ViewGroup)view.findViewById(R.id.empty_view);
   RecyclerView.ItemAnimator animator=new DefaultItemAnimator();
   animator.setSupportsChangeAnimations(true);
   mRecyclerView.setItemAnimator(animator);
@@ -21,21 +22,12 @@
     mRecyclerView.setAdapter(mNotesAdapter);
   }
  else {
-    ToastUtils.showToast(getActivity(),R.string.error_refresh_notifications);
-  }
-  mEmptyTextView=(TextView)view.findViewById(R.id.empty_view);
-  mFauxSwipeToRefreshHelper=new SwipeToRefreshHelper(getActivity(),(CustomSwipeRefreshLayout)view.findViewById(R.id.ptr_layout),new SwipeToRefreshHelper.RefreshListener(){
-    @Override public void onRefreshStarted(){
-      new Handler().postDelayed(new Runnable(){
-        @Override public void run(){
-          if (isAdded()) {
-            mFauxSwipeToRefreshHelper.setRefreshing(false);
-          }
-        }
-      }
-,2000);
+    if (!AccountHelper.getDefaultAccount().isWordPressComUser()) {
+      showEmptyView(R.string.notifications_account_required,true);
+    }
+ else {
+      showEmptyView(R.string.error_refresh_notifications,false);
     }
   }
-);
   return view;
 }
