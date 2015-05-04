@@ -1,0 +1,16 @@
+{
+  new Thread(){
+    @Override public void run(){
+      if (jsonObject == null) {
+        return;
+      }
+      JSONArray jsonTags=jsonObject.optJSONArray("tags");
+      List<Tag> tags=Tag.tagListFromJSON(jsonTags,remoteBlogId);
+      if (tags != null) {
+        SuggestionTable.insertTagsForSite(remoteBlogId,tags);
+        EventBus.getDefault().post(new SuggestionEvents.SuggestionTagListUpdated(remoteBlogId));
+      }
+    }
+  }
+.start();
+}

@@ -36,13 +36,14 @@
             continue;
           }
           if (mediaId.equals(mediaFile.getMediaId()) && !is.isNetworkImageLoaded()) {
-            int spanStart=s.getSpanStart(is);
-            int spanEnd=s.getSpanEnd(is);
+            int spanStart=is.getStartPosition();
+            int spanEnd=is.getEndPosition();
             WPEditImageSpan imageSpan=new WPEditImageSpan(getActivity(),resizedBitmap,is.getImageSource());
             imageSpan.setMediaFile(is.getMediaFile());
             imageSpan.setNetworkImageLoaded(true);
+            imageSpan.setPosition(spanStart,spanEnd);
             s.removeSpan(is);
-            s.setSpan(imageSpan,spanStart,spanEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            s.setSpan(imageSpan,spanStart,spanEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             break;
           }
         }
