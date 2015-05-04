@@ -1,0 +1,23 @@
+{
+  if (mCurrentlyRequestingTagsSiteIds.contains(remoteBlogId)) {
+    return;
+  }
+  mCurrentlyRequestingTagsSiteIds.add(remoteBlogId);
+  RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      handleTagsUpdatedResponse(remoteBlogId,jsonObject);
+      removeSiteIdFromTagRequestsAndStopServiceIfNecessary(remoteBlogId);
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(AppLog.T.SUGGESTION,volleyError);
+      removeSiteIdFromTagRequestsAndStopServiceIfNecessary(remoteBlogId);
+    }
+  }
+;
+  AppLog.d(AppLog.T.SUGGESTION,"suggestion service > updating tags for siteId: " + remoteBlogId);
+  String path="/sites/" + remoteBlogId + "/tags";
+  WordPress.getRestClientUtils().get(path,listener,errorListener);
+}
