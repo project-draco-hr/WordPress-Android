@@ -1,0 +1,22 @@
+{
+  try {
+    SelfSignedSSLCertsManager.getInstance(context).emptyLocalKeyStoreFile();
+  }
+ catch (  GeneralSecurityException e) {
+    AppLog.e(T.UTILS,"Error while cleaning the Local KeyStore File",e);
+  }
+catch (  IOException e) {
+    AppLog.e(T.UTILS,"Error while cleaning the Local KeyStore File",e);
+  }
+  flushHttpCache();
+  removeWpComUserRelatedData(context);
+  if (!AccountHelper.isSignedIn()) {
+    AnalyticsTracker.endSession(false);
+    AnalyticsTracker.clearAllData();
+    AbstractAppLock appLock=AppLockManager.getInstance().getCurrentAppLock();
+    if (appLock != null) {
+      appLock.setPassword(null);
+    }
+  }
+  EventBus.getDefault().post(new UserSignedOutWordPressCom());
+}
