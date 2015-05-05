@@ -1,5 +1,12 @@
 {
   if (isFinishing() || getIntent() == null)   return;
+  if (getIntent().hasExtra(NotificationsUtils.ARG_PUSH_AUTH_TOKEN)) {
+    Bundle extras=getIntent().getExtras();
+    String token=extras.getString(NotificationsUtils.ARG_PUSH_AUTH_TOKEN,"");
+    String title=extras.getString(NotificationsUtils.ARG_PUSH_AUTH_TITLE,"");
+    String message=extras.getString(NotificationsUtils.ARG_PUSH_AUTH_MESSAGE,"");
+    NotificationsUtils.showPushAuthAlert(this,token,title,message);
+  }
   mViewPager.setCurrentItem(WPMainTabAdapter.TAB_NOTIFS);
   String noteId=getIntent().getStringExtra(NotificationsListFragment.NOTE_ID_EXTRA);
   boolean shouldShowKeyboard=getIntent().getBooleanExtra(NotificationsListFragment.NOTE_INSTANT_REPLY_EXTRA,false);
