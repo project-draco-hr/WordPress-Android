@@ -5,13 +5,15 @@ case RequestCodes.READER_SUBS:
 case RequestCodes.READER_REBLOG:
     ReaderPostListFragment readerFragment=getReaderListFragment();
   if (readerFragment != null) {
+    readerFragment.onActivityResult(requestCode,resultCode,data);
   }
 break;
 case RequestCodes.ADD_ACCOUNT:
 if (resultCode == RESULT_OK) {
 WordPress.registerForCloudMessaging(this);
+resetFragments();
 }
- else {
+ else if (!AccountHelper.isSignedIn()) {
 finish();
 }
 break;
@@ -21,14 +23,6 @@ ActivityLauncher.showSignInForResult(this);
 }
  else {
 WordPress.registerForCloudMessaging(this);
-}
-break;
-case RequestCodes.SETTINGS:
-if (AccountHelper.isSignedIn()) {
-WordPress.registerForCloudMessaging(this);
-}
- else {
-ActivityLauncher.showSignInForResult(this);
 }
 break;
 case RequestCodes.NOTE_DETAIL:
@@ -44,6 +38,19 @@ WordPress.wpDB.updateLastBlogId(localId);
 MySiteFragment mySiteFragment=getMySiteFragment();
 if (mySiteFragment != null) {
 mySiteFragment.setBlog(blog);
+}
+}
+break;
+case RequestCodes.BLOG_SETTINGS:
+if (resultCode == BlogPreferencesActivity.RESULT_BLOG_REMOVED) {
+if (!AccountHelper.isSignedIn()) {
+ActivityLauncher.showSignInForResult(this);
+}
+ else {
+MySiteFragment mySiteFragment=getMySiteFragment();
+if (mySiteFragment != null) {
+mySiteFragment.setBlog(WordPress.getCurrentBlog());
+}
 }
 }
 break;
