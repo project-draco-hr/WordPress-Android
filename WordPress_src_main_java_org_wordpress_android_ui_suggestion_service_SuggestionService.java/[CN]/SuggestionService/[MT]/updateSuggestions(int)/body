@@ -1,19 +1,19 @@
 {
-  if (mCurrentlyRequestingSiteIds.contains(remoteBlogId)) {
+  if (mCurrentlyRequestingSuggestionsSiteIds.contains(remoteBlogId)) {
     return;
   }
-  mCurrentlyRequestingSiteIds.add(remoteBlogId);
+  mCurrentlyRequestingSuggestionsSiteIds.add(remoteBlogId);
   RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       handleSuggestionsUpdatedResponse(remoteBlogId,jsonObject);
-      removeSiteIdFromRequestsAndStopServiceIfNecessary(remoteBlogId);
+      removeSiteIdFromSuggestionRequestsAndStopServiceIfNecessary(remoteBlogId);
     }
   }
 ;
   RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.e(AppLog.T.SUGGESTION,volleyError);
-      removeSiteIdFromRequestsAndStopServiceIfNecessary(remoteBlogId);
+      removeSiteIdFromSuggestionRequestsAndStopServiceIfNecessary(remoteBlogId);
     }
   }
 ;

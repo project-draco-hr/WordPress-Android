@@ -2,4 +2,20 @@
   HashMap<String,Boolean> config=new HashMap<String,Boolean>();
   config.put("enableInAppNotification",false);
   Helpshift.install(application,BuildConfig.HELPSHIFT_API_KEY,BuildConfig.HELPSHIFT_API_DOMAIN,BuildConfig.HELPSHIFT_API_ID,config);
+  Helpshift.setDelegate(new HelpshiftDelegate(){
+    @Override public void helpshiftSessionBegan(){
+    }
+    @Override public void helpshiftSessionEnded(){
+    }
+    @Override public void newConversationStarted(    String s){
+    }
+    @Override public void userRepliedToConversation(    String s){
+      AnalyticsTracker.track(Stat.SUPPORT_SENT_REPLY_TO_SUPPORT_MESSAGE);
+    }
+    @Override public void userCompletedCustomerSatisfactionSurvey(    int i,    String s){
+    }
+    @Override public void displayAttachmentFile(    File file){
+    }
+  }
+);
 }
