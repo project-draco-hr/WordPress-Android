@@ -18,8 +18,17 @@
               AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNED_INTO_JETPACK);
               AnalyticsTracker.track(AnalyticsTracker.Stat.PERFORMED_JETPACK_SIGN_IN_FROM_STATS_SCREEN);
               if (!isFinishing()) {
-                mSwipeToRefreshHelper.setRefreshing(true);
-                refreshStats(StatsTimeframe.DAY,StatsUtils.getCurrentDateTZ(mLocalBlogID),true,true);
+                return;
+              }
+              if (NetworkUtils.checkConnection(StatsActivity.this)) {
+                handler.post(new Runnable(){
+                  @Override public void run(){
+                    mSwipeToRefreshHelper.setRefreshing(true);
+                    mRequestedDate=StatsUtils.getCurrentDateTZ(mLocalBlogID);
+                    createFragments(true);
+                  }
+                }
+);
               }
             }
           }
@@ -37,7 +46,8 @@
 ,"wp.getOptions",params);
       }
  else {
-        refreshStats(mCurrentTimeframe,StatsUtils.getCurrentDateTZ(mLocalBlogID),true,true);
+        mRequestedDate=StatsUtils.getCurrentDateTZ(mLocalBlogID);
+        createFragments(true);
       }
       mSwipeToRefreshHelper.setRefreshing(true);
     }

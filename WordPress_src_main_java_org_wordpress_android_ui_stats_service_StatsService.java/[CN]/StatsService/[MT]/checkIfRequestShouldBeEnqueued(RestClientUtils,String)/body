@@ -1,0 +1,11 @@
+{
+  String absoluteRequestPath=restClientUtils.getRestClient().getAbsoluteURL(path);
+  Iterator<Request<JSONObject>> it=mStatsNetworkRequests.iterator();
+  while (it.hasNext()) {
+    Request<JSONObject> req=it.next();
+    if (!req.hasHadResponseDelivered() && !req.isCanceled() && absoluteRequestPath.equals(req.getOriginUrl())) {
+      return false;
+    }
+  }
+  return true;
+}

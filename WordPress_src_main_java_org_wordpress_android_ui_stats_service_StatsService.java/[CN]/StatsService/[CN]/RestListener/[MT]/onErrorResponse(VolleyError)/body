@@ -1,18 +1,11 @@
 {
-  if (mServiceBlogId == null || !mServiceBlogId.equals(mRequestBlogId)) {
-    return;
-  }
-  parseResponseExecutor.submit(new Thread(){
+  singleThreadNetworkHandler.submit(new Thread(){
     @Override public void run(){
-      if (mServiceBlogId == null || !mServiceBlogId.equals(mRequestBlogId)) {
-        return;
-      }
-      mNumberOfFinishedNetworkCalls++;
       AppLog.e(T.STATS,this.getClass().getName() + " responded with an Error");
       StatsUtils.logVolleyErrorDetails(volleyError);
       mResponseObjectModel=volleyError;
-      EventBus.getDefault().post(new StatsEvents.SectionUpdated(mEndpointName,mResponseObjectModel));
-      checkAllRequestsFinished();
+      EventBus.getDefault().post(new StatsEvents.SectionUpdated(mEndpointName,mRequestBlogId,mTimeframe,mDate,mResponseObjectModel));
+      checkAllRequestsFinished(currentRequest);
     }
   }
 );
