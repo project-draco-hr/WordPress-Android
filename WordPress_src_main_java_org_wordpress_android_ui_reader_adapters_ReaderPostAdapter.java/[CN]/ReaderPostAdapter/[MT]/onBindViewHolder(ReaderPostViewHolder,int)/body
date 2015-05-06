@@ -21,13 +21,18 @@
  else {
       holder.txtBlogName.setText(null);
     }
-    holder.followButton.setIsFollowed(post.isFollowedByCurrentUser);
-    holder.followButton.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View v){
-        toggleFollow((ReaderFollowButton)v,position);
-      }
+    if (mIsLoggedOutReader) {
+      holder.followButton.setVisibility(View.GONE);
     }
+ else {
+      holder.followButton.setIsFollowed(post.isFollowedByCurrentUser);
+      holder.followButton.setOnClickListener(new View.OnClickListener(){
+        @Override public void onClick(        View v){
+          toggleFollow((ReaderFollowButton)v,position);
+        }
+      }
 );
+    }
     holder.imgAvatar.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View view){
         ReaderActivityLauncher.showReaderBlogPreview(view.getContext(),post);
@@ -87,7 +92,9 @@
     holder.likeCount.setVisibility(View.VISIBLE);
     holder.likeCount.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
-        toggleLike(v.getContext(),holder,position);
+        if (!mIsLoggedOutReader) {
+          toggleLike(v.getContext(),holder,position);
+        }
       }
     }
 );
@@ -109,7 +116,7 @@
     holder.commentCount.setVisibility(View.GONE);
     holder.commentCount.setOnClickListener(null);
   }
-  if (post.canReblog()) {
+  if (post.canReblog() && !mIsLoggedOutReader) {
     showReblogStatus(holder.imgBtnReblog,post.isRebloggedByCurrentUser);
     holder.imgBtnReblog.setVisibility(View.VISIBLE);
     if (!post.isRebloggedByCurrentUser) {
@@ -131,7 +138,7 @@
     holder.imgBtnReblog.setVisibility(View.INVISIBLE);
     holder.imgBtnReblog.setOnClickListener(null);
   }
-  if (post.isWP() && !post.isPrivate && postListType == ReaderTypes.ReaderPostListType.TAG_FOLLOWED) {
+  if (!mIsLoggedOutReader && post.isWP() && !post.isPrivate&& postListType == ReaderTypes.ReaderPostListType.TAG_FOLLOWED) {
     holder.imgMore.setVisibility(View.VISIBLE);
     holder.imgMore.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View view){

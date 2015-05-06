@@ -15,13 +15,18 @@
   mRenderer=new ReaderPostRenderer(mReaderWebView,mPost);
   mRenderer.beginRender();
   txtTitle.setText(mPost.hasTitle() ? mPost.getTitle() : getString(R.string.reader_untitled_post));
-  followButton.setIsFollowed(mPost.isFollowedByCurrentUser);
-  followButton.setOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View view){
-      togglePostFollowed();
-    }
+  if (mIsLoggedOutReader) {
+    followButton.setVisibility(View.GONE);
   }
+ else {
+    followButton.setIsFollowed(mPost.isFollowedByCurrentUser);
+    followButton.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        togglePostFollowed();
+      }
+    }
 );
+  }
   if (mPost.hasBlogName()) {
     txtBlogName.setText(mPost.getBlogName());
     txtBlogName.setVisibility(View.VISIBLE);
@@ -57,7 +62,7 @@
     }
 );
   }
-  if (mPost.canReblog()) {
+  if (mPost.canReblog() && !mIsLoggedOutReader) {
     imgBtnReblog.setVisibility(View.VISIBLE);
     imgBtnReblog.setSelected(mPost.isRebloggedByCurrentUser);
     imgBtnReblog.setOnClickListener(new View.OnClickListener(){

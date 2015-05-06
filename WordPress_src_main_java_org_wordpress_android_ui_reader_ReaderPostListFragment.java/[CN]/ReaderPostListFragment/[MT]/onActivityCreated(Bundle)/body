@@ -7,8 +7,12 @@
     mFragmentToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener(){
       @Override public boolean onMenuItemClick(      MenuItem menuItem){
         if (menuItem.getItemId() == R.id.menu_tags) {
-          ReaderActivityLauncher.showReaderSubsForResult(getActivity());
-          return true;
+          if (mIsLoggedOutReader) {
+          }
+ else {
+            ReaderActivityLauncher.showReaderSubsForResult(getActivity());
+            return true;
+          }
         }
         return false;
       }
@@ -42,7 +46,7 @@
       updatePostsWithTag(getCurrentTag(),UpdateAction.REQUEST_NEWER);
     }
   }
-  if (getPostListType().isPreviewType()) {
+  if (getPostListType().isPreviewType() && !mIsLoggedOutReader) {
     createFollowButton();
   }
 switch (getPostListType()) {
