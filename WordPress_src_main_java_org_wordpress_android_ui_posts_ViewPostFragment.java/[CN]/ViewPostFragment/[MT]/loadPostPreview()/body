@@ -2,17 +2,12 @@
   if (WordPress.currentPost != null && !TextUtils.isEmpty(WordPress.currentPost.getPermaLink())) {
     Post post=WordPress.currentPost;
     String url=post.getPermaLink();
-    if (WordPress.getCurrentBlog().isPrivate() || post.isLocalDraft() || post.isLocalChange()|| post.getStatusEnum() != PostStatus.PUBLISHED) {
-      if (-1 == url.indexOf('?')) {
-        url=url.concat("?preview=true");
-      }
- else {
-        url=url.concat("&preview=true");
-      }
-      WPWebViewActivity.openUrlByUsingBlogCredentials(getActivity(),WordPress.currentBlog,url);
+    if (-1 == url.indexOf('?')) {
+      url=url.concat("?preview=true");
     }
  else {
-      WPWebViewActivity.openURL(getActivity(),url);
+      url=url.concat("&preview=true");
     }
+    WPWebViewActivity.openUrlByUsingBlogCredentials(getActivity(),WordPress.currentBlog,url);
   }
 }

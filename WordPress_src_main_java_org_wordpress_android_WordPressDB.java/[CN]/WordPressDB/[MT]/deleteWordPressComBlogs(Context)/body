@@ -1,0 +1,10 @@
+{
+  List<Map<String,Object>> wordPressComBlogs=getBlogsBy("isHidden = 0 AND dotcomFlag = 1",null);
+  for (  Map<String,Object> blog : wordPressComBlogs) {
+    int localBlogId=MapUtils.getMapInt(blog,"id");
+    deleteQuickPressShortcutsForLocalTableBlogId(ctx,localBlogId);
+    deleteAllPostsForLocalTableBlogId(localBlogId);
+  }
+  int rowsAffected=db.delete(BLOGS_TABLE,"dotcomFlag=1",null);
+  return (rowsAffected > 0);
+}
