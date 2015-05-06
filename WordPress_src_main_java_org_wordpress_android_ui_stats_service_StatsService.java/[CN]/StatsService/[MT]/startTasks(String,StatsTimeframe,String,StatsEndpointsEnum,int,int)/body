@@ -6,7 +6,7 @@
       JSONObject response=new JSONObject(cachedStats);
       mResponseObjectModel=StatsUtils.parseResponse(sectionToUpdate,blogId,response);
       EventBus.getDefault().post(new StatsEvents.SectionUpdated(sectionToUpdate,blogId,timeframe,date,maxResultsRequested,pageRequested,mResponseObjectModel));
-      checkAllRequestsFinished();
+      checkAllRequestsFinished(null);
       return;
     }
  catch (    JSONException e) {
@@ -70,6 +70,7 @@ return;
 if (checkIfRequestShouldBeEnqueued(restClientUtils,path)) {
 AppLog.d(AppLog.T.STATS,"Enqueuing the following Stats request " + path);
 Request<JSONObject> currentRequest=restClientUtils.get(path,vListener,vListener);
+vListener.currentRequest=currentRequest;
 currentRequest.setTag("StatsCall");
 mStatsNetworkRequests.add(currentRequest);
 }
