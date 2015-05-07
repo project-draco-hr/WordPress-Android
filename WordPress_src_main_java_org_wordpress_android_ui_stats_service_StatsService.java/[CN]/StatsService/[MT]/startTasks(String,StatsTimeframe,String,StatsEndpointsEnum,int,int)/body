@@ -1,0 +1,67 @@
+{
+  final RestClientUtils restClientUtils=WordPress.getRestClientUtilsV1_1();
+  String period=timeframe.getLabelForRestCall();
+  EventBus.getDefault().post(new StatsEvents.UpdateStatusChanged(true));
+  RestListener vListener=new RestListener(sectionToUpdate,blogId,timeframe,date);
+  final String periodDateMaxPlaceholder="?period=%s&date=%s&max=%s";
+  String path=String.format("/sites/%s/stats/" + sectionToUpdate.getRestEndpointPath(),blogId);
+synchronized (mStatsNetworkRequests) {
+switch (sectionToUpdate) {
+case VISITS:
+      path=String.format(path + "?unit=%s&quantity=10&date=%s",period,date);
+    break;
+case TOP_POSTS:
+case REFERRERS:
+case CLICKS:
+case GEO_VIEWS:
+case AUTHORS:
+case VIDEO_PLAYS:
+case SEARCH_TERMS:
+  path=String.format(path + periodDateMaxPlaceholder,period,date,maxResultsRequested);
+break;
+case TAGS_AND_CATEGORIES:
+case PUBLICIZE:
+path=String.format(path + "?max=%s",maxResultsRequested);
+break;
+case COMMENTS:
+break;
+case FOLLOWERS_WPCOM:
+if (pageRequested < 1) {
+path=String.format(path + "&max=%s",maxResultsRequested);
+}
+ else {
+path=String.format(path + "&period=%s&date=%s&max=%s&page=%s",period,date,maxResultsRequested,pageRequested);
+}
+break;
+case FOLLOWERS_EMAIL:
+if (pageRequested < 1) {
+path=String.format(path + "&max=%s",maxResultsRequested);
+}
+ else {
+path=String.format(path + "&period=%s&date=%s&max=%s&page=%s",period,date,maxResultsRequested,pageRequested);
+}
+break;
+case COMMENT_FOLLOWERS:
+if (pageRequested < 1) {
+path=String.format(path + "?max=%s",maxResultsRequested);
+}
+ else {
+path=String.format(path + "?period=%s&date=%s&max=%s&page=%s",period,date,maxResultsRequested,pageRequested);
+}
+break;
+default :
+AppLog.i(T.STATS,"Called an update of Stats of unknown section!?? " + sectionToUpdate.name());
+return;
+}
+if (checkIfRequestShouldBeEnqueued(restClientUtils,path)) {
+AppLog.d(AppLog.T.STATS,"Enqueuing the following Stats request " + path);
+Request<JSONObject> currentRequest=restClientUtils.get(path,vListener,vListener);
+vListener.currentRequest=currentRequest;
+currentRequest.setTag("StatsCall");
+mStatsNetworkRequests.add(currentRequest);
+}
+ else {
+AppLog.d(AppLog.T.STATS,"Stats request is already in the queue:" + path);
+}
+}
+}
