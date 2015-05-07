@@ -1,8 +1,20 @@
 {
   singleThreadNetworkHandler.submit(new Thread(){
     @Override public void run(){
-      AppLog.e(T.STATS,this.getClass().getName() + " responded with an Error");
+      AppLog.e(T.STATS,"Error while loading Stats!");
       StatsUtils.logVolleyErrorDetails(volleyError);
+      if (volleyError.networkResponse != null) {
+        NetworkResponse networkResponse=volleyError.networkResponse;
+        if (networkResponse.statusCode == 403 && networkResponse.data != null) {
+          if (new String(networkResponse.data).contains("unauthorized")) {
+            int localId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(Integer.parseInt(mRequestBlogId));
+            Blog blog=WordPress.wpDB.instantiateBlogByLocalId(localId);
+            if (blog != null && blog.isJetpackPowered()) {
+              EventBus.getDefault().post(new StatsEvents.JetpackAuthError(localId));
+            }
+          }
+        }
+      }
       mResponseObjectModel=volleyError;
       EventBus.getDefault().post(new StatsEvents.SectionUpdated(mEndpointName,mRequestBlogId,mTimeframe,mDate,mResponseObjectModel));
       checkAllRequestsFinished(currentRequest);
