@@ -5,14 +5,9 @@
     mPostId=JSONUtils.queryJSON(mBlockData,"post_id",0);
     mRangeType=NoteBlockRangeType.fromString(JSONUtils.queryJSON(mBlockData,"type",""));
     mUrl=JSONUtils.queryJSON(mBlockData,"url","");
-    mIndices=new int[]{0,0};
-    JSONArray indicesArray=mBlockData.optJSONArray("indices");
-    if (indicesArray != null) {
-      mIndices[0]=indicesArray.optInt(0);
-      mIndices[1]=indicesArray.optInt(1);
-    }
+    mIndices=NotificationsUtils.getIndicesForRange(mBlockData);
     mShouldLink=mShouldLink && mRangeType != NoteBlockRangeType.BLOCKQUOTE && (mRangeType != NoteBlockRangeType.UNKNOWN || !TextUtils.isEmpty(mUrl));
-    if (getRangeType() == NoteBlockRangeType.BLOCKQUOTE || getRangeType() == NoteBlockRangeType.POST) {
+    if (mIsFooter || getRangeType() == NoteBlockRangeType.BLOCKQUOTE || getRangeType() == NoteBlockRangeType.POST) {
       mTextColor=mContext.getResources().getColor(R.color.grey);
     }
   }
