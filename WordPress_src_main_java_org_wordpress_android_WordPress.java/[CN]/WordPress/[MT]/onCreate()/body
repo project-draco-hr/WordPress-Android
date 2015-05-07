@@ -12,10 +12,11 @@
   enableHttpResponseCache(mContext);
   EventBus.TAG="WordPress-EVENT";
   EventBus.builder().logNoSubscriberMessages(false).sendNoSubscriberEvent(false).throwSubscriberException(true).installDefaultEventBus();
+  EventBus.getDefault().register(this);
   RestClientUtils.setUserAgent(getUserAgent());
   configureSimperium();
   setupVolleyQueue();
-  if (AccountHelper.getDefaultAccount().hasAccessToken()) {
+  if (AccountHelper.isSignedInWordPressDotCom()) {
     AccountHelper.getDefaultAccount().fetchAccountDetails();
   }
   ABTestingUtils.init();

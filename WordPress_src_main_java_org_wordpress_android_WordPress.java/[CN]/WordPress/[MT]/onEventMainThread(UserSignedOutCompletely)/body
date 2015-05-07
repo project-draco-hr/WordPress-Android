@@ -1,0 +1,19 @@
+{
+  try {
+    SelfSignedSSLCertsManager.getInstance(getContext()).emptyLocalKeyStoreFile();
+  }
+ catch (  GeneralSecurityException e) {
+    AppLog.e(T.UTILS,"Error while cleaning the Local KeyStore File",e);
+  }
+catch (  IOException e) {
+    AppLog.e(T.UTILS,"Error while cleaning the Local KeyStore File",e);
+  }
+  flushHttpCache();
+  AnalyticsTracker.endSession(false);
+  AnalyticsTracker.clearAllData();
+  AbstractAppLock appLock=AppLockManager.getInstance().getCurrentAppLock();
+  if (appLock != null) {
+    appLock.setPassword(null);
+  }
+  wpDB.dangerouslyDeleteAllContent();
+}
