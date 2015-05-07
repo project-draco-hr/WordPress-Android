@@ -9,29 +9,35 @@
     AppLog.e(T.STATS,"StatsService was started with a blank blog_id ");
     return START_NOT_STICKY;
   }
-  StatsTimeframe period=StatsTimeframe.DAY;
+  final StatsTimeframe period;
   if (intent.hasExtra(ARG_PERIOD)) {
     period=(StatsTimeframe)intent.getSerializableExtra(ARG_PERIOD);
   }
-  String requestedDate=intent.getStringExtra(ARG_DATE);
-  if (requestedDate == null) {
+ else {
+    period=StatsTimeframe.DAY;
+  }
+  final String requestedDate;
+  if (intent.getStringExtra(ARG_DATE) == null) {
     AppLog.w(T.STATS,"StatsService is started with a NULL date on this blogID - " + blogId + ". Using current date!!!");
     int parsedBlogID=Integer.parseInt(blogId);
     int localTableBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(parsedBlogID);
     requestedDate=StatsUtils.getCurrentDateTZ(localTableBlogId);
   }
-  boolean updateAlltimeStats=intent.getBooleanExtra(ARG_UPDATE_ALLTIME_STATS,true);
-  boolean updateGraphStats=intent.getBooleanExtra(ARG_UPDATE_GRAPH_STATS,true);
-  if (mServiceBlogId == null) {
-    startTasks(blogId,period,requestedDate,updateGraphStats,updateAlltimeStats,startId);
-  }
- else   if (blogId.equals(mServiceBlogId) && mServiceRequestedTimeframe == period && requestedDate.equals(mServiceRequestedDate)) {
-    AppLog.i(T.STATS,"StatsService is already running on this blogID - " + mServiceBlogId + " for the same period and the same date.");
-  }
  else {
-    stopRefresh();
-    startTasks(blogId,period,requestedDate,updateGraphStats,updateAlltimeStats,startId);
+    requestedDate=intent.getStringExtra(ARG_DATE);
   }
+  final int maxResultsRequested=intent.getIntExtra(ARG_MAX_RESULTS,DEFAULT_NUMBER_OF_RESULTS);
+  final int pageRequested=intent.getIntExtra(ARG_PAGE_REQUESTED,-1);
+  int[] sectionFromIntent=intent.getIntArrayExtra(ARG_SECTION);
   this.mServiceStartId=startId;
+  for (int i=0; i < sectionFromIntent.length; i++) {
+    final StatsEndpointsEnum currentSectionsToUpdate=StatsEndpointsEnum.values()[sectionFromIntent[i]];
+    singleThreadNetworkHandler.submit(new Thread(){
+      @Override public void run(){
+        startTasks(blogId,period,requestedDate,currentSectionsToUpdate,maxResultsRequested,pageRequested);
+      }
+    }
+);
+  }
   return START_NOT_STICKY;
 }
