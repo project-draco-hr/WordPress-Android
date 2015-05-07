@@ -17,15 +17,20 @@
   mFollowButton.setLayoutParams(params);
   toolbar.addView(mFollowButton);
   updateFollowButton();
-  mFollowButton.setOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View v){
-      if (getPostListType() == ReaderPostListType.BLOG_PREVIEW) {
-        toggleBlogFollowStatus();
-      }
+  if (mIsLoggedOutReader) {
+    mFollowButton.setEnabled(false);
+  }
  else {
-        toggleTagFollowStatus();
+    mFollowButton.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        if (getPostListType() == ReaderPostListType.BLOG_PREVIEW) {
+          toggleBlogFollowStatus();
+        }
+ else {
+          toggleTagFollowStatus();
+        }
       }
     }
-  }
 );
+  }
 }
