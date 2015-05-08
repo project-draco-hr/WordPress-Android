@@ -1,13 +1,6 @@
 {
-  if (mServiceBlogId == null || mServiceRequestedTimeframe == null || !mServiceBlogId.equals(mRequestBlogId) || mServiceRequestedTimeframe != mTimeframe) {
-    return;
-  }
-  parseResponseExecutor.submit(new Thread(){
+  singleThreadNetworkHandler.submit(new Thread(){
     @Override public void run(){
-      if (mServiceBlogId == null || !mServiceBlogId.equals(mRequestBlogId)) {
-        return;
-      }
-      mNumberOfFinishedNetworkCalls++;
       if (response != null) {
         try {
           mResponseObjectModel=StatsUtils.parseResponse(mEndpointName,mRequestBlogId,response);
@@ -16,8 +9,8 @@
           AppLog.e(AppLog.T.STATS,e);
         }
       }
-      EventBus.getDefault().post(new StatsEvents.SectionUpdated(mEndpointName,mResponseObjectModel));
-      checkAllRequestsFinished();
+      EventBus.getDefault().post(new StatsEvents.SectionUpdated(mEndpointName,mRequestBlogId,mTimeframe,mDate,mResponseObjectModel));
+      checkAllRequestsFinished(currentRequest);
     }
   }
 );

@@ -40,7 +40,7 @@
           View.OnClickListener clickListener=new View.OnClickListener(){
             @Override public void onClick(            View v){
               setNavigationButtonsEnabled(false);
-              mMoreDataListener.onMoreDataRequested(getSectionsToUpdate()[mTopPagerSelectedButtonIndex],followersModel.getPage() - 1);
+              refreshStats(followersModel.getPage() - 1,new StatsService.StatsEndpointsEnum[]{getSectionsToUpdate()[mTopPagerSelectedButtonIndex]});
             }
           }
 ;
@@ -55,14 +55,14 @@
           View.OnClickListener clickListener=new View.OnClickListener(){
             @Override public void onClick(            View v){
               setNavigationButtonsEnabled(false);
-              mMoreDataListener.onMoreDataRequested(getSectionsToUpdate()[mTopPagerSelectedButtonIndex],followersModel.getPage() + 1);
+              refreshStats(followersModel.getPage() + 1,new StatsService.StatsEndpointsEnum[]{getSectionsToUpdate()[mTopPagerSelectedButtonIndex]});
             }
           }
 ;
           mBottomPaginationGoForwardButton.setOnClickListener(clickListener);
           mTopPaginationGoForwardButton.setOnClickListener(clickListener);
         }
-        int startIndex=followersModel.getPage() * StatsViewAllActivity.MAX_RESULTS_PER_PAGE - StatsViewAllActivity.MAX_RESULTS_PER_PAGE + 1;
+        int startIndex=followersModel.getPage() * StatsService.MAX_RESULTS_REQUESTED_PER_PAGE - StatsService.MAX_RESULTS_REQUESTED_PER_PAGE + 1;
         int endIndex=startIndex + followersModel.getFollowers().size() - 1;
         String pagedLabel=getString(mTopPagerSelectedButtonIndex == 0 ? R.string.stats_followers_total_wpcom_paged : R.string.stats_followers_total_email_paged,startIndex,endIndex,FormatUtils.formatDecimal(mTopPagerSelectedButtonIndex == 0 ? followersModel.getTotalWPCom() : followersModel.getTotalEmail()));
         mTotalsLabel.setText(pagedLabel);

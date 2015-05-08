@@ -1,0 +1,47 @@
+{
+  if (!isAdded()) {
+    return;
+  }
+  if (sections == null) {
+    sections=getSectionsToUpdate();
+  }
+  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+    AppLog.w(AppLog.T.STATS,this.getClass().getCanonicalName() + "--> no connection, update canceled");
+    return;
+  }
+  final String blogId=StatsUtils.getBlogId(getLocalTableBlogID());
+  final Blog currentBlog=WordPress.getBlog(getLocalTableBlogID());
+  if (currentBlog == null) {
+    AppLog.w(AppLog.T.STATS,"Current blog is null. This should never happen here.");
+    return;
+  }
+  if (blogId == null) {
+    AppLog.e(AppLog.T.STATS,"remote blogID is null: " + currentBlog.getHomeURL());
+    return;
+  }
+  if (!currentBlog.isDotcomFlag() && !currentBlog.hasValidJetpackCredentials() && !AccountHelper.isSignedInWordPressDotCom()) {
+    AppLog.w(AppLog.T.STATS,"Current blog is a Jetpack blog without valid .com credentials stored");
+    return;
+  }
+  int[] sectionsForTheService=new int[sections.length];
+  for (int i=0; i < sections.length; i++) {
+    sectionsForTheService[i]=sections[i].ordinal();
+  }
+  Intent intent=new Intent(getActivity(),StatsService.class);
+  intent.putExtra(StatsService.ARG_BLOG_ID,blogId);
+  intent.putExtra(StatsService.ARG_PERIOD,mStatsTimeframe);
+  intent.putExtra(StatsService.ARG_DATE,mDate);
+  if (isSingleView()) {
+    if (pageNumberRequested > 0) {
+      intent.putExtra(StatsService.ARG_MAX_RESULTS,StatsService.MAX_RESULTS_REQUESTED_PER_PAGE);
+    }
+ else {
+      intent.putExtra(StatsService.ARG_MAX_RESULTS,MAX_RESULTS_REQUESTED);
+    }
+  }
+  if (pageNumberRequested > 0) {
+    intent.putExtra(StatsService.ARG_PAGE_REQUESTED,pageNumberRequested);
+  }
+  intent.putExtra(StatsService.ARG_SECTION,sectionsForTheService);
+  getActivity().startService(intent);
+}

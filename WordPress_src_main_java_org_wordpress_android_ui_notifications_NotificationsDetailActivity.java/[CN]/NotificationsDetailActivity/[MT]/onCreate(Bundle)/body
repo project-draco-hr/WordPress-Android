@@ -16,9 +16,6 @@
     if (SimperiumUtils.getNotesBucket() != null) {
       try {
         Note note=SimperiumUtils.getNotesBucket().get(noteId);
-        Map<String,String> properties=new HashMap<>();
-        properties.put("notification_type",note.getType());
-        AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATIONS_OPENED_NOTIFICATION_DETAILS,properties);
         if (note.isUnread()) {
           note.markAsRead();
           EventBus.getDefault().post(new NotificationEvents.NotificationsChanged());
