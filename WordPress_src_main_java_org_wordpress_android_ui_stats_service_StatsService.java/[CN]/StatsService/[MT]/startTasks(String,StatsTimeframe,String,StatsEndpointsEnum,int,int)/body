@@ -1,8 +1,22 @@
 {
+  String cachedStats=getCachedStats(blogId,timeframe,date,sectionToUpdate,maxResultsRequested,pageRequested);
+  if (cachedStats != null) {
+    Serializable mResponseObjectModel;
+    try {
+      JSONObject response=new JSONObject(cachedStats);
+      mResponseObjectModel=StatsUtils.parseResponse(sectionToUpdate,blogId,response);
+      EventBus.getDefault().post(new StatsEvents.SectionUpdated(sectionToUpdate,blogId,timeframe,date,maxResultsRequested,pageRequested,mResponseObjectModel));
+      checkAllRequestsFinished(null);
+      return;
+    }
+ catch (    JSONException e) {
+      AppLog.e(AppLog.T.STATS,e);
+    }
+  }
   final RestClientUtils restClientUtils=WordPress.getRestClientUtilsV1_1();
   String period=timeframe.getLabelForRestCall();
   EventBus.getDefault().post(new StatsEvents.UpdateStatusChanged(true));
-  RestListener vListener=new RestListener(sectionToUpdate,blogId,timeframe,date);
+  RestListener vListener=new RestListener(sectionToUpdate,blogId,timeframe,date,maxResultsRequested,pageRequested);
   final String periodDateMaxPlaceholder="?period=%s&date=%s&max=%s";
   String path=String.format("/sites/%s/stats/" + sectionToUpdate.getRestEndpointPath(),blogId);
 synchronized (mStatsNetworkRequests) {
