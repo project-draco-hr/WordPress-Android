@@ -82,8 +82,14 @@
     holder.txtTag.setVisibility(View.GONE);
     holder.txtTag.setOnClickListener(null);
   }
-  boolean showLikes=post.isWP() && post.isLikesEnabled;
   boolean showComments=post.isWP() && (post.isCommentsOpen || post.numReplies > 0);
+  boolean showLikes;
+  if (mIsLoggedOutReader) {
+    showLikes=(post.numLikes > 0);
+  }
+ else {
+    showLikes=(post.isWP() && post.isLikesEnabled);
+  }
   if (showLikes || showComments) {
     showCounts(holder,post,false);
   }
