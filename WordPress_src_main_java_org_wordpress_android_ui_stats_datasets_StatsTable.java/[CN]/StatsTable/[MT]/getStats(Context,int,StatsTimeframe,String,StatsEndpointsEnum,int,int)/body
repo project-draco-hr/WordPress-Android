@@ -1,0 +1,35 @@
+{
+  if (ctx == null) {
+    AppLog.e(AppLog.T.STATS,"Cannot insert a null stats since the passed context is null. Context is required " + "to access the DB.");
+    return null;
+  }
+  String sql="SELECT *  FROM " + TABLE_NAME + " WHERE blogID = ? "+ " AND type=?"+ " AND timeframe=?"+ " AND date=?"+ " AND page=?"+ " AND maxResult >=?"+ " ORDER BY timestamp DESC"+ " LIMIT 1";
+  String[] args={Integer.toString(blogId),Integer.toString(sectionToUpdate.ordinal()),Integer.toString(timeframe.ordinal()),date,Integer.toString(pageRequested),Integer.toString(maxResultsRequested)};
+  Cursor cursor=StatsDatabaseHelper.getReadableDb(ctx).rawQuery(sql,args);
+  try {
+    if (cursor != null && cursor.moveToFirst()) {
+      long timestamp=cursor.getLong(cursor.getColumnIndex("timestamp"));
+      long currentTime=System.currentTimeMillis();
+      long deltaMS=currentTime - timestamp;
+      if (deltaMS < 0) {
+        return null;
+      }
+      deltaMS=deltaMS / 1000;
+      if ((deltaMS / 60) > CACHE_TTL_MINUTES) {
+        return null;
+      }
+      String jsonData=(cursor.getString(cursor.getColumnIndex("jsonData")));
+      return jsonData;
+    }
+ else {
+      return null;
+    }
+  }
+ catch (  IllegalStateException e) {
+    AppLog.e(AppLog.T.STATS,e);
+  }
+ finally {
+    SqlUtils.closeCursor(cursor);
+  }
+  return null;
+}
