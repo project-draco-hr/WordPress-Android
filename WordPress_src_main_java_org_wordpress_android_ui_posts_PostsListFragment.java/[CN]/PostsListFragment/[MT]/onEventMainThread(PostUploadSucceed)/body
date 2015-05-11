@@ -3,7 +3,7 @@
     return;
   }
   boolean sameBlogId=true;
-  if (WordPress.getCurrentBlog() == null || WordPress.getCurrentBlog().getLocalTableBlogId() != localBlogId) {
+  if (WordPress.getCurrentBlog() == null || WordPress.getCurrentBlog().getLocalTableBlogId() != event.mLocalBlogId) {
     sameBlogId=false;
   }
   if (!NetworkUtils.checkConnection(getActivity())) {
@@ -11,12 +11,13 @@
     updateEmptyView(EmptyViewMessageType.NETWORK_ERROR);
     return;
   }
-  if (!TextUtils.isEmpty(postId)) {
+  EventBus.getDefault().removeStickyEvent(event.getClass());
+  if (!TextUtils.isEmpty(event.mRemotePostId)) {
     final boolean reloadPosts=sameBlogId;
     List<Object> apiArgs=new Vector<Object>();
-    apiArgs.add(WordPress.wpDB.instantiateBlogByLocalId(localBlogId));
-    apiArgs.add(postId);
-    apiArgs.add(isPage);
+    apiArgs.add(WordPress.wpDB.instantiateBlogByLocalId(event.mLocalBlogId));
+    apiArgs.add(event.mRemotePostId);
+    apiArgs.add(event.mIsPage);
     mCurrentFetchSinglePostTask=new ApiHelper.FetchSinglePostTask(new ApiHelper.FetchSinglePostTask.Callback(){
       @Override public void onSuccess(){
         mCurrentFetchSinglePostTask=null;
