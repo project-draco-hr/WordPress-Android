@@ -15,7 +15,12 @@
   if (mDatamodels[1] != null && !isErrorResponse(1)) {
     mTotalsLabel.setVisibility(View.VISIBLE);
     int totalNumberOfFollowers=((CommentFollowersModel)mDatamodels[1]).getTotal();
-    mTotalsLabel.setText(getString(R.string.stats_comments_total_comments_followers,FormatUtils.formatDecimal(totalNumberOfFollowers)));
+    try {
+      mTotalsLabel.setText(getString(R.string.stats_comments_total_comments_followers,FormatUtils.formatDecimal(totalNumberOfFollowers)));
+    }
+ catch (    AssertionError e) {
+      mTotalsLabel.setVisibility(View.GONE);
+    }
   }
  else {
     mTotalsLabel.setVisibility(View.GONE);
