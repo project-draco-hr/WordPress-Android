@@ -1,6 +1,6 @@
 {
   final Bucket.ObjectCursor<Note> objectCursor=(Bucket.ObjectCursor<Note>)cursor;
-  noteViewHolder.noteId=objectCursor.getSimperiumKey();
+  final String noteId=objectCursor.getSimperiumKey();
   Note.NoteTimeGroup timeGroup=Note.getTimeGroupForTimestamp(getLongForColumnName(objectCursor,Note.Schema.TIMESTAMP_INDEX));
   Note.NoteTimeGroup previousTimeGroup=null;
   if (objectCursor.getPosition() > 0 && objectCursor.moveToPrevious()) {
@@ -98,4 +98,12 @@
  else {
     noteViewHolder.itemView.setBackgroundResource(mReadBackgroundResId);
   }
+  noteViewHolder.itemView.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      if (mOnNoteClickListener != null && noteId != null) {
+        mOnNoteClickListener.onClickNote(noteId);
+      }
+    }
+  }
+);
 }
