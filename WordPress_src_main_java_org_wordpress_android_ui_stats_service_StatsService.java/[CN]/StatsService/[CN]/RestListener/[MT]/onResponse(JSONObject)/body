@@ -4,12 +4,17 @@
       if (response != null) {
         try {
           mResponseObjectModel=StatsUtils.parseResponse(mEndpointName,mRequestBlogId,response);
+          if (isCacheEnabled()) {
+            int parsedBlogID=Integer.parseInt(mRequestBlogId);
+            int localTableBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(parsedBlogID);
+            StatsTable.insertStats(StatsService.this,localTableBlogId,mTimeframe,mDate,mEndpointName,mMaxResultsRequested,mPageRequested,response.toString(),System.currentTimeMillis());
+          }
         }
  catch (        JSONException e) {
           AppLog.e(AppLog.T.STATS,e);
         }
       }
-      EventBus.getDefault().post(new StatsEvents.SectionUpdated(mEndpointName,mRequestBlogId,mTimeframe,mDate,mResponseObjectModel));
+      EventBus.getDefault().post(new StatsEvents.SectionUpdated(mEndpointName,mRequestBlogId,mTimeframe,mDate,mMaxResultsRequested,mPageRequested,mResponseObjectModel));
       checkAllRequestsFinished(currentRequest);
     }
   }
