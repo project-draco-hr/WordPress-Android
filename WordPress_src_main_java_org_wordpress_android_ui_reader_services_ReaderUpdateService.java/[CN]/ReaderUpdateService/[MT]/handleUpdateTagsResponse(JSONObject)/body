@@ -3,7 +3,12 @@
     @Override public void run(){
       ReaderTagList serverTopics=new ReaderTagList();
       serverTopics.addAll(parseTags(jsonObject,"default",ReaderTagType.DEFAULT));
-      serverTopics.addAll(parseTags(jsonObject,"subscribed",ReaderTagType.FOLLOWED));
+      if (ReaderUtils.isLoggedOutReader()) {
+        serverTopics.addAll(parseTags(jsonObject,"recommended",ReaderTagType.FOLLOWED));
+      }
+ else {
+        serverTopics.addAll(parseTags(jsonObject,"subscribed",ReaderTagType.FOLLOWED));
+      }
       ReaderTagList localTopics=new ReaderTagList();
       localTopics.addAll(ReaderTagTable.getDefaultTags());
       localTopics.addAll(ReaderTagTable.getFollowedTags());
@@ -13,12 +18,14 @@
         ReaderTagTable.replaceTags(serverTopics);
         EventBus.getDefault().post(new ReaderEvents.FollowedTagsChanged());
       }
-      ReaderTagList serverRecommended=parseTags(jsonObject,"recommended",ReaderTagType.RECOMMENDED);
-      ReaderTagList localRecommended=ReaderTagTable.getRecommendedTags(false);
-      if (!serverRecommended.isSameList(localRecommended)) {
-        AppLog.d(AppLog.T.READER,"reader service > recommended topics changed");
-        ReaderTagTable.setRecommendedTags(serverRecommended);
-        EventBus.getDefault().post(new ReaderEvents.RecommendedTagsChanged());
+      if (!ReaderUtils.isLoggedOutReader()) {
+        ReaderTagList serverRecommended=parseTags(jsonObject,"recommended",ReaderTagType.RECOMMENDED);
+        ReaderTagList localRecommended=ReaderTagTable.getRecommendedTags(false);
+        if (!serverRecommended.isSameList(localRecommended)) {
+          AppLog.d(AppLog.T.READER,"reader service > recommended topics changed");
+          ReaderTagTable.setRecommendedTags(serverRecommended);
+          EventBus.getDefault().post(new ReaderEvents.RecommendedTagsChanged());
+        }
       }
       taskCompleted(UpdateTask.TAGS);
     }
