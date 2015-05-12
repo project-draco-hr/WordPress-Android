@@ -1,4 +1,9 @@
 {
+  mPost=((EditPostActivity)getActivity()).getPost();
+  ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.fragment_edit_post_settings,container,false);
+  if (rootView == null || mPost == null) {
+    return null;
+  }
   Calendar c=Calendar.getInstance();
   mYear=c.get(Calendar.YEAR);
   mMonth=c.get(Calendar.MONTH);
@@ -6,11 +11,6 @@
   mHour=c.get(Calendar.HOUR_OF_DAY);
   mMinute=c.get(Calendar.MINUTE);
   mCategories=new ArrayList<String>();
-  ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.fragment_edit_post_settings,container,false);
-  if (rootView == null) {
-    return null;
-  }
-  mActivity=(EditPostActivity)getActivity();
   mExcerptEditText=(EditText)rootView.findViewById(R.id.postExcerpt);
   mPasswordEditText=(EditText)rootView.findViewById(R.id.post_password);
   mPubDateText=(TextView)rootView.findViewById(R.id.pubDate);
@@ -30,7 +30,7 @@
   ((TextView)rootView.findViewById(R.id.statusLabel)).setText(getResources().getString(R.string.status).toUpperCase());
   ((TextView)rootView.findViewById(R.id.postFormatLabel)).setText(getResources().getString(R.string.post_format).toUpperCase());
   ((TextView)rootView.findViewById(R.id.pubDateLabel)).setText(getResources().getString(R.string.publish_date).toUpperCase());
-  if (mActivity.getPost().isPage()) {
+  if (mPost.isPage()) {
     mExcerptEditText.setVisibility(View.GONE);
     (rootView.findViewById(R.id.sectionTags)).setVisibility(View.GONE);
     (rootView.findViewById(R.id.sectionCategories)).setVisibility(View.GONE);
@@ -41,10 +41,7 @@
     mPostFormatTitles=getResources().getStringArray(R.array.post_formats_array);
     mPostFormats=new String[]{"aside","audio","chat","gallery","image","link","quote","standard","status","video"};
     if (WordPress.getCurrentBlog().getPostFormats().equals("")) {
-      List<Object> args=new Vector<Object>();
-      args.add(WordPress.getCurrentBlog());
-      args.add(mActivity);
-      new ApiHelper.GetPostFormatsTask().execute(args);
+      new ApiHelper.GetPostFormatsTask().execute(WordPress.getCurrentBlog());
     }
  else {
       try {
@@ -73,8 +70,8 @@
     pfAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     mPostFormatSpinner.setAdapter(pfAdapter);
     String activePostFormat="standard";
-    if (!TextUtils.isEmpty(mActivity.getPost().getPostFormat())) {
-      activePostFormat=mActivity.getPost().getPostFormat();
+    if (!TextUtils.isEmpty(mPost.getPostFormat())) {
+      activePostFormat=mPost.getPostFormat();
     }
     for (int i=0; i < mPostFormats.length; i++) {
       if (mPostFormats[i].equals(activePostFormat))       mPostFormatSpinner.setSelection(i);
@@ -86,67 +83,8 @@
     }
 );
   }
-  Post post=mActivity.getPost();
-  if (post != null) {
-    mExcerptEditText.setText(post.getPostExcerpt());
-    String[] items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private)};
-    ArrayAdapter<String> adapter=new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item,items);
-    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    mStatusSpinner.setAdapter(adapter);
-    mStatusSpinner.setOnTouchListener(new View.OnTouchListener(){
-      @Override public boolean onTouch(      View view,      MotionEvent motionEvent){
-        return false;
-      }
-    }
-);
-    if (post.isUploaded()) {
-      items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private)};
-      adapter=new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item,items);
-      mStatusSpinner.setAdapter(adapter);
-    }
-    long pubDate=post.getDate_created_gmt();
-    if (pubDate != 0) {
-      try {
-        int flags=0;
-        flags|=android.text.format.DateUtils.FORMAT_SHOW_DATE;
-        flags|=android.text.format.DateUtils.FORMAT_ABBREV_MONTH;
-        flags|=android.text.format.DateUtils.FORMAT_SHOW_YEAR;
-        flags|=android.text.format.DateUtils.FORMAT_SHOW_TIME;
-        String formattedDate=DateUtils.formatDateTime(getActivity(),pubDate,flags);
-        mPubDateText.setText(formattedDate);
-      }
- catch (      RuntimeException e) {
-        AppLog.e(T.POSTS,e);
-      }
-    }
-    if (!TextUtils.isEmpty(post.getPassword()))     mPasswordEditText.setText(post.getPassword());
-switch (post.getStatusEnum()) {
-case PUBLISHED:
-case SCHEDULED:
-case UNKNOWN:
-      mStatusSpinner.setSelection(0,true);
-    break;
-case DRAFT:
-  mStatusSpinner.setSelection(1,true);
-break;
-case PENDING:
-mStatusSpinner.setSelection(2,true);
-break;
-case PRIVATE:
-mStatusSpinner.setSelection(3,true);
-break;
-}
-if (!post.isPage()) {
-if (post.getJSONCategories() != null) {
-mCategories=JSONUtils.fromJSONArrayToStringList(post.getJSONCategories());
-}
-}
-String tags=post.getKeywords();
-if (!tags.equals("")) {
-mTagsEditText.setText(tags);
-}
-populateSelectedCategories();
-}
-initLocation(rootView);
-return rootView;
+  initSettingsFields();
+  populateSelectedCategories();
+  initLocation(rootView);
+  return rootView;
 }

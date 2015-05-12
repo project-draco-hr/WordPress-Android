@@ -1,0 +1,61 @@
+{
+  mExcerptEditText.setText(mPost.getPostExcerpt());
+  String[] items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private)};
+  ArrayAdapter<String> adapter=new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item,items);
+  adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+  mStatusSpinner.setAdapter(adapter);
+  mStatusSpinner.setOnTouchListener(new View.OnTouchListener(){
+    @Override public boolean onTouch(    View view,    MotionEvent motionEvent){
+      return false;
+    }
+  }
+);
+  if (mPost.isUploaded()) {
+    items=new String[]{getResources().getString(R.string.publish_post),getResources().getString(R.string.draft),getResources().getString(R.string.pending_review),getResources().getString(R.string.post_private)};
+    adapter=new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item,items);
+    mStatusSpinner.setAdapter(adapter);
+  }
+  long pubDate=mPost.getDate_created_gmt();
+  if (pubDate != 0) {
+    try {
+      int flags=0;
+      flags|=android.text.format.DateUtils.FORMAT_SHOW_DATE;
+      flags|=android.text.format.DateUtils.FORMAT_ABBREV_MONTH;
+      flags|=android.text.format.DateUtils.FORMAT_SHOW_YEAR;
+      flags|=android.text.format.DateUtils.FORMAT_SHOW_TIME;
+      String formattedDate=DateUtils.formatDateTime(getActivity(),pubDate,flags);
+      mPubDateText.setText(formattedDate);
+    }
+ catch (    RuntimeException e) {
+      AppLog.e(T.POSTS,e);
+    }
+  }
+  if (!TextUtils.isEmpty(mPost.getPassword())) {
+    mPasswordEditText.setText(mPost.getPassword());
+  }
+switch (mPost.getStatusEnum()) {
+case PUBLISHED:
+case SCHEDULED:
+case UNKNOWN:
+    mStatusSpinner.setSelection(0,true);
+  break;
+case DRAFT:
+mStatusSpinner.setSelection(1,true);
+break;
+case PENDING:
+mStatusSpinner.setSelection(2,true);
+break;
+case PRIVATE:
+mStatusSpinner.setSelection(3,true);
+break;
+}
+if (!mPost.isPage()) {
+if (mPost.getJSONCategories() != null) {
+mCategories=JSONUtils.fromJSONArrayToStringList(mPost.getJSONCategories());
+}
+}
+String tags=mPost.getKeywords();
+if (!tags.equals("")) {
+mTagsEditText.setText(tags);
+}
+}
