@@ -10,7 +10,7 @@ case POST:
 activity.showPostActivity(clickedSpan.getSiteId(),clickedSpan.getId());
 break;
 case COMMENT:
-activity.showPostActivity(clickedSpan.getSiteId(),clickedSpan.getPostId());
+activity.showWebViewActivityForUrl(clickedSpan.getUrl());
 break;
 case STAT:
 case FOLLOW:
@@ -20,6 +20,14 @@ activity.showStatsActivityForSite(localTableSiteId,clickedSpan.getRangeType());
 }
  else if (!TextUtils.isEmpty(clickedSpan.getUrl())) {
 activity.showWebViewActivityForUrl(clickedSpan.getUrl());
+}
+break;
+case LIKE:
+if (ReaderPostTable.postExists(clickedSpan.getSiteId(),clickedSpan.getId())) {
+activity.showReaderPostLikeUsers(clickedSpan.getSiteId(),clickedSpan.getId());
+}
+ else {
+activity.showPostActivity(clickedSpan.getSiteId(),clickedSpan.getId());
 }
 break;
 default :

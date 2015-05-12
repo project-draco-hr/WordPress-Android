@@ -8,6 +8,7 @@
   if (actionBar != null) {
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
+  setTitle(R.string.stats);
   mSwipeToRefreshHelper=new SwipeToRefreshHelper(this,(CustomSwipeRefreshLayout)findViewById(R.id.ptr_layout),new SwipeToRefreshHelper.RefreshListener(){
     @Override public void onRefreshStarted(){
       if (!NetworkUtils.checkConnection(getBaseContext())) {
@@ -41,6 +42,9 @@
     mDate=extras.getString(StatsAbstractFragment.ARGS_SELECTED_DATE);
     mStatsViewType=(StatsViewType)extras.getSerializable(StatsAbstractFragment.ARGS_VIEW_TYPE);
     mOuterPagerSelectedButtonIndex=extras.getInt(StatsAbstractListFragment.ARGS_TOP_PAGER_SELECTED_BUTTON_INDEX,0);
+    if (!TextUtils.isEmpty(extras.getString(ARG_STATS_VIEW_ALL_TITLE))) {
+      setTitle(extras.getString(ARG_STATS_VIEW_ALL_TITLE));
+    }
   }
   if (mStatsViewType == null || mTimeframe == null || mDate == null) {
     Toast.makeText(this,getResources().getText(R.string.stats_generic_error),Toast.LENGTH_SHORT).show();
@@ -62,7 +66,6 @@ default :
 dateTextView.setVisibility(View.GONE);
 break;
 }
-setTitle(R.string.stats);
 FragmentManager fm=getFragmentManager();
 FragmentTransaction ft=fm.beginTransaction();
 mFragment=(StatsAbstractListFragment)fm.findFragmentByTag("ViewAll-Fragment");
