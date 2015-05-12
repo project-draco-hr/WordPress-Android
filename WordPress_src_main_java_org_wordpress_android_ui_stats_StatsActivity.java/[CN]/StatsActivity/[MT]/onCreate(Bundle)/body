@@ -27,9 +27,9 @@
         return;
       }
       mRequestedDate=StatsUtils.getCurrentDateTZ(mLocalBlogID);
-      loadStatsFragments(false,true,true);
-      emptyDataModelInFragments(true,true);
-      refreshStats(mCurrentTimeframe,mRequestedDate,true,true);
+      if (checkCredentials()) {
+        updateTimeframeAndDateAndStartRefreshOfFragments(true);
+      }
     }
   }
 );
@@ -58,7 +58,7 @@
     finish();
     return;
   }
-  loadStatsFragments(false,true,true);
+  createFragments(false);
   ScrollViewExt scrollView=(ScrollViewExt)findViewById(R.id.scroll_view_stats);
   if (scrollView != null) {
     scrollView.setScrollViewListener(this);
@@ -81,13 +81,14 @@
         }
         AppLog.d(T.STATS,"NEW TIME FRAME : " + selectedTimeframe.getLabel());
         mCurrentTimeframe=selectedTimeframe;
-        if (NetworkUtils.isNetworkAvailable(StatsActivity.this)) {
-          String date=StatsUtils.getCurrentDateTZ(mLocalBlogID);
+        mRequestedDate=StatsUtils.getCurrentDateTZ(mLocalBlogID);
+        if (NetworkUtils.checkConnection(StatsActivity.this)) {
           mSwipeToRefreshHelper.setRefreshing(true);
-          refreshStats(selectedTimeframe,date,true,true);
-          emptyDataModelInFragments(true,false);
-          loadStatsFragments(false,true,false);
         }
+ else {
+          mSwipeToRefreshHelper.setRefreshing(false);
+        }
+        createFragments(true);
       }
       @Override public void onNothingSelected(      AdapterView<?> parent){
       }

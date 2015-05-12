@@ -1,11 +1,7 @@
 {
-  String state=android.os.Environment.getExternalStorageState();
-  if (!state.equals(android.os.Environment.MEDIA_MOUNTED)) {
-    showSDCardRequiredDialog(activity);
-  }
- else {
-    Intent intent=prepareLaunchCameraIntent(callback);
-    activity.startActivityForResult(intent,RequestCodes.TAKE_PHOTO);
+  Intent intent=preparelaunchCamera(activity,callback);
+  if (intent != null) {
     AppLockManager.getInstance().setExtendedTimeout();
+    activity.startActivityForResult(intent,RequestCode.ACTIVITY_REQUEST_CODE_TAKE_PHOTO);
   }
 }

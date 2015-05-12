@@ -23,12 +23,19 @@
       holder.txtLikeCount.setSelected(comment.isLikedByCurrentUser);
       holder.txtLikeCount.setVisibility(View.VISIBLE);
     }
-    holder.layoutLikes.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View v){
-        toggleLike(v.getContext(),holder,position);
-      }
+    if (mIsLoggedOutReader) {
+      holder.imgLike.setEnabled(false);
+      holder.txtLike.setEnabled(false);
+      holder.txtLikeCount.setEnabled(false);
     }
+ else {
+      holder.layoutLikes.setOnClickListener(new View.OnClickListener(){
+        @Override public void onClick(        View v){
+          toggleLike(v.getContext(),holder,position);
+        }
+      }
 );
+    }
     holder.txtLikeCount.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
         ReaderActivityLauncher.showReaderLikingUsers(v.getContext(),comment);

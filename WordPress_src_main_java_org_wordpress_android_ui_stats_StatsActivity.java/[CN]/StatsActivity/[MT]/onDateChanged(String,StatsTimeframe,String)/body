@@ -3,7 +3,11 @@
     return;
   }
   mRequestedDate=date;
-  refreshStats(timeframe,date,false,false);
-  emptyDataModelInFragments(false,false);
-  loadStatsFragments(false,false,false);
+  updateTimeframeAndDateAndStartRefreshOfFragments(false);
+  if (NetworkUtils.checkConnection(StatsActivity.this)) {
+    mSwipeToRefreshHelper.setRefreshing(true);
+  }
+ else {
+    mSwipeToRefreshHelper.setRefreshing(false);
+  }
 }

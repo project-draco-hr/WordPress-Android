@@ -2,9 +2,8 @@
   try {
     JSONObject yearsJSON=response.getJSONObject("years");
     String[] orderedKeys=orderKeys(yearsJSON.keys(),yearsJSON.length());
-    for (int j=0; j < orderedKeys.length; j++) {
+    for (    String currentYearKey : orderedKeys) {
       Year currentYear=new Year();
-      String currentYearKey=orderedKeys[j];
       currentYear.setLabel(currentYearKey);
       JSONObject currentYearObj=yearsJSON.getJSONObject(currentYearKey);
       int total=currentYearObj.getInt("total");
@@ -17,7 +16,7 @@
         int currentMonthVisits=monthsJSON.getInt(currentMonthKey);
         monthsList.add(new Month(currentMonthKey,currentMonthVisits));
       }
-      Collections.sort(monthsList,new java.util.Comparator<Month>(){
+      Collections.sort(monthsList,new Comparator<Month>(){
         public int compare(        Month o1,        Month o2){
           int v1=Integer.parseInt(o1.getMonth());
           int v2=Integer.parseInt(o2.getMonth());
