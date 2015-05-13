@@ -1,14 +1,19 @@
 {
   if (holder instanceof ReaderToolbarHolder) {
     final ReaderToolbarHolder toolbarHolder=(ReaderToolbarHolder)holder;
-    toolbarHolder.toolbar.setVisibility(View.VISIBLE);
+    toolbarHolder.toolbar.inflateMenu(R.menu.reader_list);
+    toolbarHolder.toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener(){
+      @Override public boolean onMenuItemClick(      MenuItem menuItem){
+        if (menuItem.getItemId() == R.id.menu_tags) {
+          return true;
+        }
+        return false;
+      }
+    }
+);
   }
  else   if (holder instanceof ReaderPostViewHolder) {
     final ReaderPost post=getItem(position);
-    if (post == null) {
-      AppLog.e(AppLog.T.READER,"null post in reader post adapter");
-      return;
-    }
     final ReaderPostViewHolder postHolder=(ReaderPostViewHolder)holder;
     ReaderTypes.ReaderPostListType postListType=getPostListType();
     postHolder.txtTitle.setText(post.getTitle());
