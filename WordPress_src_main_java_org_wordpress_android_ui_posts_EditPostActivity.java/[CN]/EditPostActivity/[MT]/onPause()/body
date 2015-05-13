@@ -1,5 +1,11 @@
 {
   super.onPause();
+  try {
+    unregisterReceiver(mGalleryReceiver);
+  }
+ catch (  IllegalArgumentException e) {
+    AppLog.d(T.EDITOR,"Illegal state! Can't unregister receiver that was no registered");
+  }
   stopMediaUploadService();
   mAutoSaveTimer.cancel();
 }
