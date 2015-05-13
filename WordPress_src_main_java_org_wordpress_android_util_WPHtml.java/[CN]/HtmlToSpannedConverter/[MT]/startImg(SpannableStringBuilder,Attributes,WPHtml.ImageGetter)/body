@@ -1,15 +1,15 @@
 {
-  if (ctx == null)   return;
+  if (mContext == null)   return;
   String src=attributes.getValue("android-uri");
   Bitmap resizedBitmap=null;
   try {
-    resizedBitmap=ImageUtils.getWPImageSpanThumbnailFromFilePath(ctx,src,mMaxImageWidth);
+    resizedBitmap=ImageUtils.getWPImageSpanThumbnailFromFilePath(mContext,src,mMaxImageWidth);
     if (resizedBitmap == null && src != null) {
       if (src.contains("video")) {
-        resizedBitmap=BitmapFactory.decodeResource(ctx.getResources(),org.wordpress.android.editor.R.drawable.media_movieclip);
+        resizedBitmap=BitmapFactory.decodeResource(mContext.getResources(),org.wordpress.android.editor.R.drawable.media_movieclip);
       }
  else {
-        resizedBitmap=BitmapFactory.decodeResource(ctx.getResources(),R.drawable.media_image_placeholder);
+        resizedBitmap=BitmapFactory.decodeResource(mContext.getResources(),R.drawable.media_image_placeholder);
       }
     }
   }
@@ -23,8 +23,8 @@
     if (curStream == null) {
       return;
     }
-    WPImageSpan is=new WPImageSpan(ctx,resizedBitmap,curStream);
-    MediaFile mf=WordPress.wpDB.getMediaFile(src,post);
+    WPImageSpan is=new WPImageSpan(mContext,resizedBitmap,curStream);
+    MediaFile mf=WordPress.wpDB.getMediaFile(src,mPost);
     if (mf != null) {
       is.setMediaFile(mf);
       is.setImageSource(curStream);
@@ -33,8 +33,8 @@
       text.setSpan(as,text.getSpanStart(is),text.getSpanEnd(is),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
   }
- else   if (post != null) {
-    if (post.isLocalDraft()) {
+ else   if (mPost != null) {
+    if (mPost.isLocalDraft()) {
       if (attributes != null) {
         text.append("<img");
         for (int i=0; i < attributes.getLength(); i++) {

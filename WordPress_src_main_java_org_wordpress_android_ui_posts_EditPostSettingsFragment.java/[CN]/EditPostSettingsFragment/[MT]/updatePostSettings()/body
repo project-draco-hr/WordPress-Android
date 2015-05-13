@@ -1,41 +1,42 @@
 {
-  Post post=mActivity.getPost();
-  if (post == null)   return;
+  if (!isAdded() || mPost == null) {
+    return;
+  }
   String password=(mPasswordEditText.getText() != null) ? mPasswordEditText.getText().toString() : "";
   String pubDate=(mPubDateText.getText() != null) ? mPubDateText.getText().toString() : "";
   String excerpt=(mExcerptEditText.getText() != null) ? mExcerptEditText.getText().toString() : "";
   long pubDateTimestamp=0;
-  if (mIsCustomPubDate && pubDate.equals(getResources().getText(R.string.immediately)) && !post.isLocalDraft()) {
+  if (mIsCustomPubDate && pubDate.equals(getResources().getText(R.string.immediately)) && !mPost.isLocalDraft()) {
     Date d=new Date();
     pubDateTimestamp=d.getTime();
   }
  else   if (!pubDate.equals(getResources().getText(R.string.immediately))) {
     if (mIsCustomPubDate)     pubDateTimestamp=mCustomPubDate;
- else     if (post.getDate_created_gmt() > 0)     pubDateTimestamp=post.getDate_created_gmt();
+ else     if (mPost.getDate_created_gmt() > 0)     pubDateTimestamp=mPost.getDate_created_gmt();
   }
- else   if (pubDate.equals(getResources().getText(R.string.immediately)) && post.isLocalDraft()) {
-    post.setDate_created_gmt(0);
-    post.setDateCreated(0);
+ else   if (pubDate.equals(getResources().getText(R.string.immediately)) && mPost.isLocalDraft()) {
+    mPost.setDate_created_gmt(0);
+    mPost.setDateCreated(0);
   }
   String tags="", postFormat="";
-  if (!post.isPage()) {
+  if (!mPost.isPage()) {
     tags=(mTagsEditText.getText() != null) ? mTagsEditText.getText().toString() : "";
     if (mPostFormats != null && mPostFormatSpinner.getSelectedItemPosition() < mPostFormats.length) {
       postFormat=mPostFormats[mPostFormatSpinner.getSelectedItemPosition()];
     }
   }
   String status=getPostStatusForSpinnerPosition(mStatusSpinner.getSelectedItemPosition());
-  if (post.isUploaded() && post.getPostStatus().equals(PostStatus.toString(PostStatus.DRAFT)) && status.equals(PostStatus.toString(PostStatus.PUBLISHED))) {
-    post.setChangedFromLocalDraftToPublished(true);
+  if (mPost.isUploaded() && mPost.getPostStatus().equals(PostStatus.toString(PostStatus.DRAFT)) && status.equals(PostStatus.toString(PostStatus.PUBLISHED))) {
+    mPost.setChangedFromLocalDraftToPublished(true);
   }
-  if (post.supportsLocation()) {
-    post.setLocation(mPostLocation);
+  if (mPost.supportsLocation()) {
+    mPost.setLocation(mPostLocation);
   }
-  post.setPostExcerpt(excerpt);
-  post.setDate_created_gmt(pubDateTimestamp);
-  post.setJSONCategories(new JSONArray(mCategories));
-  post.setKeywords(tags);
-  post.setPostStatus(status);
-  post.setPassword(password);
-  post.setPostFormat(postFormat);
+  mPost.setPostExcerpt(excerpt);
+  mPost.setDate_created_gmt(pubDateTimestamp);
+  mPost.setJSONCategories(new JSONArray(mCategories));
+  mPost.setKeywords(tags);
+  mPost.setPostStatus(status);
+  mPost.setPassword(password);
+  mPost.setPostFormat(postFormat);
 }
