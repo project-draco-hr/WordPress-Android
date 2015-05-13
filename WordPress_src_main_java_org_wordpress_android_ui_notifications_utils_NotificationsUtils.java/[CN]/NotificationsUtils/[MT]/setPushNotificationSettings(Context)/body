@@ -16,7 +16,7 @@
   if (settingsJson == null)   return;
   Gson gson=new Gson();
   Map<String,StringMap<String>> notificationSettings=gson.fromJson(settingsJson,HashMap.class);
-  Map<String,Object> updatedSettings=new HashMap<String,Object>();
+  Map<String,Object> updatedSettings=new HashMap<>();
   if (notificationSettings == null)   return;
   StringMap<?> mutedBlogsMap=notificationSettings.get("muted_blogs");
   StringMap<?> muteUntilMap=notificationSettings.get("mute_until");
@@ -30,7 +30,7 @@
   if (muteUntilMap != null && muteUntilMap.get("value") != null) {
     updatedSettings.put("mute_until",muteUntilMap.get("value"));
   }
-  ArrayList<StringMap<Double>> mutedBlogsList=new ArrayList<StringMap<Double>>();
+  ArrayList<StringMap<Double>> mutedBlogsList=new ArrayList<>();
   for (  StringMap<Double> userBlog : blogsList) {
     if (MapUtils.getMapBool(userBlog,"value")) {
       mutedBlogsList.add(userBlog);
@@ -38,7 +38,7 @@
   }
   if (updatedSettings.size() == 0 && mutedBlogsList.size() == 0)   return;
   updatedSettings.put("muted_blogs",mutedBlogsList);
-  Map<String,String> contentStruct=new HashMap<String,String>();
+  Map<String,String> contentStruct=new HashMap<>();
   contentStruct.put("device_token",gcmToken);
   contentStruct.put("device_family","android");
   contentStruct.put("app_secret_key",NotificationsUtils.getAppPushNotificationsName());
