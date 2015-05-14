@@ -3,8 +3,9 @@
     return START_NOT_STICKY;
   }
   EventBus.getDefault().post(new ReaderEvents.UpdateCommentsStarted());
-  long blogId=intent.getLongExtra(ARG_BLOG_ID,0);
-  long postId=intent.getLongExtra(ARG_POST_ID,0);
+  final long blogId=intent.getLongExtra(ARG_BLOG_ID,0);
+  final long postId=intent.getLongExtra(ARG_POST_ID,0);
+  final long commentId=intent.getLongExtra(ARG_COMMENT_ID,0);
   boolean requestNextPage=intent.getBooleanExtra(ARG_NEXT_PAGE,false);
   int pageNumber;
   if (requestNextPage) {
@@ -16,8 +17,21 @@
   }
   updateCommentsForPost(blogId,postId,pageNumber,new UpdateResultListener(){
     @Override public void onUpdateResult(    UpdateResult result){
-      EventBus.getDefault().post(new ReaderEvents.UpdateCommentsEnded(result));
-      stopSelf();
+      if (commentId > 0) {
+        if (ReaderCommentTable.commentExists(blogId,postId,commentId) || !result.isNewOrChanged()) {
+          EventBus.getDefault().post(new ReaderEvents.UpdateCommentsEnded(result));
+          stopSelf();
+        }
+ else {
+          int prevPage=ReaderCommentTable.getLastPageNumberForPost(blogId,postId);
+          int nextPage=prevPage + 1;
+          updateCommentsForPost(blogId,postId,nextPage,this);
+        }
+      }
+ else {
+        EventBus.getDefault().post(new ReaderEvents.UpdateCommentsEnded(result));
+        stopSelf();
+      }
     }
   }
 );
