@@ -1,0 +1,159 @@
+{
+  final ReaderPost post=getItem(position);
+  final ReaderPostViewHolder postHolder=(ReaderPostViewHolder)holder;
+  ReaderTypes.ReaderPostListType postListType=getPostListType();
+  postHolder.txtTitle.setText(post.getTitle());
+  postHolder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(post.getDatePublished()));
+  postHolder.toolbarSpacer.setVisibility(position == 0 && mShowToolbarSpacer ? View.VISIBLE : View.GONE);
+  if (postListType == ReaderTypes.ReaderPostListType.BLOG_PREVIEW) {
+    postHolder.layoutPostHeader.setVisibility(View.GONE);
+  }
+ else {
+    postHolder.layoutPostHeader.setVisibility(View.VISIBLE);
+    postHolder.imgAvatar.setImageUrl(post.getPostAvatarForDisplay(mAvatarSz),WPNetworkImageView.ImageType.AVATAR);
+    if (post.hasBlogName()) {
+      postHolder.txtBlogName.setText(post.getBlogName());
+    }
+ else     if (post.hasAuthorName()) {
+      postHolder.txtBlogName.setText(post.getAuthorName());
+    }
+ else {
+      postHolder.txtBlogName.setText(null);
+    }
+    postHolder.followButton.setIsFollowed(post.isFollowedByCurrentUser);
+    postHolder.followButton.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        toggleFollow((ReaderFollowButton)v,position);
+      }
+    }
+);
+    postHolder.imgAvatar.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        ReaderActivityLauncher.showReaderBlogPreview(view.getContext(),post);
+      }
+    }
+);
+  }
+  if (post.hasExcerpt()) {
+    postHolder.txtText.setVisibility(View.VISIBLE);
+    postHolder.txtText.setText(post.getExcerpt());
+  }
+ else {
+    postHolder.txtText.setVisibility(View.GONE);
+  }
+  final int titleMargin;
+  if (post.hasFeaturedImage()) {
+    final String imageUrl=post.getFeaturedImageForDisplay(mPhotonWidth,mPhotonHeight);
+    postHolder.imgFeatured.setImageUrl(imageUrl,WPNetworkImageView.ImageType.PHOTO);
+    postHolder.imgFeatured.setVisibility(View.VISIBLE);
+    titleMargin=mMarginLarge;
+  }
+ else   if (post.hasFeaturedVideo()) {
+    postHolder.imgFeatured.setVideoUrl(post.postId,post.getFeaturedVideo());
+    postHolder.imgFeatured.setVisibility(View.VISIBLE);
+    titleMargin=mMarginLarge;
+  }
+ else {
+    postHolder.imgFeatured.setVisibility(View.GONE);
+    titleMargin=(postHolder.layoutPostHeader.getVisibility() == View.VISIBLE ? 0 : mMarginLarge);
+  }
+  RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)postHolder.txtTitle.getLayoutParams();
+  params.topMargin=titleMargin;
+  final String tagToDisplay=(mCurrentTag != null ? post.getTagForDisplay(mCurrentTag.getTagName()) : null);
+  if (!TextUtils.isEmpty(tagToDisplay)) {
+    postHolder.txtTag.setText(tagToDisplay);
+    postHolder.txtTag.setVisibility(View.VISIBLE);
+    postHolder.txtTag.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        if (mOnTagSelectedListener != null) {
+          mOnTagSelectedListener.onTagSelected(tagToDisplay);
+        }
+      }
+    }
+);
+  }
+ else {
+    postHolder.txtTag.setVisibility(View.GONE);
+    postHolder.txtTag.setOnClickListener(null);
+  }
+  boolean showLikes=post.isWP() && post.isLikesEnabled;
+  boolean showComments=post.isWP() && (post.isCommentsOpen || post.numReplies > 0);
+  if (showLikes || showComments) {
+    showCounts(postHolder,post,false);
+  }
+  if (showLikes) {
+    postHolder.likeCount.setSelected(post.isLikedByCurrentUser);
+    postHolder.likeCount.setVisibility(View.VISIBLE);
+    postHolder.likeCount.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        toggleLike(v.getContext(),postHolder,position);
+      }
+    }
+);
+  }
+ else {
+    postHolder.likeCount.setVisibility(View.GONE);
+    postHolder.likeCount.setOnClickListener(null);
+  }
+  if (showComments) {
+    postHolder.commentCount.setVisibility(View.VISIBLE);
+    postHolder.commentCount.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ReaderActivityLauncher.showReaderComments(v.getContext(),post);
+      }
+    }
+);
+  }
+ else {
+    postHolder.commentCount.setVisibility(View.GONE);
+    postHolder.commentCount.setOnClickListener(null);
+  }
+  if (post.canReblog()) {
+    showReblogStatus(postHolder.imgBtnReblog,post.isRebloggedByCurrentUser);
+    postHolder.imgBtnReblog.setVisibility(View.VISIBLE);
+    if (!post.isRebloggedByCurrentUser) {
+      postHolder.imgBtnReblog.setOnClickListener(new View.OnClickListener(){
+        @Override public void onClick(        View v){
+          ReaderAnim.animateReblogButton(postHolder.imgBtnReblog);
+          if (mReblogListener != null) {
+            mReblogListener.onRequestReblog(post,v);
+          }
+        }
+      }
+);
+    }
+ else {
+      postHolder.imgBtnReblog.setOnClickListener(null);
+    }
+  }
+ else {
+    postHolder.imgBtnReblog.setVisibility(View.INVISIBLE);
+    postHolder.imgBtnReblog.setOnClickListener(null);
+  }
+  if (post.isWP() && !post.isPrivate && postListType == ReaderTypes.ReaderPostListType.TAG_FOLLOWED) {
+    postHolder.imgMore.setVisibility(View.VISIBLE);
+    postHolder.imgMore.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        if (mOnPostPopupListener != null) {
+          mOnPostPopupListener.onShowPostPopup(view,post);
+        }
+      }
+    }
+);
+  }
+ else {
+    postHolder.imgMore.setVisibility(View.GONE);
+    postHolder.imgMore.setOnClickListener(null);
+  }
+  if (mCanRequestMorePosts && mDataRequestedListener != null && (position >= getItemCount() - 1)) {
+    mDataRequestedListener.onRequestData();
+  }
+  if (mPostSelectedListener != null) {
+    postHolder.cardView.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        mPostSelectedListener.onPostSelected(post.blogId,post.postId);
+      }
+    }
+);
+  }
+}

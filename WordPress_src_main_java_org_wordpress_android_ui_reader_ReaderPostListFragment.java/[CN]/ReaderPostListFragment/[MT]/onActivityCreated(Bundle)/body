@@ -1,40 +1,30 @@
 {
   super.onActivityCreated(savedInstanceState);
-  if (hasFragmentToolbar()) {
-    mFragmentToolbar=(Toolbar)getActivity().findViewById(R.id.toolbar_reader);
-    mFragmentToolbar.setVisibility(View.VISIBLE);
-    mFragmentToolbar.inflateMenu(R.menu.reader_list);
-    if (mIsLoggedOutReader) {
-      mFragmentToolbar.findViewById(R.id.menu_tags).setVisibility(View.GONE);
-    }
- else {
-      mFragmentToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener(){
-        @Override public boolean onMenuItemClick(        MenuItem menuItem){
-          if (menuItem.getItemId() == R.id.menu_tags) {
-            ReaderActivityLauncher.showReaderSubsForResult(getActivity());
-            return true;
-          }
-          return false;
+  if (shouldShowTagToolbar()) {
+    mTagToolbar=(Toolbar)getActivity().findViewById(R.id.toolbar_reader);
+    mTagToolbar.setVisibility(View.VISIBLE);
+    mTagToolbar.inflateMenu(R.menu.reader_list);
+    mTagToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener(){
+      @Override public boolean onMenuItemClick(      MenuItem menuItem){
+        if (menuItem.getItemId() == R.id.menu_tags) {
+          ReaderActivityLauncher.showReaderSubsForResult(getActivity());
+          return true;
         }
-      }
-);
-    }
-    mRecyclerView.setScrollDirectionListener(new ScrollDirectionListener(){
-      @Override public void onScrollUp(){
-        showFragmentToolbar(true);
-        checkSwipeToRefresh();
-      }
-      @Override public void onScrollDown(){
-        showFragmentToolbar(false);
-        checkSwipeToRefresh();
-      }
-      @Override public void onScrollCompleted(){
-        checkSwipeToRefresh();
+        return false;
       }
     }
 );
-    if (mSpinner == null) {
-      enableTagSpinner(mFragmentToolbar);
+    int toolbarHeight=getResources().getDimensionPixelSize(R.dimen.toolbar_height);
+    mTagToolbarOffset=(int)(toolbarHeight + (toolbarHeight * 0.25));
+    mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener(){
+      @Override public void onScrolled(      RecyclerView recyclerView,      int dx,      int dy){
+        super.onScrolled(recyclerView,dx,dy);
+        positionTagToolbar();
+      }
+    }
+);
+    if (mTagSpinner == null) {
+      enableTagSpinner();
     }
     selectTagInSpinner(getCurrentTag());
   }
@@ -47,7 +37,7 @@
       updatePostsWithTag(getCurrentTag(),UpdateAction.REQUEST_NEWER);
     }
   }
-  if (getPostListType().isPreviewType() && !mIsLoggedOutReader) {
+  if (getPostListType().isPreviewType()) {
     createFollowButton();
   }
 switch (getPostListType()) {
