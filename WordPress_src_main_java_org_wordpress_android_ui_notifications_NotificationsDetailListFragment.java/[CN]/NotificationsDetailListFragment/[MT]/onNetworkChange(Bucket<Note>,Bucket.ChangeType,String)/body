@@ -7,6 +7,10 @@
     }
     try {
       mNote=noteBucket.get(noteId);
+      if (!mNote.isUnread() && mIsUnread) {
+        mIsUnread=false;
+        return;
+      }
       if (mNote.isUnread()) {
         mNote.markAsRead();
         EventBus.getDefault().post(new NotificationEvents.NotificationsChanged());
