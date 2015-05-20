@@ -19,14 +19,14 @@
         Map<String,String> properties=new HashMap<>();
         properties.put("notification_type",note.getType());
         AnalyticsTracker.track(AnalyticsTracker.Stat.NOTIFICATIONS_OPENED_NOTIFICATION_DETAILS,properties);
-        if (note.isUnread()) {
-          note.markAsRead();
-          EventBus.getDefault().post(new NotificationEvents.NotificationsChanged());
-        }
         Fragment detailFragment=getDetailFragmentForNote(note);
         getFragmentManager().beginTransaction().add(R.id.notifications_detail_container,detailFragment).commit();
         if (getSupportActionBar() != null) {
           getSupportActionBar().setTitle(note.getTitle());
+        }
+        if (note.isUnread()) {
+          note.markAsRead();
+          EventBus.getDefault().post(new NotificationEvents.NotificationsChanged());
         }
       }
  catch (      BucketObjectMissingException e) {

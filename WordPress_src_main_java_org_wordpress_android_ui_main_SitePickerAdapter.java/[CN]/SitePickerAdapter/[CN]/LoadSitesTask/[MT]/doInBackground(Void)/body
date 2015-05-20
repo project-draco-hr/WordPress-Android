@@ -2,13 +2,20 @@
   List<Map<String,Object>> blogs;
   String[] extraFields={"isHidden","dotcomFlag"};
   if (mShowHiddenSites) {
-    blogs=WordPress.wpDB.getBlogsBy("dotcomFlag=1",extraFields);
+    if (mShowSelfHostedSites) {
+      blogs=WordPress.wpDB.getBlogsBy(null,extraFields);
+    }
+ else {
+      blogs=WordPress.wpDB.getBlogsBy("dotcomFlag=1",extraFields);
+    }
   }
  else {
-    blogs=WordPress.wpDB.getBlogsBy("isHidden=0 AND dotcomFlag=1",extraFields);
-  }
-  if (mShowSelfHostedSites) {
-    blogs.addAll(WordPress.wpDB.getBlogsBy("dotcomFlag=0",extraFields));
+    if (mShowSelfHostedSites) {
+      blogs=WordPress.wpDB.getBlogsBy("dotcomFlag=0 OR (isHidden=0 AND dotcomFlag=1) ",extraFields);
+    }
+ else {
+      blogs=WordPress.wpDB.getBlogsBy("isHidden=0 AND dotcomFlag=1",extraFields);
+    }
   }
   SiteList sites=new SiteList(blogs);
   Collections.sort(sites,new Comparator<SiteRecord>(){
