@@ -1,0 +1,19 @@
+{
+  super.onDraw(canvas);
+  String text=isMarkValid(mMark) ? String.valueOf(mMark) + "%" : "?";
+  if (!TextUtils.isEmpty(text)) {
+    float textHeight=mTextPaint.descent() + mTextPaint.ascent();
+    float yPositionOfText=(getWidth() - textHeight) / 2.0f;
+    canvas.drawText(text,(getWidth() - mTextPaint.measureText(text)) / 2.0f,yPositionOfText,mTextPaint);
+    String viewsText=getResources().getString(R.string.stats_views);
+    float paddingBetweenTextRows=-10f;
+    canvas.drawText(viewsText,(getWidth() - mSecondLineTextPaint.measureText(viewsText)) / 2.0f,yPositionOfText - (textHeight + paddingBetweenTextRows),mSecondLineTextPaint);
+  }
+  float delta=mStrokeWidth / 2f;
+  canvas.translate(0f,2 * delta);
+  mOuterRect.set(delta,delta,getWidth() - delta,getHeight() - delta);
+  float innerCircleRadius=(getWidth() - mStrokeWidth) / 2f;
+  canvas.drawCircle(getWidth() / 2f,getHeight() / 2f,innerCircleRadius,mInnerCirclePaint);
+  canvas.drawArc(mOuterRect,150,240f,false,mBgRingPaint);
+  canvas.drawArc(mOuterRect,150,getMarkAngle(),false,mPaint);
+}
