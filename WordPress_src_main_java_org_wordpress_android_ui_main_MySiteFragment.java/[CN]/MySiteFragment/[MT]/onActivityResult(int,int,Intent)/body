@@ -8,6 +8,30 @@ if (addFragment != null) {
   addFragment.onActivityResult(requestCode,resultCode,data);
 }
 break;
+case RequestCodes.EDIT_POST:
+View view=getView();
+if (data == null || view == null) {
+break;
+}
+if (!data.getBooleanExtra(EditPostActivity.EXTRA_IS_PAGE,false)) {
+mPostEdited=resultCode == Activity.RESULT_OK;
+if (mPostEdited) {
+showAlert(view.findViewById(R.id.postsGlowBackground));
+}
+ else {
+view.findViewById(R.id.postsGlowBackground).setAlpha(0.0f);
+}
+}
+ else {
+mPageEdited=resultCode == Activity.RESULT_OK;
+if (mPageEdited) {
+showAlert(view.findViewById(R.id.pagesGlowBackground));
+}
+ else {
+view.findViewById(R.id.pagesGlowBackground).setAlpha(0.0f);
+}
+}
+break;
 default :
 break;
 }
