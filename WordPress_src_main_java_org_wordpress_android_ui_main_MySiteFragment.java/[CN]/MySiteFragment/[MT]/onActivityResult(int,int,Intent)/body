@@ -10,26 +10,14 @@ if (addFragment != null) {
 break;
 case RequestCodes.EDIT_POST:
 View view=getView();
-if (data == null || view == null) {
+if (data == null || view == null || resultCode != Activity.RESULT_OK || !WordPress.currentPost.isLocalDraft()) {
 break;
 }
-if (!data.getBooleanExtra(EditPostActivity.EXTRA_IS_PAGE,false)) {
-mPostEdited=resultCode == Activity.RESULT_OK;
-if (mPostEdited) {
-showAlert(view.findViewById(R.id.postsGlowBackground));
-}
- else {
-view.findViewById(R.id.postsGlowBackground).setAlpha(0.0f);
-}
-}
- else {
-mPageEdited=resultCode == Activity.RESULT_OK;
-if (mPageEdited) {
+if (data.getBooleanExtra(EditPostActivity.EXTRA_IS_PAGE,false)) {
 showAlert(view.findViewById(R.id.pagesGlowBackground));
 }
  else {
-view.findViewById(R.id.pagesGlowBackground).setAlpha(0.0f);
-}
+showAlert(view.findViewById(R.id.postsGlowBackground));
 }
 break;
 default :

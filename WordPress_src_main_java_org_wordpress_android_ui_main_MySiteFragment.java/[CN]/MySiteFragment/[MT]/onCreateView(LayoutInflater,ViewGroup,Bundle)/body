@@ -8,14 +8,6 @@
   mBlogSubtitleTextView=(WPTextView)rootView.findViewById(R.id.my_site_subtitle_label);
   mLookAndFeelHeader=(LinearLayout)rootView.findViewById(R.id.my_site_look_and_feel_header);
   mThemesContainer=(RelativeLayout)rootView.findViewById(R.id.my_site_themes_container);
-  View postsGlow=rootView.findViewById(R.id.postsGlowBackground);
-  if (savedInstanceState != null && (mPostEdited=savedInstanceState.getBoolean(KEY_POST_EDITED,false))) {
-    showAlert(postsGlow);
-  }
-  View pagesGlow=rootView.findViewById(R.id.pagesGlowBackground);
-  if (savedInstanceState != null && (mPageEdited=savedInstanceState.getBoolean(KEY_PAGE_EDITED,false))) {
-    showAlert(pagesGlow);
-  }
   WPTextView switchSiteTextView=(WPTextView)rootView.findViewById(R.id.switch_site);
   switchSiteTextView.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
@@ -43,8 +35,6 @@
   WPTextView blogPostsTextView=(WPTextView)rootView.findViewById(R.id.my_site_blog_posts_text_view);
   blogPostsTextView.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
-      mPostEdited=false;
-      getView().findViewById(R.id.postsGlowBackground).clearAnimation();
       ActivityLauncher.viewCurrentBlogPosts(getActivity());
     }
   }
@@ -59,8 +49,6 @@
   WPTextView pagesTextView=(WPTextView)rootView.findViewById(R.id.my_site_pages_text_view);
   pagesTextView.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
-      mPageEdited=false;
-      getView().findViewById(R.id.pagesGlowBackground).clearAnimation();
       ActivityLauncher.viewCurrentBlogPages(getActivity());
     }
   }
@@ -96,18 +84,14 @@
   LinearLayout addPostContainer=(LinearLayout)rootView.findViewById(R.id.my_site_posts_add_button_container);
   addPostContainer.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
-      mPostEdited=false;
-      getView().findViewById(R.id.postsGlowBackground).clearAnimation();
-      ActivityLauncher.addNewBlogPostOrPage(getActivity(),mBlog,false);
+      ActivityLauncher.addNewBlogPostOrPageForResult(getActivity(),mBlog,false);
     }
   }
 );
   LinearLayout addPageContainer=(LinearLayout)rootView.findViewById(R.id.my_site_pages_add_button_container);
   addPageContainer.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
-      mPageEdited=false;
-      getView().findViewById(R.id.pagesGlowBackground).clearAnimation();
-      ActivityLauncher.addNewBlogPostOrPage(getActivity(),mBlog,true);
+      ActivityLauncher.addNewBlogPostOrPageForResult(getActivity(),mBlog,true);
     }
   }
 );
