@@ -1,0 +1,16 @@
+{
+  int newVisibility=(show ? View.VISIBLE : View.GONE);
+  if (fabView == null || fabView.getVisibility() == newVisibility) {
+    return;
+  }
+  final WeakReference<View> weakView=new WeakReference<View>(fabView);
+  new Handler().postDelayed(new Runnable(){
+    @Override public void run(){
+      View view=weakView.get();
+      if (view != null) {
+        showFab(view,show);
+      }
+    }
+  }
+,delayMs);
+}
