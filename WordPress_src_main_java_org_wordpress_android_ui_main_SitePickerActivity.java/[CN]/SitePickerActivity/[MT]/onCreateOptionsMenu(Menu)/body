@@ -8,12 +8,20 @@
   MenuItemCompat.setOnActionExpandListener(menuSearch,new MenuItemCompat.OnActionExpandListener(){
     @Override public boolean onMenuItemActionExpand(    MenuItem item){
       item.getActionView().requestFocus();
-      InputMethodManager imm=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-      imm.toggleSoftInput(0,InputMethodManager.HIDE_NOT_ALWAYS);
+      toggleKeyboard();
+      SitePickerSearchAdapter sitePickerSearchAdapter=new SitePickerSearchAdapter();
+      mRecycleView.swapAdapter(sitePickerSearchAdapter,true);
       return true;
     }
     @Override public boolean onMenuItemActionCollapse(    MenuItem item){
+      toggleKeyboard();
+      mRecycleView.swapAdapter(getAdapter(),true);
+      getAdapter().loadSites();
       return true;
+    }
+    private void toggleKeyboard(){
+      InputMethodManager imm=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+      imm.toggleSoftInput(0,InputMethodManager.HIDE_NOT_ALWAYS);
     }
   }
 );
