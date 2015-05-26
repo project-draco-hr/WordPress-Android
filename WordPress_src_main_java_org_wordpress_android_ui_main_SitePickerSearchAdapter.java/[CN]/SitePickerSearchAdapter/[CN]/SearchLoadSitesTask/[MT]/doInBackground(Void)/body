@@ -1,0 +1,13 @@
+{
+  List<Map<String,Object>> blogs;
+  String[] extraFields={"isHidden","dotcomFlag"};
+  blogs=WordPress.wpDB.getBlogsBy(null,extraFields);
+  SiteList sites=new SiteList(blogs);
+  Collections.sort(sites,new Comparator<SiteRecord>(){
+    public int compare(    SiteRecord site1,    SiteRecord site2){
+      return site1.getBlogNameOrHostName().compareToIgnoreCase(site2.getBlogNameOrHostName());
+    }
+  }
+);
+  return sites;
+}

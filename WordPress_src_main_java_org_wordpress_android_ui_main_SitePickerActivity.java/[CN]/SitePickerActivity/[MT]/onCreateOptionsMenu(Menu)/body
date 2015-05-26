@@ -9,8 +9,8 @@
     @Override public boolean onMenuItemActionExpand(    MenuItem item){
       item.getActionView().requestFocus();
       toggleKeyboard();
-      SitePickerSearchAdapter sitePickerSearchAdapter=new SitePickerSearchAdapter();
-      mRecycleView.swapAdapter(sitePickerSearchAdapter,true);
+      mSearchAdapter=new SitePickerSearchAdapter(getApplicationContext(),mCurrentLocalId);
+      mRecycleView.swapAdapter(mSearchAdapter,true);
       return true;
     }
     @Override public boolean onMenuItemActionCollapse(    MenuItem item){
@@ -18,10 +18,6 @@
       mRecycleView.swapAdapter(getAdapter(),true);
       getAdapter().loadSites();
       return true;
-    }
-    private void toggleKeyboard(){
-      InputMethodManager imm=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-      imm.toggleSoftInput(0,InputMethodManager.HIDE_NOT_ALWAYS);
     }
   }
 );
