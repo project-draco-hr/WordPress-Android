@@ -1,5 +1,6 @@
 {
   if (mNote == null)   return null;
+  requestReaderContentForNote();
   JSONArray bodyArray=mNote.getBody();
   final List<NoteBlock> noteList=new ArrayList<>();
   if (mNote.getHeader() != null) {
@@ -36,9 +37,6 @@
  else         if (isFooterBlock(noteObject)) {
           noteBlock=new FooterNoteBlock(noteObject,mOnNoteBlockTextClickListener);
           ((FooterNoteBlock)noteBlock).setClickableSpan(JSONUtils.queryJSON(noteObject,"ranges[last]",new JSONObject()),mNote.getType());
-          if (mNote.isUserList() && !ReaderPostTable.postExists(mNote.getSiteId(),mNote.getPostId())) {
-            ReaderPostActions.requestPost(mNote.getSiteId(),mNote.getPostId(),null);
-          }
         }
  else {
           noteBlock=new NoteBlock(noteObject,mOnNoteBlockTextClickListener);
