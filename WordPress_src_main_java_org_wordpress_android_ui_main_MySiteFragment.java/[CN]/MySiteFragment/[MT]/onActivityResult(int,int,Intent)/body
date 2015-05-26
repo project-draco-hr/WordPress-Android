@@ -8,19 +8,17 @@ if (addFragment != null) {
   addFragment.onActivityResult(requestCode,resultCode,data);
 }
 break;
+case RequestCodes.SITE_PICKER:
+if (resultCode == Activity.RESULT_OK) {
+setBlog(WordPress.getCurrentBlog());
+}
+long delayMs=getResources().getInteger(android.R.integer.config_shortAnimTime);
+ReaderAnim.showFabDelayed(mFabView,true,delayMs);
+break;
 case RequestCodes.EDIT_POST:
-View view=getView();
-if (data == null || view == null || resultCode != Activity.RESULT_OK || !data.getBooleanExtra(EditPostActivity.EXTRA_SHOULD_ALERT,false)) {
-break;
+if (resultCode == Activity.RESULT_OK && getView() != null && data != null && data.getBooleanExtra(EditPostActivity.EXTRA_SAVED_AS_LOCAL_DRAFT,false)) {
+showAlert(getView().findViewById(R.id.postsGlowBackground));
 }
-if (data.getBooleanExtra(EditPostActivity.EXTRA_IS_PAGE,false)) {
-showAlert(view.findViewById(R.id.pagesGlowBackground));
-}
- else {
-showAlert(view.findViewById(R.id.postsGlowBackground));
-}
-break;
-default :
 break;
 }
 }
