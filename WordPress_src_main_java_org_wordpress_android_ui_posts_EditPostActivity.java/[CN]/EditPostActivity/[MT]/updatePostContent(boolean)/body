@@ -6,7 +6,12 @@
   String title=StringUtils.notNullStr((String)mEditorFragment.getTitle());
   SpannableStringBuilder postContent;
   if (mEditorFragment.getSpannedContent() != null) {
-    postContent=new SpannableStringBuilder(mEditorFragment.getSpannedContent());
+    try {
+      postContent=new SpannableStringBuilder(mEditorFragment.getSpannedContent());
+    }
+ catch (    IndexOutOfBoundsException e) {
+      postContent=new SpannableStringBuilder(StringUtils.notNullStr((String)mEditorFragment.getContent()));
+    }
   }
  else {
     postContent=new SpannableStringBuilder(StringUtils.notNullStr((String)mEditorFragment.getContent()));

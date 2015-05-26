@@ -8,7 +8,17 @@ if (addFragment != null) {
   addFragment.onActivityResult(requestCode,resultCode,data);
 }
 break;
-default :
+case RequestCodes.SITE_PICKER:
+if (resultCode == Activity.RESULT_OK) {
+setBlog(WordPress.getCurrentBlog());
+}
+long delayMs=getResources().getInteger(android.R.integer.config_shortAnimTime);
+ReaderAnim.showFabDelayed(mFabView,true,delayMs);
+break;
+case RequestCodes.EDIT_POST:
+if (resultCode == Activity.RESULT_OK && getView() != null && data != null && data.getBooleanExtra(EditPostActivity.EXTRA_SAVED_AS_LOCAL_DRAFT,false)) {
+showAlert(getView().findViewById(R.id.postsGlowBackground));
+}
 break;
 }
 }
