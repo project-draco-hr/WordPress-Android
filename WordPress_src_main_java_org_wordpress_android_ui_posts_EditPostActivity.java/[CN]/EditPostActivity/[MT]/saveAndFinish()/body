@@ -3,21 +3,25 @@
   if (mEditorFragment != null && mPost.hasEmptyContentFields()) {
     if (mIsNewPost) {
       WordPress.wpDB.deletePost(mPost);
+      finish();
+      return;
     }
   }
  else   if (mOriginalPost != null && !mPost.hasChanges(mOriginalPost)) {
     WordPress.wpDB.updatePost(mOriginalPost);
     WordPress.currentPost=mOriginalPost;
+    finish();
+    return;
   }
  else {
     savePost(false);
-    WordPress.currentPost=mPost;
-    Intent i=new Intent();
-    i.putExtra(EXTRA_SHOULD_REFRESH,true);
-    i.putExtra(EXTRA_SAVED_AS_LOCAL_DRAFT,true);
-    i.putExtra(EXTRA_IS_PAGE,mIsPage);
-    setResult(RESULT_OK,i);
-    ToastUtils.showToast(this,R.string.editor_toast_changes_saved);
   }
+  WordPress.currentPost=mPost;
+  Intent i=new Intent();
+  i.putExtra(EXTRA_SHOULD_REFRESH,true);
+  i.putExtra(EXTRA_SAVED_AS_LOCAL_DRAFT,true);
+  i.putExtra(EXTRA_IS_PAGE,mIsPage);
+  setResult(RESULT_OK,i);
+  ToastUtils.showToast(this,R.string.editor_toast_changes_saved);
   finish();
 }
