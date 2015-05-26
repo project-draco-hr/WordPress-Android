@@ -6,20 +6,29 @@
   mUsernameTextView=(TextView)rootView.findViewById(R.id.me_username);
   mLoginLogoutTextView=(TextView)rootView.findViewById(R.id.me_login_logout_text_view);
   addDropShadowToAvatar();
-  TextView settingsTextView=(TextView)rootView.findViewById(R.id.me_settings_text_view);
-  settingsTextView.setOnClickListener(new View.OnClickListener(){
+  refreshAccountDetails();
+  rootView.findViewById(R.id.row_settings).setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
       ActivityLauncher.viewAccountSettings(getActivity());
     }
   }
 );
-  TextView supportTextView=(TextView)rootView.findViewById(R.id.me_support_text_view);
-  supportTextView.setOnClickListener(new View.OnClickListener(){
+  rootView.findViewById(R.id.row_support).setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
       ActivityLauncher.viewHelpAndSupport(getActivity(),Tag.ORIGIN_ME_SCREEN_HELP);
     }
   }
 );
-  refreshAccountDetails();
+  rootView.findViewById(R.id.row_logout).setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      if (AccountHelper.isSignedInWordPressDotCom()) {
+        signOutWordPressComWithConfirmation();
+      }
+ else {
+        ActivityLauncher.showSignInForResult(getActivity());
+      }
+    }
+  }
+);
   return rootView;
 }
