@@ -35,9 +35,20 @@
       lp.weight=1;
     }
     tabView.setOnClickListener(tabClickListener);
-    String desc=mContentDescriptions.get(i,null);
+    final String desc=mContentDescriptions.get(i,null);
     if (desc != null) {
       tabView.setContentDescription(desc);
+      tabView.setOnLongClickListener(new OnLongClickListener(){
+        @Override public boolean onLongClick(        View v){
+          int offsetX=v.getLeft();
+          int offsetY=v.getTop() + v.getHeight() + (v.getHeight() / 2);
+          Toast toast=Toast.makeText(v.getContext(),desc,Toast.LENGTH_SHORT);
+          toast.setGravity(Gravity.LEFT | Gravity.TOP,offsetX,offsetY);
+          toast.show();
+          return true;
+        }
+      }
+);
     }
     mTabStrip.addView(tabView);
     if (i == mViewPager.getCurrentItem()) {
