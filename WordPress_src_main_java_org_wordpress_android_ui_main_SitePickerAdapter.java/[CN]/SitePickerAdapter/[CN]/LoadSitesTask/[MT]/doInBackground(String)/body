@@ -1,4 +1,5 @@
 {
+  String searchText=params[0];
   List<Map<String,Object>> blogs;
   String[] extraFields={"isHidden","dotcomFlag"};
   if (mIsInSearchMode) {
@@ -23,6 +24,9 @@
     }
   }
   SiteList sites=new SiteList(blogs);
+  if (mIsInSearchMode) {
+    sites=filteredSitesByText(sites,searchText);
+  }
   Collections.sort(sites,new Comparator<SiteRecord>(){
     public int compare(    SiteRecord site1,    SiteRecord site2){
       return site1.getBlogNameOrHostName().compareToIgnoreCase(site2.getBlogNameOrHostName());
