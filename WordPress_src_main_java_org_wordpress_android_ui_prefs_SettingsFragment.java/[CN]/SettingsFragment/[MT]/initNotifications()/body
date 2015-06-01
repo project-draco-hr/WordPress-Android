@@ -1,30 +1,31 @@
 {
-  if (AccountHelper.getDefaultAccount().hasAccessToken()) {
-    String settingsJson=mSettings.getString(NotificationsUtils.WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,null);
-    if (settingsJson == null) {
-      com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
-        @Override public void onResponse(        JSONObject jsonObject){
-          AppLog.d(T.NOTIFS,"Get settings action succeeded");
-          Editor editor=mSettings.edit();
-          try {
-            JSONObject settingsJSON=jsonObject.getJSONObject("settings");
-            editor.putString(NotificationsUtils.WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,settingsJSON.toString());
-            editor.apply();
-          }
- catch (          JSONException e) {
-            AppLog.e(T.NOTIFS,"Can't parse the JSON object returned from the server that contains PN settings.",e);
-          }
-          refreshWPComAuthCategory();
+  if (!AccountHelper.isSignedInWordPressDotCom()) {
+    hideManageNotificationCategory();
+    return;
+  }
+  String settingsJson=mSettings.getString(NotificationsUtils.WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,null);
+  if (settingsJson == null) {
+    com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+      @Override public void onResponse(      JSONObject jsonObject){
+        AppLog.d(T.NOTIFS,"Get settings action succeeded");
+        Editor editor=mSettings.edit();
+        try {
+          JSONObject settingsJSON=jsonObject.getJSONObject("settings");
+          editor.putString(NotificationsUtils.WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,settingsJSON.toString());
+          editor.apply();
+        }
+ catch (        JSONException e) {
+          AppLog.e(T.NOTIFS,"Can't parse PN settings from server response",e);
         }
       }
-;
-      RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
-        @Override public void onErrorResponse(        VolleyError volleyError){
-          AppLog.e(T.NOTIFS,"Get settings action failed",volleyError);
-        }
-      }
-;
-      NotificationsUtils.getPushNotificationSettings(getActivity(),listener,errorListener);
     }
+;
+    RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+      @Override public void onErrorResponse(      VolleyError volleyError){
+        AppLog.e(T.NOTIFS,"Get settings action failed",volleyError);
+      }
+    }
+;
+    NotificationsUtils.getPushNotificationSettings(getActivity(),listener,errorListener);
   }
 }

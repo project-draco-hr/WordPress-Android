@@ -1,0 +1,35 @@
+{
+  if (blockObject == null) {
+    return new SpannableStringBuilder();
+  }
+  String text=blockObject.optString("text","");
+  SpannableStringBuilder spannableStringBuilder=new SpannableStringBuilder(text);
+  boolean shouldLink=onNoteBlockTextClickListener != null;
+  addImageSpansForBlockMedia(textView,blockObject,spannableStringBuilder);
+  JSONArray rangesArray=blockObject.optJSONArray("ranges");
+  if (rangesArray != null) {
+    for (int i=0; i < rangesArray.length(); i++) {
+      JSONObject rangeObject=rangesArray.optJSONObject(i);
+      if (rangeObject == null) {
+        continue;
+      }
+      NoteBlockClickableSpan clickableSpan=new NoteBlockClickableSpan(WordPress.getContext(),rangeObject,shouldLink,isFooter){
+        @Override public void onClick(        View widget){
+          if (onNoteBlockTextClickListener != null) {
+            onNoteBlockTextClickListener.onNoteBlockTextClicked(this);
+          }
+        }
+      }
+;
+      int[] indices=clickableSpan.getIndices();
+      if (indices.length == 2 && indices[0] <= spannableStringBuilder.length() && indices[1] <= spannableStringBuilder.length()) {
+        spannableStringBuilder.setSpan(clickableSpan,indices[0],indices[1],Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        if (clickableSpan.getSpanStyle() != Typeface.NORMAL) {
+          StyleSpan styleSpan=new StyleSpan(clickableSpan.getSpanStyle());
+          spannableStringBuilder.setSpan(styleSpan,indices[0],indices[1],Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        }
+      }
+    }
+  }
+  return spannableStringBuilder;
+}

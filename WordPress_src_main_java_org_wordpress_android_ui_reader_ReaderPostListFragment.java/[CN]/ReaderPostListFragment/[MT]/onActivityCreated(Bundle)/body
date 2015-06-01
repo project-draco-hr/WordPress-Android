@@ -1,10 +1,10 @@
 {
   super.onActivityCreated(savedInstanceState);
-  if (hasFragmentToolbar()) {
-    mFragmentToolbar=(Toolbar)getActivity().findViewById(R.id.toolbar_reader);
-    mFragmentToolbar.setVisibility(View.VISIBLE);
-    mFragmentToolbar.inflateMenu(R.menu.reader_list);
-    mFragmentToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener(){
+  if (shouldShowTagToolbar()) {
+    mTagToolbar=(Toolbar)getActivity().findViewById(R.id.toolbar_reader);
+    mTagToolbar.setVisibility(mRestorePosition == 0 ? View.VISIBLE : View.GONE);
+    mTagToolbar.inflateMenu(R.menu.reader_list);
+    mTagToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener(){
       @Override public boolean onMenuItemClick(      MenuItem menuItem){
         if (menuItem.getItemId() == R.id.menu_tags) {
           ReaderActivityLauncher.showReaderSubsForResult(getActivity());
@@ -14,22 +14,17 @@
       }
     }
 );
-    mRecyclerView.setScrollDirectionListener(new ScrollDirectionListener(){
-      @Override public void onScrollUp(){
-        showFragmentToolbar(true);
-        checkSwipeToRefresh();
-      }
-      @Override public void onScrollDown(){
-        showFragmentToolbar(false);
-        checkSwipeToRefresh();
-      }
-      @Override public void onScrollCompleted(){
-        checkSwipeToRefresh();
+    int toolbarHeight=getResources().getDimensionPixelSize(R.dimen.toolbar_height);
+    mTagToolbarOffset=(int)(toolbarHeight + (toolbarHeight * 0.25));
+    mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener(){
+      @Override public void onScrolled(      RecyclerView recyclerView,      int dx,      int dy){
+        super.onScrolled(recyclerView,dx,dy);
+        positionTagToolbar();
       }
     }
 );
-    if (mSpinner == null) {
-      enableTagSpinner(mFragmentToolbar);
+    if (mTagSpinner == null) {
+      enableTagSpinner();
     }
     selectTagInSpinner(getCurrentTag());
   }

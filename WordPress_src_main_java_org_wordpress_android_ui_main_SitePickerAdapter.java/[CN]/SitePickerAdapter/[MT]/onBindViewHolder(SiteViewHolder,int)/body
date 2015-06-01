@@ -1,8 +1,7 @@
 {
   SiteRecord site=getItem(position);
-  holder.txtTitle.setText(site.blogName);
+  holder.txtTitle.setText(site.getBlogNameOrHostName());
   holder.txtDomain.setText(site.hostName);
-  holder.imgBlavatar.setErrorImageResId(site.isDotCom ? R.drawable.blavatar_placeholder_com : R.drawable.blavatar_placeholder_org);
   holder.imgBlavatar.setImageUrl(site.blavatarUrl,WPNetworkImageView.ImageType.BLAVATAR);
   holder.itemView.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View view){
@@ -15,10 +14,7 @@
     }
   }
 );
-  if (site.localId == mCurrentLocalId) {
-    holder.layoutContainer.setBackgroundDrawable(mCurrentItemBackground);
-  }
- else   if (mIsMultiSelectEnabled && isItemSelected(position)) {
+  if (site.localId == mCurrentLocalId || (mIsMultiSelectEnabled && isItemSelected(position))) {
     holder.layoutContainer.setBackgroundDrawable(mSelectedItemBackground);
   }
  else {
@@ -30,4 +26,6 @@
     holder.txtTitle.setTypeface(holder.txtTitle.getTypeface(),site.isHidden ? Typeface.NORMAL : Typeface.BOLD);
     holder.imgBlavatar.setAlpha(site.isHidden ? 0.5f : 1f);
   }
+  boolean isLastItem=(position == getItemCount() - 1);
+  holder.divider.setVisibility(isLastItem ? View.INVISIBLE : View.VISIBLE);
 }

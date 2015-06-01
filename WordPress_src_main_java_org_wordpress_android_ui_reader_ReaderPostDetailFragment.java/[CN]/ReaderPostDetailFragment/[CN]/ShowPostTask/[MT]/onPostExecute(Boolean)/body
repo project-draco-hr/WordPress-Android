@@ -15,13 +15,18 @@
   mRenderer=new ReaderPostRenderer(mReaderWebView,mPost);
   mRenderer.beginRender();
   txtTitle.setText(mPost.hasTitle() ? mPost.getTitle() : getString(R.string.reader_untitled_post));
-  followButton.setIsFollowed(mPost.isFollowedByCurrentUser);
-  followButton.setOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View view){
-      togglePostFollowed();
-    }
+  if (mIsLoggedOutReader) {
+    followButton.setVisibility(View.GONE);
   }
+ else {
+    followButton.setIsFollowed(mPost.isFollowedByCurrentUser);
+    followButton.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        togglePostFollowed();
+      }
+    }
 );
+  }
   if (mPost.hasBlogName()) {
     txtBlogName.setText(mPost.getBlogName());
     txtBlogName.setVisibility(View.VISIBLE);
@@ -57,7 +62,7 @@
     }
 );
   }
-  if (mPost.canReblog()) {
+  if (mPost.canReblog() && !mIsLoggedOutReader) {
     imgBtnReblog.setVisibility(View.VISIBLE);
     imgBtnReblog.setSelected(mPost.isRebloggedByCurrentUser);
     imgBtnReblog.setOnClickListener(new View.OnClickListener(){
@@ -73,12 +78,6 @@
  else {
     imgBtnReblog.setVisibility(View.INVISIBLE);
   }
-  if (!mPost.isExternal && (mPost.isLikesEnabled || mPost.canReblog() || mPost.isCommentsOpen)) {
-    mLayoutIcons.setVisibility(View.VISIBLE);
-  }
- else {
-    mLayoutIcons.setVisibility(View.GONE);
-  }
   if (canBlockBlog()) {
     imgMore.setVisibility(View.VISIBLE);
     imgMore.setOnClickListener(new View.OnClickListener(){
@@ -93,6 +92,6 @@
  else {
     imgMore.setVisibility(View.GONE);
   }
-  mLayoutIcons.setVisibility(mPost.isWP() ? View.VISIBLE : View.GONE);
+  mLayoutIcons.setVisibility(canShowIconBar() ? View.VISIBLE : View.GONE);
   refreshIconBarCounts(false);
 }

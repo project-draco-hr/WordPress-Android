@@ -9,7 +9,7 @@
     countComments.setVisibility(View.VISIBLE);
     countComments.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
-        ReaderActivityLauncher.showReaderComments(getActivity(),mPost);
+        ReaderActivityLauncher.showReaderComments(getActivity(),mPost.blogId,mPost.postId);
       }
     }
 );
@@ -22,12 +22,17 @@
     countLikes.setCount(mPost.numLikes,animateChanges);
     countLikes.setVisibility(View.VISIBLE);
     countLikes.setSelected(mPost.isLikedByCurrentUser);
-    countLikes.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View view){
-        togglePostLike();
-      }
+    if (mIsLoggedOutReader) {
+      countLikes.setEnabled(false);
     }
+ else {
+      countLikes.setOnClickListener(new View.OnClickListener(){
+        @Override public void onClick(        View view){
+          togglePostLike();
+        }
+      }
 );
+    }
     if (mPost.numLikes > 0 && mLayoutLikes.getVisibility() == View.GONE) {
       mLayoutLikes.setVisibility(View.INVISIBLE);
     }

@@ -25,19 +25,19 @@
       showDefaultImage();
     }
   }
+  if (mUrlSkipList.contains(mUrl)) {
+    AppLog.d(AppLog.T.READER,"skipping image request " + mUrl);
+    showErrorImage();
+    return;
+  }
   Point pt=DisplayUtils.getDisplayPixelSize(this.getContext());
   int maxSize=Math.max(pt.x,pt.y);
-  ImageLoader.ImageContainer newContainer=WordPress.imageLoader.get(mUrl,new ImageLoader.ImageListener(){
+  mImageContainer=WordPress.imageLoader.get(mUrl,new ImageLoader.ImageListener(){
     @Override public void onErrorResponse(    VolleyError error){
-      if (mImageType == ImageType.MSHOT && mRetryCnt < MAX_RETRIES && VolleyUtils.statusCodeFromVolleyError(error) == 307) {
-        mRetryCnt++;
-        retry(isInLayoutPass);
-      }
- else {
-        showErrorImage();
-        if (mImageListener != null) {
-          mImageListener.onImageLoaded(false);
-        }
+      showErrorImage();
+      int statusCode=VolleyUtils.statusCodeFromVolleyError(error);
+      if (statusCode == 404) {
+        mUrlSkipList.add(mUrl);
       }
     }
     @Override public void onResponse(    final ImageLoader.ImageContainer response,    boolean isImmediate){
@@ -55,5 +55,4 @@
     }
   }
 ,maxSize,maxSize);
-  mImageContainer=newContainer;
 }

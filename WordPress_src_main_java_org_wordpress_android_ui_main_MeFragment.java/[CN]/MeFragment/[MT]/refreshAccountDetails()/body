@@ -1,13 +1,14 @@
 {
   if (AccountHelper.isSignedInWordPressDotCom()) {
     Account defaultAccount=AccountHelper.getDefaultAccount();
-    mAvatarImageView.setVisibility(View.VISIBLE);
     mDisplayNameTextView.setVisibility(View.VISIBLE);
     mUsernameTextView.setVisibility(View.VISIBLE);
+    mAvatarFrame.setVisibility(View.VISIBLE);
     int avatarSz=getResources().getDimensionPixelSize(R.dimen.avatar_sz_large);
     String avatarUrl=GravatarUtils.fixGravatarUrl(defaultAccount.getAvatarUrl(),avatarSz);
     mAvatarImageView.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
     mUsernameTextView.setText("@" + defaultAccount.getUserName());
+    mLoginLogoutTextView.setText(R.string.me_disconnect_from_wordpress_com);
     String displayName=defaultAccount.getDisplayName();
     if (!TextUtils.isEmpty(displayName)) {
       mDisplayNameTextView.setText(displayName);
@@ -15,24 +16,11 @@
  else {
       mDisplayNameTextView.setText(defaultAccount.getUserName());
     }
-    mLoginLogoutTextView.setText(R.string.me_disconnect_from_wordpress_com);
-    mLoginLogoutTextView.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View view){
-        signoutWithConfirmation();
-      }
-    }
-);
   }
  else {
-    mAvatarImageView.setVisibility(View.GONE);
     mDisplayNameTextView.setVisibility(View.GONE);
     mUsernameTextView.setVisibility(View.GONE);
+    mAvatarFrame.setVisibility(View.GONE);
     mLoginLogoutTextView.setText(R.string.me_connect_to_wordpress_com);
-    mLoginLogoutTextView.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View view){
-        ActivityLauncher.showSignInForResult(getActivity());
-      }
-    }
-);
   }
 }

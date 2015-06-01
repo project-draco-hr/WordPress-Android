@@ -9,7 +9,11 @@
   txtTitle.setText(mPost.getTitle());
   String url=mPost.getPostAvatarForDisplay(getResources().getDimensionPixelSize(R.dimen.avatar_sz_small));
   imgAvatar.setImageUrl(url,WPNetworkImageView.ImageType.AVATAR);
-  if (mPost.isCommentsOpen) {
+  if (ReaderUtils.isLoggedOutReader()) {
+    mCommentBox.setVisibility(View.GONE);
+    txtCommentsClosed.setVisibility(View.GONE);
+  }
+ else   if (mPost.isCommentsOpen) {
     mCommentBox.setVisibility(View.VISIBLE);
     txtCommentsClosed.setVisibility(View.GONE);
     mEditComment.setOnEditorActionListener(new TextView.OnEditorActionListener(){
@@ -32,6 +36,16 @@
     mCommentBox.setVisibility(View.GONE);
     mEditComment.setEnabled(false);
     txtCommentsClosed.setVisibility(View.VISIBLE);
+  }
+  if (mCommentId > 0) {
+    txtTitle.setBackgroundResource(R.drawable.selectable_background_wordpress);
+    txtTitle.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        if (isFinishing())         return;
+        ReaderActivityLauncher.showReaderPostDetail(ReaderCommentListActivity.this,mBlogId,mPostId);
+      }
+    }
+);
   }
   return true;
 }

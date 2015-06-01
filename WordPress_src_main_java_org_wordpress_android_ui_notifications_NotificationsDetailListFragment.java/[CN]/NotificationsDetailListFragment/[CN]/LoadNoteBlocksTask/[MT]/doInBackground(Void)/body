@@ -1,5 +1,6 @@
 {
   if (mNote == null)   return null;
+  requestReaderContentForNote();
   JSONArray bodyArray=mNote.getBody();
   final List<NoteBlock> noteList=new ArrayList<>();
   if (mNote.getHeader() != null) {
@@ -14,7 +15,7 @@
         JSONObject noteObject=bodyArray.getJSONObject(i);
         NoteBlock noteBlock;
         String noteBlockTypeString=JSONUtils.queryJSON(noteObject,"type","");
-        if (NoteBlockRangeType.fromString(noteBlockTypeString) == NoteBlockRangeType.USER) {
+        if (BlockType.fromString(noteBlockTypeString) == BlockType.USER) {
           if (mNote.isCommentType()) {
             mCommentListPosition=i + noteList.size();
             if (i + 1 < bodyArray.length()) {
@@ -32,6 +33,10 @@
  else {
             noteBlock=new UserNoteBlock(getActivity(),noteObject,mOnNoteBlockTextClickListener,mOnGravatarClickedListener);
           }
+        }
+ else         if (isFooterBlock(noteObject)) {
+          noteBlock=new FooterNoteBlock(noteObject,mOnNoteBlockTextClickListener);
+          ((FooterNoteBlock)noteBlock).setClickableSpan(JSONUtils.queryJSON(noteObject,"ranges[last]",new JSONObject()),mNote.getType());
         }
  else {
           noteBlock=new NoteBlock(noteObject,mOnNoteBlockTextClickListener);

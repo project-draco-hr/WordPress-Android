@@ -47,6 +47,16 @@
       AppLog.e(T.NOTIFS,e);
     }
   }
+  Map<String,String> properties=new HashMap<>();
+  if (!TextUtils.isEmpty(noteType)) {
+    if (noteType.equals(PUSH_TYPE_COMMENT)) {
+      properties.put("notification_type","comment");
+    }
+ else {
+      properties.put("notification_type",noteType);
+    }
+  }
+  AnalyticsTracker.track(Stat.PUSH_NOTIFICATION_RECEIVED,properties);
   SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(context);
   boolean sound, vibrate, light;
   sound=prefs.getBoolean("wp_pref_notification_sound",false);

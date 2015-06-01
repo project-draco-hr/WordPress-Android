@@ -1,6 +1,5 @@
 {
   AppLog.v(T.NOTIFS,"Received Message");
-  AnalyticsTracker.track(Stat.PUSH_NOTIFICATION_RECEIVED);
   Bundle extras=intent.getExtras();
   if (extras == null) {
     AppLog.v(T.NOTIFS,"No notification message content received. Aborting.");
@@ -19,7 +18,7 @@
     AnalyticsTrackerMixpanel.showNotification(context,pendingIntent,R.drawable.notification_icon,title,mpMessage);
     return;
   }
-  if (!AccountHelper.getDefaultAccount().hasAccessToken()) {
+  if (!AccountHelper.isSignedInWordPressDotCom()) {
     return;
   }
   handleDefaultPush(context,extras);

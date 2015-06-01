@@ -1,12 +1,20 @@
 {
   super.onActivityResult(requestCode,resultCode,data);
 switch (requestCode) {
+case RequestCodes.EDIT_POST:
+    if (resultCode == RESULT_OK) {
+      MySiteFragment mySiteFragment=getMySiteFragment();
+      if (mySiteFragment != null) {
+        mySiteFragment.onActivityResult(requestCode,resultCode,data);
+      }
+    }
+  break;
 case RequestCodes.READER_SUBS:
 case RequestCodes.READER_REBLOG:
-    ReaderPostListFragment readerFragment=getReaderListFragment();
-  if (readerFragment != null) {
-    readerFragment.onActivityResult(requestCode,resultCode,data);
-  }
+ReaderPostListFragment readerFragment=getReaderListFragment();
+if (readerFragment != null) {
+readerFragment.onActivityResult(requestCode,resultCode,data);
+}
 break;
 case RequestCodes.ADD_ACCOUNT:
 if (resultCode == RESULT_OK) {
@@ -30,15 +38,17 @@ if (getNotificationListFragment() != null) {
 getNotificationListFragment().onActivityResult(requestCode,resultCode,data);
 }
 break;
-case RequestCodes.SITE_PICKER:
-if (resultCode == RESULT_OK && data != null) {
-int localId=data.getIntExtra(SitePickerActivity.KEY_LOCAL_ID,0);
-Blog blog=WordPress.setCurrentBlog(localId);
-WordPress.wpDB.updateLastBlogId(localId);
-MySiteFragment mySiteFragment=getMySiteFragment();
-if (mySiteFragment != null) {
-mySiteFragment.setBlog(blog);
+case RequestCodes.PICTURE_LIBRARY:
+FragmentManager fm=getFragmentManager();
+Fragment addFragment=fm.findFragmentByTag(MySiteFragment.ADD_MEDIA_FRAGMENT_TAG);
+if (addFragment != null && data != null) {
+ToastUtils.showToast(this,R.string.image_added);
+addFragment.onActivityResult(requestCode,resultCode,data);
 }
+break;
+case RequestCodes.SITE_PICKER:
+if (getMySiteFragment() != null) {
+getMySiteFragment().onActivityResult(requestCode,resultCode,data);
 }
 break;
 case RequestCodes.BLOG_SETTINGS:

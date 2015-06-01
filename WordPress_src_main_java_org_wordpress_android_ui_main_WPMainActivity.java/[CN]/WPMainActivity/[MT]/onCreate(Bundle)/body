@@ -1,15 +1,19 @@
 {
   setStatusBarColor();
   super.onCreate(savedInstanceState);
-  setContentView(R.layout.activity_main);
+  setContentView(R.layout.main_activity);
   mViewPager=(WPMainViewPager)findViewById(R.id.viewpager_main);
   mTabAdapter=new WPMainTabAdapter(getFragmentManager());
   mViewPager.setAdapter(mTabAdapter);
   mTabs=(SlidingTabLayout)findViewById(R.id.sliding_tabs);
   mTabs.setSelectedIndicatorColors(getResources().getColor(R.color.tab_indicator));
-  mTabs.setDistributeEvenly(true);
+  mTabs.setDistributeEvenly(!DisplayUtils.isLandscape(this));
   Integer icons[]={R.drawable.main_tab_sites,R.drawable.main_tab_reader,R.drawable.main_tab_me,R.drawable.main_tab_notifications};
   mTabs.setCustomTabView(R.layout.tab_icon,R.id.tab_icon,R.id.tab_badge,icons);
+  mTabs.setContentDescription(WPMainTabAdapter.TAB_MY_SITE,getString(R.string.tabbar_accessibility_label_my_site));
+  mTabs.setContentDescription(WPMainTabAdapter.TAB_READER,getString(R.string.reader));
+  mTabs.setContentDescription(WPMainTabAdapter.TAB_ME,getString(R.string.tabbar_accessibility_label_me));
+  mTabs.setContentDescription(WPMainTabAdapter.TAB_NOTIFS,getString(R.string.notifications));
   mTabs.setViewPager(mViewPager);
   mTabs.setOnSingleTabClickListener(this);
   mTabs.setOnPageChangeListener(this);
