@@ -1,0 +1,23 @@
+{
+  super.deliverError(error);
+  if (error.networkResponse != null && error.networkResponse.statusCode >= 400 && mOnAuthFailedListener != null) {
+    String jsonString;
+    try {
+      jsonString=new String(error.networkResponse.data,HttpHeaderParser.parseCharset(error.networkResponse.headers));
+    }
+ catch (    UnsupportedEncodingException e) {
+      jsonString="";
+    }
+    JSONObject responseObject;
+    try {
+      responseObject=new JSONObject(jsonString);
+    }
+ catch (    JSONException e) {
+      responseObject=new JSONObject();
+    }
+    String restError=responseObject.optString("error","");
+    if (restError.equals("authorization_required") || restError.equals("invalid_token")) {
+      mOnAuthFailedListener.onAuthFailed();
+    }
+  }
+}
