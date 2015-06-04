@@ -1,0 +1,30 @@
+{
+  if (context == null || TextUtils.isEmpty(token) || TextUtils.isEmpty(title) || TextUtils.isEmpty(message)) {
+    return;
+  }
+  AlertDialog.Builder builder=new AlertDialog.Builder(context);
+  builder.setTitle(title).setMessage(message);
+  builder.setPositiveButton(R.string.mnu_comment_approve,new DialogInterface.OnClickListener(){
+    @Override public void onClick(    DialogInterface dialog,    int which){
+      Map<String,String> tokenMap=new HashMap<>();
+      tokenMap.put("action","authorize_login");
+      tokenMap.put("push_token",token);
+      WordPress.getRestClientUtilsV1_1().post(PUSH_AUTH_ENDPOINT,tokenMap,null,null,new RestRequest.ErrorListener(){
+        @Override public void onErrorResponse(        VolleyError error){
+          AnalyticsTracker.track(AnalyticsTracker.Stat.PUSH_AUTHENTICATION_FAILED);
+        }
+      }
+);
+      AnalyticsTracker.track(AnalyticsTracker.Stat.PUSH_AUTHENTICATION_APPROVED);
+    }
+  }
+);
+  builder.setNegativeButton(R.string.ignore,new DialogInterface.OnClickListener(){
+    @Override public void onClick(    DialogInterface dialog,    int which){
+      AnalyticsTracker.track(AnalyticsTracker.Stat.PUSH_AUTHENTICATION_IGNORED);
+    }
+  }
+);
+  AlertDialog dialog=builder.create();
+  dialog.show();
+}
