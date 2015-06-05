@@ -7,6 +7,11 @@
       return;
     }
   }
+  String noteType=StringUtils.notNullStr(extras.getString("type"));
+  if (noteType.equals(PUSH_TYPE_PUSH_AUTH)) {
+    handlePushAuth(context,extras);
+    return;
+  }
   String title=StringEscapeUtils.unescapeHtml(extras.getString("title"));
   if (title == null) {
     title=getString(R.string.app_name);
@@ -27,7 +32,6 @@
     mActiveNotificationsMap.put(note_id,extras);
   }
   String iconUrl=extras.getString("icon");
-  String noteType=StringUtils.notNullStr(extras.getString("type"));
   Bitmap largeIconBitmap=null;
   if (iconUrl != null) {
     try {
@@ -45,7 +49,7 @@
   }
   Map<String,String> properties=new HashMap<>();
   if (!TextUtils.isEmpty(noteType)) {
-    if (noteType.equals(NOTE_TYPE_COMMENT)) {
+    if (noteType.equals(PUSH_TYPE_COMMENT)) {
       properties.put("notification_type","comment");
     }
  else {
@@ -69,7 +73,7 @@
     if (note_id != null) {
       resultIntent.putExtra(NotificationsListFragment.NOTE_ID_EXTRA,note_id);
     }
-    if (noteType.equals(NOTE_TYPE_COMMENT)) {
+    if (noteType.equals(PUSH_TYPE_COMMENT)) {
       Intent commentReplyIntent=new Intent(this,WPMainActivity.class);
       commentReplyIntent.putExtra(WPMainActivity.ARG_OPENED_FROM_PUSH,true);
       commentReplyIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -93,7 +97,7 @@
     for (    Bundle wpPN : mActiveNotificationsMap.values()) {
       if (noteCtr > mMaxInboxItems)       break;
       if (wpPN.getString("msg") == null)       continue;
-      if (wpPN.getString("type") != null && wpPN.getString("type").equals(NOTE_TYPE_COMMENT)) {
+      if (wpPN.getString("type") != null && wpPN.getString("type").equals(PUSH_TYPE_COMMENT)) {
         String pnTitle=StringEscapeUtils.unescapeHtml((wpPN.getString("title")));
         String pnMessage=StringEscapeUtils.unescapeHtml((wpPN.getString("msg")));
         inboxStyle.addLine(pnTitle + ": " + pnMessage);
@@ -125,7 +129,7 @@
   mBuilder.setCategory(NotificationCompat.CATEGORY_SOCIAL);
   PendingIntent pendingIntent=PendingIntent.getActivity(context,0,resultIntent,PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_UPDATE_CURRENT);
   mBuilder.setContentIntent(pendingIntent);
-  NotificationManager mNotificationManager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-  mNotificationManager.notify(PUSH_NOTIFICATION_ID,mBuilder.build());
+  NotificationManager notificationManager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+  notificationManager.notify(PUSH_NOTIFICATION_ID,mBuilder.build());
   EventBus.getDefault().post(new NotificationEvents.NotificationsChanged());
 }

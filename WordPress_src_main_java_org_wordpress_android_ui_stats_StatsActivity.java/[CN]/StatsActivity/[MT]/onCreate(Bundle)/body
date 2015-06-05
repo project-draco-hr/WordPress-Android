@@ -47,7 +47,7 @@
       mCurrentTimeframe=(StatsTimeframe)getIntent().getSerializableExtra(SAVED_STATS_TIMEFRAME);
     }
  else {
-      mCurrentTimeframe=StatsTimeframe.DAY;
+      mCurrentTimeframe=AppPrefs.getStatsTimeframe();
     }
     mRequestedDate=StatsUtils.getCurrentDateTZ(mLocalBlogID);
   }
@@ -66,7 +66,6 @@
   if (mSpinner == null && toolbar != null) {
     View view=View.inflate(this,R.layout.toolbar_spinner,toolbar);
     mSpinner=(Spinner)view.findViewById(R.id.action_bar_spinner);
-    StatsTimeframe[] timeframes={StatsTimeframe.DAY,StatsTimeframe.WEEK,StatsTimeframe.MONTH,StatsTimeframe.YEAR};
     mTimeframeSpinnerAdapter=new TimeframeSpinnerAdapter(this,timeframes);
     mSpinner.setAdapter(mTimeframeSpinnerAdapter);
     mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
@@ -81,13 +80,8 @@
         }
         AppLog.d(T.STATS,"NEW TIME FRAME : " + selectedTimeframe.getLabel());
         mCurrentTimeframe=selectedTimeframe;
+        AppPrefs.setStatsTimeframe(mCurrentTimeframe);
         mRequestedDate=StatsUtils.getCurrentDateTZ(mLocalBlogID);
-        if (NetworkUtils.checkConnection(StatsActivity.this)) {
-          mSwipeToRefreshHelper.setRefreshing(true);
-        }
- else {
-          mSwipeToRefreshHelper.setRefreshing(false);
-        }
         createFragments(true);
       }
       @Override public void onNothingSelected(      AdapterView<?> parent){
@@ -96,4 +90,22 @@
 );
   }
   selectCurrentTimeframeInActionBar();
+  TextView otherRecentStatsMovedLabel=(TextView)findViewById(R.id.stats_other_recent_stats_moved);
+  otherRecentStatsMovedLabel.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      for (int i=0; i < timeframes.length; i++) {
+        if (timeframes[i] == StatsTimeframe.INSIGHTS) {
+          mSpinner.setSelection(i);
+          break;
+        }
+      }
+      mSpinner.postDelayed(new Runnable(){
+        @Override public void run(){
+          scrollToTop();
+        }
+      }
+,75L);
+    }
+  }
+);
 }
