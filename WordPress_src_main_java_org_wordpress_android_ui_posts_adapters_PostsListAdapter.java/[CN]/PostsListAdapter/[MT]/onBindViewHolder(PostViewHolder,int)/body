@@ -1,31 +1,24 @@
 {
   PostsListPost post=mPosts.get(position);
-  PostViewWrapper wrapper;
-  if (view == null) {
-    view=mLayoutInflater.inflate(R.layout.post_list_row,parent,false);
-    wrapper=new PostViewWrapper(view);
-    view.setTag(wrapper);
-  }
- else {
-    wrapper=(PostViewWrapper)view.getTag();
-  }
   String date=post.getFormattedDate();
   String titleText=post.getTitle();
-  if (titleText.equals(""))   titleText="(" + mContext.getResources().getText(R.string.untitled) + ")";
-  wrapper.getTitle().setText(titleText);
+  if (titleText.equals("")) {
+    titleText="(" + mContext.getResources().getText(R.string.untitled) + ")";
+  }
+  holder.txtTitle.setText(titleText);
   if (post.isLocalDraft()) {
-    wrapper.getDate().setVisibility(View.GONE);
+    holder.txtDate.setVisibility(View.GONE);
   }
  else {
-    wrapper.getDate().setText(date);
-    wrapper.getDate().setVisibility(View.VISIBLE);
+    holder.txtDate.setText(date);
+    holder.txtDate.setVisibility(View.VISIBLE);
   }
   String formattedStatus="";
   if ((post.getStatusEnum() == PostStatus.PUBLISHED) && !post.isLocalDraft() && !post.hasLocalChanges()) {
-    wrapper.getStatus().setVisibility(View.GONE);
+    holder.txtStatus.setVisibility(View.GONE);
   }
  else {
-    wrapper.getStatus().setVisibility(View.VISIBLE);
+    holder.txtStatus.setVisibility(View.VISIBLE);
     if (post.isUploading()) {
       formattedStatus=mContext.getResources().getString(R.string.post_uploading);
     }
@@ -54,16 +47,15 @@ break;
 }
 }
 if (post.isLocalDraft() || post.getStatusEnum() == PostStatus.DRAFT || post.hasLocalChanges() || post.isUploading()) {
-wrapper.getStatus().setTextColor(mContext.getResources().getColor(R.color.orange_fire));
+holder.txtStatus.setTextColor(mContext.getResources().getColor(R.color.orange_fire));
 }
  else {
-wrapper.getStatus().setTextColor(mContext.getResources().getColor(R.color.grey_darken_10));
+holder.txtStatus.setTextColor(mContext.getResources().getColor(R.color.grey_darken_10));
 }
 formattedStatus=formattedStatus.toUpperCase(Locale.getDefault()).replace(" ","\n");
-wrapper.getStatus().setText(formattedStatus);
+holder.txtStatus.setText(formattedStatus);
 }
-if (mOnLoadMoreListener != null && position >= getCount() - 1 && position >= PostsListFragment.POSTS_REQUEST_COUNT - 1) {
+if (mOnLoadMoreListener != null && position >= getItemCount() - 1 && position >= PostsListFragment.POSTS_REQUEST_COUNT - 1) {
 mOnLoadMoreListener.onLoadMore();
 }
-return view;
 }
