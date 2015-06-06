@@ -32,17 +32,17 @@
  else         if (mShouldSelectFirstPost) {
           mShouldSelectFirstPost=false;
           if (mPostsListAdapter.getItemCount() > 0) {
-            PostsListPost postsListPost=(PostsListPost)mPostsListAdapter.getItem(0);
+            PostsListPost postsListPost=mPostsListAdapter.getItem(0);
             if (postsListPost != null) {
               showPost(postsListPost.getPostId());
-              mPostsListAdapter.setItemChecked(0,true);
+              mPostsListAdapter.setSelectedPosition(0);
             }
           }
         }
  else         if (isAdded() && ((PostsActivity)getActivity()).isDualPane()) {
-          int selectedPosition=mPostsListAdapter.getCheckedItemPosition();
+          int selectedPosition=mPostsListAdapter.getSelectedPosition();
           if (selectedPosition != ListView.INVALID_POSITION && selectedPosition < mPostsListAdapter.getItemCount()) {
-            PostsListPost postsListPost=(PostsListPost)mPostsListAdapter.getItem(selectedPosition);
+            PostsListPost postsListPost=mPostsListAdapter.getItem(selectedPosition);
             if (postsListPost != null) {
               showPost(postsListPost.getPostId());
             }
@@ -51,7 +51,22 @@
       }
     }
 ;
-    mPostsListAdapter=new PostsListAdapter(getActivity(),mIsPage,loadMoreListener,postsLoadedListener);
+    PostsListAdapter.OnPostSelectedListener postSelectedListener=new PostsListAdapter.OnPostSelectedListener(){
+      @Override public void onPostSelected(      PostsListPost post){
+        if (!isAdded())         return;
+        if (mIsFetchingPosts) {
+          ToastUtils.showToast(getActivity(),mIsPage ? R.string.pages_fetching : R.string.posts_fetching);
+        }
+ else {
+          showPost(post.getPostId());
+        }
+      }
+    }
+;
+    mPostsListAdapter=new PostsListAdapter(getActivity(),mIsPage);
+    mPostsListAdapter.setOnLoadMoreListener(loadMoreListener);
+    mPostsListAdapter.setOnPostsLoadedListener(postsLoadedListener);
+    mPostsListAdapter.setOnPostSelectedListener(postSelectedListener);
   }
   return mPostsListAdapter;
 }
