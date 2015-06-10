@@ -1,12 +1,14 @@
 {
   if (context == null || view == null)   return;
   if (view.isInEditMode())   return;
-  int variation=TypefaceCache.VARIATION_NORMAL;
+  int family=FAMILY_DEFAULT;
+  int variation=VARIATION_DEFAULT;
   if (attrs != null) {
     TypedArray a=context.getTheme().obtainStyledAttributes(attrs,R.styleable.WPTextView,0,0);
     if (a != null) {
       try {
-        variation=a.getInteger(R.styleable.WPTextView_fontVariation,TypefaceCache.VARIATION_NORMAL);
+        family=a.getInteger(R.styleable.WPTextView_fontFamily,FAMILY_DEFAULT);
+        variation=a.getInteger(R.styleable.WPTextView_fontVariation,VARIATION_DEFAULT);
       }
   finally {
         a.recycle();
@@ -33,7 +35,7 @@
  else {
     fontStyle=Typeface.NORMAL;
   }
-  Typeface typeface=getTypeface(context,fontStyle,variation);
+  Typeface typeface=getTypeface(context,family,fontStyle,variation);
   if (typeface != null) {
     view.setTypeface(typeface);
   }
