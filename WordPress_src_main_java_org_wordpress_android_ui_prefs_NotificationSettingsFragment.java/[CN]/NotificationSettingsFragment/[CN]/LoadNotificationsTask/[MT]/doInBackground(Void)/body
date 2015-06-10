@@ -1,4 +1,13 @@
 {
-  loadNotifications();
+  List<Map<String,Object>> allBlogs=WordPress.wpDB.getBlogsBy(null,null,0,false);
+  Context context=getActivity();
+  PreferenceCategory blogsCategory=(PreferenceCategory)findPreference(getString(R.string.pref_notification_blogs));
+  for (  Map blog : allBlogs) {
+    if (context == null)     return null;
+    Preference preference=new Preference(context);
+    preference.setTitle(MapUtils.getMapStr(blog,"blogName"));
+    preference.setSummary(UrlUtils.getDomainFromUrl(MapUtils.getMapStr(blog,"url")));
+    blogsCategory.addPreference(preference);
+  }
   return null;
 }
