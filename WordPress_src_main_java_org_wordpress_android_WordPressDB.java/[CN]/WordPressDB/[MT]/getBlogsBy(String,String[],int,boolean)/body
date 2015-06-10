@@ -2,12 +2,14 @@
   if (db == null) {
     return new Vector<>();
   }
-  String hideJetpack="NOT(dotcomFlag=0 AND wpVersion='')";
-  if (TextUtils.isEmpty(byString)) {
-    byString=hideJetpack;
-  }
+  if (shouldHideJetpack) {
+    String hideJetpackArgs="NOT(dotcomFlag=0 AND wpVersion='' AND blogId!=1)";
+    if (TextUtils.isEmpty(byString)) {
+      byString=hideJetpackArgs;
+    }
  else {
-    byString=hideJetpack + " AND " + byString;
+      byString=hideJetpackArgs + " AND " + byString;
+    }
   }
   String limitStr=null;
   if (limit != 0) {
