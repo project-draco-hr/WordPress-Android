@@ -34,12 +34,20 @@
   }
 );
   setTitle(R.string.stats);
+  mOuterScrollView=(ScrollViewExt)findViewById(R.id.scroll_view_stats);
+  mOuterScrollView.setScrollViewListener(this);
   if (savedInstanceState != null) {
-    mNavPosition=savedInstanceState.getInt(SAVED_NAV_POSITION);
     mResultCode=savedInstanceState.getInt(SAVED_WP_LOGIN_STATE);
     mLocalBlogID=savedInstanceState.getInt(ARG_LOCAL_TABLE_BLOG_ID);
     mCurrentTimeframe=(StatsTimeframe)savedInstanceState.getSerializable(SAVED_STATS_TIMEFRAME);
     mRequestedDate=savedInstanceState.getString(SAVED_STATS_REQUESTED_DATE);
+    final int[] position=savedInstanceState.getIntArray(SAVED_STATS_SCROLL_POSITION);
+    if (position != null)     mOuterScrollView.post(new Runnable(){
+      public void run(){
+        mOuterScrollView.scrollTo(position[0],position[1]);
+      }
+    }
+);
   }
  else   if (getIntent() != null) {
     mLocalBlogID=getIntent().getIntExtra(ARG_LOCAL_TABLE_BLOG_ID,-1);
@@ -59,10 +67,6 @@
     return;
   }
   createFragments(false);
-  ScrollViewExt scrollView=(ScrollViewExt)findViewById(R.id.scroll_view_stats);
-  if (scrollView != null) {
-    scrollView.setScrollViewListener(this);
-  }
   if (mSpinner == null && toolbar != null) {
     View view=View.inflate(this,R.layout.toolbar_spinner,toolbar);
     mSpinner=(Spinner)view.findViewById(R.id.action_bar_spinner);
@@ -83,6 +87,12 @@
         AppPrefs.setStatsTimeframe(mCurrentTimeframe);
         mRequestedDate=StatsUtils.getCurrentDateTZ(mLocalBlogID);
         createFragments(true);
+        mSpinner.postDelayed(new Runnable(){
+          @Override public void run(){
+            scrollToTop();
+          }
+        }
+,75L);
       }
       @Override public void onNothingSelected(      AdapterView<?> parent){
       }
