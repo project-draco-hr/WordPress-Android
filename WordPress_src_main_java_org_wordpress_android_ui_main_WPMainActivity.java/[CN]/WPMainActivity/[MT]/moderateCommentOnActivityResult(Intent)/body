@@ -1,9 +1,18 @@
 {
   try {
     if (SimperiumUtils.getNotesBucket() != null) {
-      Note note=SimperiumUtils.getNotesBucket().get(StringUtils.notNullStr(data.getStringExtra(NotificationsListFragment.NOTE_MODERATE_ID_EXTRA)));
+      String noteId=StringUtils.notNullStr(data.getStringExtra(NotificationsListFragment.NOTE_MODERATE_ID_EXTRA));
+      Note note=SimperiumUtils.getNotesBucket().get(noteId);
       CommentStatus status=CommentStatus.fromString(data.getStringExtra(NotificationsListFragment.NOTE_MODERATE_STATUS_EXTRA));
       NotificationsUtils.moderateCommentForNote(note,status,this);
+      if (status == CommentStatus.TRASH || status == CommentStatus.SPAM) {
+        if (getNotificationListFragment() != null) {
+          getNotificationListFragment().hideNote(noteId);
+        }
+ else {
+          mRemovedNoteId=noteId;
+        }
+      }
     }
   }
  catch (  BucketObjectMissingException e) {
