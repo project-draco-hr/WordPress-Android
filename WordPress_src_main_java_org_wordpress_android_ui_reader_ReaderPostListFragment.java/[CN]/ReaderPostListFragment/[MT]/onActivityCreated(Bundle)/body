@@ -3,17 +3,19 @@
   if (shouldShowTagToolbar()) {
     mTagToolbar=(Toolbar)getActivity().findViewById(R.id.toolbar_reader);
     mTagToolbar.setVisibility(mRestorePosition > 0 ? View.GONE : View.VISIBLE);
-    mTagToolbar.inflateMenu(R.menu.reader_list);
-    mTagToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener(){
-      @Override public boolean onMenuItemClick(      MenuItem menuItem){
-        if (menuItem.getItemId() == R.id.menu_tags) {
-          ReaderActivityLauncher.showReaderSubsForResult(getActivity());
-          return true;
+    if (!mIsLoggedOutReader) {
+      mTagToolbar.inflateMenu(R.menu.reader_list);
+      mTagToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener(){
+        @Override public boolean onMenuItemClick(        MenuItem menuItem){
+          if (menuItem.getItemId() == R.id.menu_tags) {
+            ReaderActivityLauncher.showReaderSubsForResult(getActivity());
+            return true;
+          }
+          return false;
         }
-        return false;
       }
-    }
 );
+    }
     int toolbarHeight=getResources().getDimensionPixelSize(R.dimen.toolbar_height);
     mTagToolbarOffset=(int)(toolbarHeight + (toolbarHeight * 0.25));
     mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener(){
@@ -37,7 +39,7 @@
       updatePostsWithTag(getCurrentTag(),UpdateAction.REQUEST_NEWER);
     }
   }
-  if (getPostListType().isPreviewType()) {
+  if (getPostListType().isPreviewType() && !mIsLoggedOutReader) {
     createFollowButton();
   }
 switch (getPostListType()) {
