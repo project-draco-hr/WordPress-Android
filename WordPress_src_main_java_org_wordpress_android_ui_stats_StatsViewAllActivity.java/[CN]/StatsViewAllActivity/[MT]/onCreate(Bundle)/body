@@ -35,13 +35,15 @@
     mDate=savedInstanceState.getString(StatsAbstractFragment.ARGS_SELECTED_DATE);
     mStatsViewType=(StatsViewType)savedInstanceState.getSerializable(StatsAbstractFragment.ARGS_VIEW_TYPE);
     mOuterPagerSelectedButtonIndex=savedInstanceState.getInt(StatsAbstractListFragment.ARGS_TOP_PAGER_SELECTED_BUTTON_INDEX,0);
-    final int[] position=savedInstanceState.getIntArray(SAVED_STATS_SCROLL_POSITION);
-    if (position != null)     mOuterScrollView.post(new Runnable(){
-      public void run(){
-        mOuterScrollView.scrollTo(position[0],position[1]);
+    final int yScrollPosition=savedInstanceState.getInt(SAVED_STATS_SCROLL_POSITION);
+    if (yScrollPosition != 0) {
+      mOuterScrollView.postDelayed(new Runnable(){
+        public void run(){
+          mOuterScrollView.scrollTo(0,yScrollPosition);
+        }
       }
+,75L);
     }
-);
   }
  else   if (getIntent() != null) {
     Bundle extras=getIntent().getExtras();

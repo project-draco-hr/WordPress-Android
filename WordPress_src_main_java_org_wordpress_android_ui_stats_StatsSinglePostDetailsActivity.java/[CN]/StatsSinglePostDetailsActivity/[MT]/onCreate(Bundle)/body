@@ -40,13 +40,15 @@
     mRemotePostItem=(PostModel)savedInstanceState.getSerializable(ARG_REMOTE_POST_OBJECT);
     mRestResponseParsed=(PostViewsModel)savedInstanceState.getSerializable(ARG_REST_RESPONSE);
     mSelectedBarGraphIndex=savedInstanceState.getInt(ARG_SELECTED_GRAPH_BAR,-1);
-    final int[] position=savedInstanceState.getIntArray(SAVED_STATS_SCROLL_POSITION);
-    if (position != null)     mOuterScrollView.post(new Runnable(){
-      public void run(){
-        mOuterScrollView.scrollTo(position[0],position[1]);
+    final int yScrollPosition=savedInstanceState.getInt(SAVED_STATS_SCROLL_POSITION);
+    if (yScrollPosition != 0) {
+      mOuterScrollView.postDelayed(new Runnable(){
+        public void run(){
+          mOuterScrollView.scrollTo(0,yScrollPosition);
+        }
       }
+,75L);
     }
-);
     mAveragesIdToExpandedMap=savedInstanceState.getParcelable(ARG_AVERAGES_EXPANDED_ROWS);
     mRecentWeeksIdToExpandedMap=savedInstanceState.getParcelable(ARG_RECENT_EXPANDED_ROWS);
     mYearsIdToExpandedMap=savedInstanceState.getParcelable(ARG_YEARS_EXPANDED_ROWS);
