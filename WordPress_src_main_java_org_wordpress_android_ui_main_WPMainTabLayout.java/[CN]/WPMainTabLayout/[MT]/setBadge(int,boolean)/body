@@ -1,0 +1,36 @@
+{
+  final View badgeView=findViewWithTag(makeBadgeTag(position));
+  if (badgeView == null) {
+    return;
+  }
+  boolean wasBadged=(badgeView.getVisibility() == View.VISIBLE);
+  if (isBadged == wasBadged) {
+    return;
+  }
+  float start=isBadged ? 0f : 1f;
+  float end=isBadged ? 1f : 0f;
+  PropertyValuesHolder scaleX=PropertyValuesHolder.ofFloat(View.SCALE_X,start,end);
+  PropertyValuesHolder scaleY=PropertyValuesHolder.ofFloat(View.SCALE_Y,start,end);
+  ObjectAnimator animScale=ObjectAnimator.ofPropertyValuesHolder(badgeView,scaleX,scaleY);
+  if (isBadged) {
+    animScale.setInterpolator(new BounceInterpolator());
+    animScale.setDuration(getContext().getResources().getInteger(android.R.integer.config_longAnimTime));
+    animScale.addListener(new AnimatorListenerAdapter(){
+      @Override public void onAnimationStart(      Animator animation){
+        badgeView.setVisibility(View.VISIBLE);
+      }
+    }
+);
+  }
+ else {
+    animScale.setInterpolator(new AccelerateInterpolator());
+    animScale.setDuration(getContext().getResources().getInteger(android.R.integer.config_shortAnimTime));
+    animScale.addListener(new AnimatorListenerAdapter(){
+      @Override public void onAnimationEnd(      Animator animation){
+        badgeView.setVisibility(View.GONE);
+      }
+    }
+);
+  }
+  animScale.start();
+}
