@@ -9,6 +9,7 @@
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
   setTitle(R.string.stats);
+  mOuterScrollView=(ScrollViewExt)findViewById(R.id.scroll_view_stats);
   mSwipeToRefreshHelper=new SwipeToRefreshHelper(this,(CustomSwipeRefreshLayout)findViewById(R.id.ptr_layout),new SwipeToRefreshHelper.RefreshListener(){
     @Override public void onRefreshStarted(){
       if (!NetworkUtils.checkConnection(getBaseContext())) {
@@ -34,6 +35,17 @@
     mDate=savedInstanceState.getString(StatsAbstractFragment.ARGS_SELECTED_DATE);
     mStatsViewType=(StatsViewType)savedInstanceState.getSerializable(StatsAbstractFragment.ARGS_VIEW_TYPE);
     mOuterPagerSelectedButtonIndex=savedInstanceState.getInt(StatsAbstractListFragment.ARGS_TOP_PAGER_SELECTED_BUTTON_INDEX,0);
+    final int yScrollPosition=savedInstanceState.getInt(SAVED_STATS_SCROLL_POSITION);
+    if (yScrollPosition != 0) {
+      mOuterScrollView.postDelayed(new Runnable(){
+        public void run(){
+          if (!isFinishing()) {
+            mOuterScrollView.scrollTo(0,yScrollPosition);
+          }
+        }
+      }
+,StatsConstants.STATS_SCROLL_TO_DELAY);
+    }
   }
  else   if (getIntent() != null) {
     Bundle extras=getIntent().getExtras();
