@@ -44,10 +44,12 @@
     if (yScrollPosition != 0) {
       mOuterScrollView.postDelayed(new Runnable(){
         public void run(){
-          mOuterScrollView.scrollTo(0,yScrollPosition);
+          if (!isFinishing()) {
+            mOuterScrollView.scrollTo(0,yScrollPosition);
+          }
         }
       }
-,75L);
+,StatsConstants.STATS_SCROLL_TO_DELAY);
     }
     if (savedInstanceState.containsKey(ARG_AVERAGES_EXPANDED_ROWS)) {
       mAveragesIdToExpandedMap=savedInstanceState.getParcelable(ARG_AVERAGES_EXPANDED_ROWS);
