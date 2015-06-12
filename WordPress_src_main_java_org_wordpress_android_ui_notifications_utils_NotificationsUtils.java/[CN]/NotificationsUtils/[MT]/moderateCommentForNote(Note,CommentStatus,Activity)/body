@@ -2,14 +2,14 @@
   if (newStatus == CommentStatus.APPROVED || newStatus == CommentStatus.UNAPPROVED) {
     note.setLocalStatus(CommentStatus.toRESTString(newStatus));
     note.save();
-    EventBus.getDefault().post(new NoteModerationStatusChanged(note.getId(),true));
+    EventBus.getDefault().postSticky(new NoteModerationStatusChanged(note.getId(),true));
     CommentActions.moderateCommentForNote(note,newStatus,new CommentActions.CommentActionListener(){
       @Override public void onActionResult(      boolean succeeded){
-        EventBus.getDefault().post(new NoteModerationStatusChanged(note.getId(),false));
+        EventBus.getDefault().postSticky(new NoteModerationStatusChanged(note.getId(),false));
         if (!succeeded) {
           note.setLocalStatus(null);
           note.save();
-          EventBus.getDefault().post(new NoteModerationFailed());
+          EventBus.getDefault().postSticky(new NoteModerationFailed());
         }
       }
     }
@@ -17,6 +17,6 @@
   }
  else   if (newStatus == CommentStatus.TRASH || newStatus == CommentStatus.SPAM) {
     EventBus.getDefault().postSticky(new NoteVisibilityChanged(note.getId(),true));
-    showUndoBarForNote(note,newStatus,parentView);
+    showUndoBarForNote(note,newStatus,activity);
   }
 }
