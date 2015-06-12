@@ -4,8 +4,8 @@
       CommentActions.moderateCommentForNote(note,status,new CommentActions.CommentActionListener(){
         @Override public void onActionResult(        boolean succeeded){
           if (!succeeded) {
-            EventBus.getDefault().post(new NoteVisibilityChanged(note.getId(),false));
-            EventBus.getDefault().post(new NoteModerationFailed());
+            EventBus.getDefault().postSticky(new NoteVisibilityChanged(note.getId(),false));
+            EventBus.getDefault().postSticky(new NoteModerationFailed());
           }
         }
       }
@@ -14,7 +14,7 @@
     @Override public void onClear(    @Nonnull Parcelable[] token){
     }
     @Override public void onUndo(    Parcelable parcelable){
-      EventBus.getDefault().post(new NoteVisibilityChanged(note.getId(),false));
+      EventBus.getDefault().postSticky(new NoteVisibilityChanged(note.getId(),false));
     }
   }
 ).show();
