@@ -5,7 +5,7 @@
   ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
     @Override public void onActionResult(    boolean succeeded){
       if (!succeeded && !isFinishing()) {
-        getPageAdapter().refreshTagFragments();
+        getPageAdapter().refreshFollowedTagFragment();
         ToastUtils.showToast(ReaderSubsActivity.this,R.string.reader_toast_err_add_tag);
         mLastAddedTagName=null;
       }
@@ -14,6 +14,9 @@
 ;
   ReaderTag tag=new ReaderTag(tagName,ReaderTagType.FOLLOWED);
   if (ReaderTagActions.performTagAction(tag,TagAction.ADD,actionListener)) {
-    onTagAction(tag,TagAction.ADD);
+    AnalyticsTracker.track(AnalyticsTracker.Stat.READER_FOLLOWED_READER_TAG);
+    mLastAddedTagName=tag.getTagName();
+    getPageAdapter().refreshFollowedTagFragment();
+    showInfoToast(getString(R.string.reader_label_added_tag,tag.getCapitalizedTagName()));
   }
 }
