@@ -8,7 +8,6 @@
   ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
     @Override public void onActionResult(    boolean succeeded){
       if (!succeeded && isAdded()) {
-        hideUndoBar();
         ToastUtils.showToast(getActivity(),R.string.reader_toast_err_block_blog,ToastUtils.Duration.LONG);
       }
     }
@@ -17,12 +16,12 @@
   final ReaderBlogActions.BlockedBlogResult blockResult=ReaderBlogActions.blockBlogFromReader(post.blogId,actionListener);
   AnalyticsTracker.track(AnalyticsTracker.Stat.READER_BLOCKED_BLOG);
   getPostAdapter().removePostsInBlog(post.blogId);
-  UndoBarController.UndoListener undoListener=new UndoBarController.UndoListener(){
-    @Override public void onUndo(    Parcelable parcelable){
+  View.OnClickListener undoListener=new View.OnClickListener(){
+    @Override public void onClick(    View v){
       ReaderBlogActions.undoBlockBlogFromReader(blockResult);
       refreshPosts();
     }
   }
 ;
-  new UndoBarController.UndoBar(getActivity()).message(getString(R.string.reader_toast_blog_blocked)).listener(undoListener).translucent(true).show();
+  Snackbar.make(getView(),getString(R.string.reader_toast_blog_blocked),Snackbar.LENGTH_LONG).setAction(R.string.undo,undoListener).show();
 }
