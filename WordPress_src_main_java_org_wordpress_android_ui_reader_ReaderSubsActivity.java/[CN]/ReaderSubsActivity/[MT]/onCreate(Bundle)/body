@@ -4,6 +4,13 @@
   restoreState(savedInstanceState);
   mViewPager=(ViewPager)findViewById(R.id.viewpager);
   mViewPager.setAdapter(getPageAdapter());
+  TabLayout tabLayout=(TabLayout)findViewById(R.id.tab_layout);
+  tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+  int normalColor=getResources().getColor(R.color.blue_light);
+  int selectedColor=getResources().getColor(R.color.white);
+  tabLayout.setTabTextColors(normalColor,selectedColor);
+  tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+  tabLayout.setupWithViewPager(mViewPager);
   Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
   setSupportActionBar(toolbar);
   toolbar.setNavigationOnClickListener(new View.OnClickListener(){
@@ -14,9 +21,6 @@
 );
   getSupportActionBar().setDisplayShowTitleEnabled(true);
   getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-  PagerTabStrip tabStrip=(PagerTabStrip)findViewById(R.id.pager_tabs);
-  tabStrip.setTabIndicatorColorResource(R.color.tab_indicator);
-  tabStrip.setTextColor(getResources().getColor(R.color.tab_text_selected));
   mEditAdd=(EditText)findViewById(R.id.edit_add);
   mEditAdd.setOnEditorActionListener(new TextView.OnEditorActionListener(){
     @Override public boolean onEditorAction(    TextView v,    int actionId,    KeyEvent event){
@@ -37,7 +41,7 @@
   if (savedInstanceState == null) {
     restorePreviousPage();
   }
-  mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+  mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
     @Override public void onPageSelected(    int position){
       String pageTitle=(String)getPageAdapter().getPageTitle(position);
       AppPrefs.setReaderSubsPageTitle(pageTitle);
