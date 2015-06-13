@@ -1,23 +1,20 @@
 {
-  final View badgeView=findViewWithTag(makeBadgeTag(position));
-  if (badgeView == null) {
+  if (mNoteBadge == null)   return;
+  boolean isBadged=(mNoteBadge.getVisibility() == View.VISIBLE);
+  if (showBadge == isBadged) {
     return;
   }
-  boolean wasBadged=(badgeView.getVisibility() == View.VISIBLE);
-  if (isBadged == wasBadged) {
-    return;
-  }
-  float start=isBadged ? 0f : 1f;
-  float end=isBadged ? 1f : 0f;
+  float start=showBadge ? 0f : 1f;
+  float end=showBadge ? 1f : 0f;
   PropertyValuesHolder scaleX=PropertyValuesHolder.ofFloat(View.SCALE_X,start,end);
   PropertyValuesHolder scaleY=PropertyValuesHolder.ofFloat(View.SCALE_Y,start,end);
-  ObjectAnimator animScale=ObjectAnimator.ofPropertyValuesHolder(badgeView,scaleX,scaleY);
-  if (isBadged) {
+  ObjectAnimator animScale=ObjectAnimator.ofPropertyValuesHolder(mNoteBadge,scaleX,scaleY);
+  if (showBadge) {
     animScale.setInterpolator(new BounceInterpolator());
     animScale.setDuration(getContext().getResources().getInteger(android.R.integer.config_longAnimTime));
     animScale.addListener(new AnimatorListenerAdapter(){
       @Override public void onAnimationStart(      Animator animation){
-        badgeView.setVisibility(View.VISIBLE);
+        mNoteBadge.setVisibility(View.VISIBLE);
       }
     }
 );
@@ -27,7 +24,7 @@
     animScale.setDuration(getContext().getResources().getInteger(android.R.integer.config_shortAnimTime));
     animScale.addListener(new AnimatorListenerAdapter(){
       @Override public void onAnimationEnd(      Animator animation){
-        badgeView.setVisibility(View.GONE);
+        mNoteBadge.setVisibility(View.GONE);
       }
     }
 );
