@@ -1,0 +1,58 @@
+{
+  AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(getActivity());
+  dialogBuilder.setTitle(getString(R.string.language));
+  String[] availableLocales=getResources().getStringArray(R.array.available_languages);
+  final String[] values=new String[availableLocales.length + 1];
+  final Map<String,String> localeMap=new HashMap<>();
+  for (int i=0; i < availableLocales.length; ++i) {
+    String localString=availableLocales[i];
+    if (localString.contains("-")) {
+      localString=localString.substring(0,localString.indexOf("-"));
+    }
+    Locale locale=new Locale(localString);
+    values[i + 1]=locale.getDisplayLanguage() + " (" + availableLocales[i]+ ")";
+    localeMap.put(values[i + 1],availableLocales[i]);
+  }
+  values[0]=getActivity().getString(R.string.device) + " (" + Locale.getDefault().getLanguage()+ ")";
+  localeMap.put(values[0],Locale.getDefault().getLanguage());
+  Arrays.sort(values,1,values.length);
+  ArrayAdapter<String> adapter=new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1,values);
+  ListView listView=new ListView(getActivity());
+  listView.setAdapter(adapter);
+  listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+    @Override public void onItemClick(    AdapterView<?> parent,    View view,    int position,    long id){
+      Resources res=getResources();
+      DisplayMetrics dm=res.getDisplayMetrics();
+      Configuration conf=res.getConfiguration();
+      String localString=localeMap.get(values[position]);
+      if (localString.contains("-")) {
+        conf.locale=new Locale(localString.substring(0,localString.indexOf("-")),localString.substring(localString.indexOf("-") + 1,localString.length()));
+      }
+ else {
+        conf.locale=new Locale(localString);
+      }
+      res.updateConfiguration(conf,dm);
+      mSettings.edit().putString(SETTINGS_PREFERENCES,localeMap.get(values[position])).apply();
+      if (position != 0) {
+        Map<String,Object> properties=new HashMap<String,Object>();
+        properties.put("forced_app_locale",conf.locale.toString());
+        AnalyticsTracker.track(Stat.SETTINGS_LANGUAGE_SELECTION_FORCED,properties);
+      }
+      AnalyticsUtils.refreshMetadata();
+      Intent refresh=new Intent(getActivity(),getActivity().getClass());
+      startActivity(refresh);
+      getActivity().setResult(LANGUAGE_CHANGED);
+      getActivity().finish();
+    }
+  }
+);
+  dialogBuilder.setView(listView);
+  dialogBuilder.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener(){
+    @Override public void onClick(    DialogInterface dialog,    int which){
+      dialog.dismiss();
+    }
+  }
+);
+  mDialog=dialogBuilder.show();
+  return true;
+}
