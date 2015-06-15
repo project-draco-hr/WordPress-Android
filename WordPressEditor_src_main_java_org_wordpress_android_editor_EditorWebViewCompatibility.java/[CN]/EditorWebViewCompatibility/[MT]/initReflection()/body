@@ -1,0 +1,31 @@
+{
+  Object webViewProvider;
+  try {
+    if (Build.VERSION.SDK_INT >= 16) {
+      Field webViewProviderField=WebView.class.getDeclaredField("mProvider");
+      webViewProviderField.setAccessible(true);
+      webViewProvider=webViewProviderField.get(this);
+      Field webViewCoreField=webViewProvider.getClass().getDeclaredField("mWebViewCore");
+      webViewCoreField.setAccessible(true);
+      mWebViewCore=webViewCoreField.get(webViewProvider);
+    }
+ else {
+      Field webViewCoreField=WebView.class.getDeclaredField("mWebViewCore");
+      webViewCoreField.setAccessible(true);
+      mWebViewCore=webViewCoreField.get(this);
+    }
+    if (mWebViewCore != null) {
+      mSendMessageMethod=mWebViewCore.getClass().getDeclaredMethod("sendMessage",Message.class);
+      mSendMessageMethod.setAccessible(true);
+    }
+  }
+ catch (  NoSuchFieldException e) {
+    throw new ReflectionException(e);
+  }
+catch (  NoSuchMethodException e) {
+    throw new ReflectionException(e);
+  }
+catch (  IllegalAccessException e) {
+    throw new ReflectionException(e);
+  }
+}

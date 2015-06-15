@@ -1,0 +1,16 @@
+{
+  Uri imageUri=Uri.parse(mediaFile.getFilePath());
+  Bitmap thumbnailBitmap;
+  if (MediaUtils.isVideo(imageUri.toString())) {
+    thumbnailBitmap=BitmapFactory.decodeResource(context.getResources(),R.drawable.media_movieclip);
+  }
+ else {
+    thumbnailBitmap=ImageUtils.getWPImageSpanThumbnailFromFilePath(context,imageUri.getEncodedPath(),ImageUtils.getMaximumThumbnailWidthForEditor(context));
+    if (thumbnailBitmap == null) {
+      thumbnailBitmap=BitmapFactory.decodeResource(context.getResources(),R.drawable.legacy_dashicon_format_image_big_grey);
+    }
+  }
+  WPEditImageSpan imageSpan=new WPEditImageSpan(context,thumbnailBitmap,imageUri);
+  mediaFile.setWidth(MediaUtils.getMinimumImageWidth(context,imageUri,mBlogSettingMaxImageWidth));
+  return imageSpan;
+}

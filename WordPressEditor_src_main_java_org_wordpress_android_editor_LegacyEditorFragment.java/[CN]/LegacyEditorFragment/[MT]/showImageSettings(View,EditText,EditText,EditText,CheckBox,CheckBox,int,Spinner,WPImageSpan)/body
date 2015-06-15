@@ -1,0 +1,46 @@
+{
+  AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+  builder.setTitle(getString(R.string.image_settings));
+  builder.setView(alertView);
+  builder.setPositiveButton(getString(android.R.string.ok),new DialogInterface.OnClickListener(){
+    public void onClick(    DialogInterface dialog,    int whichButton){
+      String title=(titleText.getText() != null) ? titleText.getText().toString() : "";
+      MediaFile mediaFile=imageSpan.getMediaFile();
+      if (mediaFile == null) {
+        return;
+      }
+      mediaFile.setTitle(title);
+      mediaFile.setHorizontalAlignment(alignmentSpinner.getSelectedItemPosition());
+      mediaFile.setWidth(getEditTextIntegerClamped(imageWidthText,10,maxWidth));
+      String captionText=(caption.getText() != null) ? caption.getText().toString() : "";
+      mediaFile.setCaption(captionText);
+      mediaFile.setFeatured(featuredCheckBox.isChecked());
+      if (featuredCheckBox.isChecked()) {
+        Spannable contentSpannable=mContentEditText.getText();
+        WPImageSpan[] imageSpans=contentSpannable.getSpans(0,contentSpannable.length(),WPImageSpan.class);
+        if (imageSpans.length > 1) {
+          for (          WPImageSpan postImageSpan : imageSpans) {
+            if (postImageSpan != imageSpan) {
+              MediaFile postMediaFile=postImageSpan.getMediaFile();
+              postMediaFile.setFeatured(false);
+              postMediaFile.setFeaturedInPost(false);
+              mEditorFragmentListener.saveMediaFile(postMediaFile);
+            }
+          }
+        }
+      }
+      mediaFile.setFeaturedInPost(featuredInPostCheckBox.isChecked());
+      mEditorFragmentListener.saveMediaFile(mediaFile);
+    }
+  }
+);
+  builder.setNegativeButton(getString(android.R.string.cancel),new DialogInterface.OnClickListener(){
+    public void onClick(    DialogInterface dialog,    int whichButton){
+      dialog.dismiss();
+    }
+  }
+);
+  AlertDialog alertDialog=builder.create();
+  alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+  alertDialog.show();
+}

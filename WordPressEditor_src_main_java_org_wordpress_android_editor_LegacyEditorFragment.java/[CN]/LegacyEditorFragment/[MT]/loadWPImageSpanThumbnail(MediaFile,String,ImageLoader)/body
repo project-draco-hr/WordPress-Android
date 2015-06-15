@@ -1,0 +1,54 @@
+{
+  if (mediaFile == null || imageURL == null) {
+    return;
+  }
+  final String mediaId=mediaFile.getMediaId();
+  if (mediaId == null) {
+    return;
+  }
+  final int maxThumbWidth=ImageUtils.getMaximumThumbnailWidthForEditor(getActivity());
+  imageLoader.get(imageURL,new ImageLoader.ImageListener(){
+    @Override public void onErrorResponse(    VolleyError arg0){
+    }
+    @Override public void onResponse(    ImageLoader.ImageContainer container,    boolean arg1){
+      Bitmap downloadedBitmap=container.getBitmap();
+      if (downloadedBitmap == null) {
+        return;
+      }
+      if (downloadedBitmap.getWidth() < MIN_THUMBNAIL_WIDTH) {
+        return;
+      }
+      Bitmap resizedBitmap;
+      resizedBitmap=ImageUtils.getScaledBitmapAtLongestSide(downloadedBitmap,maxThumbWidth);
+      if (resizedBitmap == null) {
+        return;
+      }
+      final EditText editText=mContentEditText;
+      Editable s=editText.getText();
+      if (s == null) {
+        return;
+      }
+      WPImageSpan[] spans=s.getSpans(0,s.length(),WPImageSpan.class);
+      if (spans.length != 0) {
+        for (        WPImageSpan is : spans) {
+          MediaFile mediaFile=is.getMediaFile();
+          if (mediaFile == null) {
+            continue;
+          }
+          if (mediaId.equals(mediaFile.getMediaId()) && !is.isNetworkImageLoaded()) {
+            int spanStart=is.getStartPosition();
+            int spanEnd=is.getEndPosition();
+            WPEditImageSpan imageSpan=new WPEditImageSpan(getActivity(),resizedBitmap,is.getImageSource());
+            imageSpan.setMediaFile(is.getMediaFile());
+            imageSpan.setNetworkImageLoaded(true);
+            imageSpan.setPosition(spanStart,spanEnd);
+            s.removeSpan(is);
+            s.setSpan(imageSpan,spanStart,spanEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            break;
+          }
+        }
+      }
+    }
+  }
+,0,0);
+}

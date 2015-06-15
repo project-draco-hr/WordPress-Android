@@ -1,0 +1,13 @@
+{
+  mSetUpLatch.await();
+  mTestMethod=TestMethod.INIT;
+  mCallbackLatch=new CountDownLatch(3);
+  mCallbackSet=new HashSet<>();
+  boolean callbacksReceived=mCallbackLatch.await(5,TimeUnit.SECONDS);
+  assertTrue(callbacksReceived);
+  Set<String> expectedSet=new HashSet<>();
+  expectedSet.add("callback-new-field:id=zss_field_title");
+  expectedSet.add("callback-new-field:id=zss_field_content");
+  expectedSet.add("callback-dom-loaded:undefined");
+  assertEquals(expectedSet,mCallbackSet);
+}
