@@ -1,0 +1,26 @@
+{
+  Set<String> keyValueSet=new HashSet<>();
+  Map<String,String> expectedMap=new HashMap<>();
+  keyValueSet.add("id=test");
+  keyValueSet.add("name=example");
+  expectedMap.put("id","test");
+  expectedMap.put("name","example");
+  assertEquals(expectedMap,buildMapFromKeyValuePairs(keyValueSet));
+  keyValueSet.clear();
+  keyValueSet.add("test");
+  keyValueSet.add("name=example");
+  expectedMap.clear();
+  expectedMap.put("name","example");
+  assertEquals(expectedMap,buildMapFromKeyValuePairs(keyValueSet));
+  keyValueSet.clear();
+  keyValueSet.add("id=test");
+  keyValueSet.add("contents=some text\n<a href=\"http://wordpress.com\">WordPress</a>");
+  expectedMap.clear();
+  expectedMap.put("id","test");
+  expectedMap.put("contents","some text\n<a href=\"http://wordpress.com\">WordPress</a>");
+  assertEquals(expectedMap,buildMapFromKeyValuePairs(keyValueSet));
+  keyValueSet.clear();
+  keyValueSet.add("test");
+  assertEquals(Collections.emptyMap(),buildMapFromKeyValuePairs(keyValueSet));
+  assertEquals(Collections.emptyMap(),buildMapFromKeyValuePairs(Collections.<String>emptySet()));
+}

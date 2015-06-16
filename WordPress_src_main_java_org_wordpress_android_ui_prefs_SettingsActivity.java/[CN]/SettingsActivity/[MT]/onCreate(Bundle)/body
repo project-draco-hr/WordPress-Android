@@ -6,8 +6,18 @@
     actionBar.setHomeButtonEnabled(true);
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
-  mCurrentBlogOnCreate=WordPress.getCurrentBlog();
   setContentView(R.layout.settings_activity);
-  mSettingsFragment=new SettingsFragment();
-  getFragmentManager().beginTransaction().add(R.id.fragment_container,mSettingsFragment).commit();
+  FragmentManager fragmentManager=getFragmentManager();
+  if (savedInstanceState == null) {
+    Bundle passcodeArgs=new Bundle();
+    passcodeArgs.putBoolean(PasscodePreferenceFragment.KEY_SHOULD_INFLATE,false);
+    mSettingsFragment=new SettingsFragment();
+    mPasscodePreferenceFragment=new PasscodePreferenceFragment();
+    mPasscodePreferenceFragment.setArguments(passcodeArgs);
+    fragmentManager.beginTransaction().add(R.id.fragment_container,mSettingsFragment).add(R.id.fragment_container,mPasscodePreferenceFragment).commit();
+  }
+ else {
+    mSettingsFragment=(SettingsFragment)fragmentManager.getFragment(savedInstanceState,KEY_SETTINGS_FRAGMENT);
+    mPasscodePreferenceFragment=(PasscodePreferenceFragment)fragmentManager.getFragment(savedInstanceState,KEY_PASSCODE_FRAGMENT);
+  }
 }

@@ -2,14 +2,14 @@
   if (isFinishing()) {
     return;
   }
-  UndoBarController.UndoListener undoListener=new UndoBarController.UndoListener(){
-    @Override public void onUndo(    Parcelable parcelable){
+  View.OnClickListener undoListener=new View.OnClickListener(){
+    @Override public void onClick(    View v){
       ReaderBlogActions.undoBlockBlogFromReader(blockResult);
       loadPosts(blogId,postId);
     }
   }
 ;
-  new UndoBarController.UndoBar(ReaderPostPagerActivity.this).message(getString(R.string.reader_toast_blog_blocked)).listener(undoListener).translucent(true).show();
+  Snackbar.make(findViewById(R.id.root_view),getString(R.string.reader_toast_blog_blocked),Snackbar.LENGTH_LONG).setAction(R.string.undo,undoListener).show();
   int position=mViewPager.getCurrentItem();
   ReaderBlogIdPostId newId=(hasPagerAdapter() ? getPagerAdapter().getBestIdNotInBlog(position,blogId) : null);
   long newBlogId=(newId != null ? newId.getBlogId() : 0);

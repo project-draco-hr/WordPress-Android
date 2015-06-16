@@ -31,19 +31,10 @@
         }
  else         if (mShouldSelectFirstPost) {
           mShouldSelectFirstPost=false;
-          if (mPostsListAdapter.getCount() > 0) {
-            PostsListPost postsListPost=(PostsListPost)mPostsListAdapter.getItem(0);
+          if (mPostsListAdapter.getItemCount() > 0) {
+            PostsListPost postsListPost=mPostsListAdapter.getItem(0);
             if (postsListPost != null) {
-              showPost(postsListPost.getPostId());
-              getListView().setItemChecked(0,true);
-            }
-          }
-        }
- else         if (isAdded() && ((PostsActivity)getActivity()).isDualPane()) {
-          int selectedPosition=getListView().getCheckedItemPosition();
-          if (selectedPosition != ListView.INVALID_POSITION && selectedPosition < mPostsListAdapter.getCount()) {
-            PostsListPost postsListPost=(PostsListPost)mPostsListAdapter.getItem(selectedPosition);
-            if (postsListPost != null) {
+              mPostsListAdapter.setSelectedPosition(0);
               showPost(postsListPost.getPostId());
             }
           }
@@ -51,7 +42,19 @@
       }
     }
 ;
-    mPostsListAdapter=new PostsListAdapter(getActivity(),mIsPage,loadMoreListener,postsLoadedListener);
+    PostsListAdapter.OnPostSelectedListener postSelectedListener=new PostsListAdapter.OnPostSelectedListener(){
+      @Override public void onPostSelected(      PostsListPost post){
+        if (isAdded()) {
+          showPost(post.getPostId());
+        }
+      }
+    }
+;
+    mPostsListAdapter=new PostsListAdapter(getActivity(),mIsPage);
+    mPostsListAdapter.setOnLoadMoreListener(loadMoreListener);
+    mPostsListAdapter.setOnPostsLoadedListener(postsLoadedListener);
+    mPostsListAdapter.setOnPostSelectedListener(postSelectedListener);
+    mPostsListAdapter.setShowSelection(mShowSelection);
   }
   return mPostsListAdapter;
 }

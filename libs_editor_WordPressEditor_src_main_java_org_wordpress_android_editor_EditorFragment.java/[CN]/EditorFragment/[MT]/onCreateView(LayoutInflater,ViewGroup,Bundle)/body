@@ -1,6 +1,19 @@
 {
   View view=inflater.inflate(R.layout.fragment_editor,container,false);
   mWebView=(EditorWebViewAbstract)view.findViewById(R.id.webview);
+  mWebView.setOnTouchListener(this);
+  if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && !getResources().getBoolean(R.bool.is_large_tablet_landscape)) {
+    mHideActionBarOnSoftKeyboardUp=true;
+  }
+  mWebView.setOnImeBackListener(new EditorWebViewAbstract.OnImeBackListener(){
+    @Override public void onImeBack(){
+      if (mHideActionBarOnSoftKeyboardUp && mActionBar != null && !mActionBar.isShowing()) {
+        mActionBar.show();
+      }
+    }
+  }
+);
+  mEditorFragmentListener.onEditorFragmentInitialized();
   initJsEditor();
   ToggleButton mediaButton=(ToggleButton)view.findViewById(R.id.format_bar_button_media);
   mTagToggleButtonMap.put(TAG_FORMAT_BAR_BUTTON_MEDIA,mediaButton);

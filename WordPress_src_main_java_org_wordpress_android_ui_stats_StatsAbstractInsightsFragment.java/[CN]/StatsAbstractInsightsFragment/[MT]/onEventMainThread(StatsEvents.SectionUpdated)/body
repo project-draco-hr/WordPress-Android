@@ -1,0 +1,28 @@
+{
+  if (!isAdded()) {
+    return;
+  }
+  if (!event.mRequestBlogId.equals(StatsUtils.getBlogId(getLocalTableBlogID()))) {
+    return;
+  }
+  if (event.mTimeframe != getTimeframe()) {
+    return;
+  }
+  StatsService.StatsEndpointsEnum sectionToUpdate=event.mEndPointName;
+  StatsService.StatsEndpointsEnum[] sectionsToUpdate=getSectionsToUpdate();
+  int indexOfDatamodelMatch=-1;
+  for (int i=0; i < getSectionsToUpdate().length; i++) {
+    if (sectionToUpdate == sectionsToUpdate[i]) {
+      indexOfDatamodelMatch=i;
+      break;
+    }
+  }
+  if (-1 == indexOfDatamodelMatch) {
+    return;
+  }
+  if (mDatamodels == null) {
+    mDatamodels=new Serializable[getSectionsToUpdate().length];
+  }
+  mDatamodels[indexOfDatamodelMatch]=event.mResponseObjectModel;
+  updateUI();
+}

@@ -1,0 +1,22 @@
+{
+  MenuItem menuSearch=menu.findItem(R.id.menu_search);
+  mMenuEdit=menu.findItem(R.id.menu_edit);
+  mSitePickerActivity=sitePickerActivity;
+  setIconifiedByDefault(false);
+  setOnQueryTextListener(this);
+  MenuItemCompat.setOnActionExpandListener(menuSearch,new MenuItemCompat.OnActionExpandListener(){
+    @Override public boolean onMenuItemActionExpand(    MenuItem item){
+      enableSearchMode();
+      return true;
+    }
+    @Override public boolean onMenuItemActionCollapse(    MenuItem item){
+      disableSearchMode();
+      return true;
+    }
+  }
+);
+  if (sitePickerActivity.getIsInSearchMode()) {
+    menuSearch.expandActionView();
+    setQuery(sitePickerActivity.getLastSearch(),false);
+  }
+}

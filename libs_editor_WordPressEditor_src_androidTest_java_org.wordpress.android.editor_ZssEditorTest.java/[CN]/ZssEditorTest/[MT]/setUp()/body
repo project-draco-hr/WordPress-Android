@@ -1,0 +1,18 @@
+{
+  super.setUp();
+  mInstrumentation=getInstrumentation();
+  Activity activity=getActivity();
+  mSetUpLatch=new CountDownLatch(1);
+  mDomLoadedCallbackLatch=new CountDownLatch(1);
+  mSetUpLatch.countDown();
+  final String htmlEditor=Utils.getHtmlFromFile(activity,"android-editor.html");
+  activity.runOnUiThread(new Runnable(){
+    @Override public void run(){
+      mWebView=new EditorWebView(mInstrumentation.getContext(),null);
+      mWebView.addJavascriptInterface(new MockJsCallbackReceiver(),JS_CALLBACK_HANDLER);
+      mWebView.loadDataWithBaseURL("file:///android_asset/",htmlEditor,"text/html","utf-8","");
+      mSetUpLatch.countDown();
+    }
+  }
+);
+}

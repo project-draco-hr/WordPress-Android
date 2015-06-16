@@ -1,26 +1,5 @@
 {
   super.onActivityCreated(bundle);
-  getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-  mProgressFooterView=View.inflate(getActivity(),R.layout.list_footer_progress,null);
-  getListView().addFooterView(mProgressFooterView,null,false);
-  mProgressFooterView.setVisibility(View.GONE);
-  getListView().setDivider(getResources().getDrawable(R.drawable.list_divider));
-  getListView().setDividerHeight(1);
-  getListView().setOnItemClickListener(new AdapterView.OnItemClickListener(){
-    public void onItemClick(    AdapterView<?> arg0,    View v,    int position,    long id){
-      if (position >= getPostListAdapter().getCount())       return;
-      if (v == null)       return;
-      PostsListPost postsListPost=(PostsListPost)getPostListAdapter().getItem(position);
-      if (postsListPost == null)       return;
-      if (!mIsFetchingPosts || isLoadingMorePosts()) {
-        showPost(postsListPost.getPostId());
-      }
- else       if (isAdded()) {
-        Toast.makeText(getActivity(),mIsPage ? R.string.pages_fetching : R.string.posts_fetching,Toast.LENGTH_SHORT).show();
-      }
-    }
-  }
-);
   initSwipeToRefreshHelper();
   mFabButton=(FloatingActionButton)getView().findViewById(R.id.fab_button);
   mFabButton.setOnClickListener(new View.OnClickListener(){
@@ -31,7 +10,7 @@
 );
   mEmptyViewAnimationHandler=new EmptyViewAnimationHandler(mEmptyViewTitle,mEmptyViewImage,this);
   if (NetworkUtils.isNetworkAvailable(getActivity())) {
-    ((PostsActivity)getActivity()).requestPosts();
+    ((PostsListActivity)getActivity()).requestPosts();
   }
  else {
     updateEmptyView(EmptyViewMessageType.NETWORK_ERROR);

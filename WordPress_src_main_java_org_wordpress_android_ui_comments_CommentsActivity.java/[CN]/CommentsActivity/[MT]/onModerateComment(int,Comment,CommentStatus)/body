@@ -24,8 +24,22 @@
  else   if (newStatus == CommentStatus.SPAM || newStatus == CommentStatus.TRASH) {
     getListFragment().removeComment(comment);
     getListFragment().setCommentIsModerating(comment.commentID,true);
-    new UndoBarController.UndoBar(this).message(newStatus == CommentStatus.TRASH ? R.string.comment_trashed : R.string.comment_spammed).listener(new UndoBarController.AdvancedUndoListener(){
-      @Override public void onHide(      Parcelable parcelable){
+    String message=(newStatus == CommentStatus.TRASH ? getString(R.string.comment_trashed) : getString(R.string.comment_spammed));
+    View.OnClickListener undoListener=new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        mSnackbarDidUndo=true;
+        getListFragment().setCommentIsModerating(comment.commentID,false);
+        getListFragment().loadComments();
+      }
+    }
+;
+    mSnackbarDidUndo=false;
+    Snackbar.make(getListFragment().getView(),message,Snackbar.LENGTH_LONG).setAction(R.string.undo,undoListener).show();
+    new Handler().postDelayed(new Runnable(){
+      @Override public void run(){
+        if (mSnackbarDidUndo) {
+          return;
+        }
         CommentActions.moderateComment(accountId,comment,newStatus,new CommentActions.CommentActionListener(){
           @Override public void onActionResult(          boolean succeeded){
             if (isFinishing() || !hasListFragment()) {
@@ -40,13 +54,7 @@
         }
 );
       }
-      @Override public void onClear(      Parcelable[] token){
-      }
-      @Override public void onUndo(      Parcelable parcelable){
-        getListFragment().setCommentIsModerating(comment.commentID,false);
-        getListFragment().loadComments();
-      }
     }
-).show();
+,Constants.SNACKBAR_LONG_DURATION_MS);
   }
 }

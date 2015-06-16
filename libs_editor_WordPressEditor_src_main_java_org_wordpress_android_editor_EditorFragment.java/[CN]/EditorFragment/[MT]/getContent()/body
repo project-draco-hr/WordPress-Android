@@ -1,3 +1,20 @@
 {
-  return null;
+  if (Looper.myLooper() == Looper.getMainLooper()) {
+    AppLog.d(T.EDITOR,"getContent() called from UI thread");
+  }
+  mGetContentCountDownLatch=new CountDownLatch(1);
+  mActivity.runOnUiThread(new Runnable(){
+    @Override public void run(){
+      mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').getHTMLForCallback();");
+    }
+  }
+);
+  try {
+    mGetContentCountDownLatch.await(1,TimeUnit.SECONDS);
+  }
+ catch (  InterruptedException e) {
+    AppLog.e(T.EDITOR,e);
+    Thread.currentThread().interrupt();
+  }
+  return StringUtils.notNullStr(mContentHtml);
 }

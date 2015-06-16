@@ -10,7 +10,6 @@ case RequestCodes.EDIT_POST:
     }
   break;
 case RequestCodes.READER_SUBS:
-case RequestCodes.READER_REBLOG:
 ReaderPostListFragment readerFragment=getReaderListFragment();
 if (readerFragment != null) {
 readerFragment.onActivityResult(requestCode,resultCode,data);
@@ -34,16 +33,8 @@ WordPress.registerForCloudMessaging(this);
 }
 break;
 case RequestCodes.NOTE_DETAIL:
-if (getNotificationListFragment() != null) {
-getNotificationListFragment().onActivityResult(requestCode,resultCode,data);
-}
-break;
-case RequestCodes.PICTURE_LIBRARY:
-FragmentManager fm=getFragmentManager();
-Fragment addFragment=fm.findFragmentByTag(MySiteFragment.ADD_MEDIA_FRAGMENT_TAG);
-if (addFragment != null && data != null) {
-ToastUtils.showToast(this,R.string.image_added);
-addFragment.onActivityResult(requestCode,resultCode,data);
+if (resultCode == RESULT_OK && data != null) {
+moderateCommentOnActivityResult(data);
 }
 break;
 case RequestCodes.SITE_PICKER:
@@ -62,6 +53,11 @@ if (mySiteFragment != null) {
 mySiteFragment.setBlog(WordPress.getCurrentBlog());
 }
 }
+}
+break;
+case RequestCodes.ACCOUNT_SETTINGS:
+if (resultCode == SettingsFragment.LANGUAGE_CHANGED) {
+resetFragments();
 }
 break;
 }
