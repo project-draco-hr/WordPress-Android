@@ -3,6 +3,9 @@
     AppLog.e(AppLog.T.STATS,"Cannot insert a null stats since the passed context is null. Context is required " + "to access the DB.");
     return;
   }
+  if (jsonResponse.getBytes().length > MAX_RESPONSE_LEN) {
+    return;
+  }
   SQLiteDatabase db=StatsDatabaseHelper.getWritableDb(ctx);
   db.beginTransaction();
   SQLiteStatement stmt=db.compileStatement("INSERT INTO " + TABLE_NAME + " (blogID, type, timeframe, date, "+ "jsonData, maxResult, page, timestamp) VALUES (?1,?2,?3,?4,?5,?6,?7,?8)");
