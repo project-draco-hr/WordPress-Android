@@ -1,17 +1,17 @@
 {
   PostsListPost post=mPosts.get(position);
   Context context=holder.itemView.getContext();
-  String date=post.getFormattedDate();
-  String titleText=post.getTitle();
-  if (titleText.equals("")) {
-    titleText="(" + context.getResources().getText(R.string.untitled) + ")";
+  if (post.hasTitle()) {
+    holder.txtTitle.setText(post.getTitle());
   }
-  holder.txtTitle.setText(titleText);
+ else {
+    holder.txtTitle.setText("(" + context.getResources().getText(R.string.untitled) + ")");
+  }
   if (post.isLocalDraft()) {
     holder.txtDate.setVisibility(View.GONE);
   }
  else {
-    holder.txtDate.setText(date);
+    holder.txtDate.setText(post.getFormattedDate());
     holder.txtDate.setVisibility(View.VISIBLE);
   }
   if ((post.getStatusEnum() == PostStatus.PUBLISHED) && !post.isLocalDraft() && !post.hasLocalChanges()) {
