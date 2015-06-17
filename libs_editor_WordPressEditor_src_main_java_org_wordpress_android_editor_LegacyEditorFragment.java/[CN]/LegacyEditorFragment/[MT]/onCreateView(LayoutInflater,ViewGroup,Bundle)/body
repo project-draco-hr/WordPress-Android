@@ -1,12 +1,12 @@
 {
-  mActivity=(ActionBarActivity)getActivity();
   final ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.fragment_edit_post_content,container,false);
   mFormatBar=(LinearLayout)rootView.findViewById(R.id.format_bar);
   mTitleEditText=(EditText)rootView.findViewById(R.id.post_title);
   mTitleEditText.setText(mTitle);
   mTitleEditText.setOnEditorActionListener(new TextView.OnEditorActionListener(){
     @Override public boolean onEditorAction(    TextView v,    int actionId,    KeyEvent event){
-      if (actionId == EditorInfo.IME_ACTION_NEXT && isAdded() && mActivity.getSupportActionBar() != null && mActivity.getSupportActionBar().isShowing()) {
+      ActionBar actionBar=getActionBar();
+      if (actionId == EditorInfo.IME_ACTION_NEXT && actionBar != null && actionBar.isShowing()) {
         setContentEditingModeVisible(true);
       }
       return false;
@@ -39,7 +39,8 @@
   mContentEditText.addTextChangedListener(this);
   mContentEditText.setOnEditTextImeBackListener(new WPEditText.EditTextImeBackListener(){
     @Override public void onImeBack(    WPEditText ctrl,    String text){
-      if (mRootView.getBottom() < mFullViewBottom && isAdded() && mActivity.getSupportActionBar() != null && !mActivity.getSupportActionBar().isShowing()) {
+      ActionBar actionBar=getActionBar();
+      if (mRootView.getBottom() < mFullViewBottom && actionBar != null && !actionBar.isShowing()) {
         setContentEditingModeVisible(false);
       }
     }
