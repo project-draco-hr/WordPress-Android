@@ -1,0 +1,23 @@
+{
+  final long blogID=Long.parseLong(remoteBlogID);
+  final long itemID=Long.parseLong(remoteItemID);
+  if (itemType == null) {
+    AppLog.d(AppLog.T.UTILS,"Tpe of the item is null. Opening it in the in-app browser: " + itemURL);
+    WPWebViewActivity.openURL(ctx,itemURL);
+  }
+ else   if (itemType.equals("post") || itemType.equals("page")) {
+    if (itemID == 0) {
+      ReaderActivityLauncher.showReaderBlogPreview(ctx,blogID);
+    }
+ else {
+      ReaderActivityLauncher.showReaderPostDetail(ctx,blogID,itemID);
+    }
+  }
+ else   if (itemType.equals("homepage")) {
+    ReaderActivityLauncher.showReaderBlogPreview(ctx,blogID);
+  }
+ else {
+    AppLog.d(AppLog.T.UTILS,"Opening the in-app browser: " + itemURL);
+    WPWebViewActivity.openURL(ctx,itemURL);
+  }
+}
