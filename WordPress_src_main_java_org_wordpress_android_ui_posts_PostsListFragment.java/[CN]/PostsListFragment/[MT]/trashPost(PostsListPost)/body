@@ -2,21 +2,42 @@
   if (!NetworkUtils.checkConnection(getActivity())) {
     return;
   }
+  final Post fullPost=WordPress.wpDB.getPostForLocalTablePostId(post.getPostId());
+  if (fullPost == null) {
+    ToastUtils.showToast(getActivity(),R.string.post_not_found);
+    return;
+  }
+  final String originalStatus=fullPost.getPostStatus();
+  fullPost.setPostStatus(PostStatus.toString(PostStatus.TRASHED));
+  WordPress.wpDB.updatePost(fullPost);
   mPostsListAdapter.removePost(post);
   View.OnClickListener undoListener=new View.OnClickListener(){
     @Override public void onClick(    View v){
       mDidUndoTrash=true;
+      fullPost.setPostStatus(originalStatus);
+      WordPress.wpDB.updatePost(fullPost);
       mPostsListAdapter.loadPosts();
     }
   }
 ;
+  String text;
+  if (post.isLocalDraft()) {
+    text=mIsPage ? getString(R.string.page_deleted) : getString(R.string.post_deleted);
+  }
+ else {
+    text=mIsPage ? getString(R.string.page_trashed) : getString(R.string.post_trashed);
+  }
   mDidUndoTrash=false;
-  String text=mIsPage ? getString(R.string.page_trashed) : getString(R.string.post_trashed);
   Snackbar.make(getView(),text,Snackbar.LENGTH_LONG).setAction(R.string.undo,undoListener).show();
   new Handler().postDelayed(new Runnable(){
     @Override public void run(){
-      if (mDidUndoTrash) {
+      if (mDidUndoTrash || !isAdded()) {
         return;
+      }
+      if (fullPost.isLocalDraft()) {
+        WordPress.wpDB.deletePost(fullPost);
+      }
+ else {
       }
     }
   }
