@@ -1,19 +1,21 @@
 {
+  Post fullPost=WordPress.wpDB.getPostForLocalTablePostId(post.getPostId());
+  if (fullPost == null) {
+    return;
+  }
 switch (button) {
 case EDIT:
     ActivityLauncher.editBlogPostOrPageForResult(getActivity(),post.getPostId(),mIsPage);
   break;
 case VIEW:
-Post fullPost=WordPress.wpDB.getPostForLocalTablePostId(post.getPostId());
-if (fullPost != null) {
 if (fullPost.isLocalDraft()) {
 }
  else {
   ActivityLauncher.browsePostOrPage(getActivity(),WordPress.getCurrentBlog(),fullPost);
 }
-}
 break;
 case STATS:
+ActivityLauncher.viewStatsSinglePostDetails(getActivity(),fullPost,mIsPage);
 break;
 case TRASH:
 break;
