@@ -1,0 +1,24 @@
+{
+  if (!NetworkUtils.checkConnection(getActivity())) {
+    return;
+  }
+  mPostsListAdapter.removePost(post);
+  View.OnClickListener undoListener=new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      mDidUndoTrash=true;
+      mPostsListAdapter.loadPosts();
+    }
+  }
+;
+  mDidUndoTrash=false;
+  String text=mIsPage ? getString(R.string.page_trashed) : getString(R.string.post_trashed);
+  Snackbar.make(getView(),text,Snackbar.LENGTH_LONG).setAction(R.string.undo,undoListener).show();
+  new Handler().postDelayed(new Runnable(){
+    @Override public void run(){
+      if (mDidUndoTrash) {
+        return;
+      }
+    }
+  }
+,Constants.SNACKBAR_LONG_DURATION_MS);
+}
