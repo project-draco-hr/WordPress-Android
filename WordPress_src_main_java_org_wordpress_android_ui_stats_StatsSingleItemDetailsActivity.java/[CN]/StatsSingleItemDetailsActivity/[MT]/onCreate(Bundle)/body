@@ -37,7 +37,11 @@
   setTitle(R.string.stats);
   mOuterScrollView=(ScrollViewExt)findViewById(R.id.scroll_view_stats);
   if (savedInstanceState != null) {
-    mRemotePostItem=(PostModel)savedInstanceState.getSerializable(ARG_REMOTE_POST_OBJECT);
+    mRemoteItemID=savedInstanceState.getString(ARG_REMOTE_ITEM_ID);
+    mRemoteBlogID=savedInstanceState.getString(ARG_REMOTE_BLOG_ID);
+    mRemoteItemType=savedInstanceState.getString(ARG_REMOTE_ITEM_TYPE);
+    mItemTitle=savedInstanceState.getString(ARG_ITEM_TITLE);
+    mItemURL=savedInstanceState.getString(ARG_ITEM_URL);
     mRestResponseParsed=(PostViewsModel)savedInstanceState.getSerializable(ARG_REST_RESPONSE);
     mSelectedBarGraphIndex=savedInstanceState.getInt(ARG_SELECTED_GRAPH_BAR,-1);
     final int yScrollPosition=savedInstanceState.getInt(SAVED_STATS_SCROLL_POSITION);
@@ -63,16 +67,37 @@
   }
  else   if (getIntent() != null) {
     Bundle extras=getIntent().getExtras();
-    mRemotePostItem=(PostModel)extras.getSerializable(ARG_REMOTE_POST_OBJECT);
+    mRemoteItemID=extras.getString(ARG_REMOTE_ITEM_ID);
+    mRemoteBlogID=extras.getString(ARG_REMOTE_BLOG_ID);
+    mRemoteItemType=extras.getString(ARG_REMOTE_ITEM_TYPE);
+    mItemTitle=extras.getString(ARG_ITEM_TITLE);
+    mItemURL=extras.getString(ARG_ITEM_URL);
     mRestResponseParsed=(PostViewsModel)extras.getSerializable(ARG_REST_RESPONSE);
     mSelectedBarGraphIndex=extras.getInt(ARG_SELECTED_GRAPH_BAR,-1);
   }
-  mStatsForLabel.setText(mRemotePostItem.getTitle());
-  mStatsForLabel.setOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View v){
-      final Context ctx=v.getContext();
-      StatsUtils.openPostInReaderOrInAppWebview(ctx,mRemotePostItem);
+  if (mRemoteBlogID == null || mRemoteItemID == null) {
+    Toast.makeText(this,R.string.stats_generic_error,Toast.LENGTH_LONG).show();
+    finish();
+    return;
+  }
+  if (mItemTitle != null || mItemURL != null) {
+    mStatsForLabel.setVisibility(View.VISIBLE);
+    mStatsForLabel.setText(mItemTitle != null ? mItemTitle : mItemURL);
+    if (mItemURL != null) {
+      mStatsForLabel.setTextColor(getResources().getColor(R.color.stats_link_text_color));
+      mStatsForLabel.setOnClickListener(new View.OnClickListener(){
+        @Override public void onClick(        View v){
+          final Context ctx=v.getContext();
+          StatsUtils.openPostInReaderOrInAppWebview(ctx,mRemoteBlogID,mRemoteItemID,mRemoteItemType,mItemURL);
+        }
+      }
+);
+    }
+ else {
+      mStatsForLabel.setTextColor(getResources().getColor(R.color.grey_darken_20));
     }
   }
-);
+ else {
+    mStatsForLabel.setVisibility(View.GONE);
+  }
 }

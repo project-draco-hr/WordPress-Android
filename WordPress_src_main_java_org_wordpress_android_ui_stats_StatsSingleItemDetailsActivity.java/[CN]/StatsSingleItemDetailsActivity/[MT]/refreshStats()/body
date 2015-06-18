@@ -1,7 +1,6 @@
 {
-  final String remotePostID=mRemotePostItem.getItemID();
   if (mIsUpdatingStats) {
-    AppLog.w(AppLog.T.STATS,"stats details are already updating for the following postID " + mRemotePostItem.getItemID() + ", refresh cancelled.");
+    AppLog.w(AppLog.T.STATS,"stats details are already updating for the following postID " + mRemoteItemID + ", refresh cancelled.");
     return;
   }
   if (!NetworkUtils.isNetworkAvailable(this)) {
@@ -10,8 +9,7 @@
     return;
   }
   final RestClientUtils restClientUtils=WordPress.getRestClientUtilsV1_1();
-  final String blogId=mRemotePostItem.getBlogID();
-  final String singlePostRestPath=String.format("/sites/%s/stats/post/%s",blogId,remotePostID);
+  final String singlePostRestPath=String.format("/sites/%s/stats/post/%s",mRemoteBlogID,mRemoteItemID);
   AppLog.d(AppLog.T.STATS,"Enqueuing the following Stats request " + singlePostRestPath);
   RestBatchCallListener vListener=new RestBatchCallListener(this);
   restClientUtils.get(singlePostRestPath,vListener,vListener);
