@@ -24,26 +24,47 @@
   }
   if (post.isLocalDraft()) {
     holder.txtDate.setVisibility(View.GONE);
-    holder.btnTrash.setText(R.string.button_delete);
+    holder.btnTrash.setButtonType(PostListButton.BUTTON_DELETE);
   }
  else {
     holder.txtDate.setText(post.getFormattedDate());
     holder.txtDate.setVisibility(View.VISIBLE);
-    holder.btnTrash.setText(R.string.button_trash);
+    holder.btnTrash.setButtonType(PostListButton.BUTTON_TRASH);
   }
   updateStatusText(holder.txtStatus,post);
   View.OnClickListener btnClickListener=new View.OnClickListener(){
     @Override public void onClick(    View v){
-      postButtonClicked(v,position);
+      postButtonClicked((PostListButton)v,position);
     }
   }
 ;
   holder.btnEdit.setOnClickListener(btnClickListener);
+  holder.btnPublish.setOnClickListener(btnClickListener);
   holder.btnView.setOnClickListener(btnClickListener);
   holder.btnStats.setOnClickListener(btnClickListener);
   holder.btnTrash.setOnClickListener(btnClickListener);
-  holder.btnView.setVisibility(post.isLocalDraft() ? View.INVISIBLE : View.VISIBLE);
-  holder.btnStats.setVisibility(post.isLocalDraft() ? View.INVISIBLE : View.VISIBLE);
+  if (post.isLocalDraft() || post.hasLocalChanges()) {
+    holder.btnStats.setVisibility(View.INVISIBLE);
+    holder.btnView.setVisibility(View.GONE);
+    holder.btnPublish.setVisibility(View.VISIBLE);
+  }
+ else {
+    holder.btnStats.setVisibility(View.VISIBLE);
+    holder.btnView.setVisibility(View.VISIBLE);
+    holder.btnPublish.setVisibility(View.GONE);
+  }
+  holder.btnMore.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      animateButtonRow(holder.buttonRow2,holder.buttonRow1);
+    }
+  }
+);
+  holder.btnBack.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      animateButtonRow(holder.buttonRow1,holder.buttonRow2);
+    }
+  }
+);
   if (mOnLoadMoreListener != null && position >= getItemCount() - 1 && position >= PostsListFragment.POSTS_REQUEST_COUNT - 1) {
     mOnLoadMoreListener.onLoadMore();
   }

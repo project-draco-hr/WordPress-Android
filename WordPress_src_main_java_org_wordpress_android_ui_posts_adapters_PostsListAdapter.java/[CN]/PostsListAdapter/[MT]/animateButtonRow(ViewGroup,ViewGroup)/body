@@ -1,0 +1,26 @@
+{
+  PropertyValuesHolder scaleX=PropertyValuesHolder.ofFloat(View.SCALE_X,1f,0.5f);
+  PropertyValuesHolder scaleY=PropertyValuesHolder.ofFloat(View.SCALE_Y,1f,0.5f);
+  ObjectAnimator animOut=ObjectAnimator.ofPropertyValuesHolder(rowToAnimateOut,scaleX,scaleY);
+  animOut.setDuration(ROW_ANIM_DURATION);
+  animOut.setInterpolator(new AccelerateInterpolator());
+  animOut.addListener(new AnimatorListenerAdapter(){
+    @Override public void onAnimationEnd(    Animator animation){
+      rowToAnimateOut.setVisibility(View.GONE);
+      PropertyValuesHolder scaleX=PropertyValuesHolder.ofFloat(View.SCALE_X,0.5f,1f);
+      PropertyValuesHolder scaleY=PropertyValuesHolder.ofFloat(View.SCALE_Y,0.5f,1f);
+      ObjectAnimator animIn=ObjectAnimator.ofPropertyValuesHolder(rowToAnimateIn,scaleX,scaleY);
+      animIn.setDuration(ROW_ANIM_DURATION);
+      animIn.setInterpolator(new DecelerateInterpolator());
+      animIn.addListener(new AnimatorListenerAdapter(){
+        @Override public void onAnimationStart(        Animator animation){
+          rowToAnimateIn.setVisibility(View.VISIBLE);
+        }
+      }
+);
+      animIn.start();
+    }
+  }
+);
+  animOut.start();
+}
