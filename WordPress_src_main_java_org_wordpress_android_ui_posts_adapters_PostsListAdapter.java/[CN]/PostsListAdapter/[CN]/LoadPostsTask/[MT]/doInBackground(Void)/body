@@ -1,4 +1,24 @@
 {
-  loadedPosts=WordPress.wpDB.getPostsListPosts(mLocalTableBlogId,mIsPage,mFilter);
-  return !loadedPosts.isSameList(mPosts);
+  PostsListPostList allPosts=WordPress.wpDB.getPostsListPosts(mLocalTableBlogId,mIsPage);
+  PostStatus status;
+switch (mFilter) {
+case SCHEDULED:
+    status=PostStatus.SCHEDULED;
+  break;
+case TRASHED:
+status=PostStatus.TRASHED;
+break;
+case DRAFTS:
+status=PostStatus.DRAFT;
+break;
+default :
+status=PostStatus.PUBLISHED;
+break;
+}
+for (PostsListPost post : allPosts) {
+if (post.getStatusEnum().equals(status)) {
+filteredPosts.add(post);
+}
+}
+return !filteredPosts.isSameList(mPosts);
 }
