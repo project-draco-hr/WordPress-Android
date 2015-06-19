@@ -7,15 +7,16 @@
   }
   ProfilingUtils.split("PostsListActivity.onCreate");
   ProfilingUtils.dump();
-  setContentView(R.layout.posts);
+  setContentView(R.layout.post_list_activity);
   Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
   setSupportActionBar(toolbar);
-  getSupportActionBar().setDisplayShowTitleEnabled(true);
-  getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+  ActionBar actionBar=getSupportActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayShowTitleEnabled(true);
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
   FragmentManager fm=getFragmentManager();
   mPostList=(PostsListFragment)fm.findFragmentById(R.id.postList);
-  boolean isDualPane=(fm.findFragmentById(R.id.postDetail) != null);
-  mPostList.setShowSelection(isDualPane);
   Bundle extras=getIntent().getExtras();
   if (extras != null) {
     mIsPage=extras.getBoolean(EXTRA_VIEW_PAGES);
@@ -28,8 +29,4 @@
     getSupportActionBar().setTitle(getString(R.string.posts));
   }
   WordPress.currentPost=null;
-  if (savedInstanceState != null) {
-    popPostDetail();
-  }
-  attemptToSelectPost();
 }

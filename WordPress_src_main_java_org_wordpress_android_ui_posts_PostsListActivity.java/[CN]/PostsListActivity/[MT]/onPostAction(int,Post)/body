@@ -16,8 +16,6 @@
       dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
         public void onClick(        DialogInterface dialog,        int whichButton){
           WordPress.wpDB.deletePost(post);
-          popPostDetail();
-          attemptToSelectPost();
           mPostList.getPostListAdapter().loadPosts();
         }
       }
@@ -70,12 +68,5 @@
     share.putExtra(Intent.EXTRA_TEXT,shortlink != null ? shortlink : post.getPermaLink());
     startActivity(Intent.createChooser(share,getResources().getText(R.string.share_url)));
     AppLockManager.getInstance().setExtendedTimeout();
-  }
- else   if (action == POST_CLEAR) {
-    FragmentManager fm=getFragmentManager();
-    ViewPostFragment f=(ViewPostFragment)fm.findFragmentById(R.id.postDetail);
-    if (f != null) {
-      f.clearContent();
-    }
   }
 }
