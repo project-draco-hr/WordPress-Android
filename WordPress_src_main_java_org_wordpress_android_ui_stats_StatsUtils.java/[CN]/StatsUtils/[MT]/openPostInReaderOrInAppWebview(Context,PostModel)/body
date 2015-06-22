@@ -1,21 +1,7 @@
 {
   final String postType=post.getPostType();
   final String url=post.getUrl();
-  final long blogID=Long.parseLong(post.getBlogID());
-  final long itemID=Long.parseLong(post.getItemID());
-  if (postType.equals("post") || postType.equals("page")) {
-    if (itemID == 0) {
-      ReaderActivityLauncher.showReaderBlogPreview(ctx,blogID);
-    }
- else {
-      ReaderActivityLauncher.showReaderPostDetail(ctx,blogID,itemID);
-    }
-  }
- else   if (postType.equals("homepage")) {
-    ReaderActivityLauncher.showReaderBlogPreview(ctx,blogID);
-  }
- else {
-    AppLog.d(AppLog.T.UTILS,"Opening the in-app browser: " + url);
-    WPWebViewActivity.openURL(ctx,url);
-  }
+  final String blogID=post.getBlogID();
+  final String itemID=post.getItemID();
+  openPostInReaderOrInAppWebview(ctx,blogID,itemID,postType,url);
 }

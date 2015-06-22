@@ -1,0 +1,18 @@
+{
+  super.onResume();
+  if (mRestResponseParsed == null) {
+    setupEmptyUI(true);
+    mHandler.postDelayed(new Runnable(){
+      @Override public void run(){
+        if (!isFinishing()) {
+          refreshStats();
+        }
+      }
+    }
+,75L);
+  }
+ else {
+    updateUI();
+  }
+  ActivityId.trackLastActivity(ActivityId.STATS_POST_DETAILS);
+}
