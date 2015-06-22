@@ -13,13 +13,13 @@
     mCanLoadMorePosts=true;
     postCount=POSTS_REQUEST_COUNT;
   }
-  List<Object> apiArgs=new Vector<Object>();
+  List<Object> apiArgs=new Vector<>();
   apiArgs.add(WordPress.getCurrentBlog());
   apiArgs.add(mIsPage);
   apiArgs.add(postCount);
   apiArgs.add(loadMore);
-  if (mProgressFooterView != null && loadMore) {
-    mProgressFooterView.setVisibility(View.VISIBLE);
+  if (loadMore) {
+    showLoadMoreProgress();
   }
   mCurrentFetchPostsTask=new ApiHelper.FetchPostsTask(new ApiHelper.FetchPostsTask.Callback(){
     @Override public void onSuccess(    int postCount){
@@ -32,9 +32,7 @@
  else {
         mSwipeToRefreshHelper.setRefreshing(false);
       }
-      if (mProgressFooterView != null) {
-        mProgressFooterView.setVisibility(View.GONE);
-      }
+      hideLoadMoreProgress();
       if (postCount == 0) {
         mCanLoadMorePosts=false;
       }
@@ -50,9 +48,7 @@
         return;
       }
       mSwipeToRefreshHelper.setRefreshing(false);
-      if (mProgressFooterView != null) {
-        mProgressFooterView.setVisibility(View.GONE);
-      }
+      hideLoadMoreProgress();
       if (errorType != ErrorType.TASK_CANCELLED && errorType != ErrorType.NO_ERROR) {
 switch (errorType) {
 case UNAUTHORIZED:
@@ -60,11 +56,11 @@ case UNAUTHORIZED:
             ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_unauthorized_pages : R.string.error_refresh_unauthorized_posts,Duration.LONG);
           }
         updateEmptyView(EmptyViewMessageType.PERMISSION_ERROR);
-      return;
+      break;
 default :
     ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_pages : R.string.error_refresh_posts,Duration.LONG);
   updateEmptyView(EmptyViewMessageType.GENERIC_ERROR);
-return;
+break;
 }
 }
 }

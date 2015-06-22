@@ -1,0 +1,18 @@
+{
+  if (volleyError != null) {
+    AppLog.e(AppLog.T.STATS,"Error while reading Stats details " + volleyError.getMessage(),volleyError);
+  }
+  if (mActivityRef.get() == null || mActivityRef.get().isFinishing()) {
+    return;
+  }
+  resetModelVariables();
+  ToastUtils.showToast(mActivityRef.get(),mActivityRef.get().getString(R.string.error_refresh_stats),ToastUtils.Duration.LONG);
+  mIsUpdatingStats=false;
+  mSwipeToRefreshHelper.setRefreshing(false);
+  mHandler.post(new Runnable(){
+    @Override public void run(){
+      updateUI();
+    }
+  }
+);
+}

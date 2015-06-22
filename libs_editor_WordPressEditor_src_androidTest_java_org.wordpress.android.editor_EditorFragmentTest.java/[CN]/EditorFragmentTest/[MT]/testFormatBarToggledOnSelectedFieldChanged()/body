@@ -1,0 +1,45 @@
+{
+  Map<String,String> selectionArgs=new HashMap<>();
+  selectionArgs.put("id","zss_field_title");
+  mFragment.onSelectionChanged(selectionArgs);
+  waitFor(100);
+  View view=mFragment.getView();
+  if (view == null) {
+    throw (new IllegalStateException("Fragment view is empty"));
+  }
+  ToggleButton mediaButton=(ToggleButton)view.findViewById(R.id.format_bar_button_media);
+  ToggleButton boldButton=(ToggleButton)view.findViewById(R.id.format_bar_button_bold);
+  ToggleButton italicButton=(ToggleButton)view.findViewById(R.id.format_bar_button_italic);
+  ToggleButton quoteButton=(ToggleButton)view.findViewById(R.id.format_bar_button_quote);
+  ToggleButton ulButton=(ToggleButton)view.findViewById(R.id.format_bar_button_ul);
+  ToggleButton olButton=(ToggleButton)view.findViewById(R.id.format_bar_button_ol);
+  ToggleButton linkButton=(ToggleButton)view.findViewById(R.id.format_bar_button_link);
+  ToggleButton strikethroughButton=(ToggleButton)view.findViewById(R.id.format_bar_button_strikethrough);
+  assertFalse(mediaButton.isEnabled());
+  assertFalse(boldButton.isEnabled());
+  assertFalse(italicButton.isEnabled());
+  assertFalse(quoteButton.isEnabled());
+  assertFalse(ulButton.isEnabled());
+  assertFalse(olButton.isEnabled());
+  assertFalse(linkButton.isEnabled());
+  if (strikethroughButton != null) {
+    assertFalse(strikethroughButton.isEnabled());
+  }
+  ToggleButton htmlButton=(ToggleButton)view.findViewById(R.id.format_bar_button_html);
+  assertTrue(htmlButton.isEnabled());
+  selectionArgs.clear();
+  selectionArgs.put("id","zss_field_content");
+  mFragment.onSelectionChanged(selectionArgs);
+  waitFor(100);
+  assertTrue(mediaButton.isEnabled());
+  assertTrue(boldButton.isEnabled());
+  assertTrue(italicButton.isEnabled());
+  assertTrue(quoteButton.isEnabled());
+  assertTrue(ulButton.isEnabled());
+  assertTrue(olButton.isEnabled());
+  assertTrue(linkButton.isEnabled());
+  if (strikethroughButton != null) {
+    assertTrue(strikethroughButton.isEnabled());
+  }
+  assertTrue(htmlButton.isEnabled());
+}

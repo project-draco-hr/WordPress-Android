@@ -1,3 +1,23 @@
 {
-  return null;
+  if (!isAdded()) {
+    return "";
+  }
+  if (Looper.myLooper() == Looper.getMainLooper()) {
+    AppLog.d(T.EDITOR,"getTitle() called from UI thread");
+  }
+  mGetTitleCountDownLatch=new CountDownLatch(1);
+  getActivity().runOnUiThread(new Runnable(){
+    @Override public void run(){
+      mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_title').getHTMLForCallback();");
+    }
+  }
+);
+  try {
+    mGetTitleCountDownLatch.await(1,TimeUnit.SECONDS);
+  }
+ catch (  InterruptedException e) {
+    AppLog.e(T.EDITOR,e);
+    Thread.currentThread().interrupt();
+  }
+  return StringUtils.notNullStr(mTitle);
 }

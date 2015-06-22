@@ -1,0 +1,19 @@
+{
+  if (mIsUpdatingStats) {
+    AppLog.w(AppLog.T.STATS,"stats details are already updating for the following postID " + mRemoteItemID + ", refresh cancelled.");
+    return;
+  }
+  if (!NetworkUtils.isNetworkAvailable(this)) {
+    mSwipeToRefreshHelper.setRefreshing(false);
+    ToastUtils.showToast(this,this.getString(R.string.connection_error),ToastUtils.Duration.LONG);
+    return;
+  }
+  final RestClientUtils restClientUtils=WordPress.getRestClientUtilsV1_1();
+  final String singlePostRestPath=String.format("/sites/%s/stats/post/%s",mRemoteBlogID,mRemoteItemID);
+  AppLog.d(AppLog.T.STATS,"Enqueuing the following Stats request " + singlePostRestPath);
+  RestBatchCallListener vListener=new RestBatchCallListener(this);
+  restClientUtils.get(singlePostRestPath,vListener,vListener);
+  mIsUpdatingStats=true;
+  mSwipeToRefreshHelper.setRefreshing(true);
+  showHideEmptyModulesIndicator(true);
+}
