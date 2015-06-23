@@ -1,16 +1,22 @@
 {
   super.onResume();
   if (mRestResponseParsed == null) {
-    mHandler.postDelayed(new Runnable(){
-      @Override public void run(){
-        if (!isFinishing()) {
-          setupEmptyGraph("");
-          showHideEmptyModulesIndicator(true);
-          refreshStats();
+    if (!NetworkUtils.checkConnection(this)) {
+      mSwipeToRefreshHelper.setRefreshing(false);
+      setupEmptyUI();
+    }
+ else {
+      mHandler.postDelayed(new Runnable(){
+        @Override public void run(){
+          if (!isFinishing()) {
+            setupEmptyGraph("");
+            showHideEmptyModulesIndicator(true);
+            refreshStats();
+          }
         }
       }
-    }
 ,75L);
+    }
   }
  else {
     updateUI();
