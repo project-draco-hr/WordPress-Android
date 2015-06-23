@@ -7,16 +7,11 @@
     ToastUtils.showToast(getActivity(),R.string.post_not_found);
     return;
   }
-  final String originalStatus=fullPost.getPostStatus();
-  fullPost.setPostStatus(PostStatus.toString(PostStatus.TRASHED));
-  WordPress.wpDB.updatePost(fullPost);
-  mPostsListAdapter.removePost(post);
+  mPostsListAdapter.hidePost(post);
   View.OnClickListener undoListener=new View.OnClickListener(){
     @Override public void onClick(    View v){
       mDidUndoTrash=true;
-      fullPost.setPostStatus(originalStatus);
-      WordPress.wpDB.updatePost(fullPost);
-      mPostsListAdapter.loadPosts();
+      mPostsListAdapter.unhidePost(post);
     }
   }
 ;
@@ -34,10 +29,13 @@
       if (mDidUndoTrash || !isAdded()) {
         return;
       }
-      if (fullPost.isLocalDraft()) {
-        WordPress.wpDB.deletePost(fullPost);
-      }
- else {
+      WordPress.wpDB.deletePost(fullPost);
+      if (!post.isLocalDraft()) {
+        List<Object> apiArgs=new Vector<>();
+        apiArgs.add(WordPress.getCurrentBlog());
+        apiArgs.add(fullPost.getRemotePostId());
+        apiArgs.add(mIsPage);
+        new ApiHelper.DeleteSinglePostTask().execute(apiArgs);
       }
     }
   }
