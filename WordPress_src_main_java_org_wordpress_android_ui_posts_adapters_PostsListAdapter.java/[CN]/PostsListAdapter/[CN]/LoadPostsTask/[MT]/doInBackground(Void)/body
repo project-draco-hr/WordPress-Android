@@ -3,5 +3,12 @@
   for (  PostsListPost hiddenPost : mHiddenPosts) {
     posts.remove(hiddenPost);
   }
+  for (  PostsListPost post : posts) {
+    long mediaId=post.getFeaturedImageId();
+    if (mediaId != 0) {
+      String imageUrl=WordPress.wpDB.getMediaThumbnailUrl(mLocalTableBlogId,mediaId);
+      post.setFeaturedImageUrl(imageUrl);
+    }
+  }
   return posts;
 }
