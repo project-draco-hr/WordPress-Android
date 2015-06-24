@@ -1,6 +1,5 @@
 {
   super.onCreate(savedInstanceState);
-  setContentView(R.layout.blog_preferences);
   Integer id=getIntent().getIntExtra(ARG_LOCAL_BLOG_ID,-1);
   blog=WordPress.getBlog(id);
   if (blog == null) {
@@ -8,34 +7,13 @@
     finish();
     return;
   }
+  Fragment siteSettingsFragment=new SiteSettingsFragment();
+  siteSettingsFragment.setArguments(getIntent().getExtras());
+  getFragmentManager().beginTransaction().replace(android.R.id.content,siteSettingsFragment).commit();
   ActionBar actionBar=getSupportActionBar();
   if (actionBar != null) {
     actionBar.setElevation(0.0f);
     actionBar.setTitle(StringUtils.unescapeHTML(blog.getNameOrHostUrl()));
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
-  mUsernameET=(EditText)findViewById(R.id.username);
-  mPasswordET=(EditText)findViewById(R.id.password);
-  mHttpUsernameET=(EditText)findViewById(R.id.httpuser);
-  mHttpPasswordET=(EditText)findViewById(R.id.httppassword);
-  mScaledImageWidthET=(EditText)findViewById(R.id.scaledImageWidth);
-  mFullSizeCB=(CheckBox)findViewById(R.id.fullSizeImage);
-  mScaledCB=(CheckBox)findViewById(R.id.scaledImage);
-  mImageWidthSpinner=(Spinner)findViewById(R.id.maxImageWidth);
-  Button removeBlogButton=(Button)findViewById(R.id.remove_account);
-  if (blog.isDotcomFlag()) {
-    View credentialsRL=findViewById(R.id.sectionContent);
-    credentialsRL.setVisibility(View.GONE);
-    removeBlogButton.setVisibility(View.GONE);
-  }
- else {
-    removeBlogButton.setVisibility(View.VISIBLE);
-    removeBlogButton.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View view){
-        removeBlogWithConfirmation();
-      }
-    }
-);
-  }
-  loadSettingsForBlog();
 }
