@@ -6,7 +6,11 @@
     return;
   }
   resetModelVariables();
-  ToastUtils.showToast(mActivityRef.get(),mActivityRef.get().getString(R.string.error_refresh_stats),ToastUtils.Duration.LONG);
+  String label=mActivityRef.get().getString(R.string.error_refresh_stats);
+  if (volleyError instanceof NoConnectionError) {
+    label+="\n" + mActivityRef.get().getString(R.string.no_network_message);
+  }
+  ToastUtils.showToast(mActivityRef.get(),label,ToastUtils.Duration.LONG);
   mIsUpdatingStats=false;
   mSwipeToRefreshHelper.setRefreshing(false);
   mHandler.post(new Runnable(){
