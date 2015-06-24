@@ -1,0 +1,22 @@
+{
+  PostsListPost post=getItem(position);
+  if (post == null)   return;
+switch (view.getButtonType()) {
+case PostListButton.BUTTON_MORE:
+case PostListButton.BUTTON_BACK:
+    boolean showRow1=(view.getButtonType() == PostListButton.BUTTON_BACK);
+  showButton(holder.btnEdit,showRow1);
+showButton(holder.btnViewOrPublish,showRow1);
+showButton(holder.btnMore,showRow1);
+boolean canShowStats=mIsStatsSupported && !post.isLocalDraft() && !post.hasLocalChanges();
+showButton(holder.btnStats,!showRow1 && canShowStats);
+showButton(holder.btnTrash,!showRow1);
+showButton(holder.btnBack,!showRow1);
+break;
+default :
+if (mOnPostButtonClickListener != null) {
+mOnPostButtonClickListener.onPostButtonClicked(view.getButtonType(),post);
+}
+break;
+}
+}
