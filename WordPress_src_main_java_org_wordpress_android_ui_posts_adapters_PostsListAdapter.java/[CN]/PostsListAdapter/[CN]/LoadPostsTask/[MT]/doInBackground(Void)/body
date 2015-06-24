@@ -1,14 +1,30 @@
 {
-  PostsListPostList posts=WordPress.wpDB.getPostsListPosts(mLocalTableBlogId,mIsPage);
+  mTmpPosts=WordPress.wpDB.getPostsListPosts(mLocalTableBlogId,mIsPage);
   for (  PostsListPost hiddenPost : mHiddenPosts) {
-    posts.remove(hiddenPost);
+    mTmpPosts.remove(hiddenPost);
   }
-  for (  PostsListPost post : posts) {
+  if (mPosts.isSameList(mTmpPosts)) {
+    return false;
+  }
+  for (  PostsListPost post : mTmpPosts) {
     long mediaId=post.getFeaturedImageId();
+    String imageUrl;
     if (mediaId != 0) {
-      String imageUrl=WordPress.wpDB.getMediaThumbnailUrl(mLocalTableBlogId,mediaId);
-      post.setFeaturedImageUrl(imageUrl);
+      imageUrl=WordPress.wpDB.getMediaThumbnailUrl(mLocalTableBlogId,mediaId);
+      if (TextUtils.isEmpty(imageUrl)) {
+        mIsMediaScanNeeded=true;
+      }
+    }
+ else     if (post.hasDescription()) {
+      ReaderImageScanner scanner=new ReaderImageScanner(post.getDescription(),false);
+      imageUrl=scanner.getLargestImage();
+    }
+ else {
+      imageUrl=null;
+    }
+    if (!TextUtils.isEmpty(imageUrl)) {
+      post.setFeaturedImageUrl(ReaderUtils.getResizedImageUrl(imageUrl,mPhotonWidth,mPhotonHeight,mIsPrivateBlog));
     }
   }
-  return posts;
+  return true;
 }
