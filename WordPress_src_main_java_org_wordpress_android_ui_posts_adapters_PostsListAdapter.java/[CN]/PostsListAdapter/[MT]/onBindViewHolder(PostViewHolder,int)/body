@@ -38,24 +38,16 @@
   }
 ;
   holder.btnEdit.setOnClickListener(btnClickListener);
-  holder.btnPublish.setOnClickListener(btnClickListener);
-  holder.btnView.setOnClickListener(btnClickListener);
+  holder.btnViewOrPublish.setOnClickListener(btnClickListener);
   holder.btnStats.setOnClickListener(btnClickListener);
   holder.btnTrash.setOnClickListener(btnClickListener);
   if (post.isLocalDraft() || post.hasLocalChanges()) {
+    holder.btnViewOrPublish.setButtonType(PostListButton.BUTTON_PUBLISH);
     holder.btnStats.setVisibility(View.GONE);
-    holder.btnView.setVisibility(View.GONE);
-    holder.btnPublish.setVisibility(View.VISIBLE);
   }
  else {
-    holder.btnView.setVisibility(View.VISIBLE);
-    holder.btnPublish.setVisibility(View.GONE);
-    if (mIsStatsSupported) {
-      holder.btnStats.setVisibility(View.VISIBLE);
-    }
- else {
-      holder.btnStats.setVisibility(View.GONE);
-    }
+    holder.btnViewOrPublish.setButtonType(PostListButton.BUTTON_VIEW);
+    holder.btnStats.setVisibility(mIsStatsSupported ? View.VISIBLE : View.GONE);
   }
   holder.btnMore.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
