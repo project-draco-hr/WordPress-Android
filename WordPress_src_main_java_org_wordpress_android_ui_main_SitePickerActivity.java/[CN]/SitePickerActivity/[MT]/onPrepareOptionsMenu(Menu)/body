@@ -1,12 +1,30 @@
 {
   super.onPrepareOptionsMenu(menu);
   int numSites=WordPress.wpDB.getNumDotComBlogs();
-  MenuItem menuEdit=menu.findItem(R.id.menu_edit);
-  if (mIsInSearchMode) {
-    menuEdit.setVisible(false);
+  mMenuEdit=menu.findItem(R.id.menu_edit);
+  if (getAdapter().getIsInSearchMode()) {
+    mMenuEdit.setVisible(false);
   }
  else {
-    menuEdit.setVisible(numSites > 1);
+    mMenuEdit.setVisible(numSites > 1);
+  }
+  MenuItem menuSearch=menu.findItem(R.id.menu_search);
+  mSearchView.setIconifiedByDefault(false);
+  mSearchView.setOnQueryTextListener(this);
+  MenuItemCompat.setOnActionExpandListener(menuSearch,new MenuItemCompat.OnActionExpandListener(){
+    @Override public boolean onMenuItemActionExpand(    MenuItem item){
+      enableSearchMode();
+      return true;
+    }
+    @Override public boolean onMenuItemActionCollapse(    MenuItem item){
+      disableSearchMode();
+      return true;
+    }
+  }
+);
+  if (getAdapter().getIsInSearchMode()) {
+    menuSearch.expandActionView();
+    mSearchView.setQuery(getAdapter().getLastSearch(),false);
   }
   return true;
 }
