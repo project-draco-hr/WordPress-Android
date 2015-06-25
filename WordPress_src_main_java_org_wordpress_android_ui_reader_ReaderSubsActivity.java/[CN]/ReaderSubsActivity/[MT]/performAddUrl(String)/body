@@ -12,11 +12,26 @@
     @Override public void onFailed(    int statusCode){
       if (!isFinishing()) {
         hideAddUrlProgress();
-        String errMsg=getString(R.string.reader_toast_err_follow_blog) + " (" + Integer.toString(statusCode)+ ")";
-        ToastUtils.showToast(ReaderSubsActivity.this,errMsg);
-      }
-    }
-  }
+        String errMsg;
+switch (statusCode) {
+case 301:
+          errMsg=getString(R.string.reader_toast_err_follow_blog_moved);
+        break;
+case 401:
+      errMsg=getString(R.string.reader_toast_err_follow_blog_not_authorized);
+    break;
+case 0:
+case 404:
+  errMsg=getString(R.string.reader_toast_err_follow_blog_not_found);
+break;
+default :
+errMsg=getString(R.string.reader_toast_err_follow_blog) + " (" + Integer.toString(statusCode)+ ")";
+break;
+}
+ToastUtils.showToast(ReaderSubsActivity.this,errMsg);
+}
+}
+}
 ;
-  ReaderBlogActions.checkUrlReachable(blogUrl,urlListener);
+ReaderBlogActions.checkUrlReachable(blogUrl,urlListener);
 }
