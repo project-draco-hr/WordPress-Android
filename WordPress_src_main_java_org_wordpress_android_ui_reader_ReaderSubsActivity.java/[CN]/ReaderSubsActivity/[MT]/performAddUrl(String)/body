@@ -3,20 +3,20 @@
     return;
   }
   showAddUrlProgress();
-  ReaderActions.ActionListener urlActionListener=new ReaderActions.ActionListener(){
-    @Override public void onActionResult(    boolean succeeded){
-      if (isFinishing()) {
-        return;
-      }
-      if (succeeded) {
+  ReaderActions.OnCheckUrlReachableListener urlListener=new ReaderActions.OnCheckUrlReachableListener(){
+    @Override public void onSuccess(){
+      if (!isFinishing()) {
         followBlogUrl(blogUrl);
       }
- else {
+    }
+    @Override public void onFailed(    int statusCode){
+      if (!isFinishing()) {
         hideAddUrlProgress();
-        ToastUtils.showToast(ReaderSubsActivity.this,R.string.reader_toast_err_follow_blog);
+        String errMsg=getString(R.string.reader_toast_err_follow_blog) + " (" + Integer.toString(statusCode)+ ")";
+        ToastUtils.showToast(ReaderSubsActivity.this,errMsg);
       }
     }
   }
 ;
-  ReaderBlogActions.checkBlogUrlReachable(blogUrl,urlActionListener);
+  ReaderBlogActions.checkUrlReachable(blogUrl,urlListener);
 }

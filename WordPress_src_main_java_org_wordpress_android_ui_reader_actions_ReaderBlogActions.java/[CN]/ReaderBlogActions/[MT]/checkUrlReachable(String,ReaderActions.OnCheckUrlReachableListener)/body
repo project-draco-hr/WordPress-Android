@@ -1,21 +1,18 @@
 {
-  if (actionListener == null) {
-    return;
-  }
-  if (TextUtils.isEmpty(blogUrl)) {
-    actionListener.onActionResult(false);
+  if (urlListener == null) {
     return;
   }
   Response.Listener<String> listener=new Response.Listener<String>(){
     @Override public void onResponse(    String response){
-      actionListener.onActionResult(true);
+      urlListener.onSuccess();
     }
   }
 ;
   Response.ErrorListener errorListener=new Response.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.e(T.READER,volleyError);
-      actionListener.onActionResult(false);
+      int statusCode=VolleyUtils.statusCodeFromVolleyError(volleyError);
+      urlListener.onFailed(statusCode);
     }
   }
 ;
