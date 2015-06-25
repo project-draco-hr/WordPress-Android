@@ -1,6 +1,13 @@
 {
   if (mAdapter == null) {
-    setNewAdapter("",false);
+    if (mIsInSearchMode) {
+      mAdapter=new SitePickerSearchAdapter(this,mCurrentLocalId,mLastSearch);
+    }
+ else {
+      mAdapter=new SitePickerAdapter(this,mCurrentLocalId);
+    }
+    mAdapter.setOnSiteClickListener(this);
+    mAdapter.setOnSelectedCountChangedListener(this);
   }
   return mAdapter;
 }

@@ -1,7 +1,12 @@
 {
   super.onPrepareOptionsMenu(menu);
-  mMenuEdit=menu.findItem(R.id.menu_edit);
-  toggleMenuEditVisibility();
-  setupSearchView(menu);
+  int numSites=WordPress.wpDB.getNumDotComBlogs();
+  MenuItem menuEdit=menu.findItem(R.id.menu_edit);
+  if (mIsInSearchMode) {
+    menuEdit.setVisible(false);
+  }
+ else {
+    menuEdit.setVisible(numSites > 1);
+  }
   return true;
 }
