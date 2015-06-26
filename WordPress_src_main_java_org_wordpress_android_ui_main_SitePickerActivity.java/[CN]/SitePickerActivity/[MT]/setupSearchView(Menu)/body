@@ -1,5 +1,18 @@
 {
   MenuItem menuSearch=menu.findItem(R.id.menu_search);
-  mSearchView=(SitePickerSearchView)menuSearch.getActionView();
-  mSearchView.configure(this,menu);
+  mSearchView=(SearchView)menuSearch.getActionView();
+  mSearchView.setIconifiedByDefault(false);
+  mSearchView.setOnQueryTextListener(this);
+  MenuItemCompat.setOnActionExpandListener(menuSearch,new MenuItemCompat.OnActionExpandListener(){
+    @Override public boolean onMenuItemActionExpand(    MenuItem item){
+      enableSearchMode();
+      return true;
+    }
+    @Override public boolean onMenuItemActionCollapse(    MenuItem item){
+      disableSearchMode();
+      return true;
+    }
+  }
+);
+  setQueryIfInSearch(menuSearch);
 }
