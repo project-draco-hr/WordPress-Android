@@ -6,8 +6,8 @@
   if (WordPress.getCurrentBlog() == null || WordPress.getCurrentBlog().getLocalTableBlogId() != event.mLocalBlogId) {
     sameBlogId=false;
   }
-  if (!NetworkUtils.checkConnection(getActivity())) {
-    mSwipeToRefreshHelper.setRefreshing(false);
+  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+    setRefreshing(false);
     updateEmptyView(EmptyViewMessageType.NETWORK_ERROR);
     return;
   }
@@ -24,7 +24,7 @@
         if (!isAdded() || !reloadPosts) {
           return;
         }
-        mSwipeToRefreshHelper.setRefreshing(false);
+        setRefreshing(false);
         getPostListAdapter().loadPosts();
       }
       @Override public void onFailure(      ApiHelper.ErrorType errorType,      String errorMessage,      Throwable throwable){
@@ -36,11 +36,11 @@
         if (errorType != ErrorType.TASK_CANCELLED) {
           ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_pages : R.string.error_refresh_posts,Duration.LONG);
         }
-        mSwipeToRefreshHelper.setRefreshing(false);
+        setRefreshing(false);
       }
     }
 );
-    mSwipeToRefreshHelper.setRefreshing(true);
+    setRefreshing(true);
     mIsFetchingPosts=true;
     mCurrentFetchSinglePostTask.execute(apiArgs);
   }

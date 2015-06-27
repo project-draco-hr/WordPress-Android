@@ -2,11 +2,15 @@
   if (!isAdded() || WordPress.getCurrentBlog() == null || mIsFetchingPosts) {
     return;
   }
-  if (!NetworkUtils.checkConnection(getActivity())) {
-    mSwipeToRefreshHelper.setRefreshing(false);
+  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+    setRefreshing(false);
     updateEmptyView(EmptyViewMessageType.NETWORK_ERROR);
     return;
   }
+  if (WordPress.wpDB.findLocalChanges(WordPress.getCurrentBlog().getLocalTableBlogId(),mIsPage)) {
+    return;
+  }
+  setRefreshing(true);
   updateEmptyView(EmptyViewMessageType.LOADING);
   int postCount=getPostListAdapter().getRemotePostCount() + POSTS_REQUEST_COUNT;
   if (!loadMore) {
@@ -25,12 +29,14 @@
     @Override public void onSuccess(    int postCount){
       mCurrentFetchPostsTask=null;
       mIsFetchingPosts=false;
-      if (!isAdded())       return;
+      if (!isAdded()) {
+        return;
+      }
       if (mEmptyViewAnimationHandler.isShowingLoadingAnimation() || mEmptyViewAnimationHandler.isBetweenSequences()) {
         mKeepSwipeRefreshLayoutVisible=true;
       }
  else {
-        mSwipeToRefreshHelper.setRefreshing(false);
+        setRefreshing(false);
       }
       hideLoadMoreProgress();
       if (postCount == 0) {
@@ -47,7 +53,7 @@
       if (!isAdded()) {
         return;
       }
-      mSwipeToRefreshHelper.setRefreshing(false);
+      setRefreshing(false);
       hideLoadMoreProgress();
       if (errorType != ErrorType.TASK_CANCELLED && errorType != ErrorType.NO_ERROR) {
 switch (errorType) {

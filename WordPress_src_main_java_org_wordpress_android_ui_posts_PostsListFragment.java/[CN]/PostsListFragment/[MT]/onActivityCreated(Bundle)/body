@@ -2,10 +2,8 @@
   super.onActivityCreated(bundle);
   initSwipeToRefreshHelper();
   mEmptyViewAnimationHandler=new EmptyViewAnimationHandler(mEmptyViewTitle,mEmptyViewImage,this);
-  if (NetworkUtils.isNetworkAvailable(getActivity())) {
-    ((PostsListActivity)getActivity()).requestPosts();
+  if (WordPress.getCurrentBlog() != null && mRecyclerView.getAdapter() == null) {
+    mRecyclerView.setAdapter(getPostListAdapter());
   }
- else {
-    updateEmptyView(EmptyViewMessageType.NETWORK_ERROR);
-  }
+  requestPosts(false);
 }
