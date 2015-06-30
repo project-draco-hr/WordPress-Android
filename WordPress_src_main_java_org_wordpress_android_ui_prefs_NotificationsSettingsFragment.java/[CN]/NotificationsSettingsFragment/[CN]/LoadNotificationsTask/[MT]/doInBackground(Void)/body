@@ -4,9 +4,13 @@
   PreferenceCategory blogsCategory=(PreferenceCategory)findPreference(getString(R.string.pref_notification_blogs));
   for (  Map blog : allBlogs) {
     if (context == null)     return null;
-    Preference preference=new Preference(context);
-    preference.setTitle(MapUtils.getMapStr(blog,"blogName"));
-    preference.setSummary(UrlUtils.getDomainFromUrl(MapUtils.getMapStr(blog,"url")));
+    String siteUrl=MapUtils.getMapStr(blog,"url");
+    NotificationsPreference preference=new NotificationsPreference(context);
+    preference.setLayoutResource(R.layout.notifications_site_preference);
+    String title=MapUtils.getMapStr(blog,"blogName");
+    preference.setTitle(title);
+    preference.setSummary(UrlUtils.getDomainFromUrl(siteUrl));
+    preference.setBlavatarUrl(GravatarUtils.blavatarFromUrl(siteUrl,context.getResources().getDimensionPixelSize(R.dimen.avatar_sz_medium)));
     blogsCategory.addPreference(preference);
   }
   return null;
