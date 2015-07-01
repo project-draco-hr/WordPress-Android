@@ -1,0 +1,24 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.post_preview_activity);
+  Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
+  setSupportActionBar(toolbar);
+  ActionBar actionBar=getSupportActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayHomeAsUpEnabled(true);
+    actionBar.setDisplayShowTitleEnabled(true);
+  }
+  mTitleTextView=(TextView)findViewById(R.id.postTitle);
+  mContentTextView=(TextView)findViewById(R.id.viewPostTextView);
+  mWebView=(WebView)findViewById(R.id.viewPostWebView);
+  mWebView.setWebViewClient(new WPWebViewClient(WordPress.getCurrentBlog()));
+  if (savedInstanceState != null) {
+    mLocalPostId=savedInstanceState.getLong(ARG_LOCAL_POST_ID);
+    mIsPage=savedInstanceState.getBoolean(ARG_IS_PAGE);
+  }
+ else {
+    mLocalPostId=getIntent().getLongExtra(ARG_LOCAL_POST_ID,0);
+    mIsPage=getIntent().getBooleanExtra(ARG_IS_PAGE,false);
+  }
+  loadPost();
+}

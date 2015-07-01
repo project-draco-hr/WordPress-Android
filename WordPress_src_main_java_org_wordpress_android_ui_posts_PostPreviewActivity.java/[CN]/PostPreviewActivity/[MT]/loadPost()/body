@@ -1,0 +1,48 @@
+{
+  if (isFinishing()) {
+    return;
+  }
+  final Post post=WordPress.wpDB.getPostForLocalTablePostId(mLocalPostId);
+  if (post == null) {
+    ToastUtils.showToast(this,R.string.post_not_found);
+    finish();
+    return;
+  }
+  final Handler handler=new Handler();
+  new Thread(){
+    @Override public void run(){
+      final String title=(TextUtils.isEmpty(post.getTitle()) ? "(" + getResources().getText(R.string.untitled) + ")" : StringUtils.unescapeHTML(post.getTitle()));
+      final String postContent=post.getDescription() + "\n\n" + post.getMoreText();
+      final Spanned draftContent;
+      final String htmlContent;
+      if (post.isLocalDraft()) {
+        Point point=DisplayUtils.getDisplayPixelSize(PostPreviewActivity.this);
+        int maxWidth=Math.min(point.x,point.y);
+        draftContent=WPHtml.fromHtml(postContent.replaceAll("\uFFFC",""),PostPreviewActivity.this,post,maxWidth);
+        htmlContent=null;
+      }
+ else {
+        draftContent=null;
+        htmlContent="<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + "<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"webview.css\" /></head>" + "<body><div id=\"container\">" + StringUtils.addPTags(postContent) + "</div></body></html>";
+      }
+      handler.post(new Runnable(){
+        @Override public void run(){
+          if (isFinishing())           return;
+          mTitleTextView.setText(title);
+          if (post.isLocalDraft()) {
+            mContentTextView.setVisibility(View.VISIBLE);
+            mWebView.setVisibility(View.GONE);
+            mContentTextView.setText(draftContent);
+          }
+ else {
+            mContentTextView.setVisibility(View.GONE);
+            mWebView.setVisibility(View.VISIBLE);
+            mWebView.loadDataWithBaseURL("file:///android_asset/",htmlContent,"text/html","utf-8",null);
+          }
+        }
+      }
+);
+    }
+  }
+.start();
+}
