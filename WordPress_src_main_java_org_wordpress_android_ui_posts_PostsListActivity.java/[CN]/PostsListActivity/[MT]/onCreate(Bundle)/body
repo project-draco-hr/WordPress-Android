@@ -1,32 +1,19 @@
 {
   super.onCreate(savedInstanceState);
-  if (WordPress.getCurrentBlog() == null) {
-    ToastUtils.showToast(this,R.string.blog_not_found,ToastUtils.Duration.SHORT);
-    finish();
-    return;
-  }
   ProfilingUtils.split("PostsListActivity.onCreate");
   ProfilingUtils.dump();
   setContentView(R.layout.post_list_activity);
+  mIsPage=getIntent().getBooleanExtra(EXTRA_VIEW_PAGES,false);
   Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
   setSupportActionBar(toolbar);
   ActionBar actionBar=getSupportActionBar();
   if (actionBar != null) {
+    actionBar.setTitle(getString(mIsPage ? R.string.pages : R.string.posts));
     actionBar.setDisplayShowTitleEnabled(true);
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
   FragmentManager fm=getFragmentManager();
   mPostList=(PostsListFragment)fm.findFragmentById(R.id.postList);
-  Bundle extras=getIntent().getExtras();
-  if (extras != null) {
-    mIsPage=extras.getBoolean(EXTRA_VIEW_PAGES);
-    showErrorDialogIfNeeded(extras);
-  }
-  if (mIsPage) {
-    getSupportActionBar().setTitle(getString(R.string.pages));
-  }
- else {
-    getSupportActionBar().setTitle(getString(R.string.posts));
-  }
+  showErrorDialogIfNeeded(getIntent().getExtras());
   WordPress.currentPost=null;
 }
