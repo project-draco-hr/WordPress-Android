@@ -3,51 +3,58 @@
   addPreferencesFromResource(R.xml.site_settings);
   Integer id=getArguments().getInt(BlogPreferencesActivity.ARG_LOCAL_BLOG_ID,-1);
   mBlog=WordPress.getBlog(id);
-  if (mBlog != null) {
-    final EditTextPreference titlePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_title));
-    final EditTextPreference taglinePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_tagline));
-    final MultiSelectListPreference languagePreference=(MultiSelectListPreference)findPreference(getString(R.string.pref_key_site_language));
-    final SeekBarPreference visibilityPreference=(SeekBarPreference)findPreference(getString(R.string.pref_key_site_visibility));
-    WordPress.getRestClientUtils().getGeneralSettings(String.valueOf(mBlog.getRemoteBlogId()),new RestRequest.Listener(){
-      @Override public void onResponse(      JSONObject response){
-        if (titlePreference != null) {
-          titlePreference.setText(response.optString("name"));
-          titlePreference.setSummary(response.optString("name"));
-        }
-        if (taglinePreference != null) {
-          taglinePreference.setText(response.optString("description"));
-          taglinePreference.setSummary(response.optString("description"));
-        }
-        if (languagePreference != null) {
-          languagePreference.setDefaultValue(response.optString("lang"));
-          languagePreference.setSummary(response.optString("lang"));
-        }
-        if (visibilityPreference != null) {
-        }
-      }
-    }
-,new RestRequest.ErrorListener(){
-      @Override public void onErrorResponse(      VolleyError error){
-        if (taglinePreference != null) {
-          taglinePreference.setEnabled(false);
-          taglinePreference.setSummary("Failed to retrieve :(");
-        }
-      }
-    }
-);
-    if (titlePreference != null) {
-      titlePreference.setText(mBlog.getBlogName());
-      titlePreference.setSummary(mBlog.getBlogName());
-      titlePreference.setOnPreferenceChangeListener(mTitleChangeListener);
-    }
-    if (taglinePreference != null) {
-      taglinePreference.setOnPreferenceChangeListener(mTaglineChangeListener);
-    }
-    if (languagePreference != null) {
-      languagePreference.setOnPreferenceChangeListener(mLanguageChangeListener);
-    }
-    if (visibilityPreference != null) {
-      visibilityPreference.setOnPreferenceChangeListener(mVisibilityChangeListener);
-    }
+  if (mBlog == null)   return;
+  findPreferences();
+  if (mTitlePreference != null) {
+    mTitlePreference.setText(mBlog.getBlogName());
+    mTitlePreference.setSummary(mBlog.getBlogName());
+    mTitlePreference.setOnPreferenceChangeListener(this);
   }
+  if (mTaglinePreference != null) {
+    mTaglinePreference.setOnPreferenceChangeListener(this);
+  }
+  if (mLanguagePreference != null) {
+    mLanguagePreference.setOnPreferenceChangeListener(this);
+  }
+  if (mVisibilityPreference != null) {
+    mVisibilityPreference.setOnPreferenceChangeListener(this);
+  }
+  WordPress.getRestClientUtils().getGeneralSettings(String.valueOf(mBlog.getRemoteBlogId()),new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject response){
+      if (mTitlePreference != null) {
+        mTitlePreference.setText(response.optString(RestClientUtils.SITE_TITLE_KEY));
+        mTitlePreference.setSummary(response.optString(RestClientUtils.SITE_TITLE_KEY));
+      }
+      if (mTaglinePreference != null) {
+        mTaglinePreference.setText(response.optString(RestClientUtils.SITE_DESC_KEY));
+        mTaglinePreference.setSummary(response.optString(RestClientUtils.SITE_DESC_KEY));
+      }
+      if (mLanguagePreference != null) {
+        mLanguagePreference.setDefaultValue(response.optString(RestClientUtils.SITE_LANGUAGE_KEY));
+        mLanguagePreference.setSummary(response.optString(RestClientUtils.SITE_LANGUAGE_KEY));
+      }
+      if (mVisibilityPreference != null) {
+        int visibility=response.optJSONObject("settings").optInt("blog_public");
+switch (visibility) {
+case -1:
+          mVisibilityPreference.setProgress(0);
+        break;
+case 0:
+      mVisibilityPreference.setProgress(50);
+    break;
+case 1:
+  mVisibilityPreference.setProgress(100);
+break;
+}
+}
+}
+}
+,new RestRequest.ErrorListener(){
+@Override public void onErrorResponse(VolleyError error){
+if (isAdded()) {
+ToastUtils.showToast(getActivity(),"Error getting site info");
+}
+}
+}
+);
 }
