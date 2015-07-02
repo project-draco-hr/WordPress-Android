@@ -1,39 +1,11 @@
 {
-  if (isPostAdapterEmpty()) {
-    if (mEmptyViewMessage == EmptyViewMessageType.NO_CONTENT && emptyViewMessageType == EmptyViewMessageType.LOADING) {
-      if (mSwipedToRefresh) {
-        mSwipedToRefresh=false;
-        mEmptyViewAnimationHandler.showLoadingSequence();
-        return;
-      }
-    }
- else     if (mEmptyViewMessage == EmptyViewMessageType.LOADING && emptyViewMessageType == EmptyViewMessageType.NO_CONTENT) {
-      mEmptyViewAnimationHandler.showNoContentSequence();
-      return;
-    }
-  }
- else {
-    if (mKeepSwipeRefreshLayoutVisible) {
-      setRefreshing(false);
-      mKeepSwipeRefreshLayoutVisible=false;
-    }
-  }
-  if (mEmptyView != null) {
-    int stringId=0;
-    if (!mEmptyViewAnimationHandler.isBetweenSequences()) {
-      if (emptyViewMessageType == EmptyViewMessageType.NO_CONTENT) {
-        mEmptyViewImage.setVisibility(View.VISIBLE);
-      }
- else {
-        mEmptyViewImage.setVisibility(View.GONE);
-      }
-    }
+  int stringId;
 switch (emptyViewMessageType) {
 case LOADING:
-      stringId=mIsPage ? R.string.pages_fetching : R.string.posts_fetching;
-    break;
+    stringId=mIsPage ? R.string.pages_fetching : R.string.posts_fetching;
+  break;
 case NO_CONTENT:
-  stringId=mIsPage ? R.string.pages_empty_list : R.string.posts_empty_list;
+stringId=mIsPage ? R.string.pages_empty_list : R.string.posts_empty_list;
 break;
 case NETWORK_ERROR:
 stringId=R.string.no_network_message;
@@ -44,10 +16,10 @@ break;
 case GENERIC_ERROR:
 stringId=mIsPage ? R.string.error_refresh_pages : R.string.error_refresh_posts;
 break;
+default :
+return;
 }
 mEmptyViewTitle.setText(getText(stringId));
-mEmptyViewMessage=emptyViewMessageType;
-}
 if (isPostAdapterEmpty()) {
 mEmptyView.setVisibility(View.VISIBLE);
 }

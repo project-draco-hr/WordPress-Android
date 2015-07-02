@@ -2,17 +2,15 @@
   if (!isAdded()) {
     return;
   }
-  mEmptyView.setVisibility(postCount == 0 ? View.VISIBLE : View.GONE);
-  if (!isRefreshing() || mKeepSwipeRefreshLayoutVisible) {
-    updateEmptyView(EmptyViewMessageType.NO_CONTENT);
-  }
-  if (postCount == 0 && mCanLoadMorePosts) {
+  if (postCount == 0 && !mIsFetchingPosts) {
     if (NetworkUtils.isNetworkAvailable(getActivity())) {
-      setRefreshing(true);
-      requestPosts(false);
+      updateEmptyView(EmptyViewMessageType.NO_CONTENT);
     }
  else {
       updateEmptyView(EmptyViewMessageType.NETWORK_ERROR);
     }
+  }
+ else   if (postCount > 0) {
+    mEmptyView.setVisibility(View.GONE);
   }
 }

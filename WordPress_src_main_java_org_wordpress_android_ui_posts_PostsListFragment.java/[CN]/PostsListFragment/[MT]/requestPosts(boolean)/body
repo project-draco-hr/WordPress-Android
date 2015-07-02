@@ -10,21 +10,22 @@
   if (WordPress.wpDB.findLocalChanges(WordPress.getCurrentBlog().getLocalTableBlogId(),mIsPage)) {
     return;
   }
-  setRefreshing(true);
-  updateEmptyView(EmptyViewMessageType.LOADING);
-  int postCount=getPostListAdapter().getRemotePostCount() + POSTS_REQUEST_COUNT;
-  if (!loadMore) {
+  int postCount;
+  if (loadMore) {
+    postCount=getPostListAdapter().getRemotePostCount() + POSTS_REQUEST_COUNT;
+    showLoadMoreProgress();
+  }
+ else {
     mCanLoadMorePosts=true;
     postCount=POSTS_REQUEST_COUNT;
+    setRefreshing(true);
+    updateEmptyView(EmptyViewMessageType.LOADING);
   }
   List<Object> apiArgs=new Vector<>();
   apiArgs.add(WordPress.getCurrentBlog());
   apiArgs.add(mIsPage);
   apiArgs.add(postCount);
   apiArgs.add(loadMore);
-  if (loadMore) {
-    showLoadMoreProgress();
-  }
   mCurrentFetchPostsTask=new ApiHelper.FetchPostsTask(new ApiHelper.FetchPostsTask.Callback(){
     @Override public void onSuccess(    int postCount){
       mCurrentFetchPostsTask=null;
@@ -32,12 +33,7 @@
       if (!isAdded()) {
         return;
       }
-      if (mEmptyViewAnimationHandler.isShowingLoadingAnimation() || mEmptyViewAnimationHandler.isBetweenSequences()) {
-        mKeepSwipeRefreshLayoutVisible=true;
-      }
- else {
-        setRefreshing(false);
-      }
+      setRefreshing(false);
       hideLoadMoreProgress();
       if (postCount == 0) {
         mCanLoadMorePosts=false;
@@ -45,7 +41,7 @@
  else       if (postCount == getPostListAdapter().getRemotePostCount() && postCount != POSTS_REQUEST_COUNT) {
         mCanLoadMorePosts=false;
       }
-      getPostListAdapter().loadPosts();
+      loadPosts();
     }
     @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
       mCurrentFetchPostsTask=null;
@@ -58,15 +54,11 @@
       if (errorType != ErrorType.TASK_CANCELLED && errorType != ErrorType.NO_ERROR) {
 switch (errorType) {
 case UNAUTHORIZED:
-          if (mEmptyView == null || mEmptyView.getVisibility() != View.VISIBLE) {
-            ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_unauthorized_pages : R.string.error_refresh_unauthorized_posts,Duration.LONG);
-          }
-        updateEmptyView(EmptyViewMessageType.PERMISSION_ERROR);
-      break;
+          updateEmptyView(EmptyViewMessageType.PERMISSION_ERROR);
+        break;
 default :
-    ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_pages : R.string.error_refresh_posts,Duration.LONG);
-  updateEmptyView(EmptyViewMessageType.GENERIC_ERROR);
-break;
+      updateEmptyView(EmptyViewMessageType.GENERIC_ERROR);
+    break;
 }
 }
 }
