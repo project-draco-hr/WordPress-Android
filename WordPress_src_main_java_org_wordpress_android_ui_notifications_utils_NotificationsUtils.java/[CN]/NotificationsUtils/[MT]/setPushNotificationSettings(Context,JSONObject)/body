@@ -1,0 +1,14 @@
+{
+  if (context == null || !AccountHelper.isSignedInWordPressDotCom()) {
+    return;
+  }
+  SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(context);
+  String deviceID=settings.getString(WPCOM_PUSH_DEVICE_SERVER_ID,null);
+  if (TextUtils.isEmpty(deviceID)) {
+    AppLog.e(T.NOTIFS,"device_ID is null in preferences. Set device settings skipped.");
+    return;
+  }
+  Map<String,String> paramsMap=new HashMap<>();
+  paramsMap.put("",newSettings.toString());
+  WordPress.getRestClientUtils().post("/device/" + deviceID,paramsMap,null,null,null);
+}
