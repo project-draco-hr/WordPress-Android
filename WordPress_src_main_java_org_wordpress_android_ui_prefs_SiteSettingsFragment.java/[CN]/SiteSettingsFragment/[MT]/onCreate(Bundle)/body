@@ -4,21 +4,7 @@
   Integer id=getArguments().getInt(BlogPreferencesActivity.ARG_LOCAL_BLOG_ID,-1);
   mBlog=WordPress.getBlog(id);
   if (mBlog == null)   return;
-  findPreferences();
-  if (mTitlePreference != null) {
-    mTitlePreference.setText(mBlog.getBlogName());
-    mTitlePreference.setSummary(mBlog.getBlogName());
-    mTitlePreference.setOnPreferenceChangeListener(this);
-  }
-  if (mTaglinePreference != null) {
-    mTaglinePreference.setOnPreferenceChangeListener(this);
-  }
-  if (mLanguagePreference != null) {
-    mLanguagePreference.setOnPreferenceChangeListener(this);
-  }
-  if (mVisibilityPreference != null) {
-    mVisibilityPreference.setOnPreferenceChangeListener(this);
-  }
+  initPreferences();
   WordPress.getRestClientUtils().getGeneralSettings(String.valueOf(mBlog.getRemoteBlogId()),new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject response){
       if (mTitlePreference != null) {
@@ -57,4 +43,5 @@ ToastUtils.showToast(getActivity(),"Error getting site info");
 }
 }
 );
+setHasOptionsMenu(true);
 }
