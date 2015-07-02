@@ -6,7 +6,7 @@
   mFetchingThemes=true;
   WordPress.getRestClientUtils().getThemes(siteId,0,0,new Listener(){
     @Override public void onResponse(    JSONObject response){
-      new FetchThemesTask(page).execute(response);
+      new FetchThemesTask().execute(response);
     }
   }
 ,new ErrorListener(){
@@ -25,9 +25,6 @@
  else {
         Toast.makeText(ThemeBrowserActivity.this,R.string.theme_fetch_failed,Toast.LENGTH_LONG).show();
         AppLog.d(T.THEMES,"Failed to fetch themes: " + response.toString());
-      }
-      if (mThemePagerAdapter != null && mThemePagerAdapter.getItem(page) != null && mThemePagerAdapter.getItem(page).isAdded()) {
-        mThemePagerAdapter.getItem(page).setEmptyViewText(R.string.no_network_title);
       }
       mFetchingThemes=false;
     }
