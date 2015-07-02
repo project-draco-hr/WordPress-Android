@@ -1,17 +1,47 @@
 {
-  List<Map<String,Object>> allBlogs=WordPress.wpDB.getBlogsBy("NOT(dotcomFlag=0 AND wpVersion!='')",null,0,false);
+  JSONObject settingsJson;
+  try {
+    settingsJson=new JSONObject(AppPrefs.getNotificationsSettings());
+  }
+ catch (  JSONException e) {
+    AppLog.e(T.NOTIFS,"Could not parse notifications settings JSON");
+    return null;
+  }
+  NotificationsSettings settings=new NotificationsSettings(settingsJson);
+  if (settings.getSiteSettings() == null) {
+    return null;
+  }
+  List<Map<String,Object>> blogs=WordPress.wpDB.getBlogsBy("NOT(dotcomFlag=0 AND wpVersion!='')",null,0,false);
   Context context=getActivity();
   PreferenceCategory blogsCategory=(PreferenceCategory)findPreference(getString(R.string.pref_notification_blogs));
-  for (  Map blog : allBlogs) {
+  for (  Map blog : blogs) {
     if (context == null)     return null;
     String siteUrl=MapUtils.getMapStr(blog,"url");
-    NotificationsPreference preference=new NotificationsPreference(context);
-    preference.setLayoutResource(R.layout.notifications_site_preference);
     String title=MapUtils.getMapStr(blog,"blogName");
-    preference.setTitle(title);
-    preference.setSummary(UrlUtils.getDomainFromUrl(siteUrl));
-    preference.setBlavatarUrl(GravatarUtils.blavatarFromUrl(siteUrl,context.getResources().getDimensionPixelSize(R.dimen.avatar_sz_medium)));
-    blogsCategory.addPreference(preference);
+    long siteId=MapUtils.getMapLong(blog,"blogId");
+    PreferenceScreen prefScreen=getPreferenceManager().createPreferenceScreen(context);
+    prefScreen.setTitle(title);
+    prefScreen.setSummary(UrlUtils.getDomainFromUrl(siteUrl));
+    JSONObject siteSettings=settings.getSiteSettings().get(siteId);
+    if (siteSettings == null) {
+      siteSettings=new JSONObject();
+    }
+    JSONObject timelineSettings=JSONUtils.queryJSON(siteSettings,"timeline",new JSONObject());
+    NotificationsSettingsDialogPreference timelinePref=new NotificationsSettingsDialogPreference(context,null,NotificationsSettings.Type.TIMELINE,timelineSettings,mOnSettingsChangedListener);
+    timelinePref.setTitle(R.string.timeline);
+    timelinePref.setDialogTitle(R.string.timeline);
+    prefScreen.addPreference(timelinePref);
+    JSONObject emailSettings=JSONUtils.queryJSON(siteSettings,"email",new JSONObject());
+    NotificationsSettingsDialogPreference emailPref=new NotificationsSettingsDialogPreference(context,null,NotificationsSettings.Type.EMAIL,emailSettings,mOnSettingsChangedListener);
+    emailPref.setTitle(R.string.email);
+    emailPref.setDialogTitle(R.string.email);
+    prefScreen.addPreference(emailPref);
+    JSONObject deviceSettings=JSONUtils.queryJSON(siteSettings,"device",new JSONObject());
+    NotificationsSettingsDialogPreference devicePref=new NotificationsSettingsDialogPreference(context,null,NotificationsSettings.Type.MOBILE,deviceSettings,mOnSettingsChangedListener);
+    devicePref.setTitle(R.string.push_notifications);
+    devicePref.setDialogTitle(R.string.push_notifications);
+    prefScreen.addPreference(devicePref);
+    blogsCategory.addPreference(prefScreen);
   }
   return null;
 }
