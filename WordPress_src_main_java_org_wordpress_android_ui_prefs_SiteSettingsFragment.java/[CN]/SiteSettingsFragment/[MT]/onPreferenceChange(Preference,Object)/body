@@ -1,30 +1,36 @@
 {
   if (newValue == null)   return false;
-  if (preference == mTitlePreference) {
-    if (newValue.equals(mTitlePreference.getText()))     return false;
+  if (preference == mTitlePreference && !newValue.equals(mTitlePreference.getText())) {
     mTitlePreference.setText(newValue.toString());
     mTitlePreference.setSummary(newValue.toString());
     toggleSaveItemVisibility(true);
     return true;
   }
- else   if (preference == mTaglinePreference) {
-    if (newValue.equals(mTaglinePreference.getText()))     return false;
+ else   if (preference == mTaglinePreference && !newValue.equals(mTaglinePreference.getText())) {
     mTaglinePreference.setText(newValue.toString());
     mTaglinePreference.setSummary(newValue.toString());
     toggleSaveItemVisibility(true);
     return true;
   }
- else   if (preference == mLanguagePreference) {
-    if (newValue.equals(mLanguagePreference.getSummary()))     return false;
+ else   if (preference == mLanguagePreference && !newValue.equals(mLanguagePreference.getSummary())) {
     mLanguagePreference.setSummary(newValue.toString());
     toggleSaveItemVisibility(true);
     return true;
   }
- else   if (preference == mVisibilityPreference) {
-    int progress=convertProgressToVisibility(mVisibilityPreference.getProgress());
-    if (newValue.equals(progress))     return false;
-    toggleSaveItemVisibility(true);
-    return true;
-  }
-  return false;
+ else   if (preference == mVisibilityPreference && !newValue.equals(convertProgress(mVisibilityPreference.getProgress()))) {
+switch ((Integer)newValue) {
+case 0:
+      mVisibilityPreference.setSummary("I would like my site to be private, visible only to users I choose");
+    break;
+case 1:
+  mVisibilityPreference.setSummary("Discourage search engines from indexing this site");
+break;
+case 2:
+mVisibilityPreference.setSummary("Allow search engines to index this site");
+break;
+}
+toggleSaveItemVisibility(true);
+return true;
+}
+return false;
 }
