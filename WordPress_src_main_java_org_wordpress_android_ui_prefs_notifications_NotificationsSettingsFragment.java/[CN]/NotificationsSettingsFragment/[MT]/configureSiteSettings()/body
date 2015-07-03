@@ -1,0 +1,23 @@
+{
+  if (mNotificationsSettings == null || mNotificationsSettings.getSiteSettings() == null) {
+    return;
+  }
+  List<Map<String,Object>> blogs=WordPress.wpDB.getBlogsBy("NOT(dotcomFlag=0 AND wpVersion!='')",null,0,false);
+  Context context=getActivity();
+  PreferenceCategory blogsCategory=(PreferenceCategory)findPreference(getString(R.string.pref_notification_blogs));
+  for (  Map blog : blogs) {
+    if (context == null)     return;
+    String siteUrl=MapUtils.getMapStr(blog,"url");
+    String title=MapUtils.getMapStr(blog,"blogName");
+    long siteId=MapUtils.getMapLong(blog,"blogId");
+    PreferenceScreen prefScreen=getPreferenceManager().createPreferenceScreen(context);
+    prefScreen.setTitle(title);
+    prefScreen.setSummary(UrlUtils.getDomainFromUrl(siteUrl));
+    JSONObject siteSettings=mNotificationsSettings.getSiteSettings().get(siteId);
+    if (siteSettings == null) {
+      siteSettings=new JSONObject();
+    }
+    addPreferencesForPreferenceScreen(prefScreen,Channel.SITES,siteSettings,siteId);
+    blogsCategory.addPreference(prefScreen);
+  }
+}
