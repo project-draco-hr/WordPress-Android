@@ -2,6 +2,8 @@
   final ReaderPost post=getItem(position);
   final ReaderPostViewHolder postHolder=(ReaderPostViewHolder)holder;
   ReaderTypes.ReaderPostListType postListType=getPostListType();
+  final ReaderPostDiscoverData discoverData=post.getDiscoverData();
+  final boolean isDiscoverPost=(discoverData != null);
   postHolder.txtTitle.setText(post.getTitle());
   postHolder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(post.getDatePublished()));
   postHolder.toolbarSpacer.setVisibility(position == 0 && mShowToolbarSpacer ? View.VISIBLE : View.GONE);
@@ -20,7 +22,7 @@
  else {
       postHolder.txtBlogName.setText(null);
     }
-    if (mIsLoggedOutReader) {
+    if (mIsLoggedOutReader || isDiscoverPost) {
       postHolder.followButton.setVisibility(View.GONE);
     }
  else {
@@ -83,7 +85,11 @@
   }
   boolean showLikes;
   boolean showComments;
-  if (mIsLoggedOutReader) {
+  if (isDiscoverPost) {
+    showLikes=discoverData.numLikes > 0;
+    showComments=discoverData.numComments > 0;
+  }
+ else   if (mIsLoggedOutReader) {
     showLikes=post.numLikes > 0;
     showComments=post.numReplies > 0;
   }
@@ -97,10 +103,12 @@
   if (showLikes) {
     postHolder.likeCount.setSelected(post.isLikedByCurrentUser);
     postHolder.likeCount.setVisibility(View.VISIBLE);
-    if (mIsLoggedOutReader) {
+    if (mIsLoggedOutReader || isDiscoverPost) {
       postHolder.likeCount.setEnabled(false);
+      postHolder.likeCount.setOnClickListener(null);
     }
  else {
+      postHolder.likeCount.setEnabled(true);
       postHolder.likeCount.setOnClickListener(new View.OnClickListener(){
         @Override public void onClick(        View v){
           toggleLike(v.getContext(),postHolder,position);
@@ -115,12 +123,19 @@
   }
   if (showComments) {
     postHolder.commentCount.setVisibility(View.VISIBLE);
-    postHolder.commentCount.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View v){
-        ReaderActivityLauncher.showReaderComments(v.getContext(),post.blogId,post.postId);
-      }
+    if (isDiscoverPost) {
+      postHolder.commentCount.setEnabled(false);
+      postHolder.commentCount.setOnClickListener(null);
     }
+ else {
+      postHolder.commentCount.setEnabled(true);
+      postHolder.commentCount.setOnClickListener(new View.OnClickListener(){
+        @Override public void onClick(        View v){
+          ReaderActivityLauncher.showReaderComments(v.getContext(),post.blogId,post.postId);
+        }
+      }
 );
+    }
   }
  else {
     postHolder.commentCount.setVisibility(View.GONE);
@@ -141,8 +156,7 @@
     postHolder.imgMore.setVisibility(View.GONE);
     postHolder.imgMore.setOnClickListener(null);
   }
-  ReaderPostDiscoverData discoverData=post.getDiscoverData();
-  if (discoverData != null) {
+  if (isDiscoverPost) {
     postHolder.layoutDiscover.setVisibility(View.VISIBLE);
     postHolder.imgDiscoverAvatar.setImageUrl(GravatarUtils.fixGravatarUrl(discoverData.getAvatarUrl(),mAvatarSzSmall),WPNetworkImageView.ImageType.AVATAR);
     postHolder.txtDiscover.setText(discoverData.getAttributionHtml(postHolder.txtDiscover.getContext()));
@@ -157,18 +171,7 @@
   if (mPostSelectedListener != null) {
     postHolder.cardView.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
-        long blogId;
-        long postId;
-        ReaderPostDiscoverData discoverData=post.getDiscoverData();
-        if (discoverData != null && discoverData.getBlogId() != 0 && discoverData.getPostId() != 0) {
-          blogId=discoverData.getBlogId();
-          postId=discoverData.getPostId();
-        }
- else {
-          blogId=post.blogId;
-          postId=post.postId;
-        }
-        mPostSelectedListener.onPostSelected(post.blogId,post.postId);
+        mPostSelectedListener.onPostSelected(post);
       }
     }
 );

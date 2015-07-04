@@ -1,7 +1,16 @@
 {
-  holder.likeCount.setCount(post.numLikes,animateChanges);
-  if (post.numReplies > 0 || post.isCommentsOpen) {
-    holder.commentCount.setCount(post.numReplies,animateChanges);
+  int numLikes=post.numLikes;
+  int numComments=post.numReplies;
+  if (post.isDiscoverPost()) {
+    ReaderPostDiscoverData discoverData=post.getDiscoverData();
+    if (discoverData != null) {
+      numLikes=discoverData.numLikes;
+      numComments=discoverData.numComments;
+    }
+  }
+  holder.likeCount.setCount(numLikes,animateChanges);
+  if (numComments > 0 || post.isCommentsOpen) {
+    holder.commentCount.setCount(numComments,animateChanges);
     holder.commentCount.setVisibility(View.VISIBLE);
   }
  else {
