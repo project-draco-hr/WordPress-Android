@@ -10,7 +10,7 @@
   }
  else {
     postHolder.layoutPostHeader.setVisibility(View.VISIBLE);
-    postHolder.imgAvatar.setImageUrl(post.getPostAvatarForDisplay(mAvatarSz),WPNetworkImageView.ImageType.AVATAR);
+    postHolder.imgAvatar.setImageUrl(post.getPostAvatarForDisplay(mAvatarSzMedium),WPNetworkImageView.ImageType.AVATAR);
     if (post.hasBlogName()) {
       postHolder.txtBlogName.setText(post.getBlogName());
     }
@@ -140,6 +140,22 @@
  else {
     postHolder.imgMore.setVisibility(View.GONE);
     postHolder.imgMore.setOnClickListener(null);
+  }
+  if (post.hasDiscoverData()) {
+    try {
+      ReaderPostDiscoverData discoverData=new ReaderPostDiscoverData(post.getDiscoverJson());
+      postHolder.layoutDiscover.setVisibility(View.VISIBLE);
+      postHolder.imgDiscoverAvatar.setImageUrl(GravatarUtils.fixGravatarUrl(discoverData.getAvatarUrl(),mAvatarSzSmall),WPNetworkImageView.ImageType.AVATAR);
+      String s="Originally posted by <a href='" + discoverData.getAuthorUrl() + "'>"+ discoverData.getAuthorName()+ "</a>"+ " on <a href='"+ discoverData.getBlogUrl()+ "'>"+ discoverData.getBlogName()+ "</a>";
+      postHolder.txtDiscover.setText(Html.fromHtml(s));
+      postHolder.txtDiscover.setMovementMethod(WPLinkMovementMethod.getInstance());
+    }
+ catch (    JSONException e) {
+      postHolder.layoutDiscover.setVisibility(View.GONE);
+    }
+  }
+ else {
+    postHolder.layoutDiscover.setVisibility(View.GONE);
   }
   if (mCanRequestMorePosts && mDataRequestedListener != null && (position >= getItemCount() - 1)) {
     mDataRequestedListener.onRequestData();
