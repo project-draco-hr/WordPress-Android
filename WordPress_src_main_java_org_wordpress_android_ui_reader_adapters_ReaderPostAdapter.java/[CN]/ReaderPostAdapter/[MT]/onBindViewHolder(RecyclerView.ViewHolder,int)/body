@@ -141,17 +141,12 @@
     postHolder.imgMore.setVisibility(View.GONE);
     postHolder.imgMore.setOnClickListener(null);
   }
-  if (post.hasDiscoverData()) {
-    try {
-      ReaderPostDiscoverData discoverData=new ReaderPostDiscoverData(post.getDiscoverJson());
-      postHolder.layoutDiscover.setVisibility(View.VISIBLE);
-      postHolder.imgDiscoverAvatar.setImageUrl(GravatarUtils.fixGravatarUrl(discoverData.getAvatarUrl(),mAvatarSzSmall),WPNetworkImageView.ImageType.AVATAR);
-      postHolder.txtDiscover.setText(discoverData.getAttributionHtml(postHolder.txtDiscover.getContext()));
-      postHolder.txtDiscover.setMovementMethod(WPLinkMovementMethod.getInstance());
-    }
- catch (    JSONException e) {
-      postHolder.layoutDiscover.setVisibility(View.GONE);
-    }
+  ReaderPostDiscoverData discoverData=post.getDiscoverData();
+  if (discoverData != null) {
+    postHolder.layoutDiscover.setVisibility(View.VISIBLE);
+    postHolder.imgDiscoverAvatar.setImageUrl(GravatarUtils.fixGravatarUrl(discoverData.getAvatarUrl(),mAvatarSzSmall),WPNetworkImageView.ImageType.AVATAR);
+    postHolder.txtDiscover.setText(discoverData.getAttributionHtml(postHolder.txtDiscover.getContext()));
+    postHolder.txtDiscover.setMovementMethod(WPLinkMovementMethod.getInstance());
   }
  else {
     postHolder.layoutDiscover.setVisibility(View.GONE);
@@ -162,6 +157,17 @@
   if (mPostSelectedListener != null) {
     postHolder.cardView.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
+        long blogId;
+        long postId;
+        ReaderPostDiscoverData discoverData=post.getDiscoverData();
+        if (discoverData != null && discoverData.getBlogId() != 0 && discoverData.getPostId() != 0) {
+          blogId=discoverData.getBlogId();
+          postId=discoverData.getPostId();
+        }
+ else {
+          blogId=post.blogId;
+          postId=post.postId;
+        }
         mPostSelectedListener.onPostSelected(post.blogId,post.postId);
       }
     }
