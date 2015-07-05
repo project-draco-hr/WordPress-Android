@@ -8,7 +8,6 @@
     actionBar.setDisplayHomeAsUpEnabled(true);
     actionBar.setDisplayShowTitleEnabled(true);
   }
-  mWebView=(WebView)findViewById(R.id.webView);
   if (savedInstanceState != null) {
     mLocalPostId=savedInstanceState.getLong(ARG_LOCAL_POST_ID);
     mLocalBlogId=savedInstanceState.getInt(ARG_LOCAL_BLOG_ID);
@@ -19,7 +18,7 @@
     mLocalBlogId=getIntent().getIntExtra(ARG_LOCAL_BLOG_ID,0);
     mIsPage=getIntent().getBooleanExtra(ARG_IS_PAGE,false);
   }
-  Blog blog=WordPress.wpDB.instantiateBlogByLocalId(mLocalBlogId);
-  mWebView.setWebViewClient(new WPWebViewClient(blog));
-  loadPost();
+  if (!hasPreviewFragment()) {
+    showPreviewFragment();
+  }
 }
