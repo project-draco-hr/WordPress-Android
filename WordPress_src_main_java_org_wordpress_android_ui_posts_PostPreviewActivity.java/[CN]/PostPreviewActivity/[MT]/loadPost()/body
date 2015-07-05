@@ -8,39 +8,7 @@
     finish();
     return;
   }
-  final boolean useWebViewPreview=!post.isLocalDraft();
-  new Thread(){
-    @Override public void run(){
-      final String title=(TextUtils.isEmpty(post.getTitle()) ? "(" + getResources().getText(R.string.untitled) + ")" : StringUtils.unescapeHTML(post.getTitle()));
-      final String postContent=post.getDescription() + "\n\n" + post.getMoreText();
-      final Spanned draftContent;
-      final String htmlContent;
-      if (useWebViewPreview) {
-        draftContent=null;
-        htmlContent="<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + "<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"webview.css\" /></head>" + "<body><div id=\"container\">" + StringUtils.addPTags(postContent) + "</div></body></html>";
-      }
- else {
-        Point point=DisplayUtils.getDisplayPixelSize(PostPreviewActivity.this);
-        int maxWidth=Math.min(point.x,point.y);
-        draftContent=WPHtml.fromHtml(postContent.replaceAll("\uFFFC",""),PostPreviewActivity.this,post,maxWidth);
-        htmlContent=null;
-      }
-      PostPreviewActivity.this.runOnUiThread(new Runnable(){
-        @Override public void run(){
-          if (isFinishing())           return;
-          mTitleTextView.setText(title);
-          mContentTextView.setVisibility(useWebViewPreview ? View.GONE : View.VISIBLE);
-          mWebView.setVisibility(useWebViewPreview ? View.VISIBLE : View.GONE);
-          if (useWebViewPreview) {
-            mWebView.loadDataWithBaseURL("file:///android_asset/",htmlContent,"text/html","utf-8",null);
-          }
- else {
-            mContentTextView.setText(draftContent);
-          }
-        }
-      }
-);
-    }
-  }
-.start();
+  String title=(TextUtils.isEmpty(post.getTitle()) ? "(" + getResources().getText(R.string.untitled) + ")" : StringUtils.unescapeHTML(post.getTitle()));
+  mTitleTextView.setText(title);
+  mWebView.loadDataWithBaseURL("file:///android_asset/",formatPostContentForWebView(post),"text/html","utf-8",null);
 }
