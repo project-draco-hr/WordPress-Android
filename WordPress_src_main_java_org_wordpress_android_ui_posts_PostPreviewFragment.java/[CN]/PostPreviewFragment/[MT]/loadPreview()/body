@@ -1,11 +1,21 @@
 {
-  if (!isAdded()) {
-    return;
+  if (!isAdded())   return;
+  new Thread(){
+    @Override public void run(){
+      final String htmlContent=formatPostContentForWebView(getActivity(),WordPress.wpDB.getPostForLocalTablePostId(mLocalPostId));
+      getActivity().runOnUiThread(new Runnable(){
+        @Override public void run(){
+          if (!isAdded())           return;
+          if (htmlContent != null) {
+            mWebView.loadDataWithBaseURL(null,htmlContent,"text/html","utf-8",null);
+          }
+ else {
+            ToastUtils.showToast(getActivity(),R.string.post_not_found);
+          }
+        }
+      }
+);
+    }
   }
-  final Post post=WordPress.wpDB.getPostForLocalTablePostId(mLocalPostId);
-  if (post == null) {
-    ToastUtils.showToast(getActivity(),R.string.post_not_found);
-    return;
-  }
-  mWebView.loadDataWithBaseURL(null,formatPostContentForWebView(getActivity(),post),"text/html","utf-8",null);
+.start();
 }
