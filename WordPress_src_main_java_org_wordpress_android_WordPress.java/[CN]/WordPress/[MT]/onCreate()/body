@@ -35,4 +35,10 @@
   registerComponentCallbacks(pnBackendMonitor);
   registerActivityLifecycleCallbacks(pnBackendMonitor);
   SuggestionTable.reset(wpDB.getDatabase());
+  int versionCode=PackageUtils.getVersionCode(this);
+  int oldVersionCode=AppPrefs.getLastAppVersionCode();
+  if (oldVersionCode != 0 && oldVersionCode < versionCode) {
+    AnalyticsTracker.track(AnalyticsTracker.Stat.APPLICATION_UPGRADED);
+  }
+  AppPrefs.setLastAppVersionCode(versionCode);
 }
