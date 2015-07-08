@@ -1,79 +1,47 @@
 {
   PostsListPost post=mPosts.get(position);
   Context context=holder.itemView.getContext();
-  String date=post.getFormattedDate();
-  String titleText=post.getTitle();
-  if (titleText.equals("")) {
-    titleText="(" + context.getResources().getText(R.string.untitled) + ")";
+  if (post.hasTitle()) {
+    holder.txtTitle.setText(post.getTitle());
   }
-  holder.txtTitle.setText(titleText);
+ else {
+    holder.txtTitle.setText("(" + context.getResources().getText(R.string.untitled) + ")");
+  }
+  if (post.hasExcerpt()) {
+    holder.txtExcerpt.setVisibility(View.VISIBLE);
+    holder.txtExcerpt.setText(post.getExcerpt());
+  }
+ else {
+    holder.txtExcerpt.setVisibility(View.GONE);
+  }
+  if (post.hasFeaturedImageUrl()) {
+    holder.imgFeatured.setVisibility(View.VISIBLE);
+    holder.imgFeatured.setImageUrl(post.getFeaturedImageUrl(),WPNetworkImageView.ImageType.PHOTO);
+  }
+ else {
+    holder.imgFeatured.setVisibility(View.GONE);
+  }
   if (post.isLocalDraft()) {
     holder.txtDate.setVisibility(View.GONE);
+    holder.btnTrash.setButtonType(PostListButton.BUTTON_DELETE);
   }
  else {
-    holder.txtDate.setText(date);
+    holder.txtDate.setText(post.getFormattedDate());
     holder.txtDate.setVisibility(View.VISIBLE);
+    holder.btnTrash.setButtonType(PostListButton.BUTTON_TRASH);
   }
-  if ((post.getStatusEnum() == PostStatus.PUBLISHED) && !post.isLocalDraft() && !post.hasLocalChanges()) {
-    holder.txtStatus.setVisibility(View.GONE);
+  updateStatusText(holder.txtStatus,post);
+  configurePostButtons(holder,post);
+  if (mOnLoadMoreListener != null && position >= getItemCount() - 1 && position >= PostsListFragment.POSTS_REQUEST_COUNT - 1) {
+    mOnLoadMoreListener.onLoadMore();
   }
- else {
-    final String status;
-    holder.txtStatus.setVisibility(View.VISIBLE);
-    if (post.isUploading()) {
-      status=context.getResources().getString(R.string.post_uploading);
+  holder.itemView.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      PostsListPost selectedPost=getItem(position);
+      if (mOnPostSelectedListener != null && selectedPost != null) {
+        mOnPostSelectedListener.onPostSelected(selectedPost);
+      }
     }
- else     if (post.isLocalDraft()) {
-      status=context.getResources().getString(R.string.local_draft);
-    }
- else     if (post.hasLocalChanges()) {
-      status=context.getResources().getString(R.string.local_changes);
-    }
- else {
-switch (post.getStatusEnum()) {
-case DRAFT:
-        status=context.getResources().getString(R.string.draft);
-      break;
-case PRIVATE:
-    status=context.getResources().getString(R.string.post_private);
-  break;
-case PENDING:
-status=context.getResources().getString(R.string.pending_review);
-break;
-case SCHEDULED:
-status=context.getResources().getString(R.string.scheduled);
-break;
-default :
-status="";
-break;
-}
-}
-if (post.isLocalDraft() || post.getStatusEnum() == PostStatus.DRAFT || post.hasLocalChanges() || post.isUploading()) {
-holder.txtStatus.setTextColor(context.getResources().getColor(R.color.orange_fire));
-}
- else {
-holder.txtStatus.setTextColor(context.getResources().getColor(R.color.grey_darken_10));
-}
-holder.txtStatus.setText(status.toUpperCase(Locale.getDefault()).replace(" ","\n"));
-}
-if (mOnLoadMoreListener != null && position >= getItemCount() - 1 && position >= PostsListFragment.POSTS_REQUEST_COUNT - 1) {
-mOnLoadMoreListener.onLoadMore();
-}
-if (mShowSelection) {
-holder.itemView.setSelected(position == mSelectedPosition);
-}
-holder.itemView.setOnClickListener(new View.OnClickListener(){
-@Override public void onClick(View v){
-if (mShowSelection) {
-setSelectedPosition(position);
-}
-if (mOnPostSelectedListener != null) {
-PostsListPost selectedPost=getItem(position);
-if (selectedPost != null) {
-mOnPostSelectedListener.onPostSelected(selectedPost);
-}
-}
-}
-}
+  }
 );
 }

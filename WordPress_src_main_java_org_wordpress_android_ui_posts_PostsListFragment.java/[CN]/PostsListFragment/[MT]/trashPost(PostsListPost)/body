@@ -1,0 +1,44 @@
+{
+  if (!isAdded() || !NetworkUtils.checkConnection(getActivity())) {
+    return;
+  }
+  final Post fullPost=WordPress.wpDB.getPostForLocalTablePostId(post.getPostId());
+  if (fullPost == null) {
+    ToastUtils.showToast(getActivity(),R.string.post_not_found);
+    return;
+  }
+  getPostListAdapter().hidePost(post);
+  mTrashedPosts.add(post);
+  View.OnClickListener undoListener=new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      mTrashedPosts.remove(post);
+      getPostListAdapter().unhidePost(post);
+    }
+  }
+;
+  String text;
+  if (post.isLocalDraft()) {
+    text=mIsPage ? getString(R.string.page_deleted) : getString(R.string.post_deleted);
+  }
+ else {
+    text=mIsPage ? getString(R.string.page_trashed) : getString(R.string.post_trashed);
+  }
+  Snackbar.make(getView().findViewById(R.id.coordinator),text,Snackbar.LENGTH_LONG).setAction(R.string.undo,undoListener).show();
+  new Handler().postDelayed(new Runnable(){
+    @Override public void run(){
+      if (!mTrashedPosts.contains(post)) {
+        AppLog.d(AppLog.T.POSTS,"user undid trashing");
+        return;
+      }
+      WordPress.wpDB.deletePost(fullPost);
+      if (!post.isLocalDraft()) {
+        List<Object> apiArgs=new Vector<>();
+        apiArgs.add(WordPress.getCurrentBlog());
+        apiArgs.add(fullPost.getRemotePostId());
+        apiArgs.add(mIsPage);
+        new ApiHelper.DeleteSinglePostTask().execute(apiArgs);
+      }
+    }
+  }
+,Constants.SNACKBAR_LONG_DURATION_MS);
+}

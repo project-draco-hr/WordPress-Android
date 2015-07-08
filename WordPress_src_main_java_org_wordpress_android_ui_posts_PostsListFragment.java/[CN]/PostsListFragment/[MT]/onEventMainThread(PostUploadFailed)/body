@@ -1,16 +1,14 @@
 {
-  mSwipeToRefreshHelper.setRefreshing(true);
   if (!isAdded()) {
     return;
   }
   if (WordPress.getCurrentBlog() == null || WordPress.getCurrentBlog().getLocalTableBlogId() != event.mLocalId) {
     return;
   }
-  if (!NetworkUtils.checkConnection(getActivity())) {
-    mSwipeToRefreshHelper.setRefreshing(false);
+  setRefreshing(false);
+  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
     updateEmptyView(EmptyViewMessageType.NETWORK_ERROR);
     return;
   }
-  mSwipeToRefreshHelper.setRefreshing(false);
-  getPostListAdapter().loadPosts();
+  loadPosts();
 }
