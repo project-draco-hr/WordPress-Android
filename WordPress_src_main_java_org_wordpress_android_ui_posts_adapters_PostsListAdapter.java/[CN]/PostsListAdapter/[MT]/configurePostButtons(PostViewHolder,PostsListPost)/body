@@ -1,0 +1,49 @@
+{
+  if (post.isLocalDraft() || post.hasLocalChanges()) {
+    holder.btnViewOrPublish.setButtonType(PostListButton.BUTTON_PUBLISH);
+  }
+ else {
+    holder.btnViewOrPublish.setButtonType(PostListButton.BUTTON_VIEW);
+  }
+  boolean canShowStatsButton=canShowStatsForPost(post);
+  int numVisibleButtons=(canShowStatsButton ? 4 : 3);
+  holder.btnEdit.setVisibility(View.VISIBLE);
+  holder.btnViewOrPublish.setVisibility(View.VISIBLE);
+  if (mAlwaysShowAllButtons || numVisibleButtons <= 3) {
+    holder.btnMore.setVisibility(View.GONE);
+    holder.btnBack.setVisibility(View.GONE);
+    holder.btnTrash.setVisibility(View.VISIBLE);
+    holder.btnStats.setVisibility(canShowStatsButton ? View.VISIBLE : View.GONE);
+  }
+ else {
+    holder.btnMore.setVisibility(View.VISIBLE);
+    holder.btnBack.setVisibility(View.GONE);
+    holder.btnTrash.setVisibility(View.GONE);
+    holder.btnStats.setVisibility(View.GONE);
+  }
+  View.OnClickListener btnClickListener=new View.OnClickListener(){
+    @Override public void onClick(    View view){
+      int buttonType=((PostListButton)view).getButtonType();
+switch (buttonType) {
+case PostListButton.BUTTON_MORE:
+        animateButtonRows(holder,post,false);
+      break;
+case PostListButton.BUTTON_BACK:
+    animateButtonRows(holder,post,true);
+  break;
+default :
+if (mOnPostButtonClickListener != null) {
+  mOnPostButtonClickListener.onPostButtonClicked(buttonType,post);
+}
+break;
+}
+}
+}
+;
+holder.btnEdit.setOnClickListener(btnClickListener);
+holder.btnViewOrPublish.setOnClickListener(btnClickListener);
+holder.btnStats.setOnClickListener(btnClickListener);
+holder.btnTrash.setOnClickListener(btnClickListener);
+holder.btnMore.setOnClickListener(btnClickListener);
+holder.btnBack.setOnClickListener(btnClickListener);
+}

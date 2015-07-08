@@ -1,0 +1,29 @@
+{
+  if (TextUtils.isEmpty(description)) {
+    return null;
+  }
+  String s=HtmlUtils.fastStripHtml(description);
+  if (s.length() < MAX_EXCERPT_LEN) {
+    return s.trim();
+  }
+  StringBuilder result=new StringBuilder();
+  BreakIterator wordIterator=BreakIterator.getWordInstance();
+  wordIterator.setText(s);
+  int start=wordIterator.first();
+  int end=wordIterator.next();
+  int totalLen=0;
+  while (end != BreakIterator.DONE) {
+    String word=s.substring(start,end);
+    result.append(word);
+    totalLen+=word.length();
+    if (totalLen >= MAX_EXCERPT_LEN) {
+      break;
+    }
+    start=end;
+    end=wordIterator.next();
+  }
+  if (totalLen == 0) {
+    return null;
+  }
+  return result.toString().trim() + "...";
+}
