@@ -1,15 +1,15 @@
 {
   super.onResume();
   if (mRestResponseParsed == null) {
-    setupEmptyUI(true);
-    mHandler.postDelayed(new Runnable(){
-      @Override public void run(){
-        if (!isFinishing()) {
-          refreshStats();
-        }
-      }
+    if (!NetworkUtils.checkConnection(this)) {
+      mSwipeToRefreshHelper.setRefreshing(false);
+      setupEmptyUI();
     }
-,75L);
+ else {
+      setupEmptyGraph("");
+      showHideEmptyModulesIndicator(true);
+      refreshStats();
+    }
   }
  else {
     updateUI();

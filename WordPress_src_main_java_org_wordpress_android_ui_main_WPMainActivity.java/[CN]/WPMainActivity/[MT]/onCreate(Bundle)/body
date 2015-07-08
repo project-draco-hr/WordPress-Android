@@ -5,6 +5,21 @@
   mViewPager=(WPViewPager)findViewById(R.id.viewpager_main);
   mTabAdapter=new WPMainTabAdapter(getFragmentManager());
   mViewPager.setAdapter(mTabAdapter);
+  mConnectionBar=(TextView)findViewById(R.id.connection_bar);
+  mConnectionBar.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      AniUtils.animateBottomBar(mConnectionBar,false);
+      new Handler().postDelayed(new Runnable(){
+        @Override public void run(){
+          if (!isFinishing()) {
+            checkConnection();
+          }
+        }
+      }
+,2000);
+    }
+  }
+);
   mTabLayout=(WPMainTabLayout)findViewById(R.id.tab_layout);
   mTabLayout.createTabs();
   mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){

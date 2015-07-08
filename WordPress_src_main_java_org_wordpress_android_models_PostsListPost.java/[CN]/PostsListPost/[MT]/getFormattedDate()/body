@@ -1,3 +1,8 @@
 {
-  return DateUtils.getRelativeTimeSpanString(getDateCreatedGmt(),new Date().getTime(),DateUtils.SECOND_IN_MILLIS).toString();
+  if (getStatusEnum() == PostStatus.SCHEDULED) {
+    return DateUtils.formatDateTime(WordPress.getContext(),dateCreatedGmt,DateUtils.FORMAT_ABBREV_ALL);
+  }
+ else {
+    return DateTimeUtils.javaDateToTimeSpan(new Date(dateCreatedGmt));
+  }
 }

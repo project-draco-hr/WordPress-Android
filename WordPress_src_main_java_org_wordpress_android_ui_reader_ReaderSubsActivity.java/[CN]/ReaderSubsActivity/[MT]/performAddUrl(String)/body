@@ -3,20 +3,32 @@
     return;
   }
   showAddUrlProgress();
-  ReaderActions.ActionListener urlActionListener=new ReaderActions.ActionListener(){
-    @Override public void onActionResult(    boolean succeeded){
-      if (isFinishing()) {
-        return;
-      }
-      if (succeeded) {
+  ReaderActions.OnCheckUrlReachableListener urlListener=new ReaderActions.OnCheckUrlReachableListener(){
+    @Override public void onSuccess(){
+      if (!isFinishing()) {
         followBlogUrl(blogUrl);
       }
- else {
-        hideAddUrlProgress();
-        ToastUtils.showToast(ReaderSubsActivity.this,R.string.reader_toast_err_follow_blog);
-      }
     }
-  }
+    @Override public void onFailed(    int statusCode){
+      if (!isFinishing()) {
+        hideAddUrlProgress();
+        String errMsg;
+switch (statusCode) {
+case 401:
+          errMsg=getString(R.string.reader_toast_err_follow_blog_not_authorized);
+        break;
+case 0:
+case 404:
+      errMsg=getString(R.string.reader_toast_err_follow_blog_not_found);
+    break;
+default :
+  errMsg=getString(R.string.reader_toast_err_follow_blog) + " (" + Integer.toString(statusCode)+ ")";
+break;
+}
+ToastUtils.showToast(ReaderSubsActivity.this,errMsg);
+}
+}
+}
 ;
-  ReaderBlogActions.checkBlogUrlReachable(blogUrl,urlActionListener);
+ReaderBlogActions.checkUrlReachable(blogUrl,urlListener);
 }
