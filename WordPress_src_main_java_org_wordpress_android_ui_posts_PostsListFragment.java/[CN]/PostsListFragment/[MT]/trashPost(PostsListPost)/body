@@ -1,5 +1,5 @@
 {
-  if (!NetworkUtils.checkConnection(getActivity())) {
+  if (!isAdded() || !NetworkUtils.checkConnection(getActivity())) {
     return;
   }
   final Post fullPost=WordPress.wpDB.getPostForLocalTablePostId(post.getPostId());
@@ -7,11 +7,12 @@
     ToastUtils.showToast(getActivity(),R.string.post_not_found);
     return;
   }
-  mPostsListAdapter.hidePost(post);
+  getPostListAdapter().hidePost(post);
+  mTrashedPosts.add(post);
   View.OnClickListener undoListener=new View.OnClickListener(){
     @Override public void onClick(    View v){
-      mDidUndoTrash=true;
-      mPostsListAdapter.unhidePost(post);
+      mTrashedPosts.remove(post);
+      getPostListAdapter().unhidePost(post);
     }
   }
 ;
@@ -22,11 +23,11 @@
  else {
     text=mIsPage ? getString(R.string.page_trashed) : getString(R.string.post_trashed);
   }
-  mDidUndoTrash=false;
   Snackbar.make(getView().findViewById(R.id.coordinator),text,Snackbar.LENGTH_LONG).setAction(R.string.undo,undoListener).show();
   new Handler().postDelayed(new Runnable(){
     @Override public void run(){
-      if (mDidUndoTrash || !isAdded()) {
+      if (!mTrashedPosts.contains(post)) {
+        AppLog.d(AppLog.T.POSTS,"user undid trashing");
         return;
       }
       WordPress.wpDB.deletePost(fullPost);
