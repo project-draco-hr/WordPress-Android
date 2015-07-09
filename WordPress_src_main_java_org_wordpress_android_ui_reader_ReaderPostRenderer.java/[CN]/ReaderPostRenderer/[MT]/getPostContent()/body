@@ -4,5 +4,13 @@
     AppLog.d(AppLog.T.READER,"reader renderer > added featured image");
     content=getFeaturedImageHtml() + content;
   }
+  if (mPost.isDiscoverPost()) {
+    ReaderPostDiscoverData discoverData=mPost.getDiscoverData();
+    if (discoverData != null && discoverData.getBlogId() != 0 && discoverData.hasBlogName()) {
+      String blogLink="<a href='wordpress://blogpreview?blogId=" + Long.toString(discoverData.getBlogId()) + "'>"+ discoverData.getBlogName()+ "</a>";
+      String htmlDiscover="<div id='discover'>" + blogLink + "</div>";
+      content+=htmlDiscover;
+    }
+  }
   return content;
 }

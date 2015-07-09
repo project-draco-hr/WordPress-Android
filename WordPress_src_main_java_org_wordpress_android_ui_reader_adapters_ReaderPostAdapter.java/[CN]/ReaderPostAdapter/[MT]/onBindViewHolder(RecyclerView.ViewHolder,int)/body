@@ -86,8 +86,8 @@
   boolean showLikes;
   boolean showComments;
   if (isDiscoverPost) {
-    showLikes=discoverData.numLikes > 0;
-    showComments=discoverData.numComments > 0;
+    showLikes=false;
+    showComments=false;
   }
  else   if (mIsLoggedOutReader) {
     showLikes=post.numLikes > 0;
@@ -103,7 +103,7 @@
   if (showLikes) {
     postHolder.likeCount.setSelected(post.isLikedByCurrentUser);
     postHolder.likeCount.setVisibility(View.VISIBLE);
-    if (mIsLoggedOutReader || isDiscoverPost) {
+    if (mIsLoggedOutReader) {
       postHolder.likeCount.setEnabled(false);
       postHolder.likeCount.setOnClickListener(null);
     }
@@ -123,19 +123,13 @@
   }
   if (showComments) {
     postHolder.commentCount.setVisibility(View.VISIBLE);
-    if (isDiscoverPost) {
-      postHolder.commentCount.setEnabled(false);
-      postHolder.commentCount.setOnClickListener(null);
-    }
- else {
-      postHolder.commentCount.setEnabled(true);
-      postHolder.commentCount.setOnClickListener(new View.OnClickListener(){
-        @Override public void onClick(        View v){
-          ReaderActivityLauncher.showReaderComments(v.getContext(),post.blogId,post.postId);
-        }
+    postHolder.commentCount.setEnabled(true);
+    postHolder.commentCount.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ReaderActivityLauncher.showReaderComments(v.getContext(),post.blogId,post.postId);
       }
-);
     }
+);
   }
  else {
     postHolder.commentCount.setVisibility(View.GONE);
