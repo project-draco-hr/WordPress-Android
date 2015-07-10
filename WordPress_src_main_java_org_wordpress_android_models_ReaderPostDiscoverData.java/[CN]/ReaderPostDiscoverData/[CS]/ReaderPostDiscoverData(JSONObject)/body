@@ -15,4 +15,18 @@
     numLikes=jsonWpcomData.optInt("like_count");
     numComments=jsonWpcomData.optInt("comment_count");
   }
+  JSONArray jsonPostFormats=json.optJSONArray("discover_fp_post_formats");
+  if (jsonPostFormats != null) {
+    for (int i=0; i < jsonPostFormats.length(); i++) {
+      String slug=JSONUtils.getString(jsonPostFormats.optJSONObject(i),"slug");
+      if (slug.equals("site-pick")) {
+        discoverType=DiscoverType.SITE_PICK;
+        break;
+      }
+ else       if (slug.equals("standard-pick") || slug.equals("image-pick") || slug.equals("quote-pick")) {
+        discoverType=DiscoverType.EDITOR_PICK;
+        break;
+      }
+    }
+  }
 }
