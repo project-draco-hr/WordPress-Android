@@ -3,16 +3,11 @@
     @Override public void run(){
       AppLog.e(T.STATS,"Error while loading Stats!");
       StatsUtils.logVolleyErrorDetails(volleyError);
-      if (volleyError.networkResponse != null) {
-        NetworkResponse networkResponse=volleyError.networkResponse;
-        if (networkResponse.statusCode == 403 && networkResponse.data != null) {
-          if (new String(networkResponse.data).contains("unauthorized")) {
-            int localId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(Integer.parseInt(mRequestBlogId));
-            Blog blog=WordPress.wpDB.instantiateBlogByLocalId(localId);
-            if (blog != null && blog.isJetpackPowered()) {
-              EventBus.getDefault().post(new StatsEvents.JetpackAuthError(localId));
-            }
-          }
+      if (volleyError instanceof com.android.volley.AuthFailureError) {
+        int localId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(Integer.parseInt(mRequestBlogId));
+        Blog blog=WordPress.wpDB.instantiateBlogByLocalId(localId);
+        if (blog != null && blog.isJetpackPowered()) {
+          EventBus.getDefault().post(new StatsEvents.JetpackAuthError(localId));
         }
       }
       mResponseObjectModel=volleyError;
