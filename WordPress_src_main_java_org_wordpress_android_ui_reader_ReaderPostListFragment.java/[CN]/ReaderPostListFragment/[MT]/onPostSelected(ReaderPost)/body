@@ -3,8 +3,14 @@
   if (post.isDiscoverPost()) {
     ReaderPostDiscoverData discoverData=post.getDiscoverData();
     if (discoverData != null && discoverData.getDiscoverType() == ReaderPostDiscoverData.DiscoverType.EDITOR_PICK) {
-      ReaderActivityLauncher.showReaderPostDetail(getActivity(),discoverData.getBlogId(),discoverData.getPostId());
-      return;
+      if (discoverData.getBlogId() != 0 && discoverData.getPostId() != 0) {
+        ReaderActivityLauncher.showReaderPostDetail(getActivity(),discoverData.getBlogId(),discoverData.getPostId());
+        return;
+      }
+ else       if (discoverData.hasPermalink()) {
+        ReaderActivityLauncher.openUrl(getActivity(),discoverData.getPermaLink());
+        return;
+      }
     }
   }
   ReaderPostListType type=getPostListType();
