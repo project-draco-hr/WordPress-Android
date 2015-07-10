@@ -28,31 +28,17 @@
       }
       if (mVisibilityPreference != null) {
         int visibility=response.optJSONObject("settings").optInt("blog_public");
-switch (visibility) {
-case -1:
-          mVisibilityPreference.setProgress(0);
-        break;
-case 0:
-      mVisibilityPreference.setProgress(1);
-    break;
-case 1:
-  mVisibilityPreference.setProgress(2);
-break;
-default :
-mVisibilityPreference.setSummary("Unknown privacy setting");
-mVisibilityPreference.setEnabled(false);
-break;
-}
-}
-}
-}
+        mVisibilityPreference.setValue(String.valueOf(visibility));
+      }
+    }
+  }
 ,new RestRequest.ErrorListener(){
-@Override public void onErrorResponse(VolleyError error){
-if (isAdded()) {
-ToastUtils.showToast(getActivity(),"Error getting site info");
-}
-}
-}
+    @Override public void onErrorResponse(    VolleyError error){
+      if (isAdded()) {
+        ToastUtils.showToast(getActivity(),"Error getting site info");
+      }
+    }
+  }
 );
-setHasOptionsMenu(true);
+  setHasOptionsMenu(true);
 }

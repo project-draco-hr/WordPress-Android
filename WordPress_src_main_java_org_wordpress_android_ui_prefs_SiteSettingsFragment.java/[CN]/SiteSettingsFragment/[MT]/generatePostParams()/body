@@ -7,10 +7,12 @@
     params.put("blogdescription",mTaglinePreference.getText());
   }
   if (mLanguagePreference != null) {
-    params.put("lang_id",mLanguagePreference.getValue());
+    if (LANGUAGE_CODES.containsKey(mLanguagePreference.getValue())) {
+      params.put("lang_id",String.valueOf(LANGUAGE_CODES.get(mLanguagePreference.getValue())));
+    }
   }
   if (mVisibilityPreference != null) {
-    params.put("blog_public",String.valueOf(mVisibilityPreference.getProgress() - 1));
+    params.put("blog_public",mVisibilityPreference.getValue());
   }
   return params;
 }
