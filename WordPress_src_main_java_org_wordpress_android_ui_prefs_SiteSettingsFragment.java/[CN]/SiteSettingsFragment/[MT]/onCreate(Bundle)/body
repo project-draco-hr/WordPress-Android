@@ -1,5 +1,6 @@
 {
   super.onCreate(savedInstanceState);
+  PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().remove(getString(R.string.pref_key_site_language)).commit();
   addPreferencesFromResource(R.xml.site_settings);
   Integer id=getArguments().getInt(BlogPreferencesActivity.ARG_LOCAL_BLOG_ID,-1);
   mBlog=WordPress.getBlog(id);
@@ -15,9 +16,15 @@
         mTaglinePreference.setText(response.optString(RestClientUtils.SITE_DESC_KEY));
         mTaglinePreference.setSummary(response.optString(RestClientUtils.SITE_DESC_KEY));
       }
+      if (mAddressPreference != null) {
+        mAddressPreference.setText(response.optString(RestClientUtils.SITE_URL_KEY));
+        mAddressPreference.setSummary(response.optString(RestClientUtils.SITE_URL_KEY));
+        mAddressPreference.setEnabled(false);
+      }
       if (mLanguagePreference != null) {
-        mLanguagePreference.setDefaultValue(response.optString(RestClientUtils.SITE_LANGUAGE_KEY));
-        mLanguagePreference.setSummary(response.optString(RestClientUtils.SITE_LANGUAGE_KEY));
+        String languageString=getLanguageString(response.optString(RestClientUtils.SITE_LANGUAGE_KEY));
+        mLanguagePreference.setDefaultValue(languageString);
+        mLanguagePreference.setSummary(languageString);
       }
       if (mVisibilityPreference != null) {
         int visibility=response.optJSONObject("settings").optInt("blog_public");
@@ -30,6 +37,10 @@ case 0:
     break;
 case 1:
   mVisibilityPreference.setProgress(2);
+break;
+default :
+mVisibilityPreference.setSummary("Unknown privacy setting");
+mVisibilityPreference.setEnabled(false);
 break;
 }
 }

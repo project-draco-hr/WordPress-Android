@@ -1,8 +1,11 @@
 {
   mTitlePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_title));
   mTaglinePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_tagline));
-  mLanguagePreference=(MultiSelectListPreference)findPreference(getString(R.string.pref_key_site_language));
+  mLanguagePreference=(ListPreference)findPreference(getString(R.string.pref_key_site_language));
   mVisibilityPreference=(SeekBarPreference)findPreference(getString(R.string.pref_key_site_visibility));
+  mCategoryPreference=(MultiSelectListPreference)findPreference(getString(R.string.pref_key_site_category));
+  mFormatPreference=(ListPreference)findPreference(getString(R.string.pref_key_site_format));
+  mAddressPreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_address));
   if (mTitlePreference != null) {
     mTitlePreference.setOnPreferenceChangeListener(this);
   }
@@ -10,9 +13,13 @@
     mTaglinePreference.setOnPreferenceChangeListener(this);
   }
   if (mLanguagePreference != null) {
+    mLanguagePreference.setEntries(createLanguageDisplayStrings(mLanguagePreference.getEntryValues()));
     mLanguagePreference.setOnPreferenceChangeListener(this);
   }
   if (mVisibilityPreference != null) {
     mVisibilityPreference.setOnPreferenceChangeListener(this);
+  }
+  if (mFormatPreference != null) {
+    mFormatPreference.setOnPreferenceChangeListener(this);
   }
 }
