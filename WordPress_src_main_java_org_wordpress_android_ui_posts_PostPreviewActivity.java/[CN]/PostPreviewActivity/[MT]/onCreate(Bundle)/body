@@ -1,0 +1,25 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.post_preview_activity);
+  Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
+  setSupportActionBar(toolbar);
+  ActionBar actionBar=getSupportActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayHomeAsUpEnabled(true);
+    actionBar.setDisplayShowTitleEnabled(true);
+  }
+  if (savedInstanceState != null) {
+    mLocalPostId=savedInstanceState.getLong(ARG_LOCAL_POST_ID);
+    mLocalBlogId=savedInstanceState.getInt(ARG_LOCAL_BLOG_ID);
+    mIsPage=savedInstanceState.getBoolean(ARG_IS_PAGE);
+  }
+ else {
+    mLocalPostId=getIntent().getLongExtra(ARG_LOCAL_POST_ID,0);
+    mLocalBlogId=getIntent().getIntExtra(ARG_LOCAL_BLOG_ID,0);
+    mIsPage=getIntent().getBooleanExtra(ARG_IS_PAGE,false);
+  }
+  setTitle(mIsPage ? getString(R.string.preview_page) : getString(R.string.preview_post));
+  if (!hasPreviewFragment()) {
+    showPreviewFragment();
+  }
+}
