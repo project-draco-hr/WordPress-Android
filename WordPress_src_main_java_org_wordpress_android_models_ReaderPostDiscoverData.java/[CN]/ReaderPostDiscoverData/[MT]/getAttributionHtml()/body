@@ -1,22 +1,36 @@
 {
   if (attributionHtml == null) {
+    String html;
     String author="<strong>" + getAuthorName() + "</strong>";
     String blog="<strong>" + getBlogName() + "</strong>";
-    String html;
     Context context=WordPress.getContext();
-    if (hasBlogName() && hasAuthorName()) {
-      html=String.format(context.getString(R.string.reader_discover_attribution_author_and_blog),author,blog);
-    }
- else     if (hasBlogName()) {
-      html=String.format(context.getString(R.string.reader_discover_attribution_blog),blog);
-    }
- else     if (hasAuthorName()) {
-      html=String.format(context.getString(R.string.reader_discover_attribution_author),author);
-    }
+switch (getDiscoverType()) {
+case EDITOR_PICK:
+      if (hasBlogName() && hasAuthorName()) {
+        html=String.format(context.getString(R.string.reader_discover_attribution_author_and_blog),author,blog);
+      }
+ else       if (hasBlogName()) {
+        html=String.format(context.getString(R.string.reader_discover_attribution_blog),blog);
+      }
+ else       if (hasAuthorName()) {
+        html=String.format(context.getString(R.string.reader_discover_attribution_author),author);
+      }
  else {
-      return null;
-    }
-    attributionHtml=Html.fromHtml(html);
+        return null;
+      }
+    break;
+case SITE_PICK:
+  if (blogId != 0 && hasBlogName()) {
+    html=String.format(context.getString(R.string.reader_discover_visit_blog),blog);
   }
-  return attributionHtml;
+ else {
+    return null;
+  }
+break;
+default :
+return null;
+}
+attributionHtml=Html.fromHtml(html);
+}
+return attributionHtml;
 }

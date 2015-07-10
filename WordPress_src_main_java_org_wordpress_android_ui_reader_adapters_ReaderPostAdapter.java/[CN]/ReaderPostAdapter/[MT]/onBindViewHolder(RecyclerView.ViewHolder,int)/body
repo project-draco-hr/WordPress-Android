@@ -2,8 +2,6 @@
   final ReaderPost post=getItem(position);
   final ReaderPostViewHolder postHolder=(ReaderPostViewHolder)holder;
   ReaderTypes.ReaderPostListType postListType=getPostListType();
-  final ReaderPostDiscoverData discoverData=post.getDiscoverData();
-  final boolean isDiscoverPost=(discoverData != null);
   postHolder.txtTitle.setText(post.getTitle());
   postHolder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(post.getDatePublished()));
   postHolder.toolbarSpacer.setVisibility(position == 0 && mShowToolbarSpacer ? View.VISIBLE : View.GONE);
@@ -85,7 +83,7 @@
   }
   boolean showLikes;
   boolean showComments;
-  if (isDiscoverPost) {
+  if (post.isDiscoverPost()) {
     showLikes=false;
     showComments=false;
   }
@@ -150,10 +148,8 @@
     postHolder.imgMore.setVisibility(View.GONE);
     postHolder.imgMore.setOnClickListener(null);
   }
-  if (isDiscoverPost && discoverData.hasAttributionHtml()) {
-    postHolder.layoutDiscover.setVisibility(View.VISIBLE);
-    postHolder.imgDiscoverAvatar.setImageUrl(GravatarUtils.fixGravatarUrl(discoverData.getAvatarUrl(),mAvatarSzSmall),WPNetworkImageView.ImageType.AVATAR);
-    postHolder.txtDiscover.setText(discoverData.getAttributionHtml());
+  if (post.isDiscoverPost()) {
+    showDiscoverData(postHolder,post);
   }
  else {
     postHolder.layoutDiscover.setVisibility(View.GONE);

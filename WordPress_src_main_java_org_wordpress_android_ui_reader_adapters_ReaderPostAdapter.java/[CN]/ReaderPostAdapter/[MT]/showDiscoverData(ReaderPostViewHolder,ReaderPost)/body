@@ -1,0 +1,39 @@
+{
+  final ReaderPostDiscoverData discoverData=post.getDiscoverData();
+  if (discoverData == null) {
+    postHolder.layoutDiscover.setVisibility(View.GONE);
+  }
+  postHolder.layoutDiscover.setVisibility(View.VISIBLE);
+  postHolder.txtDiscover.setText(discoverData.getAttributionHtml());
+switch (discoverData.getDiscoverType()) {
+case EDITOR_PICK:
+    postHolder.imgDiscoverAvatar.setVisibility(View.VISIBLE);
+  postHolder.imgDiscoverAvatar.setImageUrl(GravatarUtils.fixGravatarUrl(discoverData.getAvatarUrl(),mAvatarSzSmall),WPNetworkImageView.ImageType.AVATAR);
+postHolder.layoutDiscover.setOnClickListener(new View.OnClickListener(){
+  @Override public void onClick(  View v){
+    if (mPostSelectedListener != null) {
+      mPostSelectedListener.onPostSelected(post);
+    }
+  }
+}
+);
+break;
+case SITE_PICK:
+postHolder.imgDiscoverAvatar.setVisibility(View.GONE);
+postHolder.layoutDiscover.setOnClickListener(new View.OnClickListener(){
+@Override public void onClick(View v){
+if (discoverData.getBlogId() != 0) {
+ReaderActivityLauncher.showReaderBlogPreview(v.getContext(),discoverData.getBlogId());
+}
+ else if (discoverData.hasBlogUrl()) {
+ReaderActivityLauncher.openUrl(v.getContext(),discoverData.getBlogUrl());
+}
+}
+}
+);
+break;
+default :
+postHolder.layoutDiscover.setVisibility(View.GONE);
+break;
+}
+}
