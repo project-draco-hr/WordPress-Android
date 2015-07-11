@@ -9,26 +9,28 @@
   WordPress.getRestClientUtils().getGeneralSettings(String.valueOf(mBlog.getRemoteBlogId()),new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject response){
       if (mTitlePreference != null) {
-        mTitlePreference.setText(response.optString(RestClientUtils.SITE_TITLE_KEY));
-        mTitlePreference.setSummary(response.optString(RestClientUtils.SITE_TITLE_KEY));
+        mRemoteTitle=response.optString(RestClientUtils.SITE_TITLE_KEY);
+        mTitlePreference.setText(mRemoteTitle);
+        mTitlePreference.setSummary(mRemoteTitle);
       }
       if (mTaglinePreference != null) {
-        mTaglinePreference.setText(response.optString(RestClientUtils.SITE_DESC_KEY));
-        mTaglinePreference.setSummary(response.optString(RestClientUtils.SITE_DESC_KEY));
+        mRemoteTagline=response.optString(RestClientUtils.SITE_DESC_KEY);
+        mTaglinePreference.setText(mRemoteTagline);
+        mTaglinePreference.setSummary(mRemoteTagline);
       }
       if (mAddressPreference != null) {
-        mAddressPreference.setText(response.optString(RestClientUtils.SITE_URL_KEY));
-        mAddressPreference.setSummary(response.optString(RestClientUtils.SITE_URL_KEY));
-        mAddressPreference.setEnabled(false);
+        mRemoteAddress=response.optString(RestClientUtils.SITE_URL_KEY);
+        mAddressPreference.setText(mRemoteAddress);
+        mAddressPreference.setSummary(mRemoteAddress);
       }
       if (mLanguagePreference != null) {
-        String languageString=getLanguageString(response.optString(RestClientUtils.SITE_LANGUAGE_KEY));
-        mLanguagePreference.setDefaultValue(languageString);
-        mLanguagePreference.setSummary(languageString);
+        mRemoteLanguage=getLanguageString(response.optString(RestClientUtils.SITE_LANGUAGE_KEY));
+        mLanguagePreference.setDefaultValue(mRemoteLanguage);
+        mLanguagePreference.setSummary(mRemoteLanguage);
       }
       if (mVisibilityPreference != null) {
-        int visibility=response.optJSONObject("settings").optInt("blog_public");
-        mVisibilityPreference.setValue(String.valueOf(visibility));
+        mRemotePrivacy=response.optJSONObject("settings").optInt("blog_public");
+        mVisibilityPreference.setValue(String.valueOf(mRemotePrivacy));
       }
     }
   }
@@ -41,4 +43,9 @@
   }
 );
   setHasOptionsMenu(true);
+  String[] languageIds=getResources().getStringArray(R.array.lang_ids);
+  String[] languageCodes=getResources().getStringArray(R.array.language_codes);
+  for (int i=0; i < languageIds.length && i < languageCodes.length; ++i) {
+    mLanguageCodes.put(languageCodes[i],languageIds[i]);
+  }
 }

@@ -1,17 +1,15 @@
 {
   HashMap<String,String> params=new HashMap<>();
-  if (mTitlePreference != null) {
+  if (mTitlePreference != null && !mTitlePreference.getText().equals(mRemoteTitle)) {
     params.put("blogname",mTitlePreference.getText());
   }
-  if (mTaglinePreference != null) {
+  if (mTaglinePreference != null && !mTaglinePreference.getText().equals(mRemoteTagline)) {
     params.put("blogdescription",mTaglinePreference.getText());
   }
-  if (mLanguagePreference != null) {
-    if (LANGUAGE_CODES.containsKey(mLanguagePreference.getValue())) {
-      params.put("lang_id",String.valueOf(LANGUAGE_CODES.get(mLanguagePreference.getValue())));
-    }
+  if (mLanguagePreference != null && mLanguageCodes.containsKey(mLanguagePreference.getValue()) && !mRemoteLanguage.equals(mLanguageCodes.get(mLanguagePreference.getValue()))) {
+    params.put("lang_id",String.valueOf(LANGUAGE_CODES.get(mLanguagePreference.getValue())));
   }
-  if (mVisibilityPreference != null) {
+  if (mVisibilityPreference != null && Integer.valueOf(mVisibilityPreference.getValue()) != mRemotePrivacy) {
     params.put("blog_public",mVisibilityPreference.getValue());
   }
   return params;
