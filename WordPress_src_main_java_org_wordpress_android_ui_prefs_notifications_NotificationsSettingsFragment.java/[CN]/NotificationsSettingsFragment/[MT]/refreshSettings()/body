@@ -1,0 +1,30 @@
+{
+  if (!hasNotificationsSettings()) {
+    EventBus.getDefault().post(new NotificationEvents.NotificationsSettingsStatusChanged(getString(R.string.loading)));
+  }
+  NotificationsUtils.getPushNotificationSettings(getActivity(),new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject response){
+      AppLog.d(T.NOTIFS,"Get settings action succeeded");
+      if (!isAdded())       return;
+      boolean settingsExisted=hasNotificationsSettings();
+      if (!settingsExisted) {
+        EventBus.getDefault().post(new NotificationEvents.NotificationsSettingsStatusChanged(null));
+      }
+      SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(getActivity());
+      SharedPreferences.Editor editor=settings.edit();
+      editor.putString(NotificationsUtils.WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,response.toString());
+      editor.apply();
+      new LoadNotificationsTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,!settingsExisted);
+    }
+  }
+,new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+      if (!isAdded())       return;
+      AppLog.e(T.NOTIFS,"Get settings action failed",error);
+      if (!hasNotificationsSettings()) {
+        EventBus.getDefault().post(new NotificationEvents.NotificationsSettingsStatusChanged(getString(R.string.error_loading_notifications)));
+      }
+    }
+  }
+);
+}
