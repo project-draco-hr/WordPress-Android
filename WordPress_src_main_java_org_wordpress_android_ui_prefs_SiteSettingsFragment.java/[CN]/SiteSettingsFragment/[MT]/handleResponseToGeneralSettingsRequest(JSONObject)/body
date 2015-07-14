@@ -5,11 +5,10 @@
   changeEditTextPreferenceValue(mTaglinePreference,mRemoteTagline);
   mRemoteAddress=response.optString(RestClientUtils.SITE_URL_KEY);
   changeEditTextPreferenceValue(mAddressPreference,mRemoteAddress);
-  mRemoteLanguage=StringUtils.getLanguageString(response.optString(RestClientUtils.SITE_LANGUAGE_KEY));
-  changeLanguageValue(mRemoteLanguage);
-  if (mLanguagePreference != null && mRemoteLanguage != null && !mRemoteLanguage.equals(mLanguagePreference.getValue())) {
-    mLanguagePreference.setValue(mRemoteLanguage);
-    mLanguagePreference.setSummary(mRemoteLanguage);
+  mRemoteLanguage=response.optString(RestClientUtils.SITE_LANGUAGE_KEY);
+  if (mLanguagePreference != null) {
+    changeLanguageValue(mRemoteLanguage);
+    mLanguagePreference.setSummary(getLanguageString(mRemoteLanguage,Locale.getDefault()));
   }
   mRemotePrivacy=response.optJSONObject("settings").optInt("blog_public");
   if (mPrivacyPreference != null) {
