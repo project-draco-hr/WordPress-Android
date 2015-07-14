@@ -1,51 +1,9 @@
 {
   super.onCreate(savedInstanceState);
-  PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().remove(getString(R.string.pref_key_site_language)).commit();
-  addPreferencesFromResource(R.xml.site_settings);
-  Integer id=getArguments().getInt(BlogPreferencesActivity.ARG_LOCAL_BLOG_ID,-1);
-  mBlog=WordPress.getBlog(id);
+  mBlog=WordPress.getBlog(getArguments().getInt(BlogPreferencesActivity.ARG_LOCAL_BLOG_ID,-1));
   if (mBlog == null)   return;
-  initPreferences();
-  WordPress.getRestClientUtils().getGeneralSettings(String.valueOf(mBlog.getRemoteBlogId()),new RestRequest.Listener(){
-    @Override public void onResponse(    JSONObject response){
-      if (mTitlePreference != null) {
-        mRemoteTitle=response.optString(RestClientUtils.SITE_TITLE_KEY);
-        mTitlePreference.setText(mRemoteTitle);
-        mTitlePreference.setSummary(mRemoteTitle);
-      }
-      if (mTaglinePreference != null) {
-        mRemoteTagline=response.optString(RestClientUtils.SITE_DESC_KEY);
-        mTaglinePreference.setText(mRemoteTagline);
-        mTaglinePreference.setSummary(mRemoteTagline);
-      }
-      if (mAddressPreference != null) {
-        mRemoteAddress=response.optString(RestClientUtils.SITE_URL_KEY);
-        mAddressPreference.setText(mRemoteAddress);
-        mAddressPreference.setSummary(mRemoteAddress);
-      }
-      if (mLanguagePreference != null) {
-        mRemoteLanguage=getLanguageString(response.optString(RestClientUtils.SITE_LANGUAGE_KEY));
-        mLanguagePreference.setDefaultValue(mRemoteLanguage);
-        mLanguagePreference.setSummary(mRemoteLanguage);
-      }
-      if (mVisibilityPreference != null) {
-        mRemotePrivacy=response.optJSONObject("settings").optInt("blog_public");
-        mVisibilityPreference.setValue(String.valueOf(mRemotePrivacy));
-      }
-    }
-  }
-,new RestRequest.ErrorListener(){
-    @Override public void onErrorResponse(    VolleyError error){
-      if (isAdded()) {
-        ToastUtils.showToast(getActivity(),"Error getting site info");
-      }
-    }
-  }
-);
+  addPreferencesFromResource(R.xml.site_settings);
   setHasOptionsMenu(true);
-  String[] languageIds=getResources().getStringArray(R.array.lang_ids);
-  String[] languageCodes=getResources().getStringArray(R.array.language_codes);
-  for (int i=0; i < languageIds.length && i < languageCodes.length; ++i) {
-    mLanguageCodes.put(languageCodes[i],languageIds[i]);
-  }
+  initPreferences();
+  fetchRemoteData();
 }

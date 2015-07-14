@@ -1,25 +1,29 @@
 {
   mTitlePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_title));
   mTaglinePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_tagline));
-  mLanguagePreference=(ListPreference)findPreference(getString(R.string.pref_key_site_language));
-  mVisibilityPreference=(ListPreference)findPreference(getString(R.string.pref_key_site_visibility));
-  mCategoryPreference=(MultiSelectListPreference)findPreference(getString(R.string.pref_key_site_category));
-  mFormatPreference=(ListPreference)findPreference(getString(R.string.pref_key_site_format));
   mAddressPreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_address));
+  mPrivacyPreference=(ListPreference)findPreference(getString(R.string.pref_key_site_visibility));
+  mLanguagePreference=(ListPreference)findPreference(getString(R.string.pref_key_site_language));
   if (mTitlePreference != null) {
     mTitlePreference.setOnPreferenceChangeListener(this);
   }
   if (mTaglinePreference != null) {
     mTaglinePreference.setOnPreferenceChangeListener(this);
   }
+  if (mAddressPreference != null) {
+    mAddressPreference.setOnPreferenceChangeListener(this);
+  }
+  if (mPrivacyPreference != null) {
+    mRemotePrivacy=-2;
+    mPrivacyPreference.setOnPreferenceChangeListener(this);
+  }
   if (mLanguagePreference != null) {
+    String[] languageIds=getResources().getStringArray(R.array.lang_ids);
+    String[] languageCodes=getResources().getStringArray(R.array.language_codes);
+    for (int i=0; i < languageIds.length && i < languageCodes.length; ++i) {
+      mLanguageCodes.put(languageCodes[i],languageIds[i]);
+    }
     mLanguagePreference.setEntries(createLanguageDisplayStrings(mLanguagePreference.getEntryValues()));
     mLanguagePreference.setOnPreferenceChangeListener(this);
-  }
-  if (mVisibilityPreference != null) {
-    mVisibilityPreference.setOnPreferenceChangeListener(this);
-  }
-  if (mFormatPreference != null) {
-    mFormatPreference.setOnPreferenceChangeListener(this);
   }
 }
