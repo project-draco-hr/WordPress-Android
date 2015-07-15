@@ -7,31 +7,35 @@
   postHolder.txtDiscover.setText(discoverData.getAttributionHtml());
 switch (discoverData.getDiscoverType()) {
 case EDITOR_PICK:
-    postHolder.imgDiscoverAvatar.setVisibility(View.VISIBLE);
-  if (discoverData.hasAvatarUrl()) {
-    postHolder.imgDiscoverAvatar.setImageUrl(GravatarUtils.fixGravatarUrl(discoverData.getAvatarUrl(),mAvatarSzSmall),WPNetworkImageView.ImageType.AVATAR);
-  }
+    if (discoverData.hasAvatarUrl()) {
+      postHolder.imgDiscoverAvatar.setImageUrl(GravatarUtils.fixGravatarUrl(discoverData.getAvatarUrl(),mAvatarSzSmall),WPNetworkImageView.ImageType.AVATAR);
+    }
  else {
-    postHolder.imgDiscoverAvatar.showDefaultGravatarImage();
-  }
-postHolder.layoutDiscover.setOnClickListener(new View.OnClickListener(){
-  @Override public void onClick(  View v){
-    if (mPostSelectedListener != null) {
-      mPostSelectedListener.onPostSelected(post);
+      postHolder.imgDiscoverAvatar.showDefaultGravatarImage();
+    }
+  postHolder.layoutDiscover.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      if (mPostSelectedListener != null) {
+        mPostSelectedListener.onPostSelected(post);
+      }
     }
   }
-}
 );
 break;
 case SITE_PICK:
-postHolder.imgDiscoverAvatar.setVisibility(View.GONE);
+if (discoverData.hasAvatarUrl()) {
+postHolder.imgDiscoverAvatar.setImageUrl(GravatarUtils.fixGravatarUrl(discoverData.getAvatarUrl(),mAvatarSzSmall),WPNetworkImageView.ImageType.AVATAR);
+}
+ else {
+postHolder.imgDiscoverAvatar.showDefaultBlavatarImage();
+}
 postHolder.layoutDiscover.setOnClickListener(new View.OnClickListener(){
 @Override public void onClick(View v){
 if (discoverData.getBlogId() != 0) {
-ReaderActivityLauncher.showReaderBlogPreview(v.getContext(),discoverData.getBlogId());
+  ReaderActivityLauncher.showReaderBlogPreview(v.getContext(),discoverData.getBlogId());
 }
  else if (discoverData.hasBlogUrl()) {
-ReaderActivityLauncher.openUrl(v.getContext(),discoverData.getBlogUrl());
+  ReaderActivityLauncher.openUrl(v.getContext(),discoverData.getBlogUrl());
 }
 }
 }
