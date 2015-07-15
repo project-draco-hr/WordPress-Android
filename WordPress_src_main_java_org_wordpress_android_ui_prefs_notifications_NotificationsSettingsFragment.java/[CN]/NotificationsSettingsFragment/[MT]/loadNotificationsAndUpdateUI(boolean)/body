@@ -1,5 +1,4 @@
 {
-  mShouldUpdateUI=params[0];
   JSONObject settingsJson;
   try {
     SharedPreferences sharedPreferences=PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -7,8 +6,12 @@
   }
  catch (  JSONException e) {
     AppLog.e(T.NOTIFS,"Could not parse notifications settings JSON");
-    return null;
+    return;
   }
   mNotificationsSettings=new NotificationsSettings(settingsJson);
-  return null;
+  if (shouldUpdateUI) {
+    configureSiteSettings();
+    configureOtherSettings();
+    configureDotcomSettings();
+  }
 }

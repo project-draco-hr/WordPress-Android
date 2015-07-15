@@ -2,6 +2,9 @@
   if (!hasNotificationsSettings()) {
     EventBus.getDefault().post(new NotificationEvents.NotificationsSettingsStatusChanged(getString(R.string.loading)));
   }
+  if (hasNotificationsSettings()) {
+    updateUIForNotificationsEnabledState();
+  }
   NotificationsUtils.getPushNotificationSettings(getActivity(),new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject response){
       AppLog.d(T.NOTIFS,"Get settings action succeeded");
@@ -14,7 +17,8 @@
       SharedPreferences.Editor editor=settings.edit();
       editor.putString(NotificationsUtils.WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,response.toString());
       editor.apply();
-      new LoadNotificationsTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,!settingsExisted);
+      loadNotificationsAndUpdateUI(!settingsExisted);
+      updateUIForNotificationsEnabledState();
     }
   }
 ,new RestRequest.ErrorListener(){
