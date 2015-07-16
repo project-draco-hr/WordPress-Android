@@ -1,19 +1,18 @@
 {
   final Blog blog=WordPress.getBlog(mBlogId);
   if (blog == null) {
-    AppLog.w(AppLog.T.POSTS,"PostMediaDownloader > null blog");
+    AppLog.w(AppLog.T.POSTS,"PostMediaService > null blog");
     stopSelf();
     return;
   }
   if (mMediaIds == null || mMediaIds.size() == 0) {
-    AppLog.w(AppLog.T.POSTS,"PostMediaDownloader > nothing to download");
+    AppLog.w(AppLog.T.POSTS,"PostMediaService > nothing to download");
     stopSelf();
     return;
   }
   final XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
   new Thread(){
     @Override public void run(){
-      AppLog.d(AppLog.T.POSTS,"PostMediaDownloader > starting");
       String strBlogId=Integer.toString(blog.getLocalTableBlogId());
       while (mMediaIds.size() > 0) {
         long thisMediaId=mMediaIds.get(0);
@@ -24,7 +23,7 @@
           if (results != null) {
             MediaFile mediaFile=new MediaFile(strBlogId,results,blog.isDotcomFlag());
             WordPress.wpDB.saveMediaFile(mediaFile);
-            AppLog.d(AppLog.T.POSTS,"PostMediaDownloader > downloaded " + mediaFile.getFileURL());
+            AppLog.d(AppLog.T.POSTS,"PostMediaService > downloaded " + mediaFile.getFileURL());
           }
         }
  catch (        ClassCastException|XMLRPCException|XmlPullParserException|IOException e) {
