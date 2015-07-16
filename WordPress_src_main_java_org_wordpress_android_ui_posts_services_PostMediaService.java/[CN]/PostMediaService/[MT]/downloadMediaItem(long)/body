@@ -1,0 +1,16 @@
+{
+  Object[] apiParams={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword(),mediaId};
+  String strBlogId=Integer.toString(mBlog.getLocalTableBlogId());
+  try {
+    Map<?,?> results=(Map<?,?>)mClient.call("wp.getMediaItem",apiParams);
+    if (results != null) {
+      MediaFile mediaFile=new MediaFile(strBlogId,results,mBlog.isDotcomFlag());
+      WordPress.wpDB.saveMediaFile(mediaFile);
+      AppLog.d(AppLog.T.POSTS,"PostMediaService > downloaded " + mediaFile.getFileURL());
+      EventBus.getDefault().post(new PostEvents.PostMediaDownloaded(mediaId,mediaFile.getFileURL()));
+    }
+  }
+ catch (  ClassCastException|XMLRPCException|XmlPullParserException|IOException e) {
+    AppLog.e(AppLog.T.POSTS,e);
+  }
+}

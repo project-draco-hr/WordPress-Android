@@ -2,12 +2,36 @@
   if (intent == null) {
     return START_NOT_STICKY;
   }
-  mBlogId=intent.getIntExtra(ARG_BLOG_ID,0);
   Serializable serializable=intent.getSerializableExtra(ARG_MEDIA_IDS);
   if (serializable != null && serializable instanceof List) {
-    List ids=(List)serializable;
-    mMediaIds.addAll(ids);
+    List list=(List)serializable;
+    for (    Object id : list) {
+      if (id instanceof Long) {
+        mMediaIds.add((Long)id);
+      }
+    }
   }
-  startDownloading();
+  if (mMediaIds.size() == 0) {
+    AppLog.w(AppLog.T.POSTS,"PostMediaService > nothing to download");
+    return START_NOT_STICKY;
+  }
+  int blogId=intent.getIntExtra(ARG_BLOG_ID,0);
+  mBlog=WordPress.getBlog(blogId);
+  if (mBlog == null) {
+    AppLog.w(AppLog.T.POSTS,"PostMediaService > null blog");
+    return START_NOT_STICKY;
+  }
+  mClient=XMLRPCFactory.instantiate(mBlog.getUri(),mBlog.getHttpuser(),mBlog.getHttppassword());
+  new Thread(){
+    @Override public void run(){
+      while (mMediaIds.size() > 0) {
+        long id=mMediaIds.get(0);
+        mMediaIds.remove(0);
+        downloadMediaItem(id);
+      }
+      stopSelf();
+    }
+  }
+.start();
   return START_NOT_STICKY;
 }
