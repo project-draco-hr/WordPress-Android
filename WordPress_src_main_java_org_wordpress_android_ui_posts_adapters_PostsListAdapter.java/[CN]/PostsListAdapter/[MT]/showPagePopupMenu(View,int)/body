@@ -1,0 +1,34 @@
+{
+  final PostsListPost page=getItem(position);
+  if (page == null || mOnPostButtonClickListener == null) {
+    return;
+  }
+  Context context=view.getContext();
+  PopupMenu popup=new PopupMenu(context,view);
+  MenuItem mnuView=popup.getMenu().add(context.getString(R.string.button_view));
+  mnuView.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener(){
+    @Override public boolean onMenuItemClick(    MenuItem item){
+      mOnPostButtonClickListener.onPostButtonClicked(PostListButton.BUTTON_VIEW,page);
+      return true;
+    }
+  }
+);
+  MenuItem mnuEdit=popup.getMenu().add(context.getString(R.string.button_edit));
+  mnuEdit.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener(){
+    @Override public boolean onMenuItemClick(    MenuItem item){
+      mOnPostButtonClickListener.onPostButtonClicked(PostListButton.BUTTON_EDIT,page);
+      return true;
+    }
+  }
+);
+  String trashTitle=page.isLocalDraft() ? context.getString(R.string.button_delete) : context.getString(R.string.button_trash);
+  MenuItem mnuTrash=popup.getMenu().add(trashTitle);
+  mnuTrash.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener(){
+    @Override public boolean onMenuItemClick(    MenuItem item){
+      mOnPostButtonClickListener.onPostButtonClicked(PostListButton.BUTTON_TRASH,page);
+      return true;
+    }
+  }
+);
+  popup.show();
+}
