@@ -1,0 +1,26 @@
+{
+  if (intent == null)   return START_NOT_STICKY;
+  int blogId=intent.getIntExtra(ARG_BLOG_ID,0);
+  mBlog=WordPress.getBlog(blogId);
+  Serializable serializable=intent.getSerializableExtra(ARG_MEDIA_IDS);
+  if (serializable != null && serializable instanceof List) {
+    List list=(List)serializable;
+    for (    Object id : list) {
+      if (id instanceof Long) {
+        mMediaIdQueue.add((Long)id);
+      }
+    }
+  }
+  if (mMediaIdQueue.size() > 0 && mBlog != null) {
+    new Thread(){
+      @Override public void run(){
+        while (!mMediaIdQueue.isEmpty()) {
+          long mediaId=mMediaIdQueue.poll();
+          downloadMediaItem(mediaId);
+        }
+      }
+    }
+.start();
+  }
+  return START_NOT_STICKY;
+}
