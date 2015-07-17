@@ -36,6 +36,7 @@ GraphView.GraphViewData[] secondarySeriesItems=null;
 if (mIsCheckboxChecked && selectedStatsType == OverviewLabel.VIEWS) {
 secondarySeriesItems=new GraphView.GraphViewData[dataToShowOnGraph.length];
 }
+boolean atLeastOneResultIsAvailable=false;
 for (int i=0; i < dataToShowOnGraph.length; i++) {
 int currentItemValue=0;
 switch (selectedStatsType) {
@@ -53,6 +54,9 @@ currentItemValue=dataToShowOnGraph[i].getComments();
 break;
 }
 mainSeriesItems[i]=new GraphView.GraphViewData(i,currentItemValue);
+if (currentItemValue > 0) {
+atLeastOneResultIsAvailable=true;
+}
 if (mIsCheckboxChecked && secondarySeriesItems != null) {
 secondarySeriesItems[i]=new GraphView.GraphViewData(i,dataToShowOnGraph[i].getVisitors());
 }
@@ -95,15 +99,8 @@ mGraphView.getGraphViewStyle().setNumHorizontalLabels(dataToShowOnGraph.length);
 mGraphView.getGraphViewStyle().setMaxColumnWidth(DisplayUtils.dpToPx(getActivity(),StatsConstants.STATS_GRAPH_BAR_MAX_COLUMN_WIDTH_DP));
 mGraphView.setHorizontalLabels(horLabels);
 mGraphView.setGestureListener(this);
-boolean resultsAvailable=false;
-for (int i=0; i < dataToShowOnGraph.length; i++) {
-if (dataToShowOnGraph[i].getViews() != 0 || dataToShowOnGraph[i].getVisitors() != 0 || dataToShowOnGraph[i].getLikes() != 0 || dataToShowOnGraph[i].getComments() != 0) {
-resultsAvailable=true;
-break;
-}
-}
-mNoActivtyThisPeriodContainer.setVisibility(resultsAvailable ? View.GONE : View.VISIBLE);
-mGraphView.setClickable(resultsAvailable);
+mNoActivtyThisPeriodContainer.setVisibility(atLeastOneResultIsAvailable ? View.GONE : View.VISIBLE);
+mGraphView.setClickable(atLeastOneResultIsAvailable);
 if (mPrevNumberOfBarsGraph != -1 && mPrevNumberOfBarsGraph != dataToShowOnGraph.length) {
 mSelectedBarGraphBarIndex=-1;
 mPrevNumberOfBarsGraph=dataToShowOnGraph.length;
