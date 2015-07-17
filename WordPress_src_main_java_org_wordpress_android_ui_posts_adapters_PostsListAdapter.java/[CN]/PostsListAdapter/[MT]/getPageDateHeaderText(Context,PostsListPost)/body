@@ -1,0 +1,25 @@
+{
+  if (page.isLocalDraft()) {
+    return context.getString(R.string.local_draft);
+  }
+ else   if (page.getStatusEnum() == PostStatus.SCHEDULED) {
+    return context.getString(R.string.scheduled);
+  }
+ else {
+    Date dtCreated=new Date(page.getDateCreatedGmt());
+    Date dtNow=DateTimeUtils.nowUTC();
+    int daysBetween=DateTimeUtils.daysBetween(dtCreated,dtNow);
+    if (daysBetween == 0) {
+      return context.getString(R.string.today);
+    }
+ else     if (daysBetween == 1) {
+      return context.getString(R.string.yesterday);
+    }
+ else     if (daysBetween <= 10) {
+      return String.format(context.getString(R.string.days_ago),daysBetween);
+    }
+ else {
+      return DateTimeUtils.javaDateToTimeSpan(dtCreated);
+    }
+  }
+}

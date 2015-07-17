@@ -5,14 +5,16 @@
   }
   Context context=view.getContext();
   PopupMenu popup=new PopupMenu(context,view);
-  MenuItem mnuView=popup.getMenu().add(context.getString(R.string.button_view));
-  mnuView.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener(){
-    @Override public boolean onMenuItemClick(    MenuItem item){
-      mOnPostButtonClickListener.onPostButtonClicked(PostListButton.BUTTON_VIEW,page);
-      return true;
+  if (!page.isLocalDraft()) {
+    MenuItem mnuView=popup.getMenu().add(context.getString(R.string.button_view));
+    mnuView.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener(){
+      @Override public boolean onMenuItemClick(      MenuItem item){
+        mOnPostButtonClickListener.onPostButtonClicked(PostListButton.BUTTON_VIEW,page);
+        return true;
+      }
     }
-  }
 );
+  }
   MenuItem mnuEdit=popup.getMenu().add(context.getString(R.string.button_edit));
   mnuEdit.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener(){
     @Override public boolean onMenuItemClick(    MenuItem item){
