@@ -1,60 +1,10 @@
 {
   if (mPostsListAdapter == null) {
-    PostsListAdapter.OnLoadMoreListener loadMoreListener=new PostsListAdapter.OnLoadMoreListener(){
-      @Override public void onLoadMore(){
-        if (mCanLoadMorePosts && !mIsFetchingPosts)         requestPosts(true);
-      }
-    }
-;
-    PostsListAdapter.OnPostsLoadedListener postsLoadedListener=new PostsListAdapter.OnPostsLoadedListener(){
-      @Override public void onPostsLoaded(      int postCount){
-        if (!isAdded()) {
-          return;
-        }
-        if (postCount == 0) {
-          mEmptyView.setVisibility(View.VISIBLE);
-        }
- else {
-          mEmptyView.setVisibility(View.GONE);
-        }
-        if (!isRefreshing() || mKeepSwipeRefreshLayoutVisible) {
-          updateEmptyView(EmptyViewMessageType.NO_CONTENT);
-        }
-        if (postCount == 0 && mCanLoadMorePosts) {
-          if (isAdded() && NetworkUtils.isNetworkAvailable(getActivity())) {
-            setRefreshing(true);
-            requestPosts(false);
-          }
- else {
-            updateEmptyView(EmptyViewMessageType.NETWORK_ERROR);
-          }
-        }
- else         if (mShouldSelectFirstPost) {
-          mShouldSelectFirstPost=false;
-          if (mPostsListAdapter.getItemCount() > 0) {
-            PostsListPost postsListPost=mPostsListAdapter.getItem(0);
-            if (postsListPost != null) {
-              mPostsListAdapter.setSelectedPosition(0);
-              showPost(postsListPost.getPostId());
-            }
-          }
-        }
-      }
-    }
-;
-    PostsListAdapter.OnPostSelectedListener postSelectedListener=new PostsListAdapter.OnPostSelectedListener(){
-      @Override public void onPostSelected(      PostsListPost post){
-        if (isAdded()) {
-          showPost(post.getPostId());
-        }
-      }
-    }
-;
-    mPostsListAdapter=new PostsListAdapter(getActivity(),mIsPage);
-    mPostsListAdapter.setOnLoadMoreListener(loadMoreListener);
-    mPostsListAdapter.setOnPostsLoadedListener(postsLoadedListener);
-    mPostsListAdapter.setOnPostSelectedListener(postSelectedListener);
-    mPostsListAdapter.setShowSelection(mShowSelection);
+    mPostsListAdapter=new PostsListAdapter(getActivity(),WordPress.getCurrentBlog(),mIsPage);
+    mPostsListAdapter.setOnLoadMoreListener(this);
+    mPostsListAdapter.setOnPostsLoadedListener(this);
+    mPostsListAdapter.setOnPostSelectedListener(this);
+    mPostsListAdapter.setOnPostButtonClickListener(this);
   }
   return mPostsListAdapter;
 }

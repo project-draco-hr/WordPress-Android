@@ -1,9 +1,21 @@
 {
-  View view=inflater.inflate(R.layout.post_list,container,false);
+  View view=inflater.inflate(R.layout.post_list_fragment,container,false);
   mRecyclerView=(RecyclerView)view.findViewById(R.id.recycler_view);
-  mEmptyView=view.findViewById(R.id.empty_view);
-  mEmptyViewImage=view.findViewById(R.id.empty_tags_box_top);
-  mEmptyViewTitle=(TextView)view.findViewById(R.id.title_empty);
   mProgressLoadMore=(ProgressBar)view.findViewById(R.id.progress);
+  mFabView=view.findViewById(R.id.fab_button);
+  mEmptyView=view.findViewById(R.id.empty_view);
+  mEmptyViewTitle=(TextView)mEmptyView.findViewById(R.id.title_empty);
+  mEmptyViewImage=(ImageView)mEmptyView.findViewById(R.id.image_empty);
+  Context context=getActivity();
+  mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+  int spacingHorizontal=context.getResources().getDimensionPixelSize(R.dimen.content_margin);
+  int spacingVertical=context.getResources().getDimensionPixelSize(R.dimen.reader_card_gutters);
+  mRecyclerView.addItemDecoration(new RecyclerItemDecoration(spacingHorizontal,spacingVertical));
+  mFabView.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      newPost();
+    }
+  }
+);
   return view;
 }

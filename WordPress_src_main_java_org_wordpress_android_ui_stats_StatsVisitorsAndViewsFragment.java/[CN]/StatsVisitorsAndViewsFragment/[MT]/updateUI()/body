@@ -15,6 +15,7 @@
     setupNoResultsUI(false);
     return;
   }
+  mNoActivtyThisPeriodContainer.setVisibility(View.GONE);
   OverviewLabel selectedStatsType=overviewItems[mSelectedOverviewItemIndex];
   mLegendContainer.setVisibility(View.VISIBLE);
   mLegendLabel.setText(StringUtils.capitalize(selectedStatsType.getLabel().toLowerCase()));
@@ -35,6 +36,7 @@ GraphView.GraphViewData[] secondarySeriesItems=null;
 if (mIsCheckboxChecked && selectedStatsType == OverviewLabel.VIEWS) {
 secondarySeriesItems=new GraphView.GraphViewData[dataToShowOnGraph.length];
 }
+boolean atLeastOneResultIsAvailable=false;
 for (int i=0; i < dataToShowOnGraph.length; i++) {
 int currentItemValue=0;
 switch (selectedStatsType) {
@@ -52,6 +54,9 @@ currentItemValue=dataToShowOnGraph[i].getComments();
 break;
 }
 mainSeriesItems[i]=new GraphView.GraphViewData(i,currentItemValue);
+if (currentItemValue > 0) {
+atLeastOneResultIsAvailable=true;
+}
 if (mIsCheckboxChecked && secondarySeriesItems != null) {
 secondarySeriesItems[i]=new GraphView.GraphViewData(i,dataToShowOnGraph[i].getVisitors());
 }
@@ -94,6 +99,16 @@ mGraphView.getGraphViewStyle().setNumHorizontalLabels(dataToShowOnGraph.length);
 mGraphView.getGraphViewStyle().setMaxColumnWidth(DisplayUtils.dpToPx(getActivity(),StatsConstants.STATS_GRAPH_BAR_MAX_COLUMN_WIDTH_DP));
 mGraphView.setHorizontalLabels(horLabels);
 mGraphView.setGestureListener(this);
+mNoActivtyThisPeriodContainer.setVisibility(atLeastOneResultIsAvailable ? View.GONE : View.VISIBLE);
+mGraphView.setClickable(atLeastOneResultIsAvailable);
+if (mPrevNumberOfBarsGraph != -1 && mPrevNumberOfBarsGraph != dataToShowOnGraph.length) {
+mSelectedBarGraphBarIndex=-1;
+mPrevNumberOfBarsGraph=dataToShowOnGraph.length;
+onBarTapped(dataToShowOnGraph.length - 1);
+mGraphView.highlightBar(dataToShowOnGraph.length - 1);
+return;
+}
+mPrevNumberOfBarsGraph=dataToShowOnGraph.length;
 int barSelectedOnGraph;
 if (mSelectedBarGraphBarIndex == -1) {
 barSelectedOnGraph=dataToShowOnGraph.length - 1;

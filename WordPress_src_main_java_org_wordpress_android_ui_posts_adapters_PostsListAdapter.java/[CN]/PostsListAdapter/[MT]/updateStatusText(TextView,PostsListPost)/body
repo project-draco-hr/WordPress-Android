@@ -1,0 +1,57 @@
+{
+  if ((post.getStatusEnum() == PostStatus.PUBLISHED) && !post.isLocalDraft() && !post.hasLocalChanges()) {
+    txtStatus.setVisibility(View.GONE);
+  }
+ else {
+    int statusTextResId=0;
+    int statusIconResId=0;
+    int statusColorResId=R.color.grey_darken_10;
+    if (post.isUploading()) {
+      statusTextResId=R.string.post_uploading;
+      statusColorResId=R.color.alert_yellow;
+    }
+ else     if (post.isLocalDraft()) {
+      statusTextResId=R.string.local_draft;
+      statusIconResId=R.drawable.noticon_scheduled;
+      statusColorResId=R.color.alert_yellow;
+    }
+ else     if (post.hasLocalChanges()) {
+      statusTextResId=R.string.local_changes;
+      statusIconResId=R.drawable.noticon_scheduled;
+      statusColorResId=R.color.alert_yellow;
+    }
+ else {
+switch (post.getStatusEnum()) {
+case DRAFT:
+        statusTextResId=R.string.draft;
+      statusIconResId=R.drawable.noticon_scheduled;
+    statusColorResId=R.color.alert_yellow;
+  break;
+case PRIVATE:
+statusTextResId=R.string.post_private;
+break;
+case PENDING:
+statusTextResId=R.string.pending_review;
+statusIconResId=R.drawable.noticon_scheduled;
+statusColorResId=R.color.alert_yellow;
+break;
+case SCHEDULED:
+statusTextResId=R.string.scheduled;
+statusIconResId=R.drawable.noticon_scheduled;
+statusColorResId=R.color.alert_yellow;
+break;
+case TRASHED:
+statusTextResId=R.string.trashed;
+statusIconResId=R.drawable.noticon_trashed;
+statusColorResId=R.color.alert_red;
+break;
+}
+}
+Resources resources=txtStatus.getContext().getResources();
+txtStatus.setTextColor(resources.getColor(statusColorResId));
+txtStatus.setText(statusTextResId != 0 ? resources.getString(statusTextResId) : "");
+Drawable drawable=(statusIconResId != 0 ? resources.getDrawable(statusIconResId) : null);
+txtStatus.setCompoundDrawablesWithIntrinsicBounds(drawable,null,null,null);
+txtStatus.setVisibility(View.VISIBLE);
+}
+}

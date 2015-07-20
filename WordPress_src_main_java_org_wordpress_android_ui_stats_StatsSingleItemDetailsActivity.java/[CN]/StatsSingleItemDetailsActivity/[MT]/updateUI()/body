@@ -37,8 +37,14 @@
   mGraphView.getGraphViewStyle().setMaxColumnWidth(DisplayUtils.dpToPx(this,StatsConstants.STATS_GRAPH_BAR_MAX_COLUMN_WIDTH_DP));
   mGraphView.setHorizontalLabels(horLabels);
   mGraphView.setGestureListener(this);
-  mSelectedBarGraphIndex=(mSelectedBarGraphIndex != -1) ? mSelectedBarGraphIndex : dataToShowOnGraph.length - 1;
+  if (mPrevNumberOfBarsGraph != -1 && mPrevNumberOfBarsGraph != dataToShowOnGraph.length) {
+    mSelectedBarGraphIndex=dataToShowOnGraph.length - 1;
+  }
+ else {
+    mSelectedBarGraphIndex=(mSelectedBarGraphIndex != -1) ? mSelectedBarGraphIndex : dataToShowOnGraph.length - 1;
+  }
   mGraphView.highlightBar(mSelectedBarGraphIndex);
+  mPrevNumberOfBarsGraph=dataToShowOnGraph.length;
   setMainViewsLabel(StatsUtils.parseDate(mStatsDate[mSelectedBarGraphIndex],StatsConstants.STATS_INPUT_DATE_FORMAT,StatsConstants.STATS_OUTPUT_DATE_MONTH_LONG_DAY_SHORT_FORMAT),dataToShowOnGraph[mSelectedBarGraphIndex].getViews());
   showHideEmptyModulesIndicator(false);
   mMonthsAndYearsList.setVisibility(View.VISIBLE);

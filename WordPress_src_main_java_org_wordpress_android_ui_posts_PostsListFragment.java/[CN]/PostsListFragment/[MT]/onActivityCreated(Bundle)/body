@@ -1,18 +1,13 @@
 {
   super.onActivityCreated(bundle);
   initSwipeToRefreshHelper();
-  mFabView=getView().findViewById(R.id.fab_button);
-  mFabView.setOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View v){
-      newPost();
+  if (WordPress.getCurrentBlog() != null && mRecyclerView.getAdapter() == null) {
+    mRecyclerView.setAdapter(getPostListAdapter());
+  }
+  if (bundle == null) {
+    loadPosts();
+    if (NetworkUtils.checkConnection(getActivity())) {
+      requestPosts(false);
     }
-  }
-);
-  mEmptyViewAnimationHandler=new EmptyViewAnimationHandler(mEmptyViewTitle,mEmptyViewImage,this);
-  if (NetworkUtils.isNetworkAvailable(getActivity())) {
-    ((PostsListActivity)getActivity()).requestPosts();
-  }
- else {
-    updateEmptyView(EmptyViewMessageType.NETWORK_ERROR);
   }
 }
