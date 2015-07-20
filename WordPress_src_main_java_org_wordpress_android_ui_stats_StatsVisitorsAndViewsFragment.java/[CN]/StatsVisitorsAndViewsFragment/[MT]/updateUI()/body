@@ -36,6 +36,14 @@ GraphView.GraphViewData[] secondarySeriesItems=null;
 if (mIsCheckboxChecked && selectedStatsType == OverviewLabel.VIEWS) {
 secondarySeriesItems=new GraphView.GraphViewData[dataToShowOnGraph.length];
 }
+final boolean[] isWeekEndDay;
+switch (getTimeframe()) {
+case DAY:
+isWeekEndDay=new boolean[dataToShowOnGraph.length];
+break;
+default :
+isWeekEndDay=null;
+}
 boolean atLeastOneResultIsAvailable=false;
 for (int i=0; i < dataToShowOnGraph.length; i++) {
 int currentItemValue=0;
@@ -63,6 +71,25 @@ secondarySeriesItems[i]=new GraphView.GraphViewData(i,dataToShowOnGraph[i].getVi
 String currentItemStatsDate=dataToShowOnGraph[i].getPeriod();
 horLabels[i]=getDateLabelForBarInGraph(currentItemStatsDate);
 mStatsDate[i]=currentItemStatsDate;
+if (isWeekEndDay != null) {
+SimpleDateFormat from=new SimpleDateFormat(StatsConstants.STATS_INPUT_DATE_FORMAT);
+try {
+Date date=from.parse(currentItemStatsDate);
+Calendar c=Calendar.getInstance();
+c.setFirstDayOfWeek(Calendar.MONDAY);
+c.setTimeInMillis(date.getTime());
+if (c.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY || c.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+isWeekEndDay[i]=true;
+}
+ else {
+isWeekEndDay[i]=false;
+}
+}
+ catch (ParseException e) {
+isWeekEndDay[i]=false;
+AppLog.e(AppLog.T.STATS,e);
+}
+}
 }
 if (mGraphContainer.getChildCount() >= 1 && mGraphContainer.getChildAt(0) instanceof GraphView) {
 mGraphView=(StatsBarGraph)mGraphContainer.getChildAt(0);
@@ -101,6 +128,7 @@ mGraphView.setHorizontalLabels(horLabels);
 mGraphView.setGestureListener(this);
 mNoActivtyThisPeriodContainer.setVisibility(atLeastOneResultIsAvailable ? View.GONE : View.VISIBLE);
 mGraphView.setClickable(atLeastOneResultIsAvailable);
+mGraphView.setBackgroundAvailableIndexes(isWeekEndDay);
 if (mPrevNumberOfBarsGraph != -1 && mPrevNumberOfBarsGraph != dataToShowOnGraph.length) {
 mSelectedBarGraphBarIndex=-1;
 mPrevNumberOfBarsGraph=dataToShowOnGraph.length;
