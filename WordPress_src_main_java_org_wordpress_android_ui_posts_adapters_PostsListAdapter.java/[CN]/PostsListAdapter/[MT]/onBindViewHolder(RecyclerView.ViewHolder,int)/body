@@ -1,0 +1,82 @@
+{
+  if (getItemViewType(position) == VIEW_TYPE_ENDLIST_INDICATOR) {
+    return;
+  }
+  final PostsListPost post=mPosts.get(position);
+  Context context=holder.itemView.getContext();
+  if (holder instanceof PostViewHolder) {
+    PostViewHolder postHolder=(PostViewHolder)holder;
+    if (post.hasTitle()) {
+      postHolder.txtTitle.setText(post.getTitle());
+    }
+ else {
+      postHolder.txtTitle.setText("(" + context.getResources().getText(R.string.untitled) + ")");
+    }
+    if (post.hasExcerpt()) {
+      postHolder.txtExcerpt.setVisibility(View.VISIBLE);
+      postHolder.txtExcerpt.setText(post.getExcerpt());
+    }
+ else {
+      postHolder.txtExcerpt.setVisibility(View.GONE);
+    }
+    if (post.hasFeaturedImageId() || post.hasFeaturedImageUrl()) {
+      postHolder.imgFeatured.setVisibility(View.VISIBLE);
+      postHolder.imgFeatured.setImageUrl(post.getFeaturedImageUrl(),WPNetworkImageView.ImageType.PHOTO);
+    }
+ else {
+      postHolder.imgFeatured.setVisibility(View.GONE);
+    }
+    if (post.isLocalDraft()) {
+      postHolder.txtDate.setVisibility(View.GONE);
+      postHolder.btnTrash.setButtonType(PostListButton.BUTTON_DELETE);
+    }
+ else {
+      postHolder.txtDate.setText(post.getFormattedDate());
+      postHolder.txtDate.setVisibility(View.VISIBLE);
+      postHolder.btnTrash.setButtonType(PostListButton.BUTTON_TRASH);
+    }
+    updateStatusText(postHolder.txtStatus,post);
+    configurePostButtons(postHolder,post);
+  }
+ else   if (holder instanceof PageViewHolder) {
+    PageViewHolder pageHolder=(PageViewHolder)holder;
+    if (post.hasTitle()) {
+      pageHolder.txtTitle.setText(post.getTitle());
+    }
+ else {
+      pageHolder.txtTitle.setText("(" + context.getResources().getText(R.string.untitled) + ")");
+    }
+    String dateStr=getPageDateHeaderText(context,post);
+    pageHolder.txtDate.setText(dateStr);
+    updateStatusText(pageHolder.txtStatus,post);
+    boolean showDate;
+    if (position > 0) {
+      String prevDateStr=getPageDateHeaderText(context,mPosts.get(position - 1));
+      showDate=!prevDateStr.equals(dateStr);
+    }
+ else {
+      showDate=true;
+    }
+    pageHolder.dateHeader.setVisibility(showDate ? View.VISIBLE : View.GONE);
+    pageHolder.btnMore.setVisibility(post.isUploading() ? View.GONE : View.VISIBLE);
+    pageHolder.btnMore.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        showPagePopupMenu(v,post);
+      }
+    }
+);
+    pageHolder.dividerTop.setVisibility(position == 0 ? View.VISIBLE : View.GONE);
+  }
+  if (mOnLoadMoreListener != null && position >= mPosts.size() - 1 && position >= PostsListFragment.POSTS_REQUEST_COUNT - 1) {
+    mOnLoadMoreListener.onLoadMore();
+  }
+  holder.itemView.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      PostsListPost selectedPost=getItem(position);
+      if (mOnPostSelectedListener != null && selectedPost != null) {
+        mOnPostSelectedListener.onPostSelected(selectedPost);
+      }
+    }
+  }
+);
+}
