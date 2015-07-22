@@ -11,6 +11,9 @@
   SuggestionTable.createTables(db);
   int currentVersion=db.getVersion();
   boolean isNewInstall=(currentVersion == 0);
+  if (!isNewInstall && currentVersion != DATABASE_VERSION) {
+    AppLog.d(T.DB,"updgrading database from version " + currentVersion + " to "+ DATABASE_VERSION);
+  }
 switch (currentVersion) {
 case 0:
     currentVersion++;
@@ -103,6 +106,10 @@ CommentTable.deleteBigComments(db);
 currentVersion++;
 case 31:
 db.execSQL(ADD_POST_THUMBNAIL);
+currentVersion++;
+case 32:
+db.execSQL(ADD_POST_ID_INDEX);
+db.execSQL(ADD_BLOG_ID_INDEX);
 currentVersion++;
 }
 db.setVersion(DATABASE_VERSION);
