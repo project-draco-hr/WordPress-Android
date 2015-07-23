@@ -1,12 +1,6 @@
 {
   if (!isAdded())   return;
-  Blog currentBlog=WordPress.getCurrentBlog();
-  if (currentBlog == null) {
-    ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_pages : R.string.error_refresh_posts,Duration.LONG);
-    return;
-  }
-  boolean hasLocalChanges=WordPress.wpDB.findLocalChanges(currentBlog.getLocalTableBlogId(),mIsPage);
-  if (hasLocalChanges) {
+  if (hasLocalChanges()) {
     AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(getActivity());
     dialogBuilder.setTitle(getResources().getText(R.string.local_changes));
     dialogBuilder.setMessage(getResources().getText(R.string.overwrite_local_changes));
