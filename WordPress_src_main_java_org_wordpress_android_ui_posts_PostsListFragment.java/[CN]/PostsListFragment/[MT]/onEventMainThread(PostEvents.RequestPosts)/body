@@ -1,0 +1,24 @@
+{
+  mIsFetchingPosts=false;
+  if (isAdded() && event.getBlogId() == WordPress.getCurrentLocalTableBlogId()) {
+    setRefreshing(false);
+    hideLoadMoreProgress();
+    if (!event.getFailed()) {
+      mCanLoadMorePosts=event.canLoadMore();
+      loadPosts();
+    }
+ else {
+      ApiHelper.ErrorType errorType=event.getErrorType();
+      if (errorType != null && errorType != ErrorType.TASK_CANCELLED && errorType != ErrorType.NO_ERROR) {
+switch (errorType) {
+case UNAUTHORIZED:
+          updateEmptyView(EmptyViewMessageType.PERMISSION_ERROR);
+        break;
+default :
+      updateEmptyView(EmptyViewMessageType.GENERIC_ERROR);
+    break;
+}
+}
+}
+}
+}
