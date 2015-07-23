@@ -132,10 +132,10 @@
   }
   contentStruct.put("wp_password",mPost.getPassword());
   Object[] params;
-  if (mPost.isLocalDraft() && !mPost.isUploaded())   params=new Object[]{mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword(),contentStruct,false};
+  if (mPost.isLocalDraft())   params=new Object[]{mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword(),contentStruct,false};
  else   params=new Object[]{mPost.getRemotePostId(),mBlog.getUsername(),mBlog.getPassword(),contentStruct,false};
   try {
-    if (mPost.isLocalDraft() && !mPost.isUploaded()) {
+    if (mPost.isLocalDraft()) {
       Object newPostId=mClient.call("metaWeblog.newPost",params);
       if (newPostId instanceof String) {
         mPost.setRemotePostId((String)newPostId);
@@ -144,7 +144,7 @@
  else {
       mClient.call("metaWeblog.editPost",params);
     }
-    mPost.setUploaded(true);
+    mPost.setLocalDraft(false);
     mPost.setLocalChange(false);
     WordPress.wpDB.updatePost(mPost);
     trackUploadAnalytics();
