@@ -1,12 +1,14 @@
 {
   Cursor c=db.query(POSTS_TABLE,null,"id=?",new String[]{String.valueOf(localTablePostId)},null,null,null);
-  Post post=new Post();
-  if (c.moveToFirst()) {
-    post=getPostFromCursor(c);
-  }
+  try {
+    if (c.moveToFirst()) {
+      return getPostFromCursor(c);
+    }
  else {
-    post=null;
+      return null;
+    }
   }
-  c.close();
-  return post;
+  finally {
+    SqlUtils.closeCursor(c);
+  }
 }
