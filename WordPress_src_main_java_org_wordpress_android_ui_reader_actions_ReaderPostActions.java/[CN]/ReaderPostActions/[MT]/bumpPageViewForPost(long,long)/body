@@ -1,6 +1,11 @@
 {
-  String pixelUrl=getTrackingPixelForPost(blogId,postId);
-  if (pixelUrl == null) {
+  ReaderPost post=ReaderPostTable.getPost(blogId,postId,true);
+  if (post == null) {
+    return;
+  }
+  long currentUserId=AccountHelper.getDefaultAccount().getUserId();
+  if (post.authorId == currentUserId) {
+    AppLog.d(T.READER,"skipped bump page view - user is author");
     return;
   }
   Response.Listener<String> listener=new Response.Listener<String>(){
@@ -16,7 +21,7 @@
     }
   }
 ;
-  Request request=new StringRequest(Request.Method.GET,pixelUrl,listener,errorListener){
+  Request request=new StringRequest(Request.Method.GET,getTrackingPixelForPost(post),listener,errorListener){
     @Override public Map<String,String> getHeaders() throws AuthFailureError {
       Map<String,String> headers=new HashMap<>();
       headers.put("Referer",TRACKING_REFERRER);
