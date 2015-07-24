@@ -3,9 +3,8 @@
   if (post == null) {
     return;
   }
-  long currentUserId=AccountHelper.getDefaultAccount().getUserId();
-  if (post.authorId == currentUserId) {
-    AppLog.d(T.READER,"skipped bump page view - user is author");
+  if (!post.isPrivate && WordPress.wpDB.isCurrentUserAdminOfRemoteBlogId(post.blogId)) {
+    AppLog.d(T.READER,"skipped bump page view - user is admin");
     return;
   }
   Response.Listener<String> listener=new Response.Listener<String>(){
