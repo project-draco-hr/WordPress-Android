@@ -1,8 +1,28 @@
 {
   String pixelUrl=getTrackingPixelForPost(blogId,postId);
   if (pixelUrl == null) {
-    AppLog.w(T.READER,"unable to bump page view");
     return;
   }
-  StringRequest request=new StringRequest(Request.Method.GET,pixelUrl,null,null);
+  Response.Listener<String> listener=new Response.Listener<String>(){
+    @Override public void onResponse(    String response){
+      AppLog.d(T.READER,"bump page view succeeded");
+    }
+  }
+;
+  Response.ErrorListener errorListener=new Response.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.READER,volleyError);
+      AppLog.w(T.READER,"bump page view failed");
+    }
+  }
+;
+  Request request=new StringRequest(Request.Method.GET,pixelUrl,listener,errorListener){
+    @Override public Map<String,String> getHeaders() throws AuthFailureError {
+      Map<String,String> headers=new HashMap<>();
+      headers.put("Referer",TRACKING_REFERRER);
+      return headers;
+    }
+  }
+;
+  WordPress.requestQueue.add(request);
 }
