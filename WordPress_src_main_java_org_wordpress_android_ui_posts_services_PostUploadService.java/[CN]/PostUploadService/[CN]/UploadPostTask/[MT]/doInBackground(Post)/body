@@ -136,9 +136,11 @@
  else   params=new Object[]{mPost.getRemotePostId(),mBlog.getUsername(),mBlog.getPassword(),contentStruct,false};
   try {
     if (mPost.isLocalDraft()) {
-      Object newPostId=mClient.call("metaWeblog.newPost",params);
-      if (newPostId instanceof String) {
-        mPost.setRemotePostId((String)newPostId);
+      Object object=mClient.call("metaWeblog.newPost",params);
+      if (object instanceof String) {
+        String newRemotePostId=(String)object;
+        mPost.setRemotePostId(newRemotePostId);
+        WordPress.wpDB.updateRemotePostId(mPost.getLocalTablePostId(),newRemotePostId);
       }
     }
  else {
