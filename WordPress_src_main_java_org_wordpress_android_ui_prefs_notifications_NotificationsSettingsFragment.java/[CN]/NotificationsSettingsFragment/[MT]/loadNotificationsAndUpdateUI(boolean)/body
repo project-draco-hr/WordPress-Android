@@ -8,9 +8,14 @@
     AppLog.e(T.NOTIFS,"Could not parse notifications settings JSON");
     return;
   }
-  mNotificationsSettings=new NotificationsSettings(settingsJson);
+  if (mNotificationsSettings == null) {
+    mNotificationsSettings=new NotificationsSettings(settingsJson);
+  }
+ else {
+    mNotificationsSettings.updateJson(settingsJson);
+  }
   if (shouldUpdateUI) {
-    configureSiteSettings();
+    configureBlogsSettings();
     configureOtherSettings();
     configureDotcomSettings();
   }

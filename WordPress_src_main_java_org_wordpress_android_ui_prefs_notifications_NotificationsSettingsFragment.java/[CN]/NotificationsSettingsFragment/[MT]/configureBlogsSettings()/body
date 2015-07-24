@@ -1,5 +1,5 @@
 {
-  if (mNotificationsSettings == null || mNotificationsSettings.getSiteSettings() == null) {
+  if (mNotificationsSettings == null || mNotificationsSettings.getBlogSettings() == null) {
     return;
   }
   List<Map<String,Object>> blogs=WordPress.wpDB.getBlogsBy("NOT(dotcomFlag=0 AND wpVersion!='')",null,0,false);
@@ -9,15 +9,15 @@
     if (context == null)     return;
     String siteUrl=MapUtils.getMapStr(blog,"url");
     String title=MapUtils.getMapStr(blog,"blogName");
-    long siteId=MapUtils.getMapLong(blog,"blogId");
+    long blogId=MapUtils.getMapLong(blog,"blogId");
     PreferenceScreen prefScreen=getPreferenceManager().createPreferenceScreen(context);
     prefScreen.setTitle(title);
     prefScreen.setSummary(UrlUtils.getDomainFromUrl(siteUrl));
-    JSONObject siteSettings=mNotificationsSettings.getSiteSettings().get(siteId);
-    if (siteSettings == null) {
-      siteSettings=new JSONObject();
+    JSONObject blogSettings=mNotificationsSettings.getBlogSettings().get(blogId);
+    if (blogSettings == null) {
+      blogSettings=new JSONObject();
     }
-    addPreferencesForPreferenceScreen(prefScreen,Channel.SITES,siteSettings,siteId);
+    addPreferencesForPreferenceScreen(prefScreen,Channel.BLOGS,blogSettings,blogId);
     blogsCategory.addPreference(prefScreen);
   }
 }

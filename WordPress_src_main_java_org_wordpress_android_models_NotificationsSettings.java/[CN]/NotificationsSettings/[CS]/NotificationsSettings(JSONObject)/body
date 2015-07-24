@@ -1,32 +1,3 @@
 {
-  mSiteSettings=new HashMap<>();
-  Iterator<?> keys=json.keys();
-  while (keys.hasNext()) {
-    String key=(String)keys.next();
-    try {
-      if (json.get(key) instanceof JSONObject) {
-        JSONObject settingsObject=(JSONObject)json.get(key);
-switch (key) {
-case KEY_OTHER:
-          mOtherSettings=settingsObject;
-        break;
-case KEY_DOTCOM:
-      mDotcomSettings=settingsObject;
-    break;
-default :
-  AppLog.i(AppLog.T.NOTIFS,"Unknown notification channel found");
-}
-}
- else if (json.get(key) instanceof JSONArray && key.equals(KEY_SITES)) {
-JSONArray siteSettingsArray=(JSONArray)json.get(key);
-for (int i=0; i < siteSettingsArray.length(); i++) {
-JSONObject siteSetting=siteSettingsArray.getJSONObject(i);
-mSiteSettings.put(siteSetting.optLong("site_id"),siteSetting);
-}
-}
-}
- catch (JSONException e) {
-e.printStackTrace();
-}
-}
+  updateJson(json);
 }
