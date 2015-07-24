@@ -135,6 +135,7 @@
   if (mPost.isLocalDraft())   params=new Object[]{mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword(),contentStruct,false};
  else   params=new Object[]{mPost.getRemotePostId(),mBlog.getUsername(),mBlog.getPassword(),contentStruct,false};
   try {
+    EventBus.getDefault().post(new PostUploadStarted(mPost.getLocalTableBlogId()));
     if (mPost.isLocalDraft()) {
       Object object=mClient.call("metaWeblog.newPost",params);
       if (object instanceof String) {
