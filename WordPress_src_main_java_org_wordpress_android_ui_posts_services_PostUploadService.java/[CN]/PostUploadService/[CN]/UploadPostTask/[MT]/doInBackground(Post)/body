@@ -140,7 +140,6 @@
       Object object=mClient.call("metaWeblog.newPost",params);
       if (object instanceof String) {
         mPost.setRemotePostId((String)object);
-        ApiHelper.updateSinglePost(mBlog.getLocalTableBlogId(),mPost.getRemotePostId(),mPost.isPage());
       }
     }
  else {
@@ -149,6 +148,7 @@
     mPost.setLocalDraft(false);
     mPost.setLocalChange(false);
     WordPress.wpDB.updatePost(mPost);
+    ApiHelper.updateSinglePost(mBlog.getLocalTableBlogId(),mPost.getRemotePostId(),mPost.isPage());
     trackUploadAnalytics();
     return true;
   }
