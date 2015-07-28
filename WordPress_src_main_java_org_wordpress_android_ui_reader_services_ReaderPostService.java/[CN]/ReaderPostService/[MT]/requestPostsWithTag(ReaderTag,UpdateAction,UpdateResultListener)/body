@@ -1,10 +1,10 @@
 {
-  String endpoint=getEndpointForTag(tag);
-  if (TextUtils.isEmpty(endpoint)) {
+  String path=getRelativeEndpointForTag(tag);
+  if (TextUtils.isEmpty(path)) {
     resultListener.onUpdateResult(UpdateResult.FAILED);
     return;
   }
-  StringBuilder sb=new StringBuilder(endpoint);
+  StringBuilder sb=new StringBuilder(path);
   sb.append("?number=").append(ReaderConstants.READER_MAX_POSTS_TO_REQUEST);
   sb.append("&order=DESC");
   if (updateAction == UpdateAction.REQUEST_OLDER) {
@@ -29,5 +29,11 @@
     }
   }
 ;
-  WordPress.getRestClientUtilsV1_1().get(sb.toString(),null,null,listener,errorListener);
+  String endpoint=ReaderTagTable.getEndpointForTag(tag);
+  if (!TextUtils.isEmpty(endpoint) && endpoint.contains("rest/v1.1/")) {
+    WordPress.getRestClientUtilsV1_1().get(sb.toString(),null,null,listener,errorListener);
+  }
+ else {
+    WordPress.getRestClientUtilsV1_2().get(sb.toString(),null,null,listener,errorListener);
+  }
 }

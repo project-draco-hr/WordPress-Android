@@ -1,0 +1,18 @@
+{
+  Intent intent=new Intent(context,ReaderPostPagerActivity.class);
+  intent.putExtra(ReaderConstants.ARG_BLOG_ID,blogId);
+  intent.putExtra(ReaderConstants.ARG_POST_ID,postId);
+  intent.putExtra(ReaderConstants.ARG_IS_SINGLE_POST,true);
+  if (title == null && context instanceof Activity) {
+    if (context instanceof AppCompatActivity && ((AppCompatActivity)context).getSupportActionBar() != null) {
+      title=((AppCompatActivity)context).getSupportActionBar().getTitle();
+    }
+    if (title == null) {
+      title=((Activity)context).getTitle();
+    }
+  }
+  if (!TextUtils.isEmpty(title)) {
+    intent.putExtra(ReaderConstants.ARG_TITLE,title);
+  }
+  ActivityLauncher.slideInFromRight(context,intent);
+}
