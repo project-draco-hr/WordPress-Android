@@ -1,0 +1,37 @@
+{
+  mContent=new SpannableStringBuilder("<b>");
+  mWatcher.onTextChanged(mContent,0,0,3);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(0,mSpanRange.getOpeningTagLoc());
+  assertEquals(3,mSpanRange.getClosingTagLoc());
+  mContent=new SpannableStringBuilder("stuff<b>");
+  mWatcher.onTextChanged(mContent,5,0,3);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(5,mSpanRange.getOpeningTagLoc());
+  assertEquals(8,mSpanRange.getClosingTagLoc());
+  mContent=new SpannableStringBuilder("some text <i>italics</i> <b>");
+  mWatcher.onTextChanged(mContent,25,0,3);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(25,mSpanRange.getOpeningTagLoc());
+  assertEquals(28,mSpanRange.getClosingTagLoc());
+  mContent=new SpannableStringBuilder("<b>some text");
+  mWatcher.onTextChanged(mContent,0,0,3);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(0,mSpanRange.getOpeningTagLoc());
+  assertEquals(3,mSpanRange.getClosingTagLoc());
+  mContent=new SpannableStringBuilder("<b>some text <i>italics</i>");
+  mWatcher.onTextChanged(mContent,0,0,3);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(0,mSpanRange.getOpeningTagLoc());
+  assertEquals(3,mSpanRange.getClosingTagLoc());
+  mContent=new SpannableStringBuilder("<b>some <i>text</b>");
+  mWatcher.onTextChanged(mContent,8,0,3);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(8,mSpanRange.getOpeningTagLoc());
+  assertEquals(11,mSpanRange.getClosingTagLoc());
+  mContent=new SpannableStringBuilder("<b>some <i>text</i></b>");
+  mWatcher.onTextChanged(mContent,15,0,4);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(15,mSpanRange.getOpeningTagLoc());
+  assertEquals(19,mSpanRange.getClosingTagLoc());
+}

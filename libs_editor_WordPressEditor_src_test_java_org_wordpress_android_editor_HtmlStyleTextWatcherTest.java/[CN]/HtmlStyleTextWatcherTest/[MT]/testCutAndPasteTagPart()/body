@@ -1,0 +1,14 @@
+{
+  mContent=new SpannableStringBuilder("test <b></b> <i>italics</i>");
+  mWatcher.beforeTextChanged(mContent,5,4,0);
+  mContent.delete(5,9);
+  mWatcher.onTextChanged(mContent,5,4,0);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(5,mSpanRange.getOpeningTagLoc());
+  assertEquals(8,mSpanRange.getClosingTagLoc());
+  mContent=new SpannableStringBuilder("test <b></b> <i>italics</i>");
+  mWatcher.onTextChanged(mContent,5,0,4);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(5,mSpanRange.getOpeningTagLoc());
+  assertEquals(12,mSpanRange.getClosingTagLoc());
+}
