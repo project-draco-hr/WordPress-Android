@@ -1,0 +1,29 @@
+{
+  if (mModifiedText == null || s == null) {
+    return;
+  }
+  SpanRange spanRange;
+  if (mModifiedText.toString().contains("<")) {
+    spanRange=getRespanRangeForChangedOpeningSymbol(s,"<");
+  }
+ else   if (mModifiedText.toString().contains(">")) {
+    spanRange=getRespanRangeForChangedClosingSymbol(s,">");
+  }
+ else   if (mModifiedText.toString().contains("&")) {
+    spanRange=getRespanRangeForChangedOpeningSymbol(s,"&");
+  }
+ else   if (mModifiedText.toString().contains(";")) {
+    spanRange=getRespanRangeForChangedClosingSymbol(s,";");
+  }
+ else {
+    spanRange=getRespanRangeForNormalText(s,"<");
+    if (spanRange == null) {
+      spanRange=getRespanRangeForNormalText(s,"&");
+    }
+  }
+  if (spanRange != null) {
+    updateSpans(s,spanRange);
+  }
+  mModifiedText=null;
+  mLastOperation=Operation.NONE;
+}

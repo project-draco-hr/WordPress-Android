@@ -1,14 +1,11 @@
 {
-  mPost.setUploading(false);
-  WordPress.wpDB.updatePost(mPost);
   if (postUploadedSuccessfully) {
-    EventBus.getDefault().post(new PostUploadSucceed(mPost.getLocalTableBlogId(),mPost.getRemotePostId(),mPost.isPage()));
     mPostUploadNotifier.cancelNotification();
     WordPress.wpDB.deleteMediaFilesForPost(mPost);
   }
  else {
-    EventBus.getDefault().post(new PostUploadFailed(mPost.getLocalTableBlogId()));
     mPostUploadNotifier.updateNotificationWithError(mErrorMessage,mIsMediaError,mPost.isPage(),mErrorUnavailableVideoPress);
   }
   postUploaded();
+  EventBus.getDefault().post(new PostUploadEnded(postUploadedSuccessfully,mPost.getLocalTableBlogId()));
 }
