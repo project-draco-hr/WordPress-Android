@@ -2,10 +2,14 @@
   mWebView.post(new Runnable(){
     public void run(){
       mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').setMultiline('true');");
-      mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_title').setHTML('" + Utils.escapeHtml(mTitle) + "');");
-      mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').setHTML('" + Utils.escapeHtml(mContentHtml) + "');");
-      if (mHideActionBarOnSoftKeyboardUp && getActionBar() != null) {
-        getActionBar().hide();
+      mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_title').setPlaceholderText('" + mTitlePlaceholder + "');");
+      mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').setPlaceholderText('" + mContentPlaceholder + "');");
+      updateVisualEditorFields();
+      hideActionBarIfNeeded();
+      ToggleButton htmlButton=(ToggleButton)getActivity().findViewById(R.id.format_bar_button_html);
+      htmlButton.setChecked(false);
+      for (      ToggleButton button : mTagToggleButtonMap.values()) {
+        button.setChecked(false);
       }
     }
   }

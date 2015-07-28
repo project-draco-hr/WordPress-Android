@@ -1,0 +1,38 @@
+{
+  waitForOnDomLoaded();
+  final View view=mFragment.getView();
+  if (view == null) {
+    throw (new IllegalStateException("Fragment view is empty"));
+  }
+  final ToggleButton htmlButton=(ToggleButton)view.findViewById(R.id.format_bar_button_html);
+  String content=mFragment.getContent().toString();
+  final SourceViewEditText titleText=(SourceViewEditText)view.findViewById(R.id.sourceview_title);
+  final SourceViewEditText contentText=(SourceViewEditText)view.findViewById(R.id.sourceview_content);
+  final CountDownLatch uiThreadLatch1=new CountDownLatch(1);
+  mActivity.runOnUiThread(new Runnable(){
+    @Override public void run(){
+      htmlButton.performClick();
+      uiThreadLatch1.countDown();
+    }
+  }
+);
+  uiThreadLatch1.await();
+  assertEquals("A title",titleText.getText().toString());
+  assertEquals(content,contentText.getText().toString());
+  final CountDownLatch uiThreadLatch2=new CountDownLatch(1);
+  mActivity.runOnUiThread(new Runnable(){
+    @Override public void run(){
+      titleText.setText("new title");
+      contentText.setText("new <b>content</b>");
+      assertEquals("new title",mFragment.getTitle());
+      assertEquals("new <b>content</b>",mFragment.getContent());
+      htmlButton.performClick();
+      uiThreadLatch2.countDown();
+    }
+  }
+);
+  uiThreadLatch2.await();
+  waitFor(300);
+  assertEquals("new title",mFragment.getTitle());
+  assertEquals("new <b>content</b>",mFragment.getContent());
+}
