@@ -1,69 +1,14 @@
 {
-  if (!isAdded() || WordPress.getCurrentBlog() == null || mIsFetchingPosts) {
+  if (!isAdded() || mIsFetchingPosts) {
     return;
   }
   if (!NetworkUtils.isNetworkAvailable(getActivity())) {
-    setRefreshing(false);
     updateEmptyView(EmptyViewMessageType.NETWORK_ERROR);
     return;
   }
-  if (WordPress.wpDB.findLocalChanges(WordPress.getCurrentBlog().getLocalTableBlogId(),mIsPage)) {
-    return;
-  }
-  int postCount;
+  mIsFetchingPosts=true;
   if (loadMore) {
-    postCount=getPostListAdapter().getRemotePostCount() + POSTS_REQUEST_COUNT;
     showLoadMoreProgress();
   }
- else {
-    mCanLoadMorePosts=true;
-    postCount=POSTS_REQUEST_COUNT;
-    setRefreshing(true);
-    updateEmptyView(EmptyViewMessageType.LOADING);
-  }
-  List<Object> apiArgs=new Vector<>();
-  apiArgs.add(WordPress.getCurrentBlog());
-  apiArgs.add(mIsPage);
-  apiArgs.add(postCount);
-  apiArgs.add(loadMore);
-  mCurrentFetchPostsTask=new ApiHelper.FetchPostsTask(new ApiHelper.FetchPostsTask.Callback(){
-    @Override public void onSuccess(    int postCount){
-      mCurrentFetchPostsTask=null;
-      mIsFetchingPosts=false;
-      if (!isAdded()) {
-        return;
-      }
-      setRefreshing(false);
-      hideLoadMoreProgress();
-      if (postCount == 0) {
-        mCanLoadMorePosts=false;
-      }
- else       if (postCount == getPostListAdapter().getRemotePostCount() && postCount != POSTS_REQUEST_COUNT) {
-        mCanLoadMorePosts=false;
-      }
-      loadPosts();
-    }
-    @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
-      mCurrentFetchPostsTask=null;
-      mIsFetchingPosts=false;
-      if (!isAdded()) {
-        return;
-      }
-      setRefreshing(false);
-      hideLoadMoreProgress();
-      if (errorType != ErrorType.TASK_CANCELLED && errorType != ErrorType.NO_ERROR) {
-switch (errorType) {
-case UNAUTHORIZED:
-          updateEmptyView(EmptyViewMessageType.PERMISSION_ERROR);
-        break;
-default :
-      updateEmptyView(EmptyViewMessageType.GENERIC_ERROR);
-    break;
-}
-}
-}
-}
-);
-mIsFetchingPosts=true;
-mCurrentFetchPostsTask.execute(apiArgs);
+  PostUpdateService.startServiceForBlog(getActivity(),WordPress.getCurrentLocalTableBlogId(),mIsPage,loadMore);
 }

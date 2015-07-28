@@ -1,0 +1,59 @@
+{
+  Blog blog=WordPress.getBlog(blogId);
+  if (blog == null) {
+    return;
+  }
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
+  int numPostsToRequest;
+  if (loadMore) {
+    int numExisting=WordPress.wpDB.getUploadedCountInBlog(blogId,isPage);
+    numPostsToRequest=numExisting + NUM_POSTS_TO_REQUEST;
+  }
+ else {
+    numPostsToRequest=NUM_POSTS_TO_REQUEST;
+  }
+  Object[] result;
+  Object[] xmlrpcParams={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),numPostsToRequest};
+  PostEvents.RequestPosts event=new PostEvents.RequestPosts(blogId,isPage);
+  try {
+    boolean canLoadMore;
+    result=(Object[])client.call(isPage ? "wp.getPages" : "metaWeblog.getRecentPosts",xmlrpcParams);
+    if (result != null && result.length > 0) {
+      canLoadMore=true;
+      int startPosition=0;
+      if (loadMore && result.length > NUM_POSTS_TO_REQUEST) {
+        startPosition=result.length - NUM_POSTS_TO_REQUEST;
+      }
+      List<Map<?,?>> postsList=new ArrayList<>();
+      for (int ctr=startPosition; ctr < result.length; ctr++) {
+        Map<?,?> postMap=(Map<?,?>)result[ctr];
+        postsList.add(postMap);
+      }
+      if (!loadMore) {
+        WordPress.wpDB.deleteUploadedPosts(blogId,isPage);
+      }
+      WordPress.wpDB.savePosts(postsList,blogId,isPage,false);
+    }
+ else {
+      canLoadMore=false;
+    }
+    event.setCanLoadMore(canLoadMore);
+  }
+ catch (  XMLRPCException|IOException|XmlPullParserException e) {
+    AppLog.e(AppLog.T.POSTS,e);
+    ApiHelper.ErrorType errorType;
+    if (e instanceof XMLRPCFault) {
+      if (((XMLRPCFault)(e)).getFaultCode() == 401) {
+        errorType=ApiHelper.ErrorType.UNAUTHORIZED;
+      }
+ else {
+        errorType=ApiHelper.ErrorType.NETWORK_XMLRPC;
+      }
+    }
+ else {
+      errorType=ApiHelper.ErrorType.INVALID_RESULT;
+    }
+    event.setErrorType(errorType);
+  }
+  EventBus.getDefault().post(event);
+}

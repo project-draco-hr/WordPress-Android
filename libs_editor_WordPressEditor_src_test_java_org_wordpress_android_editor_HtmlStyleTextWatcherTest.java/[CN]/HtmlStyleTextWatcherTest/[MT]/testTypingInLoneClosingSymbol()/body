@@ -1,0 +1,11 @@
+{
+  mContent=new SpannableStringBuilder("some text >");
+  mWatcher.onTextChanged(mContent,10,0,1);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(false,mUpdateSpansWasCalled);
+  mContent=new SpannableStringBuilder("some <b>tex>t</b>");
+  mWatcher.onTextChanged(mContent,11,0,1);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(5,mSpanRange.getOpeningTagLoc());
+  assertEquals(17,mSpanRange.getClosingTagLoc());
+}

@@ -1,0 +1,18 @@
+{
+  mContent=new SpannableStringBuilder("<b>stuff</b>");
+  int deletedChar=0;
+  mWatcher.beforeTextChanged(mContent,deletedChar,1,0);
+  mContent.delete(deletedChar,deletedChar + 1);
+  mWatcher.onTextChanged(mContent,deletedChar,1,0);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(0,mSpanRange.getOpeningTagLoc());
+  assertEquals(2,mSpanRange.getClosingTagLoc());
+  for (int i=8; i < 12; i++) {
+    mContent=new SpannableStringBuilder("<b>stuff</b>");
+    mWatcher.beforeTextChanged(mContent,i,1,0);
+    mContent.delete(i,i + 1);
+    mWatcher.afterTextChanged(mContent);
+    assertEquals(8,mSpanRange.getOpeningTagLoc());
+    assertEquals(mContent.length(),mSpanRange.getClosingTagLoc());
+  }
+}

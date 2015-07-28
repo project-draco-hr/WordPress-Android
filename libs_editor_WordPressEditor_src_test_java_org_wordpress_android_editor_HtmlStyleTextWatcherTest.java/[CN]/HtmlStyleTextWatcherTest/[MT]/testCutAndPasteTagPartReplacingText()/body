@@ -1,0 +1,16 @@
+{
+  mContent=new SpannableStringBuilder("test /b> <i>italics</i>");
+  mWatcher.beforeTextChanged(mContent,2,3,4);
+  mContent=new SpannableStringBuilder("te<b></b> <i>italics</i>");
+  mWatcher.onTextChanged(mContent,2,3,4);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(0,mSpanRange.getOpeningTagLoc());
+  assertEquals(mContent.length(),mSpanRange.getClosingTagLoc());
+  mContent=new SpannableStringBuilder("<test italics</i>");
+  mWatcher.beforeTextChanged(mContent,1,5,2);
+  mContent=new SpannableStringBuilder("<i>italics</i>");
+  mWatcher.onTextChanged(mContent,1,5,2);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(0,mSpanRange.getOpeningTagLoc());
+  assertEquals(mContent.length(),mSpanRange.getClosingTagLoc());
+}

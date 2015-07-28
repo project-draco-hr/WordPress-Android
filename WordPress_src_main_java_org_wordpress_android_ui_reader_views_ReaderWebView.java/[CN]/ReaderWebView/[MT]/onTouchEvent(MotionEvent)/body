@@ -1,10 +1,12 @@
 {
   if (event.getAction() == MotionEvent.ACTION_UP && mUrlClickListener != null) {
     HitTestResult hr=getHitTestResult();
-    if (hr != null && (hr.getType() == HitTestResult.IMAGE_TYPE || hr.getType() == HitTestResult.SRC_IMAGE_ANCHOR_TYPE)) {
-      String imageUrl=hr.getExtra();
-      if (isValidClickedUrl(imageUrl)) {
-        return mUrlClickListener.onImageUrlClick(imageUrl,this,(int)event.getX(),(int)event.getY());
+    if (hr != null && isValidClickedUrl(hr.getExtra())) {
+      if (UrlUtils.isImageUrl(hr.getExtra())) {
+        return mUrlClickListener.onImageUrlClick(hr.getExtra(),this,(int)event.getX(),(int)event.getY());
+      }
+ else {
+        return mUrlClickListener.onUrlClick(hr.getExtra());
       }
     }
   }
