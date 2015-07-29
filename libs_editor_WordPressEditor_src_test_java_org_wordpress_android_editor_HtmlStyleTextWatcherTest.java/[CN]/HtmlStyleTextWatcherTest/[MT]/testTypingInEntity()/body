@@ -1,0 +1,20 @@
+{
+  String[] previousTextCases=new String[]{"","plain text","&rho;","<blockquote>some existing content &dagger;</blockquote> "};
+  for (  String initialText : previousTextCases) {
+    int offset=initialText.length();
+    mUpdateSpansWasCalled=false;
+    mContent=new SpannableStringBuilder(initialText + "&");
+    mWatcher.onTextChanged(mContent,offset,0,1);
+    mWatcher.afterTextChanged(mContent);
+    assertEquals(false,mUpdateSpansWasCalled);
+    mContent=new SpannableStringBuilder(initialText + "&amp");
+    mWatcher.onTextChanged(mContent,offset + 3,0,1);
+    mWatcher.afterTextChanged(mContent);
+    assertEquals(false,mUpdateSpansWasCalled);
+    mContent=new SpannableStringBuilder(initialText + "&amp;");
+    mWatcher.onTextChanged(mContent,offset + 4,0,1);
+    mWatcher.afterTextChanged(mContent);
+    assertEquals(offset,mSpanRange.getOpeningTagLoc());
+    assertEquals(offset + 5,mSpanRange.getClosingTagLoc());
+  }
+}
