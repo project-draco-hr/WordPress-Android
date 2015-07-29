@@ -10,6 +10,13 @@
   String previewURL=object.has("preview_url") ? object.getString("preview_url") : "";
   JSONObject costObject=object.getJSONObject("cost");
   boolean isPremium=costObject.getInt("number") > 0;
+  String price="free";
+  try {
+    price=costObject.getString("display");
+  }
+ catch (  JSONException e) {
+    price="free";
+  }
   String blogId=String.valueOf(WordPress.getCurrentBlog().getRemoteBlogId());
   StringBuilder sbFeatures=new StringBuilder();
   JSONArray tags=object.optJSONArray("tags");
@@ -29,5 +36,5 @@
     }
   }
   String features=sbFeatures.toString();
-  return new Theme(themeId,screenshotURL,name,description,trendingRank,popularityRank,launchDate,blogId,previewURL,isPremium,features);
+  return new Theme(themeId,screenshotURL,name,description,trendingRank,popularityRank,launchDate,blogId,previewURL,isPremium,features,price);
 }
