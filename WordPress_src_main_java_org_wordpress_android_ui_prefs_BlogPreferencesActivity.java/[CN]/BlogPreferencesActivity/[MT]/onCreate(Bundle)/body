@@ -1,19 +1,23 @@
 {
   super.onCreate(savedInstanceState);
   Integer id=getIntent().getIntExtra(ARG_LOCAL_BLOG_ID,-1);
-  blog=WordPress.getBlog(id);
-  if (blog == null) {
+  mBlog=WordPress.getBlog(id);
+  if (mBlog == null) {
     Toast.makeText(this,getString(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
     finish();
     return;
   }
-  Fragment siteSettingsFragment=new SiteSettingsFragment();
-  siteSettingsFragment.setArguments(getIntent().getExtras());
-  getFragmentManager().beginTransaction().replace(android.R.id.content,siteSettingsFragment).commit();
+  setTitle(R.string.settings);
   ActionBar actionBar=getSupportActionBar();
   if (actionBar != null) {
     actionBar.setElevation(0.0f);
-    actionBar.setTitle(StringUtils.unescapeHTML(blog.getNameOrHostUrl()));
     actionBar.setDisplayHomeAsUpEnabled(true);
+  }
+  FragmentManager fragmentManager=getFragmentManager();
+  Fragment siteSettingsFragment=fragmentManager.findFragmentByTag(KEY_SETTINGS_FRAGMENT);
+  if (siteSettingsFragment == null) {
+    siteSettingsFragment=new SiteSettingsFragment();
+    siteSettingsFragment.setArguments(getIntent().getExtras());
+    getFragmentManager().beginTransaction().replace(android.R.id.content,siteSettingsFragment,KEY_SETTINGS_FRAGMENT).commit();
   }
 }

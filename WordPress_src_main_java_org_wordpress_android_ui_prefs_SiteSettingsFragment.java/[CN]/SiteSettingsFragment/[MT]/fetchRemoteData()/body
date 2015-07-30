@@ -17,19 +17,6 @@
  else {
     XMLRPCClientInterface client=XMLRPCFactory.instantiate(mBlog.getUri(),mBlog.getHttpuser(),mBlog.getHttppassword());
     Object[] params={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword()};
-    client.callAsync(new XMLRPCCallback(){
-      @Override public void onSuccess(      long id,      final Object result){
-        getActivity().runOnUiThread(new Runnable(){
-          @Override public void run(){
-            handleResponseToSelfHostedSettingsRequest((HashMap<String,Map<String,String>>)result);
-          }
-        }
-);
-      }
-      @Override public void onFailure(      long id,      Exception error){
-        handleSettingsFetchError(error.toString());
-      }
-    }
-,"wp.getOptions",params);
+    client.callAsync(mXmlRpcFetchCallback,"wp.getOptions",params);
   }
 }
