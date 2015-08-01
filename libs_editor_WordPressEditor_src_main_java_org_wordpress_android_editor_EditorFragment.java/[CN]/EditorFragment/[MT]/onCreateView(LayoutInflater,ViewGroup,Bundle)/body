@@ -1,25 +1,57 @@
 {
   View view=inflater.inflate(R.layout.fragment_editor,container,false);
+  if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && !getResources().getBoolean(R.bool.is_large_tablet_landscape)) {
+    mHideActionBarOnSoftKeyboardUp=true;
+  }
   mWebView=(EditorWebViewAbstract)view.findViewById(R.id.webview);
+  mWebView.setOnTouchListener(this);
+  mWebView.setOnImeBackListener(this);
+  mWebView.addOnLayoutChangeListener(new View.OnLayoutChangeListener(){
+    @Override public void onLayoutChange(    View v,    int left,    int top,    int right,    int bottom,    int oldLeft,    int oldTop,    int oldRight,    int oldBottom){
+      mWebView.post(new Runnable(){
+        @Override public void run(){
+          mWebView.execJavaScriptFromString("ZSSEditor.refreshVisibleViewportSize();");
+        }
+      }
+);
+    }
+  }
+);
+  mEditorFragmentListener.onEditorFragmentInitialized();
   initJsEditor();
-  ToggleButton mediaButton=(ToggleButton)view.findViewById(R.id.format_bar_button_media);
-  mTagToggleButtonMap.put(TAG_FORMAT_BAR_BUTTON_MEDIA,mediaButton);
+  mSourceView=view.findViewById(R.id.sourceview);
+  mSourceViewTitle=(SourceViewEditText)view.findViewById(R.id.sourceview_title);
+  mSourceViewContent=(SourceViewEditText)view.findViewById(R.id.sourceview_content);
+  mSourceViewTitle.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+    @Override public void onFocusChange(    View v,    boolean hasFocus){
+      updateFormatBarEnabledState(!hasFocus);
+    }
+  }
+);
+  mSourceViewTitle.setOnTouchListener(this);
+  mSourceViewContent.setOnTouchListener(this);
+  mSourceViewTitle.setOnImeBackListener(this);
+  mSourceViewContent.setOnImeBackListener(this);
+  mSourceViewContent.addTextChangedListener(new HtmlStyleTextWatcher());
+  mSourceViewTitle.setHint(mTitlePlaceholder);
   ToggleButton boldButton=(ToggleButton)view.findViewById(R.id.format_bar_button_bold);
-  mTagToggleButtonMap.put(TAG_FORMAT_BAR_BUTTON_BOLD,boldButton);
+  mTagToggleButtonMap.put(getString(R.string.format_bar_tag_bold),boldButton);
   ToggleButton italicButton=(ToggleButton)view.findViewById(R.id.format_bar_button_italic);
-  mTagToggleButtonMap.put(TAG_FORMAT_BAR_BUTTON_ITALIC,italicButton);
+  mTagToggleButtonMap.put(getString(R.string.format_bar_tag_italic),italicButton);
   ToggleButton quoteButton=(ToggleButton)view.findViewById(R.id.format_bar_button_quote);
-  mTagToggleButtonMap.put(TAG_FORMAT_BAR_BUTTON_QUOTE,quoteButton);
+  mTagToggleButtonMap.put(getString(R.string.format_bar_tag_blockquote),quoteButton);
   ToggleButton ulButton=(ToggleButton)view.findViewById(R.id.format_bar_button_ul);
-  mTagToggleButtonMap.put(TAG_FORMAT_BAR_BUTTON_UL,ulButton);
+  mTagToggleButtonMap.put(getString(R.string.format_bar_tag_unorderedList),ulButton);
   ToggleButton olButton=(ToggleButton)view.findViewById(R.id.format_bar_button_ol);
-  mTagToggleButtonMap.put(TAG_FORMAT_BAR_BUTTON_OL,olButton);
-  ToggleButton linkButton=(ToggleButton)view.findViewById(R.id.format_bar_button_link);
-  mTagToggleButtonMap.put(TAG_FORMAT_BAR_BUTTON_LINK,linkButton);
+  mTagToggleButtonMap.put(getString(R.string.format_bar_tag_orderedList),olButton);
   ToggleButton strikethroughButton=(ToggleButton)view.findViewById(R.id.format_bar_button_strikethrough);
   if (strikethroughButton != null) {
-    mTagToggleButtonMap.put(TAG_FORMAT_BAR_BUTTON_STRIKETHROUGH,strikethroughButton);
+    mTagToggleButtonMap.put(getString(R.string.format_bar_tag_strikethrough),strikethroughButton);
   }
+  ToggleButton mediaButton=(ToggleButton)view.findViewById(R.id.format_bar_button_media);
+  mTagToggleButtonMap.put(TAG_FORMAT_BAR_BUTTON_MEDIA,mediaButton);
+  ToggleButton linkButton=(ToggleButton)view.findViewById(R.id.format_bar_button_link);
+  mTagToggleButtonMap.put(TAG_FORMAT_BAR_BUTTON_LINK,linkButton);
   ToggleButton htmlButton=(ToggleButton)view.findViewById(R.id.format_bar_button_html);
   htmlButton.setOnClickListener(this);
   for (  ToggleButton button : mTagToggleButtonMap.values()) {

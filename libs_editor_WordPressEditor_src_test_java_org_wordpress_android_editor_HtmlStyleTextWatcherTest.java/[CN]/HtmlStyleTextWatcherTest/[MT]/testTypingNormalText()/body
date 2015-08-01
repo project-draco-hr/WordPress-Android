@@ -1,0 +1,18 @@
+{
+  mContent=new SpannableStringBuilder("a");
+  mWatcher.onTextChanged(mContent,0,0,1);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(false,mUpdateSpansWasCalled);
+  mContent=new SpannableStringBuilder("ab");
+  mWatcher.onTextChanged(mContent,1,0,1);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(false,mUpdateSpansWasCalled);
+  mContent=new SpannableStringBuilder("text <b>bold</b> a");
+  mWatcher.onTextChanged(mContent,17,0,1);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(false,mUpdateSpansWasCalled);
+  mContent=new SpannableStringBuilder("text a <b>bold</b>");
+  mWatcher.onTextChanged(mContent,5,0,1);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(false,mUpdateSpansWasCalled);
+}

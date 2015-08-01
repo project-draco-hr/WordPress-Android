@@ -1,0 +1,18 @@
+{
+  super.onResume();
+  if (mRestResponseParsed == null) {
+    if (!NetworkUtils.checkConnection(this)) {
+      mSwipeToRefreshHelper.setRefreshing(false);
+      setupEmptyUI();
+    }
+ else {
+      setupEmptyGraph("");
+      showHideEmptyModulesIndicator(true);
+      refreshStats();
+    }
+  }
+ else {
+    updateUI();
+  }
+  ActivityId.trackLastActivity(ActivityId.STATS_POST_DETAILS);
+}

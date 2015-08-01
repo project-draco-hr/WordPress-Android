@@ -1,0 +1,24 @@
+{
+  String[] previousTextCases=new String[]{"<b>stuff","plain text <b>stuff","<i><b>stuff","<blockquote>some existing content</blockquote> <b>stuff"};
+  for (  String initialText : previousTextCases) {
+    int offset=initialText.length();
+    mUpdateSpansWasCalled=false;
+    mContent=new SpannableStringBuilder(initialText + "<");
+    mWatcher.onTextChanged(mContent,offset,0,1);
+    mWatcher.afterTextChanged(mContent);
+    assertEquals(false,mUpdateSpansWasCalled);
+    mContent=new SpannableStringBuilder(initialText + "</");
+    mWatcher.onTextChanged(mContent,offset + 1,0,1);
+    mWatcher.afterTextChanged(mContent);
+    assertEquals(false,mUpdateSpansWasCalled);
+    mContent=new SpannableStringBuilder(initialText + "</b");
+    mWatcher.onTextChanged(mContent,offset + 2,0,1);
+    mWatcher.afterTextChanged(mContent);
+    assertEquals(false,mUpdateSpansWasCalled);
+    mContent=new SpannableStringBuilder(initialText + "</b>");
+    mWatcher.onTextChanged(mContent,offset + 3,0,1);
+    mWatcher.afterTextChanged(mContent);
+    assertEquals(offset,mSpanRange.getOpeningTagLoc());
+    assertEquals(offset + 4,mSpanRange.getClosingTagLoc());
+  }
+}

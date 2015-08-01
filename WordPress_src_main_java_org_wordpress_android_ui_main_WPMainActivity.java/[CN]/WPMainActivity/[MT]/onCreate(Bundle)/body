@@ -2,37 +2,79 @@
   setStatusBarColor();
   super.onCreate(savedInstanceState);
   setContentView(R.layout.main_activity);
-  mViewPager=(WPMainViewPager)findViewById(R.id.viewpager_main);
+  mViewPager=(WPViewPager)findViewById(R.id.viewpager_main);
   mTabAdapter=new WPMainTabAdapter(getFragmentManager());
   mViewPager.setAdapter(mTabAdapter);
-  mTabs=(SlidingTabLayout)findViewById(R.id.sliding_tabs);
-  mTabs.setSelectedIndicatorColors(getResources().getColor(R.color.tab_indicator));
-  mTabs.setDistributeEvenly(!DisplayUtils.isLandscape(this));
-  Integer icons[]={R.drawable.main_tab_sites,R.drawable.main_tab_reader,R.drawable.main_tab_me,R.drawable.main_tab_notifications};
-  mTabs.setCustomTabView(R.layout.tab_icon,R.id.tab_icon,R.id.tab_badge,icons);
-  mTabs.setContentDescription(WPMainTabAdapter.TAB_MY_SITE,getString(R.string.tabbar_accessibility_label_my_site));
-  mTabs.setContentDescription(WPMainTabAdapter.TAB_READER,getString(R.string.reader));
-  mTabs.setContentDescription(WPMainTabAdapter.TAB_ME,getString(R.string.tabbar_accessibility_label_me));
-  mTabs.setContentDescription(WPMainTabAdapter.TAB_NOTIFS,getString(R.string.notifications));
-  mTabs.setViewPager(mViewPager);
-  mTabs.setOnSingleTabClickListener(this);
-  mTabs.setOnPageChangeListener(this);
-  if (savedInstanceState == null) {
-    if (AccountHelper.isSignedIn()) {
-      boolean openedFromPush=(getIntent() != null && getIntent().getBooleanExtra(ARG_OPENED_FROM_PUSH,false));
-      if (openedFromPush) {
-        getIntent().putExtra(ARG_OPENED_FROM_PUSH,false);
-        launchWithNoteId();
-      }
- else {
-        int position=AppPrefs.getMainTabIndex();
-        if (mTabAdapter.isValidPosition(position) && position != mViewPager.getCurrentItem()) {
-          mViewPager.setCurrentItem(position);
+  mConnectionBar=(TextView)findViewById(R.id.connection_bar);
+  mConnectionBar.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      AniUtils.animateBottomBar(mConnectionBar,false);
+      new Handler().postDelayed(new Runnable(){
+        @Override public void run(){
+          if (!isFinishing()) {
+            checkConnection();
+          }
         }
       }
-    }
- else {
-      ActivityLauncher.showSignInForResult(this);
+,2000);
     }
   }
+);
+  mTabLayout=(WPMainTabLayout)findViewById(R.id.tab_layout);
+  mTabLayout.createTabs();
+  mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){
+    @Override public void onTabSelected(    TabLayout.Tab tab){
+      mViewPager.setCurrentItem(tab.getPosition());
+    }
+    @Override public void onTabUnselected(    TabLayout.Tab tab){
+    }
+    @Override public void onTabReselected(    TabLayout.Tab tab){
+      Fragment fragment=mTabAdapter.getFragment(tab.getPosition());
+      if (fragment instanceof OnScrollToTopListener) {
+        ((OnScrollToTopListener)fragment).onScrollToTop();
+      }
+    }
+  }
+);
+  mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+  mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener(){
+    @Override public void onPageSelected(    int position){
+      AppPrefs.setMainTabIndex(position);
+switch (position) {
+case WPMainTabAdapter.TAB_NOTIFS:
+        if (getNotificationListFragment() != null) {
+          getNotificationListFragment().updateLastSeenTime();
+          mTabLayout.showNoteBadge(false);
+        }
+      break;
+  }
+  trackLastVisibleTab(position);
+}
+@Override public void onPageScrollStateChanged(int state){
+}
+@Override public void onPageScrolled(int position,float positionOffset,int positionOffsetPixels){
+  if (position == WPMainTabAdapter.TAB_MY_SITE) {
+    EventBus.getDefault().post(new MainViewPagerScrolled(positionOffset));
+  }
+}
+}
+);
+if (savedInstanceState == null) {
+if (AccountHelper.isSignedIn()) {
+  boolean openedFromPush=(getIntent() != null && getIntent().getBooleanExtra(ARG_OPENED_FROM_PUSH,false));
+  if (openedFromPush) {
+    getIntent().putExtra(ARG_OPENED_FROM_PUSH,false);
+    launchWithNoteId();
+  }
+ else {
+    int position=AppPrefs.getMainTabIndex();
+    if (mTabAdapter.isValidPosition(position) && position != mViewPager.getCurrentItem()) {
+      mViewPager.setCurrentItem(position);
+    }
+  }
+}
+ else {
+  ActivityLauncher.showSignInForResult(this);
+}
+}
 }

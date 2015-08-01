@@ -1,0 +1,30 @@
+{
+  final PostViewsModel.Day currentDay=(PostViewsModel.Day)getChild(groupPosition,childPosition);
+  final StatsViewHolder holder;
+  if (convertView == null) {
+    convertView=inflater.inflate(R.layout.stats_list_cell,parent,false);
+    holder=new StatsViewHolder(convertView);
+    convertView.setTag(holder);
+  }
+ else {
+    holder=(StatsViewHolder)convertView.getTag();
+  }
+  holder.setEntryText(StatsUtils.parseDate(currentDay.getDay(),StatsConstants.STATS_INPUT_DATE_FORMAT,"EEE, MMM dd"));
+  holder.rowContent.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View view){
+    }
+  }
+);
+  holder.rowContent.setBackgroundColor(Color.TRANSPARENT);
+  holder.totalsTextView.setText(FormatUtils.formatDecimal(currentDay.getCount()));
+  if (currentDay.getCount() == maxReachedValue && maxReachedValue > 0) {
+    holder.imgMore.setVisibility(View.VISIBLE);
+    holder.imgMore.setImageDrawable(getResources().getDrawable(R.drawable.stats_icon_trophy));
+    holder.imgMore.setBackgroundColor(Color.TRANSPARENT);
+  }
+ else {
+    holder.imgMore.setVisibility(View.GONE);
+  }
+  holder.networkImageView.setVisibility(View.GONE);
+  return convertView;
+}

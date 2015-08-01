@@ -1,24 +1,19 @@
 {
   super.onActivityResult(requestCode,resultCode,data);
 switch (requestCode) {
-case RequestCodes.PICTURE_LIBRARY:
-    FragmentManager fm=getFragmentManager();
-  Fragment addFragment=fm.findFragmentByTag(ADD_MEDIA_FRAGMENT_TAG);
-if (addFragment != null) {
-  addFragment.onActivityResult(requestCode,resultCode,data);
-}
-break;
 case RequestCodes.SITE_PICKER:
-if (resultCode == Activity.RESULT_OK) {
-setBlog(WordPress.getCurrentBlog());
-}
-long delayMs=getResources().getInteger(android.R.integer.config_shortAnimTime);
-AniUtils.showFabDelayed(mFabView,true,delayMs);
-break;
+    if (resultCode == Activity.RESULT_OK) {
+      setBlog(WordPress.getCurrentBlog());
+    }
+  break;
 case RequestCodes.EDIT_POST:
 if (resultCode == Activity.RESULT_OK && getView() != null && data != null && data.getBooleanExtra(EditPostActivity.EXTRA_SAVED_AS_LOCAL_DRAFT,false)) {
-showAlert(getView().findViewById(R.id.postsGlowBackground));
+  showAlert(getView().findViewById(R.id.postsGlowBackground));
 }
+break;
+case RequestCodes.CREATE_BLOG:
+mBlog=WordPress.getCurrentBlog();
+refreshBlogDetails();
 break;
 }
 }

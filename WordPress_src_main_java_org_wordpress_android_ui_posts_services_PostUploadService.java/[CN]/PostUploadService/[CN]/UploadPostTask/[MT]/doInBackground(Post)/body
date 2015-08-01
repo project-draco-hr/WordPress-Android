@@ -1,0 +1,165 @@
+{
+  mErrorUnavailableVideoPress=false;
+  mPost=posts[0];
+  mPostUploadNotifier=new PostUploadNotifier(mPost);
+  String postTitle=TextUtils.isEmpty(mPost.getTitle()) ? getString(R.string.untitled) : mPost.getTitle();
+  String uploadingPostTitle=String.format(getString(R.string.posting_post),postTitle);
+  String uploadingPostMessage=String.format(getString(R.string.sending_content),mPost.isPage() ? getString(R.string.page).toLowerCase() : getString(R.string.post).toLowerCase());
+  mPostUploadNotifier.updateNotificationMessage(uploadingPostTitle,uploadingPostMessage);
+  mBlog=WordPress.wpDB.instantiateBlogByLocalId(mPost.getLocalTableBlogId());
+  if (mBlog == null) {
+    mErrorMessage=mContext.getString(R.string.blog_not_found);
+    return false;
+  }
+  mClient=XMLRPCFactory.instantiate(mBlog.getUri(),mBlog.getHttpuser(),mBlog.getHttppassword());
+  if (TextUtils.isEmpty(mPost.getPostStatus())) {
+    mPost.setPostStatus(PostStatus.toString(PostStatus.PUBLISHED));
+  }
+  String descriptionContent=processPostMedia(mPost.getDescription());
+  String moreContent="";
+  if (!TextUtils.isEmpty(mPost.getMoreText())) {
+    moreContent=processPostMedia(mPost.getMoreText());
+  }
+  mPostUploadNotifier.updateNotificationMessage(uploadingPostTitle,uploadingPostMessage);
+  if (mIsMediaError) {
+    return false;
+  }
+  JSONArray categoriesJsonArray=mPost.getJSONCategories();
+  String[] postCategories=null;
+  if (categoriesJsonArray != null) {
+    if (categoriesJsonArray.length() > 0) {
+      mHasCategory=true;
+    }
+    postCategories=new String[categoriesJsonArray.length()];
+    for (int i=0; i < categoriesJsonArray.length(); i++) {
+      try {
+        postCategories[i]=TextUtils.htmlEncode(categoriesJsonArray.getString(i));
+      }
+ catch (      JSONException e) {
+        AppLog.e(T.POSTS,e);
+      }
+    }
+  }
+  Map<String,Object> contentStruct=new HashMap<String,Object>();
+  if (!mPost.isPage() && mPost.isLocalDraft()) {
+    SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(mContext);
+    if (prefs.getBoolean(getString(R.string.pref_key_post_sig_enabled),false)) {
+      String tagline=prefs.getString(getString(R.string.pref_key_post_sig),"");
+      if (!TextUtils.isEmpty(tagline)) {
+        String tag="\n\n<span class=\"post_sig\">" + tagline + "</span>\n\n";
+        if (TextUtils.isEmpty(moreContent))         descriptionContent+=tag;
+ else         moreContent+=tag;
+      }
+    }
+  }
+  if (!mPost.isPage()) {
+    if (!TextUtils.isEmpty(mPost.getPostFormat())) {
+      contentStruct.put("wp_post_format",mPost.getPostFormat());
+    }
+  }
+  contentStruct.put("post_type",(mPost.isPage()) ? "page" : "post");
+  contentStruct.put("title",mPost.getTitle());
+  long pubDate=mPost.getDate_created_gmt();
+  if (pubDate != 0) {
+    Date date_created_gmt=new Date(pubDate);
+    contentStruct.put("date_created_gmt",date_created_gmt);
+    Date dateCreated=new Date(pubDate + (date_created_gmt.getTimezoneOffset() * 60000));
+    contentStruct.put("dateCreated",dateCreated);
+  }
+  if (!TextUtils.isEmpty(moreContent)) {
+    descriptionContent=descriptionContent.trim() + "<!--more-->" + moreContent;
+    mPost.setMoreText("");
+  }
+  if (mPost.isLocalDraft()) {
+    descriptionContent=descriptionContent.replace("<p>","").replace("</p>","\n").replace("<br>","");
+  }
+  descriptionContent=descriptionContent.replaceAll("\uFFFC","");
+  contentStruct.put("description",descriptionContent);
+  if (!mPost.isPage()) {
+    contentStruct.put("mt_keywords",mPost.getKeywords());
+    if (postCategories != null && postCategories.length > 0) {
+      contentStruct.put("categories",postCategories);
+    }
+  }
+  contentStruct.put("mt_excerpt",mPost.getPostExcerpt());
+  contentStruct.put((mPost.isPage()) ? "page_status" : "post_status",mPost.getPostStatus());
+  if (mPost.supportsLocation()) {
+    JSONObject remoteGeoLatitude=mPost.getCustomField("geo_latitude");
+    JSONObject remoteGeoLongitude=mPost.getCustomField("geo_longitude");
+    JSONObject remoteGeoPublic=mPost.getCustomField("geo_public");
+    Map<Object,Object> hLatitude=new HashMap<Object,Object>();
+    Map<Object,Object> hLongitude=new HashMap<Object,Object>();
+    Map<Object,Object> hPublic=new HashMap<Object,Object>();
+    try {
+      if (remoteGeoLatitude != null) {
+        hLatitude.put("id",remoteGeoLatitude.getInt("id"));
+      }
+      if (remoteGeoLongitude != null) {
+        hLongitude.put("id",remoteGeoLongitude.getInt("id"));
+      }
+      if (remoteGeoPublic != null) {
+        hPublic.put("id",remoteGeoPublic.getInt("id"));
+      }
+      if (mPost.hasLocation()) {
+        PostLocation location=mPost.getLocation();
+        if (!hLatitude.containsKey("id")) {
+          hLatitude.put("key","geo_latitude");
+        }
+        if (!hLongitude.containsKey("id")) {
+          hLongitude.put("key","geo_longitude");
+        }
+        if (!hPublic.containsKey("id")) {
+          hPublic.put("key","geo_public");
+        }
+        hLatitude.put("value",location.getLatitude());
+        hLongitude.put("value",location.getLongitude());
+        hPublic.put("value",1);
+      }
+    }
+ catch (    JSONException e) {
+      AppLog.e(T.EDITOR,e);
+    }
+    if (!hLatitude.isEmpty() && !hLongitude.isEmpty() && !hPublic.isEmpty()) {
+      Object[] geo={hLatitude,hLongitude,hPublic};
+      contentStruct.put("custom_fields",geo);
+    }
+  }
+  if (featuredImageID != -1) {
+    contentStruct.put("wp_post_thumbnail",featuredImageID);
+  }
+  if (!TextUtils.isEmpty(mPost.getQuickPostType())) {
+    mClient.addQuickPostHeader(mPost.getQuickPostType());
+  }
+  contentStruct.put("wp_password",mPost.getPassword());
+  Object[] params;
+  if (mPost.isLocalDraft())   params=new Object[]{mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword(),contentStruct,false};
+ else   params=new Object[]{mPost.getRemotePostId(),mBlog.getUsername(),mBlog.getPassword(),contentStruct,false};
+  try {
+    EventBus.getDefault().post(new PostUploadStarted(mPost.getLocalTableBlogId()));
+    if (mPost.isLocalDraft()) {
+      Object object=mClient.call("metaWeblog.newPost",params);
+      if (object instanceof String) {
+        mPost.setRemotePostId((String)object);
+      }
+    }
+ else {
+      mClient.call("metaWeblog.editPost",params);
+    }
+    mPost.setLocalDraft(false);
+    mPost.setLocalChange(false);
+    WordPress.wpDB.updatePost(mPost);
+    ApiHelper.updateSinglePost(mBlog.getLocalTableBlogId(),mPost.getRemotePostId(),mPost.isPage());
+    trackUploadAnalytics();
+    return true;
+  }
+ catch (  final XMLRPCException e) {
+    setUploadPostErrorMessage(e);
+  }
+catch (  IOException e) {
+    setUploadPostErrorMessage(e);
+  }
+catch (  XmlPullParserException e) {
+    setUploadPostErrorMessage(e);
+  }
+  return false;
+}

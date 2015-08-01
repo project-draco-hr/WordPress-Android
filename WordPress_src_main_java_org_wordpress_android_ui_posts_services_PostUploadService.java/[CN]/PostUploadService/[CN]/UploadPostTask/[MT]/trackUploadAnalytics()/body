@@ -1,0 +1,21 @@
+{
+  mPost.getStatusEnum();
+  boolean isFirstTimePublishing=false;
+  if (mPost.hasChangedFromLocalDraftToPublished() || (mPost.isLocalDraft() && mPost.getStatusEnum() == PostStatus.PUBLISHED)) {
+    isFirstTimePublishing=true;
+  }
+  if (isFirstTimePublishing) {
+    if (mHasImage) {
+      AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_PUBLISHED_POST_WITH_PHOTO);
+    }
+    if (mHasVideo) {
+      AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_PUBLISHED_POST_WITH_VIDEO);
+    }
+    if (mHasCategory) {
+      AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_PUBLISHED_POST_WITH_CATEGORIES);
+    }
+    if (!TextUtils.isEmpty(mPost.getKeywords())) {
+      AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_PUBLISHED_POST_WITH_TAGS);
+    }
+  }
+}

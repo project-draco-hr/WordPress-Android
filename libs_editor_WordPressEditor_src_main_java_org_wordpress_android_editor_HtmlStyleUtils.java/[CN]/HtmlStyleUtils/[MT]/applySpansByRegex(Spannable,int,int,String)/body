@@ -1,0 +1,30 @@
+{
+  if (content == null || start < 0 || end < 0 || start > content.length() || end > content.length()) {
+    AppLog.d(AppLog.T.EDITOR,"applySpansByRegex() received invalid input");
+    return;
+  }
+  Pattern pattern=Pattern.compile(regex);
+  Matcher matcher=pattern.matcher(content.subSequence(start,end));
+  while (matcher.find()) {
+    int matchStart=matcher.start() + start;
+    int matchEnd=matcher.end() + start;
+switch (regex) {
+case REGEX_HTML_TAGS:
+      content.setSpan(new ForegroundColorSpan(TAG_COLOR),matchStart,matchEnd,SPANNABLE_FLAGS);
+    break;
+case REGEX_HTML_ATTRIBUTES:
+  content.setSpan(new ForegroundColorSpan(ATTRIBUTE_COLOR),matchStart,matchEnd,SPANNABLE_FLAGS);
+break;
+case REGEX_HTML_COMMENTS:
+content.setSpan(new ForegroundColorSpan(ATTRIBUTE_COLOR),matchStart,matchEnd,SPANNABLE_FLAGS);
+content.setSpan(new StyleSpan(Typeface.ITALIC),matchStart,matchEnd,SPANNABLE_FLAGS);
+content.setSpan(new RelativeSizeSpan(0.75f),matchStart,matchEnd,SPANNABLE_FLAGS);
+break;
+case REGEX_HTML_ENTITIES:
+content.setSpan(new ForegroundColorSpan(TAG_COLOR),matchStart,matchEnd,SPANNABLE_FLAGS);
+content.setSpan(new StyleSpan(Typeface.BOLD),matchStart,matchEnd,SPANNABLE_FLAGS);
+content.setSpan(new RelativeSizeSpan(0.75f),matchStart,matchEnd,SPANNABLE_FLAGS);
+break;
+}
+}
+}

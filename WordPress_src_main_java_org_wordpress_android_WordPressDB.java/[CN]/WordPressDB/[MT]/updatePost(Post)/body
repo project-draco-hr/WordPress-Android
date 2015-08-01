@@ -6,8 +6,7 @@
     values.put("date_created_gmt",post.getDate_created_gmt());
     values.put("description",post.getDescription());
     values.put("mt_text_more",post.getMoreText());
-    values.put("isUploading",post.isUploading());
-    values.put("uploaded",post.isUploaded());
+    values.put("postid",post.getRemotePostId());
     JSONArray categoriesJsonArray=post.getJSONCategories();
     if (categoriesJsonArray != null) {
       values.put("categories",categoriesJsonArray.toString());
@@ -21,6 +20,7 @@
     values.put("wp_post_format",post.getPostFormat());
     values.put("isLocalChange",post.isLocalChange());
     values.put("mt_excerpt",post.getPostExcerpt());
+    values.put("wp_post_thumbnail",post.getFeaturedImageId());
     putPostLocation(post,values);
     result=db.update(POSTS_TABLE,values,"blogID=? AND id=? AND isPage=?",new String[]{String.valueOf(post.getLocalTableBlogId()),String.valueOf(post.getLocalTablePostId()),String.valueOf(SqlUtils.boolToSql(post.isPage()))});
   }

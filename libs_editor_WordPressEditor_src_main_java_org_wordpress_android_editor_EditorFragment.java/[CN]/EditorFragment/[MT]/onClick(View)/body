@@ -1,22 +1,28 @@
 {
   int id=v.getId();
-  if (id == R.id.format_bar_button_bold) {
-    mWebView.execJavaScriptFromString("ZSSEditor.setBold();");
-  }
- else   if (id == R.id.format_bar_button_italic) {
-    mWebView.execJavaScriptFromString("ZSSEditor.setItalic();");
-  }
- else   if (id == R.id.format_bar_button_strikethrough) {
-    mWebView.execJavaScriptFromString("ZSSEditor.setStrikeThrough();");
-  }
- else   if (id == R.id.format_bar_button_quote) {
-    mWebView.execJavaScriptFromString("ZSSEditor.setBlockquote();");
-  }
- else   if (id == R.id.format_bar_button_ul) {
-    mWebView.execJavaScriptFromString("ZSSEditor.setUnorderedList();");
-  }
- else   if (id == R.id.format_bar_button_ol) {
-    mWebView.execJavaScriptFromString("ZSSEditor.setOrderedList();");
+  if (id == R.id.format_bar_button_html) {
+    clearFormatBarButtons();
+    updateFormatBarEnabledState(true);
+    if (((ToggleButton)v).isChecked()) {
+      mSourceViewTitle.setText(getTitle());
+      SpannableString spannableContent=new SpannableString(getContent());
+      HtmlStyleUtils.styleHtmlForDisplay(spannableContent);
+      mSourceViewContent.setText(spannableContent);
+      mWebView.setVisibility(View.GONE);
+      mSourceView.setVisibility(View.VISIBLE);
+      mSourceViewContent.requestFocus();
+      mSourceViewContent.setSelection(0);
+      InputMethodManager imm=((InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE));
+      imm.showSoftInput(mSourceViewContent,InputMethodManager.SHOW_IMPLICIT);
+    }
+ else {
+      mWebView.setVisibility(View.VISIBLE);
+      mSourceView.setVisibility(View.GONE);
+      mTitle=mSourceViewTitle.getText().toString();
+      mContentHtml=mSourceViewContent.getText().toString();
+      updateVisualEditorFields();
+      mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').focus();");
+    }
   }
  else   if (id == R.id.format_bar_button_media) {
     ((ToggleButton)v).setChecked(false);
@@ -24,7 +30,9 @@
  else   if (id == R.id.format_bar_button_link) {
     ((ToggleButton)v).setChecked(false);
   }
- else   if (id == R.id.format_bar_button_html) {
-    ((ToggleButton)v).setChecked(false);
+ else {
+    if (v instanceof ToggleButton) {
+      onFormattingButtonClicked((ToggleButton)v);
+    }
   }
 }

@@ -3,15 +3,12 @@
   setContentView(R.layout.reader_activity_post_pager);
   mToolbar=(Toolbar)findViewById(R.id.toolbar);
   setSupportActionBar(mToolbar);
-  mToolbar.setNavigationOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View v){
-      onBackPressed();
-    }
+  ActionBar actionBar=getSupportActionBar();
+  if (actionBar != null) {
+    actionBar.setDisplayShowTitleEnabled(true);
+    actionBar.setDisplayHomeAsUpEnabled(true);
   }
-);
-  getSupportActionBar().setDisplayShowTitleEnabled(true);
-  getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-  mViewPager=(WPMainViewPager)findViewById(R.id.viewpager);
+  mViewPager=(WPViewPager)findViewById(R.id.viewpager);
   mProgress=(ProgressBar)findViewById(R.id.progress_loading);
   final String title;
   if (savedInstanceState != null) {
@@ -49,6 +46,7 @@
       super.onPageSelected(position);
       AnalyticsTracker.track(AnalyticsTracker.Stat.READER_OPENED_ARTICLE);
       onShowHideToolbar(true);
+      bumpPageViewIfNeeded(position);
     }
     @Override public void onPageScrollStateChanged(    int state){
       super.onPageScrollStateChanged(state);

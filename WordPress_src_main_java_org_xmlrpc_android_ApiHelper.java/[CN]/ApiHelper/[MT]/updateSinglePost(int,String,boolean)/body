@@ -1,0 +1,31 @@
+{
+  Blog blog=WordPress.getBlog(localBlogId);
+  if (blog == null || TextUtils.isEmpty(remotePostId)) {
+    return false;
+  }
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
+  Object[] apiParams;
+  if (isPage) {
+    apiParams=new Object[]{blog.getRemoteBlogId(),remotePostId,blog.getUsername(),blog.getPassword()};
+  }
+ else {
+    apiParams=new Object[]{remotePostId,blog.getUsername(),blog.getPassword()};
+  }
+  try {
+    Object result=client.call(isPage ? "wp.getPage" : "metaWeblog.getPost",apiParams);
+    if (result != null && result instanceof Map) {
+      Map postMap=(HashMap)result;
+      List<Map<?,?>> postsList=new ArrayList<>();
+      postsList.add(postMap);
+      WordPress.wpDB.savePosts(postsList,localBlogId,isPage,true);
+      return true;
+    }
+ else {
+      return false;
+    }
+  }
+ catch (  XMLRPCException|IOException|XmlPullParserException e) {
+    AppLog.e(AppLog.T.POSTS,e);
+    return false;
+  }
+}

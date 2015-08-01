@@ -1,71 +1,14 @@
 {
-  if (!isAdded() || WordPress.getCurrentBlog() == null || mIsFetchingPosts) {
+  if (!isAdded() || mIsFetchingPosts) {
     return;
   }
-  if (!NetworkUtils.checkConnection(getActivity())) {
-    mSwipeToRefreshHelper.setRefreshing(false);
+  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
     updateEmptyView(EmptyViewMessageType.NETWORK_ERROR);
     return;
   }
-  updateEmptyView(EmptyViewMessageType.LOADING);
-  int postCount=getPostListAdapter().getRemotePostCount() + POSTS_REQUEST_COUNT;
-  if (!loadMore) {
-    mCanLoadMorePosts=true;
-    postCount=POSTS_REQUEST_COUNT;
-  }
-  List<Object> apiArgs=new Vector<>();
-  apiArgs.add(WordPress.getCurrentBlog());
-  apiArgs.add(mIsPage);
-  apiArgs.add(postCount);
-  apiArgs.add(loadMore);
+  mIsFetchingPosts=true;
   if (loadMore) {
     showLoadMoreProgress();
   }
-  mCurrentFetchPostsTask=new ApiHelper.FetchPostsTask(new ApiHelper.FetchPostsTask.Callback(){
-    @Override public void onSuccess(    int postCount){
-      mCurrentFetchPostsTask=null;
-      mIsFetchingPosts=false;
-      if (!isAdded())       return;
-      if (mEmptyViewAnimationHandler.isShowingLoadingAnimation() || mEmptyViewAnimationHandler.isBetweenSequences()) {
-        mKeepSwipeRefreshLayoutVisible=true;
-      }
- else {
-        mSwipeToRefreshHelper.setRefreshing(false);
-      }
-      hideLoadMoreProgress();
-      if (postCount == 0) {
-        mCanLoadMorePosts=false;
-      }
- else       if (postCount == getPostListAdapter().getRemotePostCount() && postCount != POSTS_REQUEST_COUNT) {
-        mCanLoadMorePosts=false;
-      }
-      getPostListAdapter().loadPosts();
-    }
-    @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
-      mCurrentFetchPostsTask=null;
-      mIsFetchingPosts=false;
-      if (!isAdded()) {
-        return;
-      }
-      mSwipeToRefreshHelper.setRefreshing(false);
-      hideLoadMoreProgress();
-      if (errorType != ErrorType.TASK_CANCELLED && errorType != ErrorType.NO_ERROR) {
-switch (errorType) {
-case UNAUTHORIZED:
-          if (mEmptyView == null || mEmptyView.getVisibility() != View.VISIBLE) {
-            ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_unauthorized_pages : R.string.error_refresh_unauthorized_posts,Duration.LONG);
-          }
-        updateEmptyView(EmptyViewMessageType.PERMISSION_ERROR);
-      break;
-default :
-    ToastUtils.showToast(getActivity(),mIsPage ? R.string.error_refresh_pages : R.string.error_refresh_posts,Duration.LONG);
-  updateEmptyView(EmptyViewMessageType.GENERIC_ERROR);
-break;
-}
-}
-}
-}
-);
-mIsFetchingPosts=true;
-mCurrentFetchPostsTask.execute(apiArgs);
+  PostUpdateService.startServiceForBlog(getActivity(),WordPress.getCurrentLocalTableBlogId(),mIsPage,loadMore);
 }
