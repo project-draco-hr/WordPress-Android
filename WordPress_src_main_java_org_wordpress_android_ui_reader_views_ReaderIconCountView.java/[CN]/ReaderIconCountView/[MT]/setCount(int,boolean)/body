@@ -1,8 +1,11 @@
 {
-  if (count != 0) {
+  if (count == 0 && mHideCountWhenZero) {
+    mTextCount.setText(null);
+  }
+ else {
     mTextCount.setText(FormatUtils.formatInt(count));
   }
-  if (animateChanges && count != mCurrentCount) {
+  if (mHideCountWhenZero && animateChanges && count != mCurrentCount) {
     if (count == 0 && mTextCount.getVisibility() == View.VISIBLE) {
       AniUtils.scaleOut(mTextCount,View.GONE,AniUtils.Duration.LONG,null);
     }
@@ -14,7 +17,7 @@
     }
   }
  else {
-    mTextCount.setVisibility(count > 0 ? View.VISIBLE : View.GONE);
+    mTextCount.setVisibility(!mHideCountWhenZero || count > 0 ? View.VISIBLE : View.GONE);
   }
   mCurrentCount=count;
 }
