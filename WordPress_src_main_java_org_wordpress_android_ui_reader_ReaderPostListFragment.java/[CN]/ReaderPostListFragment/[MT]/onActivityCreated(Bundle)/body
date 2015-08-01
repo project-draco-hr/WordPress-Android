@@ -35,15 +35,19 @@
   }
   boolean adapterAlreadyExists=hasPostAdapter();
   mRecyclerView.setAdapter(getPostAdapter());
-  if (!adapterAlreadyExists && getPostListType().isTagType()) {
+  if (!adapterAlreadyExists) {
     boolean isRecreated=(savedInstanceState != null);
-    getPostAdapter().setCurrentTag(mCurrentTag);
-    if (!isRecreated && ReaderTagTable.shouldAutoUpdateTag(mCurrentTag)) {
-      updatePostsWithTag(getCurrentTag(),UpdateAction.REQUEST_NEWER);
+    if (getPostListType().isTagType()) {
+      getPostAdapter().setCurrentTag(mCurrentTag);
+      if (!isRecreated && ReaderTagTable.shouldAutoUpdateTag(mCurrentTag)) {
+        updatePostsWithTag(getCurrentTag(),UpdateAction.REQUEST_NEWER);
+      }
     }
-  }
-  if (getPostListType() == ReaderPostListType.BLOG_PREVIEW) {
-    loadBlogOrFeedInfo();
-    animateHeaderDelayed();
+ else     if (getPostListType() == ReaderPostListType.BLOG_PREVIEW) {
+      getPostAdapter().setCurrentBlog(mCurrentBlogId);
+      if (!isRecreated) {
+        updatePostsInCurrentBlogOrFeed(UpdateAction.REQUEST_NEWER);
+      }
+    }
   }
 }

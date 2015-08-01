@@ -8,6 +8,7 @@
  else {
     mPostListType=ReaderTypes.DEFAULT_POST_LIST_TYPE;
   }
+  String title=intent.getStringExtra(ReaderConstants.ARG_TITLE);
   if (savedInstanceState == null) {
     if (getPostListType() == ReaderPostListType.BLOG_PREVIEW) {
       long blogId=intent.getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
@@ -18,7 +19,9 @@
  else {
         showListFragmentForBlog(blogId);
       }
-      setTitle(R.string.reader_title_blog_preview);
+      if (TextUtils.isEmpty(title)) {
+        title=getString(R.string.reader_title_blog_preview);
+      }
     }
  else {
       ReaderTag tag;
@@ -32,9 +35,8 @@
         tag=ReaderTag.getDefaultTag();
       }
       showListFragmentForTag(tag,mPostListType);
-      if (getPostListType() == ReaderPostListType.TAG_PREVIEW) {
-        setTitle(tag.getCapitalizedTagName());
-      }
+      title=tag.getCapitalizedTagName();
     }
+    setTitle(title);
   }
 }
