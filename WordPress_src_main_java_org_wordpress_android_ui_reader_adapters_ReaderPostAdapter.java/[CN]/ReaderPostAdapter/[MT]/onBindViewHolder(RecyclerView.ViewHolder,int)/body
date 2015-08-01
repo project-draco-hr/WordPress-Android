@@ -6,7 +6,11 @@
   final ReaderPostViewHolder postHolder=(ReaderPostViewHolder)holder;
   ReaderTypes.ReaderPostListType postListType=getPostListType();
   postHolder.txtTitle.setText(post.getTitle());
-  postHolder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(post.getDatePublished()));
+  String dateLine=DateTimeUtils.javaDateToTimeSpan(post.getDatePublished());
+  if (post.hasAuthorName() && !post.getAuthorName().equalsIgnoreCase(post.getBlogName())) {
+    dateLine+=", " + post.getAuthorName();
+  }
+  postHolder.txtDate.setText(dateLine);
   if (postListType == ReaderTypes.ReaderPostListType.BLOG_PREVIEW) {
     postHolder.layoutPostHeader.setVisibility(View.GONE);
   }
@@ -22,24 +26,14 @@
  else {
       postHolder.txtBlogName.setText(null);
     }
-    if (mIsLoggedOutReader) {
-      postHolder.followButton.setVisibility(View.GONE);
-    }
- else {
-      postHolder.followButton.setIsFollowed(post.isFollowedByCurrentUser);
-      postHolder.followButton.setOnClickListener(new View.OnClickListener(){
-        @Override public void onClick(        View v){
-          toggleFollow((ReaderFollowButton)v,position);
-        }
-      }
-);
-    }
-    postHolder.imgAvatar.setOnClickListener(new View.OnClickListener(){
+    View.OnClickListener blogListener=new View.OnClickListener(){
       @Override public void onClick(      View view){
         ReaderActivityLauncher.showReaderBlogPreview(view.getContext(),post);
       }
     }
-);
+;
+    postHolder.imgAvatar.setOnClickListener(blogListener);
+    postHolder.txtBlogName.setOnClickListener(blogListener);
   }
   if (post.hasExcerpt()) {
     postHolder.txtText.setVisibility(View.VISIBLE);
@@ -68,7 +62,7 @@
   params.topMargin=titleMargin;
   final String tagToDisplay=(mCurrentTag != null ? post.getTagForDisplay(mCurrentTag.getTagName()) : null);
   if (!TextUtils.isEmpty(tagToDisplay)) {
-    postHolder.txtTag.setText(tagToDisplay);
+    postHolder.txtTag.setText("#" + tagToDisplay);
     postHolder.txtTag.setVisibility(View.VISIBLE);
     postHolder.txtTag.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
@@ -135,7 +129,7 @@
     postHolder.commentCount.setVisibility(View.GONE);
     postHolder.commentCount.setOnClickListener(null);
   }
-  if (!mIsLoggedOutReader && post.isWP() && !post.isPrivate&& postListType == ReaderTypes.ReaderPostListType.TAG_FOLLOWED) {
+  if (!mIsLoggedOutReader && postListType == ReaderTypes.ReaderPostListType.TAG_FOLLOWED) {
     postHolder.imgMore.setVisibility(View.VISIBLE);
     postHolder.imgMore.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View view){

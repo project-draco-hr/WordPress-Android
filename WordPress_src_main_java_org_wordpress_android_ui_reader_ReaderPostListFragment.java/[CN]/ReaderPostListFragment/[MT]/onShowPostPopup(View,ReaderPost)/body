@@ -3,13 +3,26 @@
     return;
   }
   PopupMenu popup=new PopupMenu(getActivity(),view);
-  MenuItem menuItem=popup.getMenu().add(getString(R.string.reader_menu_block_blog));
-  menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener(){
+  boolean isFollowed=ReaderPostTable.isPostFollowed(post);
+  MenuItem mnuFollow=popup.getMenu().add(isFollowed ? R.string.reader_btn_unfollow : R.string.reader_btn_follow);
+  mnuFollow.setCheckable(true);
+  mnuFollow.setChecked(isFollowed);
+  mnuFollow.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener(){
     @Override public boolean onMenuItemClick(    MenuItem item){
-      blockBlogForPost(post);
-      return true;
+      toggleFollowStatusForPost(post);
+      return false;
     }
   }
 );
+  if (getPostListType() == ReaderPostListType.TAG_FOLLOWED) {
+    MenuItem mnuBlock=popup.getMenu().add(getString(R.string.reader_menu_block_blog));
+    mnuBlock.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener(){
+      @Override public boolean onMenuItemClick(      MenuItem item){
+        blockBlogForPost(post);
+        return true;
+      }
+    }
+);
+  }
   popup.show();
 }
