@@ -27,14 +27,16 @@
  else {
     postHolder.txtBlogName.setText(null);
   }
-  View.OnClickListener blogListener=new View.OnClickListener(){
-    @Override public void onClick(    View view){
-      ReaderActivityLauncher.showReaderBlogPreview(view.getContext(),post);
+  if (getPostListType() != ReaderTypes.ReaderPostListType.BLOG_PREVIEW) {
+    View.OnClickListener blogListener=new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        ReaderActivityLauncher.showReaderBlogPreview(view.getContext(),post);
+      }
     }
-  }
 ;
-  postHolder.imgAvatar.setOnClickListener(blogListener);
-  postHolder.txtBlogName.setOnClickListener(blogListener);
+    postHolder.imgAvatar.setOnClickListener(blogListener);
+    postHolder.txtBlogName.setOnClickListener(blogListener);
+  }
   if (post.hasExcerpt()) {
     postHolder.txtText.setVisibility(View.VISIBLE);
     postHolder.txtText.setText(post.getExcerpt());
