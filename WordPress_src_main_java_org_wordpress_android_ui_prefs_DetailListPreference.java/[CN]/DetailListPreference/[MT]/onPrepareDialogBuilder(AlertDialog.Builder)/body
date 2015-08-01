@@ -1,0 +1,17 @@
+{
+  mListAdapter=new DetailListAdapter(getContext(),R.layout.detail_list_preference,mDetails);
+  mSelectedIndex=findIndexOfValue(getValue());
+  builder.setSingleChoiceItems(mListAdapter,mSelectedIndex,new DialogInterface.OnClickListener(){
+    public void onClick(    DialogInterface dialog,    int which){
+      if (mSelectedIndex != which) {
+        mSelectedIndex=which;
+        notifyChanged();
+      }
+      DetailListPreference.this.onClick(dialog,DialogInterface.BUTTON_POSITIVE);
+      dialog.dismiss();
+    }
+  }
+);
+  builder.setPositiveButton(null,null);
+  builder.setCustomTitle(View.inflate(getContext(),R.layout.detail_list_preference_title,null));
+}
