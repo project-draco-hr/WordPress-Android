@@ -11,7 +11,6 @@
   mBlogInfo=blogInfo;
   final TextView txtBlogName=(TextView)layoutInner.findViewById(R.id.text_blog_name);
   final TextView txtDescription=(TextView)layoutInner.findViewById(R.id.text_blog_description);
-  final WPNetworkImageView imgBlavatar=(WPNetworkImageView)layoutInner.findViewById(R.id.image_blavatar);
   if (blogInfo.hasUrl()) {
     txtBlogName.setOnClickListener(new OnClickListener(){
       @Override public void onClick(      View v){
@@ -29,7 +28,10 @@
  else {
     txtBlogName.setText(getContext().getString(R.string.reader_untitled_post));
   }
-  if (blogInfo.hasDescription()) {
+  if (blogInfo.getDescription().equalsIgnoreCase(blogInfo.getName())) {
+    txtDescription.setVisibility(View.GONE);
+  }
+ else   if (blogInfo.hasDescription()) {
     txtDescription.setText(blogInfo.getDescription());
     txtDescription.setVisibility(View.VISIBLE);
   }
@@ -40,17 +42,6 @@
  else {
     txtDescription.setVisibility(View.GONE);
   }
-  int imageSz=getResources().getDimensionPixelSize(R.dimen.avatar_sz_medium);
-  String imageUrl="";
-  if (blogInfo.hasImageUrl()) {
-    imageUrl=GravatarUtils.fixGravatarUrl(blogInfo.getImageUrl(),imageSz);
-  }
- else {
-    if (blogInfo.getUrl() != null) {
-      imageUrl=GravatarUtils.blavatarFromUrl(blogInfo.getUrl(),imageSz);
-    }
-  }
-  imgBlavatar.setImageUrl(imageUrl,ImageType.BLAVATAR);
   if (layoutInner.getVisibility() != View.VISIBLE) {
     if (animateIn) {
       new Handler().postDelayed(new Runnable(){

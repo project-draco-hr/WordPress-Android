@@ -1,5 +1,8 @@
 {
   super.onActivityCreated(savedInstanceState);
+  if (getActivity() instanceof OnNavigateTagHistoryListener) {
+    mNavigateTagHistoryListener=(OnNavigateTagHistoryListener)getActivity();
+  }
   if (shouldShowTagToolbar()) {
     mTagToolbar=(Toolbar)getActivity().findViewById(R.id.toolbar_reader);
     mTagToolbar.setVisibility(mRestorePosition > 0 ? View.GONE : View.VISIBLE);
@@ -38,9 +41,6 @@
     if (!isRecreated && ReaderTagTable.shouldAutoUpdateTag(mCurrentTag)) {
       updatePostsWithTag(getCurrentTag(),UpdateAction.REQUEST_NEWER);
     }
-  }
-  if (getPostListType().isPreviewType() && !mIsLoggedOutReader) {
-    createFollowButton();
   }
 switch (getPostListType()) {
 case BLOG_PREVIEW:

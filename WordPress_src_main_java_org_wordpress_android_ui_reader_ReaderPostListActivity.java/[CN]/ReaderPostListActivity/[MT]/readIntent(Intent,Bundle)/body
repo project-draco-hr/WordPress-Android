@@ -2,15 +2,14 @@
   if (intent == null) {
     return;
   }
-  ReaderTypes.ReaderPostListType postListType;
   if (intent.hasExtra(ReaderConstants.ARG_POST_LIST_TYPE)) {
-    postListType=(ReaderTypes.ReaderPostListType)intent.getSerializableExtra(ReaderConstants.ARG_POST_LIST_TYPE);
+    mPostListType=(ReaderPostListType)intent.getSerializableExtra(ReaderConstants.ARG_POST_LIST_TYPE);
   }
  else {
-    postListType=ReaderTypes.DEFAULT_POST_LIST_TYPE;
+    mPostListType=ReaderTypes.DEFAULT_POST_LIST_TYPE;
   }
   if (savedInstanceState == null) {
-    if (postListType == ReaderTypes.ReaderPostListType.BLOG_PREVIEW) {
+    if (getPostListType() == ReaderPostListType.BLOG_PREVIEW) {
       long blogId=intent.getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
       long feedId=intent.getLongExtra(ReaderConstants.ARG_FEED_ID,0);
       if (feedId != 0) {
@@ -28,13 +27,13 @@
  else {
         tag=AppPrefs.getReaderTag();
       }
-      if (postListType == ReaderTypes.ReaderPostListType.TAG_FOLLOWED && !ReaderTagTable.tagExists(tag)) {
+      if (mPostListType == ReaderPostListType.TAG_FOLLOWED && !ReaderTagTable.tagExists(tag)) {
         tag=ReaderTag.getDefaultTag();
       }
-      showListFragmentForTag(tag,postListType);
+      showListFragmentForTag(tag,mPostListType);
     }
   }
-switch (postListType) {
+switch (getPostListType()) {
 case TAG_PREVIEW:
     setTitle(R.string.reader_title_tag_preview);
   break;
