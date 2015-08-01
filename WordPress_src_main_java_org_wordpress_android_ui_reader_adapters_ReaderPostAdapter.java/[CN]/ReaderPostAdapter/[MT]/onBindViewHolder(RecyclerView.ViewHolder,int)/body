@@ -11,36 +11,30 @@
     dateLine+=", " + post.getAuthorName();
   }
   postHolder.txtDate.setText(dateLine);
-  if (postListType == ReaderTypes.ReaderPostListType.BLOG_PREVIEW) {
-    postHolder.layoutPostHeader.setVisibility(View.GONE);
+  if (post.hasBlogUrl()) {
+    String imageUrl=GravatarUtils.blavatarFromUrl(post.getUrl(),mAvatarSzMedium);
+    postHolder.imgAvatar.setImageUrl(imageUrl,WPNetworkImageView.ImageType.BLAVATAR);
   }
  else {
-    postHolder.layoutPostHeader.setVisibility(View.VISIBLE);
-    if (post.hasBlogUrl()) {
-      String imageUrl=GravatarUtils.blavatarFromUrl(post.getUrl(),mAvatarSzMedium);
-      postHolder.imgAvatar.setImageUrl(imageUrl,WPNetworkImageView.ImageType.BLAVATAR);
-    }
+    postHolder.imgAvatar.setImageUrl(post.getPostAvatarForDisplay(mAvatarSzMedium),WPNetworkImageView.ImageType.AVATAR);
+  }
+  if (post.hasBlogName()) {
+    postHolder.txtBlogName.setText(post.getBlogName());
+  }
+ else   if (post.hasAuthorName()) {
+    postHolder.txtBlogName.setText(post.getAuthorName());
+  }
  else {
-      postHolder.imgAvatar.setImageUrl(post.getPostAvatarForDisplay(mAvatarSzMedium),WPNetworkImageView.ImageType.AVATAR);
+    postHolder.txtBlogName.setText(null);
+  }
+  View.OnClickListener blogListener=new View.OnClickListener(){
+    @Override public void onClick(    View view){
+      ReaderActivityLauncher.showReaderBlogPreview(view.getContext(),post);
     }
-    if (post.hasBlogName()) {
-      postHolder.txtBlogName.setText(post.getBlogName());
-    }
- else     if (post.hasAuthorName()) {
-      postHolder.txtBlogName.setText(post.getAuthorName());
-    }
- else {
-      postHolder.txtBlogName.setText(null);
-    }
-    View.OnClickListener blogListener=new View.OnClickListener(){
-      @Override public void onClick(      View view){
-        ReaderActivityLauncher.showReaderBlogPreview(view.getContext(),post);
-      }
-    }
+  }
 ;
-    postHolder.imgAvatar.setOnClickListener(blogListener);
-    postHolder.txtBlogName.setOnClickListener(blogListener);
-  }
+  postHolder.imgAvatar.setOnClickListener(blogListener);
+  postHolder.txtBlogName.setOnClickListener(blogListener);
   if (post.hasExcerpt()) {
     postHolder.txtText.setVisibility(View.VISIBLE);
     postHolder.txtText.setText(post.getExcerpt());
