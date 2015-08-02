@@ -15,18 +15,15 @@
   mRenderer=new ReaderPostRenderer(mReaderWebView,mPost);
   mRenderer.beginRender();
   txtTitle.setText(mPost.hasTitle() ? mPost.getTitle() : getString(R.string.reader_untitled_post));
-  if (mIsLoggedOutReader) {
-    followButton.setVisibility(View.GONE);
-  }
- else {
-    followButton.setIsFollowed(mPost.isFollowedByCurrentUser);
-    followButton.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View view){
-        togglePostFollowed();
-      }
+  View.OnClickListener blogPreviewListener=new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      ReaderActivityLauncher.showReaderBlogPreview(v.getContext(),mPost);
     }
-);
   }
+;
+  txtBlogName.setOnClickListener(blogPreviewListener);
+  imgAvatar.setOnClickListener(blogPreviewListener);
+  txtAuthorName.setOnClickListener(blogPreviewListener);
   if (mPost.hasBlogName()) {
     txtBlogName.setText(mPost.getBlogName());
     txtBlogName.setVisibility(View.VISIBLE);
@@ -38,30 +35,17 @@
  else {
     txtBlogName.setVisibility(View.GONE);
   }
-  if (mPost.hasAuthorName() && !mPost.getAuthorName().equals(mPost.getBlogName())) {
-    txtDateAndAuthor.setText(DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished()) + " / " + mPost.getAuthorName());
-  }
- else {
-    txtDateAndAuthor.setText(DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished()));
-  }
-  if (mPost.hasPostAvatar()) {
-    imgAvatar.setImageUrl(mPost.getPostAvatarForDisplay(mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.AVATAR);
+  if (mPost.hasAuthorName()) {
+    txtAuthorName.setText(mPost.getAuthorName());
+    imgAvatar.setImageUrl(mPost.getPostAvatarForDisplay(mResourceVars.extraSmallAvatarSizePx),WPNetworkImageView.ImageType.AVATAR);
+    txtAuthorName.setVisibility(View.VISIBLE);
     imgAvatar.setVisibility(View.VISIBLE);
   }
  else {
+    txtAuthorName.setVisibility(View.GONE);
     imgAvatar.setVisibility(View.GONE);
   }
-  if (isBlogPreview()) {
-    layoutDetailHeader.setVisibility(View.GONE);
-  }
- else {
-    imgAvatar.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View v){
-        ReaderActivityLauncher.showReaderBlogPreview(v.getContext(),mPost);
-      }
-    }
-);
-  }
+  txtDate.setText(DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished()));
   if (canBlockBlog()) {
     imgMore.setVisibility(View.VISIBLE);
     imgMore.setOnClickListener(new View.OnClickListener(){
@@ -76,6 +60,8 @@
  else {
     imgMore.setVisibility(View.GONE);
   }
-  mLayoutIcons.setVisibility(canShowIconBar() ? View.VISIBLE : View.GONE);
-  refreshIconBarCounts(false);
+  if (mLayoutHeader.getVisibility() != View.VISIBLE) {
+    AniUtils.fadeIn(mLayoutHeader,AniUtils.Duration.MEDIUM);
+  }
+  refreshIconCounts(false);
 }
