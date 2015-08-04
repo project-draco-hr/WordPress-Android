@@ -19,16 +19,31 @@
   }
 );
   View titleView=View.inflate(getContext(),R.layout.detail_list_preference_title,null);
-  if (titleView != null) {
-    View infoView=titleView.findViewById(R.id.privacy_info_button);
-    infoView.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View v){
-        Uri uri=Uri.parse(getContext().getString(R.string.privacy_settings_url));
-        AppLockManager.getInstance().setExtendedTimeout();
-        getContext().startActivity(new Intent(Intent.ACTION_VIEW,uri));
+  if (titleView != null && !TextUtils.isEmpty(mTitle) && !TextUtils.isEmpty(mHelpUrl)) {
+    TextView titleText=(TextView)titleView.findViewById(R.id.title);
+    View infoView=titleView.findViewById(R.id.info_button);
+    if (infoView != null) {
+      if (TextUtils.isEmpty(mHelpUrl)) {
+        infoView.setVisibility(View.GONE);
+      }
+ else {
+        infoView.setVisibility(View.VISIBLE);
+        infoView.setOnClickListener(new View.OnClickListener(){
+          @Override public void onClick(          View v){
+            Uri uri=Uri.parse(mHelpUrl);
+            AppLockManager.getInstance().setExtendedTimeout();
+            getContext().startActivity(new Intent(Intent.ACTION_VIEW,uri));
+          }
+        }
+);
       }
     }
-);
+    if (titleText != null) {
+      titleText.setText(mTitle);
+    }
     builder.setCustomTitle(titleView);
+  }
+ else {
+    builder.setTitle(getTitle());
   }
 }
