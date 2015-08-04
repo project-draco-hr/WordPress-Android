@@ -1,43 +1,36 @@
 {
-  mTitlePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_title));
-  mTaglinePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_tagline));
-  mAddressPreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_address));
-  mPrivacyPreference=(ListPreference)findPreference(getString(R.string.pref_key_site_visibility));
-  mLanguagePreference=(ListPreference)findPreference(getString(R.string.pref_key_site_language));
-  if (mTitlePreference != null) {
+  if (null != (mTitlePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_title)))) {
     mTitlePreference.setOnPreferenceChangeListener(this);
-    changeEditTextPreferenceValue(mTitlePreference,mRemoteTitle);
   }
-  if (mTaglinePreference != null) {
+  if (null != (mTaglinePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_tagline)))) {
     mTaglinePreference.setOnPreferenceChangeListener(this);
-    changeEditTextPreferenceValue(mTaglinePreference,mRemoteTagline);
   }
-  if (mAddressPreference != null) {
+  if (null != (mAddressPreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_address)))) {
     mAddressPreference.setOnPreferenceChangeListener(this);
-    changeEditTextPreferenceValue(mAddressPreference,mRemoteAddress);
   }
-  if (mPrivacyPreference != null) {
+  if (null != (mPrivacyPreference=(DetailListPreference)findPreference(getString(R.string.pref_key_site_visibility)))) {
     if (!mBlog.isDotcomFlag()) {
-      ((PreferenceCategory)findPreference(getString(R.string.pref_key_site_general))).removePreference(mPrivacyPreference);
+      removePreference(R.string.pref_key_site_general,mPrivacyPreference);
     }
  else {
       mPrivacyPreference.setOnPreferenceChangeListener(this);
-      changePrivacyValue(mRemotePrivacy);
     }
   }
-  if (mLanguagePreference != null) {
+  if (null != (mLanguagePreference=(DetailListPreference)findPreference(getString(R.string.pref_key_site_language)))) {
     if (!mBlog.isDotcomFlag()) {
-      ((PreferenceCategory)findPreference(getString(R.string.pref_key_site_general))).removePreference(mLanguagePreference);
+      removePreference(R.string.pref_key_site_general,mLanguagePreference);
     }
  else {
       String[] languageIds=getResources().getStringArray(R.array.lang_ids);
       String[] languageCodes=getResources().getStringArray(R.array.language_codes);
+      String[] details=new String[languageIds.length];
       for (int i=0; i < languageIds.length && i < languageCodes.length; ++i) {
         mLanguageCodes.put(languageCodes[i],languageIds[i]);
+        details[i]=getLanguageString(languageCodes[i],Locale.getDefault());
       }
       mLanguagePreference.setEntries(createLanguageDisplayStrings(mLanguagePreference.getEntryValues()));
       mLanguagePreference.setOnPreferenceChangeListener(this);
-      changeLanguageValue(mRemoteLanguage);
+      mLanguagePreference.setDetails(details);
     }
   }
 }

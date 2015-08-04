@@ -1,19 +1,27 @@
 {
-  mRemoteTitle=response.optString(RestClientUtils.SITE_TITLE_KEY);
-  changeEditTextPreferenceValue(mTitlePreference,mRemoteTitle);
-  mRemoteTagline=response.optString(RestClientUtils.SITE_DESC_KEY);
-  changeEditTextPreferenceValue(mTaglinePreference,mRemoteTagline);
+  if (mTitlePreference != null) {
+    mTitlePreference.setEnabled(true);
+    mRemoteTitle=response.optString(RestClientUtils.SITE_TITLE_KEY);
+    changeEditTextPreferenceValue(mTitlePreference,mRemoteTitle);
+  }
+  if (mTaglinePreference != null) {
+    mTaglinePreference.setEnabled(true);
+    mRemoteTagline=response.optString(RestClientUtils.SITE_DESC_KEY);
+    changeEditTextPreferenceValue(mTaglinePreference,mRemoteTagline);
+  }
   mRemoteAddress=response.optString(RestClientUtils.SITE_URL_KEY);
   changeEditTextPreferenceValue(mAddressPreference,mRemoteAddress);
   JSONObject settingsObject=response.optJSONObject("settings");
   if (settingsObject != null) {
     mRemoteLanguage=convertLanguageIdToLanguageCode(settingsObject.optString("lang_id"));
     if (mLanguagePreference != null) {
+      mLanguagePreference.setEnabled(true);
       changeLanguageValue(mRemoteLanguage);
       mLanguagePreference.setSummary(getLanguageString(mRemoteLanguage,Locale.getDefault()));
     }
     mRemotePrivacy=settingsObject.optInt("blog_public");
     if (mPrivacyPreference != null) {
+      mPrivacyPreference.setEnabled(true);
       mPrivacyPreference.setValue(String.valueOf(mRemotePrivacy));
     }
     changePrivacyValue(mRemotePrivacy);
