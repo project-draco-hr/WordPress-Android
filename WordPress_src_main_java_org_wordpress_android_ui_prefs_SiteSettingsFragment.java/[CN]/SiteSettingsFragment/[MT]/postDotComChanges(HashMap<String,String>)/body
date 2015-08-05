@@ -1,0 +1,19 @@
+{
+  if (params == null || params.size() == 0)   return;
+  WordPress.getRestClientUtils().setGeneralSiteSettings(String.valueOf(mBlog.getRemoteBlogId()),new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject response){
+      if (params.containsKey("blogname")) {
+        mBlog.setBlogName(params.get("blogname"));
+      }
+    }
+  }
+,new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+      AppLog.w(AppLog.T.API,"Error POSTing site settings changes: " + error);
+      if (isAdded()) {
+        ToastUtils.showToast(getActivity(),getString(R.string.error_post_remote_site_settings));
+      }
+    }
+  }
+,params);
+}
