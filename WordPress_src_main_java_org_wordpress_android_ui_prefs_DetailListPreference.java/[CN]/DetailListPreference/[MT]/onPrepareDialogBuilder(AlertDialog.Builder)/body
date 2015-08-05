@@ -1,19 +1,24 @@
 {
   mListAdapter=new DetailListAdapter(getContext(),R.layout.detail_list_preference,mDetails);
-  mSelectedIndex=findIndexOfValue(getValue());
+  mStartingIndex=mSelectedIndex=findIndexOfValue(getValue());
   builder.setSingleChoiceItems(mListAdapter,mSelectedIndex,new DialogInterface.OnClickListener(){
     public void onClick(    DialogInterface dialog,    int which){
       if (mSelectedIndex != which) {
         mSelectedIndex=which;
+        mListAdapter.notifyDataSetChanged();
+        setValue(getEntryValues()[mSelectedIndex].toString());
         notifyChanged();
       }
-      DetailListPreference.this.onClick(dialog,DialogInterface.BUTTON_POSITIVE);
-      dialog.dismiss();
     }
   }
 );
   builder.setNegativeButton(R.string.cancel,null);
-  builder.setPositiveButton(R.string.ok,null);
+  builder.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener(){
+    @Override public void onClick(    DialogInterface dialog,    int which){
+      DetailListPreference.this.onClick(dialog,DialogInterface.BUTTON_POSITIVE);
+    }
+  }
+);
   View titleView=View.inflate(getContext(),R.layout.detail_list_preference_title,null);
   if (titleView != null && !TextUtils.isEmpty(mTitle) && !TextUtils.isEmpty(mHelpUrl)) {
     TextView titleText=(TextView)titleView.findViewById(R.id.title);
