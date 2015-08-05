@@ -1,0 +1,19 @@
+{
+  if (mLastOperation == Operation.REPLACE) {
+    return new SpanRange(0,content.length());
+  }
+  String closingSymbol=getMatchingSymbol(openingSymbol);
+  int firstOpeningTagLoc=mOffset + mModifiedText.toString().indexOf(openingSymbol);
+  int closingTagLoc;
+  if (mLastOperation == Operation.INSERT) {
+    int lastOpeningTagLoc=mOffset + mModifiedText.toString().lastIndexOf(openingSymbol);
+    closingTagLoc=content.toString().indexOf(closingSymbol,lastOpeningTagLoc);
+  }
+ else {
+    closingTagLoc=content.toString().indexOf(closingSymbol,mOffset);
+  }
+  if (closingTagLoc > 0) {
+    return new SpanRange(firstOpeningTagLoc,closingTagLoc + 1);
+  }
+  return null;
+}

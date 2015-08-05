@@ -1,0 +1,12 @@
+{
+  mContent=new SpannableStringBuilder("<ul>\n\t<li>");
+  mWatcher.onTextChanged(mContent,0,0,10);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(0,mSpanRange.getOpeningTagLoc());
+  assertEquals(10,mSpanRange.getClosingTagLoc());
+  mContent=new SpannableStringBuilder("<ul>\n" + "\t<li>list item</li>\n" + "\t<li>another list item</li>\n"+ "</ul>");
+  mWatcher.onTextChanged(mContent,47,0,11);
+  mWatcher.afterTextChanged(mContent);
+  assertEquals(47,mSpanRange.getOpeningTagLoc());
+  assertEquals(58,mSpanRange.getClosingTagLoc());
+}

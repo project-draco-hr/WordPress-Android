@@ -1,0 +1,20 @@
+{
+  HtmlStyleTextWatcher watcher=new HtmlStyleTextWatcher();
+  Spannable content=new SpannableStringBuilder("<b>stuff</b>");
+  watcher.updateSpans(content,new HtmlStyleTextWatcher.SpanRange(0,3));
+  assertEquals(1,content.getSpans(0,3,ForegroundColorSpan.class).length);
+  content=new SpannableStringBuilder("text &amp; more text");
+  watcher.updateSpans(content,new HtmlStyleTextWatcher.SpanRange(5,10));
+  assertEquals(1,content.getSpans(5,10,ForegroundColorSpan.class).length);
+  assertEquals(1,content.getSpans(5,10,StyleSpan.class).length);
+  assertEquals(1,content.getSpans(5,10,RelativeSizeSpan.class).length);
+  content=new SpannableStringBuilder("text <!--comment--> more text");
+  watcher.updateSpans(content,new HtmlStyleTextWatcher.SpanRange(5,19));
+  assertEquals(1,content.getSpans(5,19,ForegroundColorSpan.class).length);
+  assertEquals(1,content.getSpans(5,19,StyleSpan.class).length);
+  assertEquals(1,content.getSpans(5,19,RelativeSizeSpan.class).length);
+  content=new SpannableStringBuilder("<b>stuff</b>");
+  watcher.updateSpans(content,new HtmlStyleTextWatcher.SpanRange(0,3));
+  watcher.updateSpans(content,new HtmlStyleTextWatcher.SpanRange(0,42));
+  assertEquals(1,content.getSpans(0,3,ForegroundColorSpan.class).length);
+}

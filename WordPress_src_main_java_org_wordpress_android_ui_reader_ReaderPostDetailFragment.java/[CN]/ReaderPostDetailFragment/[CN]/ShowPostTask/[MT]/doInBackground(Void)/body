@@ -7,6 +7,17 @@
   if (mPost == null) {
     return false;
   }
+  if (mPost.isDiscoverPost()) {
+    ReaderPostDiscoverData discoverData=mPost.getDiscoverData();
+    if (discoverData != null && discoverData.getDiscoverType() == ReaderPostDiscoverData.DiscoverType.EDITOR_PICK && discoverData.getBlogId() != 0 && discoverData.getPostId() != 0) {
+      mBlogId=discoverData.getBlogId();
+      mPostId=discoverData.getPostId();
+      mPost=ReaderPostTable.getPost(mBlogId,mPostId,false);
+      if (mPost == null) {
+        return false;
+      }
+    }
+  }
   mReaderWebView.setIsPrivatePost(mPost.isPrivate);
   txtTitle=(TextView)container.findViewById(R.id.text_title);
   txtBlogName=(TextView)container.findViewById(R.id.text_blog_name);
