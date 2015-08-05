@@ -1,22 +1,15 @@
 {
-  Cursor cursor=db.rawQuery("SELECT name, description, screenshotURL, previewURL, isCurrent, isPremium, features FROM " + THEMES_TABLE + " WHERE blogId=? AND themeId=?",new String[]{blogId,themeId});
+  Cursor cursor=db.rawQuery("SELECT id, author, screenshot, authorURI, demoURI, name, stylesheet, price FROM " + THEMES_TABLE + " WHERE blogId=? AND id=?",new String[]{blogId,themeId});
   if (cursor.moveToFirst()) {
-    String name=cursor.getString(0);
-    String description=cursor.getString(1);
-    String screenshotURL=cursor.getString(2);
-    String previewURL=cursor.getString(3);
-    boolean isCurrent=cursor.getInt(4) == 1;
-    boolean isPremium=cursor.getInt(5) == 1;
-    String features=cursor.getString(6);
-    Theme theme=new Theme();
-    theme.setThemeId(themeId);
-    theme.setName(name);
-    theme.setDescription(description);
-    theme.setScreenshotURL(screenshotURL);
-    theme.setPreviewURL(previewURL);
-    theme.setCurrent(isCurrent);
-    theme.setPremium(isPremium);
-    theme.setFeatures(features);
+    String id=cursor.getString(0);
+    String author=cursor.getString(1);
+    String screenshot=cursor.getString(2);
+    String authorURI=cursor.getString(3);
+    String demoURI=cursor.getString(4);
+    String name=cursor.getString(5);
+    String stylesheet=cursor.getString(6);
+    String price=cursor.getString(7);
+    Theme theme=new Theme(id,author,screenshot,authorURI,demoURI,name,stylesheet,price);
     cursor.close();
     return theme;
   }
