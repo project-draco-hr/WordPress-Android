@@ -13,16 +13,36 @@
  catch (  JSONException e) {
     AppLog.e(AppLog.T.UTILS,e);
   }
+  if (isUserConnected && isWordPressComUser) {
+    setWordPressComUserName(username);
+    if (getAnonID() != null) {
+      mMixpanel.alias(getWordPressComUserName(),getAnonID());
+      clearAnonID();
+    }
+ else {
+      mMixpanel.identify(username);
+    }
+  }
+ else {
+    setWordPressComUserName(null);
+    if (getAnonID() == null) {
+      generateNewAnonID();
+    }
+    mMixpanel.identify(getAnonID());
+  }
   if (isUserConnected) {
-    mMixpanel.identify(username);
     try {
-      mMixpanel.getPeople().identify(username);
+      String userID=getWordPressComUserName() != null ? getWordPressComUserName() : getAnonID();
+      if (userID == null) {
+        return;
+      }
+      mMixpanel.getPeople().identify(userID);
       JSONObject jsonObj=new JSONObject();
-      jsonObj.put("$username",username);
+      jsonObj.put("$username",userID);
       if (email != null) {
         jsonObj.put("$email",email);
       }
-      jsonObj.put("$first_name",username);
+      jsonObj.put("$first_name",userID);
       mMixpanel.getPeople().set(jsonObj);
     }
  catch (    JSONException e) {
