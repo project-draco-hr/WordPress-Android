@@ -2,6 +2,11 @@
   if (instructions.getDisableForSelfHosted()) {
     return;
   }
+  if (getWordPressComUserName() == null && getAnonID() == null) {
+    this.clearAllData();
+    generateNewAnonID();
+    mMixpanel.identify(getAnonID());
+  }
   trackMixpanelEventForInstructions(instructions,properties);
   trackMixpanelPropertiesForInstructions(instructions);
 }
