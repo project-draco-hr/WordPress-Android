@@ -2,7 +2,8 @@
   if (mNotificationsSettings == null || mNotificationsSettings.getBlogSettings() == null) {
     return;
   }
-  List<Map<String,Object>> blogs=WordPress.wpDB.getBlogsBy("NOT(dotcomFlag=0 AND wpVersion!='')",null,0,false);
+  String args=String.format("password='%s'",WordPressDB.encryptPassword(""));
+  List<Map<String,Object>> blogs=WordPress.wpDB.getBlogsBy(args,null,0,false);
   Context context=getActivity();
   PreferenceCategory blogsCategory=(PreferenceCategory)findPreference(getString(R.string.pref_notification_blogs));
   for (  Map blog : blogs) {
