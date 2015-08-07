@@ -1,5 +1,10 @@
 {
   if (positiveResult && mUpdatedJson.length() > 0 && mOnNotificationsSettingsChangedListener != null) {
     mOnNotificationsSettingsChangedListener.onSettingsChanged(mChannel,mType,mBlogId,mUpdatedJson);
+    Iterator<?> keys=mUpdatedJson.keys();
+    while (keys.hasNext()) {
+      String settingName=(String)keys.next();
+      mSettings.updateSettingForChannelAndType(mChannel,mType,settingName,mUpdatedJson.optBoolean(settingName),mBlogId);
+    }
   }
 }
