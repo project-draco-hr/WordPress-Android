@@ -6,9 +6,12 @@
   final ReaderPostViewHolder postHolder=(ReaderPostViewHolder)holder;
   ReaderTypes.ReaderPostListType postListType=getPostListType();
   postHolder.txtTitle.setText(post.getTitle());
-  String dateLine=DateTimeUtils.javaDateToTimeSpan(post.getDatePublished());
+  String dateLine;
   if (post.hasAuthorName() && !post.getAuthorName().equalsIgnoreCase(post.getBlogName())) {
-    dateLine+=", " + post.getAuthorName();
+    dateLine=post.getAuthorName() + ", " + DateTimeUtils.javaDateToTimeSpan(post.getDatePublished());
+  }
+ else {
+    dateLine=DateTimeUtils.javaDateToTimeSpan(post.getDatePublished());
   }
   postHolder.txtDate.setText(dateLine);
   if (post.hasBlogUrl()) {
