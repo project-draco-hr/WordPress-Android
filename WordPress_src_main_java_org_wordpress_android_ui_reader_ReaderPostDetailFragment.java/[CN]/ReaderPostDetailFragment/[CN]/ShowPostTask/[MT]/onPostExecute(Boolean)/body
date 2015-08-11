@@ -43,9 +43,16 @@
  else {
     imgAvatar.setImageUrl(mPost.getPostAvatarForDisplay(avatarSz),WPNetworkImageView.ImageType.AVATAR);
   }
+  if (mPost.hasAuthorName()) {
+    txtAuthor.setText(mPost.getAuthorName());
+    txtAuthor.setVisibility(View.VISIBLE);
+  }
+ else {
+    txtAuthor.setVisibility(View.GONE);
+  }
   String dateLine;
-  if (mPost.hasAuthorName() && !mPost.getAuthorName().equalsIgnoreCase(mPost.getBlogName())) {
-    dateLine=mPost.getAuthorName() + ", " + DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished());
+  if (mPost.hasBlogUrl()) {
+    dateLine=UrlUtils.getDomainFromUrl(mPost.getBlogUrl()) + " \u2022 " + DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished());
   }
  else {
     dateLine=DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished());
