@@ -66,7 +66,12 @@
   LinearLayout.LayoutParams params=(LinearLayout.LayoutParams)postHolder.txtTitle.getLayoutParams();
   params.topMargin=titleMargin;
   if (post.wordCount > 0 && !post.isDiscoverPost()) {
-    postHolder.txtWordCount.setText(String.format(mWordCountFmtStr,post.wordCount));
+    String wordCountStr=String.format(mWordCountFmtStr,post.wordCount);
+    int readingTimeInMinutes=post.wordCount / READING_WORDS_PER_MINUTE;
+    if (readingTimeInMinutes >= MIN_READING_TIME_MINUTES) {
+      wordCountStr+=" (~" + String.format(mReadingTimeFmtStr,readingTimeInMinutes) + ")";
+    }
+    postHolder.txtWordCount.setText(wordCountStr);
     postHolder.txtWordCount.setVisibility(View.VISIBLE);
   }
  else {
