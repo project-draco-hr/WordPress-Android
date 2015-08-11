@@ -63,8 +63,15 @@
     postHolder.imgFeatured.setVisibility(View.GONE);
     titleMargin=(postHolder.layoutPostHeader.getVisibility() == View.VISIBLE ? 0 : mMarginLarge);
   }
-  RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)postHolder.txtTitle.getLayoutParams();
+  LinearLayout.LayoutParams params=(LinearLayout.LayoutParams)postHolder.txtTitle.getLayoutParams();
   params.topMargin=titleMargin;
+  if (post.wordCount > 0 && !post.isDiscoverPost()) {
+    postHolder.txtWordCount.setText(String.format(mWordCountFmtStr,post.wordCount));
+    postHolder.txtWordCount.setVisibility(View.VISIBLE);
+  }
+ else {
+    postHolder.txtWordCount.setVisibility(View.GONE);
+  }
   final String tagToDisplay=(mCurrentTag != null ? post.getTagForDisplay(mCurrentTag.getTagName()) : null);
   if (!TextUtils.isEmpty(tagToDisplay)) {
     if (tagToDisplay.startsWith("#")) {
