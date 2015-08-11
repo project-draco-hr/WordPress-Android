@@ -1,0 +1,26 @@
+{
+  if (mActivityRef.get() == null || mActivityRef.get().isFinishing() || !isAdded()) {
+    return;
+  }
+  final InsightsLatestPostModel latestPostModel=(InsightsLatestPostModel)mDatamodels[0];
+  ThreadPoolExecutor parseResponseExecutor=(ThreadPoolExecutor)Executors.newFixedThreadPool(1);
+  parseResponseExecutor.submit(new Thread(){
+    @Override public void run(){
+      AppLog.d(AppLog.T.STATS,"The REST response: " + response.toString());
+      try {
+        int view=response.getInt("views");
+        latestPostModel.setPostViewsCount(view);
+      }
+ catch (      JSONException e) {
+        AppLog.e(AppLog.T.STATS,"Cannot parse the JSON response",e);
+      }
+      mHandler.post(new Runnable(){
+        @Override public void run(){
+          updateUI();
+        }
+      }
+);
+    }
+  }
+);
+}

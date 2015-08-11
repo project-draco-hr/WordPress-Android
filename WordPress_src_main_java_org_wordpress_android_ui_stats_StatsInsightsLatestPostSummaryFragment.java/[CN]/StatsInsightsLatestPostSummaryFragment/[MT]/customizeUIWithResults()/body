@@ -1,0 +1,62 @@
+{
+  if (!isAdded()) {
+    return;
+  }
+  mResultContainer.removeAllViews();
+  if (isDataEmpty(0) || !(mDatamodels[0] instanceof InsightsLatestPostModel)) {
+    showErrorUI(null);
+    return;
+  }
+  final InsightsLatestPostModel latestPostModel=(InsightsLatestPostModel)mDatamodels[0];
+  View mainView=getView();
+  if (mainView != null) {
+    mainView.setVisibility(latestPostModel.isLatestPostAvailable() ? View.VISIBLE : View.GONE);
+  }
+  if (!latestPostModel.isLatestPostAvailable()) {
+    return;
+  }
+  if (latestPostModel.getPostViewsCount() == Integer.MIN_VALUE) {
+    final RestClientUtils restClientUtils=WordPress.getRestClientUtilsV1_1();
+    final String singlePostRestPath=String.format("/sites/%s/stats/post/%s?fields=views",latestPostModel.getBlogID(),latestPostModel.getPostID());
+    RestCallListener vListener=new RestCallListener(getActivity());
+    restClientUtils.get(singlePostRestPath,vListener,vListener);
+    showPlaceholderUI();
+    return;
+  }
+  TextView moduleTitle=(TextView)mainView.findViewById(R.id.stats_module_title);
+  moduleTitle.setOnClickListener(ButtonsOnClickListener);
+  moduleTitle.setTextColor(getResources().getColor(R.color.stats_link_text_color));
+  LinearLayout ll=(LinearLayout)getActivity().getLayoutInflater().inflate(R.layout.stats_insights_latest_post_item,(ViewGroup)mResultContainer.getRootView(),false);
+  String trendLabel=getString(R.string.stats_insights_latest_post_trend);
+  String sinceLabel=StatsUtils.getSinceLabel(getActivity(),latestPostModel.getPostDate());
+  final String trendLabelFormatted=String.format(trendLabel,sinceLabel,latestPostModel.getPostTitle());
+  int startIndex, endIndex;
+  startIndex=trendLabelFormatted.indexOf(latestPostModel.getPostTitle());
+  endIndex=startIndex + latestPostModel.getPostTitle().length() + 1;
+  Spannable wordtoSpan=new SpannableString(trendLabelFormatted);
+  wordtoSpan.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.stats_link_text_color)),startIndex,endIndex,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+  TextView trendLabelTextField=(TextView)ll.findViewById(R.id.stats_post_trend_label);
+  trendLabelTextField.setText(wordtoSpan);
+  trendLabelTextField.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      StatsUtils.openPostInReaderOrInAppWebview(getActivity(),latestPostModel.getBlogID(),String.valueOf(latestPostModel.getPostID()),StatsConstants.ITEM_TYPE_POST,latestPostModel.getPostURL());
+    }
+  }
+);
+  LinearLayout tabs=(LinearLayout)ll.findViewById(R.id.stats_latest_post_tabs);
+  for (int i=0; i < tabs.getChildCount(); i++) {
+    LinearLayout currentTab=(LinearLayout)tabs.getChildAt(i);
+switch (i) {
+case 0:
+      setupTab(currentTab,FormatUtils.formatDecimal(latestPostModel.getPostViewsCount()),StatsVisitorsAndViewsFragment.OverviewLabel.VIEWS);
+    break;
+case 1:
+  setupTab(currentTab,FormatUtils.formatDecimal(latestPostModel.getPostLikeCount()),StatsVisitorsAndViewsFragment.OverviewLabel.LIKES);
+break;
+case 2:
+setupTab(currentTab,FormatUtils.formatDecimal(latestPostModel.getPostCommentCount()),StatsVisitorsAndViewsFragment.OverviewLabel.COMMENTS);
+break;
+}
+}
+mResultContainer.addView(ll);
+}
