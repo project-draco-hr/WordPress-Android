@@ -16,10 +16,7 @@
     return;
   }
   if (latestPostModel.getPostViewsCount() == Integer.MIN_VALUE) {
-    final RestClientUtils restClientUtils=WordPress.getRestClientUtilsV1_1();
-    final String singlePostRestPath=String.format("/sites/%s/stats/post/%s?fields=views",latestPostModel.getBlogID(),latestPostModel.getPostID());
-    RestCallListener vListener=new RestCallListener(getActivity());
-    restClientUtils.get(singlePostRestPath,vListener,vListener);
+    refreshStats(latestPostModel.getPostID(),new StatsService.StatsEndpointsEnum[]{StatsService.StatsEndpointsEnum.INSIGHTS_LATEST_POST_VIEWS});
     showPlaceholderUI();
     return;
   }
