@@ -18,6 +18,13 @@
   mRenderer=new ReaderPostRenderer(mReaderWebView,mPost);
   mRenderer.beginRender();
   txtTitle.setText(mPost.hasTitle() ? mPost.getTitle() : getString(R.string.reader_untitled_post));
+  followButton.setIsFollowed(mPost.isFollowedByCurrentUser);
+  followButton.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      togglePostFollowed();
+    }
+  }
+);
   layoutHeader.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
       ReaderActivityLauncher.showReaderBlogPreview(v.getContext(),mPost);
@@ -73,20 +80,6 @@
       }
     }
 );
-  }
-  if (mOnPopupListener != null) {
-    imgMore.setVisibility(View.VISIBLE);
-    imgMore.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View view){
-        if (mOnPopupListener != null) {
-          mOnPopupListener.onShowPostPopup(view,mPost);
-        }
-      }
-    }
-);
-  }
- else {
-    imgMore.setVisibility(View.GONE);
   }
   if (canShowFooter() && mLayoutFooter.getVisibility() != View.VISIBLE) {
     AniUtils.fadeIn(mLayoutFooter,AniUtils.Duration.LONG);
