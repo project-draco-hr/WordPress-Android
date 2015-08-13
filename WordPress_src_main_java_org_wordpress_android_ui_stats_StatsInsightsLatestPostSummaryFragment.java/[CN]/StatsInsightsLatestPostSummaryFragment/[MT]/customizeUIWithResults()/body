@@ -21,15 +21,16 @@
     return;
   }
   TextView moduleTitle=(TextView)mainView.findViewById(R.id.stats_module_title);
-  moduleTitle.setOnClickListener(ButtonsOnClickListener);
+  moduleTitle.setOnClickListener(ViewsTabOnClickListener);
   moduleTitle.setTextColor(getResources().getColor(R.color.stats_link_text_color));
   LinearLayout ll=(LinearLayout)getActivity().getLayoutInflater().inflate(R.layout.stats_insights_latest_post_item,(ViewGroup)mResultContainer.getRootView(),false);
   String trendLabel=getString(R.string.stats_insights_latest_post_trend);
-  String sinceLabel=StatsUtils.getSinceLabel(getActivity(),latestPostModel.getPostDate());
-  final String trendLabelFormatted=String.format(trendLabel,sinceLabel,latestPostModel.getPostTitle());
+  String sinceLabel=StatsUtils.getSinceLabel(getActivity(),latestPostModel.getPostDate()).toLowerCase();
+  String postTitle=StringEscapeUtils.unescapeHtml(latestPostModel.getPostTitle());
+  final String trendLabelFormatted=String.format(trendLabel,sinceLabel,postTitle);
   int startIndex, endIndex;
-  startIndex=trendLabelFormatted.indexOf(latestPostModel.getPostTitle());
-  endIndex=startIndex + latestPostModel.getPostTitle().length() + 1;
+  startIndex=trendLabelFormatted.indexOf(postTitle);
+  endIndex=startIndex + postTitle.length() + 1;
   Spannable descriptionTextToSpan=new SpannableString(trendLabelFormatted);
   descriptionTextToSpan.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.stats_link_text_color)),startIndex,endIndex,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
   TextView trendLabelTextField=(TextView)ll.findViewById(R.id.stats_post_trend_label);
