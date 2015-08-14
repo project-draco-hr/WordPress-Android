@@ -4,18 +4,11 @@
   blockResult.deletedPosts=ReaderPostTable.getPostsInBlog(blogId,0,false);
   blockResult.wasFollowing=ReaderBlogTable.isFollowedBlog(blogId);
   ReaderPostTable.deletePostsInBlog(blogId);
+  ReaderBlogTable.setIsFollowedBlogId(blogId,false);
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
-      boolean success=(jsonObject != null && jsonObject.optBoolean("success"));
-      if (success) {
-        ReaderBlogTable.setIsFollowedBlogId(blogId,false);
-      }
- else {
-        AppLog.w(T.READER,"failed to block blog " + blogId);
-        ReaderPostTable.addOrUpdatePosts(null,blockResult.deletedPosts);
-      }
       if (actionListener != null) {
-        actionListener.onActionResult(success);
+        actionListener.onActionResult(true);
       }
     }
   }
@@ -24,6 +17,9 @@
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.e(T.READER,volleyError);
       ReaderPostTable.addOrUpdatePosts(null,blockResult.deletedPosts);
+      if (blockResult.wasFollowing) {
+        ReaderBlogTable.setIsFollowedBlogId(blogId,true);
+      }
       if (actionListener != null) {
         actionListener.onActionResult(false);
       }
