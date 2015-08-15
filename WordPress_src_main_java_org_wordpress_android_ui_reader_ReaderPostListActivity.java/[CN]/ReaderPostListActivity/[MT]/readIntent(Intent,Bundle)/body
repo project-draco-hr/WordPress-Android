@@ -10,8 +10,9 @@
   }
 switch (getPostListType()) {
 case BLOG_PREVIEW:
-    long blogId=intent.getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
-  long feedId=intent.getLongExtra(ReaderConstants.ARG_FEED_ID,0);
+    setTitle(getString(R.string.loading));
+  long blogId=intent.getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
+long feedId=intent.getLongExtra(ReaderConstants.ARG_FEED_ID,0);
 ReaderBlogInfoView infoView=(ReaderBlogInfoView)findViewById(R.id.layout_blog_info);
 infoView.setOnBlogInfoLoadedListener(this);
 infoView.loadBlogInfo(blogId,feedId);
@@ -31,9 +32,6 @@ tag=(ReaderTag)intent.getSerializableExtra(ReaderConstants.ARG_TAG);
 }
  else {
 tag=AppPrefs.getReaderTag();
-}
-if (getPostListType() == ReaderPostListType.TAG_FOLLOWED && !ReaderTagTable.tagExists(tag)) {
-tag=ReaderTag.getDefaultTag();
 }
 if (tag != null) {
 setTitle(ReaderUtils.makeHashTag(tag.getTagName()));
