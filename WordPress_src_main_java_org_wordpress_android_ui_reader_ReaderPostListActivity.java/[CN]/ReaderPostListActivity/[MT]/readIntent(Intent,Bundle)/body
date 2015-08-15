@@ -12,13 +12,15 @@ switch (getPostListType()) {
 case BLOG_PREVIEW:
     long blogId=intent.getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
   long feedId=intent.getLongExtra(ReaderConstants.ARG_FEED_ID,0);
-loadBlogInfo(blogId,feedId);
+ReaderBlogInfoView infoView=(ReaderBlogInfoView)findViewById(R.id.layout_blog_info);
+infoView.setOnBlogInfoLoadedListener(this);
+infoView.loadBlogInfo(blogId,feedId);
 if (savedInstanceState == null) {
 if (feedId != 0) {
-  showListFragmentForFeed(feedId);
+showListFragmentForFeed(feedId);
 }
  else {
-  showListFragmentForBlog(blogId);
+showListFragmentForBlog(blogId);
 }
 }
 break;

@@ -1,0 +1,26 @@
+{
+  if (blogInfo == null)   return;
+  ViewGroup layoutInfo=(ViewGroup)findViewById(R.id.layout_blog_info);
+  TextView txtDescription=(TextView)layoutInfo.findViewById(R.id.text_blog_description);
+  TextView txtFollowCount=(TextView)layoutInfo.findViewById(R.id.text_blog_follow_count);
+  if (blogInfo.hasDescription()) {
+    txtDescription.setVisibility(View.VISIBLE);
+    txtDescription.setText(blogInfo.getDescription());
+  }
+ else {
+    txtDescription.setVisibility(View.GONE);
+  }
+  if (blogInfo.numSubscribers > 0) {
+    txtFollowCount.setText(String.format(getContext().getString(R.string.reader_label_follow_count),blogInfo.numSubscribers));
+    txtFollowCount.setVisibility(View.VISIBLE);
+  }
+ else {
+    txtFollowCount.setVisibility(View.GONE);
+  }
+  if (layoutInfo.getVisibility() != View.VISIBLE) {
+    AniUtils.scaleIn(layoutInfo,AniUtils.Duration.MEDIUM);
+  }
+  if (mBlogInfoListener != null) {
+    mBlogInfoListener.onBlogInfoLoaded(blogInfo);
+  }
+}
