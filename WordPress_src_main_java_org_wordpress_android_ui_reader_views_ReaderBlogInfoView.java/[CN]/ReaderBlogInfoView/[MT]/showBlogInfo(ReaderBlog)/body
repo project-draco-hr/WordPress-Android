@@ -1,14 +1,16 @@
 {
   if (blogInfo == null)   return;
   ViewGroup layoutInfo=(ViewGroup)findViewById(R.id.layout_blog_info);
+  ViewGroup layoutDescription=(ViewGroup)findViewById(R.id.layout_blog_description);
   TextView txtDescription=(TextView)layoutInfo.findViewById(R.id.text_blog_description);
   TextView txtFollowCount=(TextView)layoutInfo.findViewById(R.id.text_blog_follow_count);
+  ReaderFollowButton followButton=(ReaderFollowButton)layoutInfo.findViewById(R.id.follow_button);
   if (blogInfo.hasDescription()) {
-    txtDescription.setVisibility(View.VISIBLE);
     txtDescription.setText(blogInfo.getDescription());
+    layoutDescription.setVisibility(View.VISIBLE);
   }
  else {
-    txtDescription.setVisibility(View.GONE);
+    layoutDescription.setVisibility(View.GONE);
   }
   if (blogInfo.numSubscribers > 0) {
     txtFollowCount.setText(String.format(getContext().getString(R.string.reader_label_follow_count),blogInfo.numSubscribers));
@@ -17,8 +19,15 @@
  else {
     txtFollowCount.setVisibility(View.GONE);
   }
+  followButton.setIsFollowed(blogInfo.isFollowing);
+  followButton.setOnClickListener(new OnClickListener(){
+    @Override public void onClick(    View v){
+      toggleFollowStatus((ReaderFollowButton)v);
+    }
+  }
+);
   if (layoutInfo.getVisibility() != View.VISIBLE) {
-    AniUtils.scaleIn(layoutInfo,AniUtils.Duration.MEDIUM);
+    layoutInfo.setVisibility(View.VISIBLE);
   }
   if (mBlogInfoListener != null) {
     mBlogInfoListener.onBlogInfoLoaded(blogInfo);

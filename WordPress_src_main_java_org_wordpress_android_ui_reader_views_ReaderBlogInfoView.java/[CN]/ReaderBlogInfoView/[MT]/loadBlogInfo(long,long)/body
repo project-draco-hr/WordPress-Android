@@ -1,24 +1,32 @@
 {
-  ReaderBlog blogInfo;
-  if (feedId != 0) {
-    blogInfo=ReaderBlogTable.getFeedInfo(feedId);
+  mBlogId=blogId;
+  mFeedId=feedId;
+  final ReaderBlog localBlogInfo;
+  if (mBlogId != 0) {
+    localBlogInfo=ReaderBlogTable.getBlogInfo(mBlogId);
+  }
+ else   if (mFeedId != 0) {
+    localBlogInfo=ReaderBlogTable.getFeedInfo(mFeedId);
   }
  else {
-    blogInfo=ReaderBlogTable.getBlogInfo(blogId);
+    ToastUtils.showToast(getContext(),R.string.reader_toast_err_get_blog_info);
+    return;
   }
-  if (blogInfo != null) {
-    showBlogInfo(blogInfo);
+  if (localBlogInfo != null) {
+    showBlogInfo(localBlogInfo);
   }
   ReaderActions.UpdateBlogInfoListener listener=new ReaderActions.UpdateBlogInfoListener(){
-    @Override public void onResult(    ReaderBlog blogInfo){
-      showBlogInfo(blogInfo);
+    @Override public void onResult(    ReaderBlog serverBlogInfo){
+      if (serverBlogInfo != null && !serverBlogInfo.isSameAs(localBlogInfo)) {
+        showBlogInfo(serverBlogInfo);
+      }
     }
   }
 ;
-  if (feedId != 0) {
-    ReaderBlogActions.updateFeedInfo(feedId,null,listener);
+  if (mBlogId != 0) {
+    ReaderBlogActions.updateBlogInfo(mBlogId,null,listener);
   }
  else {
-    ReaderBlogActions.updateBlogInfo(blogId,null,listener);
+    ReaderBlogActions.updateFeedInfo(mFeedId,null,listener);
   }
 }

@@ -1,0 +1,11 @@
+{
+  ReaderPostListFragment fragment=getListFragment();
+  if (fragment == null || !NetworkUtils.checkConnection(this)) {
+    return;
+  }
+  boolean isAskingToFollow=!ReaderTagTable.isFollowedTagName(fragment.getCurrentTagName());
+  ReaderTagActions.TagAction action=(isAskingToFollow ? ReaderTagActions.TagAction.ADD : ReaderTagActions.TagAction.DELETE);
+  if (ReaderTagActions.performTagAction(fragment.getCurrentTag(),action,null)) {
+    updateTagFollowStatus();
+  }
+}
