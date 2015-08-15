@@ -1,0 +1,24 @@
+{
+  ReaderBlog blogInfo;
+  if (feedId != 0) {
+    blogInfo=ReaderBlogTable.getFeedInfo(feedId);
+  }
+ else {
+    blogInfo=ReaderBlogTable.getBlogInfo(blogId);
+  }
+  if (blogInfo != null) {
+    showBlogInfo(blogInfo);
+  }
+  ReaderActions.UpdateBlogInfoListener listener=new ReaderActions.UpdateBlogInfoListener(){
+    @Override public void onResult(    ReaderBlog blogInfo){
+      showBlogInfo(blogInfo);
+    }
+  }
+;
+  if (feedId != 0) {
+    ReaderBlogActions.updateFeedInfo(feedId,null,listener);
+  }
+ else {
+    ReaderBlogActions.updateBlogInfo(blogId,null,listener);
+  }
+}
