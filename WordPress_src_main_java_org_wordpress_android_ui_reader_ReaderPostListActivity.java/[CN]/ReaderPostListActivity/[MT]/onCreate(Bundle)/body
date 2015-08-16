@@ -3,8 +3,11 @@
   setContentView(R.layout.reader_activity_post_list);
   mToolbar=(Toolbar)findViewById(R.id.toolbar);
   setSupportActionBar(mToolbar);
-  getSupportActionBar().setDisplayShowTitleEnabled(true);
-  getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+  ActionBar actionBar=getSupportActionBar();
+  if (actionBar != null) {
+    getSupportActionBar().setDisplayShowTitleEnabled(true);
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+  }
   if (getIntent() != null) {
     if (getIntent().hasExtra(ReaderConstants.ARG_POST_LIST_TYPE)) {
       mPostListType=(ReaderPostListType)getIntent().getSerializableExtra(ReaderConstants.ARG_POST_LIST_TYPE);
@@ -13,8 +16,8 @@
       mPostListType=ReaderTypes.DEFAULT_POST_LIST_TYPE;
     }
     if (getPostListType() == ReaderPostListType.BLOG_PREVIEW) {
-      View infoView=getLayoutInflater().inflate(R.layout.reader_blog_info_for_toolbar,mToolbar,false);
-      mToolbar.addView(infoView);
+      View blogInfoView=getLayoutInflater().inflate(R.layout.reader_blog_info_for_toolbar,mToolbar,false);
+      mToolbar.addView(blogInfoView);
       if (savedInstanceState == null) {
         long blogId=getIntent().getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
         long feedId=getIntent().getLongExtra(ReaderConstants.ARG_FEED_ID,0);
@@ -26,18 +29,9 @@
         }
       }
     }
- else {
-      ReaderTag tag;
-      if (getIntent().hasExtra(ReaderConstants.ARG_TAG)) {
-        tag=(ReaderTag)getIntent().getSerializableExtra(ReaderConstants.ARG_TAG);
-      }
- else {
-        tag=AppPrefs.getReaderTag();
-      }
+ else     if (savedInstanceState == null && getIntent().hasExtra(ReaderConstants.ARG_TAG)) {
+      ReaderTag tag=(ReaderTag)getIntent().getSerializableExtra(ReaderConstants.ARG_TAG);
       if (tag != null) {
-        setTitle(ReaderUtils.makeHashTag(tag.getTagName()));
-      }
-      if (savedInstanceState == null) {
         showListFragmentForTag(tag,mPostListType);
       }
     }
