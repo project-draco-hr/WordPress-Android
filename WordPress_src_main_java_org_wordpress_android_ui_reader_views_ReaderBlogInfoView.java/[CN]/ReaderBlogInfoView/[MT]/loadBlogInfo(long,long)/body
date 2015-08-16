@@ -15,16 +15,18 @@
   if (localBlogInfo != null) {
     showBlogInfo(localBlogInfo);
   }
-  ReaderActions.UpdateBlogInfoListener listener=new ReaderActions.UpdateBlogInfoListener(){
-    @Override public void onResult(    ReaderBlog serverBlogInfo){
-      showBlogInfo(serverBlogInfo);
+  if (localBlogInfo == null || ReaderBlogTable.isTimeToUpdateBlogInfo(localBlogInfo)) {
+    ReaderActions.UpdateBlogInfoListener listener=new ReaderActions.UpdateBlogInfoListener(){
+      @Override public void onResult(      ReaderBlog serverBlogInfo){
+        showBlogInfo(serverBlogInfo);
+      }
     }
-  }
 ;
-  if (mBlogId != 0) {
-    ReaderBlogActions.updateBlogInfo(mBlogId,null,listener);
-  }
+    if (mBlogId != 0) {
+      ReaderBlogActions.updateBlogInfo(mBlogId,null,listener);
+    }
  else {
-    ReaderBlogActions.updateFeedInfo(mFeedId,null,listener);
+      ReaderBlogActions.updateFeedInfo(mFeedId,null,listener);
+    }
   }
 }
