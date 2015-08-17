@@ -15,7 +15,7 @@
     mPostListType=ReaderTypes.DEFAULT_POST_LIST_TYPE;
   }
   if (getPostListType() == ReaderPostListType.BLOG_PREVIEW) {
-    setTitle(R.string.loading);
+    setTitle(R.string.reader_title_blog_preview);
     if (savedInstanceState == null) {
       long blogId=getIntent().getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
       long feedId=getIntent().getLongExtra(ReaderConstants.ARG_FEED_ID,0);
@@ -27,10 +27,10 @@
       }
     }
   }
- else   if (savedInstanceState == null && getIntent().hasExtra(ReaderConstants.ARG_TAG)) {
+ else   if (getPostListType() == ReaderPostListType.TAG_PREVIEW) {
     setTitle(R.string.reader_title_tag_preview);
     ReaderTag tag=(ReaderTag)getIntent().getSerializableExtra(ReaderConstants.ARG_TAG);
-    if (tag != null) {
+    if (tag != null && savedInstanceState == null) {
       showListFragmentForTag(tag,mPostListType);
     }
   }
