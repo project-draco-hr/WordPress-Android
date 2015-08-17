@@ -1,0 +1,17 @@
+{
+  String args=String.format("password='%s'",WordPressDB.encryptPassword(""));
+  List<Map<String,Object>> blogs=WordPress.wpDB.getBlogsBy(args,null,0,false);
+  Context context=getActivity();
+  PreferenceCategory blogsCategory=(PreferenceCategory)findPreference(getString(R.string.pref_notification_blogs));
+  for (  Map blog : blogs) {
+    if (context == null)     return;
+    String siteUrl=MapUtils.getMapStr(blog,"url");
+    String title=MapUtils.getMapStr(blog,"blogName");
+    long blogId=MapUtils.getMapLong(blog,"blogId");
+    PreferenceScreen prefScreen=getPreferenceManager().createPreferenceScreen(context);
+    prefScreen.setTitle(title);
+    prefScreen.setSummary(UrlUtils.getDomainFromUrl(siteUrl));
+    addPreferencesForPreferenceScreen(prefScreen,Channel.BLOGS,blogId);
+    blogsCategory.addPreference(prefScreen);
+  }
+}

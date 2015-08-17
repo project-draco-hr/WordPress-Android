@@ -1,0 +1,29 @@
+{
+  if (mTypePreferenceCategories == null || mTypePreferenceCategories.size() == 0) {
+    return;
+  }
+  for (  final PreferenceCategory category : mTypePreferenceCategories) {
+    if (mNotificationsEnabled && category.getPreferenceCount() > TYPE_COUNT) {
+      category.removePreference(category.getPreference(TYPE_COUNT));
+    }
+ else     if (!mNotificationsEnabled && category.getPreferenceCount() == TYPE_COUNT) {
+      Preference disabledMessage=new Preference(getActivity());
+      disabledMessage.setSummary(R.string.notifications_disabled);
+      disabledMessage.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
+        @Override public boolean onPreferenceClick(        Preference preference){
+          Intent intent=new Intent();
+          intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+          Uri uri=Uri.fromParts("package",getActivity().getApplicationContext().getPackageName(),null);
+          intent.setData(uri);
+          startActivity(intent);
+          return true;
+        }
+      }
+);
+      category.addPreference(disabledMessage);
+    }
+    if (category.getPreference(TYPE_COUNT - 1) != null) {
+      category.getPreference(TYPE_COUNT - 1).setEnabled(mNotificationsEnabled);
+    }
+  }
+}

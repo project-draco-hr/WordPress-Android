@@ -1,0 +1,19 @@
+{
+  ReaderPostListFragment fragment=getListFragment();
+  if (fragment == null || mFollowMenuItem == null)   return;
+  boolean isFollowing;
+switch (getPostListType()) {
+case BLOG_PREVIEW:
+    if (fragment.getCurrentFeedId() != 0) {
+      isFollowing=ReaderBlogTable.isFollowedFeed(fragment.getCurrentFeedId());
+    }
+ else {
+      isFollowing=ReaderBlogTable.isFollowedBlog(fragment.getCurrentBlogId());
+    }
+  break;
+default :
+isFollowing=ReaderTagTable.isFollowedTagName(fragment.getCurrentTagName());
+break;
+}
+mFollowMenuItem.setTitle(isFollowing ? R.string.reader_btn_unfollow : R.string.reader_btn_follow);
+}
