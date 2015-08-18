@@ -4,40 +4,23 @@
   }
   final ReaderComment comment=mComments.get(position);
   if (mPost.isLikesEnabled) {
-    holder.layoutLikes.setVisibility(View.VISIBLE);
-    holder.imgLike.setSelected(comment.isLikedByCurrentUser);
-    holder.txtLike.setText(ReaderUtils.getShortLikeLabelText(holder.txtLike.getContext(),comment.numLikes));
-    if (comment.numLikes == 0) {
-      holder.txtLike.setTextColor(mLinkColor);
-      holder.txtLikeCount.setVisibility(View.GONE);
-    }
- else {
-      holder.txtLike.setTextColor(mNoLinkColor);
-      holder.txtLikeCount.setSelected(comment.isLikedByCurrentUser);
-      holder.txtLikeCount.setVisibility(View.VISIBLE);
-    }
+    holder.countLikes.setVisibility(View.VISIBLE);
+    holder.countLikes.setSelected(comment.isLikedByCurrentUser);
+    holder.countLikes.setCount(comment.numLikes);
     if (mIsLoggedOutReader) {
-      holder.imgLike.setEnabled(false);
-      holder.txtLike.setEnabled(false);
-      holder.txtLikeCount.setEnabled(false);
+      holder.countLikes.setEnabled(false);
     }
  else {
-      holder.layoutLikes.setOnClickListener(new View.OnClickListener(){
+      holder.countLikes.setOnClickListener(new View.OnClickListener(){
         @Override public void onClick(        View v){
           toggleLike(v.getContext(),holder,position);
         }
       }
 );
     }
-    holder.txtLikeCount.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View v){
-        ReaderActivityLauncher.showReaderLikingUsers(v.getContext(),comment);
-      }
-    }
-);
   }
  else {
-    holder.layoutLikes.setVisibility(View.GONE);
-    holder.layoutLikes.setOnClickListener(null);
+    holder.countLikes.setVisibility(View.GONE);
+    holder.countLikes.setOnClickListener(null);
   }
 }
