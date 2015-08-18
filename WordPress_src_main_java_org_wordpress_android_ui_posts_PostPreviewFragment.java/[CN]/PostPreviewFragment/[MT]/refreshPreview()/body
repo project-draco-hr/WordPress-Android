@@ -1,0 +1,22 @@
+{
+  if (!isAdded())   return;
+  new Thread(){
+    @Override public void run(){
+      Post post=WordPress.wpDB.getPostForLocalTablePostId(mLocalPostId);
+      final String htmlContent=formatPostContentForWebView(getActivity(),post);
+      getActivity().runOnUiThread(new Runnable(){
+        @Override public void run(){
+          if (!isAdded())           return;
+          if (htmlContent != null) {
+            mWebView.loadDataWithBaseURL(null,htmlContent,"text/html","utf-8",null);
+          }
+ else {
+            ToastUtils.showToast(getActivity(),R.string.post_not_found);
+          }
+        }
+      }
+);
+    }
+  }
+.start();
+}

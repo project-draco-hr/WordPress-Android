@@ -1,0 +1,22 @@
+{
+  JSONObject settingsJson;
+  try {
+    SharedPreferences sharedPreferences=PreferenceManager.getDefaultSharedPreferences(getActivity());
+    settingsJson=new JSONObject(sharedPreferences.getString(NotificationsUtils.WPCOM_PUSH_DEVICE_NOTIFICATION_SETTINGS,""));
+  }
+ catch (  JSONException e) {
+    AppLog.e(T.NOTIFS,"Could not parse notifications settings JSON");
+    return;
+  }
+  if (mNotificationsSettings == null) {
+    mNotificationsSettings=new NotificationsSettings(settingsJson);
+  }
+ else {
+    mNotificationsSettings.updateJson(settingsJson);
+  }
+  if (shouldUpdateUI) {
+    configureBlogsSettings();
+    configureOtherSettings();
+    configureDotcomSettings();
+  }
+}

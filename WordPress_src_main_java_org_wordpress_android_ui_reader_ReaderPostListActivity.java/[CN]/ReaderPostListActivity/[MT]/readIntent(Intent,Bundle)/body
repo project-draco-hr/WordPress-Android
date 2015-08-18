@@ -2,16 +2,15 @@
   if (intent == null) {
     return;
   }
-  ReaderTypes.ReaderPostListType postListType;
   if (intent.hasExtra(ReaderConstants.ARG_POST_LIST_TYPE)) {
-    postListType=(ReaderTypes.ReaderPostListType)intent.getSerializableExtra(ReaderConstants.ARG_POST_LIST_TYPE);
+    mPostListType=(ReaderPostListType)intent.getSerializableExtra(ReaderConstants.ARG_POST_LIST_TYPE);
   }
  else {
-    postListType=ReaderTypes.DEFAULT_POST_LIST_TYPE;
+    mPostListType=ReaderTypes.DEFAULT_POST_LIST_TYPE;
   }
+  String title=intent.getStringExtra(ReaderConstants.ARG_TITLE);
   if (savedInstanceState == null) {
-    AnalyticsTracker.track(AnalyticsTracker.Stat.READER_ACCESSED);
-    if (postListType == ReaderTypes.ReaderPostListType.BLOG_PREVIEW) {
+    if (getPostListType() == ReaderPostListType.BLOG_PREVIEW) {
       long blogId=intent.getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
       long feedId=intent.getLongExtra(ReaderConstants.ARG_FEED_ID,0);
       if (feedId != 0) {
@@ -19,6 +18,9 @@
       }
  else {
         showListFragmentForBlog(blogId);
+      }
+      if (TextUtils.isEmpty(title)) {
+        title=getString(R.string.reader_title_blog_preview);
       }
     }
  else {
@@ -29,20 +31,14 @@
  else {
         tag=AppPrefs.getReaderTag();
       }
-      if (postListType == ReaderTypes.ReaderPostListType.TAG_FOLLOWED && !ReaderTagTable.tagExists(tag)) {
+      if (mPostListType == ReaderPostListType.TAG_FOLLOWED && !ReaderTagTable.tagExists(tag)) {
         tag=ReaderTag.getDefaultTag();
       }
-      showListFragmentForTag(tag,postListType);
+      if (tag != null) {
+        title=ReaderUtils.makeHashTag(tag.getTagName());
+      }
+      showListFragmentForTag(tag,mPostListType);
     }
+    setTitle(title);
   }
-switch (postListType) {
-case TAG_PREVIEW:
-    setTitle(R.string.reader_title_tag_preview);
-  break;
-case BLOG_PREVIEW:
-setTitle(R.string.reader_title_blog_preview);
-break;
-default :
-break;
-}
 }

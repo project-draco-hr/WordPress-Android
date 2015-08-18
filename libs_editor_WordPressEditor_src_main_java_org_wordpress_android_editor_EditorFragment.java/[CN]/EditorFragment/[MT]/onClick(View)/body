@@ -28,7 +28,34 @@
     ((ToggleButton)v).setChecked(false);
   }
  else   if (id == R.id.format_bar_button_link) {
+    if (!((ToggleButton)v).isChecked()) {
+      mWebView.execJavaScriptFromString("ZSSEditor.unlink();");
+      return;
+    }
     ((ToggleButton)v).setChecked(false);
+    LinkDialogFragment linkDialogFragment=new LinkDialogFragment();
+    linkDialogFragment.setTargetFragment(this,LinkDialogFragment.LINK_DIALOG_REQUEST_CODE_ADD);
+    Bundle dialogBundle=new Bundle();
+    if (mSourceView.getVisibility() == View.VISIBLE) {
+      mSelectionStart=mSourceViewContent.getSelectionStart();
+      mSelectionEnd=mSourceViewContent.getSelectionEnd();
+      String selectedText=mSourceViewContent.getText().toString().substring(mSelectionStart,mSelectionEnd);
+      dialogBundle.putString("linkText",selectedText);
+    }
+ else {
+      mGetSelectedTextCountDownLatch=new CountDownLatch(1);
+      mWebView.execJavaScriptFromString("ZSSEditor.execFunctionForResult('getSelectedText');");
+      try {
+        if (mGetSelectedTextCountDownLatch.await(1,TimeUnit.SECONDS)) {
+          dialogBundle.putString("linkText",mJavaScriptResult);
+        }
+      }
+ catch (      InterruptedException e) {
+        AppLog.d(T.EDITOR,"Failed to obtain selected text from JS editor.");
+      }
+    }
+    linkDialogFragment.setArguments(dialogBundle);
+    linkDialogFragment.show(getFragmentManager(),"LinkDialogFragment");
   }
  else {
     if (v instanceof ToggleButton) {

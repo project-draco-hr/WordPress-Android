@@ -1,5 +1,38 @@
 {
   super.onConfigurationChanged(newConfig);
+  if (getView() != null) {
+    View formatBar=getView().findViewById(R.id.format_bar);
+    if (formatBar != null) {
+      ArrayList<String> activeTags=new ArrayList<>();
+      for (      Map.Entry<String,ToggleButton> entry : mTagToggleButtonMap.entrySet()) {
+        if (entry.getValue().isChecked()) {
+          activeTags.add(entry.getKey());
+        }
+      }
+      ViewGroup parent=(ViewGroup)formatBar.getParent();
+      parent.removeView(formatBar);
+      formatBar=getActivity().getLayoutInflater().inflate(R.layout.format_bar,parent,false);
+      formatBar.setId(R.id.format_bar);
+      parent.addView(formatBar);
+      setupFormatBarButtonMap(formatBar);
+      for (      String tag : activeTags) {
+        mTagToggleButtonMap.get(tag).setChecked(true);
+      }
+      if (mSourceView.getVisibility() == View.VISIBLE) {
+        ToggleButton htmlButton=(ToggleButton)formatBar.findViewById(R.id.format_bar_button_html);
+        htmlButton.setChecked(true);
+      }
+    }
+    View sourceViewTitle=getView().findViewById(R.id.sourceview_title);
+    View sourceViewContent=getView().findViewById(R.id.sourceview_content);
+    if (sourceViewTitle != null && sourceViewContent != null) {
+      int sideMargin=(int)getActivity().getResources().getDimension(R.dimen.sourceview_side_margin);
+      ViewGroup.MarginLayoutParams titleParams=(ViewGroup.MarginLayoutParams)sourceViewTitle.getLayoutParams();
+      ViewGroup.MarginLayoutParams contentParams=(ViewGroup.MarginLayoutParams)sourceViewContent.getLayoutParams();
+      titleParams.setMargins(sideMargin,titleParams.topMargin,sideMargin,titleParams.bottomMargin);
+      contentParams.setMargins(sideMargin,contentParams.topMargin,sideMargin,contentParams.bottomMargin);
+    }
+  }
   if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE && !getResources().getBoolean(R.bool.is_large_tablet_landscape)) {
     mHideActionBarOnSoftKeyboardUp=true;
     hideActionBarIfNeeded();

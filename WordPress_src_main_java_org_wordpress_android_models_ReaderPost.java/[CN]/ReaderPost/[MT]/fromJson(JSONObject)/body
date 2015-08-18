@@ -12,17 +12,19 @@
  else {
     post.pseudoId=JSONUtils.getString(json,"global_ID");
   }
-  post.excerpt=HtmlUtils.fastStripHtml(JSONUtils.getString(json,"excerpt"));
+  post.excerpt=HtmlUtils.fastStripHtml(JSONUtils.getString(json,"excerpt")).trim();
   post.text=JSONUtils.getString(json,"content");
   post.title=JSONUtils.getStringDecoded(json,"title");
   post.url=JSONUtils.getString(json,"URL");
   post.shortUrl=JSONUtils.getString(json,"short_URL");
   post.setBlogUrl(JSONUtils.getString(json,"site_URL"));
   post.numLikes=json.optInt("like_count");
+  post.wordCount=json.optInt("word_count");
   post.isLikedByCurrentUser=JSONUtils.getBool(json,"i_like");
   post.isFollowedByCurrentUser=JSONUtils.getBool(json,"is_following");
   post.isExternal=JSONUtils.getBool(json,"is_external");
   post.isPrivate=JSONUtils.getBool(json,"site_is_private");
+  post.isJetpack=JSONUtils.getBool(json,"is_jetpack");
   post.isLikesEnabled=JSONUtils.getBool(json,"likes_enabled");
   post.isSharingEnabled=JSONUtils.getBool(json,"sharing_enabled");
   JSONObject jsonDiscussion=json.optJSONObject("discussion");
@@ -73,6 +75,10 @@
     post.setBlogUrl(JSONUtils.getString(jsonSite,"URL"));
     post.isPrivate=JSONUtils.getBool(jsonSite,"is_private");
     post.isJetpack=JSONUtils.getBool(jsonSite,"jetpack");
+  }
+  JSONObject jsonDiscover=json.optJSONObject("discover_metadata");
+  if (jsonDiscover != null) {
+    post.setDiscoverJson(jsonDiscover.toString());
   }
   if (!post.hasFeaturedImage()) {
     JSONObject jsonMedia=json.optJSONObject("featured_media");

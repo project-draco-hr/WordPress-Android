@@ -1,0 +1,43 @@
+{
+  super.onActivityResult(requestCode,resultCode,data);
+  if ((requestCode == LinkDialogFragment.LINK_DIALOG_REQUEST_CODE_ADD || requestCode == LinkDialogFragment.LINK_DIALOG_REQUEST_CODE_UPDATE)) {
+    if (resultCode == LinkDialogFragment.LINK_DIALOG_REQUEST_CODE_DELETE) {
+      mWebView.execJavaScriptFromString("ZSSEditor.unlink();");
+      return;
+    }
+    if (data == null) {
+      return;
+    }
+    Bundle extras=data.getExtras();
+    if (extras == null) {
+      return;
+    }
+    String linkUrl=extras.getString("linkURL");
+    String linkText=extras.getString("linkText");
+    if (linkText == null || linkText.equals("")) {
+      linkText=linkUrl;
+    }
+    if (mSourceView.getVisibility() == View.VISIBLE) {
+      Editable content=mSourceViewContent.getText();
+      if (content == null) {
+        return;
+      }
+      if (mSelectionStart < mSelectionEnd) {
+        content.delete(mSelectionStart,mSelectionEnd);
+      }
+      String urlHtml="<a href=\"" + linkUrl + "\">"+ linkText+ "</a>";
+      content.insert(mSelectionStart,urlHtml);
+      mSourceViewContent.setSelection(mSelectionStart + urlHtml.length());
+    }
+ else {
+      String jsMethod;
+      if (requestCode == LinkDialogFragment.LINK_DIALOG_REQUEST_CODE_ADD) {
+        jsMethod="ZSSEditor.insertLink";
+      }
+ else {
+        jsMethod="ZSSEditor.updateLink";
+      }
+      mWebView.execJavaScriptFromString(jsMethod + "('" + Utils.escapeHtml(linkUrl)+ "', '"+ Utils.escapeHtml(linkText)+ "');");
+    }
+  }
+}

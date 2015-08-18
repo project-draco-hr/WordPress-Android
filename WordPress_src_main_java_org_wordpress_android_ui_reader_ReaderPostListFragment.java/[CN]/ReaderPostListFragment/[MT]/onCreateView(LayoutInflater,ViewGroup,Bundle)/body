@@ -2,7 +2,7 @@
   final ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.reader_fragment_post_cards,container,false);
   mRecyclerView=(ReaderRecyclerView)rootView.findViewById(R.id.recycler_view);
   Context context=container.getContext();
-  int spacingHorizontal=context.getResources().getDimensionPixelSize(R.dimen.content_margin);
+  int spacingHorizontal=context.getResources().getDimensionPixelSize(R.dimen.reader_card_margin);
   int spacingVertical=context.getResources().getDimensionPixelSize(R.dimen.reader_card_gutters);
   mRecyclerView.addItemDecoration(new RecyclerItemDecoration(spacingHorizontal,spacingVertical));
   mNewPostsBar=rootView.findViewById(R.id.layout_new_posts);
@@ -14,41 +14,27 @@
     }
   }
 );
-  ViewGroup header=(ViewGroup)rootView.findViewById(R.id.frame_header);
-switch (getPostListType()) {
-case TAG_PREVIEW:
-    mTagInfoView=(ViewGroup)inflater.inflate(R.layout.reader_tag_info_view,container,false);
-  header.addView(mTagInfoView);
-header.setVisibility(View.INVISIBLE);
-break;
-case BLOG_PREVIEW:
-mBlogInfoView=new ReaderBlogInfoView(context);
-header.addView(mBlogInfoView);
-header.setVisibility(View.INVISIBLE);
-break;
-}
-mEmptyView=rootView.findViewById(R.id.empty_view);
-mEmptyView.findViewById(R.id.layout_box_images).setVisibility(shouldShowBoxAndPagesAnimation() ? View.VISIBLE : View.GONE);
-mProgress=(ProgressBar)rootView.findViewById(R.id.progress_footer);
-mProgress.setVisibility(View.GONE);
-mSwipeToRefreshLayout=(CustomSwipeRefreshLayout)rootView.findViewById(R.id.ptr_layout);
-mSwipeToRefreshHelper=new SwipeToRefreshHelper(getActivity(),mSwipeToRefreshLayout,new RefreshListener(){
-@Override public void onRefreshStarted(){
-if (!isAdded()) {
-return;
-}
-if (!NetworkUtils.checkConnection(getActivity())) {
-showSwipeToRefreshProgress(false);
-return;
-}
+  mEmptyView=rootView.findViewById(R.id.empty_view);
+  mEmptyView.findViewById(R.id.layout_box_images).setVisibility(shouldShowBoxAndPagesAnimation() ? View.VISIBLE : View.GONE);
+  mProgress=(ProgressBar)rootView.findViewById(R.id.progress_footer);
+  mProgress.setVisibility(View.GONE);
+  mSwipeToRefreshHelper=new SwipeToRefreshHelper(getActivity(),(CustomSwipeRefreshLayout)rootView.findViewById(R.id.ptr_layout),new RefreshListener(){
+    @Override public void onRefreshStarted(){
+      if (!isAdded()) {
+        return;
+      }
+      if (!NetworkUtils.checkConnection(getActivity())) {
+        showSwipeToRefreshProgress(false);
+        return;
+      }
 switch (getPostListType()) {
 case TAG_FOLLOWED:
 case TAG_PREVIEW:
-updatePostsWithTag(getCurrentTag(),UpdateAction.REQUEST_NEWER);
-break;
+        updatePostsWithTag(getCurrentTag(),UpdateAction.REQUEST_NEWER);
+      break;
 case BLOG_PREVIEW:
-updatePostsInCurrentBlogOrFeed(UpdateAction.REQUEST_NEWER);
-break;
+    updatePostsInCurrentBlogOrFeed(UpdateAction.REQUEST_NEWER);
+  break;
 }
 showSwipeToRefreshProgress(true);
 }

@@ -4,5 +4,14 @@
     AppLog.d(AppLog.T.READER,"reader renderer > added featured image");
     content=getFeaturedImageHtml() + content;
   }
+  if (mPost.isDiscoverPost()) {
+    ReaderPostDiscoverData discoverData=mPost.getDiscoverData();
+    if (discoverData != null && discoverData.getBlogId() != 0 && discoverData.hasBlogName()) {
+      String label=String.format(WordPress.getContext().getString(R.string.reader_discover_visit_blog),discoverData.getBlogName());
+      String url=ReaderUtils.makeBlogPreviewUrl(discoverData.getBlogId());
+      String htmlDiscover="<div id='discover'>" + "<a href='" + url + "'>"+ label+ "</a>"+ "</div>";
+      content+=htmlDiscover;
+    }
+  }
   return content;
 }
