@@ -19,6 +19,12 @@
     holder.imgAvatar.setOnClickListener(null);
     holder.txtAuthor.setOnClickListener(null);
   }
+  if (comment.authorId == mPost.authorId) {
+    holder.txtAuthor.setTextColor(mColorAuthor);
+  }
+ else {
+    holder.txtAuthor.setTextColor(mColorNotAuthor);
+  }
   if (comment.parentId != 0 && comment.level > 0) {
     int indent=Math.min(MAX_INDENT_LEVEL,comment.level) * mIndentPerLevel;
     RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)holder.spacerIndent.getLayoutParams();
@@ -29,11 +35,11 @@
     holder.spacerIndent.setVisibility(View.GONE);
   }
   if (mHighlightCommentId != 0 && mHighlightCommentId == comment.commentId) {
-    holder.container.setSelected(true);
+    holder.container.setBackgroundColor(mColorHighlight);
     holder.progress.setVisibility(mShowProgressForHighlightedComment ? View.VISIBLE : View.GONE);
   }
  else {
-    holder.container.setSelected(comment.authorId == mPost.authorId);
+    holder.container.setBackgroundColor(Color.WHITE);
     holder.progress.setVisibility(View.GONE);
   }
   if (mIsLoggedOutReader) {
