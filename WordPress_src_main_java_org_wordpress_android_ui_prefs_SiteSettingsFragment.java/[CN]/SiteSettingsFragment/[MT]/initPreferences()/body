@@ -29,4 +29,26 @@
       }
     }
   }
+  if (mBlog.isDotcomFlag()) {
+    PreferenceScreen screen=(PreferenceScreen)findPreference(getString(R.string.pref_key_site_screen));
+    if (screen != null) {
+      screen.removePreference(findPreference(getString(R.string.pref_key_site_account)));
+    }
+  }
+ else {
+    if (null != (mUsernamePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_username)))) {
+      mUsernamePreference.setOnPreferenceChangeListener(this);
+      if (!TextUtils.isEmpty(mBlog.getUsername())) {
+        mUsernamePreference.setText(mBlog.getUsername());
+        mUsernamePreference.setSummary(mBlog.getUsername());
+      }
+    }
+    if (null != (mPasswordPreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_password)))) {
+      mPasswordPreference.setOnPreferenceChangeListener(this);
+      if (!TextUtils.isEmpty(mBlog.getPassword())) {
+        mPasswordPreference.setText(mBlog.getPassword());
+        mPasswordPreference.setSummary(mBlog.getPassword());
+      }
+    }
+  }
 }
