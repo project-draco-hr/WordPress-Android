@@ -1,0 +1,69 @@
+{
+  if (holder instanceof PostHeaderHolder) {
+    PostHeaderHolder headerHolder=(PostHeaderHolder)holder;
+    headerHolder.mHeaderView.setPost(mPost);
+    return;
+  }
+  CommentHolder commentHolder=(CommentHolder)holder;
+  final ReaderComment comment=getItem(position);
+  commentHolder.txtAuthor.setText(comment.getAuthorName());
+  commentHolder.imgAvatar.setImageUrl(GravatarUtils.fixGravatarUrl(comment.getAuthorAvatar(),mAvatarSz),WPNetworkImageView.ImageType.AVATAR);
+  CommentUtils.displayHtmlComment(commentHolder.txtText,comment.getText(),commentHolder.itemView.getWidth());
+  java.util.Date dtPublished=DateTimeUtils.iso8601ToJavaDate(comment.getPublished());
+  commentHolder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(dtPublished));
+  if (comment.hasAuthorBlogId()) {
+    View.OnClickListener authorListener=new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        ReaderActivityLauncher.showReaderBlogPreview(view.getContext(),comment.authorBlogId);
+      }
+    }
+;
+    commentHolder.imgAvatar.setOnClickListener(authorListener);
+    commentHolder.txtAuthor.setOnClickListener(authorListener);
+  }
+ else {
+    commentHolder.imgAvatar.setOnClickListener(null);
+    commentHolder.txtAuthor.setOnClickListener(null);
+  }
+  if (comment.authorId == mPost.authorId) {
+    commentHolder.txtAuthor.setTextColor(mColorAuthor);
+  }
+ else {
+    commentHolder.txtAuthor.setTextColor(mColorNotAuthor);
+  }
+  if (comment.parentId != 0 && comment.level > 0) {
+    int indent=Math.min(MAX_INDENT_LEVEL,comment.level) * mIndentPerLevel;
+    RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)commentHolder.spacerIndent.getLayoutParams();
+    params.width=indent;
+    commentHolder.spacerIndent.setVisibility(View.VISIBLE);
+  }
+ else {
+    commentHolder.spacerIndent.setVisibility(View.GONE);
+  }
+  if (mHighlightCommentId != 0 && mHighlightCommentId == comment.commentId) {
+    commentHolder.container.setBackgroundColor(mColorHighlight);
+    commentHolder.progress.setVisibility(mShowProgressForHighlightedComment ? View.VISIBLE : View.GONE);
+  }
+ else {
+    commentHolder.container.setBackgroundColor(Color.WHITE);
+    commentHolder.progress.setVisibility(View.GONE);
+  }
+  if (mIsLoggedOutReader) {
+    commentHolder.txtReply.setVisibility(View.GONE);
+    commentHolder.imgReply.setVisibility(View.GONE);
+  }
+ else   if (mReplyListener != null) {
+    View.OnClickListener replyClickListener=new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        mReplyListener.onRequestReply(comment.commentId);
+      }
+    }
+;
+    commentHolder.txtReply.setOnClickListener(replyClickListener);
+    commentHolder.imgReply.setOnClickListener(replyClickListener);
+  }
+  showLikeStatus(commentHolder,position);
+  if (mMoreCommentsExist && mDataRequestedListener != null && (position >= getItemCount() - 1)) {
+    mDataRequestedListener.onRequestData();
+  }
+}

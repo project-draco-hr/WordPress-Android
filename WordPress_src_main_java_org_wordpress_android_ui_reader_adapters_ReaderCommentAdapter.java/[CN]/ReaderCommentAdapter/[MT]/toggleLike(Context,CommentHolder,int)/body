@@ -2,11 +2,11 @@
   if (!NetworkUtils.checkConnection(context)) {
     return;
   }
-  if (!isValidPosition(position)) {
+  ReaderComment comment=getItem(position);
+  if (comment == null) {
     ToastUtils.showToast(context,R.string.reader_toast_err_generic);
     return;
   }
-  ReaderComment comment=mComments.get(position);
   boolean isAskingToLike=!comment.isLikedByCurrentUser;
   ReaderAnim.animateLikeButton(holder.countLikes.getImageView(),isAskingToLike);
   if (!ReaderCommentActions.performLikeAction(comment,isAskingToLike)) {
