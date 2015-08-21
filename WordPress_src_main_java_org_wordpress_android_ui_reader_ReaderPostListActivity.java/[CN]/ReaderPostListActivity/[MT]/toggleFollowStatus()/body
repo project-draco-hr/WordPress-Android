@@ -1,0 +1,29 @@
+{
+  ReaderPostListFragment fragment=getListFragment();
+  if (fragment == null)   return;
+  if (!NetworkUtils.checkConnection(this))   return;
+  boolean isAskingToFollow;
+  boolean result;
+switch (getPostListType()) {
+case BLOG_PREVIEW:
+    if (fragment.getCurrentFeedId() != 0) {
+      isAskingToFollow=!ReaderBlogTable.isFollowedFeed(fragment.getCurrentFeedId());
+      result=ReaderBlogActions.followFeedById(fragment.getCurrentFeedId(),isAskingToFollow,null);
+    }
+ else {
+      isAskingToFollow=!ReaderBlogTable.isFollowedBlog(fragment.getCurrentBlogId());
+      result=ReaderBlogActions.followBlogById(fragment.getCurrentBlogId(),isAskingToFollow,null);
+    }
+  break;
+case TAG_PREVIEW:
+isAskingToFollow=!ReaderTagTable.isFollowedTagName(fragment.getCurrentTagName());
+ReaderTagActions.TagAction action=(isAskingToFollow ? ReaderTagActions.TagAction.ADD : ReaderTagActions.TagAction.DELETE);
+result=ReaderTagActions.performTagAction(fragment.getCurrentTag(),action,null);
+break;
+default :
+return;
+}
+if (result) {
+updateFollowMenu();
+}
+}

@@ -1,0 +1,22 @@
+{
+  if (post == null || !NetworkUtils.checkConnection(context)) {
+    return;
+  }
+  boolean isCurrentlyLiked=ReaderPostTable.isPostLikedByCurrentUser(post);
+  boolean isAskingToLike=!isCurrentlyLiked;
+  ReaderAnim.animateLikeButton(holder.likeCount.getImageView(),isAskingToLike);
+  if (!ReaderPostActions.performLikeAction(post,isAskingToLike)) {
+    ToastUtils.showToast(context,R.string.reader_toast_err_generic);
+    return;
+  }
+  if (isAskingToLike) {
+    AnalyticsTracker.track(AnalyticsTracker.Stat.READER_LIKED_ARTICLE);
+  }
+  int position=mPosts.indexOfPost(post);
+  ReaderPost updatedPost=ReaderPostTable.getPost(post.blogId,post.postId,true);
+  if (updatedPost != null && position > -1) {
+    mPosts.set(position,updatedPost);
+    holder.likeCount.setSelected(updatedPost.isLikedByCurrentUser);
+    showCounts(holder,updatedPost);
+  }
+}

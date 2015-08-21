@@ -1,0 +1,26 @@
+{
+  String typeName=type.toString();
+  try {
+switch (channel) {
+case BLOGS:
+      JSONObject blogJson=getBlogSettings().get(blogId);
+    if (blogJson != null) {
+      JSONObject blogSetting=JSONUtils.queryJSON(blogJson,typeName,new JSONObject());
+      blogSetting.put(settingName,newValue);
+      blogJson.put(typeName,blogSetting);
+      getBlogSettings().put(blogId,blogJson);
+    }
+  break;
+case OTHER:
+JSONObject otherSetting=JSONUtils.queryJSON(getOtherSettings(),typeName,new JSONObject());
+otherSetting.put(settingName,newValue);
+getOtherSettings().put(typeName,otherSetting);
+break;
+case DOTCOM:
+getDotcomSettings().put(settingName,newValue);
+}
+}
+ catch (JSONException e) {
+AppLog.e(AppLog.T.NOTIFS,"Could not update notifications settings JSON");
+}
+}
