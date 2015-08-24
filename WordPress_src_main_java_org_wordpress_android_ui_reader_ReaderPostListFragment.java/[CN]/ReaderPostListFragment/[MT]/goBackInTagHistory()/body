@@ -9,7 +9,10 @@
     }
     tagName=mTagPreviewHistory.pop();
   }
-  setCurrentTag(new ReaderTag(tagName,ReaderTagType.FOLLOWED),false);
-  updateFollowButton();
+  ReaderTag newTag=new ReaderTag(tagName,ReaderTagType.FOLLOWED);
+  setCurrentTag(newTag,false);
+  if (mNavigateTagHistoryListener != null) {
+    mNavigateTagHistoryListener.onNavigateTagHistory(newTag);
+  }
   return true;
 }

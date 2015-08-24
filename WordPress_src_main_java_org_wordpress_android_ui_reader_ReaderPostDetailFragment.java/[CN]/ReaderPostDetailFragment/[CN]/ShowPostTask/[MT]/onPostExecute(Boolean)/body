@@ -11,22 +11,29 @@
     }
     return;
   }
+  if (!canShowFooter()) {
+    mLayoutFooter.setVisibility(View.GONE);
+  }
+  int topPadding=(mAutoHideToolbarListener != null ? mToolbarHeight : 0);
+  int bottomPadding=(canShowFooter() ? mLayoutFooter.getHeight() : 0);
+  mScrollView.setPadding(0,topPadding,0,bottomPadding);
   mScrollView.setVisibility(View.VISIBLE);
   mRenderer=new ReaderPostRenderer(mReaderWebView,mPost);
   mRenderer.beginRender();
   txtTitle.setText(mPost.hasTitle() ? mPost.getTitle() : getString(R.string.reader_untitled_post));
-  if (mIsLoggedOutReader) {
-    followButton.setVisibility(View.GONE);
-  }
- else {
-    followButton.setIsFollowed(mPost.isFollowedByCurrentUser);
-    followButton.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View view){
-        togglePostFollowed();
-      }
+  followButton.setIsFollowed(mPost.isFollowedByCurrentUser);
+  followButton.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      togglePostFollowed();
     }
-);
   }
+);
+  layoutHeader.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      ReaderActivityLauncher.showReaderBlogPreview(v.getContext(),mPost);
+    }
+  }
+);
   if (mPost.hasBlogName()) {
     txtBlogName.setText(mPost.getBlogName());
     txtBlogName.setVisibility(View.VISIBLE);
@@ -38,44 +45,42 @@
  else {
     txtBlogName.setVisibility(View.GONE);
   }
-  if (mPost.hasAuthorName() && !mPost.getAuthorName().equals(mPost.getBlogName())) {
-    txtDateAndAuthor.setText(DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished()) + " / " + mPost.getAuthorName());
+  int avatarSz=getResources().getDimensionPixelSize(R.dimen.avatar_sz_medium);
+  if (mPost.hasBlogUrl()) {
+    String imageUrl=GravatarUtils.blavatarFromUrl(mPost.getBlogUrl(),avatarSz);
+    imgAvatar.setImageUrl(imageUrl,WPNetworkImageView.ImageType.BLAVATAR);
   }
  else {
-    txtDateAndAuthor.setText(DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished()));
+    imgAvatar.setImageUrl(mPost.getPostAvatarForDisplay(avatarSz),WPNetworkImageView.ImageType.AVATAR);
   }
-  if (mPost.hasPostAvatar()) {
-    imgAvatar.setImageUrl(mPost.getPostAvatarForDisplay(mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.AVATAR);
-    imgAvatar.setVisibility(View.VISIBLE);
-  }
- else {
-    imgAvatar.setVisibility(View.GONE);
-  }
-  if (isBlogPreview()) {
-    layoutDetailHeader.setVisibility(View.GONE);
+  if (mPost.hasAuthorName()) {
+    txtAuthor.setText(mPost.getAuthorName());
+    txtAuthor.setVisibility(View.VISIBLE);
   }
  else {
-    imgAvatar.setOnClickListener(new View.OnClickListener(){
+    txtAuthor.setVisibility(View.GONE);
+  }
+  String dateLine;
+  if (mPost.hasBlogUrl()) {
+    dateLine=UrlUtils.getDomainFromUrl(mPost.getBlogUrl()) + " \u2022 " + DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished());
+  }
+ else {
+    dateLine=DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished());
+  }
+  txtDateLine.setText(dateLine);
+  final String tagToDisplay=mPost.getTagForDisplay(null);
+  if (!TextUtils.isEmpty(tagToDisplay)) {
+    txtTag.setText(ReaderUtils.makeHashTag(tagToDisplay));
+    txtTag.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
-        ReaderActivityLauncher.showReaderBlogPreview(v.getContext(),mPost);
+        ReaderTag tag=new ReaderTag(tagToDisplay,ReaderTagType.FOLLOWED);
+        ReaderActivityLauncher.showReaderTagPreview(v.getContext(),tag);
       }
     }
 );
   }
-  if (canBlockBlog()) {
-    imgMore.setVisibility(View.VISIBLE);
-    imgMore.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View view){
-        if (mOnPopupListener != null) {
-          mOnPopupListener.onShowPostPopup(view,mPost);
-        }
-      }
-    }
-);
+  if (canShowFooter() && mLayoutFooter.getVisibility() != View.VISIBLE) {
+    AniUtils.fadeIn(mLayoutFooter,AniUtils.Duration.LONG);
   }
- else {
-    imgMore.setVisibility(View.GONE);
-  }
-  mLayoutIcons.setVisibility(canShowIconBar() ? View.VISIBLE : View.GONE);
-  refreshIconBarCounts(false);
+  refreshIconCounts();
 }

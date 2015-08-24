@@ -4,7 +4,11 @@
     AppLog.w(T.READER,"post like unchanged");
     return false;
   }
-  int newNumLikes=(isAskingToLike ? post.numLikes + 1 : post.numLikes - 1);
+  int numCurrentLikes=ReaderPostTable.getNumLikesForPost(post.blogId,post.postId);
+  int newNumLikes=(isAskingToLike ? numCurrentLikes + 1 : numCurrentLikes - 1);
+  if (newNumLikes < 0) {
+    newNumLikes=0;
+  }
   ReaderPostTable.setLikesForPost(post,newNumLikes,isAskingToLike);
   ReaderLikeTable.setCurrentUserLikesPost(post,isAskingToLike);
   final String actionName=isAskingToLike ? "like" : "unlike";

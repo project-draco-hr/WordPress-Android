@@ -1,5 +1,5 @@
 {
-  if (!isAdded() || !hasPost()) {
+  if (!isAdded() || !hasPost() || !NetworkUtils.checkConnection(getActivity())) {
     return;
   }
   boolean isAskingToLike=!mPost.isLikedByCurrentUser;
@@ -12,7 +12,7 @@
   }
   mPost=ReaderPostTable.getPost(mBlogId,mPostId,false);
   refreshLikes();
-  refreshIconBarCounts(true);
+  refreshIconCounts();
   if (isAskingToLike) {
     AnalyticsTracker.track(AnalyticsTracker.Stat.READER_LIKED_ARTICLE);
   }

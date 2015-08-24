@@ -1,0 +1,15 @@
+{
+  mBlogSettings=new HashMap<>();
+  mOtherSettings=JSONUtils.queryJSON(json,KEY_OTHER,new JSONObject());
+  mDotcomSettings=JSONUtils.queryJSON(json,KEY_DOTCOM,new JSONObject());
+  JSONArray siteSettingsArray=JSONUtils.queryJSON(json,KEY_BLOGS,new JSONArray());
+  for (int i=0; i < siteSettingsArray.length(); i++) {
+    try {
+      JSONObject siteSetting=siteSettingsArray.getJSONObject(i);
+      mBlogSettings.put(siteSetting.optLong(KEY_BLOG_ID),siteSetting);
+    }
+ catch (    JSONException e) {
+      AppLog.e(AppLog.T.NOTIFS,"Could not parse blog JSON in notification settings");
+    }
+  }
+}

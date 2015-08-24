@@ -1,0 +1,53 @@
+{
+  Date currentDateTime=new Date();
+  try {
+    SimpleDateFormat from=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    Date date=from.parse(dataSubscribed);
+    long currentDifference=Math.abs(StatsUtils.getDateDiff(date,currentDateTime,TimeUnit.SECONDS));
+    if (currentDifference <= 45) {
+      return ctx.getString(R.string.stats_followers_seconds_ago);
+    }
+    if (currentDifference < 90) {
+      return ctx.getString(R.string.stats_followers_a_minute_ago);
+    }
+    if (currentDifference <= 2700) {
+      long minutes=StatsUtils.roundUp(currentDifference,60);
+      String followersMinutes=ctx.getString(R.string.stats_followers_minutes);
+      return String.format(followersMinutes,minutes);
+    }
+    if (currentDifference <= 5400) {
+      return ctx.getString(R.string.stats_followers_an_hour_ago);
+    }
+    if (currentDifference <= 79200) {
+      long hours=StatsUtils.roundUp(currentDifference,60 * 60);
+      String followersHours=ctx.getString(R.string.stats_followers_hours);
+      return String.format(followersHours,hours);
+    }
+    if (currentDifference <= 129600) {
+      return ctx.getString(R.string.stats_followers_a_day);
+    }
+    if (currentDifference <= 2160000) {
+      long days=StatsUtils.roundUp(currentDifference,86400);
+      String followersDays=ctx.getString(R.string.stats_followers_days);
+      return String.format(followersDays,days);
+    }
+    if (currentDifference <= 3888000) {
+      return ctx.getString(R.string.stats_followers_a_month);
+    }
+    if (currentDifference <= 29808000) {
+      long months=StatsUtils.roundUp(currentDifference,2678400);
+      String followersMonths=ctx.getString(R.string.stats_followers_months);
+      return String.format(followersMonths,months);
+    }
+    if (currentDifference <= 47260800) {
+      return ctx.getString(R.string.stats_followers_a_year);
+    }
+    long years=StatsUtils.roundUp(currentDifference,31536000);
+    String followersYears=ctx.getString(R.string.stats_followers_years);
+    return String.format(followersYears,years);
+  }
+ catch (  ParseException e) {
+    AppLog.e(AppLog.T.STATS,e);
+  }
+  return "";
+}

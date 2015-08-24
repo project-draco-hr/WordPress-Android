@@ -1,7 +1,8 @@
 {
   boolean isConnected=NetworkUtils.isNetworkAvailable(context);
-  if (isConnected != mWasConnected) {
+  if (mIsFirstReceive || isConnected != mWasConnected) {
     mWasConnected=isConnected;
+    mIsFirstReceive=false;
     EventBus.getDefault().post(new ConnectionChangeEvent(isConnected));
   }
 }
