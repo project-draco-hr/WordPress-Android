@@ -4,6 +4,8 @@
     @Override public void onResponse(    JSONObject response){
       if (params.containsKey("blogname")) {
         mBlog.setBlogName(params.get("blogname"));
+        WordPress.wpDB.saveBlog(mBlog);
+        EventBus.getDefault().post(new CoreEvents.BlogListChanged());
       }
     }
   }
