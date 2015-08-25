@@ -2,7 +2,11 @@
   if (changeType == Bucket.ChangeType.INSERT || changeType == Bucket.ChangeType.MODIFY) {
     runOnUiThread(new Runnable(){
       @Override public void run(){
-        if (!isFinishing()) {
+        if (isFinishing())         return;
+        if (isViewingNotificationsTab()) {
+          new UpdateLastSeenTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+ else {
           mTabLayout.checkNoteBadge();
         }
       }
