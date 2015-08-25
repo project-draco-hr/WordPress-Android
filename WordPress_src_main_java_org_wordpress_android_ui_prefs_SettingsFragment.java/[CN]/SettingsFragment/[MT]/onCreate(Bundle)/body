@@ -1,6 +1,5 @@
 {
   super.onCreate(savedInstanceState);
-  Resources resources=getResources();
   if (savedInstanceState == null) {
     AnalyticsTracker.track(AnalyticsTracker.Stat.OPENED_SETTINGS);
   }
@@ -15,32 +14,16 @@
     }
   }
 ;
-  mTaglineTextPreference=(WPEditTextPreference)findPreference(resources.getString(R.string.pref_key_post_sig));
+  mTaglineTextPreference=(WPEditTextPreference)findPreference(getString(R.string.pref_key_post_sig));
   if (mTaglineTextPreference != null) {
     mTaglineTextPreference.setOnPreferenceChangeListener(preferenceChangeListener);
   }
-  findPreference(resources.getString(R.string.pref_key_notifications)).setOnPreferenceClickListener(notificationPreferenceClickListener);
-  findPreference(resources.getString(R.string.pref_key_language)).setOnPreferenceClickListener(languagePreferenceClickListener);
-  findPreference(resources.getString(R.string.pref_key_app_about)).setOnPreferenceClickListener(launchActivityClickListener);
-  findPreference(resources.getString(R.string.pref_key_oss_licenses)).setOnPreferenceClickListener(launchActivityClickListener);
-  findPreference(resources.getString(R.string.pref_key_passlock)).setOnPreferenceChangeListener(passcodeCheckboxChangeListener);
-  findPreference(resources.getString(R.string.pref_key_reset_shared_pref)).setOnPreferenceClickListener(resetAutoSharePreferenceClickListener);
+  findPreference(getString(R.string.pref_key_language)).setOnPreferenceClickListener(this);
+  findPreference(getString(R.string.pref_key_app_about)).setOnPreferenceClickListener(this);
+  findPreference(getString(R.string.pref_key_notifications)).setOnPreferenceClickListener(this);
+  findPreference(getString(R.string.pref_key_oss_licenses)).setOnPreferenceClickListener(this);
+  findPreference(getString(R.string.pref_key_reset_shared_pref)).setOnPreferenceClickListener(this);
   mSettings=PreferenceManager.getDefaultSharedPreferences(getActivity());
   initNotifications();
-  if (AppLockManager.getInstance().isAppLockFeatureEnabled()) {
-    final CheckBoxPreference passcodeEnabledCheckBoxPreference=(CheckBoxPreference)findPreference(resources.getString(R.string.pref_key_passlock));
-    passcodeEnabledCheckBoxPreference.setOnPreferenceClickListener(new OnPreferenceClickListener(){
-      @Override public boolean onPreferenceClick(      Preference preference){
-        passcodeEnabledCheckBoxPreference.setChecked(AppLockManager.getInstance().getCurrentAppLock().isPasswordLocked());
-        return false;
-      }
-    }
-);
-  }
- else {
-    PreferenceScreen rootScreen=(PreferenceScreen)findPreference(resources.getString(R.string.pref_key_settings_root));
-    PreferenceGroup passcodeGroup=(PreferenceGroup)findPreference(resources.getString(R.string.pref_key_passlock_section));
-    rootScreen.removePreference(passcodeGroup);
-  }
   updatePostSignature();
 }
