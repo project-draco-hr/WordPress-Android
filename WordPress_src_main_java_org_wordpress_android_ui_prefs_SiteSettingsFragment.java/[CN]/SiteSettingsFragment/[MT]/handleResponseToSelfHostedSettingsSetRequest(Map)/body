@@ -1,6 +1,12 @@
 {
   AppLog.d(AppLog.T.API,"Site settings saved");
-  mBlog.setBlogName(StringUtils.unescapeHTML(getNestedMapValue(result,"blog_title")));
-  WordPress.wpDB.saveBlog(mBlog);
-  EventBus.getDefault().post(new CoreEvents.BlogListChanged());
+  if (result.containsKey("blog_title")) {
+    String titleResult=getNestedMapValue(result,"blog_title");
+    if (TextUtils.isEmpty(titleResult)) {
+      titleResult=mBlog.getUrl();
+    }
+    mBlog.setBlogName(StringUtils.unescapeHTML(titleResult));
+    WordPress.wpDB.saveBlog(mBlog);
+    EventBus.getDefault().post(new CoreEvents.BlogListChanged());
+  }
 }
