@@ -1,47 +1,4 @@
 {
   super.onPause();
-  if (mBlogDeleted) {
-    return;
-  }
-  blog.setUsername(mUsernameET.getText().toString());
-  blog.setPassword(mPasswordET.getText().toString());
-  blog.setHttpuser(mHttpUsernameET.getText().toString());
-  blog.setHttppassword(mHttpPasswordET.getText().toString());
-  blog.setFullSizeImage(mFullSizeCB.isChecked());
-  blog.setScaledImage(mScaledCB.isChecked());
-  if (blog.isScaledImage()) {
-    EditText scaledImgWidth=(EditText)findViewById(R.id.scaledImageWidth);
-    boolean error=false;
-    int width=0;
-    try {
-      width=Integer.parseInt(scaledImgWidth.getText().toString().trim());
-    }
- catch (    NumberFormatException e) {
-      error=true;
-    }
-    if (width == 0) {
-      error=true;
-    }
-    if (error) {
-      AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(BlogPreferencesActivity.this);
-      dialogBuilder.setTitle(getResources().getText(R.string.error));
-      dialogBuilder.setMessage(getResources().getText(R.string.scaled_image_error));
-      dialogBuilder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-        public void onClick(        DialogInterface dialog,        int whichButton){
-        }
-      }
-);
-      dialogBuilder.setCancelable(true);
-      dialogBuilder.create().show();
-      return;
-    }
- else {
-      blog.setScaledImageWidth(width);
-    }
-  }
-  blog.setMaxImageWidth(mImageWidthSpinner.getSelectedItem().toString());
-  WordPress.wpDB.saveBlog(blog);
-  if (WordPress.getCurrentBlog().getLocalTableBlogId() == blog.getLocalTableBlogId()) {
-    WordPress.currentBlog=blog;
-  }
+  WordPress.wpDB.saveBlog(mBlog);
 }
