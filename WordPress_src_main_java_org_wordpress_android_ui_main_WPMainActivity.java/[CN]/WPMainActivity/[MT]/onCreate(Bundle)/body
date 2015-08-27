@@ -29,9 +29,14 @@
     @Override public void onTabUnselected(    TabLayout.Tab tab){
     }
     @Override public void onTabReselected(    TabLayout.Tab tab){
-      Fragment fragment=mTabAdapter.getFragment(tab.getPosition());
-      if (fragment instanceof OnScrollToTopListener) {
-        ((OnScrollToTopListener)fragment).onScrollToTop();
+      if (tab.getPosition() == mLastReselectedTabPosition) {
+        Fragment fragment=mTabAdapter.getFragment(tab.getPosition());
+        if (fragment instanceof OnScrollToTopListener) {
+          ((OnScrollToTopListener)fragment).onScrollToTop();
+        }
+      }
+ else {
+        mLastReselectedTabPosition=tab.getPosition();
       }
     }
   }
