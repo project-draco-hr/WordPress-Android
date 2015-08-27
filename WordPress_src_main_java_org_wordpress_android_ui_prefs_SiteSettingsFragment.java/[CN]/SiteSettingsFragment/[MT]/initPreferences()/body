@@ -8,6 +8,7 @@
   }
   if (null != (mAddressPreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_address)))) {
     mAddressPreference.setOnPreferenceChangeListener(this);
+    changeEditTextPreferenceValue(mAddressPreference,mRemoteAddress);
   }
   if (null != (mPrivacyPreference=(DetailListPreference)findPreference(getString(R.string.pref_key_site_visibility)))) {
     if (!mBlog.isDotcomFlag()) {
@@ -22,12 +23,14 @@
       removePreference(R.string.pref_key_site_general,mLanguagePreference);
     }
  else {
-      mLanguagePreference.setOnPreferenceChangeListener(this);
       String[] languageIds=getResources().getStringArray(R.array.lang_ids);
       String[] languageCodes=getResources().getStringArray(R.array.language_codes);
       for (int i=0; i < languageIds.length && i < languageCodes.length; ++i) {
         mLanguageCodes.put(languageCodes[i],languageIds[i]);
       }
+      changeLanguageValue(Locale.getDefault().getISO3Language());
+      mLanguagePreference.setValue(Locale.getDefault().getCountry());
+      mLanguagePreference.setOnPreferenceChangeListener(this);
     }
   }
   if (mBlog.isDotcomFlag()) {
@@ -39,17 +42,11 @@
  else {
     if (null != (mUsernamePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_username)))) {
       mUsernamePreference.setOnPreferenceChangeListener(this);
-      if (!TextUtils.isEmpty(mBlog.getUsername())) {
-        mUsernamePreference.setText(mBlog.getUsername());
-        mUsernamePreference.setSummary(mBlog.getUsername());
-      }
+      changeEditTextPreferenceValue(mUsernamePreference,mRemoteUsername);
     }
     if (null != (mPasswordPreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_password)))) {
       mPasswordPreference.setOnPreferenceChangeListener(this);
-      if (!TextUtils.isEmpty(mBlog.getPassword())) {
-        mPasswordPreference.setText(mBlog.getPassword());
-        mPasswordPreference.setSummary(mBlog.getPassword());
-      }
+      changeEditTextPreferenceValue(mPasswordPreference,mRemotePassword);
     }
   }
 }
