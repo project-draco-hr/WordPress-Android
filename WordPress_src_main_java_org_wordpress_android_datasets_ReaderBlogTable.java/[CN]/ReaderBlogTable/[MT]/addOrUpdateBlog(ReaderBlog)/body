@@ -2,7 +2,7 @@
   if (blogInfo == null) {
     return;
   }
-  String sql="INSERT OR REPLACE INTO tbl_blog_info" + "   (blog_id, feed_id, blog_url, image_url, feed_url, name, description, is_private, is_jetpack, is_following, num_followers)" + "   VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)";
+  String sql="INSERT OR REPLACE INTO tbl_blog_info" + "   (blog_id, feed_id, blog_url, image_url, feed_url, name, description, is_private, is_jetpack, is_following, num_followers, date_updated)" + "   VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)";
   SQLiteStatement stmt=ReaderDatabase.getWritableDb().compileStatement(sql);
   try {
     stmt.bindLong(1,blogInfo.blogId);
@@ -16,6 +16,7 @@
     stmt.bindLong(9,SqlUtils.boolToSql(blogInfo.isJetpack));
     stmt.bindLong(10,SqlUtils.boolToSql(blogInfo.isFollowing));
     stmt.bindLong(11,blogInfo.numSubscribers);
+    stmt.bindString(12,DateTimeUtils.javaDateToIso8601(new Date()));
     stmt.execute();
   }
   finally {
