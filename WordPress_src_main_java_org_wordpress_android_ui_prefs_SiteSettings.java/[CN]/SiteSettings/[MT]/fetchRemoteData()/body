@@ -1,0 +1,28 @@
+{
+  if (mBlog.isDotcomFlag()) {
+    WordPress.getRestClientUtils().getGeneralSettings(String.valueOf(mBlog.getRemoteBlogId()),new RestRequest.Listener(){
+      @Override public void onResponse(      JSONObject response){
+        AppLog.d(AppLog.T.API,"Received response to Settings REST request.");
+        mRemoteSettings=new SettingsContainer();
+        mRemoteSettings.deserializeDotComRestResponse(response);
+        mListener.onSettingsUpdated(null,mRemoteSettings);
+        SiteSettingsTable.saveSettings(mRemoteSettings);
+        mRemoteSettings.isInLocalTable=true;
+        if (!mSettings.isInLocalTable)         mSettings.copyFrom(mRemoteSettings);
+      }
+    }
+,new RestRequest.ErrorListener(){
+      @Override public void onErrorResponse(      VolleyError error){
+        AppLog.w(AppLog.T.API,"Error response to Settings REST request: " + error);
+        mListener.onSettingsUpdated(error,null);
+      }
+    }
+);
+  }
+ else {
+    XMLRPCClientInterface xmlrpcInterface=instantiateInterface();
+    if (xmlrpcInterface == null)     return;
+    Object[] params={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword()};
+    xmlrpcInterface.callAsync(mXmlRpcFetchCallback,ApiHelper.Methods.GET_OPTIONS,params);
+  }
+}

@@ -1,0 +1,36 @@
+{
+  final Map<String,String> params=mSettings.serializeParams(mBlog.isDotcomFlag(),mRemoteSettings);
+  if (params == null || params.size() == 0)   return;
+  if (mBlog.isDotcomFlag()) {
+    WordPress.getRestClientUtils().setGeneralSiteSettings(String.valueOf(mBlog.getRemoteBlogId()),new RestRequest.Listener(){
+      @Override public void onResponse(      JSONObject response){
+        AppLog.d(AppLog.T.API,"Site Settings saved remotely");
+        mListener.onSettingsSaved(null,mSettings);
+        mRemoteSettings.copyFrom(mSettings);
+      }
+    }
+,new RestRequest.ErrorListener(){
+      @Override public void onErrorResponse(      VolleyError error){
+        AppLog.w(AppLog.T.API,"Error POSTing site settings changes: " + error);
+        mListener.onSettingsSaved(error,null);
+      }
+    }
+,params);
+  }
+ else {
+    XMLRPCCallback callback=new XMLRPCCallback(){
+      @Override public void onSuccess(      long id,      final Object result){
+        mListener.onSettingsSaved(null,mSettings);
+        mRemoteSettings.copyFrom(mSettings);
+      }
+      @Override public void onFailure(      long id,      final Exception error){
+        mListener.onSettingsSaved(error,null);
+      }
+    }
+;
+    final Object[] callParams={mBlog.getRemoteBlogId(),mSettings.username,mSettings.password,params};
+    XMLRPCClientInterface xmlrpcInterface=instantiateInterface();
+    if (xmlrpcInterface == null)     return;
+    xmlrpcInterface.callAsync(callback,ApiHelper.Methods.SET_OPTIONS,callParams);
+  }
+}
