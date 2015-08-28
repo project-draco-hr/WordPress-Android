@@ -1,0 +1,37 @@
+{
+  if (!NetworkUtils.checkConnection(getContext())) {
+    return;
+  }
+  final boolean isAskingToFollow;
+  if (mFeedId != 0) {
+    isAskingToFollow=!ReaderBlogTable.isFollowedFeed(mFeedId);
+  }
+ else {
+    isAskingToFollow=!ReaderBlogTable.isFollowedBlog(mBlogId);
+  }
+  ReaderActions.ActionListener listener=new ReaderActions.ActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      if (getContext() == null) {
+        return;
+      }
+      mFollowButton.setEnabled(true);
+      if (!succeeded) {
+        int errResId=isAskingToFollow ? R.string.reader_toast_err_follow_blog : R.string.reader_toast_err_unfollow_blog;
+        ToastUtils.showToast(getContext(),errResId);
+        mFollowButton.setIsFollowed(!isAskingToFollow);
+      }
+    }
+  }
+;
+  mFollowButton.setEnabled(false);
+  boolean result;
+  if (mFeedId != 0) {
+    result=ReaderBlogActions.followFeedById(mFeedId,isAskingToFollow,listener);
+  }
+ else {
+    result=ReaderBlogActions.followBlogById(mBlogId,isAskingToFollow,listener);
+  }
+  if (result) {
+    mFollowButton.setIsFollowedAnimated(isAskingToFollow);
+  }
+}

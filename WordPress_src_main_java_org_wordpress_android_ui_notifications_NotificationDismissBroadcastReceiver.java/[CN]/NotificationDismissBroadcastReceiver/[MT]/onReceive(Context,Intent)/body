@@ -1,11 +1,11 @@
 {
   int notificationId=intent.getIntExtra("notificationId",0);
   if (notificationId == GCMIntentService.GROUP_NOTIFICATION_ID) {
-    GCMIntentService.clearNotificationsMap();
+    GCMIntentService.clearNotifications();
   }
  else {
-    GCMIntentService.getNotificationsMap().remove(notificationId);
-    if (GCMIntentService.getNotificationsMap().isEmpty()) {
+    GCMIntentService.removeNotification(notificationId);
+    if (!GCMIntentService.hasNotifications()) {
       NotificationManager notificationManager=(NotificationManager)context.getSystemService(GCMIntentService.NOTIFICATION_SERVICE);
       notificationManager.cancel(GCMIntentService.GROUP_NOTIFICATION_ID);
     }
