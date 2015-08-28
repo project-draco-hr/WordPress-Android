@@ -49,9 +49,18 @@
       changeEditTextPreferenceValue(mPasswordPreference,mRemotePassword);
     }
   }
-  mLocationPreference=(SwitchPreference)findPreference(getString(R.string.pref_key_site_location));
-  if (mLocationPreference != null) {
+  if (null != (mLocationPreference=(SwitchPreference)findPreference(getString(R.string.pref_key_site_location)))) {
     mLocationPreference.setOnPreferenceChangeListener(this);
-    mLocationPreference.setChecked(siteSettingsPreferences().getBoolean(LOCATION_PREF_KEY,false));
+    mLocationPreference.setChecked(siteSettingsPreferences().getBoolean(SiteSettings.LOCATION_PREF_KEY,false));
+  }
+  if (null != (mCategoryPreference=(DetailListPreference)findPreference(getString(R.string.pref_key_site_category)))) {
+    mCategoryPreference.setOnPreferenceChangeListener(this);
+    String[] details=new String[Math.max(mCategoryPreference.getEntries().length,1)];
+    mCategoryPreference.setDetails(details);
+  }
+  if (null != (mFormatPreference=(DetailListPreference)findPreference(getString(R.string.pref_key_site_format)))) {
+    mFormatPreference.setOnPreferenceChangeListener(this);
+    String[] details=new String[Math.max(mFormatPreference.getEntries().length,1)];
+    mFormatPreference.setDetails(details);
   }
 }

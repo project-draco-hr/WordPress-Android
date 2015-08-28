@@ -5,13 +5,17 @@
   final RadioButton radioButton=(RadioButton)convertView.findViewById(R.id.radio);
   TextView mainText=(TextView)convertView.findViewById(R.id.main_text);
   TextView detailText=(TextView)convertView.findViewById(R.id.detail_text);
-  if (mainText != null && position < getEntries().length) {
+  if (mainText != null && getEntries() != null && position < getEntries().length) {
     mainText.setText(getEntries()[position]);
     mainText.setTypeface(TypefaceCache.getTypeface(getContext(),TypefaceCache.FAMILY_OPEN_SANS,Typeface.NORMAL,TypefaceCache.VARIATION_NORMAL));
   }
-  if (detailText != null && position < mDetails.length) {
-    detailText.setText(mDetails[position]);
-    detailText.setTypeface(TypefaceCache.getTypeface(getContext(),TypefaceCache.FAMILY_OPEN_SANS,Typeface.NORMAL,TypefaceCache.VARIATION_NORMAL));
+  if (detailText != null) {
+    if (position < mDetails.length && !TextUtils.isEmpty(mDetails[position])) {
+      detailText.setText(mDetails[position]);
+      detailText.setTypeface(TypefaceCache.getTypeface(getContext(),TypefaceCache.FAMILY_OPEN_SANS,Typeface.NORMAL,TypefaceCache.VARIATION_NORMAL));
+    }
+ else {
+    }
   }
   if (radioButton != null) {
     radioButton.setChecked(mSelectedIndex == position);
