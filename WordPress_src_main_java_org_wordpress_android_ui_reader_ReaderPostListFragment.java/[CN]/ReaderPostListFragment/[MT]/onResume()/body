@@ -4,10 +4,23 @@
     AppLog.d(T.READER,"reader post list > resumed from paused state");
     mWasPaused=false;
     refreshPosts();
-    refreshTags();
-    if (!isUpdating() && getPostListType() == ReaderPostListType.TAG_FOLLOWED && ReaderTagTable.shouldAutoUpdateTag(mCurrentTag)) {
-      AppLog.i(T.READER,"reader post list > auto-updating current tag after resume");
-      updatePostsWithTag(getCurrentTag(),UpdateAction.REQUEST_NEWER);
+    if (getPostListType().equals(ReaderPostListType.TAG_FOLLOWED)) {
+      getPostAdapter().reloadTagSpinner();
+      Object event=EventBus.getDefault().getStickyEvent(ReaderEvents.TagAdded.class);
+      if (event != null) {
+        String tagName=((ReaderEvents.TagAdded)event).getTagName();
+        EventBus.getDefault().removeStickyEvent(event);
+        ReaderTag newTag=new ReaderTag(tagName,ReaderTagType.FOLLOWED);
+        setCurrentTag(newTag,true);
+      }
+ else       if (!ReaderTagTable.tagExists(getCurrentTag())) {
+        AppLog.d(T.READER,"reader post list > current tag no longer valid");
+        setCurrentTag(ReaderTag.getDefaultTag(),true);
+      }
+ else       if (!isUpdating() && ReaderTagTable.shouldAutoUpdateTag(getCurrentTag())) {
+        AppLog.i(T.READER,"reader post list > auto-updating current tag after resume");
+        updatePostsWithTag(getCurrentTag(),UpdateAction.REQUEST_NEWER);
+      }
     }
   }
 }
