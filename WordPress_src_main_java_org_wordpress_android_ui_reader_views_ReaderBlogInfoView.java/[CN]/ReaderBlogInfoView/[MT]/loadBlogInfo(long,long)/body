@@ -1,0 +1,32 @@
+{
+  mBlogId=blogId;
+  mFeedId=feedId;
+  final ReaderBlog localBlogInfo;
+  if (mBlogId != 0) {
+    localBlogInfo=ReaderBlogTable.getBlogInfo(mBlogId);
+  }
+ else   if (mFeedId != 0) {
+    localBlogInfo=ReaderBlogTable.getFeedInfo(mFeedId);
+  }
+ else {
+    ToastUtils.showToast(getContext(),R.string.reader_toast_err_get_blog_info);
+    return;
+  }
+  if (localBlogInfo != null) {
+    showBlogInfo(localBlogInfo);
+  }
+  if (localBlogInfo == null || ReaderBlogTable.isTimeToUpdateBlogInfo(localBlogInfo)) {
+    ReaderActions.UpdateBlogInfoListener listener=new ReaderActions.UpdateBlogInfoListener(){
+      @Override public void onResult(      ReaderBlog serverBlogInfo){
+        showBlogInfo(serverBlogInfo);
+      }
+    }
+;
+    if (mFeedId != 0) {
+      ReaderBlogActions.updateFeedInfo(mFeedId,null,listener);
+    }
+ else {
+      ReaderBlogActions.updateBlogInfo(mBlogId,null,listener);
+    }
+  }
+}
