@@ -1,66 +1,44 @@
 {
-  if (null != (mTitlePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_title)))) {
-    mTitlePreference.setOnPreferenceChangeListener(this);
-    changeEditTextPreferenceValue(mTitlePreference,StringUtils.unescapeHTML(mRemoteTitle));
-  }
-  if (null != (mTaglinePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_tagline)))) {
-    mTaglinePreference.setOnPreferenceChangeListener(this);
-  }
-  if (null != (mAddressPreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_address)))) {
-    mAddressPreference.setOnPreferenceChangeListener(this);
-    changeEditTextPreferenceValue(mAddressPreference,mRemoteAddress);
-  }
-  if (null != (mPrivacyPreference=(DetailListPreference)findPreference(getString(R.string.pref_key_site_visibility)))) {
-    if (!mBlog.isDotcomFlag()) {
-      removePreference(R.string.pref_key_site_general,mPrivacyPreference);
-    }
- else {
-      mPrivacyPreference.setOnPreferenceChangeListener(this);
-    }
-  }
-  if (null != (mLanguagePreference=(DetailListPreference)findPreference(getString(R.string.pref_key_site_language)))) {
-    if (!mBlog.isDotcomFlag()) {
-      removePreference(R.string.pref_key_site_general,mLanguagePreference);
-    }
- else {
-      String[] languageIds=getResources().getStringArray(R.array.lang_ids);
-      String[] languageCodes=getResources().getStringArray(R.array.language_codes);
-      for (int i=0; i < languageIds.length && i < languageCodes.length; ++i) {
-        mLanguageCodes.put(languageCodes[i],languageIds[i]);
-      }
-      changeLanguageValue(Locale.getDefault().getISO3Language());
-      mLanguagePreference.setValue(Locale.getDefault().getCountry());
-      mLanguagePreference.setOnPreferenceChangeListener(this);
-    }
-  }
+  mTitlePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_title));
+  mTaglinePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_tagline));
+  mAddressPreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_address));
+  mPrivacyPreference=(DetailListPreference)findPreference(getString(R.string.pref_key_site_visibility));
+  mLanguagePreference=(DetailListPreference)findPreference(getString(R.string.pref_key_site_language));
+  mUsernamePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_username));
+  mPasswordPreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_password));
+  mLocationPreference=(SwitchPreference)findPreference(getString(R.string.pref_key_site_location));
+  mCategoryPreference=(DetailListPreference)findPreference(getString(R.string.pref_key_site_category));
+  mFormatPreference=(DetailListPreference)findPreference(getString(R.string.pref_key_site_format));
+  changeEditTextPreferenceValue(mTitlePreference,mSiteSettings.getTitle());
+  changeEditTextPreferenceValue(mTaglinePreference,mSiteSettings.getTagline());
+  changeEditTextPreferenceValue(mAddressPreference,mSiteSettings.getAddress());
+  mLocationPreference.setChecked(siteSettingsPreferences().getBoolean(SiteSettings.LOCATION_PREF_KEY,false));
+  String[] details=new String[Math.max(mCategoryPreference.getEntries().length,1)];
+  mCategoryPreference.setDetails(details);
+  String[] details2=new String[Math.max(mFormatPreference.getEntries().length,1)];
+  mFormatPreference.setDetails(details2);
+  mTitlePreference.setOnPreferenceChangeListener(this);
+  mTaglinePreference.setOnPreferenceChangeListener(this);
+  mAddressPreference.setOnPreferenceChangeListener(this);
+  mLocationPreference.setOnPreferenceChangeListener(this);
+  mCategoryPreference.setOnPreferenceChangeListener(this);
+  mFormatPreference.setOnPreferenceChangeListener(this);
   if (mBlog.isDotcomFlag()) {
     PreferenceScreen screen=(PreferenceScreen)findPreference(getString(R.string.pref_key_site_screen));
     if (screen != null) {
       screen.removePreference(findPreference(getString(R.string.pref_key_site_account)));
     }
+    changeLanguageValue(Locale.getDefault().getISO3Language());
+    mPrivacyPreference.setOnPreferenceChangeListener(this);
+    mLanguagePreference.setValue(Locale.getDefault().getCountry());
+    mLanguagePreference.setOnPreferenceChangeListener(this);
   }
  else {
-    if (null != (mUsernamePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_username)))) {
-      mUsernamePreference.setOnPreferenceChangeListener(this);
-      changeEditTextPreferenceValue(mUsernamePreference,mRemoteUsername);
-    }
-    if (null != (mPasswordPreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_password)))) {
-      mPasswordPreference.setOnPreferenceChangeListener(this);
-      changeEditTextPreferenceValue(mPasswordPreference,mRemotePassword);
-    }
-  }
-  if (null != (mLocationPreference=(SwitchPreference)findPreference(getString(R.string.pref_key_site_location)))) {
-    mLocationPreference.setOnPreferenceChangeListener(this);
-    mLocationPreference.setChecked(siteSettingsPreferences().getBoolean(SiteSettings.LOCATION_PREF_KEY,false));
-  }
-  if (null != (mCategoryPreference=(DetailListPreference)findPreference(getString(R.string.pref_key_site_category)))) {
-    mCategoryPreference.setOnPreferenceChangeListener(this);
-    String[] details=new String[Math.max(mCategoryPreference.getEntries().length,1)];
-    mCategoryPreference.setDetails(details);
-  }
-  if (null != (mFormatPreference=(DetailListPreference)findPreference(getString(R.string.pref_key_site_format)))) {
-    mFormatPreference.setOnPreferenceChangeListener(this);
-    String[] details=new String[Math.max(mFormatPreference.getEntries().length,1)];
-    mFormatPreference.setDetails(details);
+    removePreference(R.string.pref_key_site_general,mPrivacyPreference);
+    removePreference(R.string.pref_key_site_general,mLanguagePreference);
+    changeEditTextPreferenceValue(mUsernamePreference,mSiteSettings.getUsername());
+    changeEditTextPreferenceValue(mPasswordPreference,mSiteSettings.getPassword());
+    mUsernamePreference.setOnPreferenceChangeListener(this);
+    mPasswordPreference.setOnPreferenceChangeListener(this);
   }
 }
