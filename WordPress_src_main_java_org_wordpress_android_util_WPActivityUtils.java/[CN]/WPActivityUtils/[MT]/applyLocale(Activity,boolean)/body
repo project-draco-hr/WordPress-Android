@@ -1,0 +1,19 @@
+{
+  SharedPreferences sharedPreferences=PreferenceManager.getDefaultSharedPreferences(context);
+  if (sharedPreferences.contains(SettingsFragment.LANGUAGE_PREF_KEY)) {
+    String contextLocale=context.getResources().getConfiguration().locale.getLanguage();
+    String locale=sharedPreferences.getString(SettingsFragment.LANGUAGE_PREF_KEY,"");
+    if (!locale.equals(contextLocale)) {
+      Resources resources=context.getResources();
+      Configuration conf=resources.getConfiguration();
+      conf.locale=new Locale(locale);
+      resources.updateConfiguration(conf,resources.getDisplayMetrics());
+      if (restart) {
+        Intent refresh=new Intent(context,context.getClass());
+        context.startActivity(refresh);
+        context.finish();
+        context.overridePendingTransition(0,0);
+      }
+    }
+  }
+}
