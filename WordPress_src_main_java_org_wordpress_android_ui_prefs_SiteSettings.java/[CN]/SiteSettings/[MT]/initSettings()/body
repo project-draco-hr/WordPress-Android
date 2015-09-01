@@ -1,12 +1,17 @@
 {
-  mSettings=new SettingsContainer();
-  Cursor localSettings=SiteSettingsTable.getSettings(mBlog.getUrl());
-  mSettings.isInLocalTable=localSettings != null;
+  mSettings=new SiteSettingsModel();
+  int tableKey=mBlog.getLocalTableBlogId();
+  Cursor localSettings=SiteSettingsTable.getSettings(tableKey);
+  mSettings.isInLocalTable=localSettings != null && localSettings.moveToFirst() && localSettings.getCount() > 0;
   if (mSettings.isInLocalTable) {
     mSettings.deserializeDatabaseCursor(localSettings);
+    localSettings.close();
+    setLocation(mSettings.location);
+    mSettings.language=convertLanguageIdToLanguageCode(Integer.toString(mSettings.languageId));
+    updateOnUiThread(null,mSettings);
   }
  else {
-    setAddress(mBlog.getUrl());
+    setAddress(mBlog.getHomeURL());
     setUsername(mBlog.getUsername());
     setPassword(mBlog.getPassword());
     setTitle(mBlog.getBlogName());

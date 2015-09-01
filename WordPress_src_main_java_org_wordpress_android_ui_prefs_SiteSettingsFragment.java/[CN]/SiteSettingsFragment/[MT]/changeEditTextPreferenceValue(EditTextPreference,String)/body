@@ -1,7 +1,8 @@
 {
-  if (pref == null || pref.getEditText().isInEditMode())   return;
-  if (newValue != null && !newValue.equals(pref.getSummary())) {
-    pref.setText(StringUtils.unescapeHTML(newValue));
-    pref.setSummary(StringUtils.unescapeHTML(newValue));
+  if (newValue == null || pref == null || pref.getEditText().isInEditMode())   return;
+  if (!pref.getSummary().equals(newValue)) {
+    String formattedValue=StringUtils.unescapeHTML(newValue.replaceFirst(ADDRESS_FORMAT_REGEX,""));
+    pref.setText(formattedValue);
+    pref.setSummary(formattedValue);
   }
 }
