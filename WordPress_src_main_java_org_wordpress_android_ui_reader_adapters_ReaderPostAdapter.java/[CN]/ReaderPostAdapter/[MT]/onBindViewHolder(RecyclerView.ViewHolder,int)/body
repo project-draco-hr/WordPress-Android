@@ -1,5 +1,14 @@
 {
-  if (holder instanceof SpacerViewHolder) {
+  if (!(holder instanceof ReaderPostViewHolder)) {
+    if (holder instanceof BlogInfoViewHolder) {
+      BlogInfoViewHolder blogHolder=(BlogInfoViewHolder)holder;
+      blogHolder.mBlogInfoView.setOnBlogInfoLoadedListener(mBlogInfoLoadedListener);
+      blogHolder.mBlogInfoView.loadBlogInfo(mCurrentBlogId,mCurrentFeedId);
+    }
+ else     if (holder instanceof TagInfoViewHolder) {
+      TagInfoViewHolder tagHolder=(TagInfoViewHolder)holder;
+      tagHolder.mTagInfoView.setCurrentTag(mCurrentTag);
+    }
     return;
   }
   final ReaderPost post=getItem(position);
@@ -30,15 +39,13 @@
  else {
     postHolder.txtBlogName.setText(null);
   }
-  if (getPostListType() != ReaderTypes.ReaderPostListType.BLOG_PREVIEW) {
-    View.OnClickListener blogListener=new View.OnClickListener(){
+  if (!isBlogPreview()) {
+    postHolder.layoutPostHeader.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View view){
         ReaderActivityLauncher.showReaderBlogPreview(view.getContext(),post);
       }
     }
-;
-    postHolder.imgAvatar.setOnClickListener(blogListener);
-    postHolder.txtBlogName.setOnClickListener(blogListener);
+);
   }
   if (post.hasExcerpt()) {
     postHolder.txtText.setVisibility(View.VISIBLE);
