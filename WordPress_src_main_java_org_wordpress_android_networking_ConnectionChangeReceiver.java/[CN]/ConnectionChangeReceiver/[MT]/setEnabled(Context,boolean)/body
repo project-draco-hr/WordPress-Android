@@ -1,0 +1,13 @@
+{
+  if (mIsEnabled == enabled) {
+    return;
+  }
+  mIsEnabled=enabled;
+  AppLog.i(T.UTILS,"ConnectionChangeReceiver.setEnabled " + enabled);
+  int flag=(enabled ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED : PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
+  ComponentName component=new ComponentName(context,ConnectionChangeReceiver.class);
+  context.getPackageManager().setComponentEnabledSetting(component,flag,PackageManager.DONT_KILL_APP);
+  if (mIsEnabled) {
+    postConnectionChangeEvent(NetworkUtils.isNetworkAvailable(context));
+  }
+}
