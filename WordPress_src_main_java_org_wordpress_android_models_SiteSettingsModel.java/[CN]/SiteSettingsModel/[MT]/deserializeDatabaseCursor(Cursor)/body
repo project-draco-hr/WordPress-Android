@@ -8,4 +8,19 @@
   tagline=cursor.getString(cursor.getColumnIndex(SiteSettingsTable.TAGLINE_COLUMN_NAME));
   languageId=cursor.getInt(cursor.getColumnIndex(SiteSettingsTable.LANGUAGE_COLUMN_NAME));
   privacy=cursor.getInt(cursor.getColumnIndex(SiteSettingsTable.PRIVACY_COLUMN_NAME));
+  defaultCategory=cursor.getInt(cursor.getColumnIndex(SiteSettingsTable.DEF_CATEGORY_COLUMN_NAME));
+  defaultPostFormat=cursor.getInt(cursor.getColumnIndex(SiteSettingsTable.DEF_POST_FORMAT_COLUMN_NAME));
+  String cachedCategories=cursor.getString(cursor.getColumnIndex(SiteSettingsTable.CATEGORIES_COLUMN_NAME));
+  String cachedFormats=cursor.getString(cursor.getColumnIndex(SiteSettingsTable.POST_FORMATS_COLUMN_NAME));
+  if (!TextUtils.isEmpty(cachedCategories)) {
+    String[] split=cachedCategories.split(",");
+    categories=new CategoryModel[split.length];
+    for (int i=0; i < split.length; ++i) {
+      int catId=Integer.parseInt(split[i]);
+      categories[i]=new CategoryModel();
+      categories[i].deserializeLocalDatabaseCursor(SiteSettingsTable.getCategory(catId));
+    }
+  }
+  if (!TextUtils.isEmpty(cachedFormats)) {
+  }
 }
