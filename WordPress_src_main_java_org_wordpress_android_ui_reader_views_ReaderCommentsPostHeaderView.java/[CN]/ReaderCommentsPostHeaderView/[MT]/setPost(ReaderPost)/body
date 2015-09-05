@@ -1,0 +1,33 @@
+{
+  if (post == null)   return;
+  TextView txtTitle=(TextView)findViewById(R.id.text_post_title);
+  TextView txtBlogName=(TextView)findViewById(R.id.text_blog_name);
+  TextView txtDateline=(TextView)findViewById(R.id.text_post_dateline);
+  WPNetworkImageView imgAvatar=(WPNetworkImageView)findViewById(R.id.image_post_avatar);
+  txtTitle.setText(post.getTitle());
+  if (post.hasBlogName()) {
+    txtBlogName.setText(post.getBlogName());
+  }
+ else {
+    txtBlogName.setText(R.string.reader_untitled_post);
+  }
+  java.util.Date dtPublished=DateTimeUtils.iso8601ToJavaDate(post.getPublished());
+  String dateLine=DateTimeUtils.javaDateToTimeSpan(dtPublished);
+  if (post.isCommentsOpen || post.numReplies > 0) {
+    dateLine+="  \u2022  " + ReaderUtils.getShortCommentLabelText(getContext(),post.numReplies);
+  }
+  if (post.isLikesEnabled) {
+    dateLine+="  \u2022  " + ReaderUtils.getShortLikeLabelText(getContext(),post.numLikes);
+  }
+  txtDateline.setText(dateLine);
+  int avatarSz=getResources().getDimensionPixelSize(R.dimen.avatar_sz_extra_small);
+  String avatarUrl;
+  if (post.hasBlogUrl()) {
+    avatarUrl=GravatarUtils.blavatarFromUrl(post.getBlogUrl(),avatarSz);
+    imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.BLAVATAR);
+  }
+ else {
+    avatarUrl=post.getPostAvatarForDisplay(avatarSz);
+    imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
+  }
+}
