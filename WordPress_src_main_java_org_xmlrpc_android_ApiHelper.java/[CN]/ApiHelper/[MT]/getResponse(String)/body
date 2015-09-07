@@ -1,21 +1,17 @@
 {
+  RequestFuture<String> future=RequestFuture.newFuture();
+  StringRequest request=new StringRequest(stringUrl,future,future);
+  WordPress.requestQueue.add(request);
   try {
-    URL url=new URL(stringUrl);
-    HttpURLConnection urlConnection=(HttpURLConnection)url.openConnection();
-    urlConnection.setInstanceFollowRedirects(true);
-    InputStream inputStream=urlConnection.getInputStream();
-    BufferedReader r=new BufferedReader(new InputStreamReader(inputStream));
-    StringBuilder sb=new StringBuilder();
-    String line;
-    while ((line=r.readLine()) != null) {
-      sb.append(line);
-    }
-    return sb.toString();
+    return future.get(XMLRPCClient.DEFAULT_SOCKET_TIMEOUT,TimeUnit.SECONDS);
   }
- catch (  SSLHandshakeException e) {
-    throw e;
+ catch (  InterruptedException e) {
+    AppLog.e(T.API,e);
   }
-catch (  IOException e) {
+catch (  ExecutionException e) {
+    AppLog.e(T.API,e);
+  }
+catch (  TimeoutException e) {
     AppLog.e(T.API,e);
   }
   return null;
