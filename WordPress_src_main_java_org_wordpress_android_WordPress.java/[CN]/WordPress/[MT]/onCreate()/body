@@ -3,6 +3,7 @@
   mContext=this;
   ProfilingUtils.start("WordPress.onCreate");
   AppLog.enableRecording(true);
+  AppLog.i(T.UTILS,"WordPress.onCreate");
   if (!PackageUtils.isDebugBuild()) {
     Fabric.with(this,new Crashlytics());
   }
@@ -14,12 +15,7 @@
   EventBus.builder().logNoSubscriberMessages(false).sendNoSubscriberEvent(false).throwSubscriberException(true).installDefaultEventBus();
   EventBus.getDefault().register(this);
   RestClientUtils.setUserAgent(getUserAgent());
-  configureSimperium();
   setupVolleyQueue();
-  if (AccountHelper.isSignedInWordPressDotCom()) {
-    AccountHelper.getDefaultAccount().fetchAccountDetails();
-  }
-  ABTestingUtils.init();
   AppLockManager.getInstance().enableDefaultAppLockIfAvailable(this);
   if (AppLockManager.getInstance().isAppLockFeatureEnabled()) {
     AppLockManager.getInstance().getCurrentAppLock().setDisabledActivities(new String[]{"org.wordpress.android.ui.ShareIntentReceiverActivity"});
@@ -28,12 +24,9 @@
   AnalyticsTracker.registerTracker(new AnalyticsTrackerMixpanel(getContext(),BuildConfig.MIXPANEL_TOKEN));
   AnalyticsTracker.registerTracker(new AnalyticsTrackerNosara(getContext()));
   AnalyticsTracker.init(getContext());
-  AnalyticsUtils.refreshMetadata();
-  registerForCloudMessaging(this);
-  ApplicationLifecycleMonitor pnBackendMonitor=new ApplicationLifecycleMonitor();
-  registerComponentCallbacks(pnBackendMonitor);
-  registerActivityLifecycleCallbacks(pnBackendMonitor);
-  SuggestionTable.reset(wpDB.getDatabase());
+  ApplicationLifecycleMonitor applicationLifecycleMonitor=new ApplicationLifecycleMonitor();
+  registerComponentCallbacks(applicationLifecycleMonitor);
+  registerActivityLifecycleCallbacks(applicationLifecycleMonitor);
   int versionCode=PackageUtils.getVersionCode(this);
   int oldVersionCode=AppPrefs.getLastAppVersionCode();
   if (oldVersionCode != 0 && oldVersionCode < versionCode) {
