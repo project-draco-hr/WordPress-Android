@@ -1,0 +1,33 @@
+{
+  RequestFuture<String> future=RequestFuture.newFuture();
+  StringRequest request=new StringRequest(stringUrl,future,future);
+  WordPress.requestQueue.add(request);
+  try {
+    return future.get(XMLRPCClient.DEFAULT_SOCKET_TIMEOUT,TimeUnit.SECONDS);
+  }
+ catch (  InterruptedException e) {
+    AppLog.e(T.API,e);
+  }
+catch (  ExecutionException e) {
+    if (e.getCause() != null && e.getCause() instanceof RedirectError) {
+      if (numberOfRedirects > 5) {
+        AppLog.e(T.API,"Maximum of 5 redirects reached, aborting.",e);
+        return null;
+      }
+      RedirectError re=(RedirectError)e.getCause();
+      if (re.networkResponse != null && re.networkResponse.headers != null && re.networkResponse.headers.containsKey("Location")) {
+        String newURL=re.networkResponse.headers.get("Location");
+        AppLog.i(T.API,"Follow redirect from " + stringUrl + " to "+ newURL);
+        if (URLUtil.isHttpsUrl(stringUrl) && !URLUtil.isHttpsUrl(newURL)) {
+          AppLog.e(T.API,"Redirect from HTTPS to HTTP not allowed.",e);
+          return null;
+        }
+        return getResponse(newURL,numberOfRedirects + 1);
+      }
+    }
+  }
+catch (  TimeoutException e) {
+    AppLog.e(T.API,e);
+  }
+  return null;
+}
