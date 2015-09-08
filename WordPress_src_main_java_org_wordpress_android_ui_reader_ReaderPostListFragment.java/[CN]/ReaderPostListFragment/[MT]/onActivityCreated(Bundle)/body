@@ -1,35 +1,5 @@
 {
   super.onActivityCreated(savedInstanceState);
-  if (shouldShowTagToolbar()) {
-    mTagToolbar=(Toolbar)getActivity().findViewById(R.id.toolbar_reader);
-    mTagToolbar.setVisibility(mRestorePosition > 0 ? View.GONE : View.VISIBLE);
-    if (!mIsLoggedOutReader) {
-      mTagToolbar.inflateMenu(R.menu.reader_list);
-      mTagToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener(){
-        @Override public boolean onMenuItemClick(        MenuItem menuItem){
-          if (menuItem.getItemId() == R.id.menu_tags) {
-            ReaderActivityLauncher.showReaderSubsForResult(getActivity());
-            return true;
-          }
-          return false;
-        }
-      }
-);
-    }
-    int toolbarHeight=getResources().getDimensionPixelSize(R.dimen.toolbar_height);
-    mTagToolbarOffset=(int)(toolbarHeight + (toolbarHeight * 0.25));
-    mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener(){
-      @Override public void onScrolled(      RecyclerView recyclerView,      int dx,      int dy){
-        super.onScrolled(recyclerView,dx,dy);
-        positionTagToolbar();
-      }
-    }
-);
-    if (mTagSpinner == null) {
-      enableTagSpinner();
-    }
-    selectTagInSpinner(getCurrentTag());
-  }
   boolean adapterAlreadyExists=hasPostAdapter();
   mRecyclerView.setAdapter(getPostAdapter());
   if (!adapterAlreadyExists) {
