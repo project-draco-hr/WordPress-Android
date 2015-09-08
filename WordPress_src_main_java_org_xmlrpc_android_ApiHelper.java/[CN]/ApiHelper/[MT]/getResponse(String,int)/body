@@ -1,6 +1,7 @@
 {
   RequestFuture<String> future=RequestFuture.newFuture();
   StringRequest request=new StringRequest(stringUrl,future,future);
+  request.setRetryPolicy(new DefaultRetryPolicy(XMLRPCClient.DEFAULT_SOCKET_TIMEOUT,0,1));
   WordPress.requestQueue.add(request);
   try {
     return future.get(XMLRPCClient.DEFAULT_SOCKET_TIMEOUT,TimeUnit.SECONDS);
@@ -15,15 +16,22 @@ catch (  ExecutionException e) {
         return null;
       }
       RedirectError re=(RedirectError)e.getCause();
-      if (re.networkResponse != null && re.networkResponse.headers != null && re.networkResponse.headers.containsKey("Location")) {
-        String newURL=re.networkResponse.headers.get("Location");
-        AppLog.i(T.API,"Follow redirect from " + stringUrl + " to "+ newURL);
+      if (re.networkResponse != null) {
+        String newURL=getRedirectURL(stringUrl,re.networkResponse);
+        if (newURL == null) {
+          AppLog.e(T.API,"Invalid server response",e);
+          return null;
+        }
         if (URLUtil.isHttpsUrl(stringUrl) && !URLUtil.isHttpsUrl(newURL)) {
           AppLog.e(T.API,"Redirect from HTTPS to HTTP not allowed.",e);
           return null;
         }
+        AppLog.i(T.API,"Follow redirect from " + stringUrl + " to "+ newURL);
         return getResponse(newURL,numberOfRedirects + 1);
       }
+    }
+ else {
+      AppLog.e(T.API,e);
     }
   }
 catch (  TimeoutException e) {
