@@ -1,8 +1,11 @@
 {
   if (networkResponse.headers != null && networkResponse.headers.containsKey("Location")) {
     String newURL=networkResponse.headers.get("Location");
-    if (newURL.startsWith("/")) {
+    if (newURL != null && newURL.startsWith("/")) {
       Uri oldUri=Uri.parse(oldURL);
+      if (oldUri.getScheme() == null || oldUri.getAuthority() == null) {
+        return null;
+      }
       return oldUri.getScheme() + "://" + oldUri.getAuthority()+ newURL;
     }
     return newURL;
