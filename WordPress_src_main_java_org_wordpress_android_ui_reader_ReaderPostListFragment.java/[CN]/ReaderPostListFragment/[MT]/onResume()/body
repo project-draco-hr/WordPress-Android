@@ -3,28 +3,32 @@
   if (mWasPaused) {
     AppLog.d(T.READER,"reader post list > resumed from paused state");
     mWasPaused=false;
-    boolean shouldRefreshPosts=true;
     if (getPostListType().equals(ReaderPostListType.TAG_FOLLOWED)) {
-      Object event=EventBus.getDefault().getStickyEvent(ReaderEvents.TagAdded.class);
-      if (event != null) {
-        String tagName=((ReaderEvents.TagAdded)event).getTagName();
-        EventBus.getDefault().removeStickyEvent(event);
-        ReaderTag newTag=new ReaderTag(tagName,ReaderTagType.FOLLOWED);
-        setCurrentTag(newTag,true);
-        shouldRefreshPosts=false;
+      new Thread(){
+        @Override public void run(){
+          final boolean isTagValid=ReaderTagTable.tagExists(getCurrentTag());
+          final boolean timeToAutoUpdate=isTagValid && ReaderTagTable.shouldAutoUpdateTag(getCurrentTag());
+          getActivity().runOnUiThread(new Runnable(){
+            @Override public void run(){
+              if (!isTagValid) {
+                AppLog.d(T.READER,"reader post list > current tag no longer valid");
+                setCurrentTag(ReaderTag.getDefaultTag(),true);
+              }
+ else               if (timeToAutoUpdate && !isUpdating()) {
+                AppLog.i(T.READER,"reader post list > auto-updating current tag");
+                updateCurrentTag();
+              }
+ else {
+                refreshPosts();
+              }
+            }
+          }
+);
+        }
       }
- else       if (!ReaderTagTable.tagExists(getCurrentTag())) {
-        AppLog.d(T.READER,"reader post list > current tag no longer valid");
-        setCurrentTag(ReaderTag.getDefaultTag(),true);
-        shouldRefreshPosts=false;
-      }
- else       if (!isUpdating() && ReaderTagTable.shouldAutoUpdateTag(getCurrentTag())) {
-        AppLog.i(T.READER,"reader post list > auto-updating current tag after resume");
-        updatePostsWithTag(getCurrentTag(),UpdateAction.REQUEST_NEWER);
-        shouldRefreshPosts=false;
-      }
+.start();
     }
-    if (shouldRefreshPosts) {
+ else {
       refreshPosts();
     }
   }
