@@ -1,0 +1,14 @@
+{
+  if (isAdded() && mRecyclerView.getAdapter() == null) {
+    mRecyclerView.setAdapter(getPostAdapter());
+    if (!mHasUpdatedPosts && NetworkUtils.isNetworkAvailable(getActivity())) {
+      mHasUpdatedPosts=true;
+      if (getPostListType().isTagType() && ReaderTagTable.shouldAutoUpdateTag(mCurrentTag)) {
+        updateCurrentTag();
+      }
+ else       if (getPostListType() == ReaderPostListType.BLOG_PREVIEW) {
+        updatePostsInCurrentBlogOrFeed(UpdateAction.REQUEST_NEWER);
+      }
+    }
+  }
+}
