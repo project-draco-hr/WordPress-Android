@@ -5,29 +5,7 @@
     AppLog.d(T.READER,"reader post list > resumed from paused state");
     mWasPaused=false;
     if (getPostListType().equals(ReaderPostListType.TAG_FOLLOWED)) {
-      new Thread(){
-        @Override public void run(){
-          final boolean isTagValid=ReaderTagTable.tagExists(getCurrentTag());
-          final boolean timeToAutoUpdate=isTagValid && ReaderTagTable.shouldAutoUpdateTag(getCurrentTag());
-          getActivity().runOnUiThread(new Runnable(){
-            @Override public void run(){
-              if (!isTagValid) {
-                AppLog.d(T.READER,"reader post list > current tag no longer valid");
-                setCurrentTag(ReaderTag.getDefaultTag(),true);
-              }
- else               if (timeToAutoUpdate && !isUpdating()) {
-                AppLog.d(T.READER,"reader post list > auto-updating current tag");
-                updateCurrentTag();
-              }
- else {
-                refreshPosts();
-              }
-            }
-          }
-);
-        }
-      }
-.start();
+      resumeFollowedTag();
     }
  else {
       refreshPosts();
