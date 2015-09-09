@@ -1,9 +1,13 @@
 {
-  ReaderEvents.UpdatedFollowedTagsAndBlogs lastUpdateEvent=EventBus.getDefault().getStickyEvent(ReaderEvents.UpdatedFollowedTagsAndBlogs.class);
-  if (lastUpdateEvent != null && lastUpdateEvent.minutesSinceLastUpdate() < 120) {
+  if (!isAdded() || !NetworkUtils.isNetworkAvailable(getActivity())) {
     return;
   }
+  if (mLastAutoUpdateDt != null) {
+    int minutesSinceLastUpdate=DateTimeUtils.minutesBetween(mLastAutoUpdateDt,new Date());
+    if (minutesSinceLastUpdate < 120) {
+      return;
+    }
+  }
   AppLog.d(T.READER,"reader post list > updating tags and blogs");
-  EventBus.getDefault().postSticky(new ReaderEvents.UpdatedFollowedTagsAndBlogs());
-  ReaderUpdateService.startService(getActivity(),EnumSet.of(ReaderUpdateService.UpdateTask.TAGS,ReaderUpdateService.UpdateTask.FOLLOWED_BLOGS));
+  ReaderUpdateService.startService(getActivity(),EnumSet.of(UpdateTask.TAGS,UpdateTask.FOLLOWED_BLOGS));
 }
