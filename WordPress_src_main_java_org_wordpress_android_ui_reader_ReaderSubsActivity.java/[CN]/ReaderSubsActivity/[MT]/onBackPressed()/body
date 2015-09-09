@@ -1,18 +1,6 @@
 {
-  if (mTagsChanged || mBlogsChanged) {
-    Bundle bundle=new Bundle();
-    if (mTagsChanged) {
-      bundle.putBoolean(KEY_TAGS_CHANGED,true);
-      if (mLastAddedTagName != null && ReaderTagTable.isFollowedTagName(mLastAddedTagName)) {
-        bundle.putString(KEY_LAST_ADDED_TAG_NAME,mLastAddedTagName);
-      }
-    }
-    if (mBlogsChanged) {
-      bundle.putBoolean(KEY_BLOGS_CHANGED,true);
-    }
-    Intent intent=new Intent();
-    intent.putExtras(bundle);
-    setResult(RESULT_OK,intent);
+  if (!TextUtils.isEmpty(mLastAddedTagName)) {
+    EventBus.getDefault().postSticky(new ReaderEvents.TagAdded(mLastAddedTagName));
   }
   super.onBackPressed();
 }
