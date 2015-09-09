@@ -1,7 +1,7 @@
 {
-  if (EventBus.getDefault().getStickyEvent(ReaderEvents.HasPurgedDatabase.class) == null && NetworkUtils.isNetworkAvailable(getActivity())) {
+  if (!mHasPurgedReaderDb && NetworkUtils.isNetworkAvailable(getActivity())) {
     AppLog.d(T.READER,"reader post list > purging database");
+    mHasPurgedReaderDb=true;
     ReaderDatabase.purgeAsync();
-    EventBus.getDefault().postSticky(new ReaderEvents.HasPurgedDatabase());
   }
 }
