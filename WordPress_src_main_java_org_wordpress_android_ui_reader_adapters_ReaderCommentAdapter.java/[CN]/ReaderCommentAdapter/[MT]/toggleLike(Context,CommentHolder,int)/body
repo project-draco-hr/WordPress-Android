@@ -2,18 +2,20 @@
   if (!NetworkUtils.checkConnection(context)) {
     return;
   }
-  if (!isValidPosition(position)) {
+  ReaderComment comment=getItem(position);
+  if (comment == null) {
     ToastUtils.showToast(context,R.string.reader_toast_err_generic);
     return;
   }
-  ReaderComment comment=mComments.get(position);
   boolean isAskingToLike=!comment.isLikedByCurrentUser;
-  ReaderAnim.animateLikeButton(holder.imgLike,isAskingToLike);
+  ReaderAnim.animateLikeButton(holder.countLikes.getImageView(),isAskingToLike);
   if (!ReaderCommentActions.performLikeAction(comment,isAskingToLike)) {
     ToastUtils.showToast(context,R.string.reader_toast_err_generic);
     return;
   }
   ReaderComment updatedComment=ReaderCommentTable.getComment(comment.blogId,comment.postId,comment.commentId);
-  mComments.set(position,updatedComment);
-  showLikeStatus(holder,position);
+  if (updatedComment != null) {
+    mComments.set(position - NUM_HEADERS,updatedComment);
+    showLikeStatus(holder,position);
+  }
 }
