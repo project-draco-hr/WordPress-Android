@@ -10,7 +10,12 @@
  else   if (itemID == R.id.menu_share) {
     Intent share=new Intent(Intent.ACTION_SEND);
     share.setType("text/plain");
-    share.putExtra(Intent.EXTRA_TEXT,mWebView.getUrl());
+    Bundle extras=getIntent().getExtras();
+    String sharableUrl=extras.getString(SHARABLE_URL,null);
+    if (sharableUrl == null) {
+      sharableUrl=mWebView.getUrl();
+    }
+    share.putExtra(Intent.EXTRA_TEXT,sharableUrl);
     startActivity(Intent.createChooser(share,getText(R.string.share_link)));
     return true;
   }
