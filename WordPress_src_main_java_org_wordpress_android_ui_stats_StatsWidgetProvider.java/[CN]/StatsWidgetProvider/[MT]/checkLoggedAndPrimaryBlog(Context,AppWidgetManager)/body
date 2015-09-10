@@ -1,0 +1,26 @@
+{
+  if (!AccountHelper.isSignedInWordPressDotCom()) {
+    AppLog.w(AppLog.T.STATS,"Not signed to WordPress.com. Widget update skipped!");
+    showError(context,appWidgetManager,context.getString(R.string.stats_widget_error_login));
+    return null;
+  }
+  final long primaryBlogId=AccountHelper.getDefaultAccount().getPrimaryBlogId();
+  final int localBlogID=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId((int)primaryBlogId);
+  if (primaryBlogId == 0 || localBlogID == 0) {
+    AppLog.w(AppLog.T.STATS,"No primary blog found! Widget update skipped!");
+    showError(context,appWidgetManager,"No primary blog found!");
+    return null;
+  }
+  final Blog primaryBlog=WordPress.getBlog(localBlogID);
+  if (primaryBlog == null) {
+    showError(context,appWidgetManager,"No primary blog found!");
+    AppLog.e(AppLog.T.STATS,"Current blog is null. This should never happen here.");
+    return null;
+  }
+  if (!primaryBlog.isDotcomFlag() && !primaryBlog.hasValidJetpackCredentials() && !AccountHelper.isSignedInWordPressDotCom()) {
+    showError(context,appWidgetManager,"Your Jetpack blog is not connected properly with WordPress.com into the app.");
+    AppLog.w(AppLog.T.STATS,context.getString(R.string.stats_widget_error_login));
+    return null;
+  }
+  return primaryBlog;
+}

@@ -1,0 +1,33 @@
+{
+  if (pageRequested != -1) {
+    return;
+  }
+  if (endpointName != StatsEndpointsEnum.VISITS) {
+    return;
+  }
+  if (timeframe != StatsTimeframe.DAY && timeframe != StatsTimeframe.INSIGHTS) {
+    return;
+  }
+  int parsedBlogID=Integer.parseInt(blogId);
+  int localTableBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(parsedBlogID);
+  if (!date.equals(StatsUtils.getCurrentDateTZ(localTableBlogId))) {
+    return;
+  }
+  final long primaryBlogId=AccountHelper.getDefaultAccount().getPrimaryBlogId();
+  if (localTableBlogId != WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId((int)primaryBlogId)) {
+    return;
+  }
+  if (responseObjectModel == null || responseObjectModel instanceof VolleyError || responseObjectModel instanceof StatsError) {
+    return;
+  }
+  if (!(responseObjectModel instanceof VisitsModel)) {
+    return;
+  }
+  VisitsModel visitsModel=(VisitsModel)responseObjectModel;
+  if (visitsModel.getVisits() == null || visitsModel.getVisits().size() == 0) {
+    return;
+  }
+  List<VisitModel> visits=visitsModel.getVisits();
+  VisitModel data=visits.get(visits.size() - 1);
+  StatsWidgetProvider.updateWidgets(getApplicationContext(),data);
+}
