@@ -1,0 +1,22 @@
+{
+  Context context=view.getContext();
+  final ListPopupWindow listPopup=new ListPopupWindow(context);
+  listPopup.setAnchorView(view);
+  listPopup.setWidth(context.getResources().getDimensionPixelSize(R.dimen.menu_item_width));
+  listPopup.setModal(true);
+  listPopup.setAdapter(new ReaderTagMenuAdapter(context,mCurrentTag));
+  listPopup.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+    @Override public void onItemClick(    AdapterView<?> parent,    View view,    int position,    long id){
+      listPopup.dismiss();
+      Object object=parent.getItemAtPosition(position);
+      if (object instanceof ReaderTag) {
+        ReaderTag tag=(ReaderTag)object;
+        if (mOnTagChangedListener != null) {
+          mOnTagChangedListener.onTagChanged(tag);
+        }
+      }
+    }
+  }
+);
+  listPopup.show();
+}
