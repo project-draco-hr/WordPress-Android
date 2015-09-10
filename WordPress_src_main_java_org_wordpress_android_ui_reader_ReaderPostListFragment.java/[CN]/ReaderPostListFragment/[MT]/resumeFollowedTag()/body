@@ -4,31 +4,14 @@
     String tagName=((ReaderEvents.TagAdded)event).getTagName();
     EventBus.getDefault().removeStickyEvent(event);
     ReaderTag newTag=new ReaderTag(tagName,ReaderTagType.FOLLOWED);
-    setCurrentTag(newTag,true);
-    return;
+    setCurrentTag(newTag);
   }
-  new Thread(){
-    @Override public void run(){
-      final boolean isTagValid=ReaderTagTable.tagExists(getCurrentTag());
-      final boolean timeToAutoUpdate=isTagValid && ReaderTagTable.shouldAutoUpdateTag(getCurrentTag());
-      getActivity().runOnUiThread(new Runnable(){
-        @Override public void run(){
-          if (!isAdded())           return;
-          if (!isTagValid) {
-            AppLog.d(T.READER,"reader post list > current tag no longer valid");
-            setCurrentTag(ReaderTag.getDefaultTag(),true);
-          }
- else           if (timeToAutoUpdate && !isUpdating()) {
-            AppLog.d(T.READER,"reader post list > auto-updating current tag");
-            updateCurrentTag();
-          }
+ else   if (!ReaderTagTable.tagExists(getCurrentTag())) {
+    AppLog.d(T.READER,"reader post list > current tag no longer valid");
+    setCurrentTag(ReaderTag.getDefaultTag());
+  }
  else {
-            refreshPosts();
-          }
-        }
-      }
-);
-    }
+    refreshPosts();
+    updateCurrentTagIfTime();
   }
-.start();
 }
