@@ -1,0 +1,19 @@
+{
+  String prevWidgetDataString=AppPrefs.getStatsWidgetData();
+  if (!StringUtils.isEmpty(prevWidgetDataString)) {
+    try {
+      JSONObject prevData=new JSONObject(prevWidgetDataString);
+      if (!prevData.has("date") || !prevData.getString("date").equals(currentDate)) {
+        return null;
+      }
+      if (!prevData.has("blog_id") || Integer.parseInt(prevData.getString("blog_id")) != primaryBlog.getRemoteBlogId()) {
+        return null;
+      }
+      return prevData;
+    }
+ catch (    JSONException e) {
+      AppLog.e(AppLog.T.STATS,e);
+    }
+  }
+  return null;
+}

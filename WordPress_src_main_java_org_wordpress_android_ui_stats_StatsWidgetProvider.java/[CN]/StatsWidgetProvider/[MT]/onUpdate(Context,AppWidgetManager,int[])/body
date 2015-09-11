@@ -1,27 +1,21 @@
 {
-  AppLog.i(AppLog.T.STATS,"onUpdate called");
+  AppLog.d(AppLog.T.STATS,"onUpdate called");
   Blog primaryBlog=checkLoggedAndPrimaryBlog(context,appWidgetManager);
   if (primaryBlog == null) {
     return;
   }
-  String prevWidgetDataString=AppPrefs.getStatsWidgetData();
-  String views=null;
-  String visitors=null;
-  if (!StringUtils.isEmpty(prevWidgetDataString)) {
-    String[] prevWidgetData=prevWidgetDataString.split(";");
-    if (prevWidgetData.length == 6) {
-      String currentDate=StatsUtils.getCurrentDateTZ(primaryBlog.getLocalTableBlogId());
-      if (Integer.parseInt(prevWidgetData[0]) == primaryBlog.getRemoteBlogId() && currentDate.equals(prevWidgetData[1])) {
-        views=prevWidgetData[2];
-        visitors=prevWidgetData[3];
-      }
-    }
+  String currentDate=StatsUtils.getCurrentDateTZ(primaryBlog.getLocalTableBlogId());
+  JSONObject prevData=getCachedStatsData(primaryBlog,currentDate);
+  if (prevData != null) {
+    showStatsData(context,appWidgetManager,primaryBlog,prevData);
   }
-  updateUI(context,appWidgetManager,primaryBlog,views,visitors);
+ else {
+    showMessage(context,appWidgetManager,context.getString(R.string.stats_widget_loading_data));
+  }
   Intent intent=new Intent(context,StatsService.class);
   intent.putExtra(StatsService.ARG_BLOG_ID,String.valueOf(primaryBlog.getRemoteBlogId()));
   intent.putExtra(StatsService.ARG_PERIOD,StatsTimeframe.DAY);
-  intent.putExtra(StatsService.ARG_DATE,StatsUtils.getCurrentDateTZ(primaryBlog.getLocalTableBlogId()));
+  intent.putExtra(StatsService.ARG_DATE,currentDate);
   intent.putExtra(StatsService.ARG_SECTION,new int[]{StatsService.StatsEndpointsEnum.VISITS.ordinal()});
   context.startService(intent);
 }

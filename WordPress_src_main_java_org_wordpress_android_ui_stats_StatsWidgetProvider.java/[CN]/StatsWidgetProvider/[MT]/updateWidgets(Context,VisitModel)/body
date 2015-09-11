@@ -9,8 +9,19 @@
     AppLog.w(AppLog.T.STATS,"Widget received stats data that doesn't belong to the primary blog!!!");
     return;
   }
-  updateUI(context,appWidgetManager,primaryBlog,String.valueOf(data.getViews()),String.valueOf(data.getVisitors()));
-  String currentDate=StatsUtils.getCurrentDateTZ(primaryBlog.getLocalTableBlogId());
-  String prefString=data.getBlogID() + ";" + currentDate+ ";"+ data.getViews()+ ";"+ data.getVisitors()+ ";"+ data.getComments()+ ";"+ data.getLikes();
-  AppPrefs.setStatsWidgetData(prefString);
+  try {
+    String currentDate=StatsUtils.getCurrentDateTZ(primaryBlog.getLocalTableBlogId());
+    JSONObject newData=new JSONObject();
+    newData.put("blog_id",data.getBlogID());
+    newData.put("date",currentDate);
+    newData.put("views",data.getViews());
+    newData.put("visitors",data.getVisitors());
+    newData.put("comments",data.getComments());
+    newData.put("likes",data.getLikes());
+    AppPrefs.setStatsWidgetData(newData.toString());
+    showStatsData(context,appWidgetManager,primaryBlog,newData);
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.STATS,e);
+  }
 }

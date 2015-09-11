@@ -17,17 +17,24 @@
   if (localTableBlogId != WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId((int)primaryBlogId)) {
     return;
   }
-  if (responseObjectModel == null || responseObjectModel instanceof VolleyError || responseObjectModel instanceof StatsError) {
+  if (responseObjectModel == null) {
     return;
   }
-  if (!(responseObjectModel instanceof VisitsModel)) {
-    return;
+  if (responseObjectModel instanceof VisitsModel) {
+    VisitsModel visitsModel=(VisitsModel)responseObjectModel;
+    if (visitsModel.getVisits() == null || visitsModel.getVisits().size() == 0) {
+      return;
+    }
+    List<VisitModel> visits=visitsModel.getVisits();
+    VisitModel data=visits.get(visits.size() - 1);
+    StatsWidgetProvider.updateWidgets(getApplicationContext(),data);
   }
-  VisitsModel visitsModel=(VisitsModel)responseObjectModel;
-  if (visitsModel.getVisits() == null || visitsModel.getVisits().size() == 0) {
-    return;
+ else   if (responseObjectModel instanceof VolleyError) {
+    VolleyError error=(VolleyError)responseObjectModel;
+    StatsWidgetProvider.updateWidgets(getApplicationContext(),error);
   }
-  List<VisitModel> visits=visitsModel.getVisits();
-  VisitModel data=visits.get(visits.size() - 1);
-  StatsWidgetProvider.updateWidgets(getApplicationContext(),data);
+ else   if (responseObjectModel instanceof StatsError) {
+    StatsError statsError=(StatsError)responseObjectModel;
+    StatsWidgetProvider.updateWidgets(getApplicationContext(),statsError);
+  }
 }

@@ -5,17 +5,10 @@
   for (  int widgetId : allWidgetIds) {
     RemoteViews remoteViews=new RemoteViews(context.getPackageName(),R.layout.stats_widget_layout);
     remoteViews.setTextViewText(R.id.blog_title,name);
-    if (views == null) {
-      remoteViews.setViewVisibility(R.id.stats_widget_error_container,View.VISIBLE);
-      remoteViews.setViewVisibility(R.id.stats_widget_values_container,View.GONE);
-      remoteViews.setTextViewText(R.id.stats_widget_error_text,context.getString(R.string.stats_widget_loading_data));
-    }
- else {
-      remoteViews.setViewVisibility(R.id.stats_widget_error_container,View.GONE);
-      remoteViews.setViewVisibility(R.id.stats_widget_values_container,View.VISIBLE);
-      remoteViews.setTextViewText(R.id.stats_widget_views,views);
-      remoteViews.setTextViewText(R.id.stats_widget_visitors,visitors);
-    }
+    remoteViews.setViewVisibility(R.id.stats_widget_error_container,View.GONE);
+    remoteViews.setViewVisibility(R.id.stats_widget_values_container,View.VISIBLE);
+    remoteViews.setTextViewText(R.id.stats_widget_views,data.optString("views","0"));
+    remoteViews.setTextViewText(R.id.stats_widget_visitors,data.optString("visitors","0"));
     Intent intent=new Intent(context,StatsActivity.class);
     intent.putExtra(StatsActivity.ARG_LOCAL_TABLE_BLOG_ID,blog.getLocalTableBlogId());
     PendingIntent pendingIntent=PendingIntent.getActivity(context,0,intent,0);
