@@ -1,0 +1,20 @@
+{
+  final ThemeViewHolder themeViewHolder=(ThemeViewHolder)view.getTag();
+  final String screenshotURL=cursor.getString(cursor.getColumnIndex("screenshot"));
+  final String name=cursor.getString(cursor.getColumnIndex("name"));
+  final String price=cursor.getString(cursor.getColumnIndex("price"));
+  themeViewHolder.nameView.setText(name);
+  themeViewHolder.priceView.setText(price);
+  ScreenshotHolder urlHolder=(ScreenshotHolder)themeViewHolder.imageView.getTag();
+  if (urlHolder == null) {
+    urlHolder=new ScreenshotHolder();
+    urlHolder.requestURL=screenshotURL;
+    themeViewHolder.imageView.setDefaultImageResId(R.drawable.light_grey);
+    themeViewHolder.imageView.setTag(urlHolder);
+  }
+  if (!urlHolder.requestURL.equals(screenshotURL)) {
+    themeViewHolder.imageView.setImageBitmap(null);
+    urlHolder.requestURL=screenshotURL;
+  }
+  themeViewHolder.imageView.setImageUrl(screenshotURL + "?w=" + mGridView.getWidth(),WordPress.imageLoader);
+}
