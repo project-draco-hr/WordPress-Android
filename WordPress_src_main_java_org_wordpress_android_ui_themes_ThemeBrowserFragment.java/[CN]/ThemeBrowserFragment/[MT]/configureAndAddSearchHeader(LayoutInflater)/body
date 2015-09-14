@@ -1,9 +1,11 @@
 {
   View headerSearch=inflater.inflate(R.layout.theme_grid_cardview_header_search,null);
-  mSpinner=(Spinner)headerSearch.findViewById(R.id.theme_filter_spinner);
-  ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(getActivity(),R.array.themes_filter_array,android.R.layout.simple_spinner_item);
-  adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-  mSpinner.setAdapter(adapter);
-  mGridView.addHeaderView(headerSearch);
-  mSpinner.setOnItemSelectedListener(this);
+  configureFilterSpinner(headerSearch);
+  mSearchView=(ImageButton)headerSearch.findViewById(R.id.theme_search);
+  mSearchView.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      mCallback.onSearchClicked();
+    }
+  }
+);
 }
