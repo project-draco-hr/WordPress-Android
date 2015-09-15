@@ -27,17 +27,16 @@
     String message=(newStatus == CommentStatus.TRASH ? getString(R.string.comment_trashed) : getString(R.string.comment_spammed));
     View.OnClickListener undoListener=new View.OnClickListener(){
       @Override public void onClick(      View v){
-        mSnackbarDidUndo=true;
         getListFragment().setCommentIsModerating(comment.commentID,false);
         getListFragment().loadComments();
       }
     }
 ;
-    mSnackbarDidUndo=false;
     Snackbar.make(getListFragment().getView(),message,Snackbar.LENGTH_LONG).setAction(R.string.undo,undoListener).show();
     new Handler().postDelayed(new Runnable(){
       @Override public void run(){
-        if (mSnackbarDidUndo) {
+        if (!isFinishing() && hasListFragment() && !getListFragment().isModeratingComment(comment.commentID)) {
+          AppLog.d(AppLog.T.COMMENTS,"comment moderation undone");
           return;
         }
         CommentActions.moderateComment(accountId,comment,newStatus,new CommentActions.CommentActionListener(){
