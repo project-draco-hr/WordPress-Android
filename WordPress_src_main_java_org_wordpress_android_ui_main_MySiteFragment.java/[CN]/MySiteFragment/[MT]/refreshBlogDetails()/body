@@ -25,10 +25,8 @@
   String blogName=StringUtils.unescapeHTML(mBlog.getBlogName());
   String homeURL;
   if (!TextUtils.isEmpty(mBlog.getHomeURL())) {
-    homeURL=mBlog.getHomeURL().replace("http://","").replace("https://","").trim();
-    if (homeURL.endsWith("/")) {
-      homeURL=homeURL.substring(0,homeURL.length() - 1);
-    }
+    homeURL=UrlUtils.removeScheme(mBlog.getHomeURL());
+    homeURL=StringUtils.removeTrailingSlash(homeURL);
   }
  else {
     homeURL=StringUtils.getHost(mBlog.getUrl());
