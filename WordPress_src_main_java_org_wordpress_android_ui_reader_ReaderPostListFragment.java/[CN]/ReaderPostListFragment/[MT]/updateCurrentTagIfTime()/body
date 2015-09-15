@@ -1,0 +1,18 @@
+{
+  if (!isAdded() || !hasCurrentTag()) {
+    return;
+  }
+  new Thread(){
+    @Override public void run(){
+      if (isAdded() && ReaderTagTable.shouldAutoUpdateTag(getCurrentTag())) {
+        getActivity().runOnUiThread(new Runnable(){
+          @Override public void run(){
+            updateCurrentTag();
+          }
+        }
+);
+      }
+    }
+  }
+.start();
+}
