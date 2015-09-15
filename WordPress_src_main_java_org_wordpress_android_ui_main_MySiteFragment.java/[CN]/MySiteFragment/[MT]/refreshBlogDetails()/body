@@ -23,8 +23,15 @@
   mThemesContainer.setVisibility(themesVisibility);
   mBlavatarImageView.setImageUrl(GravatarUtils.blavatarFromUrl(mBlog.getUrl(),mBlavatarSz),WPNetworkImageView.ImageType.BLAVATAR);
   String blogName=StringUtils.unescapeHTML(mBlog.getBlogName());
-  String hostName=StringUtils.getHost(mBlog.getUrl());
-  String blogTitle=TextUtils.isEmpty(blogName) ? hostName : blogName;
+  String homeURL;
+  if (!TextUtils.isEmpty(mBlog.getHomeURL())) {
+    homeURL=UrlUtils.removeScheme(mBlog.getHomeURL());
+    homeURL=StringUtils.removeTrailingSlash(homeURL);
+  }
+ else {
+    homeURL=StringUtils.getHost(mBlog.getUrl());
+  }
+  String blogTitle=TextUtils.isEmpty(blogName) ? homeURL : blogName;
   mBlogTitleTextView.setText(blogTitle);
-  mBlogSubtitleTextView.setText(hostName);
+  mBlogSubtitleTextView.setText(homeURL);
 }
