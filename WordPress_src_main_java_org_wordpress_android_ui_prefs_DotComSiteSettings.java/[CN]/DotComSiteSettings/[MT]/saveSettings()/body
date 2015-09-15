@@ -1,0 +1,19 @@
+{
+  SiteSettingsTable.saveSettings(mSettings);
+  final Map<String,String> params=mSettings.serializeDotComParams(mRemoteSettings);
+  if (params == null || params.isEmpty())   return;
+  WordPress.getRestClientUtils().setGeneralSiteSettings(String.valueOf(mBlog.getRemoteBlogId()),new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject response){
+      AppLog.d(AppLog.T.API,"Site Settings saved remotely");
+      saveOnUiThread(null,mSettings);
+      mRemoteSettings.copyFrom(mSettings);
+    }
+  }
+,new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+      AppLog.w(AppLog.T.API,"Error POSTing site settings changes: " + error);
+      saveOnUiThread(error,null);
+    }
+  }
+,params);
+}
