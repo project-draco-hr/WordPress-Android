@@ -1,12 +1,11 @@
 {
   try {
-    int num=response.getInt(NUM_POSTS_WPCOM_REST_KEY);
-    JSONArray categories=response.getJSONArray(CATEGORIES_WPCOM_REST_KEY);
+    int num=response.getInt(NUM_POSTS_KEY);
+    JSONArray categories=response.getJSONArray(CATEGORIES_KEY);
     CategoryModel[] models=new CategoryModel[num];
     for (int i=0; i < num; ++i) {
       JSONObject category=categories.getJSONObject(i);
-      models[i]=new CategoryModel();
-      models[i].deserializeDotComRestResponse(category);
+      models[i]=deserializeCategoryFromJson(category);
     }
     AppLog.d(AppLog.T.API,"Successfully fetched WP.com categories");
     return models;
