@@ -1,10 +1,11 @@
 {
   if (postUploadedSuccessfully) {
-    mPostUploadNotifier.cancelNotification();
     WordPress.wpDB.deleteMediaFilesForPost(mPost);
+    mPostUploadNotifier.cancelNotification();
+    mPostUploadNotifier.updateNotificationSuccess(mPost,mLatestIcon);
   }
  else {
-    mPostUploadNotifier.updateNotificationWithError(mErrorMessage,mIsMediaError,mPost.isPage(),mErrorUnavailableVideoPress);
+    mPostUploadNotifier.updateNotificationError(mErrorMessage,mIsMediaError,mPost.isPage(),mErrorUnavailableVideoPress);
   }
   postUploaded();
   EventBus.getDefault().post(new PostUploadEnded(postUploadedSuccessfully,mPost.getLocalTableBlogId()));
