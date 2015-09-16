@@ -1,0 +1,18 @@
+{
+  if (mSiteSettings.isSameCategoryList(mCategoryPreference.getEntryValues())) {
+    mCategoryPreference.setValue(String.valueOf(mSiteSettings.getDefaultCategory()));
+    return;
+  }
+  CategoryModel[] models=mSiteSettings.getCategories();
+  if (models == null)   return;
+  String[] entries=new String[models.length];
+  String[] values=new String[models.length];
+  for (int i=0; i < models.length; ++i) {
+    entries[i]=models[i].name;
+    values[i]=String.valueOf(models[i].id);
+  }
+  mCategoryPreference.setEntries(entries);
+  mCategoryPreference.setEntryValues(values);
+  mCategoryPreference.setValue(String.valueOf(mSiteSettings.getDefaultCategory()));
+  mCategoryPreference.setSummary(mCategoryPreference.getEntry());
+}

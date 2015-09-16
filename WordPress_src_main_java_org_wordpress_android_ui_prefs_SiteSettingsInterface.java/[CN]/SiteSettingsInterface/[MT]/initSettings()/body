@@ -1,21 +1,5 @@
 {
-  int tableKey=mBlog.getLocalTableBlogId();
-  Cursor localSettings=SiteSettingsTable.getSettings(tableKey);
-  if (localSettings != null && localSettings.moveToFirst() && localSettings.getCount() > 0) {
-    mSettings.isInLocalTable=true;
-    mSettings.deserializeDatabaseCursor(localSettings);
-    localSettings.close();
-    mSettings.language=convertLanguageIdToLanguageCode(Integer.toString(mSettings.languageId));
-    setLocation(mSettings.location);
-    updateOnUiThread(null,mSettings);
-  }
- else {
-    mSettings.isInLocalTable=false;
-    setAddress(mBlog.getHomeURL());
-    setUsername(mBlog.getUsername());
-    setPassword(mBlog.getPassword());
-    setTitle(mBlog.getBlogName());
-  }
+  loadCachedSettings();
   fetchRemoteData();
   fetchPostFormats();
 }

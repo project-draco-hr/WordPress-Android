@@ -5,18 +5,18 @@
       AppLog.d(AppLog.T.API,"Received response to Settings REST request.");
       mRemoteSettings.localTableId=mBlog.getLocalTableBlogId();
       mRemoteSettings.deserializeDotComRestResponse(mBlog,response);
-      mRemoteSettings.language=convertLanguageIdToLanguageCode(Integer.toString(mRemoteSettings.languageId));
+      mRemoteSettings.language=languageIdToLanguageCode(Integer.toString(mRemoteSettings.languageId));
       if (!mRemoteSettings.isTheSame(mSettings)) {
-        updateOnUiThread(null,mRemoteSettings);
         mSettings.copyFrom(mRemoteSettings);
         SiteSettingsTable.saveSettings(mSettings);
+        updateOnUiThread(null);
       }
     }
   }
 ,new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError error){
       AppLog.w(AppLog.T.API,"Error response to Settings REST request: " + error);
-      updateOnUiThread(error,null);
+      updateOnUiThread(error);
     }
   }
 );
