@@ -1,0 +1,18 @@
+{
+  mBucket=SimperiumUtils.getNotesBucket();
+  if (mBucket != null) {
+    if (mNotesAdapter == null) {
+      mNotesAdapter=new NotesAdapter(getActivity(),mBucket);
+      mNotesAdapter.setOnNoteClickListener(mOnNoteClickListener);
+    }
+    mRecyclerView.setAdapter(mNotesAdapter);
+  }
+ else {
+    if (!AccountHelper.isSignedInWordPressDotCom()) {
+      showEmptyView(R.string.notifications_account_required,true);
+    }
+ else {
+      showEmptyView(R.string.error_refresh_notifications,false);
+    }
+  }
+}
