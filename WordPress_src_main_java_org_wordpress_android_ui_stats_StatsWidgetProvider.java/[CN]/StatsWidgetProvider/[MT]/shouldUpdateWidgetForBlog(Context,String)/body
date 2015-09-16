@@ -1,0 +1,17 @@
+{
+  AppWidgetManager appWidgetManager=AppWidgetManager.getInstance(context);
+  ComponentName thisWidget=new ComponentName(context,StatsWidgetProvider.class);
+  if (appWidgetManager.getAppWidgetIds(thisWidget).length == 0) {
+    return false;
+  }
+  if (!AccountHelper.isSignedInWordPressDotCom()) {
+    AppLog.w(AppLog.T.STATS,"Not signed to WordPress.com.");
+    return false;
+  }
+  long parsedBlogID=Long.parseLong(blogID);
+  final long primaryBlogId=AccountHelper.getDefaultAccount().getPrimaryBlogId();
+  if (parsedBlogID != primaryBlogId) {
+    return false;
+  }
+  return true;
+}

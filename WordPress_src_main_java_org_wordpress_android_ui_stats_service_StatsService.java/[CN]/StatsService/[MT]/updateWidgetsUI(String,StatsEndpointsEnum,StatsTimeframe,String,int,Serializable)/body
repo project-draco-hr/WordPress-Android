@@ -8,21 +8,15 @@
   if (timeframe != StatsTimeframe.DAY && timeframe != StatsTimeframe.INSIGHTS) {
     return;
   }
-  AppWidgetManager appWidgetManager=AppWidgetManager.getInstance(this);
-  ComponentName thisWidget=new ComponentName(this,StatsWidgetProvider.class);
-  if (appWidgetManager.getAppWidgetIds(thisWidget).length == 0) {
-    return;
-  }
   int parsedBlogID=Integer.parseInt(blogId);
   int localTableBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(parsedBlogID);
   if (!date.equals(StatsUtils.getCurrentDateTZ(localTableBlogId))) {
     return;
   }
-  final long primaryBlogId=AccountHelper.getDefaultAccount().getPrimaryBlogId();
-  if (localTableBlogId != WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId((int)primaryBlogId)) {
+  if (responseObjectModel == null) {
     return;
   }
-  if (responseObjectModel == null) {
+  if (!StatsWidgetProvider.shouldUpdateWidgetForBlog(this,blogId)) {
     return;
   }
   if (responseObjectModel instanceof VisitsModel) {
