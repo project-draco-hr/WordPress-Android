@@ -1,0 +1,16 @@
+{
+  new Thread(new Runnable(){
+    @Override public void run(){
+      AnalyticsTracker.registerTracker(new AnalyticsTrackerMixpanel(getContext(),BuildConfig.MIXPANEL_TOKEN));
+      AnalyticsTracker.registerTracker(analyticsTrackerNosara);
+      AnalyticsTracker.init(getContext());
+      int versionCode=PackageUtils.getVersionCode(getContext());
+      int oldVersionCode=AppPrefs.getLastAppVersionCode();
+      if (oldVersionCode != 0 && oldVersionCode < versionCode) {
+        AnalyticsTracker.track(AnalyticsTracker.Stat.APPLICATION_UPGRADED);
+      }
+      AppPrefs.setLastAppVersionCode(versionCode);
+    }
+  }
+).start();
+}
