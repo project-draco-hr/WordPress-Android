@@ -27,9 +27,10 @@
  else {
     text=mIsPage ? getString(R.string.page_trashed) : getString(R.string.post_trashed);
   }
-  Snackbar.make(getView().findViewById(R.id.coordinator),text,Snackbar.LENGTH_LONG).setAction(R.string.undo,undoListener).show();
-  new Handler().postDelayed(new Runnable(){
-    @Override public void run(){
+  Snackbar snackbar=Snackbar.make(getView().findViewById(R.id.coordinator),text,Snackbar.LENGTH_LONG).setAction(R.string.undo,undoListener);
+  snackbar.setCallback(new Snackbar.Callback(){
+    @Override public void onDismissed(    Snackbar snackbar,    int event){
+      super.onDismissed(snackbar,event);
       if (!mTrashedPosts.contains(post)) {
         AppLog.d(AppLog.T.POSTS,"user undid trashing");
         return;
@@ -44,5 +45,6 @@
       }
     }
   }
-,Constants.SNACKBAR_LONG_DURATION_MS);
+);
+  snackbar.show();
 }
