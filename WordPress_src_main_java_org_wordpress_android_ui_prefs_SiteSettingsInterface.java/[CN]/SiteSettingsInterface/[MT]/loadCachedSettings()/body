@@ -1,12 +1,12 @@
 {
-  new Thread(new Runnable(){
+  mLoadCacheThread=new Thread(new Runnable(){
     @Override public void run(){
       Cursor localSettings=SiteSettingsTable.getSettings(mBlog.getLocalTableBlogId());
       if (localSettings != null && localSettings.moveToFirst() && localSettings.getCount() > 0) {
         mSettings.deserializeDatabaseCursor(localSettings);
         mSettings.language=languageIdToLanguageCode(Integer.toString(mSettings.languageId));
         localSettings.close();
-        updateOnUiThread(null);
+        notifyUpdatedOnUiThread(null);
       }
  else {
         mSettings.isInLocalTable=false;
@@ -15,7 +15,9 @@
         setPassword(mBlog.getPassword());
         setTitle(mBlog.getBlogName());
       }
+      mLoadCacheThread=null;
     }
   }
-).start();
+);
+  mLoadCacheThread.start();
 }

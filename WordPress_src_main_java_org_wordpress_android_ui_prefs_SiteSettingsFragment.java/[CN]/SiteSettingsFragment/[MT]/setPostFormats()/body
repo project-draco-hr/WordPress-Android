@@ -3,13 +3,14 @@
     mFormatPreference.setValue(String.valueOf(mSiteSettings.getDefaultFormat()));
     return;
   }
-  String[] formats=mSiteSettings.getFormats();
-  if (formats == null)   return;
-  String[] entries=new String[formats.length];
-  String[] values=new String[formats.length];
-  for (int i=0; i < formats.length; ++i) {
-    entries[i]=formats[i];
-    values[i]=formats[i].toLowerCase();
+  Map<String,String> formats=mSiteSettings.getFormats();
+  String[] formatKeys=mSiteSettings.getFormatKeys();
+  if (formats == null || formatKeys == null)   return;
+  String[] entries=new String[formatKeys.length];
+  String[] values=new String[formatKeys.length];
+  for (int i=0; i < entries.length; ++i) {
+    entries[i]=formats.get(formatKeys[i]);
+    values[i]=formatKeys[i];
   }
   mFormatPreference.setEntries(entries);
   mFormatPreference.setEntryValues(values);
