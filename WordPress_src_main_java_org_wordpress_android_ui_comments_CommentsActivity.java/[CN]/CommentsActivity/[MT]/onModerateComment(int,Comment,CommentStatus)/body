@@ -32,9 +32,10 @@
       }
     }
 ;
-    Snackbar.make(getListFragment().getView(),message,Snackbar.LENGTH_LONG).setAction(R.string.undo,undoListener).show();
-    new Handler().postDelayed(new Runnable(){
-      @Override public void run(){
+    Snackbar snackbar=Snackbar.make(getListFragment().getView(),message,Snackbar.LENGTH_LONG).setAction(R.string.undo,undoListener);
+    snackbar.setCallback(new Snackbar.Callback(){
+      @Override public void onDismissed(      Snackbar snackbar,      int event){
+        super.onDismissed(snackbar,event);
         if (!isFinishing() && hasListFragment() && !getListFragment().isModeratingComment(comment.commentID)) {
           AppLog.d(AppLog.T.COMMENTS,"comment moderation undone");
           return;
@@ -54,6 +55,7 @@
 );
       }
     }
-,Constants.SNACKBAR_LONG_DURATION_MS);
+);
+    snackbar.show();
   }
 }
