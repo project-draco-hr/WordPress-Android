@@ -4,12 +4,23 @@
   mScrollView.setScrollDirectionListener(this);
   mLayoutFooter=(ViewGroup)view.findViewById(R.id.layout_post_detail_footer);
   mLikingUsersView=(ReaderLikingUsersView)view.findViewById(R.id.layout_liking_users_view);
-  mLikingUsersContainer=view.findViewById(R.id.liking_users_container);
+  mLikingUsersDivider=view.findViewById(R.id.layout_liking_users_divider);
   mReaderWebView=(ReaderWebView)view.findViewById(R.id.reader_webview);
   mReaderWebView.setCustomViewListener(this);
   mReaderWebView.setUrlClickListener(this);
   mReaderWebView.setPageFinishedListener(this);
   mLayoutFooter.setVisibility(View.INVISIBLE);
   mScrollView.setVisibility(View.INVISIBLE);
+  mLayoutFooter.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
+    @Override public void onGlobalLayout(){
+      mScrollView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+      if (isAdded()) {
+        int footerHeight=mLayoutFooter.getHeight();
+        View spacer=getView().findViewById(R.id.footer_spacer);
+        spacer.getLayoutParams().height=footerHeight;
+      }
+    }
+  }
+);
   return view;
 }
