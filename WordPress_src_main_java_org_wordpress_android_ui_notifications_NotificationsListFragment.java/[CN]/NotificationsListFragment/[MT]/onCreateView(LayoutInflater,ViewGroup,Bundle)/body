@@ -7,30 +7,5 @@
   mRecyclerView.setItemAnimator(animator);
   mLinearLayoutManager=new LinearLayoutManager(getActivity());
   mRecyclerView.setLayoutManager(mLinearLayoutManager);
-  mBucket=SimperiumUtils.getNotesBucket();
-  if (mBucket != null) {
-    if (mNotesAdapter == null) {
-      mNotesAdapter=new NotesAdapter(getActivity(),mBucket);
-      mNotesAdapter.setOnNoteClickListener(new OnNoteClickListener(){
-        @Override public void onClickNote(        String noteId){
-          if (!isAdded()) {
-            return;
-          }
-          if (TextUtils.isEmpty(noteId))           return;
-          openNote(getActivity(),noteId,false,true);
-        }
-      }
-);
-    }
-    mRecyclerView.setAdapter(mNotesAdapter);
-  }
- else {
-    if (!AccountHelper.isSignedInWordPressDotCom()) {
-      showEmptyView(R.string.notifications_account_required,true);
-    }
- else {
-      showEmptyView(R.string.error_refresh_notifications,false);
-    }
-  }
   return view;
 }
