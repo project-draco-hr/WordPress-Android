@@ -1,17 +1,5 @@
 {
   if (settings == null)   return;
-  ContentValues values=new ContentValues();
-  values.put(ID_COLUMN_NAME,settings.localTableId);
-  values.put(ADDRESS_COLUMN_NAME,settings.address);
-  values.put(USERNAME_COLUMN_NAME,settings.username);
-  values.put(PASSWORD_COLUMN_NAME,settings.password);
-  values.put(TITLE_COLUMN_NAME,settings.title);
-  values.put(TAGLINE_COLUMN_NAME,settings.tagline);
-  values.put(PRIVACY_COLUMN_NAME,settings.privacy);
-  values.put(LANGUAGE_COLUMN_NAME,settings.languageId);
-  values.put(DEF_CATEGORY_COLUMN_NAME,settings.defaultCategory);
-  values.put(CATEGORIES_COLUMN_NAME,commaSeparatedElements(settings.categories));
-  values.put(DEF_POST_FORMAT_COLUMN_NAME,settings.defaultPostFormat);
-  values.put(POST_FORMATS_COLUMN_NAME,serializePostFormats(settings.postFormats));
+  ContentValues values=settings.serializeToDatabase();
   settings.isInLocalTable=WordPress.wpDB.getDatabase().insertWithOnConflict(SETTINGS_TABLE_NAME,null,values,SQLiteDatabase.CONFLICT_REPLACE) != -1;
 }
