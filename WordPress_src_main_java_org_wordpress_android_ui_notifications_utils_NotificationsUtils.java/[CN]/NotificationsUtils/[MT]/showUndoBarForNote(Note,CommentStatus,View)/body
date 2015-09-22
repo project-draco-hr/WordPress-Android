@@ -9,9 +9,10 @@
   }
 ;
   mSnackbarDidUndo=false;
-  Snackbar.make(parentView,message,Snackbar.LENGTH_LONG).setAction(R.string.undo,undoListener).show();
-  new Handler().postDelayed(new Runnable(){
-    @Override public void run(){
+  Snackbar snackbar=Snackbar.make(parentView,message,Snackbar.LENGTH_LONG).setAction(R.string.undo,undoListener);
+  snackbar.setCallback(new Snackbar.Callback(){
+    @Override public void onDismissed(    Snackbar snackbar,    int event){
+      super.onDismissed(snackbar,event);
       if (mSnackbarDidUndo) {
         return;
       }
@@ -26,5 +27,6 @@
 );
     }
   }
-,Constants.SNACKBAR_LONG_DURATION_MS);
+);
+  snackbar.show();
 }
