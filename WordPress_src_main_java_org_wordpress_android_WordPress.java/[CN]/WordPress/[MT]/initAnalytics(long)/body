@@ -1,0 +1,14 @@
+{
+  AnalyticsTracker.registerTracker(new AnalyticsTrackerMixpanel(getContext(),BuildConfig.MIXPANEL_TOKEN));
+  AnalyticsTracker.registerTracker(new AnalyticsTrackerNosara(getContext()));
+  AnalyticsTracker.init(getContext());
+  AnalyticsUtils.refreshMetadata();
+  int versionCode=PackageUtils.getVersionCode(getContext());
+  int oldVersionCode=AppPrefs.getLastAppVersionCode();
+  if (oldVersionCode != 0 && oldVersionCode < versionCode) {
+    Map<String,Long> properties=new HashMap<String,Long>(1);
+    properties.put("elapsed_time_on_create",elapsedTimeOnCreate);
+    AnalyticsTracker.track(AnalyticsTracker.Stat.APPLICATION_UPGRADED,properties);
+  }
+  AppPrefs.setLastAppVersionCode(versionCode);
+}
