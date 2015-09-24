@@ -1,14 +1,14 @@
 {
   super.onCreate();
+  long startDate=SystemClock.elapsedRealtime();
   mContext=this;
-  ProfilingUtils.start("WordPress.onCreate");
+  ProfilingUtils.start("App Startup");
   AppLog.enableRecording(true);
   AppLog.i(T.UTILS,"WordPress.onCreate");
   if (!PackageUtils.isDebugBuild()) {
     Fabric.with(this,new Crashlytics());
   }
   versionName=PackageUtils.getVersionName(this);
-  HelpshiftHelper.init(this);
   initWpDb();
   enableHttpResponseCache(mContext);
   EventBus.TAG="WordPress-EVENT";
@@ -21,16 +21,8 @@
     AppLockManager.getInstance().getCurrentAppLock().setDisabledActivities(new String[]{"org.wordpress.android.ui.ShareIntentReceiverActivity"});
   }
   HelpshiftHelper.init(this);
-  AnalyticsTracker.registerTracker(new AnalyticsTrackerMixpanel(getContext(),BuildConfig.MIXPANEL_TOKEN));
-  AnalyticsTracker.registerTracker(new AnalyticsTrackerNosara(getContext()));
-  AnalyticsTracker.init(getContext());
   ApplicationLifecycleMonitor applicationLifecycleMonitor=new ApplicationLifecycleMonitor();
   registerComponentCallbacks(applicationLifecycleMonitor);
   registerActivityLifecycleCallbacks(applicationLifecycleMonitor);
-  int versionCode=PackageUtils.getVersionCode(this);
-  int oldVersionCode=AppPrefs.getLastAppVersionCode();
-  if (oldVersionCode != 0 && oldVersionCode < versionCode) {
-    AnalyticsTracker.track(AnalyticsTracker.Stat.APPLICATION_UPGRADED);
-  }
-  AppPrefs.setLastAppVersionCode(versionCode);
+  initAnalytics(SystemClock.elapsedRealtime() - startDate);
 }
