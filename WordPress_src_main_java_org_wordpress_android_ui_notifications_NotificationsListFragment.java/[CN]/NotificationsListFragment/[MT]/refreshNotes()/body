@@ -4,15 +4,34 @@
   }
   getActivity().runOnUiThread(new Runnable(){
     @Override public void run(){
-      mNotesAdapter.reloadNotes();
-      restoreListScrollPosition();
-      if (mNotesAdapter.getCount() > 0) {
-        hideEmptyView();
-      }
+      int checkedId=mFilterRadioGroup.getCheckedRadioButtonId();
+switch (checkedId) {
+case R.id.notifications_filter_all:
+        mNotesAdapter.queryNotes();
+      break;
+case R.id.notifications_filter_unread:
+    mNotesAdapter.queryNotes(Note.Schema.UNREAD_INDEX,1);
+  break;
+case R.id.notifications_filter_comments:
+mNotesAdapter.queryNotes(Note.Schema.TYPE_INDEX,Note.NOTE_COMMENT_TYPE);
+break;
+case R.id.notifications_filter_follows:
+mNotesAdapter.queryNotes(Note.Schema.TYPE_INDEX,Note.NOTE_FOLLOW_TYPE);
+break;
+case R.id.notifications_filter_likes:
+mNotesAdapter.queryNotes(Note.Schema.TYPE_INDEX,Note.NOTE_LIKE_TYPE);
+break;
+default :
+mNotesAdapter.queryNotes();
+}
+restoreListScrollPosition();
+if (mNotesAdapter.getCount() > 0) {
+hideEmptyView();
+}
  else {
-        showEmptyView(R.string.notifications_empty_list,false);
-      }
-    }
-  }
+showEmptyView(R.string.notifications_empty_list,false);
+}
+}
+}
 );
 }
