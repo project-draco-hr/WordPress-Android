@@ -1,12 +1,11 @@
 {
   super.onActivityCreated(savedInstanceState);
-  Cursor cursor=fetchThemes(0);
+  Cursor cursor=fetchThemes(mSpinner.getSelectedItemPosition());
   if (cursor == null) {
     return;
   }
-  mAdapter=new ThemeBrowserAdapter(getActivity(),cursor,false,mGridView);
+  mAdapter=new ThemeBrowserAdapter(getActivity(),cursor,false,mCallback);
   setEmptyViewVisible(mAdapter.getCount() == 0);
   mGridView.setAdapter(mAdapter);
-  mGridView.setOnItemClickListener(this);
   mGridView.setSelection(mSavedScrollPosition);
 }
