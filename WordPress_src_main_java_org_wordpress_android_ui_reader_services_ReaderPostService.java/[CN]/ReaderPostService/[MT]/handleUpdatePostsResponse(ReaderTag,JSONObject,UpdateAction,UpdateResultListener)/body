@@ -8,6 +8,15 @@
       ReaderPostList serverPosts=ReaderPostList.fromJson(jsonObject);
       UpdateResult updateResult=ReaderPostTable.comparePosts(serverPosts);
       if (updateResult.isNewOrChanged()) {
+        if (tag != null && updateAction == UpdateAction.REQUEST_NEWER) {
+          ReaderPostTable.removeGapMarkerForTag(tag);
+          long oldestTimestampExisting=ReaderPostTable.getOldestTimestampWithTag(tag);
+          long oldestTimestampServer=serverPosts.getOldestTimestamp();
+          if (oldestTimestampExisting > 0 && oldestTimestampExisting < oldestTimestampServer) {
+            serverPosts.get(serverPosts.size() - 1).hasGapMarker=true;
+            AppLog.d(AppLog.T.READER,"added gap marker to tag " + tag.getTagNameForLog());
+          }
+        }
         ReaderPostTable.addOrUpdatePosts(tag,serverPosts);
       }
       AppLog.d(AppLog.T.READER,"requested posts response = " + updateResult.toString());
