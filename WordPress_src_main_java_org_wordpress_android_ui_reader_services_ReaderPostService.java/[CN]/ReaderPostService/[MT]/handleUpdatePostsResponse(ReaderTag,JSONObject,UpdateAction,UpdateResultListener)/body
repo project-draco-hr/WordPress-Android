@@ -13,7 +13,8 @@
           long oldestTimestampExisting=ReaderPostTable.getOldestTimestampWithTag(tag);
           long oldestTimestampServer=serverPosts.getOldestTimestamp();
           if (oldestTimestampExisting > 0 && oldestTimestampExisting < oldestTimestampServer) {
-            serverPosts.get(serverPosts.size() - 1).hasGapMarker=true;
+            ReaderPost postWithGap=serverPosts.get(serverPosts.size() - 1);
+            ReaderPostTable.setGapMarkerForTag(postWithGap.blogId,postWithGap.postId,tag);
             AppLog.d(AppLog.T.READER,"added gap marker to tag " + tag.getTagNameForLog());
           }
         }
