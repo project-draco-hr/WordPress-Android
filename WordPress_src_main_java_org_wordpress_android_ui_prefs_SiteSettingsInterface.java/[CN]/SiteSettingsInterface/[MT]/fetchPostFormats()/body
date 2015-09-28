@@ -6,6 +6,7 @@
   Object[] params={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword(),args};
   client.callAsync(new XMLRPCCallback(){
     @Override public void onSuccess(    long id,    Object result){
+      credentialsVerified(true);
       if (result != null && result instanceof HashMap) {
         Map<?,?> resultMap=(HashMap<?,?>)result;
         Map allFormats;
@@ -24,7 +25,7 @@
             mRemoteSettings.postFormats.put(supportedFormat.toString(),allFormats.get(supportedFormat).toString());
           }
         }
-        mSettings.copyFormatsFrom(mRemoteSettings);
+        mSettings.postFormats=new HashMap<>(mRemoteSettings.postFormats);
         notifyUpdatedOnUiThread(null);
       }
     }
