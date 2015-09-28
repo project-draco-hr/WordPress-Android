@@ -6,6 +6,10 @@ case TAG_FOLLOWED:
     allPosts=ReaderPostTable.getPostsWithTag(mCurrentTag,MAX_ROWS,EXCLUDE_TEXT_COLUMN);
   numExisting=ReaderPostTable.getNumPostsWithTag(mCurrentTag);
 mGapMarkerIds=ReaderPostTable.getGapMarkerForTag(mCurrentTag);
+if (mGapMarkerIds != null && allPosts.size() > 0 && allPosts.get(allPosts.size() - 1).hasIds(mGapMarkerIds)) {
+mGapMarkerIds=null;
+ReaderPostTable.removeGapMarkerForTag(mCurrentTag);
+}
 break;
 case BLOG_PREVIEW:
 mGapMarkerIds=null;
