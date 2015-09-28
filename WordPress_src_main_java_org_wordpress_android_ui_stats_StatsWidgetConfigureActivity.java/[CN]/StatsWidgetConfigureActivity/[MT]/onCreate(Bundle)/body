@@ -1,0 +1,33 @@
+{
+  super.onCreate(bundle);
+  Intent intent=getIntent();
+  Bundle extras=intent.getExtras();
+  if (extras != null) {
+    mAppWidgetId=extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,AppWidgetManager.INVALID_APPWIDGET_ID);
+  }
+  setResult(RESULT_CANCELED,new Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,mAppWidgetId));
+  if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+    finish();
+  }
+  String[] blogNames=getBlogNames();
+  if (blogNames == null) {
+    finishIfNoVisibleBlogs();
+    return;
+  }
+  if (blogNames.length == 1) {
+    mSelectedBlogID=mAccountIDs[0];
+    shareIt();
+    return;
+  }
+  setContentView(R.layout.stats_widget_config);
+  mBlogSpinnerTitle=(TextView)findViewById(R.id.blog_spinner_title);
+  mBlogSpinner=(Spinner)findViewById(R.id.blog_spinner);
+  if (blogNames.length == 1) {
+    mBlogSpinner.setVisibility(View.GONE);
+    mBlogSpinnerTitle.setVisibility(View.GONE);
+  }
+ else {
+    ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,R.layout.spinner_menu_dropdown_item,blogNames);
+    mBlogSpinner.setAdapter(adapter);
+  }
+}
