@@ -10,13 +10,17 @@
       if (updateResult.isNewOrChanged()) {
         ReaderPost postWithGap=null;
         if (tag != null && updateAction == UpdateAction.REQUEST_NEWER) {
-          ReaderPostTable.removeGapMarkerForTag(tag);
           long oldestTimestampExisting=ReaderPostTable.getOldestTimestampWithTag(tag);
           long oldestTimestampServer=serverPosts.getOldestTimestamp();
           if (oldestTimestampExisting > 0 && oldestTimestampExisting < oldestTimestampServer) {
             postWithGap=serverPosts.get(serverPosts.size() - 1);
             AppLog.d(AppLog.T.READER,"added gap marker to tag " + tag.getTagNameForLog());
           }
+          ReaderPostTable.removeGapMarkerForTag(tag);
+        }
+ else         if (tag != null && updateAction == UpdateAction.REQUEST_OLDER_THAN_GAP) {
+          ReaderPostTable.deletePostsOlderThanGapMarkerForTag(tag);
+          ReaderPostTable.removeGapMarkerForTag(tag);
         }
         ReaderPostTable.addOrUpdatePosts(tag,serverPosts);
         if (postWithGap != null) {
