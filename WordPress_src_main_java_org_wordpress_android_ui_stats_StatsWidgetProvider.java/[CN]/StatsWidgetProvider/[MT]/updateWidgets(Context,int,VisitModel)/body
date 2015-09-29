@@ -1,0 +1,27 @@
+{
+  AppLog.d(AppLog.T.STATS,"updateWidgets called");
+  int[] widgetIDs=getWidgetIDsFromRemoteBlogID(remoteBlogID);
+  if (widgetIDs.length == 0) {
+    return;
+  }
+  int localId=StatsUtils.getLocalBlogIdFromRemoteBlogId(remoteBlogID);
+  Blog blog=WordPress.getBlog(localId);
+  if (blog == null) {
+    AppLog.e(AppLog.T.STATS,"No blog found in the db!");
+    return;
+  }
+  try {
+    String currentDate=StatsUtils.getCurrentDateTZ(blog.getLocalTableBlogId());
+    JSONObject newData=new JSONObject();
+    newData.put("blog_id",data.getBlogID());
+    newData.put("date",currentDate);
+    newData.put("views",data.getViews());
+    newData.put("visitors",data.getVisitors());
+    newData.put("comments",data.getComments());
+    newData.put("likes",data.getLikes());
+    showStatsData(context,widgetIDs,blog,newData);
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.STATS,e);
+  }
+}

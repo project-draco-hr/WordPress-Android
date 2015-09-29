@@ -8,26 +8,28 @@
   setResult(RESULT_CANCELED,new Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,mAppWidgetId));
   if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
     finish();
-  }
-  String[] blogNames=getBlogNames();
-  if (blogNames == null) {
-    finishIfNoVisibleBlogs();
     return;
   }
+  if (!AccountHelper.isSignedIn()) {
+    ToastUtils.showToast(getBaseContext(),R.string.stats_widget_error_login,ToastUtils.Duration.LONG);
+    finish();
+    return;
+  }
+  String[] blogNames=getBlogNames();
+  if (blogNames == null || blogNames.length == 0) {
+    ToastUtils.showToast(getBaseContext(),R.string.stats_widget_error_no_visible_blog,ToastUtils.Duration.LONG);
+    finish();
+    return;
+  }
+  mSelectedBlogID=mAccountIDs[0];
   if (blogNames.length == 1) {
-    mSelectedBlogID=mAccountIDs[0];
-    shareIt();
+    addWidgetToScreenAndFinish();
     return;
   }
   setContentView(R.layout.stats_widget_config);
   mBlogSpinnerTitle=(TextView)findViewById(R.id.blog_spinner_title);
   mBlogSpinner=(Spinner)findViewById(R.id.blog_spinner);
-  if (blogNames.length == 1) {
-    mBlogSpinner.setVisibility(View.GONE);
-    mBlogSpinnerTitle.setVisibility(View.GONE);
-  }
- else {
-    ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,R.layout.spinner_menu_dropdown_item,blogNames);
-    mBlogSpinner.setAdapter(adapter);
-  }
+  mBlogSpinner.setOnItemSelectedListener(this);
+  ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,R.layout.spinner_menu_dropdown_item,blogNames);
+  mBlogSpinner.setAdapter(adapter);
 }

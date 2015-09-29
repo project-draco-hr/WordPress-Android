@@ -1,0 +1,25 @@
+{
+  if (allWidgets.length == 0) {
+    return;
+  }
+  AppWidgetManager appWidgetManager=AppWidgetManager.getInstance(context);
+  String name=StringEscapeUtils.unescapeHtml(blog.getNameOrHostUrl()) + " " + context.getString(R.string.stats_insights_today);
+  for (  int widgetId : allWidgets) {
+    RemoteViews remoteViews=new RemoteViews(context.getPackageName(),R.layout.stats_widget_layout);
+    remoteViews.setTextViewText(R.id.blog_title,name);
+    remoteViews.setViewVisibility(R.id.stats_widget_error_container,View.GONE);
+    remoteViews.setViewVisibility(R.id.stats_widget_values_container,View.VISIBLE);
+    remoteViews.setTextViewText(R.id.stats_widget_views,data.optString("views","0"));
+    remoteViews.setTextViewText(R.id.stats_widget_visitors,data.optString("visitors","0"));
+    remoteViews.setTextViewText(R.id.stats_widget_comments,data.optString("comments","0"));
+    remoteViews.setTextViewText(R.id.stats_widget_likes,data.optString("likes","0"));
+    Intent intent=new Intent(context,StatsActivity.class);
+    intent.putExtra(StatsActivity.ARG_LOCAL_TABLE_BLOG_ID,blog.getLocalTableBlogId());
+    intent.putExtra(StatsActivity.ARG_LAUNCHED_FROM,StatsActivity.StatsLaunchedFrom.STATS_WIDGET);
+    intent.putExtra(StatsActivity.ARG_DESIDERED_TIMEFRAME,StatsTimeframe.DAY);
+    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+    PendingIntent pendingIntent=PendingIntent.getActivity(context,blog.getLocalTableBlogId(),intent,PendingIntent.FLAG_UPDATE_CURRENT);
+    remoteViews.setOnClickPendingIntent(R.id.stats_widget_outer_container,pendingIntent);
+    appWidgetManager.updateAppWidget(widgetId,remoteViews);
+  }
+}

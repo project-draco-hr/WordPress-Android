@@ -1,0 +1,23 @@
+{
+  String prevWidgetKeysString=AppPrefs.getStatsWidgetsKeys();
+  if (StringUtils.isEmpty(prevWidgetKeysString)) {
+    return new int[0];
+  }
+  ArrayList<Integer> widgetIDs=new ArrayList<>();
+  try {
+    JSONObject prevKeys=new JSONObject(prevWidgetKeysString);
+    JSONArray allKeys=prevKeys.names();
+    for (int i=0; i < allKeys.length(); i++) {
+      String currentKey=allKeys.getString(i);
+      int currentBlogID=prevKeys.getInt(currentKey);
+      if (currentBlogID == remoteBlogID) {
+        AppLog.d(AppLog.T.STATS,"The blog with remoteID " + remoteBlogID + " is displayed in a widget");
+        widgetIDs.add(Integer.parseInt(currentKey));
+      }
+    }
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.STATS,e);
+  }
+  return ArrayUtils.toPrimitive(widgetIDs.toArray(new Integer[widgetIDs.size()]));
+}

@@ -1,16 +1,18 @@
 {
   AppLog.d(AppLog.T.STATS,"onUpdate called");
-  Blog primaryBlog=checkLoggedAndPrimaryBlog(context,appWidgetManager);
-  if (primaryBlog == null) {
+  if (!AccountHelper.isSignedIn()) {
+    showMessage(context,appWidgetIds,context.getString(R.string.stats_widget_error_login));
     return;
   }
-  String currentDate=StatsUtils.getCurrentDateTZ(primaryBlog.getLocalTableBlogId());
-  JSONObject prevData=getCachedStatsData(primaryBlog,currentDate);
-  if (prevData != null) {
-    showStatsData(context,appWidgetManager,primaryBlog,prevData);
+  for (  int widgetId : appWidgetIds) {
+    int remoteBlogID=getRemoteBlogIDFromWidgetID(widgetId);
+    int localId=StatsUtils.getLocalBlogIdFromRemoteBlogId(remoteBlogID);
+    Blog blog=WordPress.getBlog(localId);
+    if (blog == null) {
+      showMessage(context,new int[]{widgetId},context.getString(R.string.stats_widget_error_blog_gone));
+      continue;
+    }
+    String currentDate=StatsUtils.getCurrentDateTZ(localId);
+    enqueueStatsRequestForBlog(context,String.valueOf(remoteBlogID),currentDate);
   }
- else {
-    showMessage(context,appWidgetManager,context.getString(R.string.stats_widget_loading_data));
-  }
-  enqueueStatsRequestForBlog(context,String.valueOf(primaryBlog.getRemoteBlogId()),currentDate);
 }

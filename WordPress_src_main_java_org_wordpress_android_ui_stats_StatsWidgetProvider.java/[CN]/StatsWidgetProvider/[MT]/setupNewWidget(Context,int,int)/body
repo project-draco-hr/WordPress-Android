@@ -1,0 +1,31 @@
+{
+  AppLog.d(AppLog.T.STATS,"setupNewWidget called");
+  Blog blog=WordPress.getBlog(localBlogID);
+  if (blog == null) {
+    AppLog.e(AppLog.T.STATS,"setupNewWidget: No blog found in the db!");
+    return;
+  }
+  String prevWidgetKeysString=AppPrefs.getStatsWidgetsKeys();
+  JSONObject prevKeys=null;
+  if (!StringUtils.isEmpty(prevWidgetKeysString)) {
+    try {
+      prevKeys=new JSONObject(prevWidgetKeysString);
+    }
+ catch (    JSONException e) {
+      AppLog.e(AppLog.T.STATS,e);
+    }
+  }
+  try {
+    if (prevKeys == null) {
+      prevKeys=new JSONObject();
+    }
+    prevKeys.put(String.valueOf(widgetID),blog.getRemoteBlogId());
+    AppPrefs.setStatsWidgetsKeys(prevKeys.toString());
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.STATS,e);
+  }
+  String currentDate=StatsUtils.getCurrentDateTZ(localBlogID);
+  showMessage(context,new int[]{widgetID},context.getString(R.string.stats_widget_loading_data));
+  enqueueStatsRequestForBlog(context,String.valueOf(blog.getRemoteBlogId()),currentDate);
+}

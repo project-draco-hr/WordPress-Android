@@ -1,0 +1,14 @@
+{
+  int[] widgetIDs=getWidgetIDsFromRemoteBlogID(remoteBlogID);
+  if (widgetIDs.length == 0) {
+    return;
+  }
+  int localId=StatsUtils.getLocalBlogIdFromRemoteBlogId(remoteBlogID);
+  Blog blog=WordPress.getBlog(localId);
+  if (blog == null) {
+    AppLog.e(AppLog.T.STATS,"No blog found in the db!");
+    return;
+  }
+  String currentDate=StatsUtils.getCurrentDateTZ(blog.getLocalTableBlogId());
+  showMessage(context,widgetIDs,context.getString(R.string.stats_widget_error_generic));
+}

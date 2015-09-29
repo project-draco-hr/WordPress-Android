@@ -4,10 +4,7 @@
       AppLog.e(T.STATS,"Error while loading Stats!");
       StatsUtils.logVolleyErrorDetails(volleyError);
       if (volleyError instanceof com.android.volley.AuthFailureError) {
-        int localId=WordPress.wpDB.getLocalTableBlogIdForJetpackRemoteID(Integer.parseInt(mRequestBlogId),null);
-        if (localId == 0) {
-          localId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(Integer.parseInt(mRequestBlogId));
-        }
+        int localId=StatsUtils.getLocalBlogIdFromRemoteBlogId(Integer.parseInt(mRequestBlogId));
         Blog blog=WordPress.wpDB.instantiateBlogByLocalId(localId);
         if (blog != null && blog.isJetpackPowered()) {
           if (!StatsUtils.isRESTDisabledError(volleyError)) {

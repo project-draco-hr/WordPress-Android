@@ -16,7 +16,8 @@
   if (responseObjectModel == null) {
     return;
   }
-  if (!StatsWidgetProvider.shouldUpdateWidgetForBlog(this,blogId)) {
+  if (!StatsWidgetProvider.isBlogDisplayedInWidget(parsedBlogID)) {
+    AppLog.d(AppLog.T.STATS,"The blog with remoteID " + parsedBlogID + " is NOT displayed in a widget. Stats Service doesn't call an update of the widget.");
     return;
   }
   if (responseObjectModel instanceof VisitsModel) {
@@ -26,14 +27,14 @@
     }
     List<VisitModel> visits=visitsModel.getVisits();
     VisitModel data=visits.get(visits.size() - 1);
-    StatsWidgetProvider.updateWidgets(getApplicationContext(),data);
+    StatsWidgetProvider.updateWidgets(getApplicationContext(),parsedBlogID,data);
   }
  else   if (responseObjectModel instanceof VolleyError) {
     VolleyError error=(VolleyError)responseObjectModel;
-    StatsWidgetProvider.updateWidgets(getApplicationContext(),error);
+    StatsWidgetProvider.updateWidgets(getApplicationContext(),parsedBlogID,error);
   }
  else   if (responseObjectModel instanceof StatsError) {
     StatsError statsError=(StatsError)responseObjectModel;
-    StatsWidgetProvider.updateWidgets(getApplicationContext(),statsError);
+    StatsWidgetProvider.updateWidgets(getApplicationContext(),parsedBlogID,statsError);
   }
 }
