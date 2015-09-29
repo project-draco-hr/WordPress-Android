@@ -1,0 +1,27 @@
+{
+  boolean canShowComments;
+  if (post.isDiscoverPost()) {
+    canShowComments=false;
+  }
+ else   if (mIsLoggedOutReader) {
+    canShowComments=post.numReplies > 0;
+  }
+ else {
+    canShowComments=post.isWP() && !post.isJetpack && (post.isCommentsOpen || post.numReplies > 0);
+  }
+  if (canShowComments) {
+    holder.commentCount.setCount(post.numReplies);
+    holder.commentCount.setVisibility(View.VISIBLE);
+    holder.commentCount.setEnabled(true);
+    holder.commentCount.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ReaderActivityLauncher.showReaderComments(v.getContext(),post.blogId,post.postId);
+      }
+    }
+);
+  }
+ else {
+    holder.commentCount.setVisibility(View.GONE);
+    holder.commentCount.setOnClickListener(null);
+  }
+}
