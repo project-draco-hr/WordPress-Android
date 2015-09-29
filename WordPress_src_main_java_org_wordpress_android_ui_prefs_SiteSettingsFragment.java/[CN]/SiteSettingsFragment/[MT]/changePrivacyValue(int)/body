@@ -1,9 +1,8 @@
 {
   if (mPrivacyPreference == null)   return;
-  String expectedSummary=privacyStringForValue(newValue);
-  if (!expectedSummary.equals(mPrivacyPreference.getSummary())) {
+  if (TextUtils.isEmpty(mPrivacyPreference.getSummary()) || newValue != Integer.valueOf(mPrivacyPreference.getValue())) {
     mPrivacyPreference.setValue(String.valueOf(newValue));
-    mPrivacyPreference.setSummary(privacyStringForValue(newValue));
+    mPrivacyPreference.setSummary(mSiteSettings.getPrivacyForDisplay());
     mPrivacyPreference.refreshAdapter();
   }
 }

@@ -1,25 +1,23 @@
 {
-  mLoadCacheThread=new Thread(new Runnable(){
-    @Override public void run(){
-      Cursor localSettings=SiteSettingsTable.getSettings(mBlog.getLocalTableBlogId());
-      if (localSettings != null) {
-        Map<Integer,CategoryModel> cachedModels=SiteSettingsTable.getAllCategories();
-        mSettings.deserializeOptionsDatabaseCursor(localSettings,cachedModels);
-        mSettings.language=languageIdToLanguageCode(Integer.toString(mSettings.languageId));
-        mRemoteSettings.location=mSettings.location;
-        localSettings.close();
-        notifyUpdatedOnUiThread(null);
-      }
- else {
-        mSettings.isInLocalTable=false;
-        setAddress(mBlog.getHomeURL());
-        setUsername(mBlog.getUsername());
-        setPassword(mBlog.getPassword());
-        setTitle(mBlog.getBlogName());
-      }
-      mLoadCacheThread=null;
+  Cursor localSettings=SiteSettingsTable.getSettings(mBlog.getRemoteBlogId());
+  if (localSettings != null) {
+    Map<Integer,CategoryModel> cachedModels=SiteSettingsTable.getAllCategories();
+    mSettings.deserializeOptionsDatabaseCursor(localSettings,cachedModels);
+    mSettings.language=languageIdToLanguageCode(Integer.toString(mSettings.languageId));
+    if (mSettings.language == null) {
+      setLanguageCode(Locale.getDefault().getLanguage());
     }
+    mRemoteSettings.language=mSettings.language;
+    mRemoteSettings.languageId=mSettings.languageId;
+    mRemoteSettings.location=mSettings.location;
+    localSettings.close();
+    notifyUpdatedOnUiThread(null);
   }
-);
-  mLoadCacheThread.start();
+ else {
+    mSettings.isInLocalTable=false;
+    setAddress(mBlog.getHomeURL());
+    setUsername(mBlog.getUsername());
+    setPassword(mBlog.getPassword());
+    setTitle(mBlog.getBlogName());
+  }
 }

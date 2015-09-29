@@ -3,16 +3,16 @@
     mCategoryPreference.setValue(String.valueOf(mSiteSettings.getDefaultCategory()));
     return;
   }
-  CategoryModel[] models=mSiteSettings.getCategories();
-  if (models == null)   return;
-  String[] entries=new String[models.length];
-  String[] values=new String[models.length];
-  for (int i=0; i < models.length; ++i) {
-    entries[i]=models[i].name;
-    values[i]=String.valueOf(models[i].id);
+  Map<Integer,String> categories=mSiteSettings.getCategoryNames();
+  CharSequence[] entries=new CharSequence[categories.size()];
+  CharSequence[] values=new CharSequence[categories.size()];
+  int i=0;
+  for (  Integer key : categories.keySet()) {
+    entries[i]=categories.get(key);
+    values[i++]=String.valueOf(key);
   }
   mCategoryPreference.setEntries(entries);
   mCategoryPreference.setEntryValues(values);
   mCategoryPreference.setValue(String.valueOf(mSiteSettings.getDefaultCategory()));
-  mCategoryPreference.setSummary(mCategoryPreference.getEntry());
+  mCategoryPreference.setSummary(mSiteSettings.getDefaultCategoryForDisplay());
 }
