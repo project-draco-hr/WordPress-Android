@@ -1,0 +1,39 @@
+{
+  widthSeekBar.setMax(mMaxImageWidth / 10);
+  if (imageWidth != 0) {
+    widthSeekBar.setProgress(imageWidth / 10);
+    widthText.setText(String.valueOf(imageWidth) + "px");
+  }
+  widthSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+    @Override public void onStopTrackingTouch(    SeekBar seekBar){
+    }
+    @Override public void onStartTrackingTouch(    SeekBar seekBar){
+    }
+    @Override public void onProgressChanged(    SeekBar seekBar,    int progress,    boolean fromUser){
+      if (progress == 0) {
+        progress=1;
+      }
+      widthText.setText(progress * 10 + "px");
+    }
+  }
+);
+  widthText.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+    @Override public void onFocusChange(    View v,    boolean hasFocus){
+      if (hasFocus) {
+        widthText.setText("");
+      }
+    }
+  }
+);
+  widthText.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+    @Override public boolean onEditorAction(    TextView v,    int actionId,    KeyEvent event){
+      int width=getEditTextIntegerClamped(widthText,10,mMaxImageWidth);
+      widthSeekBar.setProgress(width / 10);
+      widthText.setSelection((String.valueOf(width).length()));
+      InputMethodManager imm=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+      imm.hideSoftInputFromWindow(widthText.getWindowToken(),InputMethodManager.RESULT_UNCHANGED_SHOWN);
+      return true;
+    }
+  }
+);
+}
