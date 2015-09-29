@@ -9,27 +9,30 @@
       UpdateResult updateResult=ReaderPostTable.comparePosts(serverPosts);
       if (updateResult.isNewOrChanged()) {
         ReaderPost postWithGap=null;
-        if (tag != null && updateAction == UpdateAction.REQUEST_NEWER) {
-          long oldestTimestampExisting=ReaderPostTable.getOldestTimestampWithTag(tag);
-          long oldestTimestampServer=serverPosts.getOldestTimestamp();
-          if (oldestTimestampExisting > 0 && oldestTimestampExisting < oldestTimestampServer) {
-            postWithGap=serverPosts.get(serverPosts.size() - 1);
-            AppLog.d(AppLog.T.READER,"added gap marker to tag " + tag.getTagNameForLog());
-          }
+        if (tag != null) {
+switch (updateAction) {
+case REQUEST_NEWER:
+            if (ReaderPostTable.getNumPostsWithTag(tag) > 0 && !ReaderPostTable.hasOverlap(serverPosts)) {
+              serverPosts.remove(serverPosts.size() - 1);
+              postWithGap=serverPosts.get(serverPosts.size() - 1);
+              AppLog.d(AppLog.T.READER,"added gap marker to tag " + tag.getTagNameForLog());
+            }
           ReaderPostTable.removeGapMarkerForTag(tag);
-        }
- else         if (tag != null && updateAction == UpdateAction.REQUEST_OLDER_THAN_GAP) {
-          ReaderPostTable.deletePostsOlderThanGapMarkerForTag(tag);
-          ReaderPostTable.removeGapMarkerForTag(tag);
-        }
-        ReaderPostTable.addOrUpdatePosts(tag,serverPosts);
-        if (postWithGap != null) {
-          ReaderPostTable.setGapMarkerForTag(postWithGap.blogId,postWithGap.postId,tag);
-        }
-      }
-      AppLog.d(AppLog.T.READER,"requested posts response = " + updateResult.toString());
-      resultListener.onUpdateResult(updateResult);
-    }
-  }
+        break;
+case REQUEST_OLDER_THAN_GAP:
+      ReaderPostTable.deletePostsOlderThanGapMarkerForTag(tag);
+    ReaderPostTable.removeGapMarkerForTag(tag);
+  break;
+}
+}
+ReaderPostTable.addOrUpdatePosts(tag,serverPosts);
+if (postWithGap != null) {
+ReaderPostTable.setGapMarkerForTag(postWithGap.blogId,postWithGap.postId,tag);
+}
+}
+AppLog.d(AppLog.T.READER,"requested posts response = " + updateResult.toString());
+resultListener.onUpdateResult(updateResult);
+}
+}
 .start();
 }
