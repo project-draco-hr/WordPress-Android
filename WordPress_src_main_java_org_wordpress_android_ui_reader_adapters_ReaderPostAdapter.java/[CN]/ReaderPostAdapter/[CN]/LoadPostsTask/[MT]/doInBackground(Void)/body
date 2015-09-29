@@ -5,14 +5,8 @@ case TAG_PREVIEW:
 case TAG_FOLLOWED:
     allPosts=ReaderPostTable.getPostsWithTag(mCurrentTag,MAX_ROWS,EXCLUDE_TEXT_COLUMN);
   numExisting=ReaderPostTable.getNumPostsWithTag(mCurrentTag);
-mGapMarkerIds=ReaderPostTable.getGapMarkerForTag(mCurrentTag);
-if (mGapMarkerIds != null && allPosts.size() > 0 && allPosts.get(allPosts.size() - 1).hasIds(mGapMarkerIds)) {
-mGapMarkerIds=null;
-ReaderPostTable.removeGapMarkerForTag(mCurrentTag);
-}
 break;
 case BLOG_PREVIEW:
-mGapMarkerIds=null;
 if (mCurrentFeedId != 0) {
 allPosts=ReaderPostTable.getPostsInFeed(mCurrentFeedId,MAX_ROWS,EXCLUDE_TEXT_COLUMN);
 numExisting=ReaderPostTable.getNumPostsInFeed(mCurrentFeedId);
@@ -29,5 +23,16 @@ if (mPosts.isSameList(allPosts)) {
 return false;
 }
 mCanRequestMorePosts=(numExisting < ReaderConstants.READER_MAX_POSTS_TO_DISPLAY);
+mGapMarkerPosition=-1;
+if (getPostListType().isTagType()) {
+ReaderBlogIdPostId gapMarkerIds=ReaderPostTable.getGapMarkerForTag(mCurrentTag);
+if (gapMarkerIds != null) {
+mGapMarkerPosition=allPosts.indexOfIds(gapMarkerIds);
+if (mGapMarkerPosition == 0 || mGapMarkerPosition == allPosts.size()) {
+mGapMarkerPosition=-1;
+ReaderPostTable.removeGapMarkerForTag(mCurrentTag);
+}
+}
+}
 return true;
 }
