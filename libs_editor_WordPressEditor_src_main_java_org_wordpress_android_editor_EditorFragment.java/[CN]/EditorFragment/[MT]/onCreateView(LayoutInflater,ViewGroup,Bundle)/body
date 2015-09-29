@@ -3,6 +3,7 @@
   if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && !getResources().getBoolean(R.bool.is_large_tablet_landscape)) {
     mHideActionBarOnSoftKeyboardUp=true;
   }
+  mUploadingMediaIds=new HashSet<>();
   mWebView=(EditorWebViewAbstract)view.findViewById(R.id.webview);
   mWebView.setOnTouchListener(this);
   mWebView.setOnImeBackListener(this);
@@ -19,6 +20,10 @@
 );
   mEditorFragmentListener.onEditorFragmentInitialized();
   initJsEditor();
+  if (savedInstanceState != null) {
+    setTitle(savedInstanceState.getCharSequence(KEY_TITLE));
+    setContent(savedInstanceState.getCharSequence(KEY_CONTENT));
+  }
   mSourceView=view.findViewById(R.id.sourceview);
   mSourceViewTitle=(SourceViewEditText)view.findViewById(R.id.sourceview_title);
   mSourceViewContent=(SourceViewEditText)view.findViewById(R.id.sourceview_content);

@@ -1,0 +1,38 @@
+{
+  View view=inflater.inflate(R.layout.dialog_image_options,container,false);
+  ImageView thumbnailImage=(ImageView)view.findViewById(R.id.image_thumbnail);
+  TextView filenameLabel=(TextView)view.findViewById(R.id.image_filename);
+  mTitleText=(EditText)view.findViewById(R.id.image_title);
+  mCaptionText=(EditText)view.findViewById(R.id.image_caption);
+  mAltText=(EditText)view.findViewById(R.id.image_alt_text);
+  mAlignmentSpinner=(Spinner)view.findViewById(R.id.alignment_spinner);
+  mLinkTo=(EditText)view.findViewById(R.id.image_link_to);
+  SeekBar widthSeekBar=(SeekBar)view.findViewById(R.id.image_width_seekbar);
+  mWidthText=(EditText)view.findViewById(R.id.image_width_text);
+  final CheckBox featuredCheckBox=(CheckBox)view.findViewById(R.id.featuredImage);
+  final CheckBox featuredInPostCheckBox=(CheckBox)view.findViewById(R.id.featuredInPost);
+  Bundle bundle=getArguments();
+  if (bundle != null) {
+    try {
+      mImageMeta=new JSONObject(bundle.getString("imageMeta"));
+      final String imageSrc=mImageMeta.getString("src");
+      final String imageFilename=imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+      loadThumbnail(imageSrc,thumbnailImage);
+      filenameLabel.setText(imageFilename);
+      mTitleText.setText(mImageMeta.getString("title"));
+      mCaptionText.setText(mImageMeta.getString("caption"));
+      mAltText.setText(mImageMeta.getString("alt"));
+      String alignment=mImageMeta.getString("align");
+      String[] alignmentArray=getResources().getStringArray(R.array.alignment_array);
+      mAlignmentSpinner.setSelection(Arrays.asList(alignmentArray).indexOf(alignment));
+      mLinkTo.setText(mImageMeta.getString("linkUrl"));
+      mMaxImageWidth=getMaximumImageWidth(mImageMeta.getInt("naturalWidth"),bundle.getString("maxWidth"));
+      setupWidthSeekBar(widthSeekBar,mWidthText,mImageMeta.getInt("width"));
+    }
+ catch (    JSONException e1) {
+      AppLog.d(AppLog.T.EDITOR,"Missing JSON properties");
+    }
+  }
+  mTitleText.requestFocus();
+  return view;
+}
