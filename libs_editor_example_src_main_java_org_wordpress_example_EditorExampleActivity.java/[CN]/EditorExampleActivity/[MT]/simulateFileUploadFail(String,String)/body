@@ -1,0 +1,21 @@
+{
+  Thread thread=new Thread(){
+    @Override public void run(){
+      try {
+        float count=(float)0.1;
+        while (count < 0.6) {
+          sleep(500);
+          ((EditorMediaUploadListener)mEditorFragment).onMediaUploadProgress(mediaId,count);
+          count+=0.1;
+        }
+        ((EditorMediaUploadListener)mEditorFragment).onMediaUploadFailed(mediaId);
+        mFailedUploads.put(mediaId,mediaUrl);
+      }
+ catch (      InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+;
+  thread.start();
+}

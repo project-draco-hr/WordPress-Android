@@ -5,6 +5,7 @@
     deleteQuickPressShortcutsForLocalTableBlogId(ctx,localBlogId);
     deleteAllPostsForLocalTableBlogId(localBlogId);
   }
-  int rowsAffected=db.delete(BLOGS_TABLE,"dotcomFlag=1",null);
+  String args=String.format("dotcomFlag=1 OR (dotcomFlag=0 AND password='%s')",encryptPassword(""));
+  int rowsAffected=db.delete(BLOGS_TABLE,args,null);
   return (rowsAffected > 0);
 }

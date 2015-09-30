@@ -1,5 +1,4 @@
 {
-  retrieveAndSaveEmailAddressIfApplicable();
   SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
   int sessionCount=preferences.getInt(AnalyticsTrackerMixpanel.SESSION_COUNT,0);
   boolean isUserConnected=AccountHelper.isSignedIn();
@@ -8,6 +7,6 @@
   int numBlogs=WordPress.wpDB.getVisibleBlogs().size();
   int versionCode=PackageUtils.getVersionCode(WordPress.getContext());
   String username=AccountHelper.getDefaultAccount().getUserName();
-  String email=AppPrefs.getMixpanelUserEmail();
+  String email=AccountHelper.getDefaultAccount().getEmail();
   AnalyticsTracker.refreshMetadata(isUserConnected,isWordPressComUser,isJetpackUser,sessionCount,numBlogs,versionCode,username,email);
 }
