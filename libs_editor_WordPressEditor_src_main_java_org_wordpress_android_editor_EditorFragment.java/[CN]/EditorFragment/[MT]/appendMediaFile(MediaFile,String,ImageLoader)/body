@@ -1,2 +1,16 @@
 {
+  mWebView.post(new Runnable(){
+    @Override public void run(){
+      if (URLUtil.isNetworkUrl(mediaUrl)) {
+        mWebView.execJavaScriptFromString("ZSSEditor.insertImage('" + mediaUrl + "');");
+      }
+ else {
+        String id=mediaFile.getMediaId();
+        mWebView.execJavaScriptFromString("ZSSEditor.insertLocalImage(" + id + ", '"+ mediaUrl+ "');");
+        mWebView.execJavaScriptFromString("ZSSEditor.setProgressOnImage(" + id + ", "+ 0+ ");");
+        mUploadingMediaIds.add(id);
+      }
+    }
+  }
+);
 }
