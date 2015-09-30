@@ -1,21 +1,19 @@
 {
-  if (!(this instanceof ThemeSearchFragment)) {
-    mSwipeToRefreshHelper=new SwipeToRefreshHelper(getActivity(),(CustomSwipeRefreshLayout)view.findViewById(R.id.ptr_layout),new RefreshListener(){
-      @Override public void onRefreshStarted(){
-        if (!isAdded()) {
-          return;
-        }
-        if (!NetworkUtils.checkConnection(getActivity())) {
-          mSwipeToRefreshHelper.setRefreshing(false);
-          mEmptyView.setText(R.string.no_network_title);
-          return;
-        }
-        if (getActivity() instanceof ThemeBrowserActivity) {
-          ((ThemeBrowserActivity)getActivity()).fetchThemes();
-        }
+  mSwipeToRefreshHelper=new SwipeToRefreshHelper(getActivity(),(CustomSwipeRefreshLayout)view.findViewById(R.id.ptr_layout),new RefreshListener(){
+    @Override public void onRefreshStarted(){
+      if (!isAdded()) {
+        return;
+      }
+      if (!NetworkUtils.checkConnection(getActivity())) {
+        mSwipeToRefreshHelper.setRefreshing(false);
+        mEmptyView.setText(R.string.no_network_title);
+        return;
+      }
+      if (getActivity() instanceof ThemeBrowserActivity) {
+        ((ThemeBrowserActivity)getActivity()).fetchThemes();
       }
     }
-);
-    mSwipeToRefreshHelper.setRefreshing(mShouldRefreshOnStart);
   }
+);
+  mSwipeToRefreshHelper.setRefreshing(mShouldRefreshOnStart);
 }
