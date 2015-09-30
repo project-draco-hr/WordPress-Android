@@ -1,0 +1,29 @@
+{
+  boolean canShowLikes;
+  if (post.isDiscoverPost()) {
+    canShowLikes=false;
+  }
+ else   if (mIsLoggedOutReader) {
+    canShowLikes=post.numLikes > 0;
+  }
+ else {
+    canShowLikes=post.canLikePost();
+  }
+  if (canShowLikes) {
+    holder.likeCount.setCount(post.numLikes);
+    holder.likeCount.setSelected(post.isLikedByCurrentUser);
+    holder.likeCount.setVisibility(View.VISIBLE);
+    if (!mIsLoggedOutReader) {
+      holder.likeCount.setOnClickListener(new View.OnClickListener(){
+        @Override public void onClick(        View v){
+          toggleLike(v.getContext(),holder,post);
+        }
+      }
+);
+    }
+  }
+ else {
+    holder.likeCount.setVisibility(View.GONE);
+    holder.likeCount.setOnClickListener(null);
+  }
+}
