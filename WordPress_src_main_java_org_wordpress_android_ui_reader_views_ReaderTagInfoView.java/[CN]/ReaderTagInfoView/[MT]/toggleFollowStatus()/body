@@ -1,0 +1,25 @@
+{
+  if (mCurrentTag == null || !NetworkUtils.checkConnection(getContext())) {
+    return;
+  }
+  final boolean isAskingToFollow=!ReaderTagTable.isFollowedTagName(mCurrentTag.getTagName());
+  ReaderTagActions.TagAction action=isAskingToFollow ? ReaderTagActions.TagAction.ADD : ReaderTagActions.TagAction.DELETE;
+  ReaderActions.ActionListener listener=new ReaderActions.ActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      if (getContext() == null) {
+        return;
+      }
+      mFollowButton.setEnabled(true);
+      if (!succeeded) {
+        int errResId=isAskingToFollow ? R.string.reader_toast_err_add_tag : R.string.reader_toast_err_remove_tag;
+        ToastUtils.showToast(getContext(),errResId);
+        mFollowButton.setIsFollowed(!isAskingToFollow);
+      }
+    }
+  }
+;
+  mFollowButton.setEnabled(false);
+  if (ReaderTagActions.performTagAction(mCurrentTag,action,listener)) {
+    mFollowButton.setIsFollowedAnimated(isAskingToFollow);
+  }
+}

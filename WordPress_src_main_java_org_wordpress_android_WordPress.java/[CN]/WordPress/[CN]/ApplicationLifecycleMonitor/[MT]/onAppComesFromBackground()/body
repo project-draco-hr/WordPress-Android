@@ -1,0 +1,13 @@
+{
+  AppLog.i(T.UTILS,"App comes from background");
+  ConnectionChangeReceiver.setEnabled(WordPress.this,true);
+  AnalyticsUtils.refreshMetadata();
+  mApplicationOpenedDate=new Date();
+  AnalyticsTracker.track(AnalyticsTracker.Stat.APPLICATION_OPENED);
+  if (NetworkUtils.isNetworkAvailable(mContext)) {
+    updatePushNotificationTokenIfNotLimited();
+    sUpdateWordPressComBlogList.runIfNotLimited();
+    sUpdateCurrentBlogOption.runIfNotLimited();
+  }
+  sDeleteExpiredStats.runIfNotLimited();
+}

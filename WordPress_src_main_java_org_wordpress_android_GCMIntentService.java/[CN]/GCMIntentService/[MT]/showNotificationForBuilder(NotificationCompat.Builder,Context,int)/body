@@ -1,0 +1,34 @@
+{
+  if (builder == null || context == null)   return;
+  Intent resultIntent=new Intent(this,WPMainActivity.class);
+  resultIntent.putExtra(WPMainActivity.ARG_OPENED_FROM_PUSH,true);
+  resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+  resultIntent.setAction("android.intent.action.MAIN");
+  resultIntent.addCategory("android.intent.category.LAUNCHER");
+  if (mPreviousNoteId != null) {
+    resultIntent.putExtra(NotificationsListFragment.NOTE_ID_EXTRA,mPreviousNoteId);
+  }
+  SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(context);
+  boolean shouldPlaySound=prefs.getBoolean("wp_pref_notification_sound",false);
+  boolean shouldVibrate=prefs.getBoolean("wp_pref_notification_vibrate",false);
+  boolean shouldBlinkLight=prefs.getBoolean("wp_pref_notification_light",false);
+  if (shouldPlaySound) {
+    builder.setSound(Uri.parse("android.resource://" + getPackageName() + "/"+ R.raw.notification));
+  }
+  if (shouldVibrate) {
+    builder.setVibrate(new long[]{500,500,500});
+  }
+  if (shouldBlinkLight) {
+    builder.setLights(0xff0000ff,1000,5000);
+  }
+  Intent notificationDeletedIntent=new Intent(this,NotificationDismissBroadcastReceiver.class);
+  notificationDeletedIntent.putExtra("notificationId",notificationId);
+  notificationDeletedIntent.setAction(String.valueOf(notificationId));
+  PendingIntent pendingDeleteIntent=PendingIntent.getBroadcast(context,notificationId,notificationDeletedIntent,0);
+  builder.setDeleteIntent(pendingDeleteIntent);
+  builder.setCategory(NotificationCompat.CATEGORY_SOCIAL);
+  PendingIntent pendingIntent=PendingIntent.getActivity(context,notificationId,resultIntent,PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_UPDATE_CURRENT);
+  builder.setContentIntent(pendingIntent);
+  NotificationManagerCompat notificationManager=NotificationManagerCompat.from(this);
+  notificationManager.notify(notificationId,builder.build());
+}

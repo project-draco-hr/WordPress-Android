@@ -1,15 +1,14 @@
 {
   Context context=parent.getContext();
-  if (viewType == VIEW_TYPE_SPACER) {
-    View spacerView=new View(context);
-    int toolbarHeight=context.getResources().getDimensionPixelSize(R.dimen.toolbar_height);
-    int dividerHeight=context.getResources().getDimensionPixelSize(R.dimen.reader_card_gutters);
-    int spacerHeight=toolbarHeight - dividerHeight;
-    spacerView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,spacerHeight));
-    return new SpacerViewHolder(spacerView);
-  }
- else {
-    View postView=LayoutInflater.from(context).inflate(R.layout.reader_cardview_post,parent,false);
-    return new ReaderPostViewHolder(postView);
-  }
+switch (viewType) {
+case VIEW_TYPE_TAG_TOOLBAR:
+    return new TagToolbarViewHolder(new ReaderTagToolbar(context));
+case VIEW_TYPE_BLOG_INFO:
+  return new BlogInfoViewHolder(new ReaderBlogInfoView(context));
+case VIEW_TYPE_TAG_INFO:
+return new TagInfoViewHolder(new ReaderTagInfoView(context));
+default :
+View postView=LayoutInflater.from(context).inflate(R.layout.reader_cardview_post,parent,false);
+return new ReaderPostViewHolder(postView);
+}
 }

@@ -1,3 +1,9 @@
 {
-  return mPost != null && !mPost.isDiscoverPost() && mPost.isLikesEnabled;
+  if (mPost == null) {
+    return false;
+  }
+  if (mIsLoggedOutReader) {
+    return mPost.numLikes > 0;
+  }
+  return mPost.canLikePost() || mPost.numLikes > 0;
 }

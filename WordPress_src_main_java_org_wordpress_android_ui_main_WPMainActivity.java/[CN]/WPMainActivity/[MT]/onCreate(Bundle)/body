@@ -1,8 +1,10 @@
 {
   setStatusBarColor();
+  ProfilingUtils.split("WPMainActivity.onCreate");
   super.onCreate(savedInstanceState);
   setContentView(R.layout.main_activity);
   mViewPager=(WPViewPager)findViewById(R.id.viewpager_main);
+  mViewPager.setOffscreenPageLimit(WPMainTabAdapter.NUM_TABS - 1);
   mTabAdapter=new WPMainTabAdapter(getFragmentManager());
   mViewPager.setAdapter(mTabAdapter);
   mConnectionBar=(TextView)findViewById(R.id.connection_bar);
@@ -29,9 +31,14 @@
     @Override public void onTabUnselected(    TabLayout.Tab tab){
     }
     @Override public void onTabReselected(    TabLayout.Tab tab){
-      Fragment fragment=mTabAdapter.getFragment(tab.getPosition());
-      if (fragment instanceof OnScrollToTopListener) {
-        ((OnScrollToTopListener)fragment).onScrollToTop();
+      if (tab.getPosition() == mLastReselectedTabPosition) {
+        Fragment fragment=mTabAdapter.getFragment(tab.getPosition());
+        if (fragment instanceof OnScrollToTopListener) {
+          ((OnScrollToTopListener)fragment).onScrollToTop();
+        }
+      }
+ else {
+        mLastReselectedTabPosition=tab.getPosition();
       }
     }
   }
@@ -42,10 +49,7 @@
       AppPrefs.setMainTabIndex(position);
 switch (position) {
 case WPMainTabAdapter.TAB_NOTIFS:
-        if (getNotificationListFragment() != null) {
-          getNotificationListFragment().updateLastSeenTime();
-          mTabLayout.showNoteBadge(false);
-        }
+        new UpdateLastSeenTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
       break;
   }
   trackLastVisibleTab(position);

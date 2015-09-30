@@ -5,10 +5,19 @@
     mPostAdapter=new ReaderPostAdapter(context,getPostListType());
     mPostAdapter.setOnPostSelectedListener(this);
     mPostAdapter.setOnTagSelectedListener(this);
+    mPostAdapter.setOnTagChangedListener(this);
     mPostAdapter.setOnPostPopupListener(this);
     mPostAdapter.setOnDataLoadedListener(mDataLoadedListener);
     mPostAdapter.setOnDataRequestedListener(mDataRequestedListener);
-    mPostAdapter.setShowToolbarSpacer(shouldShowTagToolbar());
+    if (getActivity() instanceof ReaderBlogInfoView.OnBlogInfoLoadedListener) {
+      mPostAdapter.setOnBlogInfoLoadedListener((ReaderBlogInfoView.OnBlogInfoLoadedListener)getActivity());
+    }
+    if (getPostListType().isTagType()) {
+      mPostAdapter.setCurrentTag(getCurrentTag());
+    }
+ else     if (getPostListType() == ReaderPostListType.BLOG_PREVIEW) {
+      mPostAdapter.setCurrentBlogAndFeed(mCurrentBlogId,mCurrentFeedId);
+    }
   }
   return mPostAdapter;
 }

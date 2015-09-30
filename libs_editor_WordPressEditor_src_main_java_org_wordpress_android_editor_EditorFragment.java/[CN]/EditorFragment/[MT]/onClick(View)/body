@@ -1,6 +1,13 @@
 {
   int id=v.getId();
   if (id == R.id.format_bar_button_html) {
+    if (!mUploadingMediaIds.isEmpty()) {
+      ((ToggleButton)v).setChecked(false);
+      if (isAdded()) {
+        ToastUtils.showToast(getActivity(),R.string.alert_html_toggle_uploading,ToastUtils.Duration.LONG);
+      }
+      return;
+    }
     clearFormatBarButtons();
     updateFormatBarEnabledState(true);
     if (((ToggleButton)v).isChecked()) {
@@ -26,6 +33,15 @@
   }
  else   if (id == R.id.format_bar_button_media) {
     ((ToggleButton)v).setChecked(false);
+    if (mSourceView.getVisibility() == View.VISIBLE) {
+      ToastUtils.showToast(getActivity(),R.string.alert_insert_image_html_mode,ToastUtils.Duration.LONG);
+    }
+ else {
+      mEditorFragmentListener.onAddMediaClicked();
+      if (isAdded()) {
+        getActivity().openContextMenu(mTagToggleButtonMap.get(TAG_FORMAT_BAR_BUTTON_MEDIA));
+      }
+    }
   }
  else   if (id == R.id.format_bar_button_link) {
     if (!((ToggleButton)v).isChecked()) {

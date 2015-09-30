@@ -1,6 +1,17 @@
 {
-  if (isInBackground) {
-    onFromBackground();
+  int orientation=activity.getResources().getConfiguration().orientation;
+  boolean shouldRestart=mOrientation == -1 || mOrientation != orientation || !mClass.equals(activity.getClass());
+  if (shouldRestart) {
+    mOrientation=orientation;
+    mClass=activity.getClass();
   }
-  isInBackground=false;
+  WPActivityUtils.applyLocale(activity,shouldRestart);
+  if (mIsInBackground) {
+    onAppComesFromBackground();
+  }
+  mIsInBackground=false;
+  if (mFirstActivityResumed) {
+    deferredInit();
+  }
+  mFirstActivityResumed=false;
 }
