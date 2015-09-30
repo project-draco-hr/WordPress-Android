@@ -8,7 +8,17 @@
     if (widgetIDs.length == 0) {
       return;
     }
-    showMessage(context,widgetIDs,context.getString(R.string.stats_sign_in_jetpack_different_com_account));
+    int localId=StatsUtils.getLocalBlogIdFromRemoteBlogId(remoteBlogID);
+    Blog blog=WordPress.getBlog(localId);
+    if (blog == null) {
+      return;
+    }
+    if (blog.isDotcomFlag()) {
+      showMessage(context,widgetIDs,context.getString(R.string.stats_widget_error_no_permissions));
+    }
+ else {
+      showMessage(context,widgetIDs,context.getString(R.string.stats_sign_in_jetpack_different_com_account));
+    }
     return;
   }
   updateWidgetsOnError(context,remoteBlogID);
