@@ -106,53 +106,8 @@
     postHolder.txtTag.setVisibility(View.GONE);
     postHolder.txtTag.setOnClickListener(null);
   }
-  boolean showLikes;
-  boolean showComments;
-  if (post.isDiscoverPost()) {
-    showLikes=false;
-    showComments=false;
-  }
- else   if (mIsLoggedOutReader) {
-    showLikes=post.numLikes > 0;
-    showComments=post.numReplies > 0;
-  }
- else {
-    showLikes=post.canLikePost();
-    showComments=post.isWP() && !post.isJetpack && (post.isCommentsOpen || post.numReplies > 0);
-  }
-  if (showLikes || showComments) {
-    showCounts(postHolder,post);
-  }
-  if (showLikes) {
-    postHolder.likeCount.setSelected(post.isLikedByCurrentUser);
-    postHolder.likeCount.setVisibility(View.VISIBLE);
-    if (!mIsLoggedOutReader) {
-      postHolder.likeCount.setOnClickListener(new View.OnClickListener(){
-        @Override public void onClick(        View v){
-          toggleLike(v.getContext(),postHolder,post);
-        }
-      }
-);
-    }
-  }
- else {
-    postHolder.likeCount.setVisibility(View.GONE);
-    postHolder.likeCount.setOnClickListener(null);
-  }
-  if (showComments) {
-    postHolder.commentCount.setVisibility(View.VISIBLE);
-    postHolder.commentCount.setEnabled(true);
-    postHolder.commentCount.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View v){
-        ReaderActivityLauncher.showReaderComments(v.getContext(),post.blogId,post.postId);
-      }
-    }
-);
-  }
- else {
-    postHolder.commentCount.setVisibility(View.GONE);
-    postHolder.commentCount.setOnClickListener(null);
-  }
+  showLikes(postHolder,post);
+  showComments(postHolder,post);
   if (!mIsLoggedOutReader && postListType == ReaderTypes.ReaderPostListType.TAG_FOLLOWED) {
     postHolder.imgMore.setVisibility(View.VISIBLE);
     postHolder.imgMore.setOnClickListener(new View.OnClickListener(){
