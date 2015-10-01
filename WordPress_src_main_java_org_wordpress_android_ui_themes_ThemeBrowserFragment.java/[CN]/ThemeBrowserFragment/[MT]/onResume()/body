@@ -1,4 +1,12 @@
 {
   super.onResume();
+  Cursor cursor=fetchThemes(getSpinnerPosition());
+  if (cursor == null) {
+    return;
+  }
+  mAdapter=new ThemeBrowserAdapter(getActivity(),cursor,false,mCallback);
+  setEmptyViewVisible(mAdapter.getCount() == 0);
+  mGridView.setAdapter(mAdapter);
+  mGridView.setSelection(mSavedScrollPosition);
   ((ThemeBrowserActivity)getActivity()).fetchCurrentTheme();
 }
