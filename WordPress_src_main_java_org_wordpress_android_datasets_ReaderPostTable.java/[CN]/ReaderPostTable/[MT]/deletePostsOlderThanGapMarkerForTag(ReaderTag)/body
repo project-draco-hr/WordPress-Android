@@ -2,6 +2,7 @@
   long timestamp=getGapMarkerTimestampForTag(tag);
   if (timestamp == 0)   return;
   String[] args={Long.toString(timestamp),tag.getTagName(),Integer.toString(tag.tagType.toInt())};
-  String sql="DELETE FROM tbl_posts WHERE timestamp < ?" + " AND pseudo_id IN (" + "     SELECT pseudo_id FROM tbl_post_tags WHERE tag_name=? AND tag_type=?"+ ")";
-  ReaderDatabase.getWritableDb().execSQL(sql,args);
+  String where="timestamp < ? AND pseudo_id IN" + " (SELECT pseudo_id FROM tbl_post_tags WHERE tag_name=? AND tag_type=?)";
+  int numDeleted=ReaderDatabase.getWritableDb().delete("tbl_posts",where,args);
+  AppLog.d(AppLog.T.READER,"removed " + numDeleted + " posts older than gap marker");
 }
