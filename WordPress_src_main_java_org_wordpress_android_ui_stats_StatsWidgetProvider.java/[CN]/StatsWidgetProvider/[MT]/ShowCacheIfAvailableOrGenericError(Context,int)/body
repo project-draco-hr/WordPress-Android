@@ -9,5 +9,12 @@
     AppLog.e(AppLog.T.STATS,"No blog found in the db!");
     return;
   }
-  showMessage(context,widgetIDs,context.getString(R.string.stats_widget_error_generic));
+  String currentDate=StatsUtils.getCurrentDateTZ(localId);
+  JSONObject cache=getCacheDataForBlog(remoteBlogID,currentDate);
+  if (cache != null) {
+    showStatsData(context,widgetIDs,blog,cache);
+  }
+ else {
+    showMessage(context,widgetIDs,context.getString(R.string.stats_widget_error_generic));
+  }
 }

@@ -27,6 +27,16 @@
     AppLog.e(AppLog.T.STATS,e);
   }
   String currentDate=StatsUtils.getCurrentDateTZ(localBlogID);
-  showMessage(context,new int[]{widgetID},context.getString(R.string.stats_widget_loading_data));
-  enqueueStatsRequestForBlog(context,remoteBlogID,currentDate);
+  JSONObject cache=getCacheDataForBlog(Integer.parseInt(remoteBlogID),currentDate);
+  if (cache != null) {
+    showStatsData(context,new int[]{widgetID},blog,cache);
+  }
+ else {
+    if (!NetworkUtils.isNetworkAvailable(context)) {
+      showMessage(context,new int[]{widgetID},context.getString(R.string.stats_widget_loading_data));
+    }
+ else {
+      enqueueStatsRequestForBlog(context,remoteBlogID,currentDate);
+    }
+  }
 }

@@ -19,6 +19,26 @@
     newData.put("visitors",data.getVisitors());
     newData.put("comments",data.getComments());
     newData.put("likes",data.getLikes());
+    String prevDataAsString=AppPrefs.getStatsWidgetsData();
+    JSONObject prevData=null;
+    if (!StringUtils.isEmpty(prevDataAsString)) {
+      try {
+        prevData=new JSONObject(prevDataAsString);
+      }
+ catch (      JSONException e) {
+        AppLog.e(AppLog.T.STATS,e);
+      }
+    }
+    try {
+      if (prevData == null) {
+        prevData=new JSONObject();
+      }
+      prevData.put(data.getBlogID(),newData);
+      AppPrefs.setStatsWidgetsData(prevData.toString());
+    }
+ catch (    JSONException e) {
+      AppLog.e(AppLog.T.STATS,e);
+    }
     showStatsData(context,widgetIDs,blog,newData);
   }
  catch (  JSONException e) {

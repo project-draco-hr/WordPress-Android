@@ -3,18 +3,42 @@
     showMessage(context,appWidgetIds,context.getString(R.string.stats_widget_error_no_account));
     return;
   }
+  SparseArray<ArrayList<Integer>> blogsToWidgetIDs=new SparseArray<>();
   for (  int widgetId : appWidgetIds) {
     int remoteBlogID=getRemoteBlogIDFromWidgetID(widgetId);
     if (remoteBlogID == 0) {
       showMessage(context,new int[]{widgetId},context.getString(R.string.stats_widget_error_readd_widget));
       continue;
     }
+    ArrayList<Integer> widgetIDs=blogsToWidgetIDs.get(remoteBlogID,new ArrayList<Integer>());
+    widgetIDs.add(widgetId);
+    blogsToWidgetIDs.append(remoteBlogID,widgetIDs);
+  }
+  for (int i=0; i < blogsToWidgetIDs.size(); i++) {
+    int remoteBlogID=blogsToWidgetIDs.keyAt(i);
+    ArrayList<Integer> widgetsList=blogsToWidgetIDs.get(remoteBlogID);
+    int[] currentWidgets=ArrayUtils.toPrimitive(widgetsList.toArray(new Integer[widgetsList.size()]));
     int localId=StatsUtils.getLocalBlogIdFromRemoteBlogId(remoteBlogID);
-    if (localId == 0 || WordPress.getBlog(localId) == null) {
-      showMessage(context,new int[]{widgetId},context.getString(R.string.stats_widget_error_readd_widget));
+    Blog blog=WordPress.getBlog(localId);
+    if (localId == 0 || blog == null) {
+      showMessage(context,currentWidgets,context.getString(R.string.stats_widget_error_readd_widget));
       continue;
     }
     String currentDate=StatsUtils.getCurrentDateTZ(localId);
-    enqueueStatsRequestForBlog(context,String.valueOf(remoteBlogID),currentDate);
+    JSONObject cache=getCacheDataForBlog(remoteBlogID,currentDate);
+    if (cache != null) {
+      showStatsData(context,currentWidgets,blog,cache);
+    }
+    if (!NetworkUtils.isNetworkAvailable(context)) {
+      if (cache == null) {
+        showMessage(context,currentWidgets,context.getString(R.string.stats_widget_error_generic));
+      }
+    }
+ else {
+      if (cache == null) {
+        showMessage(context,currentWidgets,context.getString(R.string.stats_widget_loading_data));
+      }
+      enqueueStatsRequestForBlog(context,String.valueOf(remoteBlogID),currentDate);
+    }
   }
 }
