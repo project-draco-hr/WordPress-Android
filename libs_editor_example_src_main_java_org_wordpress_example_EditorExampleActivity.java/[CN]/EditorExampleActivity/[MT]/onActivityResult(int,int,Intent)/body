@@ -1,0 +1,23 @@
+{
+  super.onActivityResult(requestCode,resultCode,data);
+  if (data == null) {
+    return;
+  }
+  Uri imageUri=data.getData();
+  MediaFile mediaFile=new MediaFile();
+  String mediaId=String.valueOf(System.currentTimeMillis());
+  mediaFile.setMediaId(mediaId);
+switch (requestCode) {
+case ADD_MEDIA_ACTIVITY_REQUEST_CODE:
+    mEditorFragment.appendMediaFile(mediaFile,imageUri.toString(),null);
+  if (mEditorFragment instanceof EditorMediaUploadListener) {
+    simulateFileUpload(mediaId,imageUri.toString());
+  }
+break;
+case ADD_MEDIA_FAIL_ACTIVITY_REQUEST_CODE:
+mEditorFragment.appendMediaFile(mediaFile,imageUri.toString(),null);
+if (mEditorFragment instanceof EditorMediaUploadListener) {
+simulateFileUploadFail(mediaId,imageUri.toString());
+}
+}
+}

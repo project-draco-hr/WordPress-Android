@@ -1,0 +1,46 @@
+{
+  super.onCreate(savedInstanceState);
+  setHasOptionsMenu(true);
+  ActionBar actionBar=getActionBar();
+  if (actionBar == null) {
+    return;
+  }
+  actionBar.show();
+  mPreviousActionBarTitle=actionBar.getTitle();
+  mPreviousCustomView=actionBar.getCustomView();
+  final int displayOptions=actionBar.getDisplayOptions();
+  mPreviousHomeAsUpEnabled=(displayOptions & ActionBar.DISPLAY_HOME_AS_UP) != 0;
+  actionBar.setTitle(R.string.image_settings);
+  actionBar.setDisplayHomeAsUpEnabled(true);
+  if (getResources().getBoolean(R.bool.show_extra_side_padding)) {
+    actionBar.setHomeAsUpIndicator(R.drawable.ic_close_padded);
+  }
+ else {
+    actionBar.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+  }
+  actionBar.setDisplayShowCustomEnabled(true);
+  actionBar.setCustomView(R.layout.image_settings_formatbar);
+  actionBar.getCustomView().findViewById(R.id.menu_save).setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      try {
+        mImageMeta.put("title",mTitleText.getText().toString());
+        mImageMeta.put("caption",mCaptionText.getText().toString());
+        mImageMeta.put("alt",mAltText.getText().toString());
+        mImageMeta.put("align",mAlignmentSpinner.getSelectedItem().toString());
+        mImageMeta.put("linkUrl",mLinkTo.getText().toString());
+        int newWidth=getEditTextIntegerClamped(mWidthText,10,mMaxImageWidth);
+        mImageMeta.put("width",newWidth);
+        mImageMeta.put("height",getRelativeHeightFromWidth(newWidth));
+      }
+ catch (      JSONException e) {
+        AppLog.d(AppLog.T.EDITOR,"Unable to update JSON array");
+      }
+      Intent intent=new Intent();
+      intent.putExtra("imageMeta",mImageMeta.toString());
+      getTargetFragment().onActivityResult(getTargetRequestCode(),getTargetRequestCode(),intent);
+      restorePreviousActionBar();
+      getFragmentManager().popBackStack();
+    }
+  }
+);
+}
