@@ -11,7 +11,8 @@
   mediaFile.setFileName(fileName);
   mediaFile.setFilePath(filePath);
   mediaFile.setMimeType(mimeType);
-  ApiHelper.UploadMediaTask task=new ApiHelper.UploadMediaTask(mContext,mediaFile,new ApiHelper.UploadMediaTask.Callback(){
+  mCurrentUploadMediaId=mediaId;
+  mCurrentUploadMediaTask=new ApiHelper.UploadMediaTask(mContext,mediaFile,new ApiHelper.UploadMediaTask.Callback(){
     @Override public void onSuccess(    String remoteId,    String remoteUrl){
       WordPress.wpDB.deleteMediaFile(blogIdStr,mediaId);
       EventBus.getDefault().post(new MediaUploadEvents.MediaUploadSucceeded(mediaId,remoteId,remoteUrl));
@@ -20,6 +21,7 @@
     @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
       WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,"failed");
       mUploadInProgress=false;
+      mCurrentUploadMediaId="";
       EventBus.getDefault().post(new MediaUploadEvents.MediaUploadFailed(mediaId,getString(R.string.upload_failed)));
       mHandler.post(mFetchQueueTask);
       if (errorType != ErrorType.NETWORK_XMLRPC) {
@@ -34,6 +36,6 @@
   WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,"uploading");
   List<Object> apiArgs=new ArrayList<Object>();
   apiArgs.add(WordPress.getCurrentBlog());
-  task.execute(apiArgs);
+  mCurrentUploadMediaTask.execute(apiArgs);
   mHandler.post(mFetchQueueTask);
 }

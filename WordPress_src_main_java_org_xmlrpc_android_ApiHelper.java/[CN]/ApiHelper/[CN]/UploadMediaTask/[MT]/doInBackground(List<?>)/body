@@ -6,7 +6,7 @@
     setError(ErrorType.INVALID_CURRENT_BLOG,"current blog is null");
     return null;
   }
-  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
+  final XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
   Map<String,Object> data=new HashMap<String,Object>();
   data.put("name",mMediaFile.getFileName());
   data.put("type",mMediaFile.getMimeType());
@@ -17,6 +17,9 @@
   if (client instanceof XMLRPCClient) {
     ((XMLRPCClient)client).setOnBytesUploadedListener(new XMLRPCClient.OnBytesUploadedListener(){
       @Override public void onBytesUploaded(      long uploadedBytes){
+        if (isCancelled()) {
+          ((XMLRPCClient)client).cancel();
+        }
         if (tempFile == null || tempFile.length() == 0) {
           return;
         }
