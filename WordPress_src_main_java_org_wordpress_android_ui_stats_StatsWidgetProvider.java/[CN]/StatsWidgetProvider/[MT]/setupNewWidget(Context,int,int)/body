@@ -5,38 +5,23 @@
     AppLog.e(AppLog.T.STATS,"setupNewWidget: No blog found in the db!");
     return;
   }
-  String remoteBlogID=StatsUtils.getBlogId(localBlogID);
-  String prevWidgetKeysString=AppPrefs.getStatsWidgetsKeys();
-  JSONObject prevKeys=null;
-  if (!StringUtils.isEmpty(prevWidgetKeysString)) {
-    try {
-      prevKeys=new JSONObject(prevWidgetKeysString);
-    }
- catch (    JSONException e) {
-      AppLog.e(AppLog.T.STATS,e);
-    }
+  String remoteBlogID=StatsUtils.getBlogId(blog);
+  if (remoteBlogID == null) {
+    showMessage(context,new int[]{widgetID},context.getString(R.string.stats_widget_error_jetpack_no_blogid));
+    return;
   }
-  try {
-    if (prevKeys == null) {
-      prevKeys=new JSONObject();
-    }
-    prevKeys.put(String.valueOf(widgetID),remoteBlogID);
-    AppPrefs.setStatsWidgetsKeys(prevKeys.toString());
-  }
- catch (  JSONException e) {
-    AppLog.e(AppLog.T.STATS,e);
-  }
+  setRemoteBlogIDForWidgetIDs(new int[]{widgetID},remoteBlogID);
   String currentDate=StatsUtils.getCurrentDateTZ(localBlogID);
   JSONObject cache=getCacheDataForBlog(Integer.parseInt(remoteBlogID),currentDate);
   if (cache != null) {
     showStatsData(context,new int[]{widgetID},blog,cache);
+    return;
+  }
+  if (!NetworkUtils.isNetworkAvailable(context)) {
+    showMessage(context,new int[]{widgetID},context.getString(R.string.no_network_title));
   }
  else {
-    if (!NetworkUtils.isNetworkAvailable(context)) {
-      showMessage(context,new int[]{widgetID},context.getString(R.string.stats_widget_loading_data));
-    }
- else {
-      enqueueStatsRequestForBlog(context,remoteBlogID,currentDate);
-    }
+    showMessage(context,new int[]{widgetID},context.getString(R.string.stats_widget_loading_data));
+    enqueueStatsRequestForBlog(context,remoteBlogID,currentDate);
   }
 }
