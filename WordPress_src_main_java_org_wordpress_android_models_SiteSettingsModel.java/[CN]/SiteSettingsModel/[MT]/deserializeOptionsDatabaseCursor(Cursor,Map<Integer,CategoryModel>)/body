@@ -1,0 +1,35 @@
+{
+  if (cursor == null || !cursor.moveToFirst() || cursor.getCount() == 0)   return;
+  localTableId=getIntFromCursor(cursor,ID_COLUMN_NAME);
+  address=getStringFromCursor(cursor,ADDRESS_COLUMN_NAME);
+  username=getStringFromCursor(cursor,USERNAME_COLUMN_NAME);
+  password=getStringFromCursor(cursor,PASSWORD_COLUMN_NAME);
+  title=getStringFromCursor(cursor,TITLE_COLUMN_NAME);
+  tagline=getStringFromCursor(cursor,TAGLINE_COLUMN_NAME);
+  languageId=getIntFromCursor(cursor,LANGUAGE_COLUMN_NAME);
+  privacy=getIntFromCursor(cursor,PRIVACY_COLUMN_NAME);
+  defaultCategory=getIntFromCursor(cursor,DEF_CATEGORY_COLUMN_NAME);
+  defaultPostFormat=getStringFromCursor(cursor,DEF_POST_FORMAT_COLUMN_NAME);
+  location=getBooleanFromCursor(cursor,LOCATION_COLUMN_NAME);
+  hasVerifiedCredentials=getBooleanFromCursor(cursor,CREDS_VERIFIED_COLUMN_NAME);
+  setRelatedPostsFlags(Math.max(0,getIntFromCursor(cursor,RELATED_POSTS_COLUMN_NAME)));
+  String cachedCategories=getStringFromCursor(cursor,CATEGORIES_COLUMN_NAME);
+  String cachedFormats=getStringFromCursor(cursor,POST_FORMATS_COLUMN_NAME);
+  if (models != null && !TextUtils.isEmpty(cachedCategories)) {
+    String[] split=cachedCategories.split(",");
+    categories=new CategoryModel[split.length];
+    for (int i=0; i < split.length; ++i) {
+      int catId=Integer.parseInt(split[i]);
+      categories[i]=models.get(catId);
+    }
+  }
+  if (!TextUtils.isEmpty(cachedFormats)) {
+    String[] split=cachedFormats.split(";");
+    postFormats=new HashMap<>();
+    for (    String format : split) {
+      String[] kvp=format.split(",");
+      postFormats.put(kvp[0],kvp[1]);
+    }
+  }
+  isInLocalTable=true;
+}
