@@ -1,0 +1,20 @@
+{
+  final PeopleViewHolder holder;
+  if (convertView == null || convertView.getTag() == null) {
+    convertView=mInflater.inflate(R.layout.people_list_row,parent,false);
+    holder=new PeopleViewHolder(convertView);
+    convertView.setTag(holder);
+  }
+ else {
+    holder=(PeopleViewHolder)convertView.getTag();
+  }
+  Person person=getItem(position);
+  if (person != null) {
+    String avatarUrl=GravatarUtils.fixGravatarUrl(person.getImageUrl(),mAvatarSz);
+    holder.imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
+    holder.txtDisplayName.setText(person.getDisplayName());
+  }
+  boolean isLastItem=(position == getCount() - 1);
+  holder.divider.setVisibility(isLastItem ? View.INVISIBLE : View.VISIBLE);
+  return convertView;
+}
