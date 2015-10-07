@@ -1,0 +1,36 @@
+{
+  XMLRPCClientInterface client=instantiateInterface();
+  if (client == null)   return;
+  Map<String,String> args=new HashMap<>();
+  args.put(ApiHelper.Params.SHOW_SUPPORTED_POST_FORMATS,"true");
+  Object[] params={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword(),args};
+  client.callAsync(new XMLRPCCallback(){
+    @Override public void onSuccess(    long id,    Object result){
+      credentialsVerified(true);
+      if (result != null && result instanceof HashMap) {
+        Map<?,?> resultMap=(HashMap<?,?>)result;
+        Map allFormats;
+        Object[] supportedFormats;
+        if (resultMap.containsKey("supported")) {
+          allFormats=(Map)resultMap.get("all");
+          supportedFormats=(Object[])resultMap.get("supported");
+        }
+ else {
+          allFormats=resultMap;
+          supportedFormats=allFormats.keySet().toArray();
+        }
+        mRemoteSettings.postFormats=new HashMap<>();
+        for (        Object supportedFormat : supportedFormats) {
+          if (allFormats.containsKey(supportedFormat)) {
+            mRemoteSettings.postFormats.put(supportedFormat.toString(),allFormats.get(supportedFormat).toString());
+          }
+        }
+        mSettings.postFormats=new HashMap<>(mRemoteSettings.postFormats);
+        notifyUpdatedOnUiThread(null);
+      }
+    }
+    @Override public void onFailure(    long id,    Exception error){
+    }
+  }
+,ApiHelper.Methods.GET_POST_FORMATS,params);
+}

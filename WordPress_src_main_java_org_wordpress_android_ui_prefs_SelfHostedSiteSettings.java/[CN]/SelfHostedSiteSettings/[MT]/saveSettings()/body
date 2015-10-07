@@ -1,0 +1,19 @@
+{
+  super.saveSettings();
+  final Map<String,String> params=serializeSelfHostedParams();
+  if (params == null || params.isEmpty())   return;
+  XMLRPCCallback callback=new XMLRPCCallback(){
+    @Override public void onSuccess(    long id,    final Object result){
+      notifySavedOnUiThread(null);
+      mRemoteSettings.copyFrom(mSettings);
+    }
+    @Override public void onFailure(    long id,    final Exception error){
+      notifySavedOnUiThread(error);
+    }
+  }
+;
+  final Object[] callParams={mBlog.getRemoteBlogId(),mSettings.username,mSettings.password,params};
+  XMLRPCClientInterface xmlrpcInterface=instantiateInterface();
+  if (xmlrpcInterface == null)   return;
+  xmlrpcInterface.callAsync(callback,ApiHelper.Methods.SET_OPTIONS,callParams);
+}
