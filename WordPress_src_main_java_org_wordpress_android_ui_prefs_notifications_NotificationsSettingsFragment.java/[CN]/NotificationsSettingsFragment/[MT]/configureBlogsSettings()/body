@@ -1,8 +1,16 @@
 {
-  String args=String.format("password='%s'",WordPressDB.encryptPassword(""));
+  if (!isAdded())   return;
+  String args="password='" + WordPressDB.encryptPassword("") + "'";
+  String trimmedQuery=null;
+  if (mSearchView != null && !TextUtils.isEmpty(mSearchView.getQuery())) {
+    trimmedQuery=mSearchView.getQuery().toString().trim();
+    args+=" AND (url LIKE '%" + trimmedQuery + "%' OR blogName LIKE '%"+ trimmedQuery+ "%')";
+  }
   List<Map<String,Object>> blogs=WordPress.wpDB.getBlogsBy(args,null,0,false);
+  mSiteCount=blogs.size();
   Context context=getActivity();
   PreferenceCategory blogsCategory=(PreferenceCategory)findPreference(getString(R.string.pref_notification_blogs));
+  blogsCategory.removeAll();
   for (  Map blog : blogs) {
     if (context == null)     return;
     String siteUrl=MapUtils.getMapStr(blog,"url");
@@ -14,4 +22,10 @@
     addPreferencesForPreferenceScreen(prefScreen,Channel.BLOGS,blogId);
     blogsCategory.addPreference(prefScreen);
   }
+  if (mSiteCount == 0 && !TextUtils.isEmpty(trimmedQuery)) {
+    Preference searchResultsPref=new Preference(context);
+    searchResultsPref.setSummary(String.format(getString(R.string.notifications_no_search_results),trimmedQuery));
+    blogsCategory.addPreference(searchResultsPref);
+  }
+  updateSearchMenuVisibility();
 }
