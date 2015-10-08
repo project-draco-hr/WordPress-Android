@@ -1,0 +1,25 @@
+{
+  if (error == null) {
+    AppLog.e(AppLog.T.STATS,"Widget received a VolleyError that is null!");
+    return;
+  }
+  if (error instanceof com.android.volley.AuthFailureError) {
+    int[] widgetIDs=getWidgetIDsFromRemoteBlogID(remoteBlogID);
+    if (widgetIDs.length == 0) {
+      return;
+    }
+    int localId=StatsUtils.getLocalBlogIdFromRemoteBlogId(remoteBlogID);
+    Blog blog=WordPress.getBlog(localId);
+    if (blog == null) {
+      return;
+    }
+    if (blog.isDotcomFlag()) {
+      showMessage(context,widgetIDs,context.getString(R.string.stats_widget_error_no_permissions));
+    }
+ else {
+      showMessage(context,widgetIDs,context.getString(R.string.stats_sign_in_jetpack_different_com_account));
+    }
+    return;
+  }
+  ShowCacheIfAvailableOrGenericError(context,remoteBlogID);
+}

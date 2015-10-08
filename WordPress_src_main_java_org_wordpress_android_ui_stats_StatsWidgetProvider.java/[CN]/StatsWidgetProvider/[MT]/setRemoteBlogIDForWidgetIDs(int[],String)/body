@@ -1,0 +1,24 @@
+{
+  String prevWidgetKeysString=AppPrefs.getStatsWidgetsKeys();
+  JSONObject prevKeys=null;
+  if (!StringUtils.isEmpty(prevWidgetKeysString)) {
+    try {
+      prevKeys=new JSONObject(prevWidgetKeysString);
+    }
+ catch (    JSONException e) {
+      AppLog.e(AppLog.T.STATS,e);
+    }
+  }
+  if (prevKeys == null) {
+    prevKeys=new JSONObject();
+  }
+  for (  int widgetID : widgetIDs) {
+    try {
+      prevKeys.put(String.valueOf(widgetID),remoteBlogID);
+      AppPrefs.setStatsWidgetsKeys(prevKeys.toString());
+    }
+ catch (    JSONException e) {
+      AppLog.e(AppLog.T.STATS,e);
+    }
+  }
+}
