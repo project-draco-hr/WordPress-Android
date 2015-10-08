@@ -1,0 +1,28 @@
+{
+  String prevDataAsString=AppPrefs.getStatsWidgetsData();
+  if (StringUtils.isEmpty(prevDataAsString)) {
+    AppLog.i(AppLog.T.STATS,"No cache found for the widgets");
+    return null;
+  }
+  try {
+    JSONObject prevData=new JSONObject(prevDataAsString);
+    if (!prevData.has(String.valueOf(remoteBlogID))) {
+      AppLog.i(AppLog.T.STATS,"No cache found for the blog ID " + remoteBlogID);
+      return null;
+    }
+    JSONObject cache=prevData.getJSONObject(String.valueOf(remoteBlogID));
+    String dateStoredInCache=cache.optString("date");
+    if (date.equals(dateStoredInCache)) {
+      AppLog.i(AppLog.T.STATS,"Cache found for the blog ID " + remoteBlogID);
+      return cache;
+    }
+ else {
+      AppLog.i(AppLog.T.STATS,"Cache found for the blog ID " + remoteBlogID + " but the date value doesn't match!!");
+      return null;
+    }
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.STATS,e);
+    return null;
+  }
+}

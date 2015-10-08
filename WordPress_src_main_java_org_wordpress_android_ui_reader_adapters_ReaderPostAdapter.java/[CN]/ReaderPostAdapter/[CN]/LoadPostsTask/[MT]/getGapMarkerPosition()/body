@@ -1,0 +1,25 @@
+{
+  if (!getPostListType().isTagType()) {
+    return -1;
+  }
+  ReaderBlogIdPostId gapMarkerIds=ReaderPostTable.getGapMarkerForTag(mCurrentTag);
+  if (gapMarkerIds == null) {
+    return -1;
+  }
+  int gapPosition=allPosts.indexOfIds(gapMarkerIds);
+  if (gapPosition > -1) {
+    gapPosition++;
+    if (hasCustomFirstItem()) {
+      gapPosition++;
+    }
+    if (gapPosition >= allPosts.size() - 1) {
+      gapPosition=-1;
+      AppLog.w(AppLog.T.READER,"gap marker at/after last post, removed");
+      ReaderPostTable.removeGapMarkerForTag(mCurrentTag);
+    }
+ else {
+      AppLog.d(AppLog.T.READER,"gap marker at position " + gapPosition);
+    }
+  }
+  return gapPosition;
+}
