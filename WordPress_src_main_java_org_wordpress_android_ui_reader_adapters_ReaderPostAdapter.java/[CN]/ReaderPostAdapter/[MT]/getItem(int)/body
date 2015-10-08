@@ -1,6 +1,13 @@
 {
-  if (hasCustomFirstItem()) {
-    return position == 0 ? null : mPosts.get(position - 1);
+  if (position == 0 && hasCustomFirstItem()) {
+    return null;
   }
-  return mPosts.get(position);
+  if (position == mGapMarkerPosition) {
+    return null;
+  }
+  int arrayPos=hasCustomFirstItem() ? position - 1 : position;
+  if (mGapMarkerPosition > -1 && position > mGapMarkerPosition) {
+    arrayPos--;
+  }
+  return mPosts.get(arrayPos);
 }

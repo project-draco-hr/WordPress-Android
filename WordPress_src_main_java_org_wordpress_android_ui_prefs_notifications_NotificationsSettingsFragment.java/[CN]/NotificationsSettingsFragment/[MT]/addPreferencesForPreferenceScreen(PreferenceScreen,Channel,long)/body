@@ -16,12 +16,16 @@
   emailPreference.setDialogTitle(R.string.email);
   emailPreference.setSummary(R.string.notifications_email_summary);
   rootCategory.addPreference(emailPreference);
-  NotificationsSettingsDialogPreference devicePreference=new NotificationsSettingsDialogPreference(context,null,channel,NotificationsSettings.Type.DEVICE,blogId,mNotificationsSettings,mOnSettingsChangedListener);
-  devicePreference.setIcon(R.drawable.ic_phone_grey);
-  devicePreference.setTitle(R.string.app_notifications);
-  devicePreference.setDialogTitle(R.string.app_notifications);
-  devicePreference.setSummary(R.string.notifications_push_summary);
-  devicePreference.setEnabled(mNotificationsEnabled);
-  rootCategory.addPreference(devicePreference);
+  SharedPreferences settings=PreferenceManager.getDefaultSharedPreferences(context);
+  String deviceID=settings.getString(NotificationsUtils.WPCOM_PUSH_DEVICE_SERVER_ID,null);
+  if (!TextUtils.isEmpty(deviceID)) {
+    NotificationsSettingsDialogPreference devicePreference=new NotificationsSettingsDialogPreference(context,null,channel,NotificationsSettings.Type.DEVICE,blogId,mNotificationsSettings,mOnSettingsChangedListener);
+    devicePreference.setIcon(R.drawable.ic_phone_grey);
+    devicePreference.setTitle(R.string.app_notifications);
+    devicePreference.setDialogTitle(R.string.app_notifications);
+    devicePreference.setSummary(R.string.notifications_push_summary);
+    devicePreference.setEnabled(mNotificationsEnabled);
+    rootCategory.addPreference(devicePreference);
+  }
   mTypePreferenceCategories.add(rootCategory);
 }

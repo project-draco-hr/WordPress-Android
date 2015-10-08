@@ -1,0 +1,25 @@
+{
+  if (blog == null) {
+    return null;
+  }
+  if (blog.isDotcomFlag()) {
+    return String.valueOf(blog.getRemoteBlogId());
+  }
+ else {
+    String remoteID=blog.getApi_blogid();
+    if (StringUtils.isEmpty(remoteID)) {
+      return null;
+    }
+    try {
+      int parsedBlogID=Integer.parseInt(remoteID);
+      if (parsedBlogID < 1) {
+        return null;
+      }
+    }
+ catch (    NumberFormatException e) {
+      AppLog.e(T.STATS,"The remote blog ID stored in options isn't valid: " + remoteID);
+      return null;
+    }
+    return remoteID;
+  }
+}

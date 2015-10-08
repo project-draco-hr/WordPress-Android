@@ -1,0 +1,21 @@
+{
+  final Blog currentBlog=WordPress.getBlog(localID);
+  if (currentBlog == null) {
+    AppLog.e(AppLog.T.STATS,"The blog with local_blog_id " + localID + " cannot be loaded from the DB.");
+    Toast.makeText(this,R.string.stats_no_blog,Toast.LENGTH_LONG).show();
+    finish();
+    return;
+  }
+  final String remoteBlogID=StatsUtils.getBlogId(currentBlog);
+  if (remoteBlogID == null) {
+    Toast.makeText(this,R.string.stats_widget_error_jetpack_no_blogid,Toast.LENGTH_LONG).show();
+    finish();
+    return;
+  }
+  final Context context=StatsWidgetConfigureActivity.this;
+  StatsWidgetProvider.setupNewWidget(context,mAppWidgetId,localID);
+  Intent resultValue=new Intent();
+  resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,mAppWidgetId);
+  setResult(RESULT_OK,resultValue);
+  finish();
+}
