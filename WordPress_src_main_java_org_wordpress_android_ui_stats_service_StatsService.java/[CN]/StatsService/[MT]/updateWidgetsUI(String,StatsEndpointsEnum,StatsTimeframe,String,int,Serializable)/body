@@ -1,0 +1,40 @@
+{
+  if (pageRequested != -1) {
+    return;
+  }
+  if (endpointName != StatsEndpointsEnum.VISITS) {
+    return;
+  }
+  if (timeframe != StatsTimeframe.DAY && timeframe != StatsTimeframe.INSIGHTS) {
+    return;
+  }
+  int parsedBlogID=Integer.parseInt(blogId);
+  int localTableBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId(parsedBlogID);
+  if (!date.equals(StatsUtils.getCurrentDateTZ(localTableBlogId))) {
+    return;
+  }
+  if (responseObjectModel == null) {
+    return;
+  }
+  if (!StatsWidgetProvider.isBlogDisplayedInWidget(parsedBlogID)) {
+    AppLog.d(AppLog.T.STATS,"The blog with remoteID " + parsedBlogID + " is NOT displayed in any widget. Stats Service doesn't call an update of the widget.");
+    return;
+  }
+  if (responseObjectModel instanceof VisitsModel) {
+    VisitsModel visitsModel=(VisitsModel)responseObjectModel;
+    if (visitsModel.getVisits() == null || visitsModel.getVisits().size() == 0) {
+      return;
+    }
+    List<VisitModel> visits=visitsModel.getVisits();
+    VisitModel data=visits.get(visits.size() - 1);
+    StatsWidgetProvider.updateWidgets(getApplicationContext(),parsedBlogID,data);
+  }
+ else   if (responseObjectModel instanceof VolleyError) {
+    VolleyError error=(VolleyError)responseObjectModel;
+    StatsWidgetProvider.updateWidgets(getApplicationContext(),parsedBlogID,error);
+  }
+ else   if (responseObjectModel instanceof StatsError) {
+    StatsError statsError=(StatsError)responseObjectModel;
+    StatsWidgetProvider.updateWidgets(getApplicationContext(),parsedBlogID,statsError);
+  }
+}
