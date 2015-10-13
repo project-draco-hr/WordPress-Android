@@ -2,6 +2,9 @@
   if (isFinishing()) {
     return;
   }
+  findViewById(R.id.stats_other_recent_stats_label_insights).setVisibility(View.INVISIBLE);
+  findViewById(R.id.stats_other_recent_stats_label_timeline).setVisibility(View.INVISIBLE);
+  findViewById(R.id.stats_other_recent_stats_moved).setVisibility(View.INVISIBLE);
   FragmentManager fm=getFragmentManager();
   FragmentTransaction ft=fm.beginTransaction();
   StatsAbstractFragment fragment;
@@ -58,7 +61,7 @@
     }
     if (fm.findFragmentByTag(StatsInsightsLatestPostSummaryFragment.TAG) == null || forceRecreationOfFragments) {
       fragment=StatsAbstractFragment.newInstance(StatsViewType.INSIGHTS_LATEST_POST_SUMMARY,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
-      ft.replace(R.id.stats_insights_latest_post_summary_container,fragment,StatsInsightsTodayFragment.TAG);
+      ft.replace(R.id.stats_insights_latest_post_summary_container,fragment,StatsInsightsLatestPostSummaryFragment.TAG);
     }
     if (fm.findFragmentByTag(StatsCommentsFragment.TAG) == null || forceRecreationOfFragments) {
       fragment=StatsAbstractFragment.newInstance(StatsViewType.COMMENTS,mLocalBlogID,mCurrentTimeframe,mRequestedDate);
@@ -78,4 +81,16 @@
     }
   }
   ft.commitAllowingStateLoss();
+  mOuterScrollView.postDelayed(new Runnable(){
+    @Override public void run(){
+      if (isFinishing()) {
+        return;
+      }
+      boolean isInsights=mCurrentTimeframe == StatsTimeframe.INSIGHTS;
+      findViewById(R.id.stats_other_recent_stats_label_insights).setVisibility(isInsights ? View.VISIBLE : View.GONE);
+      findViewById(R.id.stats_other_recent_stats_label_timeline).setVisibility(isInsights ? View.GONE : View.VISIBLE);
+      findViewById(R.id.stats_other_recent_stats_moved).setVisibility(isInsights ? View.GONE : View.VISIBLE);
+    }
+  }
+,StatsConstants.STATS_LABELS_SETUP_DELAY);
 }
