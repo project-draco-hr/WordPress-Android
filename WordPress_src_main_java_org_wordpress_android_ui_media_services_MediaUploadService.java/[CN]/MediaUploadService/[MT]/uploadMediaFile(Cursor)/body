@@ -19,7 +19,7 @@
       fetchMediaFile(remoteId);
     }
     @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
-      WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,"failed");
+      WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,MediaUploadState.FAILED);
       mUploadInProgress=false;
       mCurrentUploadMediaId="";
       EventBus.getDefault().post(new MediaUploadEvents.MediaUploadFailed(mediaId,getString(R.string.upload_failed)));
@@ -33,7 +33,7 @@
     }
   }
 );
-  WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,"uploading");
+  WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,MediaUploadState.UPLOADING);
   List<Object> apiArgs=new ArrayList<Object>();
   apiArgs.add(WordPress.getCurrentBlog());
   mCurrentUploadMediaTask.execute(apiArgs);
