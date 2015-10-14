@@ -5,7 +5,12 @@
  else {
     if (WordPress.getCurrentBlog() != null) {
       String blogId=String.valueOf(WordPress.getCurrentBlog().getLocalTableBlogId());
-      WordPress.wpDB.deleteMediaFile(blogId,mediaId);
+      if (delete) {
+        WordPress.wpDB.deleteMediaFile(blogId,mediaId);
+      }
+ else {
+        WordPress.wpDB.updateMediaUploadState(blogId,mediaId,MediaUploadState.FAILED);
+      }
     }
   }
 }
