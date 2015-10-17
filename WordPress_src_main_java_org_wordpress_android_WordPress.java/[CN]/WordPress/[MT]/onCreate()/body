@@ -1,43 +1,28 @@
 {
   super.onCreate();
+  long startDate=SystemClock.elapsedRealtime();
   mContext=this;
-  ProfilingUtils.start("WordPress.onCreate");
+  ProfilingUtils.start("App Startup");
   AppLog.enableRecording(true);
+  AppLog.i(T.UTILS,"WordPress.onCreate");
   if (!PackageUtils.isDebugBuild()) {
     Fabric.with(this,new Crashlytics());
   }
   versionName=PackageUtils.getVersionName(this);
-  HelpshiftHelper.init(this);
   initWpDb();
   enableHttpResponseCache(mContext);
   EventBus.TAG="WordPress-EVENT";
   EventBus.builder().logNoSubscriberMessages(false).sendNoSubscriberEvent(false).throwSubscriberException(true).installDefaultEventBus();
   EventBus.getDefault().register(this);
   RestClientUtils.setUserAgent(getUserAgent());
-  configureSimperium();
   setupVolleyQueue();
-  if (AccountHelper.isSignedInWordPressDotCom()) {
-    AccountHelper.getDefaultAccount().fetchAccountDetails();
-  }
-  ABTestingUtils.init();
   AppLockManager.getInstance().enableDefaultAppLockIfAvailable(this);
   if (AppLockManager.getInstance().isAppLockFeatureEnabled()) {
     AppLockManager.getInstance().getCurrentAppLock().setDisabledActivities(new String[]{"org.wordpress.android.ui.ShareIntentReceiverActivity"});
   }
   HelpshiftHelper.init(this);
-  AnalyticsTracker.registerTracker(new AnalyticsTrackerMixpanel(getContext(),BuildConfig.MIXPANEL_TOKEN));
-  AnalyticsTracker.registerTracker(new AnalyticsTrackerNosara(getContext()));
-  AnalyticsTracker.init(getContext());
-  AnalyticsUtils.refreshMetadata();
-  registerForCloudMessaging(this);
-  ApplicationLifecycleMonitor pnBackendMonitor=new ApplicationLifecycleMonitor();
-  registerComponentCallbacks(pnBackendMonitor);
-  registerActivityLifecycleCallbacks(pnBackendMonitor);
-  SuggestionTable.reset(wpDB.getDatabase());
-  int versionCode=PackageUtils.getVersionCode(this);
-  int oldVersionCode=AppPrefs.getLastAppVersionCode();
-  if (oldVersionCode != 0 && oldVersionCode < versionCode) {
-    AnalyticsTracker.track(AnalyticsTracker.Stat.APPLICATION_UPGRADED);
-  }
-  AppPrefs.setLastAppVersionCode(versionCode);
+  ApplicationLifecycleMonitor applicationLifecycleMonitor=new ApplicationLifecycleMonitor();
+  registerComponentCallbacks(applicationLifecycleMonitor);
+  registerActivityLifecycleCallbacks(applicationLifecycleMonitor);
+  initAnalytics(SystemClock.elapsedRealtime() - startDate);
 }

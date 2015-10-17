@@ -1,8 +1,5 @@
 {
-  if (post == null || !hasPostAdapter()) {
-    return;
-  }
-  if (!NetworkUtils.checkConnection(getActivity())) {
+  if (post == null || !isAdded() || !hasPostAdapter() || !NetworkUtils.checkConnection(getActivity())) {
     return;
   }
   ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
@@ -13,7 +10,7 @@
     }
   }
 ;
-  final ReaderBlogActions.BlockedBlogResult blockResult=ReaderBlogActions.blockBlogFromReader(post.blogId,actionListener);
+  final BlockedBlogResult blockResult=ReaderBlogActions.blockBlogFromReader(post.blogId,actionListener);
   AnalyticsTracker.track(AnalyticsTracker.Stat.READER_BLOCKED_BLOG);
   getPostAdapter().removePostsInBlog(post.blogId);
   View.OnClickListener undoListener=new View.OnClickListener(){
@@ -24,12 +21,4 @@
   }
 ;
   Snackbar.make(getView(),getString(R.string.reader_toast_blog_blocked),Snackbar.LENGTH_LONG).setAction(R.string.undo,undoListener).show();
-  if (shouldShowTagToolbar()) {
-    new Handler().postDelayed(new Runnable(){
-      @Override public void run(){
-        positionTagToolbar();
-      }
-    }
-,Constants.SNACKBAR_LONG_DURATION_MS);
-  }
 }

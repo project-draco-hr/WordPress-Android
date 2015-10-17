@@ -7,7 +7,9 @@
       SelfSignedSSLCertsManager selfSignedSSLCertsManager;
       try {
         selfSignedSSLCertsManager=SelfSignedSSLCertsManager.getInstance(ctx);
-        selfSignedSSLCertsManager.addCertificates(selfSignedSSLCertsManager.getLastFailureChain());
+        X509Certificate[] certificates=selfSignedSSLCertsManager.getLastFailureChain();
+        AppLog.i(T.NUX,"Add the following certificate to our Certificate Manager: " + Arrays.toString(certificates));
+        selfSignedSSLCertsManager.addCertificates(certificates);
       }
  catch (      GeneralSecurityException e) {
         AppLog.e(T.API,e);

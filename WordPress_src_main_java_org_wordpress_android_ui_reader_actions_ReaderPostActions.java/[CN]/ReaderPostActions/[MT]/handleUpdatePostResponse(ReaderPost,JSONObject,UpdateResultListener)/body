@@ -8,22 +8,20 @@
   final Handler handler=new Handler();
   new Thread(){
     @Override public void run(){
-      ReaderPost updatedPost=ReaderPost.fromJson(jsonObject);
-      boolean hasChanges=!originalPost.isSamePost(updatedPost);
+      ReaderPost serverPost=ReaderPost.fromJson(jsonObject);
+      boolean hasChanges=!serverPost.isSamePost(localPost);
       if (hasChanges) {
         AppLog.d(T.READER,"post updated");
-        if (originalPost.hasFeaturedImage()) {
-          updatedPost.setFeaturedImage(originalPost.getFeaturedImage());
-        }
-        if (originalPost.hasFeaturedVideo()) {
-          updatedPost.setFeaturedVideo(originalPost.getFeaturedVideo());
-          updatedPost.isVideoPress=originalPost.isVideoPress;
-        }
-        updatedPost.timestamp=originalPost.timestamp;
-        updatedPost.setPublished(originalPost.getPublished());
-        ReaderPostTable.addOrUpdatePost(updatedPost);
+        localPost.numReplies=serverPost.numReplies;
+        localPost.numLikes=serverPost.numLikes;
+        localPost.isFollowedByCurrentUser=serverPost.isFollowedByCurrentUser;
+        localPost.isLikedByCurrentUser=serverPost.isLikedByCurrentUser;
+        localPost.isCommentsOpen=serverPost.isCommentsOpen;
+        localPost.setTitle(serverPost.getTitle());
+        localPost.setText(serverPost.getText());
+        ReaderPostTable.addOrUpdatePost(localPost);
       }
-      if (handlePostLikes(updatedPost,jsonObject)) {
+      if (handlePostLikes(serverPost,jsonObject)) {
         hasChanges=true;
       }
       if (resultListener != null) {
