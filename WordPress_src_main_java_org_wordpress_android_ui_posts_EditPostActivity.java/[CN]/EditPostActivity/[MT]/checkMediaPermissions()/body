@@ -1,0 +1,14 @@
+{
+  List<String> toRequest=new ArrayList<>();
+  for (  String permission : MEDIA_PERMISSIONS) {
+    if (ContextCompat.checkSelfPermission(this,permission) != PackageManager.PERMISSION_GRANTED) {
+      toRequest.add(permission);
+    }
+  }
+  if (toRequest.size() > 0) {
+    String[] requestedPermissions=toRequest.toArray(new String[toRequest.size()]);
+    ActivityCompat.requestPermissions(this,requestedPermissions,MEDIA_PERMISSION_REQUEST_CODE);
+    return false;
+  }
+  return true;
+}

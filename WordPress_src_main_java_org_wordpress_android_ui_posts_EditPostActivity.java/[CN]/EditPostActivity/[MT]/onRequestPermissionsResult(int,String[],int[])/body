@@ -1,8 +1,42 @@
 {
-  if (requestCode == EditPostSettingsFragment.PERMISSION_REQUEST_LOCATION) {
+switch (requestCode) {
+case EditPostSettingsFragment.PERMISSION_REQUEST_LOCATION:
     if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
       mEditPostSettingsFragment.showLocationSearch();
       return;
     }
+  break;
+case MEDIA_PERMISSION_REQUEST_CODE:
+boolean shouldShowContextMenu=true;
+for (int i=0; i < grantResults.length; ++i) {
+switch (permissions[i]) {
+case Manifest.permission.CAMERA:
+  if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+    shouldShowContextMenu=false;
   }
+break;
+case Manifest.permission.WRITE_EXTERNAL_STORAGE:
+if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+shouldShowContextMenu=false;
+}
+ else {
+registerReceiver(mGalleryReceiver,new IntentFilter(LegacyEditorFragment.ACTION_MEDIA_GALLERY_TOUCHED));
+refreshBlogMedia();
+}
+break;
+}
+}
+if (shouldShowContextMenu) {
+if (mMenuView != null) {
+super.openContextMenu(mMenuView);
+mMenuView=null;
+}
+}
+ else {
+ToastUtils.showToast(this,"Permissions required in order to access media");
+}
+break;
+default :
+break;
+}
 }
