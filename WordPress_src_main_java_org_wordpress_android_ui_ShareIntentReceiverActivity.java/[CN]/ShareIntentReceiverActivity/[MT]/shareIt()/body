@@ -1,13 +1,16 @@
 {
   Intent intent=null;
+  if (!isSharingText()) {
+    if (!WordPressMediaUtils.checkStoragePermission(this,SHARE_MEDIA_PERMISSION_REQUEST_CODE)) {
+      return false;
+    }
+  }
   if (mActionIndex == ADD_TO_NEW_POST) {
     intent=new Intent(this,EditPostActivity.class);
   }
  else   if (mActionIndex == ADD_TO_MEDIA_LIBRARY) {
-    if (!WordPressMediaUtils.checkStoragePermission(this,SHARE_MEDIA_PERMISSION_REQUEST_CODE)) {
-      return;
-    }
     intent=new Intent(this,MediaBrowserActivity.class);
   }
   startActivityAndFinish(intent);
+  return true;
 }
