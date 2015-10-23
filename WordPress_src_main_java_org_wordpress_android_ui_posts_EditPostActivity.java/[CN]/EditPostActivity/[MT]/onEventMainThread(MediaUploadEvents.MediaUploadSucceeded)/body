@@ -1,0 +1,42 @@
+{
+  if (mEditorMediaUploadListener != null) {
+    mEditorMediaUploadListener.onMediaUploadSucceeded(event.mLocalId,event.mRemoteUrl);
+  }
+  for (  Long galleryId : mPendingGalleryUploads.keySet()) {
+    if (mPendingGalleryUploads.get(galleryId).contains(event.mLocalId)) {
+      SpannableStringBuilder postContent;
+      if (mEditorFragment.getSpannedContent() != null) {
+        postContent=new SpannableStringBuilder(mEditorFragment.getSpannedContent());
+      }
+ else {
+        postContent=new SpannableStringBuilder(StringUtils.notNullStr((String)mEditorFragment.getContent()));
+      }
+      int selectionStart=0;
+      int selectionEnd=postContent.length();
+      MediaGalleryImageSpan[] gallerySpans=postContent.getSpans(selectionStart,selectionEnd,MediaGalleryImageSpan.class);
+      if (gallerySpans.length != 0) {
+        for (        MediaGalleryImageSpan gallerySpan : gallerySpans) {
+          MediaGallery gallery=gallerySpan.getMediaGallery();
+          if (gallery.getUniqueId() == galleryId) {
+            ArrayList<String> galleryIds=gallery.getIds();
+            galleryIds.add(event.mRemoteId);
+            gallery.setIds(galleryIds);
+            gallerySpan.setMediaGallery(gallery);
+            int spanStart=postContent.getSpanStart(gallerySpan);
+            int spanEnd=postContent.getSpanEnd(gallerySpan);
+            postContent.setSpan(gallerySpan,spanStart,spanEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+          }
+        }
+      }
+      mPendingGalleryUploads.get(galleryId).remove(event.mLocalId);
+      if (mPendingGalleryUploads.get(galleryId).size() == 0) {
+        mPendingGalleryUploads.remove(galleryId);
+      }
+    }
+  }
+  if (mPendingGalleryUploads.size() == 0) {
+    stopMediaUploadService();
+    NotificationManager notificationManager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+    notificationManager.cancel(10);
+  }
+}

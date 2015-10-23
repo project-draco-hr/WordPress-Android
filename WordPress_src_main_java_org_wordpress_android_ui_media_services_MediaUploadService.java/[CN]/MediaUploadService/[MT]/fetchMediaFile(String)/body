@@ -5,12 +5,14 @@
     @Override public void onSuccess(    MediaFile mediaFile){
       String blogId=mediaFile.getBlogId();
       String mediaId=mediaFile.getMediaId();
-      WordPress.wpDB.updateMediaUploadState(blogId,mediaId,"uploaded");
+      WordPress.wpDB.updateMediaUploadState(blogId,mediaId,MediaUploadState.UPLOADED);
       mUploadInProgress=false;
+      mCurrentUploadMediaId="";
       mHandler.post(mFetchQueueTask);
     }
     @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
       mUploadInProgress=false;
+      mCurrentUploadMediaId="";
       mHandler.post(mFetchQueueTask);
       if (errorType != ErrorType.NETWORK_XMLRPC) {
         CrashlyticsUtils.logException(throwable,ExceptionType.SPECIFIC,T.MEDIA,errorMessage);

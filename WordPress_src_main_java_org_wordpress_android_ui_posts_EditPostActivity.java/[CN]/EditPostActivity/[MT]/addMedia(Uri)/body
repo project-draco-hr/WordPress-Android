@@ -5,21 +5,10 @@
   if (imageUri == null) {
     return false;
   }
-  String mediaTitle;
-  if (MediaUtils.isVideo(imageUri.toString())) {
-    mediaTitle=getResources().getString(R.string.video);
+  if (mShowNewEditor) {
+    return addMediaVisualEditor(imageUri);
   }
  else {
-    mediaTitle=ImageUtils.getTitleForWPImageSpan(this,imageUri.getEncodedPath());
+    return addMediaLegacyEditor(imageUri);
   }
-  MediaFile mediaFile=new MediaFile();
-  mediaFile.setPostID(getPost().getLocalTablePostId());
-  mediaFile.setTitle(mediaTitle);
-  mediaFile.setFilePath(imageUri.toString());
-  if (imageUri.getEncodedPath() != null) {
-    mediaFile.setVideo(MediaUtils.isVideo(imageUri.toString()));
-  }
-  WordPress.wpDB.saveMediaFile(mediaFile);
-  mEditorFragment.appendMediaFile(mediaFile,mediaFile.getFilePath(),WordPress.imageLoader);
-  return true;
 }
