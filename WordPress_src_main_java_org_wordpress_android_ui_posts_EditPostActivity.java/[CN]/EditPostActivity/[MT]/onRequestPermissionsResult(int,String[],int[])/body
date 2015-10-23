@@ -1,0 +1,49 @@
+{
+switch (requestCode) {
+case LOCATION_PERMISSION_REQUEST_CODE:
+    boolean shouldShowLocation=false;
+  for (  int grantResult : grantResults) {
+    if (grantResult == PackageManager.PERMISSION_GRANTED) {
+      shouldShowLocation=true;
+    }
+  }
+if (shouldShowLocation) {
+  mEditPostSettingsFragment.showLocationSearch();
+  return;
+}
+ToastUtils.showToast(this,getString(R.string.add_location_permission_required));
+break;
+case MEDIA_PERMISSION_REQUEST_CODE:
+boolean shouldShowContextMenu=true;
+for (int i=0; i < grantResults.length; ++i) {
+switch (permissions[i]) {
+case Manifest.permission.CAMERA:
+if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+shouldShowContextMenu=false;
+}
+break;
+case Manifest.permission.WRITE_EXTERNAL_STORAGE:
+if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+shouldShowContextMenu=false;
+}
+ else {
+registerReceiver(mGalleryReceiver,new IntentFilter(LegacyEditorFragment.ACTION_MEDIA_GALLERY_TOUCHED));
+refreshBlogMedia();
+}
+break;
+}
+}
+if (shouldShowContextMenu) {
+if (mMenuView != null) {
+super.openContextMenu(mMenuView);
+mMenuView=null;
+}
+}
+ else {
+ToastUtils.showToast(this,getString(R.string.access_media_permission_required));
+}
+break;
+default :
+break;
+}
+}
