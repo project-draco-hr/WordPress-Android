@@ -1,5 +1,10 @@
 {
   Intent intent=null;
+  if (!isSharingText()) {
+    if (!PermissionUtils.checkAndRequestStoragePermission(this,SHARE_MEDIA_PERMISSION_REQUEST_CODE)) {
+      return false;
+    }
+  }
   if (mActionIndex == ADD_TO_NEW_POST) {
     intent=new Intent(this,EditPostActivity.class);
   }
@@ -7,4 +12,5 @@
     intent=new Intent(this,MediaBrowserActivity.class);
   }
   startActivityAndFinish(intent);
+  return true;
 }
