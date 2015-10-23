@@ -55,10 +55,19 @@
     if (getIntent().hasExtra(SAVED_STATS_TIMEFRAME)) {
       mCurrentTimeframe=(StatsTimeframe)getIntent().getSerializableExtra(SAVED_STATS_TIMEFRAME);
     }
+ else     if (getIntent().hasExtra(ARG_DESIRED_TIMEFRAME)) {
+      mCurrentTimeframe=(StatsTimeframe)getIntent().getSerializableExtra(ARG_DESIRED_TIMEFRAME);
+    }
  else {
       mCurrentTimeframe=AppPrefs.getStatsTimeframe();
     }
     mRequestedDate=StatsUtils.getCurrentDateTZ(mLocalBlogID);
+    if (getIntent().hasExtra(ARG_LAUNCHED_FROM)) {
+      StatsLaunchedFrom from=(StatsLaunchedFrom)getIntent().getSerializableExtra(ARG_LAUNCHED_FROM);
+      if (from == StatsLaunchedFrom.STATS_WIDGET) {
+        AnalyticsTracker.track(AnalyticsTracker.Stat.STATS_WIDGET_TAPPED);
+      }
+    }
   }
   final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
   if (currentBlog == null) {

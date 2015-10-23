@@ -1,0 +1,42 @@
+{
+  if (jsonObject == null) {
+    resultListener.onUpdateResult(UpdateResult.FAILED);
+    return;
+  }
+  new Thread(){
+    @Override public void run(){
+      ReaderPostList serverPosts=ReaderPostList.fromJson(jsonObject);
+      UpdateResult updateResult=ReaderPostTable.comparePosts(serverPosts);
+      if (updateResult.isNewOrChanged()) {
+        ReaderPost postWithGap=null;
+        if (tag != null) {
+switch (updateAction) {
+case REQUEST_NEWER:
+            if (ReaderPostTable.getNumPostsWithTag(tag) > 0 && !ReaderPostTable.hasOverlap(serverPosts)) {
+              serverPosts.remove(serverPosts.size() - 1);
+              postWithGap=serverPosts.get(serverPosts.size() - 1);
+              AppLog.d(AppLog.T.READER,"added gap marker to tag " + tag.getTagNameForLog());
+            }
+          ReaderPostTable.removeGapMarkerForTag(tag);
+        break;
+case REQUEST_OLDER_THAN_GAP:
+      ReaderPostTable.deletePostsOlderThanGapMarkerForTag(tag);
+    ReaderPostTable.removeGapMarkerForTag(tag);
+  break;
+}
+}
+ReaderPostTable.addOrUpdatePosts(tag,serverPosts);
+if (postWithGap != null) {
+ReaderPostTable.setGapMarkerForTag(postWithGap.blogId,postWithGap.postId,tag);
+}
+}
+ else if (updateResult == UpdateResult.UNCHANGED && updateAction == UpdateAction.REQUEST_OLDER_THAN_GAP) {
+ReaderPostTable.removeGapMarkerForTag(tag);
+AppLog.w(AppLog.T.READER,"attempt to fill gap returned nothing new");
+}
+AppLog.d(AppLog.T.READER,"requested posts response = " + updateResult.toString());
+resultListener.onUpdateResult(updateResult);
+}
+}
+.start();
+}
