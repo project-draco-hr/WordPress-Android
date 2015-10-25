@@ -1,14 +1,17 @@
 {
   setStyle(STYLE_NORMAL,R.style.Calypso_SiteSettingsTheme);
   getDialog().setTitle(R.string.site_settings_related_posts_title);
-  View v=inflater.inflate(R.layout.related_posts_dialog,container,false);
+  View v=inflater.inflate(R.layout.related_posts_dialog,root,false);
   mShowRelatedPosts=(WPSwitch)v.findViewById(R.id.toggle_related_posts_switch);
   mShowHeader=(CheckBox)v.findViewById(R.id.show_header_checkbox);
   mShowImages=(CheckBox)v.findViewById(R.id.show_images_checkbox);
   mPreviewHeader=(TextView)v.findViewById(R.id.preview_header);
   mRelatedPostsListHeader=(TextView)v.findViewById(R.id.related_posts_list_header);
-  if (savedInstanceState != null) {
-    mShowRelatedPosts.setChecked(savedInstanceState.getBoolean(SHOW_RELATED_POSTS_KEY));
+  Bundle args=getArguments();
+  if (args != null) {
+    mShowRelatedPosts.setChecked(args.getBoolean(SHOW_RELATED_POSTS_KEY));
+    mShowHeader.setChecked(args.getBoolean(SHOW_HEADER_KEY));
+    mShowImages.setChecked(args.getBoolean(SHOW_IMAGES_KEY));
   }
   mShowRelatedPosts.setOnCheckedChangeListener(this);
   mShowHeader.setOnCheckedChangeListener(this);
