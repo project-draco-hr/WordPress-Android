@@ -3,7 +3,12 @@
     return;
   }
   if (openUrlType == OpenUrlType.INTERNAL) {
-    WPWebViewActivity.openURL(context,url);
+    if (UrlUtils.getDomainFromUrl(url).endsWith("wordpress.com")) {
+      WPWebViewActivity.openUrlByUsingWPCOMCredentials(context,url,AccountHelper.getDefaultAccount().getUserName());
+    }
+ else {
+      WPWebViewActivity.openURL(context,url);
+    }
   }
  else {
     try {
