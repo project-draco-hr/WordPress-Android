@@ -1,0 +1,21 @@
+{
+  String prevWidgetKeysString=AppPrefs.getStatsWidgetsKeys();
+  if (StringUtils.isEmpty(prevWidgetKeysString)) {
+    return false;
+  }
+  try {
+    JSONObject prevKeys=new JSONObject(prevWidgetKeysString);
+    JSONArray allKeys=prevKeys.names();
+    for (int i=0; i < allKeys.length(); i++) {
+      String currentKey=allKeys.getString(i);
+      int currentBlogID=prevKeys.getInt(currentKey);
+      if (currentBlogID == remoteBlogID) {
+        return true;
+      }
+    }
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.STATS,e);
+  }
+  return false;
+}
