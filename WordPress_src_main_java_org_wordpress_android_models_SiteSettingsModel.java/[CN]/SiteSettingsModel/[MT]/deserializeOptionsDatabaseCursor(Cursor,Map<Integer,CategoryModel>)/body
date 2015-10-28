@@ -12,6 +12,27 @@
   defaultPostFormat=getStringFromCursor(cursor,DEF_POST_FORMAT_COLUMN_NAME);
   location=getBooleanFromCursor(cursor,LOCATION_COLUMN_NAME);
   hasVerifiedCredentials=getBooleanFromCursor(cursor,CREDS_VERIFIED_COLUMN_NAME);
+  allowComments=getBooleanFromCursor(cursor,ALLOW_COMMENTS_COLUMN_NAME);
+  sendPingbacks=getBooleanFromCursor(cursor,SEND_PINGBACKS_COLUMN_NAME);
+  receivePingbacks=getBooleanFromCursor(cursor,RECEIVE_PINGBACKS_COLUMN_NAME);
+  closeCommentAfter=getIntFromCursor(cursor,CLOSE_AFTER_COLUMN_NAME);
+  sortCommentsBy=getIntFromCursor(cursor,SORT_BY_COLUMN_NAME);
+  threadingLevels=getIntFromCursor(cursor,THREADING_COLUMN_NAME);
+  commentsPerPage=getIntFromCursor(cursor,PAGING_COLUMN_NAME);
+  commentApprovalRequired=getBooleanFromCursor(cursor,MANUAL_APPROVAL_COLUMN_NAME);
+  commentsRequireIdentity=getBooleanFromCursor(cursor,IDENTITY_REQUIRED_COLUMN_NAME);
+  commentsRequireUserAccount=getBooleanFromCursor(cursor,USER_ACCOUNT_REQUIRED_COLUMN_NAME);
+  commentAutoApprovalKnownUsers=getBooleanFromCursor(cursor,WHITELIST_COLUMN_NAME);
+  String moderationKeys=getStringFromCursor(cursor,MODERATION_KEYS_COLUMN_NAME);
+  String blacklistKeys=getStringFromCursor(cursor,BLACKLIST_KEYS_COLUMN_NAME);
+  holdForModeration=new ArrayList<>();
+  blacklist=new ArrayList<>();
+  for (  String key : moderationKeys.split("\n")) {
+    holdForModeration.add(key);
+  }
+  for (  String key : blacklistKeys.split("\n")) {
+    blacklist.add(key);
+  }
   setRelatedPostsFlags(Math.max(0,getIntFromCursor(cursor,RELATED_POSTS_COLUMN_NAME)));
   String cachedCategories=getStringFromCursor(cursor,CATEGORIES_COLUMN_NAME);
   String cachedFormats=getStringFromCursor(cursor,POST_FORMATS_COLUMN_NAME);
