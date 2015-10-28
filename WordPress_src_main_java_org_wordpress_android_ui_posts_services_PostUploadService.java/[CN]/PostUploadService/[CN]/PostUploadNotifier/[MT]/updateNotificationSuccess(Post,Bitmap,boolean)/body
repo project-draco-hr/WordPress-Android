@@ -5,7 +5,10 @@
     sharableUrl=post.getPermaLink();
   }
   Builder notificationBuilder=new NotificationCompat.Builder(getApplicationContext());
-  String notificationTitle=(String)(post.isPage() ? mContext.getResources().getText(R.string.page_uploaded) : mContext.getResources().getText(R.string.post_uploaded));
+  String notificationTitle=(String)(post.isPage() ? mContext.getResources().getText(R.string.page_published) : mContext.getResources().getText(R.string.post_published));
+  if (!isFirstPublishing) {
+    notificationTitle=(String)(post.isPage() ? mContext.getResources().getText(R.string.page_updated) : mContext.getResources().getText(R.string.post_updated));
+  }
   notificationBuilder.setSmallIcon(android.R.drawable.stat_sys_upload_done);
   if (largeIcon == null) {
     notificationBuilder.setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.app_icon));
@@ -26,6 +29,7 @@
     Intent share=new Intent(Intent.ACTION_SEND);
     share.setType("text/plain");
     share.putExtra(Intent.EXTRA_TEXT,sharableUrl);
+    share.putExtra(Intent.EXTRA_SUBJECT,post.getTitle());
     PendingIntent pendingIntent=PendingIntent.getActivity(mContext,0,share,PendingIntent.FLAG_UPDATE_CURRENT);
     notificationBuilder.addAction(R.drawable.ic_share_white_24dp,getString(R.string.share_action),pendingIntent);
   }

@@ -145,10 +145,13 @@
  else {
       mClient.call("metaWeblog.editPost",params);
     }
-    trackUploadAnalytics();
+    mIsFirstPublishing=mPost.hasChangedFromDraftToPublished() || (mPost.isLocalDraft() && mPost.getStatusEnum() == PostStatus.PUBLISHED);
     mPost.setLocalDraft(false);
     mPost.setLocalChange(false);
     WordPress.wpDB.updatePost(mPost);
+    if (mIsFirstPublishing) {
+      trackUploadAnalytics();
+    }
     ApiHelper.updateSinglePost(mBlog.getLocalTableBlogId(),mPost.getRemotePostId(),mPost.isPage());
     return true;
   }
