@@ -8,7 +8,7 @@
   if (mThemeBrowserFragment != null) {
     page=mThemeBrowserFragment.getPage();
   }
-  WordPress.getRestClientUtilsV1_2().getThemes(siteId,THEME_FETCH_MAX,page,new Listener(){
+  WordPress.getRestClientUtilsV1_2().getFreeThemes(siteId,THEME_FETCH_MAX,page,new Listener(){
     @Override public void onResponse(    JSONObject response){
       new FetchThemesTask().execute(response);
     }
@@ -21,14 +21,14 @@
         if (mIsRunning) {
           FragmentTransaction ft=getFragmentManager().beginTransaction();
           WPAlertDialogFragment fragment=WPAlertDialogFragment.newAlertDialog(errorMsg,errorTitle);
-          ft.add(fragment,"alert");
+          ft.add(fragment,ALERT_TAB);
           ft.commitAllowingStateLoss();
         }
-        AppLog.d(T.THEMES,"Failed to fetch themes: failed authenticate user");
+        AppLog.d(T.THEMES,getString(R.string.theme_auth_error_authenticate));
       }
  else {
         Toast.makeText(ThemeBrowserActivity.this,R.string.theme_fetch_failed,Toast.LENGTH_LONG).show();
-        AppLog.d(T.THEMES,"Failed to fetch themes: " + response.toString());
+        AppLog.d(T.THEMES,getString(R.string.theme_fetch_failed) + ": " + response.toString());
       }
       mFetchingThemes=false;
     }

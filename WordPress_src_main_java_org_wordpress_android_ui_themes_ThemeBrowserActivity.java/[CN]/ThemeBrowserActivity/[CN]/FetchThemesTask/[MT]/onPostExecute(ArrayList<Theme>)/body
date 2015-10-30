@@ -2,10 +2,14 @@
   runOnUiThread(new Runnable(){
     @Override public void run(){
       mFetchingThemes=false;
-      if (result == null) {
-        Toast.makeText(ThemeBrowserActivity.this,R.string.theme_fetch_failed,Toast.LENGTH_SHORT).show();
+      if (mThemeBrowserFragment != null && mThemeBrowserFragment.isVisible()) {
+        mThemeBrowserFragment.mEmptyView.setText(R.string.no_themes);
+        mThemeBrowserFragment.setRefreshing(false);
       }
-      mThemeBrowserFragment.setRefreshing(false);
+ else       if (mThemeSearchFragment != null && mThemeSearchFragment.isVisible()) {
+        mThemeSearchFragment.mEmptyView.setText(R.string.no_themes);
+        mThemeSearchFragment.setRefreshing(false);
+      }
     }
   }
 );
