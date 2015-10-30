@@ -1,0 +1,12 @@
+{
+  int notificationId=receivedIntent.getIntExtra(NOTIFICATION_ID_KEY,0);
+  NotificationManager notificationManager=(NotificationManager)SystemServiceFactory.get(context,Context.NOTIFICATION_SERVICE);
+  notificationManager.cancel(notificationId);
+  context.sendBroadcast(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
+  Intent shareIntent=new Intent(Intent.ACTION_SEND);
+  shareIntent.setType("text/plain");
+  shareIntent.putExtra(Intent.EXTRA_TEXT,receivedIntent.getStringExtra(Intent.EXTRA_TEXT));
+  shareIntent.putExtra(Intent.EXTRA_SUBJECT,receivedIntent.getStringExtra(Intent.EXTRA_SUBJECT));
+  shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+  context.startActivity(shareIntent);
+}

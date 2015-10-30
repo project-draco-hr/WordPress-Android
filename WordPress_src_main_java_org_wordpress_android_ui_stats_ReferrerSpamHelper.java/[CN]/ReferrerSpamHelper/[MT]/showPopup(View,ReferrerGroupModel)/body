@@ -1,0 +1,37 @@
+{
+  if (mActivityRef.get() == null || mActivityRef.get().isFinishing()) {
+    return;
+  }
+  final PopupMenu popup=new PopupMenu(mActivityRef.get(),anchor);
+  final MenuItem menuItem;
+  if (referrerGroup.isRestCallInProgress) {
+    menuItem=popup.getMenu().add(referrerGroup.isMarkedAsSpam ? mActivityRef.get().getString(R.string.stats_referrers_marking_not_spam) : mActivityRef.get().getString(R.string.stats_referrers_marking_spam));
+  }
+ else {
+    menuItem=popup.getMenu().add(referrerGroup.isMarkedAsSpam ? mActivityRef.get().getString(R.string.stats_referrers_unspam) : mActivityRef.get().getString(R.string.stats_referrers_spam));
+  }
+  menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener(){
+    @Override public boolean onMenuItemClick(    MenuItem item){
+      item.setTitle(referrerGroup.isMarkedAsSpam ? mActivityRef.get().getString(R.string.stats_referrers_marking_not_spam) : mActivityRef.get().getString(R.string.stats_referrers_marking_spam));
+      item.setOnMenuItemClickListener(null);
+      final RestClientUtils restClientUtils=WordPress.getRestClientUtilsV1_1();
+      final String restPath;
+      final boolean isMarkingAsSpamInProgress;
+      if (referrerGroup.isMarkedAsSpam) {
+        restPath=String.format("/sites/%s/stats/referrers/spam/delete/?domain=%s",referrerGroup.getBlogId(),getDomain(referrerGroup));
+        isMarkingAsSpamInProgress=false;
+      }
+ else {
+        restPath=String.format("/sites/%s/stats/referrers/spam/new/?domain=%s",referrerGroup.getBlogId(),getDomain(referrerGroup));
+        isMarkingAsSpamInProgress=true;
+      }
+      referrerGroup.isRestCallInProgress=true;
+      ReferrerSpamRestListener vListener=new ReferrerSpamRestListener(mActivityRef.get(),referrerGroup,isMarkingAsSpamInProgress);
+      restClientUtils.post(restPath,vListener,vListener);
+      AppLog.d(AppLog.T.STATS,"Enqueuing the following REST request " + restPath);
+      return true;
+    }
+  }
+);
+  popup.show();
+}
