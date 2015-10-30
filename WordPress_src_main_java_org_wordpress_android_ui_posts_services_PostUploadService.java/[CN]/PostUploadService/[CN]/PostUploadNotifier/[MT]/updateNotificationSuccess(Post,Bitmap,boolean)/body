@@ -5,7 +5,10 @@
     sharableUrl=post.getPermaLink();
   }
   Builder notificationBuilder=new NotificationCompat.Builder(getApplicationContext());
-  String notificationTitle=(String)(post.isPage() ? mContext.getResources().getText(R.string.page_uploaded) : mContext.getResources().getText(R.string.post_uploaded));
+  String notificationTitle=(String)(post.isPage() ? mContext.getResources().getText(R.string.page_published) : mContext.getResources().getText(R.string.post_published));
+  if (!isFirstPublishing) {
+    notificationTitle=(String)(post.isPage() ? mContext.getResources().getText(R.string.page_updated) : mContext.getResources().getText(R.string.post_updated));
+  }
   notificationBuilder.setSmallIcon(android.R.drawable.stat_sys_upload_done);
   if (largeIcon == null) {
     notificationBuilder.setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.app_icon));
@@ -15,6 +18,7 @@
   }
   notificationBuilder.setContentTitle(notificationTitle);
   notificationBuilder.setContentText(post.getTitle());
+  notificationBuilder.setAutoCancel(true);
   Intent notificationIntent=new Intent(mContext,PostsListActivity.class);
   notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
   notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -22,12 +26,14 @@
   notificationIntent.putExtra(PostsListActivity.EXTRA_VIEW_PAGES,post.isPage());
   PendingIntent pendingIntentPost=PendingIntent.getActivity(mContext,0,notificationIntent,PendingIntent.FLAG_UPDATE_CURRENT);
   notificationBuilder.setContentIntent(pendingIntentPost);
+  int notificationId=getNotificationIdForPost(post);
   if (sharableUrl != null && post.getStatusEnum() == PostStatus.PUBLISHED) {
-    Intent share=new Intent(Intent.ACTION_SEND);
-    share.setType("text/plain");
-    share.putExtra(Intent.EXTRA_TEXT,sharableUrl);
-    PendingIntent pendingIntent=PendingIntent.getActivity(mContext,0,share,PendingIntent.FLAG_UPDATE_CURRENT);
+    Intent shareIntent=new Intent(mContext,ShareAndDismissNotificationReceiver.class);
+    shareIntent.putExtra(ShareAndDismissNotificationReceiver.NOTIFICATION_ID_KEY,notificationId);
+    shareIntent.putExtra(Intent.EXTRA_TEXT,sharableUrl);
+    shareIntent.putExtra(Intent.EXTRA_SUBJECT,post.getTitle());
+    PendingIntent pendingIntent=PendingIntent.getBroadcast(mContext,0,shareIntent,PendingIntent.FLAG_CANCEL_CURRENT);
     notificationBuilder.addAction(R.drawable.ic_share_white_24dp,getString(R.string.share_action),pendingIntent);
   }
-  mNotificationManager.notify(getNotificationIdForPost(post),notificationBuilder.build());
+  mNotificationManager.notify(notificationId,notificationBuilder.build());
 }

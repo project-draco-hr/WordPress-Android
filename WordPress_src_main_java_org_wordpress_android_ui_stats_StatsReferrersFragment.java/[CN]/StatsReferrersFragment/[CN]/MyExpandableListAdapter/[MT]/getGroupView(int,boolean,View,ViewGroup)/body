@@ -10,7 +10,7 @@
  else {
     holder=(StatsViewHolder)convertView.getTag();
   }
-  ReferrerGroupModel group=(ReferrerGroupModel)getGroup(groupPosition);
+  final ReferrerGroupModel group=(ReferrerGroupModel)getGroup(groupPosition);
   String name=group.getName();
   int total=group.getTotal();
   String url=group.getUrl();
@@ -35,6 +35,20 @@
   }
  else {
     holder.showChevronIcon();
+  }
+  if (ReferrerSpamHelper.isSpamActionAvailable(group)) {
+    holder.imgMore.setVisibility(View.VISIBLE);
+    holder.imgMore.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        ReferrerSpamHelper rp=new ReferrerSpamHelper(act);
+        rp.showPopup(holder.imgMore,group);
+      }
+    }
+);
+  }
+ else {
+    holder.imgMore.setVisibility(View.GONE);
+    holder.imgMore.setClickable(false);
   }
   return convertView;
 }
