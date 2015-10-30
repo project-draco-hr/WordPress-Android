@@ -11,14 +11,14 @@
   boolean isLocalFile=MediaUtils.isLocalFile(state);
   String fileName=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_NAME));
   if (holder.filenameView != null) {
-    holder.filenameView.setText("File name: " + fileName);
+    holder.filenameView.setText(String.format(context.getString(R.string.media_file_name),fileName));
   }
   String title=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_TITLE));
   if (title == null || title.equals(""))   title=fileName;
   holder.titleView.setText(title);
   if (holder.uploadDateView != null) {
     String date=MediaUtils.getDate(cursor.getLong(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_DATE_CREATED_GMT)));
-    holder.uploadDateView.setText("Uploaded on: " + date);
+    holder.uploadDateView.setText(String.format(context.getString(R.string.media_uploaded_on),date));
   }
   if (isLocalFile) {
   }
@@ -27,12 +27,9 @@
   }
   String filePath=StringUtils.notNullStr(cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_PATH)));
   if (filePath.isEmpty())   filePath=StringUtils.notNullStr(cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_URL)));
-  String fileType=filePath.replaceAll(".*\\.(\\w+)$","$1").toUpperCase();
-  if (DisplayUtils.isXLarge(context)) {
-    holder.fileTypeView.setText("File type: " + fileType);
-  }
- else {
-    holder.fileTypeView.setText(fileType);
+  String fileExtension=filePath.replaceAll(".*\\.(\\w+)$","$1").toUpperCase();
+  if (holder.fileTypeView != null) {
+    holder.fileTypeView.setText(String.format(context.getString(R.string.media_file_type),fileExtension));
   }
   if (holder.dimensionView != null) {
     if (MediaUtils.isValidImage(filePath)) {
@@ -40,7 +37,7 @@
       int height=cursor.getInt(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_HEIGHT));
       if (width > 0 && height > 0) {
         String dimensions=width + "x" + height;
-        holder.dimensionView.setText("Dimensions: " + dimensions);
+        holder.dimensionView.setText(String.format(context.getString(R.string.media_dimensions),dimensions));
         holder.dimensionView.setVisibility(View.VISIBLE);
       }
     }
