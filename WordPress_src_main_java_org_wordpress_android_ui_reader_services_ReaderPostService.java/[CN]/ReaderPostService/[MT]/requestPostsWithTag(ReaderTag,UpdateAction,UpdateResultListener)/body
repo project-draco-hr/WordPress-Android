@@ -7,27 +7,36 @@
   StringBuilder sb=new StringBuilder(path);
   sb.append("?number=").append(ReaderConstants.READER_MAX_POSTS_TO_REQUEST);
   sb.append("&order=DESC");
-  if (updateAction == UpdateAction.REQUEST_OLDER) {
-    String dateOldest=ReaderPostTable.getOldestPubDateWithTag(tag);
-    if (!TextUtils.isEmpty(dateOldest)) {
-      sb.append("&before=").append(UrlUtils.urlEncode(dateOldest));
-    }
-  }
-  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
-    @Override public void onResponse(    JSONObject jsonObject){
-      if (updateAction == UpdateAction.REQUEST_NEWER) {
-        ReaderTagTable.setTagLastUpdated(tag);
-      }
-      handleUpdatePostsResponse(tag,jsonObject,resultListener);
-    }
-  }
+  String beforeDate;
+switch (updateAction) {
+case REQUEST_OLDER:
+    beforeDate=ReaderPostTable.getOldestPubDateWithTag(tag);
+  break;
+case REQUEST_OLDER_THAN_GAP:
+beforeDate=ReaderPostTable.getGapMarkerPubDateForTag(tag);
+break;
+default :
+beforeDate=null;
+break;
+}
+if (!TextUtils.isEmpty(beforeDate)) {
+sb.append("&before=").append(UrlUtils.urlEncode(beforeDate));
+}
+com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+@Override public void onResponse(JSONObject jsonObject){
+if (updateAction == UpdateAction.REQUEST_NEWER) {
+ReaderTagTable.setTagLastUpdated(tag);
+}
+handleUpdatePostsResponse(tag,jsonObject,updateAction,resultListener);
+}
+}
 ;
-  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
-    @Override public void onErrorResponse(    VolleyError volleyError){
-      AppLog.e(AppLog.T.READER,volleyError);
-      resultListener.onUpdateResult(UpdateResult.FAILED);
-    }
-  }
+RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+@Override public void onErrorResponse(VolleyError volleyError){
+AppLog.e(AppLog.T.READER,volleyError);
+resultListener.onUpdateResult(UpdateResult.FAILED);
+}
+}
 ;
-  WordPress.getRestClientUtilsV1_2().get(sb.toString(),null,null,listener,errorListener);
+WordPress.getRestClientUtilsV1_2().get(sb.toString(),null,null,listener,errorListener);
 }
