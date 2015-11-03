@@ -1,5 +1,5 @@
 {
-  if (!mPost.supportsLocation() || !checkForLocationPermission())   return;
+  if (!mPost.supportsLocation())   return;
   View locationRootView=((ViewStub)rootView.findViewById(R.id.stub_post_location_settings)).inflate();
   TextView locationLabel=((TextView)locationRootView.findViewById(R.id.locationLabel));
   locationLabel.setText(getResources().getString(R.string.location).toUpperCase());
@@ -19,6 +19,7 @@
   Button removeLocation=(Button)locationRootView.findViewById(R.id.removeLocation);
   updateLocation.setOnClickListener(this);
   removeLocation.setOnClickListener(this);
+  if (!checkForLocationPermission())   return;
   if (mPost.hasLocation()) {
     showLocationView();
     PostLocation location=mPost.getLocation();
