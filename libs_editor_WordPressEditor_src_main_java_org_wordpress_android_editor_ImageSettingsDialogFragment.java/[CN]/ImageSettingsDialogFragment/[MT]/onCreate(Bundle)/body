@@ -22,7 +22,9 @@
   actionBar.setCustomView(R.layout.image_settings_formatbar);
   actionBar.getCustomView().findViewById(R.id.menu_save).setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
+      String imageRemoteId="";
       try {
+        imageRemoteId=mImageMeta.getString("attachment_id");
         mImageMeta.put("title",mTitleText.getText().toString());
         mImageMeta.put("caption",mCaptionText.getText().toString());
         mImageMeta.put("alt",mAltText.getText().toString());
@@ -37,6 +39,11 @@
       }
       Intent intent=new Intent();
       intent.putExtra("imageMeta",mImageMeta.toString());
+      boolean isFeaturedImage=mFeaturedCheckBox.isChecked();
+      intent.putExtra("isFeatured",isFeaturedImage);
+      if (!imageRemoteId.isEmpty()) {
+        intent.putExtra("imageRemoteId",Integer.parseInt(imageRemoteId));
+      }
       getTargetFragment().onActivityResult(getTargetRequestCode(),getTargetRequestCode(),intent);
       restorePreviousActionBar();
       getFragmentManager().popBackStack();

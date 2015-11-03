@@ -49,11 +49,23 @@
       return;
     }
     final String imageMeta=extras.getString("imageMeta");
+    final int imageRemoteId=extras.getInt("imageRemoteId");
+    final boolean isFeaturedImage=extras.getBoolean("isFeatured");
     mWebView.post(new Runnable(){
       @Override public void run(){
         mWebView.execJavaScriptFromString("ZSSEditor.updateCurrentImageMeta('" + imageMeta + "');");
       }
     }
 );
+    if (imageRemoteId != 0) {
+      if (isFeaturedImage) {
+        mFeaturedImageId=imageRemoteId;
+      }
+ else {
+        if (mFeaturedImageId == imageRemoteId) {
+          mFeaturedImageId=0;
+        }
+      }
+    }
   }
 }
