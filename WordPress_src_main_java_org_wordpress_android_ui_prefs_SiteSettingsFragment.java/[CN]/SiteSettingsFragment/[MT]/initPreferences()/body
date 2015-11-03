@@ -1,28 +1,24 @@
 {
-  if (null != (mTitlePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_title)))) {
-    mTitlePreference.setOnPreferenceChangeListener(this);
-    changeEditTextPreferenceValue(mTitlePreference,StringUtils.unescapeHTML(mSiteSettings.getTitle()));
+  mTitlePreference=(EditTextPreference)getPref(R.string.pref_key_site_title);
+  mTaglinePreference=(EditTextPreference)getPref(R.string.pref_key_site_tagline);
+  mAddressPreference=(EditTextPreference)getPref(R.string.pref_key_site_address);
+  mPrivacyPreference=(DetailListPreference)getPref(R.string.pref_key_site_visibility);
+  mLanguagePreference=(DetailListPreference)getPref(R.string.pref_key_site_language);
+  mUsernamePreference=(EditTextPreference)getPref(R.string.pref_key_site_username);
+  mPasswordPreference=(EditTextPreference)getPref(R.string.pref_key_site_password);
+  mLocationPreference=(WPSwitchPreference)getPref(R.string.pref_key_site_location);
+  mCategoryPreference=(DetailListPreference)getPref(R.string.pref_key_site_category);
+  mFormatPreference=(DetailListPreference)getPref(R.string.pref_key_site_format);
+  mRelatedPostsPreference=findPreference(getString(R.string.pref_key_site_related_posts));
+  mRelatedPostsPreference.setOnPreferenceClickListener(this);
+  if (mBlog.isDotcomFlag()) {
+    removePreference(R.string.pref_key_site_screen,R.string.pref_key_site_account);
   }
-  if (null != (mTaglinePreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_tagline)))) {
-    mTaglinePreference.setOnPreferenceChangeListener(this);
-  }
-  if (null != (mAddressPreference=(EditTextPreference)findPreference(getString(R.string.pref_key_site_address)))) {
-    mAddressPreference.setOnPreferenceChangeListener(this);
-  }
-  if (null != (mPrivacyPreference=(DetailListPreference)findPreference(getString(R.string.pref_key_site_visibility)))) {
-    if (!mBlog.isDotcomFlag()) {
-      removePreference(R.string.pref_key_site_general,mPrivacyPreference);
-    }
  else {
-      mPrivacyPreference.setOnPreferenceChangeListener(this);
-    }
-  }
-  if (null != (mLanguagePreference=(DetailListPreference)findPreference(getString(R.string.pref_key_site_language)))) {
-    if (!mBlog.isDotcomFlag()) {
-      removePreference(R.string.pref_key_site_general,mLanguagePreference);
-    }
- else {
-      mLanguagePreference.setOnPreferenceChangeListener(this);
-    }
+    removePreference(R.string.pref_key_site_general,R.string.pref_key_site_visibility);
+    removePreference(R.string.pref_key_site_general,R.string.pref_key_site_language);
+    removePreference(R.string.pref_key_site_writing,R.string.pref_key_site_related_posts);
+    removePreference(R.string.pref_key_site_writing,R.string.pref_key_site_category);
+    removePreference(R.string.pref_key_site_writing,R.string.pref_key_site_format);
   }
 }

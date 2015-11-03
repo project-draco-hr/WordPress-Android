@@ -1,0 +1,20 @@
+{
+  if (mSiteSettings.isSameFormatList(mFormatPreference.getEntryValues())) {
+    mFormatPreference.setValue(String.valueOf(mSiteSettings.getDefaultFormat()));
+    mFormatPreference.setSummary(mSiteSettings.getDefaultPostFormatDisplay());
+    return;
+  }
+  Map<String,String> formats=mSiteSettings.getFormats();
+  String[] formatKeys=mSiteSettings.getFormatKeys();
+  if (formats == null || formatKeys == null)   return;
+  String[] entries=new String[formatKeys.length];
+  String[] values=new String[formatKeys.length];
+  for (int i=0; i < entries.length; ++i) {
+    entries[i]=formats.get(formatKeys[i]);
+    values[i]=formatKeys[i];
+  }
+  mFormatPreference.setEntries(entries);
+  mFormatPreference.setEntryValues(values);
+  mFormatPreference.setValue(String.valueOf(mSiteSettings.getDefaultFormat()));
+  mFormatPreference.setSummary(mSiteSettings.getDefaultPostFormatDisplay());
+}
