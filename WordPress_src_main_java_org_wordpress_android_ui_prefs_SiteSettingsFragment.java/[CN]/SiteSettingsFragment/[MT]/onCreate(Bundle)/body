@@ -1,12 +1,12 @@
 {
   super.onCreate(savedInstanceState);
-  setRetainInstance(true);
-  if (!NetworkUtils.checkConnection(getActivity())) {
-    getActivity().finish();
-  }
   mBlog=WordPress.getBlog(getArguments().getInt(BlogPreferencesActivity.ARG_LOCAL_BLOG_ID,-1));
-  if (mBlog == null)   return;
+  if (!NetworkUtils.checkConnection(getActivity()) || mBlog == null) {
+    getActivity().finish();
+    return;
+  }
   mSiteSettings=SiteSettingsInterface.getInterface(getActivity(),mBlog,this);
+  setRetainInstance(true);
   addPreferencesFromResource(R.xml.site_settings);
   initPreferences();
 }

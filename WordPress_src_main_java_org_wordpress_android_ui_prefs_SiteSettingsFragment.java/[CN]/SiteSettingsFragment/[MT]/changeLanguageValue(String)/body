@@ -1,8 +1,10 @@
 {
-  if (mLanguagePreference != null && !newValue.equals(mLanguagePreference.getValue())) {
+  if (mLanguagePreference == null || newValue == null)   return;
+  if (TextUtils.isEmpty(mLanguagePreference.getSummary()) || !newValue.equals(mLanguagePreference.getValue())) {
     mLanguagePreference.setValue(newValue);
-    mLanguagePreference.setSummary(getLanguageString(newValue,new Locale(localeInput(newValue))));
-    String[] languageCodes=getResources().getStringArray(R.array.language_codes);
+    String summary=getLanguageString(newValue,languageLocale(newValue));
+    mLanguagePreference.setSummary(summary);
+    CharSequence[] languageCodes=mLanguagePreference.getEntryValues();
     mLanguagePreference.setEntries(createLanguageDisplayStrings(languageCodes));
     mLanguagePreference.setDetails(createLanguageDetailDisplayStrings(languageCodes,newValue));
     mLanguagePreference.refreshAdapter();
