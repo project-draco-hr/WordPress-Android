@@ -124,14 +124,16 @@
       contentStruct.put("custom_fields",geo);
     }
   }
-  if (featuredImageID != -1) {
-    contentStruct.put("wp_post_thumbnail",featuredImageID);
+  if (mUseLegacyMode) {
+    if (featuredImageID != -1) {
+      contentStruct.put("wp_post_thumbnail",featuredImageID);
+    }
   }
- else {
+ else   if (mPost.featuredImageHasChanged()) {
     if (mPost.getFeaturedImageId() == 0 && !mPost.isLocalDraft()) {
       contentStruct.put("wp_post_thumbnail","");
     }
- else     if (mPost.isLocalDraft() || mPost.featuredImageHasChanged()) {
+ else {
       contentStruct.put("wp_post_thumbnail",mPost.getFeaturedImageId());
     }
   }
