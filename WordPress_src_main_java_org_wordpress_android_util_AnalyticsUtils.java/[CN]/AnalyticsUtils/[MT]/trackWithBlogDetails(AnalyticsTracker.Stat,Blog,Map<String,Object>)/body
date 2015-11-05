@@ -1,0 +1,23 @@
+{
+  if (blog == null || (!blog.isDotcomFlag() && !blog.isJetpackPowered())) {
+    AppLog.w(AppLog.T.STATS,"The passed blog obj is null or it's not a wpcom or Jetpack. Tracking analytics without blog info");
+    AnalyticsTracker.track(stat,properties);
+    return;
+  }
+  String blogID=StatsUtils.getBlogId(blog);
+  if (blogID != null) {
+    if (properties == null) {
+      properties=new HashMap<>();
+    }
+    properties.put(BLOG_ID_KEY,blogID);
+    properties.put(IS_JETPACK_KEY,blog.isJetpackPowered());
+  }
+ else {
+  }
+  if (properties == null) {
+    AnalyticsTracker.track(stat);
+  }
+ else {
+    AnalyticsTracker.track(stat,properties);
+  }
+}
