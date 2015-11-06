@@ -9,7 +9,15 @@
     source="http:" + source;
   }
   if (mMaxSize > 0) {
-    source=PhotonUtils.getPhotonImageUrl(source,mMaxSize,0);
+    if (UrlUtils.isWPComUrl(source)) {
+      Map<String,String> params=new ArrayMap<>();
+      params.put("w",String.valueOf(mMaxSize));
+      params.put("quality",IMAGE_QUALITY);
+      source=UrlUtils.appendUrlParameters(UrlUtils.removeQuery(source),params);
+    }
+ else {
+      source=PhotonUtils.getPhotonImageUrl(source,mMaxSize,0);
+    }
   }
   final RemoteDrawable remote=new RemoteDrawable(mLoadingDrawable,mFailedDrawable);
   mImageLoader.get(source,new ImageLoader.ImageListener(){
