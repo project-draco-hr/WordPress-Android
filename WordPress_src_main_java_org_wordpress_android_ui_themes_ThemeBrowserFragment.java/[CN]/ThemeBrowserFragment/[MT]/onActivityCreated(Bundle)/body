@@ -1,17 +1,16 @@
 {
-  ThemeBrowserActivity themeBrowserActivity=(ThemeBrowserActivity)getActivity();
   super.onActivityCreated(savedInstanceState);
   if (this instanceof ThemeSearchFragment) {
-    (themeBrowserActivity).setThemeSearchFragment((ThemeSearchFragment)this);
+    mThemeBrowserActivity.setThemeSearchFragment((ThemeSearchFragment)this);
   }
  else {
-    (themeBrowserActivity).setThemeBrowserFragment(this);
+    mThemeBrowserActivity.setThemeBrowserFragment(this);
   }
   Cursor cursor=fetchThemes(getSpinnerPosition());
   if (cursor == null) {
     return;
   }
-  mAdapter=new ThemeBrowserAdapter(themeBrowserActivity,cursor,false,mCallback);
+  mAdapter=new ThemeBrowserAdapter(mThemeBrowserActivity,cursor,false,mCallback);
   setEmptyViewVisible(mAdapter.getCount() == 0);
   mGridView.setAdapter(mAdapter);
   restoreState(savedInstanceState);

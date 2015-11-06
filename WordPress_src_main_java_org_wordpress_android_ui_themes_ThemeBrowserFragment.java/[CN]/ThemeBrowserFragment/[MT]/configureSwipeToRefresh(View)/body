@@ -1,17 +1,15 @@
 {
-  mSwipeToRefreshHelper=new SwipeToRefreshHelper(getActivity(),(CustomSwipeRefreshLayout)view.findViewById(R.id.ptr_layout),new RefreshListener(){
+  mSwipeToRefreshHelper=new SwipeToRefreshHelper(mThemeBrowserActivity,(CustomSwipeRefreshLayout)view.findViewById(R.id.ptr_layout),new RefreshListener(){
     @Override public void onRefreshStarted(){
       if (!isAdded()) {
         return;
       }
-      if (!NetworkUtils.checkConnection(getActivity())) {
+      if (!NetworkUtils.checkConnection(mThemeBrowserActivity)) {
         mSwipeToRefreshHelper.setRefreshing(false);
         mEmptyTextView.setText(R.string.no_network_title);
         return;
       }
-      if (getActivity() instanceof ThemeBrowserActivity) {
-        ((ThemeBrowserActivity)getActivity()).fetchThemes();
-      }
+      mThemeBrowserActivity.fetchThemes();
     }
   }
 );
