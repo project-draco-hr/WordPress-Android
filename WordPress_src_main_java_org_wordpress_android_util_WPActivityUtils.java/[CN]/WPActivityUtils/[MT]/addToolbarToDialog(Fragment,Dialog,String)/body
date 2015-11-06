@@ -1,6 +1,5 @@
 {
-  final Dialog dialog=preferenceScreen.getDialog();
-  if (!isAdded() || dialog == null) {
+  if (!context.isAdded() || dialog == null) {
     return;
   }
   Toolbar toolbar;
@@ -9,7 +8,7 @@
       return;
     }
     LinearLayout root=(LinearLayout)dialog.findViewById(android.R.id.list).getParent();
-    toolbar=(Toolbar)LayoutInflater.from(getActivity()).inflate(R.layout.toolbar,root,false);
+    toolbar=(Toolbar)LayoutInflater.from(context.getActivity()).inflate(org.wordpress.android.R.layout.toolbar,root,false);
     root.addView(toolbar,0);
   }
  else {
@@ -22,11 +21,11 @@
     }
     ListView content=(ListView)root.getChildAt(0);
     root.removeAllViews();
-    toolbar=(Toolbar)LayoutInflater.from(getActivity()).inflate(R.layout.toolbar,root,false);
+    toolbar=(Toolbar)LayoutInflater.from(context.getActivity()).inflate(org.wordpress.android.R.layout.toolbar,root,false);
     int height;
     TypedValue tv=new TypedValue();
-    if (getActivity().getTheme().resolveAttribute(R.attr.actionBarSize,tv,true)) {
-      height=TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
+    if (context.getActivity().getTheme().resolveAttribute(org.wordpress.android.R.attr.actionBarSize,tv,true)) {
+      height=TypedValue.complexToDimensionPixelSize(tv.data,context.getResources().getDisplayMetrics());
     }
  else {
       height=toolbar.getHeight();
@@ -35,8 +34,9 @@
     root.addView(content);
     root.addView(toolbar);
   }
-  toolbar.setTitle(preferenceScreen.getTitle());
-  toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+  dialog.getWindow().setWindowAnimations(R.style.DialogAnimations);
+  toolbar.setTitle(title);
+  toolbar.setNavigationIcon(org.wordpress.android.R.drawable.ic_arrow_back_white_24dp);
   toolbar.setNavigationOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
       dialog.dismiss();
