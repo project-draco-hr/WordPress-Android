@@ -1,0 +1,19 @@
+{
+  if (mDialog != null)   return;
+  Context context=getContext();
+  Dialog dialog=mDialog=new Dialog(context);
+  dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+  dialog.setOnDismissListener(this);
+  WebView webView=new WebView(context);
+  webView.setWebViewClient(new WebViewClient(){
+    @Override public boolean shouldOverrideUrlLoading(    WebView view,    String url){
+      view.loadUrl(url);
+      return true;
+    }
+  }
+);
+  webView.loadUrl(WP_SUPPORT_URL);
+  dialog.setContentView(webView);
+  dialog.show();
+  webView.requestFocus();
+}
