@@ -1,6 +1,9 @@
 {
   if (response.getBitmap() != null) {
     Bitmap bitmap=response.getBitmap();
+    if (mImageType == ImageType.GONE_UNTIL_AVAILABLE) {
+      setVisibility(View.VISIBLE);
+    }
     if (mImageType == ImageType.AVATAR) {
       new CircularizeBitmapTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,bitmap);
       return;
@@ -11,6 +14,7 @@
     }
   }
  else {
+    mRequestDidFail=true;
     showDefaultImage();
   }
 }
