@@ -1,0 +1,30 @@
+{
+  String siteId=getBlogId();
+  mFetchingThemes=true;
+  int page=1;
+  if (mThemeSearchFragment != null) {
+    page=mThemeSearchFragment.getPage();
+  }
+  WordPress.getRestClientUtilsV1_2().getFreeSearchThemes(siteId,THEME_FETCH_MAX,page,searchTerm,new Listener(){
+    @Override public void onResponse(    JSONObject response){
+      new FetchThemesTask().execute(response);
+    }
+  }
+,new ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError response){
+      if (response.toString().equals(AuthFailureError.class.getName())) {
+        String errorTitle=getString(R.string.theme_auth_error_title);
+        String errorMsg=getString(R.string.theme_auth_error_message);
+        if (mIsRunning) {
+          FragmentTransaction ft=getFragmentManager().beginTransaction();
+          WPAlertDialogFragment fragment=WPAlertDialogFragment.newAlertDialog(errorMsg,errorTitle);
+          ft.add(fragment,ALERT_TAB);
+          ft.commitAllowingStateLoss();
+        }
+        AppLog.d(T.THEMES,getString(R.string.theme_auth_error_authenticate));
+      }
+      mFetchingThemes=false;
+    }
+  }
+);
+}
