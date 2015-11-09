@@ -1,0 +1,24 @@
+{
+  AppLog.v(T.NOTIFS,"Received Message");
+  if (data == null) {
+    AppLog.v(T.NOTIFS,"No notification message content received. Aborting.");
+    return;
+  }
+  if (TextUtils.equals(data.getString("origin"),"helpshift")) {
+    HelpshiftHelper.getInstance().handlePush(getBaseContext(),new Intent().putExtras(data));
+    return;
+  }
+  if (data.containsKey("mp_message")) {
+    String mpMessage=data.getString("mp_message");
+    String title=getString(R.string.app_name);
+    Intent resultIntent=new Intent(this,WPMainActivity.class);
+    resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    PendingIntent pendingIntent=PendingIntent.getActivity(this,0,resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+    AnalyticsTrackerMixpanel.showNotification(getBaseContext(),pendingIntent,R.drawable.notification_icon,title,mpMessage);
+    return;
+  }
+  if (!AccountHelper.isSignedInWordPressDotCom()) {
+    return;
+  }
+  handleDefaultPush(from,data);
+}
