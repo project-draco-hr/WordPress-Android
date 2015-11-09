@@ -2,11 +2,13 @@
   VolleyUtils.cancelAllRequests(requestQueue);
   NotificationsUtils.unregisterDevicePushNotifications(context);
   try {
-    GCMRegistrar.checkDevice(context);
-    GCMRegistrar.unregister(context);
+    String gcmId=BuildConfig.GCM_ID;
+    if (!TextUtils.isEmpty(gcmId)) {
+      InstanceID.getInstance(context).deleteToken(gcmId,GoogleCloudMessaging.INSTANCE_ID_SCOPE);
+    }
   }
  catch (  Exception e) {
-    AppLog.v(T.NOTIFS,"Could not unregister for GCM: " + e.getMessage());
+    AppLog.e(T.NOTIFS,"Could not delete GCM Token",e);
   }
   wpDB.deleteWordPressComBlogs(context);
   AccountHelper.getDefaultAccount().signout();

@@ -1,5 +1,5 @@
 {
-  SimperiumUtils.configureSimperium(getBaseContext(),AccountHelper.getDefaultAccount().getAccessToken());
+  SimperiumUtils.configureSimperium(this,AccountHelper.getDefaultAccount().getAccessToken());
   long wpcomUserId=AccountHelper.getDefaultAccount().getUserId();
   String pushUserId=data.getString(PUSH_ARG_USER);
   if (!String.valueOf(wpcomUserId).equals(pushUserId)) {
@@ -79,13 +79,13 @@
     if (noteId != null) {
       commentReplyIntent.putExtra(NotificationsListFragment.NOTE_ID_EXTRA,noteId);
     }
-    PendingIntent commentReplyPendingIntent=PendingIntent.getActivity(getBaseContext(),0,commentReplyIntent,PendingIntent.FLAG_CANCEL_CURRENT);
+    PendingIntent commentReplyPendingIntent=PendingIntent.getActivity(this,0,commentReplyIntent,PendingIntent.FLAG_CANCEL_CURRENT);
     builder.addAction(R.drawable.ic_reply_white_24dp,getText(R.string.reply),commentReplyPendingIntent);
   }
   if (largeIconBitmap != null) {
     builder.setLargeIcon(largeIconBitmap);
   }
-  showNotificationForBuilder(builder,getBaseContext(),pushId);
+  showNotificationForBuilder(builder,this,pushId);
   if (mActiveNotificationsMap.size() > 1) {
     NotificationCompat.InboxStyle inboxStyle=new NotificationCompat.InboxStyle();
     int noteCtr=1;
@@ -112,11 +112,11 @@
     }
     String subject=String.format(getString(R.string.new_notifications),mActiveNotificationsMap.size());
     NotificationCompat.Builder groupBuilder=new NotificationCompat.Builder(this).setSmallIcon(R.drawable.notification_icon).setColor(getResources().getColor(R.color.blue_wordpress)).setGroup(NOTIFICATION_GROUP_KEY).setGroupSummary(true).setAutoCancel(true).setTicker(message).setContentTitle(getString(R.string.app_name)).setContentText(subject).setStyle(inboxStyle);
-    showNotificationForBuilder(groupBuilder,getBaseContext(),GROUP_NOTIFICATION_ID);
+    showNotificationForBuilder(groupBuilder,this,GROUP_NOTIFICATION_ID);
   }
  else {
     builder.setGroupSummary(true);
-    showNotificationForBuilder(builder,getBaseContext(),GROUP_NOTIFICATION_ID);
+    showNotificationForBuilder(builder,this,GROUP_NOTIFICATION_ID);
   }
   EventBus.getDefault().post(new NotificationEvents.NotificationsChanged());
 }

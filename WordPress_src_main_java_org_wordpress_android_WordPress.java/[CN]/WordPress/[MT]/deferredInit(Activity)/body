@@ -1,6 +1,8 @@
 {
   AppLog.i(T.UTILS,"Deferred Initialisation");
-  registerForCloudMessaging(this);
+  if (checkPlayServices(activity)) {
+    startService(new Intent(this,GCMRegistrationIntentService.class));
+  }
   configureSimperium();
   if (AccountHelper.isSignedInWordPressDotCom()) {
     AccountHelper.getDefaultAccount().fetchAccountDetails();
