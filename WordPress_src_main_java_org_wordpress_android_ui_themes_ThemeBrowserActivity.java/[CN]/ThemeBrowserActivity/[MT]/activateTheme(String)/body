@@ -1,0 +1,20 @@
+{
+  final String siteId=getBlogId();
+  final String newThemeId=themeId;
+  WordPress.getRestClientUtils().setTheme(siteId,themeId,new Listener(){
+    @Override public void onResponse(    JSONObject response){
+      WordPress.wpDB.setCurrentTheme(siteId,newThemeId);
+      if (!isFinishing()) {
+        Theme newTheme=WordPress.wpDB.getTheme(siteId,newThemeId);
+        showAlertDialogOnNewSettingNewTheme(newTheme);
+        fetchCurrentTheme();
+      }
+    }
+  }
+,new ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+      Toast.makeText(getApplicationContext(),R.string.theme_activation_error,Toast.LENGTH_SHORT).show();
+    }
+  }
+);
+}
