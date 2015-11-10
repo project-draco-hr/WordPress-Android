@@ -8,10 +8,14 @@
   final StatsViewHolder holder=(StatsViewHolder)convertView.getTag();
   String name=currentChild.name;
   int views=currentChild.views;
-  holder.showLinkIcon();
+  holder.chevronImageView.setVisibility(View.GONE);
+  holder.linkImageView.setVisibility(TextUtils.isEmpty(currentChild.url) ? View.GONE : View.VISIBLE);
   holder.setEntryTextOrLink(currentChild.url,name);
   holder.totalsTextView.setText(FormatUtils.formatDecimal(views));
   holder.networkImageView.setVisibility(View.GONE);
+  if (!TextUtils.isEmpty(currentChild.icon)) {
+    holder.networkImageView.setImageUrl(GravatarUtils.fixGravatarUrl(currentChild.icon,mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.GONE_UNTIL_AVAILABLE);
+  }
   holder.imgMore.setVisibility(View.GONE);
   return convertView;
 }
