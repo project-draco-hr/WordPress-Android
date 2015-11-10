@@ -1,0 +1,17 @@
+{
+  AlertDialog.Builder builder=new AlertDialog.Builder(getActivity(),R.style.Calypso_AlertDialog);
+  View view=View.inflate(getActivity(),R.layout.number_picker_dialog,null);
+  final NumberPicker numberPicker=(NumberPicker)view.findViewById(R.id.number_picker);
+  numberPicker.setMaxValue(100);
+  builder.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener(){
+    @Override public void onClick(    DialogInterface dialog,    int which){
+      if (mSiteSettings.getMultipleLinks() != numberPicker.getValue()) {
+        onPreferenceChange(mMultipleLinksPref,numberPicker.getValue());
+      }
+    }
+  }
+);
+  builder.setNegativeButton(R.string.cancel,null);
+  builder.setView(view);
+  builder.create().show();
+}
