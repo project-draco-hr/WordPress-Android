@@ -22,7 +22,7 @@
   }
  else   if (preference == mPrivacyPreference) {
     mSiteSettings.setPrivacy(Integer.valueOf(newValue.toString()));
-    changePrivacyValue(mSiteSettings.getPrivacy());
+    setDetailListPreferenceValue(mPrivacyPreference,String.valueOf(mSiteSettings.getPrivacy()),getPrivacySummary(mSiteSettings.getPrivacy()));
     return true;
   }
  else   if (preference == mAllowComments || preference == mAllowCommentsNested) {
@@ -39,20 +39,22 @@
   }
  else   if (preference == mCloseAfterPreference) {
     mSiteSettings.setCloseAfter(Integer.parseInt(newValue.toString()));
-    mCloseAfterPreference.setValue(newValue.toString());
-    mCloseAfterPreference.refreshAdapter();
+    setDetailListPreferenceValue(mCloseAfterPreference,newValue.toString(),getCloseAfterSummary(mSiteSettings.getCloseAfter()));
     return true;
   }
  else   if (preference == mSortByPreference) {
     mSiteSettings.setCommentSorting(Integer.parseInt(newValue.toString()));
-    mSortByPreference.setValue(newValue.toString());
-    mSortByPreference.refreshAdapter();
+    setDetailListPreferenceValue(mSortByPreference,newValue.toString(),getSortOrderSummary(mSiteSettings.getCommentSorting()));
     return true;
   }
  else   if (preference == mThreadingPreference) {
+    mSiteSettings.setThreadingLevels(Integer.parseInt(newValue.toString()));
+    setDetailListPreferenceValue(mThreadingPreference,newValue.toString(),getThreadingSummary(mSiteSettings.getThreadingLevels()));
     return true;
   }
  else   if (preference == mPagingPreference) {
+    mSiteSettings.setPagingCount(Integer.parseInt(newValue.toString()));
+    setDetailListPreferenceValue(mPagingPreference,newValue.toString(),getPagingSummary(mSiteSettings.getPagingCount()));
     return true;
   }
  else   if (preference == mIdentityRequiredPreference) {
