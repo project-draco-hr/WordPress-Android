@@ -1,16 +1,9 @@
 {
   mLastSearch=searchTerm;
-  if (mAdapter == null || WordPress.getCurrentBlog() == null) {
-    return;
-  }
-  String blogId=String.valueOf(WordPress.getCurrentBlog().getRemoteBlogId());
-  Cursor cursor=WordPress.wpDB.getThemes(blogId,searchTerm);
-  mAdapter.changeCursor(cursor);
-  mGridView.invalidateViews();
-  if (cursor == null || cursor.getCount() == 0) {
-    mNoResultText.setVisibility(View.VISIBLE);
+  if (NetworkUtils.isNetworkAvailable(mThemeBrowserActivity)) {
+    mThemeBrowserActivity.searchThemes(searchTerm);
   }
  else {
-    mNoResultText.setVisibility(View.GONE);
+    refreshView(getSpinnerPosition());
   }
 }

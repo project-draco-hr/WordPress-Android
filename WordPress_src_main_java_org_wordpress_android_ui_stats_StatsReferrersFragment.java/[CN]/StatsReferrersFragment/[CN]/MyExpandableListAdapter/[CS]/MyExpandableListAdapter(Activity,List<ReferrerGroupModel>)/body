@@ -8,36 +8,23 @@
   }
   for (int i=0; i < groups.size(); i++) {
     ReferrerGroupModel currentGroup=groups.get(i);
-    List<ReferrerResultModel> referrals=currentGroup.getResults();
-    if (referrals != null) {
-      List<MyChildModel> currentGroupChildren=new ArrayList<>();
-      for (      ReferrerResultModel refResult : referrals) {
-        List<SingleItemModel> thirdLevelChildren=refResult.getChildren();
-        if (thirdLevelChildren != null && thirdLevelChildren.size() > 0) {
-          for (          SingleItemModel currentThirdLevelChild : thirdLevelChildren) {
-            MyChildModel myChild=new MyChildModel();
-            if (!TextUtils.isEmpty(currentThirdLevelChild.getIcon())) {
-              myChild.icon=currentThirdLevelChild.getIcon();
-            }
- else {
-              myChild.icon=refResult.getIcon();
-            }
-            myChild.url=currentThirdLevelChild.getUrl();
-            myChild.name=currentThirdLevelChild.getTitle();
-            myChild.views=currentThirdLevelChild.getTotals();
-            currentGroupChildren.add(myChild);
-          }
+    List<MyChildModel> currentGroupChildren=new ArrayList<>();
+    List<ReferrerResultModel> childrenOfLevelOne=currentGroup.getResults();
+    if (childrenOfLevelOne != null) {
+      for (      ReferrerResultModel singleLevelOneChild : childrenOfLevelOne) {
+        MyChildModel myChild=new MyChildModel();
+        myChild.icon=singleLevelOneChild.getIcon();
+        myChild.url=singleLevelOneChild.getUrl();
+        myChild.name=singleLevelOneChild.getName();
+        myChild.views=singleLevelOneChild.getViews();
+        List<SingleItemModel> secondLevelChildren=singleLevelOneChild.getChildren();
+        if (secondLevelChildren != null && secondLevelChildren.size() > 0) {
+          SingleItemModel firstThirdLevelChild=secondLevelChildren.get(0);
+          myChild.url=firstThirdLevelChild.getUrl();
         }
- else {
-          MyChildModel myChild=new MyChildModel();
-          myChild.icon=refResult.getIcon();
-          myChild.url=refResult.getUrl();
-          myChild.name=refResult.getName();
-          myChild.views=refResult.getViews();
-          currentGroupChildren.add(myChild);
-        }
+        currentGroupChildren.add(myChild);
       }
-      this.children.set(i,currentGroupChildren);
     }
+    this.children.set(i,currentGroupChildren);
   }
 }

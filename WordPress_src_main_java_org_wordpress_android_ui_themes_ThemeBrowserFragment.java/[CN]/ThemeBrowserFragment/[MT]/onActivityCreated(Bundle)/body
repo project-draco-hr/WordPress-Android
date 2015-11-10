@@ -1,0 +1,17 @@
+{
+  super.onActivityCreated(savedInstanceState);
+  if (this instanceof ThemeSearchFragment) {
+    mThemeBrowserActivity.setThemeSearchFragment((ThemeSearchFragment)this);
+  }
+ else {
+    mThemeBrowserActivity.setThemeBrowserFragment(this);
+  }
+  Cursor cursor=fetchThemes(getSpinnerPosition());
+  if (cursor == null) {
+    return;
+  }
+  mAdapter=new ThemeBrowserAdapter(mThemeBrowserActivity,cursor,false,mCallback);
+  setEmptyViewVisible(mAdapter.getCount() == 0);
+  mGridView.setAdapter(mAdapter);
+  restoreState(savedInstanceState);
+}
