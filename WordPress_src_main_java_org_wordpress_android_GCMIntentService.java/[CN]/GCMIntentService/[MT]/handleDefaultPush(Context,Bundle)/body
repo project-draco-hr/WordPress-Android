@@ -111,8 +111,12 @@
       inboxStyle.setSummaryText(String.format(getString(R.string.more_notifications),mActiveNotificationsMap.size() - mMaxInboxItems));
     }
     String subject=String.format(getString(R.string.new_notifications),mActiveNotificationsMap.size());
-    NotificationCompat.Builder groupBuilder=new NotificationCompat.Builder(this).setSmallIcon(R.drawable.notification_icon).setColor(getResources().getColor(R.color.blue_wordpress)).setContentTitle(getString(R.string.app_name)).setContentText(subject).setGroup(NOTIFICATION_GROUP_KEY).setGroupSummary(true).setTicker(message).setAutoCancel(true).setStyle(inboxStyle);
+    NotificationCompat.Builder groupBuilder=new NotificationCompat.Builder(this).setSmallIcon(R.drawable.notification_icon).setColor(getResources().getColor(R.color.blue_wordpress)).setGroup(NOTIFICATION_GROUP_KEY).setGroupSummary(true).setAutoCancel(true).setTicker(message).setContentTitle(getString(R.string.app_name)).setContentText(subject).setStyle(inboxStyle);
     showNotificationForBuilder(groupBuilder,context,GROUP_NOTIFICATION_ID);
+  }
+ else {
+    builder.setGroupSummary(true);
+    showNotificationForBuilder(builder,context,GROUP_NOTIFICATION_ID);
   }
   EventBus.getDefault().post(new NotificationEvents.NotificationsChanged());
 }
