@@ -3,12 +3,26 @@
   if (NetworkUtils.isNetworkAvailable(this)) {
     if (mCurrentTheme != null) {
       boolean isCurrentTheme=mCurrentTheme.getId().equals(themeId);
-      ThemeWebActivity.openTheme(this,themeId,type,isCurrentTheme);
-      return;
-    }
+switch (type) {
+case PREVIEW:
+        AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.THEMES_PREVIEWED_SITE);
+      break;
+case DEMO:
+    AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.THEMES_DEMO_ACCESSED);
+  break;
+case DETAILS:
+AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.THEMES_DETAILS_ACCESSED);
+break;
+case SUPPORT:
+AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.THEMES_SUPPORT_ACCESSED);
+break;
+}
+ThemeWebActivity.openTheme(this,themeId,type,isCurrentTheme);
+return;
+}
  else {
-      toastText=getString(R.string.could_not_load_theme);
-    }
-  }
-  Toast.makeText(this,toastText,Toast.LENGTH_SHORT).show();
+toastText=getString(R.string.could_not_load_theme);
+}
+}
+Toast.makeText(this,toastText,Toast.LENGTH_SHORT).show();
 }
