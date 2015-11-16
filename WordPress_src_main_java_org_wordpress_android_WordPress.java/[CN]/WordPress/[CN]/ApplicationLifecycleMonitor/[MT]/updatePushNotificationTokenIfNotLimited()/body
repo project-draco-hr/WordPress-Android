@@ -1,20 +1,5 @@
 {
   if (isPushNotificationPingNeeded() && AccountHelper.isSignedInWordPressDotCom()) {
-    String token=null;
-    try {
-      GCMRegistrar.checkDevice(mContext);
-      GCMRegistrar.checkManifest(mContext);
-      token=GCMRegistrar.getRegistrationId(mContext);
-      String gcmId=BuildConfig.GCM_ID;
-      if (gcmId == null || token == null || token.equals("")) {
-        AppLog.e(T.NOTIFS,"Could not ping the PNs backend, Token or gmcID not found");
-      }
- else {
-        NotificationsUtils.registerDeviceForPushNotifications(mContext,token);
-      }
-    }
- catch (    Exception e) {
-      AppLog.e(T.NOTIFS,"Could not ping the PNs backend: " + e.getMessage());
-    }
+    startService(new Intent(getContext(),GCMRegistrationIntentService.class));
   }
 }

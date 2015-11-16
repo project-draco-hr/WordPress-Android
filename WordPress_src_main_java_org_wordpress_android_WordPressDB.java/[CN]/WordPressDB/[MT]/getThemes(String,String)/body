@@ -1,3 +1,5 @@
 {
-  return db.rawQuery("SELECT _id,  themeId, name, screenshotURL, isCurrent, isPremium FROM " + THEMES_TABLE + " WHERE blogId=? AND (name LIKE ? OR description LIKE ?) ORDER BY name ASC",new String[]{blogId,"%" + searchTerm + "%","%" + searchTerm + "%"});
+  String[] columns={COLUMN_NAME_ID,Theme.ID,Theme.NAME,Theme.SCREENSHOT,Theme.PRICE,Theme.IS_CURRENT};
+  String[] selection={blogId,"%" + searchTerm + "%"};
+  return db.query(THEMES_TABLE,columns,Theme.BLOG_ID + "=? AND " + Theme.NAME+ " LIKE ?",selection,null,null,null);
 }

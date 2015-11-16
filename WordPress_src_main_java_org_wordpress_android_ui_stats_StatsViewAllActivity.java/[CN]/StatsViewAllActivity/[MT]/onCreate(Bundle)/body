@@ -1,9 +1,6 @@
 {
   super.onCreate(savedInstanceState);
   setContentView(R.layout.stats_activity_view_all);
-  if (savedInstanceState == null) {
-    AnalyticsTracker.track(AnalyticsTracker.Stat.STATS_VIEW_ALL_ACCESSED);
-  }
   ActionBar actionBar=getSupportActionBar();
   if (actionBar != null) {
     actionBar.setDisplayHomeAsUpEnabled(true);
@@ -85,5 +82,8 @@ if (mFragment == null) {
 mFragment=getInnerFragment();
 ft.replace(R.id.stats_single_view_fragment,mFragment,"ViewAll-Fragment");
 ft.commitAllowingStateLoss();
+}
+if (savedInstanceState == null) {
+AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.STATS_VIEW_ALL_ACCESSED,WordPress.getBlog(mLocalBlogID));
 }
 }

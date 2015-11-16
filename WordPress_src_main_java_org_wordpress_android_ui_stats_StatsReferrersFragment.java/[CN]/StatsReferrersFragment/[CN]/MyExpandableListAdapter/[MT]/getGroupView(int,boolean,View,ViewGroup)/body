@@ -3,8 +3,6 @@
   if (convertView == null) {
     convertView=inflater.inflate(R.layout.stats_list_cell,parent,false);
     holder=new StatsViewHolder(convertView);
-    holder.networkImageView.setErrorImageResId(R.drawable.stats_icon_default_site_avatar);
-    holder.networkImageView.setDefaultImageResId(R.drawable.stats_icon_default_site_avatar);
     convertView.setTag(holder);
   }
  else {
@@ -23,8 +21,10 @@
     holder.setEntryTextOrLink(url,name);
   }
   holder.totalsTextView.setText(FormatUtils.formatDecimal(total));
-  holder.networkImageView.setImageUrl(GravatarUtils.fixGravatarUrl(icon,mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.BLAVATAR);
-  holder.networkImageView.setVisibility(View.VISIBLE);
+  holder.networkImageView.setVisibility(View.GONE);
+  if (!TextUtils.isEmpty(icon)) {
+    holder.networkImageView.setImageUrl(GravatarUtils.fixGravatarUrl(icon,mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.GONE_UNTIL_AVAILABLE);
+  }
   if (children == 0) {
     holder.showLinkIcon();
   }
