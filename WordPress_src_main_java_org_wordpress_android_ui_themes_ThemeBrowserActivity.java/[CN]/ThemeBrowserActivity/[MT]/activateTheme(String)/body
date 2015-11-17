@@ -4,8 +4,11 @@
   WordPress.getRestClientUtils().setTheme(siteId,themeId,new Listener(){
     @Override public void onResponse(    JSONObject response){
       WordPress.wpDB.setCurrentTheme(siteId,newThemeId);
+      Theme newTheme=WordPress.wpDB.getTheme(siteId,newThemeId);
+      Map<String,Object> themeProperties=new HashMap<>();
+      themeProperties.put(THEME_ID,themeId);
+      AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.THEMES_CHANGED_THEME,themeProperties);
       if (!isFinishing()) {
-        Theme newTheme=WordPress.wpDB.getTheme(siteId,newThemeId);
         showAlertDialogOnNewSettingNewTheme(newTheme);
         fetchCurrentTheme();
       }
