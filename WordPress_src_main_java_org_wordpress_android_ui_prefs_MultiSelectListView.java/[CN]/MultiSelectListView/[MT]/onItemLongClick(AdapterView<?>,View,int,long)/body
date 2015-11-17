@@ -1,0 +1,31 @@
+{
+  if (mActionMode != null)   return false;
+  if (mEnterListener != null)   mEnterListener.onEnterMultiSelect();
+  setItemChecked(position,true);
+  mActionMode=startActionMode(new ActionMode.Callback(){
+    @Override public boolean onCreateActionMode(    ActionMode mode,    Menu menu){
+      MenuInflater inflater=mode.getMenuInflater();
+      inflater.inflate(R.menu.list_editor,menu);
+      return true;
+    }
+    @Override public boolean onPrepareActionMode(    ActionMode mode,    Menu menu){
+      mode.setTitle(String.valueOf(getCheckedItemCount()));
+      return true;
+    }
+    @Override public boolean onActionItemClicked(    ActionMode mode,    MenuItem item){
+      if (item.getItemId() == R.id.menu_delete) {
+        if (mDeleteListener == null || mDeleteListener.onDeleteRequested()) {
+          mActionMode.finish();
+        }
+        return true;
+      }
+      return false;
+    }
+    @Override public void onDestroyActionMode(    ActionMode mode){
+      mActionMode=null;
+      if (mExitListener != null)       mExitListener.onExitMultiSelect();
+    }
+  }
+);
+  return true;
+}
