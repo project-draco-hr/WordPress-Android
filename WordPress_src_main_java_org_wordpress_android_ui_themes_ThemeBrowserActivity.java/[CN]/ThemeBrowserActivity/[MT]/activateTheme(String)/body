@@ -5,7 +5,9 @@
     @Override public void onResponse(    JSONObject response){
       WordPress.wpDB.setCurrentTheme(siteId,newThemeId);
       Theme newTheme=WordPress.wpDB.getTheme(siteId,newThemeId);
-      AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.THEMES_CHANGED_THEME);
+      Map<String,Object> themeProperties=new HashMap<>();
+      themeProperties.put(THEME_ID,themeId);
+      AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.THEMES_CHANGED_THEME,themeProperties);
       if (!isFinishing()) {
         showAlertDialogOnNewSettingNewTheme(newTheme);
         fetchCurrentTheme();
