@@ -1,0 +1,21 @@
+{
+  if (mFeaturedImageId != id) {
+    mFeaturedImageId=id;
+    if (mFeaturedImageId > 0) {
+      int blogId=WordPress.getCurrentBlog().getLocalTableBlogId();
+      Cursor cursor=WordPress.wpDB.getMediaFile(String.valueOf(blogId),String.valueOf(mFeaturedImageId));
+      if (cursor != null && cursor.moveToFirst()) {
+        mFeaturedImageView.setVisibility(View.VISIBLE);
+        mFeaturedImageButton.setVisibility(View.GONE);
+        loadNetworkThumbnail(cursor,mFeaturedImageView);
+      }
+      if (cursor != null) {
+        cursor.close();
+      }
+    }
+ else {
+      mFeaturedImageView.setVisibility(View.GONE);
+      mFeaturedImageButton.setVisibility(View.VISIBLE);
+    }
+  }
+}
