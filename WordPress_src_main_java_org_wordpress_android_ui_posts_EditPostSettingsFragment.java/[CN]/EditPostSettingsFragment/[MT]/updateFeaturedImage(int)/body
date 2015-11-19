@@ -7,7 +7,11 @@
       if (cursor != null && cursor.moveToFirst()) {
         mFeaturedImageView.setVisibility(View.VISIBLE);
         mFeaturedImageButton.setVisibility(View.GONE);
-        loadNetworkThumbnail(cursor,mFeaturedImageView);
+        int maxWidth=getContext().getResources().getDisplayMetrics().widthPixels;
+        int padding=DisplayUtils.dpToPx(getContext(),16);
+        int imageWidth=(maxWidth - padding);
+        String thumbUrl=WordPressMediaUtils.getNetworkThumbnailUrl(cursor,imageWidth);
+        WordPressMediaUtils.loadNetworkImage(thumbUrl,mFeaturedImageView);
       }
       if (cursor != null) {
         cursor.close();
