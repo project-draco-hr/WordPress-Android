@@ -3,23 +3,23 @@
 switch (status) {
 case PUBLISHED:
     if (!mPost.isLocalDraft()) {
-      AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_UPDATED_POST);
+      AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_UPDATED_POST,WordPress.getBlog(mPost.getLocalTableBlogId()));
     }
  else {
     }
   break;
 case SCHEDULED:
 if (!mPost.isLocalDraft()) {
-  AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_UPDATED_POST);
+  AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_UPDATED_POST,WordPress.getBlog(mPost.getLocalTableBlogId()));
 }
  else {
   Map<String,Object> properties=new HashMap<String,Object>();
   properties.put("word_count",AnalyticsUtils.getWordCount(mPost.getContent()));
-  AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_SCHEDULED_POST,properties);
+  AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_SCHEDULED_POST,WordPress.getBlog(mPost.getLocalTableBlogId()),properties);
 }
 break;
 case DRAFT:
-AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_SAVED_DRAFT);
+AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_SAVED_DRAFT,WordPress.getBlog(mPost.getLocalTableBlogId()));
 break;
 default :
 }
