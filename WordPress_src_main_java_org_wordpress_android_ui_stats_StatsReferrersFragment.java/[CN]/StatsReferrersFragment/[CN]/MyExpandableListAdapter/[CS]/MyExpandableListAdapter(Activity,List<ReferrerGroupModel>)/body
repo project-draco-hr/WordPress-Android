@@ -1,0 +1,30 @@
+{
+  this.groups=groups;
+  this.inflater=LayoutInflater.from(act);
+  this.act=act;
+  this.children=new ArrayList<>(groups.size());
+  for (int i=0; i < groups.size(); i++) {
+    this.children.add(null);
+  }
+  for (int i=0; i < groups.size(); i++) {
+    ReferrerGroupModel currentGroup=groups.get(i);
+    List<MyChildModel> currentGroupChildren=new ArrayList<>();
+    List<ReferrerResultModel> childrenOfLevelOne=currentGroup.getResults();
+    if (childrenOfLevelOne != null) {
+      for (      ReferrerResultModel singleLevelOneChild : childrenOfLevelOne) {
+        MyChildModel myChild=new MyChildModel();
+        myChild.icon=singleLevelOneChild.getIcon();
+        myChild.url=singleLevelOneChild.getUrl();
+        myChild.name=singleLevelOneChild.getName();
+        myChild.views=singleLevelOneChild.getViews();
+        List<SingleItemModel> secondLevelChildren=singleLevelOneChild.getChildren();
+        if (secondLevelChildren != null && secondLevelChildren.size() > 0) {
+          SingleItemModel firstThirdLevelChild=secondLevelChildren.get(0);
+          myChild.url=firstThirdLevelChild.getUrl();
+        }
+        currentGroupChildren.add(myChild);
+      }
+    }
+    this.children.set(i,currentGroupChildren);
+  }
+}

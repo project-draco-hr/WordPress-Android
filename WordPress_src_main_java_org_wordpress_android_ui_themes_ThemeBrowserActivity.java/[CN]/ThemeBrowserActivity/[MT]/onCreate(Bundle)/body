@@ -5,31 +5,12 @@
     finish();
     return;
   }
-  if (savedInstanceState == null) {
-    AnalyticsTracker.track(AnalyticsTracker.Stat.THEMES_ACCESSED_THEMES_BROWSER);
-  }
   setContentView(R.layout.theme_browser_activity);
-  Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
-  setSupportActionBar(toolbar);
-  ActionBar actionBar=getSupportActionBar();
-  if (actionBar != null) {
-    actionBar.setElevation(0.0f);
-    actionBar.setDisplayShowTitleEnabled(true);
-    actionBar.setDisplayHomeAsUpEnabled(true);
-    actionBar.setTitle(getString(R.string.themes));
+  if (savedInstanceState == null) {
+    AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.THEMES_ACCESSED_THEMES_BROWSER);
+    mThemeBrowserFragment=new ThemeBrowserFragment();
+    mThemeSearchFragment=new ThemeSearchFragment();
+    addBrowserFragment();
   }
-  mThemePagerAdapter=new ThemePagerAdapter(getFragmentManager());
-  mViewPager=(WPViewPager)findViewById(R.id.theme_browser_pager);
-  mViewPager.setAdapter(mThemePagerAdapter);
-  mTabLayout=(TabLayout)findViewById(R.id.tab_layout);
-  int normalColor=getResources().getColor(R.color.blue_light);
-  int selectedColor=getResources().getColor(R.color.white);
-  mTabLayout.setTabTextColors(normalColor,selectedColor);
-  mTabLayout.setupWithViewPager(mViewPager);
-  FragmentManager fm=getFragmentManager();
-  fm.addOnBackStackChangedListener(mOnBackStackChangedListener);
-  setupBaseLayout();
-  mPreviewFragment=(ThemePreviewFragment)fm.findFragmentByTag(ThemePreviewFragment.TAG);
-  mDetailsFragment=(ThemeDetailsFragment)fm.findFragmentByTag(ThemeDetailsFragment.TAG);
-  mSearchFragment=(ThemeSearchFragment)fm.findFragmentByTag(ThemeSearchFragment.TAG);
+  showToolbar();
 }

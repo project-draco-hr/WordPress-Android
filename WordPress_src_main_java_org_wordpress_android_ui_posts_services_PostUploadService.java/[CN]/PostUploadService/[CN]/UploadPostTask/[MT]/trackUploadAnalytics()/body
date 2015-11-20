@@ -1,24 +1,17 @@
 {
-  mPost.getStatusEnum();
-  boolean isFirstTimePublishing=false;
-  if (mPost.hasChangedFromDraftToPublished() || (mPost.isLocalDraft() && mPost.getStatusEnum() == PostStatus.PUBLISHED)) {
-    isFirstTimePublishing=true;
+  Map<String,Object> properties=new HashMap<String,Object>();
+  properties.put("word_count",AnalyticsUtils.getWordCount(mPost.getContent()));
+  if (mHasImage) {
+    properties.put("with_photos",true);
   }
-  if (isFirstTimePublishing) {
-    Map<String,Object> properties=new HashMap<String,Object>();
-    properties.put("word_count",AnalyticsUtils.getWordCount(mPost.getContent()));
-    if (mHasImage) {
-      properties.put("with_photos",true);
-    }
-    if (mHasVideo) {
-      properties.put("with_videos",true);
-    }
-    if (mHasCategory) {
-      properties.put("with_categories",true);
-    }
-    if (!TextUtils.isEmpty(mPost.getKeywords())) {
-      properties.put("with_tags",true);
-    }
-    AnalyticsTracker.track(AnalyticsTracker.Stat.EDITOR_PUBLISHED_POST,properties);
+  if (mHasVideo) {
+    properties.put("with_videos",true);
   }
+  if (mHasCategory) {
+    properties.put("with_categories",true);
+  }
+  if (!TextUtils.isEmpty(mPost.getKeywords())) {
+    properties.put("with_tags",true);
+  }
+  AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_PUBLISHED_POST,mBlog,properties);
 }
