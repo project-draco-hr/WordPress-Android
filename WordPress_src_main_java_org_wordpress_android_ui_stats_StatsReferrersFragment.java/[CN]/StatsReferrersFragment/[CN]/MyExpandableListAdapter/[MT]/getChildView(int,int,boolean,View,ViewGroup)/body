@@ -3,22 +3,18 @@
   if (convertView == null) {
     convertView=inflater.inflate(R.layout.stats_list_cell,parent,false);
     StatsViewHolder viewHolder=new StatsViewHolder(convertView);
-    viewHolder.networkImageView.setErrorImageResId(R.drawable.stats_icon_default_site_avatar);
-    viewHolder.networkImageView.setDefaultImageResId(R.drawable.stats_icon_default_site_avatar);
     convertView.setTag(viewHolder);
   }
   final StatsViewHolder holder=(StatsViewHolder)convertView.getTag();
   String name=currentChild.name;
   int views=currentChild.views;
-  holder.showLinkIcon();
+  holder.chevronImageView.setVisibility(View.GONE);
+  holder.linkImageView.setVisibility(TextUtils.isEmpty(currentChild.url) ? View.GONE : View.VISIBLE);
   holder.setEntryTextOrLink(currentChild.url,name);
   holder.totalsTextView.setText(FormatUtils.formatDecimal(views));
+  holder.networkImageView.setVisibility(View.GONE);
   if (!TextUtils.isEmpty(currentChild.icon)) {
-    holder.networkImageView.setImageUrl(GravatarUtils.fixGravatarUrl(currentChild.icon,mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.BLAVATAR);
-    holder.networkImageView.setVisibility(View.VISIBLE);
-  }
- else {
-    holder.networkImageView.setVisibility(View.GONE);
+    holder.networkImageView.setImageUrl(GravatarUtils.fixGravatarUrl(currentChild.icon,mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.GONE_UNTIL_AVAILABLE);
   }
   holder.imgMore.setVisibility(View.GONE);
   return convertView;

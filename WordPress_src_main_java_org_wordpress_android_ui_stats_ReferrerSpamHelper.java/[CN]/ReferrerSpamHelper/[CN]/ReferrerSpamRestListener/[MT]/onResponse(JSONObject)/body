@@ -1,0 +1,24 @@
+{
+  if (mActivityRef.get() == null || mActivityRef.get().isFinishing()) {
+    return;
+  }
+  mReferrerGroup.isRestCallInProgress=false;
+  if (response != null) {
+    boolean success=response.optBoolean("success");
+    if (success) {
+      mReferrerGroup.isMarkedAsSpam=isMarkingAsSpamInProgress;
+      int localBlogID=StatsUtils.getLocalBlogIdFromRemoteBlogId(Integer.parseInt(mReferrerGroup.getBlogId()));
+      StatsTable.deleteStatsForBlog(mActivityRef.get(),localBlogID,StatsService.StatsEndpointsEnum.REFERRERS);
+    }
+ else {
+      String errorMessage=null;
+      if (response.has("error")) {
+        errorMessage=response.optString("message");
+      }
+      if (TextUtils.isEmpty(errorMessage)) {
+        errorMessage=mActivityRef.get().getString(R.string.stats_referrers_spam_generic_error);
+      }
+      ToastUtils.showToast(mActivityRef.get(),errorMessage,ToastUtils.Duration.LONG);
+    }
+  }
+}

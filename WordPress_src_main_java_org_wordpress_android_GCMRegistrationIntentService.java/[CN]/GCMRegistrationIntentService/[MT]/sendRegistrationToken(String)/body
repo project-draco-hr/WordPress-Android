@@ -1,0 +1,19 @@
+{
+  if (!TextUtils.isEmpty(gcmToken)) {
+    AppLog.i(T.NOTIFS,"Sending GCM token to our remote services: " + gcmToken);
+    if (AccountHelper.isSignedInWordPressDotCom()) {
+      SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(this);
+      String uuid=preferences.getString(NotificationsUtils.WPCOM_PUSH_DEVICE_UUID,null);
+      if (uuid == null) {
+        uuid=UUID.randomUUID().toString();
+        preferences.edit().putString(NotificationsUtils.WPCOM_PUSH_DEVICE_UUID,uuid).apply();
+      }
+      NotificationsUtils.registerDeviceForPushNotifications(this,gcmToken);
+    }
+    HelpshiftHelper.getInstance().registerDeviceToken(this,gcmToken);
+    AnalyticsTracker.registerPushNotificationToken(gcmToken);
+  }
+ else {
+    AppLog.w(T.NOTIFS,"Empty GCM token, can't register the id on remote services");
+  }
+}

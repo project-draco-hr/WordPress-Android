@@ -3,14 +3,12 @@
   if (convertView == null) {
     convertView=inflater.inflate(R.layout.stats_list_cell,parent,false);
     holder=new StatsViewHolder(convertView);
-    holder.networkImageView.setErrorImageResId(R.drawable.stats_icon_default_site_avatar);
-    holder.networkImageView.setDefaultImageResId(R.drawable.stats_icon_default_site_avatar);
     convertView.setTag(holder);
   }
  else {
     holder=(StatsViewHolder)convertView.getTag();
   }
-  ReferrerGroupModel group=(ReferrerGroupModel)getGroup(groupPosition);
+  final ReferrerGroupModel group=(ReferrerGroupModel)getGroup(groupPosition);
   String name=group.getName();
   int total=group.getTotal();
   String url=group.getUrl();
@@ -23,13 +21,29 @@
     holder.setEntryTextOrLink(url,name);
   }
   holder.totalsTextView.setText(FormatUtils.formatDecimal(total));
-  holder.networkImageView.setImageUrl(GravatarUtils.fixGravatarUrl(icon,mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.BLAVATAR);
-  holder.networkImageView.setVisibility(View.VISIBLE);
+  holder.networkImageView.setVisibility(View.GONE);
+  if (!TextUtils.isEmpty(icon)) {
+    holder.networkImageView.setImageUrl(GravatarUtils.fixGravatarUrl(icon,mResourceVars.headerAvatarSizePx),WPNetworkImageView.ImageType.GONE_UNTIL_AVAILABLE);
+  }
   if (children == 0) {
     holder.showLinkIcon();
   }
  else {
     holder.showChevronIcon();
+  }
+  if (ReferrerSpamHelper.isSpamActionAvailable(group)) {
+    holder.imgMore.setVisibility(View.VISIBLE);
+    holder.imgMore.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        ReferrerSpamHelper rp=new ReferrerSpamHelper(act);
+        rp.showPopup(holder.imgMore,group);
+      }
+    }
+);
+  }
+ else {
+    holder.imgMore.setVisibility(View.GONE);
+    holder.imgMore.setClickable(false);
   }
   return convertView;
 }
