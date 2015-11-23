@@ -6,6 +6,10 @@
       return false;
     }
     if (mViewPager.getCurrentItem() > PAGE_CONTENT) {
+      if (mViewPager.getCurrentItem() == PAGE_SETTINGS) {
+        mPost.setFeaturedImageId(mEditPostSettingsFragment.getFeaturedImageId());
+        mEditorFragment.setFeaturedImageId(mPost.getFeaturedImageId());
+      }
       mViewPager.setCurrentItem(PAGE_CONTENT);
       invalidateOptionsMenu();
     }
@@ -36,6 +40,7 @@
       return false;
     }
     PostUploadService.addPostToUpload(mPost);
+    PostUploadService.setLegacyMode(!mShowNewEditor);
     startService(new Intent(this,PostUploadService.class));
     setResult(RESULT_OK);
     finish();
@@ -47,6 +52,9 @@
  else   if (itemId == R.id.menu_post_settings) {
     InputMethodManager imm=((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE));
     imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(),0);
+    if (mShowNewEditor) {
+      mEditPostSettingsFragment.updateFeaturedImage(mPost.getFeaturedImageId());
+    }
     mViewPager.setCurrentItem(PAGE_SETTINGS);
   }
   return false;

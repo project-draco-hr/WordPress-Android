@@ -26,6 +26,29 @@
 );
   mTagsEditText=(EditText)mRootView.findViewById(R.id.tags);
   mSectionCategories=((ViewGroup)mRootView.findViewById(R.id.sectionCategories));
+  mFeaturedImageLabel=(TextView)mRootView.findViewById(R.id.featuredImageLabel);
+  mFeaturedImageView=(NetworkImageView)mRootView.findViewById(R.id.featuredImage);
+  mFeaturedImageButton=(Button)mRootView.findViewById(R.id.addFeaturedImage);
+  if (mSupportNewEditor) {
+    registerForContextMenu(mFeaturedImageView);
+    mFeaturedImageView.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        view.showContextMenu();
+      }
+    }
+);
+    mFeaturedImageButton.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        launchMediaGalleryActivity();
+      }
+    }
+);
+  }
+ else {
+    mFeaturedImageLabel.setVisibility(View.GONE);
+    mFeaturedImageView.setVisibility(View.GONE);
+    mFeaturedImageButton.setVisibility(View.GONE);
+  }
   if (mPost.isPage()) {
     mExcerptEditText.setVisibility(View.GONE);
     mRootView.findViewById(R.id.sectionTags).setVisibility(View.GONE);
