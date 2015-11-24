@@ -1,57 +1,84 @@
 {
   if (newValue == null)   return false;
-  if (preference == mTitlePreference) {
+  if (preference == mTitlePref) {
     mSiteSettings.setTitle(newValue.toString());
-    changeEditTextPreferenceValue(mTitlePreference,mSiteSettings.getTitle());
-    return true;
+    changeEditTextPreferenceValue(mTitlePref,mSiteSettings.getTitle());
   }
- else   if (preference == mTaglinePreference) {
+ else   if (preference == mTaglinePref) {
     mSiteSettings.setTagline(newValue.toString());
-    changeEditTextPreferenceValue(mTaglinePreference,mSiteSettings.getTagline());
-    return true;
+    changeEditTextPreferenceValue(mTaglinePref,mSiteSettings.getTagline());
   }
- else   if (preference == mAddressPreference) {
+ else   if (preference == mAddressPref) {
     mSiteSettings.setAddress(newValue.toString());
-    changeEditTextPreferenceValue(mAddressPreference,mSiteSettings.getAddress());
-    return true;
+    changeEditTextPreferenceValue(mAddressPref,mSiteSettings.getAddress());
   }
- else   if (preference == mLanguagePreference) {
+ else   if (preference == mLanguagePref) {
     mSiteSettings.setLanguageCode(newValue.toString());
     changeLanguageValue(mSiteSettings.getLanguageCode());
-    return true;
   }
- else   if (preference == mPrivacyPreference) {
+ else   if (preference == mPrivacyPref) {
     mSiteSettings.setPrivacy(Integer.valueOf(newValue.toString()));
-    changePrivacyValue(mSiteSettings.getPrivacy());
-    return true;
+    setDetailListPreferenceValue(mPrivacyPref,String.valueOf(mSiteSettings.getPrivacy()),getPrivacySummary(mSiteSettings.getPrivacy()));
   }
- else   if (preference == mUsernamePreference) {
+ else   if (preference == mAllowCommentsPref || preference == mAllowCommentsNested) {
+    setAllowComments((Boolean)newValue);
+  }
+ else   if (preference == mSendPingbacksPref || preference == mSendPingbacksNested) {
+    setSendPingbacks((Boolean)newValue);
+  }
+ else   if (preference == mReceivePingbacksPref || preference == mReceivePingbacksNested) {
+    setReceivePingbacks((Boolean)newValue);
+  }
+ else   if (preference == mCloseAfterPref) {
+    mSiteSettings.setCloseAfter(Integer.parseInt(newValue.toString()));
+    setDetailListPreferenceValue(mCloseAfterPref,newValue.toString(),getCloseAfterSummary(mSiteSettings.getCloseAfter()));
+  }
+ else   if (preference == mSortByPref) {
+    mSiteSettings.setCommentSorting(Integer.parseInt(newValue.toString()));
+    setDetailListPreferenceValue(mSortByPref,newValue.toString(),getSortOrderSummary(mSiteSettings.getCommentSorting()));
+  }
+ else   if (preference == mThreadingPref) {
+    mSiteSettings.setThreadingLevels(Integer.parseInt(newValue.toString()));
+    setDetailListPreferenceValue(mThreadingPref,newValue.toString(),getThreadingSummary(mSiteSettings.getThreadingLevels()));
+  }
+ else   if (preference == mPagingPref) {
+    mSiteSettings.setPagingCount(Integer.parseInt(newValue.toString()));
+    setDetailListPreferenceValue(mPagingPref,newValue.toString(),getPagingSummary(mSiteSettings.getPagingCount()));
+  }
+ else   if (preference == mIdentityRequiredPreference) {
+    mSiteSettings.setIdentityRequired((Boolean)newValue);
+  }
+ else   if (preference == mUserAccountRequiredPref) {
+    mSiteSettings.setUserAccountRequired((Boolean)newValue);
+  }
+ else   if (preference == mWhitelistPref) {
+    updateWhitelistSettings(Integer.parseInt(newValue.toString()));
+  }
+ else   if (preference == mMultipleLinksPref) {
+    mSiteSettings.setMultipleLinks(Integer.parseInt(newValue.toString()));
+    mMultipleLinksPref.setSummary(getResources().getQuantityString(R.plurals.multiple_links_summary,mSiteSettings.getMultipleLinks(),mSiteSettings.getMultipleLinks()));
+  }
+ else   if (preference == mUsernamePref) {
     mSiteSettings.setUsername(newValue.toString());
-    changeEditTextPreferenceValue(mUsernamePreference,mSiteSettings.getUsername());
-    return true;
+    changeEditTextPreferenceValue(mUsernamePref,mSiteSettings.getUsername());
   }
- else   if (preference == mPasswordPreference) {
+ else   if (preference == mPasswordPref) {
     mSiteSettings.setPassword(newValue.toString());
-    changeEditTextPreferenceValue(mPasswordPreference,mSiteSettings.getPassword());
-    return true;
+    changeEditTextPreferenceValue(mPasswordPref,mSiteSettings.getPassword());
   }
- else   if (preference == mLocationPreference) {
+ else   if (preference == mLocationPref) {
     mSiteSettings.setLocation((Boolean)newValue);
-    return true;
   }
- else   if (preference == mCategoryPreference) {
+ else   if (preference == mCategoryPref) {
     mSiteSettings.setDefaultCategory(Integer.parseInt(newValue.toString()));
-    mCategoryPreference.setValue(newValue.toString());
-    mCategoryPreference.setSummary(mSiteSettings.getDefaultCategoryForDisplay());
-    mCategoryPreference.refreshAdapter();
-    return true;
+    setDetailListPreferenceValue(mCategoryPref,newValue.toString(),mSiteSettings.getDefaultCategoryForDisplay());
   }
- else   if (preference == mFormatPreference) {
+ else   if (preference == mFormatPref) {
     mSiteSettings.setDefaultFormat(newValue.toString());
-    mFormatPreference.setValue(newValue.toString());
-    mFormatPreference.setSummary(mSiteSettings.getDefaultPostFormatDisplay());
-    mFormatPreference.refreshAdapter();
-    return true;
+    setDetailListPreferenceValue(mFormatPref,newValue.toString(),mSiteSettings.getDefaultPostFormatDisplay());
   }
-  return false;
+ else {
+    return false;
+  }
+  return true;
 }

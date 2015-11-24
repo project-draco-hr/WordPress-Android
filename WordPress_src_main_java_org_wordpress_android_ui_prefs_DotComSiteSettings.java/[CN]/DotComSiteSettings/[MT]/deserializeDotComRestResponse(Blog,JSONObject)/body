@@ -3,14 +3,56 @@
   JSONObject settingsObject=response.optJSONObject("settings");
   mRemoteSettings.username=blog.getUsername();
   mRemoteSettings.password=blog.getPassword();
-  mRemoteSettings.address=response.optString(GET_URL_KEY,"");
+  mRemoteSettings.address=response.optString(URL_KEY,"");
   mRemoteSettings.title=response.optString(GET_TITLE_KEY,"");
   mRemoteSettings.tagline=response.optString(GET_DESC_KEY,"");
-  mRemoteSettings.languageId=settingsObject.optInt(GET_LANGUAGE_ID_KEY,-1);
-  mRemoteSettings.privacy=settingsObject.optInt(GET_PRIVACY_KEY,-2);
-  mRemoteSettings.defaultCategory=settingsObject.optInt(GET_DEF_CATEGORY_KEY,0);
-  mRemoteSettings.defaultPostFormat=settingsObject.optString(GET_DEF_POST_FORMAT_KEY,"0");
+  mRemoteSettings.languageId=settingsObject.optInt(LANGUAGE_ID_KEY,-1);
+  mRemoteSettings.privacy=settingsObject.optInt(PRIVACY_KEY,-2);
+  mRemoteSettings.defaultCategory=settingsObject.optInt(DEF_CATEGORY_KEY,0);
+  mRemoteSettings.defaultPostFormat=settingsObject.optString(DEF_POST_FORMAT_KEY,"0");
   mRemoteSettings.language=languageIdToLanguageCode(Integer.toString(mRemoteSettings.languageId));
+  mRemoteSettings.allowComments=settingsObject.optBoolean(ALLOW_COMMENTS_KEY,true);
+  mRemoteSettings.sendPingbacks=settingsObject.optBoolean(SEND_PINGBACKS_KEY,false);
+  mRemoteSettings.receivePingbacks=settingsObject.optBoolean(RECEIVE_PINGBACKS_KEY,true);
+  mRemoteSettings.commentApprovalRequired=settingsObject.optBoolean(COMMENT_MODERATION_KEY,false);
+  mRemoteSettings.commentsRequireIdentity=settingsObject.optBoolean(REQUIRE_IDENTITY_KEY,false);
+  mRemoteSettings.commentsRequireUserAccount=settingsObject.optBoolean(REQUIRE_USER_ACCOUNT_KEY,true);
+  mRemoteSettings.commentAutoApprovalKnownUsers=settingsObject.optBoolean(WHITELIST_KNOWN_USERS_KEY,false);
+  mRemoteSettings.maxLinks=settingsObject.optInt(MAX_LINKS_KEY,0);
+  mRemoteSettings.holdForModeration=new ArrayList<>();
+  mRemoteSettings.blacklist=new ArrayList<>();
+  String modKeys=settingsObject.optString(MODERATION_KEYS_KEY,"");
+  if (modKeys.length() > 0) {
+    Collections.addAll(mRemoteSettings.holdForModeration,modKeys.split("\n"));
+  }
+  String blacklistKeys=settingsObject.optString(BLACKLIST_KEYS_KEY,"");
+  if (blacklistKeys.length() > 0) {
+    Collections.addAll(mRemoteSettings.blacklist,blacklistKeys.split("\n"));
+  }
+  if (settingsObject.optBoolean(CLOSE_OLD_COMMENTS_KEY,false)) {
+    mRemoteSettings.closeCommentAfter=settingsObject.optInt(CLOSE_OLD_COMMENTS_DAYS_KEY,0);
+  }
+ else {
+    mRemoteSettings.closeCommentAfter=0;
+  }
+  if (settingsObject.optBoolean(THREAD_COMMENTS_KEY,false)) {
+    mRemoteSettings.threadingLevels=settingsObject.optInt(THREAD_COMMENTS_DEPTH_KEY,0);
+  }
+ else {
+    mRemoteSettings.threadingLevels=0;
+  }
+  if (settingsObject.optBoolean(PAGE_COMMENTS_KEY,false)) {
+    mRemoteSettings.commentsPerPage=settingsObject.optInt(PAGE_COMMENT_COUNT_KEY,0);
+  }
+ else {
+    mRemoteSettings.commentsPerPage=0;
+  }
+  if (settingsObject.optString(COMMENT_SORT_ORDER_KEY,"").equals("asc")) {
+    mRemoteSettings.sortCommentsBy=ASCENDING_SORT;
+  }
+ else {
+    mRemoteSettings.sortCommentsBy=DESCENDING_SORT;
+  }
   if (settingsObject.optBoolean(RELATED_POSTS_ALLOWED_KEY,false)) {
     mRemoteSettings.showRelatedPosts=settingsObject.optBoolean(RELATED_POSTS_ENABLED_KEY,false);
     mRemoteSettings.showRelatedPostHeader=settingsObject.optBoolean(RELATED_POSTS_HEADER_KEY,false);

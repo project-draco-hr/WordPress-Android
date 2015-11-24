@@ -1,10 +1,11 @@
 {
   super.onCreate(savedInstanceState);
-  mBlog=WordPress.getBlog(getArguments().getInt(BlogPreferencesActivity.ARG_LOCAL_BLOG_ID,-1));
+  mBlog=WordPress.getBlog(getArguments().getInt(ARG_LOCAL_BLOG_ID,-1));
   if (!NetworkUtils.checkConnection(getActivity()) || mBlog == null) {
     getActivity().finish();
     return;
   }
+  mShouldFetch=true;
   mSiteSettings=SiteSettingsInterface.getInterface(getActivity(),mBlog,this);
   setRetainInstance(true);
   addPreferencesFromResource(R.xml.site_settings);
