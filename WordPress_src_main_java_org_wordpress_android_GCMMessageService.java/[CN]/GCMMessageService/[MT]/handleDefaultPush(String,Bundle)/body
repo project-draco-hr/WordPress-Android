@@ -66,13 +66,7 @@
         properties.put("notification_type",noteType);
       }
     }
-    String[] propertiesToCopy={PUSH_ARG_NOTE_ID,PUSH_ARG_TYPE,"blog_id","post_id","comment_id"};
-    for (    String currentPropertyToCopy : propertiesToCopy) {
-      if (data.containsKey(currentPropertyToCopy)) {
-        properties.put("push_notification_" + currentPropertyToCopy,data.get(currentPropertyToCopy));
-      }
-    }
-    AnalyticsTracker.track(Stat.PUSH_NOTIFICATION_RECEIVED,properties);
+    bumpPushNotificationsAnalytics(Stat.PUSH_NOTIFICATION_RECEIVED,data,properties);
     AnalyticsTracker.flush();
   }
   NotificationCompat.Builder builder;
