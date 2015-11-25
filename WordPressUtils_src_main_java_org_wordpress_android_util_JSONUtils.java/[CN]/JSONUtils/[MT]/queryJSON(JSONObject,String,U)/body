@@ -1,4 +1,12 @@
 {
+  if (source == null) {
+    AppLog.e(T.UTILS,"Parameter source is null, can't query a null object");
+    return defaultObject;
+  }
+  if (query == null) {
+    AppLog.e(T.UTILS,"Parameter query is null");
+    return defaultObject;
+  }
   int nextSeperator=query.indexOf(QUERY_SEPERATOR);
   int nextIndexStart=query.indexOf(QUERY_ARRAY_INDEX_START);
   if (nextSeperator == -1 && nextIndexStart == -1) {
@@ -11,6 +19,7 @@
         return (U)result;
       }
  else {
+        AppLog.w(T.UTILS,String.format("The returned object type %s is not assignable to the type %s. Using default!",result.getClass(),defaultObject.getClass()));
         return defaultObject;
       }
     }
@@ -33,9 +42,6 @@ catch (    JSONException e) {
   String nextQuery=query.substring(endQuery);
   String key=query.substring(0,endQuery);
   try {
-    if (source == null) {
-      return defaultObject;
-    }
     if (nextQuery.indexOf(QUERY_SEPERATOR) == 0) {
       return queryJSON(source.getJSONObject(key),nextQuery.substring(1),defaultObject);
     }
