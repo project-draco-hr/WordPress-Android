@@ -1,0 +1,13 @@
+{
+  String notificationID=noteBundle.getString(PUSH_ARG_NOTE_ID,"");
+  if (!TextUtils.isEmpty(notificationID)) {
+    Map<String,Object> properties=new HashMap<>();
+    String[] propertiesToCopy={PUSH_ARG_NOTE_ID,PUSH_ARG_TYPE,"blog_id","post_id","comment_id"};
+    for (    String currentPropertyToCopy : propertiesToCopy) {
+      if (noteBundle.containsKey(currentPropertyToCopy)) {
+        properties.put("push_notification_" + currentPropertyToCopy,noteBundle.get(currentPropertyToCopy));
+      }
+    }
+    AnalyticsTracker.track(stat,properties);
+  }
+}
