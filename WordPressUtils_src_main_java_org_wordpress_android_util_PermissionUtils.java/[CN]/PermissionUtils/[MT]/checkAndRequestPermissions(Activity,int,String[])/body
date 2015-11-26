@@ -1,0 +1,14 @@
+{
+  List<String> toRequest=new ArrayList<>();
+  for (  String permission : permissionList) {
+    if (ContextCompat.checkSelfPermission(activity,permission) != PackageManager.PERMISSION_GRANTED) {
+      toRequest.add(permission);
+    }
+  }
+  if (toRequest.size() > 0) {
+    String[] requestedPermissions=toRequest.toArray(new String[toRequest.size()]);
+    ActivityCompat.requestPermissions(activity,requestedPermissions,requestCode);
+    return false;
+  }
+  return true;
+}
