@@ -28,8 +28,6 @@
     mediaFile.setMimeType(mimeType);
   }
   WordPress.wpDB.saveMediaFile(mediaFile);
-  if (mCallback != null) {
-    mCallback.onMediaAdded(mediaFile.getMediaId());
-  }
+  EventBus.getDefault().post(new MediaAdded(String.valueOf(blog.getLocalTableBlogId()),mediaFile.getMediaId()));
   startMediaUploadService();
 }
