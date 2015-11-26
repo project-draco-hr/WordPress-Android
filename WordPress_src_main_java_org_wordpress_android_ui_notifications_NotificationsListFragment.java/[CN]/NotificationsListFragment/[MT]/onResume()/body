@@ -5,7 +5,12 @@
   if (mBucket != null) {
     mBucket.addListener(this);
   }
-  cancelNotifications();
+  new Thread(new Runnable(){
+    public void run(){
+      GCMMessageService.removeAllNotifications(getActivity());
+    }
+  }
+).start();
   if (SimperiumUtils.isUserAuthorized()) {
     SimperiumUtils.startBuckets();
     AppLog.i(AppLog.T.NOTIFS,"Starting Simperium buckets");
