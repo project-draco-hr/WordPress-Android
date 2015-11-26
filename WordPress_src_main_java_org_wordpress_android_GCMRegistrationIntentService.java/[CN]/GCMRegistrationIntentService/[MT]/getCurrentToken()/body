@@ -1,0 +1,15 @@
+{
+  try {
+    InstanceID instanceID=InstanceID.getInstance(WordPress.getContext());
+    String gcmId=BuildConfig.GCM_ID;
+    if (TextUtils.isEmpty(gcmId)) {
+      AppLog.e(T.NOTIFS,"GCM_ID must be configured in gradle.properties");
+      return null;
+    }
+    return instanceID.getToken(gcmId,GoogleCloudMessaging.INSTANCE_ID_SCOPE,null);
+  }
+ catch (  Exception e) {
+    AppLog.e(T.NOTIFS,"Google Play Services unavailable: ",e);
+  }
+  return null;
+}
