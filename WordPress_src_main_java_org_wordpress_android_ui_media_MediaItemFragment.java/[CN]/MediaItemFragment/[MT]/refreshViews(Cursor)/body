@@ -1,11 +1,12 @@
 {
-  if (!cursor.moveToFirst())   return;
+  if (!isAdded() || !cursor.moveToFirst()) {
+    return;
+  }
   String state=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_UPLOAD_STATE));
   mIsLocal=MediaUtils.isLocalFile(state);
   if (mIsLocal && getActivity() != null) {
     getActivity().invalidateOptionsMenu();
   }
-  mTitleView.setText(cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_TITLE)));
   String caption=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_CAPTION));
   if (TextUtils.isEmpty(caption)) {
     mCaptionView.setVisibility(View.GONE);
@@ -29,34 +30,33 @@
  else {
     mDateView.setText(getResources().getString(R.string.media_details_uploaded_on) + " " + date);
   }
+  final String fileURL=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_URL));
   String fileName=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_NAME));
-  mFileNameView.setText(getResources().getString(R.string.media_details_file_name) + " " + fileName);
-  String fileURL=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_URL));
-  String fileExt;
-  if (!TextUtils.isEmpty(fileURL)) {
-    fileExt=fileURL.replaceAll(".*\\.(\\w+)$","$1").toUpperCase();
-    mFileUrlView.setText(getResources().getString(R.string.media_details_file_url) + " " + fileURL);
-    mFileUrlView.setVisibility(View.VISIBLE);
+  if (mIsLocal || TextUtils.isEmpty(fileURL)) {
+    mFileNameView.setText(fileName);
   }
  else {
-    fileExt=null;
-  }
-  String imageUri=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_URL));
-  if (TextUtils.isEmpty(imageUri)) {
-    imageUri=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_PATH));
+    String link=String.format("<a href='%1$s'>%2$s</a>",fileURL,fileName);
+    mFileNameView.setText(Html.fromHtml(link));
+    mFileNameView.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ReaderActivityLauncher.openUrl(v.getContext(),fileURL);
+      }
+    }
+);
   }
   inflateImageView();
   String dimensions=null;
+  String imageUri=TextUtils.isEmpty(fileURL) ? cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_PATH)) : fileURL;
   if (MediaUtils.isValidImage(imageUri)) {
     int mediaWidth=cursor.getInt(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_WIDTH));
     int mediaHeight=cursor.getInt(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_HEIGHT));
     if (mediaWidth > 0 && mediaHeight > 0) {
-      dimensions=mediaWidth + "x" + mediaHeight;
+      dimensions=mediaWidth + " x " + mediaHeight;
     }
     float screenWidth;
-    View parentView=(View)mImageView.getParent();
     if (this.isInLayout()) {
-      screenWidth=parentView.getMeasuredWidth();
+      screenWidth=((View)mImageView.getParent()).getMeasuredWidth();
     }
  else {
       screenWidth=getActivity().getResources().getDisplayMetrics().widthPixels;
@@ -90,6 +90,7 @@
     mImageView.setVisibility(View.GONE);
     mProgressView.setVisibility(View.GONE);
   }
+  String fileExt=TextUtils.isEmpty(fileURL) ? null : fileURL.replaceAll(".*\\.(\\w+)$","$1").toUpperCase();
   boolean hasDimens=!TextUtils.isEmpty(dimensions);
   boolean hasExt=!TextUtils.isEmpty(fileExt);
   if (hasDimens & hasExt) {
