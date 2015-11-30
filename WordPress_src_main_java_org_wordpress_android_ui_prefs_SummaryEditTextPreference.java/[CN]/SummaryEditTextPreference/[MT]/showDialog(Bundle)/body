@@ -1,0 +1,40 @@
+{
+  Context context=getContext();
+  Resources res=context.getResources();
+  AlertDialog.Builder builder=new AlertDialog.Builder(context,R.style.Calypso_AlertDialog);
+  View titleView=View.inflate(getContext(),R.layout.detail_list_preference_title,null);
+  builder.setPositiveButton(R.string.ok,this);
+  builder.setNegativeButton(res.getString(R.string.cancel).toUpperCase(),this);
+  if (titleView != null) {
+    TextView titleText=(TextView)titleView.findViewById(R.id.title);
+    if (titleText != null) {
+      titleText.setText(getTitle());
+    }
+    builder.setCustomTitle(titleView);
+  }
+ else {
+    builder.setTitle(getTitle());
+  }
+  View view=View.inflate(getContext(),getDialogLayoutResource(),null);
+  if (view != null) {
+    onBindDialogView(view);
+    builder.setView(view);
+  }
+  if ((mDialog=builder.create()) == null)   return;
+  if (state != null) {
+    mDialog.onRestoreInstanceState(state);
+  }
+  mDialog.setOnDismissListener(this);
+  mDialog.show();
+  Button positive=mDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+  Button negative=mDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+  Typeface typeface=TypefaceCache.getTypeface(getContext(),TypefaceCache.FAMILY_OPEN_SANS,Typeface.BOLD,TypefaceCache.VARIATION_LIGHT);
+  if (positive != null) {
+    positive.setTextColor(res.getColor(R.color.blue_medium));
+    positive.setTypeface(typeface);
+  }
+  if (negative != null) {
+    negative.setTextColor(res.getColor(R.color.blue_medium));
+    negative.setTypeface(typeface);
+  }
+}
