@@ -2,16 +2,25 @@
   mImageType=ImageType.VIDEO;
   mRequestDidFail=false;
   if (TextUtils.isEmpty(videoUrl)) {
+    showErrorImage();
+    return;
+  }
+  String thumbnailUrl;
+  if (ReaderVideoUtils.isYouTubeVideoLink(videoUrl)) {
+    thumbnailUrl=ReaderVideoUtils.getYouTubeThumbnailUrl(videoUrl);
+  }
+ else {
+    thumbnailUrl=ReaderThumbnailTable.getThumbnailUrl(videoUrl);
+  }
+  if (!TextUtils.isEmpty(thumbnailUrl)) {
+    setImageUrl(thumbnailUrl,ImageType.VIDEO);
+    return;
+  }
+  if (MediaUtils.isValidImage(videoUrl)) {
+    setImageUrl(videoUrl,ImageType.VIDEO);
+  }
+ else   if (ReaderVideoUtils.isVimeoLink(videoUrl)) {
     showDefaultImage();
-    return;
-  }
-  String cachedThumbnail=ReaderThumbnailTable.getThumbnailUrl(videoUrl);
-  if (!TextUtils.isEmpty(cachedThumbnail)) {
-    setImageUrl(cachedThumbnail,ImageType.VIDEO);
-    return;
-  }
-  showDefaultImage();
-  if (ReaderVideoUtils.isVimeoLink(videoUrl)) {
     ReaderVideoUtils.requestVimeoThumbnail(videoUrl,new ReaderVideoUtils.VideoThumbnailListener(){
       @Override public void onResponse(      boolean successful,      String thumbnailUrl){
         if (successful) {
@@ -21,5 +30,9 @@
       }
     }
 );
+  }
+ else {
+    AppLog.d(AppLog.T.UTILS,"no video thumbnail for " + videoUrl);
+    showErrorImage();
   }
 }
