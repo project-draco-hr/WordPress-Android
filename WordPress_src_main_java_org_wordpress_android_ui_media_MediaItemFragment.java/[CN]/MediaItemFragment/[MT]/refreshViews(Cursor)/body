@@ -32,6 +32,7 @@
   }
   final String fileURL=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_URL));
   String fileName=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_NAME));
+  String imageUri=TextUtils.isEmpty(fileURL) ? cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_PATH)) : fileURL;
   if (mIsLocal || TextUtils.isEmpty(fileURL)) {
     mFileNameView.setText(fileName);
   }
@@ -47,7 +48,6 @@
   }
   inflateImageView();
   String dimensions=null;
-  String imageUri=TextUtils.isEmpty(fileURL) ? cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_PATH)) : fileURL;
   if (MediaUtils.isValidImage(imageUri)) {
     int mediaWidth=cursor.getInt(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_WIDTH));
     int mediaHeight=cursor.getInt(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_HEIGHT));
