@@ -111,14 +111,16 @@
   if (!mIsLocal && !TextUtils.isEmpty(imageUri)) {
     mImageView.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
-        ReaderActivityLauncher.showReaderPhotoViewer(v.getContext(),imageUri,WordPress.getCurrentBlog().isPrivate());
+        Blog blog=WordPress.getCurrentBlog();
+        boolean isPrivate=blog != null && blog.isPrivate();
+        ReaderActivityLauncher.showReaderPhotoViewer(v.getContext(),imageUri,isPrivate);
       }
     }
 );
     mImageCopy.setVisibility(View.VISIBLE);
     mImageCopy.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
-        copyUrlToClipboard(imageUri);
+        copyUrlToClipboard(v.getContext(),imageUri);
       }
     }
 );
