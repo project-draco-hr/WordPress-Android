@@ -32,7 +32,7 @@
   }
   final String fileURL=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_URL));
   String fileName=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_NAME));
-  String imageUri=TextUtils.isEmpty(fileURL) ? cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_PATH)) : fileURL;
+  final String imageUri=TextUtils.isEmpty(fileURL) ? cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_PATH)) : fileURL;
   if (mIsLocal || TextUtils.isEmpty(fileURL)) {
     mFileNameView.setText(fileName);
   }
@@ -107,5 +107,17 @@
   }
  else {
     mFileTypeView.setVisibility(View.GONE);
+  }
+  if (!mIsLocal && !TextUtils.isEmpty(imageUri)) {
+    mImageCopy.setVisibility(View.VISIBLE);
+    mImageCopy.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        copyUrlToClipboard(imageUri);
+      }
+    }
+);
+  }
+ else {
+    mImageCopy.setVisibility(View.GONE);
   }
 }
