@@ -46,59 +46,57 @@
     }
 );
   }
-  inflateImageView();
-  String dimensions=null;
+  float mediaWidth=cursor.getInt(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_WIDTH));
+  float mediaHeight=cursor.getInt(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_HEIGHT));
   if (MediaUtils.isValidImage(imageUri)) {
-    int mediaWidth=cursor.getInt(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_WIDTH));
-    int mediaHeight=cursor.getInt(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_HEIGHT));
-    if (mediaWidth > 0 && mediaHeight > 0) {
-      dimensions=mediaWidth + " x " + mediaHeight;
+    int screenWidth=DisplayUtils.getDisplayPixelWidth(getActivity());
+    int screenHeight=DisplayUtils.getDisplayPixelHeight(getActivity());
+    int imageWidth;
+    int imageHeight;
+    if (mediaWidth == 0 || mediaHeight == 0) {
+      imageWidth=screenWidth;
+      imageHeight=screenHeight / 2;
     }
-    float screenWidth;
-    if (this.isInLayout()) {
-      screenWidth=((View)mImageView.getParent()).getMeasuredWidth();
+ else     if (mediaWidth > mediaHeight) {
+      float ratio=mediaHeight / mediaWidth;
+      imageWidth=screenWidth;
+      imageHeight=(int)(imageWidth * ratio);
     }
  else {
-      screenWidth=getActivity().getResources().getDisplayMetrics().widthPixels;
+      float ratio=mediaWidth / mediaHeight;
+      imageHeight=screenHeight / 2;
+      imageWidth=(int)(imageHeight * ratio);
     }
-    float screenHeight=getActivity().getResources().getDisplayMetrics().heightPixels;
-    if (mediaWidth > screenWidth) {
-      mediaHeight=(int)(mediaHeight / (mediaWidth / screenWidth));
-      mediaWidth=(int)screenWidth;
-    }
- else     if (mediaHeight > screenHeight) {
-      mediaWidth=(int)(mediaWidth / (mediaHeight / screenHeight));
-      mediaHeight=(int)screenHeight;
-    }
+    mImageView.setLayoutParams(new RelativeLayout.LayoutParams(imageWidth,imageHeight));
     if (mIsLocal) {
       final String filePath=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_PATH));
-      loadLocalImage(mImageView,filePath,mediaWidth,mediaHeight);
+      loadLocalImage(mImageView,filePath,imageWidth,imageHeight);
     }
  else {
+      String thumbnailURL;
       if (WordPress.getCurrentBlog() != null && WordPress.getCurrentBlog().isPhotonCapable()) {
-        String thumbnailURL=StringUtils.getPhotonUrl(imageUri,(int)screenWidth);
-        ((NetworkImageView)mImageView).setImageUrl(thumbnailURL,mImageLoader);
+        thumbnailURL=StringUtils.getPhotonUrl(imageUri,(int)screenWidth);
       }
  else {
-        ((NetworkImageView)mImageView).setImageUrl(imageUri + "?w=" + screenWidth,mImageLoader);
+        thumbnailURL=imageUri + "?w=" + imageWidth;
       }
+      mImageView.setImageUrl(thumbnailURL,WPNetworkImageView.ImageType.PHOTO);
     }
     mImageView.setVisibility(View.VISIBLE);
-    mImageView.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,mediaHeight));
   }
  else {
     mImageView.setVisibility(View.GONE);
-    mProgressView.setVisibility(View.GONE);
   }
+  String dimens=(mediaWidth > 0 && mediaHeight > 0) ? (int)mediaWidth + " x " + (int)mediaHeight : null;
   String fileExt=TextUtils.isEmpty(fileURL) ? null : fileURL.replaceAll(".*\\.(\\w+)$","$1").toUpperCase();
-  boolean hasDimens=!TextUtils.isEmpty(dimensions);
+  boolean hasDimens=!TextUtils.isEmpty(dimens);
   boolean hasExt=!TextUtils.isEmpty(fileExt);
   if (hasDimens & hasExt) {
-    mFileTypeView.setText(dimensions + " " + fileExt);
+    mFileTypeView.setText(dimens + " " + fileExt);
     mFileTypeView.setVisibility(View.VISIBLE);
   }
  else   if (hasDimens) {
-    mFileTypeView.setText(dimensions);
+    mFileTypeView.setText(dimens);
     mFileTypeView.setVisibility(View.VISIBLE);
   }
  else   if (hasExt) {
@@ -117,8 +115,8 @@
       }
     }
 );
-    mImageCopy.setVisibility(View.VISIBLE);
-    mImageCopy.setOnClickListener(new View.OnClickListener(){
+    mImgBtnCopy.setVisibility(View.VISIBLE);
+    mImgBtnCopy.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
         copyUrlToClipboard(v.getContext(),imageUri);
       }
@@ -126,7 +124,7 @@
 );
   }
  else {
-    mImageCopy.setVisibility(View.GONE);
+    mImgBtnCopy.setVisibility(View.GONE);
     mImageView.setOnClickListener(null);
   }
 }
