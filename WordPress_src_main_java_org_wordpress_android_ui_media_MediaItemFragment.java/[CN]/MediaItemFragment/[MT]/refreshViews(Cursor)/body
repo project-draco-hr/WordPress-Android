@@ -25,10 +25,10 @@
   }
   String date=MediaUtils.getDate(cursor.getLong(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_DATE_CREATED_GMT)));
   if (mIsLocal) {
-    mDateView.setText(getResources().getString(R.string.media_details_added_on) + " " + date);
+    mDateView.setText(String.format(getString(R.string.media_details_date_added),date));
   }
  else {
-    mDateView.setText(getResources().getString(R.string.media_details_uploaded_on) + " " + date);
+    mDateView.setText(String.format(getString(R.string.media_details_date_uploaded),date));
   }
   final String fileURL=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_URL));
   final String fileName=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_NAME));
@@ -67,7 +67,8 @@
       imageHeight=screenHeight / 2;
       imageWidth=(int)(imageHeight * ratio);
     }
-    mImageView.setLayoutParams(new RelativeLayout.LayoutParams(imageWidth,imageHeight));
+    FrameLayout frameImage=(FrameLayout)getView().findViewById(R.id.frame_image);
+    frameImage.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,imageHeight));
     if (mIsLocal) {
       final String filePath=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_PATH));
       loadLocalImage(mImageView,filePath,imageWidth,imageHeight);
@@ -75,10 +76,10 @@
  else {
       String thumbnailURL;
       if (WordPress.getCurrentBlog() != null && WordPress.getCurrentBlog().isPhotonCapable()) {
-        thumbnailURL=StringUtils.getPhotonUrl(imageUri,(int)screenWidth);
+        thumbnailURL=StringUtils.getPhotonUrl(imageUri,screenWidth);
       }
  else {
-        thumbnailURL=imageUri + "?w=" + imageWidth;
+        thumbnailURL=UrlUtils.removeQuery(imageUri) + "?w=" + imageWidth;
       }
       mImageView.setImageUrl(thumbnailURL,WPNetworkImageView.ImageType.PHOTO);
     }
