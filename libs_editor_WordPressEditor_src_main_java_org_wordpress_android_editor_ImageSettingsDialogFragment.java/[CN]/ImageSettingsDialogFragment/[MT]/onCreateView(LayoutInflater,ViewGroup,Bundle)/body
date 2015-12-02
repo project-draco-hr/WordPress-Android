@@ -22,6 +22,7 @@
       mCaptionText.setText(mImageMeta.getString("caption"));
       mAltText.setText(mImageMeta.getString("alt"));
       String alignment=mImageMeta.getString("align");
+      alignment=alignment.substring(0,1).toUpperCase(Locale.US) + alignment.substring(1);
       String[] alignmentArray=getResources().getStringArray(R.array.alignment_array);
       mAlignmentSpinner.setSelection(Arrays.asList(alignmentArray).indexOf(alignment));
       mLinkTo.setText(mImageMeta.getString("linkUrl"));
@@ -30,7 +31,8 @@
       boolean featuredImageSupported=bundle.getBoolean("featuredImageSupported");
       if (featuredImageSupported) {
         mFeaturedCheckBox.setVisibility(View.VISIBLE);
-        mFeaturedCheckBox.setChecked(bundle.getBoolean("isFeatured",false));
+        mIsFeatured=bundle.getBoolean("isFeatured",false);
+        mFeaturedCheckBox.setChecked(mIsFeatured);
       }
     }
  catch (    JSONException e1) {
