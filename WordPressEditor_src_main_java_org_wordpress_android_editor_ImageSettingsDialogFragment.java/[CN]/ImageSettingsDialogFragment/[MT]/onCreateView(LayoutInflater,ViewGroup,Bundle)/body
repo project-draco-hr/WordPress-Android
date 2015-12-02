@@ -9,8 +9,7 @@
   mLinkTo=(EditText)view.findViewById(R.id.image_link_to);
   SeekBar widthSeekBar=(SeekBar)view.findViewById(R.id.image_width_seekbar);
   mWidthText=(EditText)view.findViewById(R.id.image_width_text);
-  final CheckBox featuredCheckBox=(CheckBox)view.findViewById(R.id.featuredImage);
-  final CheckBox featuredInPostCheckBox=(CheckBox)view.findViewById(R.id.featuredInPost);
+  mFeaturedCheckBox=(CheckBox)view.findViewById(R.id.featuredImage);
   Bundle bundle=getArguments();
   if (bundle != null) {
     try {
@@ -23,11 +22,18 @@
       mCaptionText.setText(mImageMeta.getString("caption"));
       mAltText.setText(mImageMeta.getString("alt"));
       String alignment=mImageMeta.getString("align");
+      alignment=alignment.substring(0,1).toUpperCase(Locale.US) + alignment.substring(1);
       String[] alignmentArray=getResources().getStringArray(R.array.alignment_array);
       mAlignmentSpinner.setSelection(Arrays.asList(alignmentArray).indexOf(alignment));
       mLinkTo.setText(mImageMeta.getString("linkUrl"));
       mMaxImageWidth=getMaximumImageWidth(mImageMeta.getInt("naturalWidth"),bundle.getString("maxWidth"));
       setupWidthSeekBar(widthSeekBar,mWidthText,mImageMeta.getInt("width"));
+      boolean featuredImageSupported=bundle.getBoolean("featuredImageSupported");
+      if (featuredImageSupported) {
+        mFeaturedCheckBox.setVisibility(View.VISIBLE);
+        mIsFeatured=bundle.getBoolean("isFeatured",false);
+        mFeaturedCheckBox.setChecked(mIsFeatured);
+      }
     }
  catch (    JSONException e1) {
       AppLog.d(AppLog.T.EDITOR,"Missing JSON properties");
