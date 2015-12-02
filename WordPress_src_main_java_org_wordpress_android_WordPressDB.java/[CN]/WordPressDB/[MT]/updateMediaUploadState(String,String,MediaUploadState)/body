@@ -3,11 +3,17 @@
     return;
   }
   ContentValues values=new ContentValues();
-  values.put("uploadState",uploadState.toString());
+  if (uploadState == null) {
+    values.putNull("uploadState");
+  }
+ else {
+    values.put("uploadState",uploadState.toString());
+  }
   if (mediaId == null) {
     db.update(MEDIA_TABLE,values,"blogId=? AND (uploadState IS NULL OR uploadState ='uploaded')",new String[]{blogId});
   }
  else {
     db.update(MEDIA_TABLE,values,"blogId=? AND mediaId=?",new String[]{blogId,mediaId});
+    EventBus.getDefault().post(new MediaChanged(blogId,mediaId));
   }
 }
