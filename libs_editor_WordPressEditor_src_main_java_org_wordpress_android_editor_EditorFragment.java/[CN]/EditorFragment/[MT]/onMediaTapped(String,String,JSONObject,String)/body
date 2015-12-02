@@ -5,7 +5,7 @@ case "uploading":
   builder.setTitle(getString(R.string.stop_upload_dialog_title));
 builder.setPositiveButton(R.string.stop_upload_button,new DialogInterface.OnClickListener(){
   public void onClick(  DialogInterface dialog,  int id){
-    mEditorFragmentListener.onMediaUploadCancelClicked(mediaId);
+    mEditorFragmentListener.onMediaUploadCancelClicked(mediaId,true);
     mWebView.post(new Runnable(){
       @Override public void run(){
         mWebView.execJavaScriptFromString("ZSSEditor.removeImage(" + mediaId + ");");
@@ -32,6 +32,7 @@ mWebView.post(new Runnable(){
 @Override public void run(){
 mWebView.execJavaScriptFromString("ZSSEditor.unmarkImageUploadFailed(" + mediaId + ");");
 mWebView.execJavaScriptFromString("ZSSEditor.setProgressOnImage(" + mediaId + ", "+ 0+ ");");
+mFailedMediaIds.remove(mediaId);
 mUploadingMediaIds.add(mediaId);
 }
 }
@@ -45,8 +46,13 @@ return;
 ImageSettingsDialogFragment imageSettingsDialogFragment=new ImageSettingsDialogFragment();
 imageSettingsDialogFragment.setTargetFragment(this,ImageSettingsDialogFragment.IMAGE_SETTINGS_DIALOG_REQUEST_CODE);
 Bundle dialogBundle=new Bundle();
-dialogBundle.putString("imageMeta",meta);
+dialogBundle.putString("imageMeta",meta.toString());
 dialogBundle.putString("maxWidth",mBlogSettingMaxImageWidth);
+dialogBundle.putBoolean("featuredImageSupported",mFeaturedImageSupported);
+String imageId=JSONUtils.getString(meta,"attachment_id");
+if (!imageId.isEmpty()) {
+dialogBundle.putBoolean("isFeatured",mFeaturedImageId == Integer.parseInt(imageId));
+}
 imageSettingsDialogFragment.setArguments(dialogBundle);
 FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
 fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
