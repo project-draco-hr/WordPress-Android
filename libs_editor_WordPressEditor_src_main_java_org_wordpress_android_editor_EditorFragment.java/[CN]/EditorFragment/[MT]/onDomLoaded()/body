@@ -1,6 +1,7 @@
 {
   mWebView.post(new Runnable(){
     public void run(){
+      mDomHasLoaded=true;
       mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').setMultiline('true');");
       mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_title').setPlaceholderText('" + mTitlePlaceholder + "');");
       mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').setPlaceholderText('" + mContentPlaceholder + "');");
@@ -12,6 +13,13 @@
       htmlButton.setChecked(false);
       for (      ToggleButton button : mTagToggleButtonMap.values()) {
         button.setChecked(false);
+      }
+      if (mWaitingMediaFiles.size() > 0) {
+        mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').focus();");
+        for (        Map.Entry<String,MediaFile> entry : mWaitingMediaFiles.entrySet()) {
+          appendMediaFile(entry.getValue(),entry.getKey(),null);
+        }
+        mWaitingMediaFiles.clear();
       }
     }
   }

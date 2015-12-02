@@ -22,31 +22,25 @@
   actionBar.setCustomView(R.layout.image_settings_formatbar);
   actionBar.getCustomView().findViewById(R.id.menu_save).setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
+      mImageMeta=extractMetaDataFromFields(mImageMeta);
       String imageRemoteId="";
       try {
         imageRemoteId=mImageMeta.getString("attachment_id");
-        mImageMeta.put("title",mTitleText.getText().toString());
-        mImageMeta.put("caption",mCaptionText.getText().toString());
-        mImageMeta.put("alt",mAltText.getText().toString());
-        mImageMeta.put("align",mAlignmentSpinner.getSelectedItem().toString());
-        mImageMeta.put("linkUrl",mLinkTo.getText().toString());
-        int newWidth=getEditTextIntegerClamped(mWidthText,10,mMaxImageWidth);
-        mImageMeta.put("width",newWidth);
-        mImageMeta.put("height",getRelativeHeightFromWidth(newWidth));
       }
  catch (      JSONException e) {
-        AppLog.d(AppLog.T.EDITOR,"Unable to update JSON array");
+        AppLog.e(AppLog.T.EDITOR,"Unable to retrieve featured image id from meta data");
       }
       Intent intent=new Intent();
       intent.putExtra("imageMeta",mImageMeta.toString());
-      boolean isFeaturedImage=mFeaturedCheckBox.isChecked();
-      intent.putExtra("isFeatured",isFeaturedImage);
+      mIsFeatured=mFeaturedCheckBox.isChecked();
+      intent.putExtra("isFeatured",mIsFeatured);
       if (!imageRemoteId.isEmpty()) {
         intent.putExtra("imageRemoteId",Integer.parseInt(imageRemoteId));
       }
       getTargetFragment().onActivityResult(getTargetRequestCode(),getTargetRequestCode(),intent);
       restorePreviousActionBar();
       getFragmentManager().popBackStack();
+      ToastUtils.showToast(getActivity(),R.string.image_settings_save_toast);
     }
   }
 );
