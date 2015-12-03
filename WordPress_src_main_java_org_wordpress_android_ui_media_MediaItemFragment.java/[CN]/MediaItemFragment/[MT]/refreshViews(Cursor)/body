@@ -38,7 +38,6 @@
   float mediaHeight=cursor.getInt(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_HEIGHT));
   boolean isValidImage=MediaUtils.isValidImage(mImageUri);
   ViewGroup containerView=(ViewGroup)getView().findViewById(R.id.layout_image_container);
-  containerView.setVisibility(isValidImage ? View.VISIBLE : View.GONE);
   if (isValidImage) {
     int screenWidth=DisplayUtils.getDisplayPixelWidth(getActivity());
     int screenHeight=DisplayUtils.getDisplayPixelHeight(getActivity());
@@ -83,6 +82,11 @@
       }
       mImageView.setImageUrl(thumbnailURL,WPNetworkImageView.ImageType.PHOTO);
     }
+  }
+ else {
+    int placeholderResId=WordPressMediaUtils.getPlaceholder(mImageUri);
+    mImageView.setDefaultImageResId(placeholderResId);
+    mImageView.showDefaultImage();
   }
   String dimens=(mediaWidth > 0 && mediaHeight > 0) ? (int)mediaWidth + " x " + (int)mediaHeight : null;
   String fileExt=TextUtils.isEmpty(fileURL) ? null : fileURL.replaceAll(".*\\.(\\w+)$","$1").toUpperCase();
