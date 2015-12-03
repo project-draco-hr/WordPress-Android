@@ -1,0 +1,21 @@
+{
+  try {
+    JSONObject newImageMeta=extractMetaDataFromFields(new JSONObject());
+    for (int i=0; i < newImageMeta.names().length(); i++) {
+      String name=newImageMeta.names().getString(i);
+      if (!newImageMeta.getString(name).equals(mImageMeta.getString(name))) {
+        showDiscardChangesDialog();
+        return;
+      }
+    }
+    if (mFeaturedCheckBox.isChecked() != mIsFeatured) {
+      showDiscardChangesDialog();
+      return;
+    }
+  }
+ catch (  JSONException e) {
+    AppLog.d(AppLog.T.EDITOR,"Unable to update JSON array");
+  }
+  restorePreviousActionBar();
+  getFragmentManager().popBackStack();
+}

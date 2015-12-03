@@ -1,0 +1,19 @@
+{
+  if (mediaId == null) {
+    return;
+  }
+  if (!WordPress.wpDB.mediaFileExists(blogId,mediaId)) {
+    mMediaGridFragment.removeFromMultiSelect(mediaId);
+    if (mMediaEditFragment != null && mMediaEditFragment.isVisible() && mediaId.equals(mMediaEditFragment.getMediaId())) {
+      if (mMediaEditFragment.isInLayout()) {
+        mMediaEditFragment.loadMedia(null);
+      }
+ else {
+        getFragmentManager().popBackStack();
+      }
+    }
+  }
+  mMediaGridFragment.refreshMediaFromDB();
+  mMediaGridFragment.updateFilterText();
+  mMediaGridFragment.updateSpinnerAdapter();
+}
