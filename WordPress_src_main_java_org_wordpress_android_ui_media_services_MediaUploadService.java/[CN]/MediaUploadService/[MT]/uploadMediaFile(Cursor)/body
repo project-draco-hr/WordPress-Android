@@ -13,14 +13,15 @@
   mediaFile.setMimeType(mimeType);
   mCurrentUploadMediaId=mediaId;
   mCurrentUploadMediaTask=new ApiHelper.UploadMediaTask(mContext,mediaFile,new ApiHelper.UploadMediaTask.Callback(){
-    @Override public void onSuccess(    String id){
-      WordPress.wpDB.updateMediaLocalToRemoteId(blogIdStr,mediaId,id);
-      EventBus.getDefault().post(new MediaEvents.MediaUploadSucceed(blogIdStr,mediaId,id));
-      fetchMediaFile(id);
+    @Override public void onSuccess(    String remoteId,    String remoteUrl){
+      WordPress.wpDB.updateMediaLocalToRemoteId(blogIdStr,mediaId,remoteId);
+      EventBus.getDefault().post(new MediaEvents.MediaUploadSucceeded(blogIdStr,mediaId,remoteId,remoteUrl));
+      fetchMediaFile(remoteId);
     }
     @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
       WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,MediaUploadState.FAILED);
       mUploadInProgress=false;
+      mCurrentUploadMediaId="";
       EventBus.getDefault().post(new MediaEvents.MediaUploadFailed(mediaId,getString(R.string.upload_failed)));
       mHandler.post(mFetchQueueTask);
       if (errorType != ErrorType.NETWORK_XMLRPC) {
@@ -28,7 +29,7 @@
       }
     }
     @Override public void onProgressUpdate(    float progress){
-      EventBus.getDefault().post(new MediaUploadEvents.MediaUploadProgress(mediaId,progress));
+      EventBus.getDefault().post(new MediaEvents.MediaUploadProgress(mediaId,progress));
     }
   }
 );
