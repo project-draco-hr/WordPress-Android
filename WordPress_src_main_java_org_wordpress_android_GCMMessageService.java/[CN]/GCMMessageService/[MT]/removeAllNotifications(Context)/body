@@ -2,11 +2,8 @@
   if (context == null || !hasNotifications())   return;
   NotificationManagerCompat notificationManager=NotificationManagerCompat.from(context);
   for (  Integer pushId : mActiveNotificationsMap.keySet()) {
-    Bundle noteBundle=mActiveNotificationsMap.get(pushId);
-    bumpPushNotificationsAnalytics(Stat.PUSH_NOTIFICATION_IGNORED,noteBundle,null);
     notificationManager.cancel(pushId);
   }
   notificationManager.cancel(GCMMessageService.GROUP_NOTIFICATION_ID);
-  AnalyticsTracker.flush();
   clearNotifications();
 }
