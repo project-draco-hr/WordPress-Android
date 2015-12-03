@@ -32,11 +32,11 @@
   }
   final String fileURL=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_URL));
   final String fileName=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_NAME));
-  final String imageUri=TextUtils.isEmpty(fileURL) ? cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_PATH)) : fileURL;
+  mImageUri=TextUtils.isEmpty(fileURL) ? cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_PATH)) : fileURL;
   mFileNameView.setText(fileName);
   float mediaWidth=cursor.getInt(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_WIDTH));
   float mediaHeight=cursor.getInt(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_HEIGHT));
-  boolean isValidImage=MediaUtils.isValidImage(imageUri);
+  boolean isValidImage=MediaUtils.isValidImage(mImageUri);
   ViewGroup containerView=(ViewGroup)getView().findViewById(R.id.layout_image_container);
   containerView.setVisibility(isValidImage ? View.VISIBLE : View.GONE);
   if (isValidImage) {
@@ -76,10 +76,10 @@
  else {
       String thumbnailURL;
       if (WordPress.getCurrentBlog() != null && WordPress.getCurrentBlog().isPhotonCapable()) {
-        thumbnailURL=StringUtils.getPhotonUrl(imageUri,imageWidth);
+        thumbnailURL=StringUtils.getPhotonUrl(mImageUri,imageWidth);
       }
  else {
-        thumbnailURL=UrlUtils.removeQuery(imageUri) + "?w=" + imageWidth;
+        thumbnailURL=UrlUtils.removeQuery(mImageUri) + "?w=" + imageWidth;
       }
       mImageView.setImageUrl(thumbnailURL,WPNetworkImageView.ImageType.PHOTO);
     }
@@ -103,27 +103,14 @@
  else {
     mFileTypeView.setVisibility(View.GONE);
   }
-  if (!mIsLocal && !TextUtils.isEmpty(imageUri)) {
+  if (!mIsLocal && isValidImage) {
     mImageView.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
         Blog blog=WordPress.getCurrentBlog();
         boolean isPrivate=blog != null && blog.isPrivate();
-        ReaderActivityLauncher.showReaderPhotoViewer(v.getContext(),imageUri,isPrivate);
+        ReaderActivityLauncher.showReaderPhotoViewer(v.getContext(),mImageUri,isPrivate);
       }
     }
 );
-    View layoutFileName=getView().findViewById(R.id.layout_file_name);
-    layoutFileName.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View v){
-        copyUrlToClipboard(v.getContext(),imageUri);
-      }
-    }
-);
-    mFileNameView.setTextColor(getActivity().getResources().getColor(R.color.blue_medium));
-    mImgBtnCopy.setVisibility(View.VISIBLE);
-  }
- else {
-    mImgBtnCopy.setVisibility(View.GONE);
-    mImageView.setOnClickListener(null);
   }
 }
