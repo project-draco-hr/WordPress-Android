@@ -1,6 +1,13 @@
 {
   super.onCreate(savedInstanceState);
-  AccountHelper.getDefaultAccount().fetchAccountSettings();
+  AccountHelper.getDefaultAccount().fetchAccountSettings(new ApiHelper.GenericCallback(){
+    @Override public void onSuccess(){
+      refreshDetails();
+    }
+    @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
+    }
+  }
+);
   ActionBar actionBar=getSupportActionBar();
   if (actionBar != null) {
     actionBar.setHomeButtonEnabled(true);
