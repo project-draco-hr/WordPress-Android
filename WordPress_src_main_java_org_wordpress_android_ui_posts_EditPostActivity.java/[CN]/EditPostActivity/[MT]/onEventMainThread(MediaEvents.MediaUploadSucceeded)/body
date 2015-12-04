@@ -1,42 +1,26 @@
 {
-  if (mEditorMediaUploadListener != null) {
-    mEditorMediaUploadListener.onMediaUploadSucceeded(event.mLocalMediaId,event.mRemoteMediaId,event.mRemoteMediaUrl);
-  }
   for (  Long galleryId : mPendingGalleryUploads.keySet()) {
     if (mPendingGalleryUploads.get(galleryId).contains(event.mLocalMediaId)) {
-      SpannableStringBuilder postContent;
-      if (mEditorFragment.getSpannedContent() != null) {
-        postContent=new SpannableStringBuilder(mEditorFragment.getSpannedContent());
+      if (mEditorMediaUploadListener != null) {
+        int remaining=mPendingGalleryUploads.get(galleryId).size() - 1;
+        mEditorMediaUploadListener.onGalleryMediaUploadSucceeded(galleryId,event.mRemoteMediaId,remaining);
       }
  else {
-        postContent=new SpannableStringBuilder(StringUtils.notNullStr((String)mEditorFragment.getContent()));
-      }
-      int selectionStart=0;
-      int selectionEnd=postContent.length();
-      MediaGalleryImageSpan[] gallerySpans=postContent.getSpans(selectionStart,selectionEnd,MediaGalleryImageSpan.class);
-      if (gallerySpans.length != 0) {
-        for (        MediaGalleryImageSpan gallerySpan : gallerySpans) {
-          MediaGallery gallery=gallerySpan.getMediaGallery();
-          if (gallery.getUniqueId() == galleryId) {
-            ArrayList<String> galleryIds=gallery.getIds();
-            galleryIds.add(event.mRemoteMediaId);
-            gallery.setIds(galleryIds);
-            gallerySpan.setMediaGallery(gallery);
-            int spanStart=postContent.getSpanStart(gallerySpan);
-            int spanEnd=postContent.getSpanEnd(gallerySpan);
-            postContent.setSpan(gallerySpan,spanStart,spanEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-          }
-        }
+        handleGalleryImageUploadedLegacyEditor(galleryId,event.mLocalMediaId,event.mRemoteMediaId);
       }
       mPendingGalleryUploads.get(galleryId).remove(event.mLocalMediaId);
       if (mPendingGalleryUploads.get(galleryId).size() == 0) {
         mPendingGalleryUploads.remove(galleryId);
       }
+      if (mPendingGalleryUploads.size() == 0) {
+        stopMediaUploadService();
+        NotificationManager notificationManager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(10);
+      }
+      return;
     }
   }
-  if (mPendingGalleryUploads.size() == 0) {
-    stopMediaUploadService();
-    NotificationManager notificationManager=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-    notificationManager.cancel(10);
+  if (mEditorMediaUploadListener != null) {
+    mEditorMediaUploadListener.onMediaUploadSucceeded(event.mLocalMediaId,event.mRemoteMediaId,event.mRemoteMediaUrl);
   }
 }
