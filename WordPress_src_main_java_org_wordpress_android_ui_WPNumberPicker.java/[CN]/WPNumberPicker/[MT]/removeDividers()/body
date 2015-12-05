@@ -8,18 +8,77 @@
   }
   if (numberPickerClass == null)   return;
   Field selectionDivider=null;
+  Field inputField=null;
+  Field middleIndex=null;
   try {
     selectionDivider=numberPickerClass.getDeclaredField(DIVIDER_FIELD);
+    inputField=numberPickerClass.getDeclaredField(INPUT_FIELD);
+    middleIndex=numberPickerClass.getDeclaredField(MIDDLE_INDEX_FIELD);
+    mSelectorIndices=numberPickerClass.getDeclaredField(INDICES_FIELD);
+    mSelectorHeight=numberPickerClass.getDeclaredField(SELECTOR_HEIGHT_FIELD);
+    mOffsetField=numberPickerClass.getDeclaredField(CUR_OFFSET_FIELD);
+    mStringCache=numberPickerClass.getDeclaredField(STRING_CACHE_FIELD);
   }
  catch (  NoSuchFieldException e) {
     e.printStackTrace();
   }
-  if (selectionDivider == null)   return;
-  try {
-    selectionDivider.setAccessible(true);
-    selectionDivider.set(this,null);
+  if (middleIndex != null) {
+    try {
+      middleIndex.setAccessible(true);
+      mMiddleIndex=(Integer)middleIndex.get(this);
+    }
+ catch (    IllegalArgumentException|IllegalAccessException|Resources.NotFoundException e) {
+      e.printStackTrace();
+    }
   }
- catch (  IllegalArgumentException|IllegalAccessException|Resources.NotFoundException e) {
-    e.printStackTrace();
+  if (selectionDivider != null) {
+    try {
+      selectionDivider.setAccessible(true);
+      selectionDivider.set(this,null);
+    }
+ catch (    IllegalArgumentException|IllegalAccessException|Resources.NotFoundException e) {
+      e.printStackTrace();
+    }
+  }
+  if (inputField != null) {
+    try {
+      inputField.setAccessible(true);
+      mInputView=((EditText)inputField.get(this));
+    }
+ catch (    IllegalArgumentException|IllegalAccessException|Resources.NotFoundException e) {
+      e.printStackTrace();
+    }
+  }
+  if (mStringCache != null) {
+    try {
+      mStringCache.setAccessible(true);
+    }
+ catch (    IllegalArgumentException|Resources.NotFoundException e) {
+      e.printStackTrace();
+    }
+  }
+  if (mSelectorIndices != null) {
+    try {
+      mSelectorIndices.setAccessible(true);
+    }
+ catch (    IllegalArgumentException|Resources.NotFoundException e) {
+      e.printStackTrace();
+    }
+  }
+  if (mOffsetField != null) {
+    try {
+      mOffsetField.setAccessible(true);
+    }
+ catch (    IllegalArgumentException|Resources.NotFoundException e) {
+      e.printStackTrace();
+    }
+  }
+  if (mSelectorHeight != null) {
+    try {
+      mSelectorHeight.setAccessible(true);
+    }
+ catch (    IllegalArgumentException|Resources.NotFoundException e) {
+      e.printStackTrace();
+    }
   }
 }
