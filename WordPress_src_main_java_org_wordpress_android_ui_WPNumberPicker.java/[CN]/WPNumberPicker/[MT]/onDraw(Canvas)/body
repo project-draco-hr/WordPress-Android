@@ -1,12 +1,28 @@
 {
-  if (mInputView != null)   mInputView.setVisibility(View.VISIBLE);
+  mInputView.setVisibility(View.VISIBLE);
+  int[] selectorIndices=getIndices();
+  setIndices(new int[0]);
   super.onDraw(canvas);
-  String scrollSelectorValue=getDisplayString();
+  setIndices(selectorIndices);
+  float elementHeight=getSelectorElementHeight();
   float x=((getRight() - getLeft()) / 2.0f);
-  float y=getScrollOffset() + getSelectorElementHeight();
+  float y=getScrollOffset();
+  SparseArray displayStrings=getDisplayStrings();
   Paint paint=mInputView.getPaint();
   paint.setTextAlign(Paint.Align.CENTER);
   paint.setColor(getResources().getColor(R.color.blue_medium));
-  canvas.drawText(scrollSelectorValue,x,y,paint);
-  if (mInputView != null)   mInputView.setVisibility(View.INVISIBLE);
+  if (selectorIndices != null && displayStrings != null) {
+    for (int i=0; i < selectorIndices.length; i++) {
+      int selectorIndex=selectorIndices[i];
+      String scrollSelectorValue=String.valueOf(displayStrings.get(selectorIndex));
+      if (i == MIDDLE_INDEX) {
+        canvas.drawText(scrollSelectorValue,x,y,paint);
+      }
+ else {
+        canvas.drawText(scrollSelectorValue,x,y,mPaint);
+      }
+      y+=elementHeight;
+    }
+  }
+  mInputView.setVisibility(View.INVISIBLE);
 }
