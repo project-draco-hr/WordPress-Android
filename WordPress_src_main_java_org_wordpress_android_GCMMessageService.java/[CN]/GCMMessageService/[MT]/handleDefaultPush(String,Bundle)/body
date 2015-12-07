@@ -56,16 +56,19 @@
       AppLog.e(T.NOTIFS,e);
     }
   }
-  Map<String,String> properties=new HashMap<>();
-  if (!TextUtils.isEmpty(noteType)) {
-    if (noteType.equals(PUSH_TYPE_COMMENT)) {
-      properties.put("notification_type","comment");
-    }
+  if (NotificationsUtils.isNotificationsEnabled(this)) {
+    Map<String,Object> properties=new HashMap<>();
+    if (!TextUtils.isEmpty(noteType)) {
+      if (noteType.equals(PUSH_TYPE_COMMENT)) {
+        properties.put("notification_type","comment");
+      }
  else {
-      properties.put("notification_type",noteType);
+        properties.put("notification_type",noteType);
+      }
     }
+    bumpPushNotificationsAnalytics(Stat.PUSH_NOTIFICATION_RECEIVED,data,properties);
+    AnalyticsTracker.flush();
   }
-  AnalyticsTracker.track(Stat.PUSH_NOTIFICATION_RECEIVED,properties);
   NotificationCompat.Builder builder;
   builder=new NotificationCompat.Builder(this).setSmallIcon(R.drawable.notification_icon).setColor(getResources().getColor(R.color.blue_wordpress)).setContentTitle(title).setContentText(message).setTicker(message).setAutoCancel(true).setStyle(new NotificationCompat.BigTextStyle().bigText(message)).setGroup(NOTIFICATION_GROUP_KEY);
   if (noteType.equals(PUSH_TYPE_COMMENT)) {
