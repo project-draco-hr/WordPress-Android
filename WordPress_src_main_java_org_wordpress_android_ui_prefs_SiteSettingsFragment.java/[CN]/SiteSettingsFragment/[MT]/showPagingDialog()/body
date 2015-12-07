@@ -1,0 +1,24 @@
+{
+  AlertDialog.Builder builder=new AlertDialog.Builder(getActivity(),R.style.Calypso_AlertDialog);
+  View view=View.inflate(getActivity(),R.layout.number_picker_dialog,null);
+  SwitchCompat switchView=(SwitchCompat)view.findViewById(R.id.number_picker_switch);
+  switchView.setText(R.string.site_settings_paging_title);
+  TextView detailText=(TextView)view.findViewById(R.id.number_picker_text);
+  detailText.setText(R.string.paging_description);
+  final NumberPicker numberPicker=(NumberPicker)view.findViewById(R.id.number_picker);
+  numberPicker.setMinValue(1);
+  numberPicker.setMaxValue(getResources().getInteger(R.integer.paging_limit));
+  numberPicker.setValue(Math.max(numberPicker.getMinValue(),Math.min(numberPicker.getMaxValue(),mSiteSettings.getPagingCount())));
+  builder.setCustomTitle(getDialogTitleView(R.string.site_settings_paging_title));
+  builder.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener(){
+    @Override public void onClick(    DialogInterface dialog,    int which){
+      if (mSiteSettings.getPagingCount() != numberPicker.getValue()) {
+        onPreferenceChange(mPagingPref,numberPicker.getValue());
+      }
+    }
+  }
+);
+  builder.setNegativeButton(R.string.cancel,null);
+  builder.setView(view);
+  builder.create().show();
+}
