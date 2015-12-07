@@ -3,11 +3,14 @@
   String lastName=mLastName.getText().toString();
   String displayName=mDisplayName.getText().toString();
   String aboutMe=mAboutMe.getText().toString();
+  mProgressDialog=ProgressDialog.show(this,null,getText(R.string.saving_changes),false);
   AccountHelper.getDefaultAccount().postAccountSettings(firstName,lastName,displayName,aboutMe,new ApiHelper.GenericCallback(){
     @Override public void onSuccess(){
       refreshDetails();
+      dismissProgressDialog();
     }
     @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
+      dismissProgressDialog();
     }
   }
 );
