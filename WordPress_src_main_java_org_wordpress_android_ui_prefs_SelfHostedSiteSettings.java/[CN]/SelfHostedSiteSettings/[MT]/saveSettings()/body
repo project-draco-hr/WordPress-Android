@@ -6,6 +6,9 @@
     @Override public void onSuccess(    long id,    final Object result){
       notifySavedOnUiThread(null);
       mRemoteSettings.copyFrom(mSettings);
+      HashMap<String,Object> properties=new HashMap<>();
+      properties.put("items_saved",result);
+      AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.SETTINGS_SAVED_REMOTELY,properties);
     }
     @Override public void onFailure(    long id,    final Exception error){
       notifySavedOnUiThread(error);
