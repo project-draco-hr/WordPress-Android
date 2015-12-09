@@ -5,6 +5,9 @@
   AnalyticsUtils.refreshMetadata();
   int versionCode=PackageUtils.getVersionCode(getContext());
   int oldVersionCode=AppPrefs.getLastAppVersionCode();
+  if (oldVersionCode == 0) {
+    AnalyticsTracker.track(Stat.APPLICATION_INSTALLED);
+  }
   if (oldVersionCode != 0 && oldVersionCode < versionCode) {
     Map<String,Long> properties=new HashMap<String,Long>(1);
     properties.put("elapsed_time_on_create",elapsedTimeOnCreate);
