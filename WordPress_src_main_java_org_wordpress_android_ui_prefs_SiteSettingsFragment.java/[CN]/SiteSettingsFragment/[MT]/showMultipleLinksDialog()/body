@@ -1,23 +1,10 @@
 {
-  AlertDialog.Builder builder=new AlertDialog.Builder(getActivity(),R.style.Calypso_AlertDialog);
-  View view=View.inflate(getActivity(),R.layout.number_picker_dialog,null);
-  view.findViewById(R.id.number_picker_switch).setVisibility(View.GONE);
-  final NumberPicker numberPicker=(NumberPicker)view.findViewById(R.id.number_picker);
-  TextView detailText=(TextView)view.findViewById(R.id.number_picker_text);
-  detailText.setText(R.string.multiple_links_description);
-  numberPicker.setMinValue(0);
-  numberPicker.setMaxValue(getResources().getInteger(R.integer.max_links_limit));
-  numberPicker.setValue(Math.max(numberPicker.getMinValue(),Math.min(numberPicker.getMaxValue(),mSiteSettings.getMultipleLinks())));
-  builder.setCustomTitle(getDialogTitleView(R.string.site_settings_multiple_links_title));
-  builder.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener(){
+  getNumberPickerDialog(false,-1,R.string.multiple_links_description,0,getResources().getInteger(R.integer.max_links_limit),mSiteSettings.getMultipleLinks(),R.string.site_settings_multiple_links_title,new DialogInterface.OnClickListener(){
     @Override public void onClick(    DialogInterface dialog,    int which){
-      if (mSiteSettings.getMultipleLinks() != numberPicker.getValue()) {
-        onPreferenceChange(mMultipleLinksPref,numberPicker.getValue());
+      if (mSiteSettings.getMultipleLinks() != mNumberPicker.getValue()) {
+        onPreferenceChange(mMultipleLinksPref,mNumberPicker.getValue());
       }
     }
   }
-);
-  builder.setNegativeButton(R.string.cancel,null);
-  builder.setView(view);
-  builder.create().show();
+,null).show();
 }

@@ -1,7 +1,6 @@
 {
   super.onBindDialogView(view);
   if (view != null) {
-    Typeface typeface=TypefaceCache.getTypeface(getContext(),TypefaceCache.FAMILY_OPEN_SANS,Typeface.NORMAL,TypefaceCache.VARIATION_NORMAL);
     EditText editText=getEditText();
     ViewParent oldParent=editText.getParent();
     if (oldParent != view) {
@@ -11,14 +10,12 @@
       ((View)oldParent).setPadding(((View)oldParent).getPaddingLeft(),0,((View)oldParent).getPaddingRight(),((View)oldParent).getPaddingBottom());
       onAddEditTextToDialogView(view,editText);
     }
+    WPPrefUtils.layoutAsInput(editText);
     editText.setSelection(editText.getText().length());
-    editText.setTypeface(typeface);
-    editText.setTextColor(getContext().getResources().getColor(R.color.grey_dark));
-    editText.requestFocusFromTouch();
     (new Handler()).postDelayed(new Runnable(){
       public void run(){
         InputMethodManager inputMethodManager=(InputMethodManager)view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.toggleSoftInputFromWindow(view.getWindowToken(),InputMethodManager.SHOW_FORCED,0);
+        inputMethodManager.toggleSoftInputFromWindow(view.getWindowToken(),InputMethodManager.SHOW_IMPLICIT,0);
       }
     }
 ,SHOW_KEYBOARD_DELAY);
