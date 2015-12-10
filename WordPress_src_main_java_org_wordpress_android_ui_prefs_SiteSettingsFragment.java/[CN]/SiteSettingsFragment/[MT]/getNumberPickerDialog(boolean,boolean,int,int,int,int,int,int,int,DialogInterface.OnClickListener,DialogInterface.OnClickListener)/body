@@ -1,16 +1,29 @@
 {
   AlertDialog.Builder builder=new AlertDialog.Builder(getActivity(),R.style.Calypso_AlertDialog);
   View view=View.inflate(getActivity(),R.layout.number_picker_dialog,null);
+  mNumberPicker=(NumberPicker)view.findViewById(R.id.number_picker);
   SwitchCompat pickerSwitch=(SwitchCompat)view.findViewById(R.id.number_picker_switch);
   if (showSwitch) {
     pickerSwitch.setVisibility(View.VISIBLE);
     pickerSwitch.setText(switchText);
+    pickerSwitch.setChecked(switchChecked);
+    final View toggleContainer=view.findViewById(R.id.number_picker_toggleable);
+    toggleContainer.setEnabled(switchChecked);
+    mNumberPicker.setEnabled(switchChecked);
+    pickerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+      @Override public void onCheckedChanged(      CompoundButton buttonView,      boolean isChecked){
+        toggleContainer.setEnabled(isChecked);
+        mNumberPicker.setEnabled(isChecked);
+      }
+    }
+);
   }
  else {
     pickerSwitch.setVisibility(View.GONE);
   }
-  mNumberPicker=(NumberPicker)view.findViewById(R.id.number_picker);
   TextView detailText=(TextView)view.findViewById(R.id.number_picker_text);
+  TextView headerText=(TextView)view.findViewById(R.id.number_picker_header);
+  headerText.setText(header);
   detailText.setText(detail);
   mNumberPicker.setMinValue(min);
   mNumberPicker.setMaxValue(max);
