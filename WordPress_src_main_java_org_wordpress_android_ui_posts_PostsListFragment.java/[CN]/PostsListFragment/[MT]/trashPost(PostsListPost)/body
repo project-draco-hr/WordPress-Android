@@ -32,9 +32,9 @@
     @Override public void onDismissed(    Snackbar snackbar,    int event){
       super.onDismissed(snackbar,event);
       if (!mTrashedPosts.contains(post)) {
-        AppLog.d(AppLog.T.POSTS,"user undid trashing");
         return;
       }
+      mTrashedPosts.remove(post);
       WordPress.wpDB.deletePost(fullPost);
       if (!post.isLocalDraft()) {
         List<Object> apiArgs=new Vector<>();
