@@ -30,14 +30,9 @@
     @Override public void onTabUnselected(    TabLayout.Tab tab){
     }
     @Override public void onTabReselected(    TabLayout.Tab tab){
-      if (tab.getPosition() == mLastReselectedTabPosition) {
-        Fragment fragment=mTabAdapter.getFragment(tab.getPosition());
-        if (fragment instanceof OnScrollToTopListener) {
-          ((OnScrollToTopListener)fragment).onScrollToTop();
-        }
-      }
- else {
-        mLastReselectedTabPosition=tab.getPosition();
+      Fragment fragment=mTabAdapter.getFragment(tab.getPosition());
+      if (fragment instanceof OnScrollToTopListener) {
+        ((OnScrollToTopListener)fragment).onScrollToTop();
       }
     }
   }
@@ -51,7 +46,7 @@ case WPMainTabAdapter.TAB_NOTIFS:
         new UpdateLastSeenTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
       break;
   }
-  trackLastVisibleTab(position);
+  trackLastVisibleTab(position,true);
 }
 @Override public void onPageScrollStateChanged(int state){
 }
@@ -79,8 +74,5 @@ if (AccountHelper.isSignedIn()) {
  else {
   ActivityLauncher.showSignInForResult(this);
 }
-}
- else {
-mLastReselectedTabPosition=savedInstanceState.getInt(KEY_LAST_RESELECTED_TAB_POSITION,-1);
 }
 }
