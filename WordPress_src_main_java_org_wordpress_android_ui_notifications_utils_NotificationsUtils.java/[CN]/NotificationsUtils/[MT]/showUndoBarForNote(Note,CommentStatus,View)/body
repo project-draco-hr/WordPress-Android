@@ -3,19 +3,20 @@
   String message=(status == CommentStatus.TRASH ? resources.getString(R.string.comment_trashed) : resources.getString(R.string.comment_spammed));
   View.OnClickListener undoListener=new View.OnClickListener(){
     @Override public void onClick(    View v){
-      mSnackbarDidUndo=true;
+      mSnackbarDidUndoOrDismiss=true;
       EventBus.getDefault().postSticky(new NoteVisibilityChanged(note.getId(),false));
     }
   }
 ;
-  mSnackbarDidUndo=false;
+  mSnackbarDidUndoOrDismiss=false;
   Snackbar snackbar=Snackbar.make(parentView,message,Snackbar.LENGTH_LONG).setAction(R.string.undo,undoListener);
   snackbar.setCallback(new Snackbar.Callback(){
     @Override public void onDismissed(    Snackbar snackbar,    int event){
       super.onDismissed(snackbar,event);
-      if (mSnackbarDidUndo) {
+      if (mSnackbarDidUndoOrDismiss) {
         return;
       }
+      mSnackbarDidUndoOrDismiss=true;
       CommentActions.moderateCommentForNote(note,status,new CommentActions.CommentActionListener(){
         @Override public void onActionResult(        boolean succeeded){
           if (!succeeded) {
