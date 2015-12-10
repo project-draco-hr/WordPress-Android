@@ -9,10 +9,14 @@
       if (result != null) {
         HashMap<String,Object> properties=new HashMap<>();
         if (result instanceof Map) {
-          Set keys=((Map)result).keySet();
-          List keyList=new ArrayList();
-          for (          Object key : keys)           keyList.add(key);
-          properties.put("items_saved",keyList);
+          Map<String,Object> resultMap=(Map)result;
+          Set<String> keys=resultMap.keySet();
+          for (          String key : keys) {
+            Object currentValue=resultMap.get(key);
+            if (currentValue != null) {
+              properties.put("item_saved_" + key,currentValue);
+            }
+          }
         }
         AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.SITE_SETTINGS_SAVED_REMOTELY,properties);
       }
