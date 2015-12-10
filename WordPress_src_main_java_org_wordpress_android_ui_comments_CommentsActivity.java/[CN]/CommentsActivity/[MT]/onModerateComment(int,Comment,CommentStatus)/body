@@ -22,11 +22,13 @@
 );
   }
  else   if (newStatus == CommentStatus.SPAM || newStatus == CommentStatus.TRASH) {
+    mTrashedComments.add(comment);
     getListFragment().removeComment(comment);
     getListFragment().setCommentIsModerating(comment.commentID,true);
     String message=(newStatus == CommentStatus.TRASH ? getString(R.string.comment_trashed) : getString(R.string.comment_spammed));
     View.OnClickListener undoListener=new View.OnClickListener(){
       @Override public void onClick(      View v){
+        mTrashedComments.remove(comment);
         getListFragment().setCommentIsModerating(comment.commentID,false);
         getListFragment().loadComments();
       }
@@ -36,10 +38,10 @@
     snackbar.setCallback(new Snackbar.Callback(){
       @Override public void onDismissed(      Snackbar snackbar,      int event){
         super.onDismissed(snackbar,event);
-        if (!isFinishing() && hasListFragment() && !getListFragment().isModeratingComment(comment.commentID)) {
-          AppLog.d(AppLog.T.COMMENTS,"comment moderation undone");
+        if (!mTrashedComments.contains(comment)) {
           return;
         }
+        mTrashedComments.remove(comment);
         CommentActions.moderateComment(accountId,comment,newStatus,new CommentActions.CommentActionListener(){
           @Override public void onActionResult(          boolean succeeded){
             if (isFinishing() || !hasListFragment()) {
