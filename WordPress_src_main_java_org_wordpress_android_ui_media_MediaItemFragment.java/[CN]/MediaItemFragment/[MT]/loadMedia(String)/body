@@ -2,14 +2,18 @@
   Blog blog=WordPress.getCurrentBlog();
   if (blog != null) {
     String blogId=String.valueOf(blog.getLocalTableBlogId());
-    Cursor cursor;
-    if (mediaId == null) {
-      cursor=WordPress.wpDB.getFirstMediaFileForBlog(blogId);
-    }
+    Cursor cursor=null;
+    try {
+      if (mediaId == null) {
+        cursor=WordPress.wpDB.getFirstMediaFileForBlog(blogId);
+      }
  else {
-      cursor=WordPress.wpDB.getMediaFile(blogId,mediaId);
+        cursor=WordPress.wpDB.getMediaFile(blogId,mediaId);
+      }
+      refreshViews(cursor);
     }
-    refreshViews(cursor);
-    cursor.close();
+  finally {
+      SqlUtils.closeCursor(cursor);
+    }
   }
 }

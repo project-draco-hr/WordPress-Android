@@ -15,7 +15,6 @@
   CommentHolder commentHolder=(CommentHolder)holder;
   final ReaderComment comment=getItem(position);
   commentHolder.txtAuthor.setText(comment.getAuthorName());
-  CommentUtils.displayHtmlComment(commentHolder.txtText,comment.getText(),commentHolder.itemView.getWidth());
   java.util.Date dtPublished=DateTimeUtils.iso8601ToJavaDate(comment.getPublished());
   commentHolder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(dtPublished));
   if (comment.hasAuthorAvatar()) {
@@ -45,15 +44,19 @@
  else {
     commentHolder.txtAuthor.setTextColor(mColorNotAuthor);
   }
+  int indentWidth;
   if (comment.parentId != 0 && comment.level > 0) {
-    int indent=Math.min(MAX_INDENT_LEVEL,comment.level) * mIndentPerLevel;
+    indentWidth=Math.min(MAX_INDENT_LEVEL,comment.level) * mIndentPerLevel;
     RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)commentHolder.spacerIndent.getLayoutParams();
-    params.width=indent;
+    params.width=indentWidth;
     commentHolder.spacerIndent.setVisibility(View.VISIBLE);
   }
  else {
+    indentWidth=0;
     commentHolder.spacerIndent.setVisibility(View.GONE);
   }
+  int maxImageWidth=mDisplayWidth - indentWidth;
+  CommentUtils.displayHtmlComment(commentHolder.txtText,comment.getText(),maxImageWidth);
   if (mHighlightCommentId != 0 && mHighlightCommentId == comment.commentId) {
     commentHolder.container.setBackgroundColor(mColorHighlight);
     commentHolder.progress.setVisibility(mShowProgressForHighlightedComment ? View.VISIBLE : View.GONE);
