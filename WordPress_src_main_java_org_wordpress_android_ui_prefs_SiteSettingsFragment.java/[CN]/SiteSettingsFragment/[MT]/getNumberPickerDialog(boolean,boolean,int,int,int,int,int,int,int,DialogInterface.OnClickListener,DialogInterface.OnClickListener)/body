@@ -23,8 +23,18 @@
   }
   TextView detailText=(TextView)view.findViewById(R.id.number_picker_text);
   TextView headerText=(TextView)view.findViewById(R.id.number_picker_header);
-  headerText.setText(header);
-  detailText.setText(detail);
+  if (header >= 0) {
+    headerText.setText(header);
+  }
+ else {
+    headerText.setVisibility(View.GONE);
+  }
+  if (detail >= 0) {
+    detailText.setText(detail);
+  }
+ else {
+    detailText.setVisibility(View.GONE);
+  }
   mNumberPicker.setMinValue(min);
   mNumberPicker.setMaxValue(max);
   mNumberPicker.setValue(cur);
@@ -33,7 +43,7 @@
   builder.setNegativeButton(R.string.cancel,negative);
   builder.setView(view);
   AlertDialog dialog=builder.create();
+  dialog.show();
   WPPrefUtils.layoutAsFlatButton(dialog.getButton(DialogInterface.BUTTON_POSITIVE));
   WPPrefUtils.layoutAsFlatButton(dialog.getButton(DialogInterface.BUTTON_NEGATIVE));
-  return dialog;
 }
