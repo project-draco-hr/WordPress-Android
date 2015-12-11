@@ -1,6 +1,6 @@
 {
-  final Comment comment=mComments.get(position);
-  final CommentHolder holder=(CommentHolder)viewHolder;
+  Comment comment=mComments.get(position);
+  CommentHolder holder=(CommentHolder)viewHolder;
   if (isModeratingCommentId(comment.commentID)) {
     holder.progressBar.setVisibility(View.VISIBLE);
   }
@@ -27,21 +27,18 @@ showStatus=false;
 break;
 }
 holder.txtStatus.setVisibility(showStatus ? View.VISIBLE : View.GONE);
-boolean useSelectionBackground;
+int checkmarkVisiblity;
 if (mEnableSelection && isItemSelected(position)) {
-useSelectionBackground=true;
-holder.imgCheckmark.setVisibility(View.VISIBLE);
+checkmarkVisiblity=View.VISIBLE;
+holder.containerView.setBackgroundColor(mSelectedColor);
 }
  else {
-useSelectionBackground=false;
-holder.imgCheckmark.setVisibility(View.GONE);
+checkmarkVisiblity=View.GONE;
 holder.imgAvatar.setImageUrl(comment.getAvatarForDisplay(mAvatarSz),WPNetworkImageView.ImageType.AVATAR);
+holder.containerView.setBackgroundColor(mUnselectedColor);
 }
-if (useSelectionBackground) {
-holder.itemView.setBackgroundColor(mSelectionColor);
-}
- else {
-holder.itemView.setBackgroundDrawable(null);
+if (holder.imgCheckmark.getVisibility() != checkmarkVisiblity) {
+holder.imgCheckmark.setVisibility(checkmarkVisiblity);
 }
 boolean adjustComment=(showStatus && holder.txtTitle.getLineCount() <= 1);
 RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)holder.txtComment.getLayoutParams();
