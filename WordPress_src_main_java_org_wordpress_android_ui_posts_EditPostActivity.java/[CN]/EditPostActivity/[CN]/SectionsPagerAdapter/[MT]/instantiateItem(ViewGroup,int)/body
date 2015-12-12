@@ -5,6 +5,12 @@ case 0:
     mEditorFragment=(EditorFragmentAbstract)fragment;
   if (mEditorFragment instanceof EditorMediaUploadListener) {
     mEditorMediaUploadListener=(EditorMediaUploadListener)mEditorFragment;
+    mEditorFragment.setWebViewHeader("User-Agent",WordPress.getUserAgent());
+    Blog currentBlog=WordPress.getCurrentBlog();
+    String token=AccountHelper.getDefaultAccount().getAccessToken();
+    if (currentBlog != null && currentBlog.isPrivate() && !TextUtils.isEmpty(token)) {
+      mEditorFragment.setWebViewHeader("Authorization","Bearer " + token);
+    }
   }
 break;
 case 1:
