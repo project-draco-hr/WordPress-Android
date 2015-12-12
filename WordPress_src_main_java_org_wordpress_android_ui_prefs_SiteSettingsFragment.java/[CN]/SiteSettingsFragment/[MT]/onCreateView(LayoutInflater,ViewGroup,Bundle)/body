@@ -1,16 +1,9 @@
 {
-  Context contextThemeWrapper=new ContextThemeWrapper(getActivity(),R.style.Calypso_SiteSettingsTheme);
-  LayoutInflater localInflater=inflater.cloneInContext(contextThemeWrapper);
+  Context themer=new ContextThemeWrapper(getActivity(),R.style.Calypso_SiteSettingsTheme);
+  LayoutInflater localInflater=inflater.cloneInContext(themer);
   View view=super.onCreateView(localInflater,container,savedInstanceState);
   if (view != null) {
-    ListView prefList=(ListView)view.findViewById(android.R.id.list);
-    Resources res=getResources();
-    if (prefList != null && res != null) {
-      prefList.setOnHierarchyChangeListener(this);
-      prefList.setOnItemLongClickListener(this);
-      prefList.setFooterDividersEnabled(false);
-      prefList.setOverscrollFooter(res.getDrawable(R.color.transparent));
-    }
+    setupPreferenceList((ListView)view.findViewById(android.R.id.list),getResources());
   }
   return view;
 }
