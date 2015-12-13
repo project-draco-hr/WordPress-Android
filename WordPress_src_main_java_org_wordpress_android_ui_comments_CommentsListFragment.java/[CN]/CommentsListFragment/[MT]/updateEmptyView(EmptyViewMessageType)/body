@@ -1,17 +1,14 @@
 {
-  if (!isAdded()) {
-    return;
-  }
-  if (mEmptyView != null) {
-    if (getCommentAdapter().getCount() == 0) {
-      int stringId=0;
+  if (!isAdded() || !hasAdapter() || mEmptyView == null)   return;
+  if (getAdapter().isEmpty()) {
+    int stringId=0;
 switch (emptyViewMessageType) {
 case LOADING:
-        stringId=R.string.comments_fetching;
-      break;
+      stringId=R.string.comments_fetching;
+    break;
 case NO_CONTENT:
-    stringId=R.string.comments_empty_list;
-  break;
+  stringId=R.string.comments_empty_list;
+break;
 case NETWORK_ERROR:
 stringId=R.string.no_network_message;
 break;
@@ -28,6 +25,5 @@ mEmptyView.setVisibility(View.VISIBLE);
 }
  else {
 mEmptyView.setVisibility(View.GONE);
-}
 }
 }
