@@ -1,6 +1,6 @@
 {
   if (!NetworkUtils.checkConnection(getActivity()))   return;
-  final CommentList selectedComments=getCommentAdapter().getSelectedComments();
+  final CommentList selectedComments=getAdapter().getSelectedComments();
   getActivity().showDialog(CommentDialogs.ID_COMMENT_DLG_TRASHING);
   CommentActions.OnCommentsModeratedListener listener=new CommentActions.OnCommentsModeratedListener(){
     @Override public void onCommentsModerated(    final CommentList deletedComments){
@@ -8,8 +8,8 @@
       finishActionMode();
       dismissDialog(CommentDialogs.ID_COMMENT_DLG_TRASHING);
       if (deletedComments.size() > 0) {
-        getCommentAdapter().clearSelectedComments();
-        getCommentAdapter().deleteComments(deletedComments);
+        getAdapter().clearSelectedComments();
+        getAdapter().deleteComments(deletedComments);
       }
  else {
         ToastUtils.showToast(getActivity(),R.string.error_moderate_comment);
