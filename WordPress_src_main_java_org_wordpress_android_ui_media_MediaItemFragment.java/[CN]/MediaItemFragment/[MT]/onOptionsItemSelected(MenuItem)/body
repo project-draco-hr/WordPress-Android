@@ -9,7 +9,7 @@
     }
     Builder builder=new AlertDialog.Builder(getActivity()).setMessage(R.string.confirm_delete_media).setCancelable(true).setPositiveButton(R.string.delete,new OnClickListener(){
       @Override public void onClick(      DialogInterface dialog,      int which){
-        ArrayList<String> ids=new ArrayList<String>(1);
+        ArrayList<String> ids=new ArrayList<>(1);
         ids.add(getMediaId());
         if (getActivity() instanceof MediaBrowserActivity) {
           ((MediaBrowserActivity)getActivity()).deleteMedia(ids);
@@ -19,6 +19,10 @@
 ).setNegativeButton(R.string.cancel,null);
     AlertDialog dialog=builder.create();
     dialog.show();
+    return true;
+  }
+ else   if (itemId == R.id.menu_copy_media_url) {
+    copyUrlToClipboard();
     return true;
   }
   return super.onOptionsItemSelected(item);
