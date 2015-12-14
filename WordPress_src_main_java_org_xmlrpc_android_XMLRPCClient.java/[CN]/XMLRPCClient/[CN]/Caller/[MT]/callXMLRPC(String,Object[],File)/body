@@ -45,10 +45,13 @@
     }
 switch (e.getFaultCode()) {
 case 403:
-      EventBus.getDefault().post(new CoreEvents.InvalidCredentialsDetected());
-    break;
+      if ("wp.getPostFormats".equals(method) || "wp.getCommentStatusList".equals(method) || "wp.getPostStatusList".equals(method)|| "wp.getPageStatusList".equals(method)) {
+        break;
+      }
+    EventBus.getDefault().post(new CoreEvents.InvalidCredentialsDetected());
+  break;
 case 425:
-  EventBus.getDefault().post(new CoreEvents.TwoFactorAuthenticationDetected());
+EventBus.getDefault().post(new CoreEvents.TwoFactorAuthenticationDetected());
 break;
 default :
 break;
