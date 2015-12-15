@@ -2,19 +2,18 @@
   final ProgressBar progress=(ProgressBar)getView().findViewById(R.id.progress_loading);
   progress.setVisibility(View.VISIBLE);
   progress.bringToFront();
-  ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
-    @Override public void onActionResult(    boolean succeeded){
+  ReaderActions.OnRequestListener listener=new ReaderActions.OnRequestListener(){
+    @Override public void onSuccess(){
       if (isAdded()) {
-        progress.setVisibility(View.GONE);
-        if (succeeded) {
-          showPost();
-        }
- else {
-          postFailed();
-        }
+        showPost();
+      }
+    }
+    @Override public void onFailure(    int statusCode){
+      if (isAdded()) {
+        ToastUtils.showToast(getActivity(),R.string.reader_toast_err_get_post,ToastUtils.Duration.LONG);
       }
     }
   }
 ;
-  ReaderPostActions.requestPost(mBlogId,mPostId,actionListener);
+  ReaderPostActions.requestPost(mBlogId,mPostId,listener);
 }

@@ -3,13 +3,13 @@
     return;
   }
   showAddUrlProgress();
-  ReaderActions.OnCheckUrlReachableListener urlListener=new ReaderActions.OnCheckUrlReachableListener(){
+  ReaderActions.OnRequestListener requestListener=new ReaderActions.OnRequestListener(){
     @Override public void onSuccess(){
       if (!isFinishing()) {
         followBlogUrl(blogUrl);
       }
     }
-    @Override public void onFailed(    int statusCode){
+    @Override public void onFailure(    int statusCode){
       if (!isFinishing()) {
         hideAddUrlProgress();
         String errMsg;
@@ -30,5 +30,5 @@ ToastUtils.showToast(ReaderSubsActivity.this,errMsg);
 }
 }
 ;
-ReaderBlogActions.checkUrlReachable(blogUrl,urlListener);
+ReaderBlogActions.checkUrlReachable(blogUrl,requestListener);
 }

@@ -6,7 +6,7 @@
       ReaderPostTable.addOrUpdatePost(post);
       handlePostLikes(post,jsonObject);
       if (actionListener != null) {
-        actionListener.onActionResult(true);
+        actionListener.onSuccess();
       }
     }
   }
@@ -15,7 +15,8 @@
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.e(T.READER,volleyError);
       if (actionListener != null) {
-        actionListener.onActionResult(false);
+        int statusCode=VolleyUtils.statusCodeFromVolleyError(volleyError);
+        actionListener.onFailure(statusCode);
       }
     }
   }
