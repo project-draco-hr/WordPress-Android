@@ -1,18 +1,17 @@
 {
-  getNumberPickerDialog(true,mSiteSettings.getPagingCount() > 0,new CompoundButton.OnCheckedChangeListener(){
+  mSwitchChecked=mSiteSettings.getPagingCount() > 0;
+  getNumberPickerDialog(true,mSwitchChecked,new CompoundButton.OnCheckedChangeListener(){
     @Override public void onCheckedChanged(    CompoundButton buttonView,    boolean isChecked){
       mSwitchChecked=isChecked;
     }
   }
 ,R.string.site_settings_paging_title,R.string.paging_description,R.string.paging_header,1,getResources().getInteger(R.integer.paging_limit),mSiteSettings.getPagingCount(),R.string.site_settings_paging_title,new DialogInterface.OnClickListener(){
     @Override public void onClick(    DialogInterface dialog,    int which){
-      if (mSiteSettings.getPagingCount() != mNumberPicker.getValue()) {
-        if (mSwitchChecked) {
-          onPreferenceChange(mPagingPref,mNumberPicker.getValue());
-        }
+      if (mSwitchChecked && mSiteSettings.getPagingCount() != mNumberPicker.getValue()) {
+        onPreferenceChange(mPagingPref,mNumberPicker.getValue());
+      }
  else {
-          onPreferenceChange(mPagingPref,0);
-        }
+        onPreferenceChange(mPagingPref,0);
       }
     }
   }
