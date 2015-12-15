@@ -1,0 +1,18 @@
+{
+  String fromSiteName;
+  String excerpt=post.getExcerpt();
+  int plusPos=excerpt.indexOf("+");
+  int colonPos=excerpt.indexOf(":",plusPos);
+  if (plusPos > 0 && colonPos > 0) {
+    fromSiteName=excerpt.substring(plusPos,colonPos);
+  }
+ else {
+    fromSiteName="(unknown)";
+  }
+  String toSiteName="+" + UrlUtils.getDomainFromUrl(post.getBlogUrl());
+  if (toSiteName.contains(".")) {
+    toSiteName=toSiteName.substring(0,toSiteName.indexOf("."));
+  }
+  String subtitle=String.format("%1$s cross-posted from %2$s to %3$s",makeBold(post.getAuthorName()),fromSiteName,toSiteName);
+  return Html.fromHtml(subtitle);
+}
