@@ -1,16 +1,5 @@
 {
   boolean isCommentXPost=post.getExcerpt().startsWith("X-comment");
-  String fromSiteName;
-  String excerpt=post.getExcerpt();
-  int plusPos=excerpt.indexOf("+");
-  int colonPos=excerpt.indexOf(":",plusPos);
-  if (plusPos > 0 && colonPos > 0) {
-    fromSiteName=excerpt.substring(plusPos,colonPos);
-  }
- else {
-    fromSiteName=UNKNOWN_SITE;
-  }
-  String toSiteName="+" + getSubdomain(post.getBlogUrl());
-  String subtitle=String.format(isCommentXPost ? FMT_COMMENT_XPOST : FMT_SITE_XPOST,makeBold(post.getAuthorName()),fromSiteName,toSiteName);
+  String subtitle=String.format(isCommentXPost ? FMT_COMMENT_XPOST : FMT_SITE_XPOST,"<strong>" + post.getAuthorName() + "</strong>",getFromSiteName(post),getToSiteName(post));
   return Html.fromHtml(subtitle);
 }
