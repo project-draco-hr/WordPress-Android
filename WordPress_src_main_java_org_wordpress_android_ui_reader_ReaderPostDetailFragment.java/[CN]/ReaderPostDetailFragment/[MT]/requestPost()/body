@@ -13,19 +13,24 @@
       if (isAdded()) {
         progress.setVisibility(View.GONE);
         int errMsgResId;
+        if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+          errMsgResId=R.string.no_network_message;
+        }
+ else {
 switch (statusCode) {
 case 401:
 case 403:
-          errMsgResId=R.string.reader_err_get_post_not_authorized;
-        break;
+            errMsgResId=R.string.reader_err_get_post_not_authorized;
+          break;
 case 404:
-      errMsgResId=R.string.reader_err_get_post_not_found;
-    break;
+        errMsgResId=R.string.reader_err_get_post_not_found;
+      break;
 default :
-  errMsgResId=R.string.reader_err_get_post_generic;
-break;
+    errMsgResId=R.string.reader_err_get_post_generic;
+  break;
 }
-showError(errMsgResId);
+}
+showError(getString(errMsgResId));
 }
 }
 }
