@@ -5,12 +5,16 @@
       String auth="Basic " + Base64.encodeToString(creds.getBytes(),Base64.DEFAULT);
       additionalHeaders.put("Authorization",auth);
     }
-    if (StringUtils.getHost(request.getUrl()).endsWith("files.wordpress.com") && mCtx != null && AccountHelper.isSignedInWordPressDotCom()) {
+    String blogUriScheme=WordPress.currentBlog.getUri().getScheme();
+    if (StringUtils.getHost(request.getUrl()).endsWith("files.wordpress.com") && mCtx != null && AccountHelper.isSignedInWordPressDotCom() && blogUriScheme.equals("https")) {
       additionalHeaders.put("Authorization","Bearer " + AccountHelper.getDefaultAccount().getAccessToken());
     }
   }
   additionalHeaders.put("User-Agent",WordPress.getUserAgent());
   String url=request.getUrl();
+  if (additionalHeaders.containsKey("Authorization")) {
+    url=UrlUtils.makeHttps(url);
+  }
   HashMap<String,String> map=new HashMap<String,String>();
   map.putAll(request.getHeaders());
   map.putAll(additionalHeaders);
