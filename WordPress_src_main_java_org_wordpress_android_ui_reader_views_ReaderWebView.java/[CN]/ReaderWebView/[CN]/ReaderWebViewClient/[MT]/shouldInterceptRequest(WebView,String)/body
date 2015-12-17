@@ -1,7 +1,7 @@
 {
-  if (mIsPrivatePost && !TextUtils.isEmpty(mToken) && UrlUtils.isImageUrl(url)) {
+  if (mIsPrivatePost && mBlogSchemeIsHttps && !TextUtils.isEmpty(mToken)&& UrlUtils.isImageUrl(url)) {
     try {
-      URL imageUrl=new URL(url);
+      URL imageUrl=new URL(UrlUtils.makeHttps(url));
       HttpURLConnection conn=(HttpURLConnection)imageUrl.openConnection();
       conn.setRequestProperty("Authorization","Bearer " + mToken);
       conn.setReadTimeout(WPRestClient.REST_TIMEOUT_MS);
