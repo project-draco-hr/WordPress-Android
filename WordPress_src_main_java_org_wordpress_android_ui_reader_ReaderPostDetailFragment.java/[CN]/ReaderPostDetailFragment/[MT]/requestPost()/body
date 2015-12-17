@@ -2,19 +2,38 @@
   final ProgressBar progress=(ProgressBar)getView().findViewById(R.id.progress_loading);
   progress.setVisibility(View.VISIBLE);
   progress.bringToFront();
-  ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
-    @Override public void onActionResult(    boolean succeeded){
+  ReaderActions.OnRequestListener listener=new ReaderActions.OnRequestListener(){
+    @Override public void onSuccess(){
       if (isAdded()) {
         progress.setVisibility(View.GONE);
-        if (succeeded) {
-          showPost();
-        }
- else {
-          postFailed();
-        }
+        showPost();
       }
     }
-  }
+    @Override public void onFailure(    int statusCode){
+      if (isAdded()) {
+        progress.setVisibility(View.GONE);
+        int errMsgResId;
+        if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+          errMsgResId=R.string.no_network_message;
+        }
+ else {
+switch (statusCode) {
+case 401:
+case 403:
+            errMsgResId=R.string.reader_err_get_post_not_authorized;
+          break;
+case 404:
+        errMsgResId=R.string.reader_err_get_post_not_found;
+      break;
+default :
+    errMsgResId=R.string.reader_err_get_post_generic;
+  break;
+}
+}
+showError(getString(errMsgResId));
+}
+}
+}
 ;
-  ReaderPostActions.requestPost(mBlogId,mPostId,actionListener);
+ReaderPostActions.requestPost(mBlogId,mPostId,listener);
 }

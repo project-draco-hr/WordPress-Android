@@ -1,0 +1,30 @@
+{
+  if (requestListener == null)   return;
+  Response.Listener<String> listener=new Response.Listener<String>(){
+    @Override public void onResponse(    String response){
+      requestListener.onSuccess();
+    }
+  }
+;
+  Response.ErrorListener errorListener=new Response.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.READER,volleyError);
+      int statusCode;
+      if (volleyError instanceof com.android.volley.AuthFailureError) {
+        statusCode=401;
+      }
+ else {
+        statusCode=VolleyUtils.statusCodeFromVolleyError(volleyError);
+      }
+      if (statusCode == 301) {
+        requestListener.onSuccess();
+      }
+ else {
+        requestListener.onFailure(statusCode);
+      }
+    }
+  }
+;
+  StringRequest request=new StringRequest(Request.Method.GET,blogUrl,listener,errorListener);
+  WordPress.requestQueue.add(request);
+}
