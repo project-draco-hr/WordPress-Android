@@ -3,7 +3,7 @@
   holder.txtName.setText(user.getDisplayName());
   if (user.hasUrl()) {
     holder.txtUrl.setVisibility(View.VISIBLE);
-    holder.txtUrl.setText(user.getUrlDomain());
+    holder.txtUrl.setText(UrlUtils.getDomainFromUrl(user.getUrl()));
     holder.itemView.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
         if (user.hasBlogId()) {
@@ -18,7 +18,7 @@
     holder.itemView.setOnClickListener(null);
   }
   if (user.hasAvatarUrl()) {
-    holder.imgAvatar.setImageUrl(user.getAvatarUrl(),WPNetworkImageView.ImageType.AVATAR);
+    holder.imgAvatar.setImageUrl(GravatarUtils.fixGravatarUrl(user.getAvatarUrl(),mAvatarSz),WPNetworkImageView.ImageType.AVATAR);
   }
  else {
     holder.imgAvatar.showDefaultGravatarImage();
