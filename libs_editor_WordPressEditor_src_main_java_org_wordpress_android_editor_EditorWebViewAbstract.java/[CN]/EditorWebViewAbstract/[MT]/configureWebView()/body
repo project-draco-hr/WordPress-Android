@@ -10,22 +10,13 @@
       AppLog.e(AppLog.T.EDITOR,description);
     }
     @TargetApi(Build.VERSION_CODES.LOLLIPOP) @Override public WebResourceResponse shouldInterceptRequest(    WebView view,    WebResourceRequest request){
-      String url=request.getUrl().toString();
       if (mHeaderMap.size() > 0) {
         try {
-          if (mHeaderMap.keySet().contains("Authorization")) {
-            url=UrlUtils.makeHttps(url);
-          }
-          URL imageUrl=new URL(url);
-          HttpURLConnection conn=(HttpURLConnection)imageUrl.openConnection();
-          conn.setReadTimeout(REQUEST_TIMEOUT_MS);
-          conn.setConnectTimeout(REQUEST_TIMEOUT_MS);
-          for (          Map.Entry<String,String> entry : request.getRequestHeaders().entrySet()) {
-            conn.setRequestProperty(entry.getKey(),entry.getValue());
-          }
+          Map<String,String> mergedHeaders=request.getRequestHeaders();
           for (          Map.Entry<String,String> entry : mHeaderMap.entrySet()) {
-            conn.setRequestProperty(entry.getKey(),entry.getValue());
+            mergedHeaders.put(entry.getKey(),entry.getValue());
           }
+          HttpURLConnection conn=Utils.setupUrlConnection(request.getUrl().toString(),mergedHeaders);
           return new WebResourceResponse(conn.getContentType(),conn.getContentEncoding(),conn.getInputStream());
         }
  catch (        IOException e) {
@@ -40,16 +31,7 @@
     @SuppressWarnings("deprecation") @Override public WebResourceResponse shouldInterceptRequest(    WebView view,    String url){
       if (mHeaderMap.size() > 0) {
         try {
-          if (mHeaderMap.keySet().contains("Authorization")) {
-            url=UrlUtils.makeHttps(url);
-          }
-          URL imageUrl=new URL(url);
-          HttpURLConnection conn=(HttpURLConnection)imageUrl.openConnection();
-          conn.setReadTimeout(REQUEST_TIMEOUT_MS);
-          conn.setConnectTimeout(REQUEST_TIMEOUT_MS);
-          for (          Map.Entry<String,String> entry : mHeaderMap.entrySet()) {
-            conn.setRequestProperty(entry.getKey(),entry.getValue());
-          }
+          HttpURLConnection conn=Utils.setupUrlConnection(url,mHeaderMap);
           return new WebResourceResponse(conn.getContentType(),conn.getContentEncoding(),conn.getInputStream());
         }
  catch (        IOException e) {
