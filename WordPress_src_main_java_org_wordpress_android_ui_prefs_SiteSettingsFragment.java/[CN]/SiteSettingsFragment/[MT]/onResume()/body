@@ -1,10 +1,12 @@
 {
   super.onResume();
-  new Handler().postDelayed(new Runnable(){
-    @Override public void run(){
-      mSiteSettings.init(mShouldFetch);
-      mShouldFetch=false;
+  if (mShouldFetch) {
+    new Handler().postDelayed(new Runnable(){
+      @Override public void run(){
+        mSiteSettings.init(mShouldFetch);
+      }
     }
+,FETCH_DELAY);
+    mShouldFetch=false;
   }
-,1000);
 }
