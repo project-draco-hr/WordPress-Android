@@ -3,18 +3,21 @@
     clear();
     return;
   }
-  mUsers=(ReaderUserList)users.clone();
   final Handler handler=new Handler();
   new Thread(){
     @Override public void run(){
       ReaderUrlList followedBlogUrls=ReaderBlogTable.getFollowedBlogUrls();
-      for (      ReaderUser user : mUsers) {
+      for (      ReaderUser user : users) {
         user.isFollowed=user.hasUrl() && followedBlogUrls.contains(user.getUrl());
-        user.setAvatarUrl(GravatarUtils.fixGravatarUrl(user.getAvatarUrl(),mAvatarSz));
         user.getUrlDomain();
+        if (user.hasAvatarUrl()) {
+          user.setAvatarUrl(GravatarUtils.fixGravatarUrl(user.getAvatarUrl(),mAvatarSz));
+        }
       }
       handler.post(new Runnable(){
         @Override public void run(){
+          mUsers.clear();
+          mUsers.addAll(users);
           notifyDataSetChanged();
           if (mDataLoadedListener != null) {
             mDataLoadedListener.onDataLoaded(isEmpty());
