@@ -6,12 +6,13 @@
  else {
     mSelectedPositions.remove(position);
   }
-  notifyDataSetChanged();
+  notifyItemChanged(position);
   if (view != null && view.getTag() instanceof CommentHolder) {
     CommentHolder holder=(CommentHolder)view.getTag();
-    holder.imgCheckmark.clearAnimation();
     AniUtils.startAnimation(holder.imgCheckmark,isSelected ? R.anim.cab_select : R.anim.cab_deselect);
     holder.imgCheckmark.setVisibility(isSelected ? View.VISIBLE : View.GONE);
   }
-  if (mOnSelectedChangeListener != null)   mOnSelectedChangeListener.onSelectedItemsChanged();
+  if (mOnSelectedChangeListener != null) {
+    mOnSelectedChangeListener.onSelectedItemsChanged();
+  }
 }
