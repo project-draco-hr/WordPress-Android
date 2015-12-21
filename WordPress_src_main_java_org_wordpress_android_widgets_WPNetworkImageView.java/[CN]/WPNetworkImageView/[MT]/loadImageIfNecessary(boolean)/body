@@ -1,10 +1,16 @@
 {
-  if (mImageType == ImageType.NONE || mRequestDidFail) {
+  if (mImageType == ImageType.NONE) {
     return;
   }
   int width=getWidth();
   int height=getHeight();
-  boolean isFullyWrapContent=getLayoutParams() != null && getLayoutParams().height == LayoutParams.WRAP_CONTENT && getLayoutParams().width == LayoutParams.WRAP_CONTENT;
+  ScaleType scaleType=getScaleType();
+  boolean wrapWidth=false, wrapHeight=false;
+  if (getLayoutParams() != null) {
+    wrapWidth=getLayoutParams().width == LayoutParams.WRAP_CONTENT;
+    wrapHeight=getLayoutParams().height == LayoutParams.WRAP_CONTENT;
+  }
+  boolean isFullyWrapContent=wrapWidth && wrapHeight;
   if (width == 0 && height == 0 && !isFullyWrapContent && mImageType != ImageType.GONE_UNTIL_AVAILABLE) {
     return;
   }
@@ -29,15 +35,13 @@
   }
   if (mUrlSkipList.contains(mUrl)) {
     AppLog.d(AppLog.T.UTILS,"skipping image request " + mUrl);
-    mRequestDidFail=true;
     showErrorImage();
     return;
   }
-  Point pt=DisplayUtils.getDisplayPixelSize(this.getContext());
-  int maxSize=Math.max(pt.x,pt.y);
-  mImageContainer=WordPress.imageLoader.get(mUrl,new ImageLoader.ImageListener(){
+  int maxWidth=wrapWidth ? 0 : width;
+  int maxHeight=wrapHeight ? 0 : height;
+  ImageLoader.ImageContainer newContainer=WordPress.imageLoader.get(mUrl,new ImageLoader.ImageListener(){
     @Override public void onErrorResponse(    VolleyError error){
-      mRequestDidFail=true;
       showErrorImage();
       int statusCode=VolleyUtils.statusCodeFromVolleyError(error);
       if (statusCode == 404) {
@@ -48,15 +52,16 @@
       if (isImmediate && isInLayoutPass) {
         post(new Runnable(){
           @Override public void run(){
-            handleResponse(response,true,false);
+            handleResponse(response,true);
           }
         }
 );
       }
  else {
-        handleResponse(response,isImmediate,true);
+        handleResponse(response,isImmediate);
       }
     }
   }
-,maxSize,maxSize);
+,maxWidth,maxHeight,scaleType);
+  mImageContainer=newContainer;
 }
