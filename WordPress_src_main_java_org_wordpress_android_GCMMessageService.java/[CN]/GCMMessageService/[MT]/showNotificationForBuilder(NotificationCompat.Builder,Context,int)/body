@@ -1,12 +1,14 @@
 {
-  if (builder == null || context == null)   return;
+  if (builder == null || context == null) {
+    return;
+  }
   Intent resultIntent=new Intent(this,WPMainActivity.class);
   resultIntent.putExtra(WPMainActivity.ARG_OPENED_FROM_PUSH,true);
   resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
   resultIntent.setAction("android.intent.action.MAIN");
   resultIntent.addCategory("android.intent.category.LAUNCHER");
-  if (mPreviousNoteId != null) {
-    resultIntent.putExtra(NotificationsListFragment.NOTE_ID_EXTRA,mPreviousNoteId);
+  if (sPreviousNoteId != null) {
+    resultIntent.putExtra(NotificationsListFragment.NOTE_ID_EXTRA,sPreviousNoteId);
   }
   SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(context);
   boolean shouldPlaySound=prefs.getBoolean("wp_pref_notification_sound",false);
