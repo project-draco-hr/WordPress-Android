@@ -18,30 +18,30 @@
   String message=StringEscapeUtils.unescapeHtml(data.getString(PUSH_ARG_MSG));
   String noteId=data.getString(PUSH_ARG_NOTE_ID,"");
   long thisTime=System.currentTimeMillis();
-  if (mPreviousNoteId != null && mPreviousNoteId.equals(noteId)) {
-    long seconds=TimeUnit.MILLISECONDS.toSeconds(thisTime - mPreviousNoteTime);
+  if (sPreviousNoteId != null && sPreviousNoteId.equals(noteId)) {
+    long seconds=TimeUnit.MILLISECONDS.toSeconds(thisTime - sPreviousNoteTime);
     if (seconds <= 1) {
       AppLog.w(T.NOTIFS,"skipped potential duplicate notification");
       return;
     }
   }
-  mPreviousNoteId=noteId;
-  mPreviousNoteTime=thisTime;
+  sPreviousNoteId=noteId;
+  sPreviousNoteTime=thisTime;
   int pushId=0;
-  for (  Integer id : mActiveNotificationsMap.keySet()) {
+  for (  Integer id : sActiveNotificationsMap.keySet()) {
     if (id == null) {
       continue;
     }
-    Bundle noteBundle=mActiveNotificationsMap.get(id);
+    Bundle noteBundle=sActiveNotificationsMap.get(id);
     if (noteBundle != null && noteBundle.getString(PUSH_ARG_NOTE_ID,"").equals(noteId)) {
       pushId=id;
-      mActiveNotificationsMap.put(pushId,data);
+      sActiveNotificationsMap.put(pushId,data);
       break;
     }
   }
   if (pushId == 0) {
-    pushId=PUSH_NOTIFICATION_ID + mActiveNotificationsMap.size();
-    mActiveNotificationsMap.put(pushId,data);
+    pushId=PUSH_NOTIFICATION_ID + sActiveNotificationsMap.size();
+    sActiveNotificationsMap.put(pushId,data);
   }
   String iconUrl=data.getString("icon");
   Bitmap largeIconBitmap=null;
@@ -92,11 +92,11 @@
     builder.setLargeIcon(largeIconBitmap);
   }
   showNotificationForBuilder(builder,this,pushId);
-  if (mActiveNotificationsMap.size() > 1) {
+  if (sActiveNotificationsMap.size() > 1) {
     NotificationCompat.InboxStyle inboxStyle=new NotificationCompat.InboxStyle();
     int noteCtr=1;
-    for (    Bundle pushBundle : mActiveNotificationsMap.values()) {
-      if (noteCtr > mMaxInboxItems) {
+    for (    Bundle pushBundle : sActiveNotificationsMap.values()) {
+      if (noteCtr > MAX_INBOX_ITEMS) {
         break;
       }
       if (pushBundle == null || pushBundle.getString(PUSH_ARG_MSG) == null) {
@@ -113,10 +113,10 @@
       }
       noteCtr++;
     }
-    if (mActiveNotificationsMap.size() > mMaxInboxItems) {
-      inboxStyle.setSummaryText(String.format(getString(R.string.more_notifications),mActiveNotificationsMap.size() - mMaxInboxItems));
+    if (sActiveNotificationsMap.size() > MAX_INBOX_ITEMS) {
+      inboxStyle.setSummaryText(String.format(getString(R.string.more_notifications),sActiveNotificationsMap.size() - MAX_INBOX_ITEMS));
     }
-    String subject=String.format(getString(R.string.new_notifications),mActiveNotificationsMap.size());
+    String subject=String.format(getString(R.string.new_notifications),sActiveNotificationsMap.size());
     NotificationCompat.Builder groupBuilder=new NotificationCompat.Builder(this).setSmallIcon(R.drawable.notification_icon).setColor(getResources().getColor(R.color.blue_wordpress)).setGroup(NOTIFICATION_GROUP_KEY).setGroupSummary(true).setAutoCancel(true).setTicker(message).setContentTitle(getString(R.string.app_name)).setContentText(subject).setStyle(inboxStyle);
     showNotificationForBuilder(groupBuilder,this,GROUP_NOTIFICATION_ID);
   }
