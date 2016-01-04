@@ -1,0 +1,12 @@
+{
+  if (headers.keySet().contains("Authorization")) {
+    url=UrlUtils.makeHttps(url);
+  }
+  HttpURLConnection conn=(HttpURLConnection)new URL(url).openConnection();
+  conn.setReadTimeout(REQUEST_TIMEOUT_MS);
+  conn.setConnectTimeout(REQUEST_TIMEOUT_MS);
+  for (  Map.Entry<String,String> entry : headers.entrySet()) {
+    conn.setRequestProperty(entry.getKey(),entry.getValue());
+  }
+  return conn;
+}
