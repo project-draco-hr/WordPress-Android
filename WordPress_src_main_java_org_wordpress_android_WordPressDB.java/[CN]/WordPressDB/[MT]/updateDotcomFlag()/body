@@ -1,0 +1,14 @@
+{
+  List<Map<String,Object>> allBlogs=getBlogsBy("dotcomFlag=1",null,0,false);
+  for (  Map<String,Object> blog : allBlogs) {
+    String xmlrpcURL=MapUtils.getMapStr(blog,"url");
+    if (!WPUrlUtils.isWordPressCom(xmlrpcURL)) {
+      int blogID=MapUtils.getMapInt(blog,"id");
+      if (blogID > 0) {
+        ContentValues values=new ContentValues();
+        values.put("dotcomFlag",false);
+        db.update(BLOGS_TABLE,values,"id=" + blogID,null);
+      }
+    }
+  }
+}
