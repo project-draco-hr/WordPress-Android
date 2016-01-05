@@ -1,0 +1,24 @@
+{
+  if (WordPress.wpDB.deleteBlog(this,blog.getLocalTableBlogId())) {
+    StatsTable.deleteStatsForBlog(this,blog.getLocalTableBlogId());
+    AnalyticsUtils.refreshMetadata();
+    ToastUtils.showToast(this,R.string.blog_removed_successfully);
+    WordPress.wpDB.deleteLastBlogId();
+    WordPress.currentBlog=null;
+    mBlogDeleted=true;
+    setResult(RESULT_BLOG_REMOVED);
+    if (!AccountHelper.isSignedIn()) {
+      EventBus.getDefault().post(new UserSignedOutCompletely());
+    }
+    StatsWidgetProvider.updateWidgetsOnLogout(this);
+    finish();
+  }
+ else {
+    AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(this);
+    dialogBuilder.setTitle(getResources().getText(R.string.error));
+    dialogBuilder.setMessage(getResources().getText(R.string.could_not_remove_account));
+    dialogBuilder.setPositiveButton("OK",null);
+    dialogBuilder.setCancelable(true);
+    dialogBuilder.create().show();
+  }
+}
