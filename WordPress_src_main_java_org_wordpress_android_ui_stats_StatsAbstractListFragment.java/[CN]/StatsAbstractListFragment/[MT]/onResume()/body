@@ -1,5 +1,15 @@
 {
   super.onResume();
-  showPlaceholderUI();
-  refreshStats();
+  if (hasPreviousDataAvailable()) {
+    updateUI();
+  }
+ else {
+    if (NetworkUtils.isNetworkAvailable(getActivity())) {
+      showPlaceholderUI();
+      refreshStats();
+    }
+ else {
+      showErrorUI(new NoConnectionError());
+    }
+  }
 }
