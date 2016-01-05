@@ -1,25 +1,12 @@
 {
-  mSwitchChecked=mSiteSettings.getCloseAfter() > 0;
-  getNumberPickerDialog(true,mSwitchChecked,new CompoundButton.OnCheckedChangeListener(){
-    @Override public void onCheckedChanged(    CompoundButton buttonView,    boolean isChecked){
-      mSwitchChecked=isChecked;
-    }
-  }
-,R.string.site_settings_close_after_dialog_switch_text,R.string.site_settings_close_after_dialog_description,R.string.site_settings_close_after_dialog_header,1,getResources().getInteger(R.integer.close_after_limit),mSiteSettings.getCloseAfter(),R.string.site_settings_close_after_dialog_title,new DialogInterface.OnClickListener(){
-    @Override public void onClick(    DialogInterface dialog,    int which){
-      if (mSwitchChecked && mSiteSettings.getCloseAfter() != mNumberPicker.getValue()) {
-        onPreferenceChange(mCloseAfterPref,mNumberPicker.getValue());
-      }
- else {
-        onPreferenceChange(mCloseAfterPref,0);
-      }
-    }
-  }
-,null);
-  mNumberPicker.setFormatter(new NumberPicker.Formatter(){
-    @Override public String format(    int value){
-      return getResources().getQuantityString(R.plurals.days_quantity,value,value);
-    }
-  }
-);
+  Bundle args=new Bundle();
+  args.putBoolean(NumberPickerDialog.SHOW_SWITCH_KEY,true);
+  args.putBoolean(NumberPickerDialog.SWITCH_ENABLED_KEY,mSiteSettings.getCloseAfter() > 0);
+  args.putString(NumberPickerDialog.SWITCH_TITLE_KEY,getString(R.string.site_settings_close_after_dialog_switch_text));
+  args.putString(NumberPickerDialog.TITLE_KEY,getString(R.string.site_settings_close_after_dialog_title));
+  args.putString(NumberPickerDialog.HEADER_TEXT_KEY,getString(R.string.site_settings_close_after_dialog_header));
+  args.putInt(NumberPickerDialog.MIN_VALUE_KEY,1);
+  args.putInt(NumberPickerDialog.MAX_VALUE_KEY,getResources().getInteger(R.integer.close_after_limit));
+  args.putInt(NumberPickerDialog.CUR_VALUE_KEY,mSiteSettings.getCloseAfter());
+  showNumberPickerDialog(args,CLOSE_AFTER_REQUEST_CODE,"close-after-dialog");
 }

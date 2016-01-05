@@ -1,19 +1,12 @@
 {
-  mSwitchChecked=mSiteSettings.getPagingCount() > 0;
-  getNumberPickerDialog(true,mSwitchChecked,new CompoundButton.OnCheckedChangeListener(){
-    @Override public void onCheckedChanged(    CompoundButton buttonView,    boolean isChecked){
-      mSwitchChecked=isChecked;
-    }
-  }
-,R.string.site_settings_paging_title,R.string.site_settings_paging_dialog_description,R.string.site_settings_paging_dialog_header,1,getResources().getInteger(R.integer.paging_limit),mSiteSettings.getPagingCount(),R.string.site_settings_paging_title,new DialogInterface.OnClickListener(){
-    @Override public void onClick(    DialogInterface dialog,    int which){
-      if (mSwitchChecked && mSiteSettings.getPagingCount() != mNumberPicker.getValue()) {
-        onPreferenceChange(mPagingPref,mNumberPicker.getValue());
-      }
- else {
-        onPreferenceChange(mPagingPref,0);
-      }
-    }
-  }
-,null);
+  Bundle args=new Bundle();
+  args.putBoolean(NumberPickerDialog.SHOW_SWITCH_KEY,true);
+  args.putBoolean(NumberPickerDialog.SWITCH_ENABLED_KEY,mSiteSettings.getPagingCount() > 0);
+  args.putString(NumberPickerDialog.SWITCH_TITLE_KEY,getString(R.string.site_settings_paging_title));
+  args.putString(NumberPickerDialog.TITLE_KEY,getString(R.string.site_settings_paging_title));
+  args.putString(NumberPickerDialog.HEADER_TEXT_KEY,getString(R.string.site_settings_paging_dialog_header));
+  args.putInt(NumberPickerDialog.MIN_VALUE_KEY,1);
+  args.putInt(NumberPickerDialog.MAX_VALUE_KEY,getResources().getInteger(R.integer.paging_limit));
+  args.putInt(NumberPickerDialog.CUR_VALUE_KEY,mSiteSettings.getPagingCount());
+  showNumberPickerDialog(args,PAGING_REQUEST_CODE,"paging-dialog");
 }
