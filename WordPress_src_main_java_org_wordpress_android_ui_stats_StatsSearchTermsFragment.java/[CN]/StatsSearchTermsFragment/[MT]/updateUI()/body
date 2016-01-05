@@ -7,14 +7,13 @@
     return;
   }
   if (hasSearchTerms()) {
-    SearchTermsModel searchTerms=(SearchTermsModel)mDatamodels[0];
-    List<SearchTermModel> originalSearchTermList=searchTerms.getSearchTerms();
+    List<SearchTermModel> originalSearchTermList=mSearchTerms.getSearchTerms();
     List<SearchTermModel> mySearchTermList;
     if (originalSearchTermList == null) {
       mySearchTermList=new ArrayList<>(0);
     }
  else {
-      if (searchTerms.getEncryptedSearchTerms() > 0 && originalSearchTermList.size() > getMaxNumberOfItemsToShowInList() - 1) {
+      if (mSearchTerms.getEncryptedSearchTerms() > 0 && originalSearchTermList.size() > getMaxNumberOfItemsToShowInList() - 1) {
         mySearchTermList=new ArrayList<>();
         int minIndex=Math.min(originalSearchTermList.size(),getMaxNumberOfItemsToShowInList() - 1);
         for (int i=0; i < minIndex; i++) {
@@ -25,7 +24,7 @@
         mySearchTermList=originalSearchTermList;
       }
     }
-    ArrayAdapter adapter=new SearchTermsAdapter(getActivity(),mySearchTermList,searchTerms.getEncryptedSearchTerms());
+    ArrayAdapter adapter=new SearchTermsAdapter(getActivity(),mySearchTermList,mSearchTerms.getEncryptedSearchTerms());
     StatsUIHelper.reloadLinearLayout(getActivity(),adapter,mList,getMaxNumberOfItemsToShowInList());
     showHideNoResultsUI(false);
   }
