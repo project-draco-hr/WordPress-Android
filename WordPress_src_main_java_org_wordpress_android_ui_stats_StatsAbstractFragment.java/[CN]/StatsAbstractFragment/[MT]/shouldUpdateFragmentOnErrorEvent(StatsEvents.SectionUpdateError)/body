@@ -1,0 +1,19 @@
+{
+  StatsEvents.SectionUpdatedAbstract abstractEvent=errorEvent;
+  if (!shouldUpdateFragmentOnEvent(abstractEvent)) {
+    return false;
+  }
+  StatsService.StatsEndpointsEnum sectionToUpdate=errorEvent.mEndPointName;
+  StatsService.StatsEndpointsEnum[] sectionsToUpdate=getSectionsToUpdate();
+  int indexOfDatamodelMatch=-1;
+  for (int i=0; i < getSectionsToUpdate().length; i++) {
+    if (sectionToUpdate == sectionsToUpdate[i]) {
+      indexOfDatamodelMatch=i;
+      break;
+    }
+  }
+  if (-1 == indexOfDatamodelMatch) {
+    return false;
+  }
+  return true;
+}

@@ -3,6 +3,7 @@
     @Override public void run(){
       AppLog.e(T.STATS,"Error while loading Stats!");
       StatsUtils.logVolleyErrorDetails(volleyError);
+      BaseStatsModel mResponseObjectModel=null;
       if (volleyError instanceof com.android.volley.AuthFailureError) {
         int localId=StatsUtils.getLocalBlogIdFromRemoteBlogId(Integer.parseInt(mRequestBlogId));
         Blog blog=WordPress.wpDB.instantiateBlogByLocalId(localId);
@@ -12,8 +13,8 @@
           }
         }
       }
-      mResponseObjectModel=volleyError;
-      EventBus.getDefault().post(new StatsEvents.SectionUpdated(mEndpointName,mRequestBlogId,mTimeframe,mDate,mMaxResultsRequested,mPageRequested,mResponseObjectModel));
+      EventBus.getDefault().post(new StatsEvents.SectionUpdateError(mEndpointName,mRequestBlogId,mTimeframe,mDate,mMaxResultsRequested,mPageRequested,volleyError));
+      EventBus.getDefault().post(new StatsEvents.SectionUpdated(mEndpointName,mRequestBlogId,mTimeframe,mDate,mMaxResultsRequested,mPageRequested,volleyError));
       updateWidgetsUI(mRequestBlogId,mEndpointName,mTimeframe,mDate,mPageRequested,mResponseObjectModel);
       checkAllRequestsFinished(currentRequest);
     }
