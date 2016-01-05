@@ -14,6 +14,12 @@
   mRemoteSettings.allowComments=settingsObject.optBoolean(ALLOW_COMMENTS_KEY,true);
   mRemoteSettings.sendPingbacks=settingsObject.optBoolean(SEND_PINGBACKS_KEY,false);
   mRemoteSettings.receivePingbacks=settingsObject.optBoolean(RECEIVE_PINGBACKS_KEY,true);
+  mRemoteSettings.shouldCloseAfter=settingsObject.optBoolean(CLOSE_OLD_COMMENTS_KEY,false);
+  mRemoteSettings.closeCommentAfter=settingsObject.optInt(CLOSE_OLD_COMMENTS_DAYS_KEY,0);
+  mRemoteSettings.shouldThreadComments=settingsObject.optBoolean(THREAD_COMMENTS_KEY,false);
+  mRemoteSettings.threadingLevels=settingsObject.optInt(THREAD_COMMENTS_DEPTH_KEY,0);
+  mRemoteSettings.shouldPageComments=settingsObject.optBoolean(PAGE_COMMENTS_KEY,false);
+  mRemoteSettings.commentsPerPage=settingsObject.optInt(PAGE_COMMENT_COUNT_KEY,0);
   mRemoteSettings.commentApprovalRequired=settingsObject.optBoolean(COMMENT_MODERATION_KEY,false);
   mRemoteSettings.commentsRequireIdentity=settingsObject.optBoolean(REQUIRE_IDENTITY_KEY,false);
   mRemoteSettings.commentsRequireUserAccount=settingsObject.optBoolean(REQUIRE_USER_ACCOUNT_KEY,true);
@@ -28,24 +34,6 @@
   String blacklistKeys=settingsObject.optString(BLACKLIST_KEYS_KEY,"");
   if (blacklistKeys.length() > 0) {
     Collections.addAll(mRemoteSettings.blacklist,blacklistKeys.split("\n"));
-  }
-  if (settingsObject.optBoolean(CLOSE_OLD_COMMENTS_KEY,false)) {
-    mRemoteSettings.closeCommentAfter=settingsObject.optInt(CLOSE_OLD_COMMENTS_DAYS_KEY,0);
-  }
- else {
-    mRemoteSettings.closeCommentAfter=0;
-  }
-  if (settingsObject.optBoolean(THREAD_COMMENTS_KEY,false)) {
-    mRemoteSettings.threadingLevels=settingsObject.optInt(THREAD_COMMENTS_DEPTH_KEY,0);
-  }
- else {
-    mRemoteSettings.threadingLevels=0;
-  }
-  if (settingsObject.optBoolean(PAGE_COMMENTS_KEY,false)) {
-    mRemoteSettings.commentsPerPage=settingsObject.optInt(PAGE_COMMENT_COUNT_KEY,0);
-  }
- else {
-    mRemoteSettings.commentsPerPage=0;
   }
   if (settingsObject.optString(COMMENT_SORT_ORDER_KEY,"").equals("asc")) {
     mRemoteSettings.sortCommentsBy=ASCENDING_SORT;
