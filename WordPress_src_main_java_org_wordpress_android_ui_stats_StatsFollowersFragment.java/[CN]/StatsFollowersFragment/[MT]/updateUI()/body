@@ -4,16 +4,12 @@
   }
   mTopPagerContainer.setVisibility(View.VISIBLE);
   mTotalsLabel.setVisibility(View.VISIBLE);
-  if (mDatamodels == null) {
+  if (mFollowersWPCOM == null && mFollowersEmail == null) {
     showHideNoResultsUI(true);
     mTotalsLabel.setText(getTotalFollowersLabel(0));
     return;
   }
-  if (isErrorResponse()) {
-    showErrorUI();
-    return;
-  }
-  final FollowersModel followersModel=(FollowersModel)mDatamodels[mTopPagerSelectedButtonIndex];
+  final FollowersModel followersModel=getCurrentDataModel();
   if (followersModel != null && followersModel.getFollowers() != null && followersModel.getFollowers().size() > 0) {
     ArrayAdapter adapter=new DotComFollowerAdapter(getActivity(),followersModel.getFollowers());
     StatsUIHelper.reloadLinearLayout(getActivity(),adapter,mList,getMaxNumberOfItemsToShowInList());
