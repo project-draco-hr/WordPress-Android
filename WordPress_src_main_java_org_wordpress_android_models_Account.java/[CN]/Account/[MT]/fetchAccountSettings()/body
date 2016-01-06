@@ -1,0 +1,19 @@
+{
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      if (jsonObject != null) {
+        updateAccountSettingsFromRestResponse(jsonObject);
+        save();
+        EventBus.getDefault().post(new PrefsEvents.MyProfileDetailsChanged());
+      }
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.API,volleyError);
+    }
+  }
+;
+  WordPress.getRestClientUtilsV1_1().get("me/settings",listener,errorListener);
+}

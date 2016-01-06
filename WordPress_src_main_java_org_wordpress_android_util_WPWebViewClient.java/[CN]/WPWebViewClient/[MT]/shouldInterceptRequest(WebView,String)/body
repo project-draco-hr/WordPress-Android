@@ -1,8 +1,16 @@
 {
-  if (mBlog != null && mBlog.isPrivate() && !TextUtils.isEmpty(mToken) && UrlUtils.isImageUrl(stringUrl)) {
+  URL imageUrl=null;
+  if (mBlog != null && mBlog.isPrivate() && UrlUtils.isImageUrl(stringUrl)) {
     try {
-      URL url=new URL(stringUrl);
-      HttpURLConnection urlConnection=(HttpURLConnection)url.openConnection();
+      imageUrl=new URL(UrlUtils.makeHttps(stringUrl));
+    }
+ catch (    MalformedURLException e) {
+      AppLog.e(AppLog.T.READER,e);
+    }
+  }
+  if (imageUrl != null && WPUrlUtils.safeToAddWordPressComAuthToken(imageUrl) && !TextUtils.isEmpty(mToken)) {
+    try {
+      HttpURLConnection urlConnection=(HttpURLConnection)imageUrl.openConnection();
       urlConnection.setRequestProperty("Authorization","Bearer " + mToken);
       urlConnection.setReadTimeout(WPRestClient.REST_TIMEOUT_MS);
       urlConnection.setConnectTimeout(WPRestClient.REST_TIMEOUT_MS);
