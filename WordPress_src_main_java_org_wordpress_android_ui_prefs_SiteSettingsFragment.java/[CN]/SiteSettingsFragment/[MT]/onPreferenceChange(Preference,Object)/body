@@ -18,7 +18,7 @@
   }
  else   if (preference == mPrivacyPref) {
     mSiteSettings.setPrivacy(Integer.valueOf(newValue.toString()));
-    setDetailListPreferenceValue(mPrivacyPref,String.valueOf(mSiteSettings.getPrivacy()),getPrivacySummary(mSiteSettings.getPrivacy()));
+    setDetailListPreferenceValue(mPrivacyPref,String.valueOf(mSiteSettings.getPrivacy()),mSiteSettings.getPrivacyDescription());
   }
  else   if (preference == mAllowCommentsPref || preference == mAllowCommentsNested) {
     setAllowComments((Boolean)newValue);
@@ -31,19 +31,24 @@
   }
  else   if (preference == mCloseAfterPref) {
     mSiteSettings.setCloseAfter(Integer.parseInt(newValue.toString()));
-    setDetailListPreferenceValue(mCloseAfterPref,newValue.toString(),getCloseAfterSummary(mSiteSettings.getCloseAfter()));
+    if (mSiteSettings.getShouldCloseAfter()) {
+      mCloseAfterPref.setSummary(mSiteSettings.getCloseAfterDescription());
+    }
+ else {
+      mCloseAfterPref.setSummary(mSiteSettings.getCloseAfterDescription(0));
+    }
   }
  else   if (preference == mSortByPref) {
     mSiteSettings.setCommentSorting(Integer.parseInt(newValue.toString()));
-    setDetailListPreferenceValue(mSortByPref,newValue.toString(),getSortOrderSummary(mSiteSettings.getCommentSorting()));
+    setDetailListPreferenceValue(mSortByPref,newValue.toString(),mSiteSettings.getSortingDescription());
   }
  else   if (preference == mThreadingPref) {
     mSiteSettings.setThreadingLevels(Integer.parseInt(newValue.toString()));
-    setDetailListPreferenceValue(mThreadingPref,newValue.toString(),getThreadingSummary(mSiteSettings.getThreadingLevels()));
+    setDetailListPreferenceValue(mThreadingPref,newValue.toString(),mSiteSettings.getThreadingDescription());
   }
  else   if (preference == mPagingPref) {
     mSiteSettings.setPagingCount(Integer.parseInt(newValue.toString()));
-    setDetailListPreferenceValue(mPagingPref,newValue.toString(),getPagingSummary(mSiteSettings.getPagingCount()));
+    mPagingPref.setSummary(mSiteSettings.getPagingDescription());
   }
  else   if (preference == mIdentityRequiredPreference) {
     mSiteSettings.setIdentityRequired((Boolean)newValue);
@@ -56,7 +61,7 @@
   }
  else   if (preference == mMultipleLinksPref) {
     mSiteSettings.setMultipleLinks(Integer.parseInt(newValue.toString()));
-    mMultipleLinksPref.setSummary(getResources().getQuantityString(R.plurals.multiple_links_summary,mSiteSettings.getMultipleLinks(),mSiteSettings.getMultipleLinks()));
+    mMultipleLinksPref.setSummary(getResources().getQuantityString(R.plurals.site_settings_multiple_links_summary,mSiteSettings.getMultipleLinks(),mSiteSettings.getMultipleLinks()));
   }
  else   if (preference == mUsernamePref) {
     mSiteSettings.setUsername(newValue.toString());
@@ -80,5 +85,6 @@
  else {
     return false;
   }
+  mSiteSettings.saveSettings();
   return true;
 }

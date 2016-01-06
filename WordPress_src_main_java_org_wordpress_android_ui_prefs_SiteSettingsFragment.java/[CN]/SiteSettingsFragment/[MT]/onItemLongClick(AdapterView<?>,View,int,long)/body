@@ -10,6 +10,9 @@
  else     if (obj instanceof PreferenceHint) {
       PreferenceHint hintObj=(PreferenceHint)obj;
       if (hintObj.hasHint()) {
+        HashMap<String,Object> properties=new HashMap<>();
+        properties.put("hint_shown",hintObj.getHint());
+        AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.SITE_SETTINGS_HINT_TOAST_SHOWN,properties);
         ToastUtils.showToast(getActivity(),hintObj.getHint(),ToastUtils.Duration.SHORT);
       }
       return true;

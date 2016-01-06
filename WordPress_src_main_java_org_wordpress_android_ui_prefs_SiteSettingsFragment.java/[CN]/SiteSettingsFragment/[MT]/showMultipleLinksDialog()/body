@@ -1,27 +1,9 @@
 {
-  AlertDialog.Builder builder=new AlertDialog.Builder(getActivity(),R.style.Calypso_AlertDialog);
-  View view=View.inflate(getActivity(),R.layout.number_picker_dialog,null);
-  final NumberPicker numberPicker=(NumberPicker)view.findViewById(R.id.number_picker);
-  TextView detailText=(TextView)view.findViewById(R.id.number_picker_text);
-  detailText.setTextColor(getResources().getColor(R.color.grey_darken_10));
-  detailText.setText(R.string.multiple_links_description);
-  numberPicker.setMaxValue(getResources().getInteger(R.integer.max_links_limit));
-  numberPicker.setValue(Math.max(numberPicker.getMinValue(),Math.min(numberPicker.getMaxValue(),mSiteSettings.getMultipleLinks())));
-  LayoutInflater inflater=LayoutInflater.from(getActivity());
-  @SuppressLint("InflateParams") View titleView=inflater.inflate(R.layout.detail_list_preference_title,null);
-  TextView titleText=((TextView)titleView.findViewById(R.id.title));
-  titleText.setText(R.string.site_settings_multiple_links_title);
-  titleText.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.WRAP_CONTENT));
-  builder.setCustomTitle(titleView);
-  builder.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener(){
-    @Override public void onClick(    DialogInterface dialog,    int which){
-      if (mSiteSettings.getMultipleLinks() != numberPicker.getValue()) {
-        onPreferenceChange(mMultipleLinksPref,numberPicker.getValue());
-      }
-    }
-  }
-);
-  builder.setNegativeButton(R.string.cancel,null);
-  builder.setView(view);
-  builder.create().show();
+  Bundle args=new Bundle();
+  args.putBoolean(NumberPickerDialog.SHOW_SWITCH_KEY,false);
+  args.putString(NumberPickerDialog.TITLE_KEY,getString(R.string.site_settings_multiple_links_title));
+  args.putInt(NumberPickerDialog.MIN_VALUE_KEY,0);
+  args.putInt(NumberPickerDialog.MAX_VALUE_KEY,getResources().getInteger(R.integer.max_links_limit));
+  args.putInt(NumberPickerDialog.CUR_VALUE_KEY,mSiteSettings.getMultipleLinks());
+  showNumberPickerDialog(args,MULTIPLE_LINKS_REQUEST_CODE,"multiple-links-dialog");
 }
