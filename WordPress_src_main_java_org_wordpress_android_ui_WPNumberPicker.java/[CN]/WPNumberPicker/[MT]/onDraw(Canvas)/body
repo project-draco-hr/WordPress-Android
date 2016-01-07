@@ -1,0 +1,32 @@
+{
+  int[] selectorIndices=getIndices();
+  setIndices(new int[0]);
+  setIndices(selectorIndices);
+  setDisplayValues();
+  float elementHeight=getSelectorElementHeight();
+  float x=((getRight() - getLeft()) / 2.0f);
+  float y=getScrollOffset();
+  Paint paint=mInputView.getPaint();
+  paint.setTextAlign(Paint.Align.CENTER);
+  paint.setColor(getResources().getColor(R.color.blue_medium));
+  int alpha=isEnabled() ? 255 : 96;
+  paint.setAlpha(alpha);
+  mPaint.setAlpha(alpha);
+  int offset=getResources().getDimensionPixelSize(R.dimen.margin_medium);
+  for (int i=0; i < DISPLAY_COUNT; ++i) {
+    String scrollSelectorValue;
+    if (mFormatter != null) {
+      scrollSelectorValue=mFormatter.format(mDisplayValues[i]);
+    }
+ else {
+      scrollSelectorValue=String.valueOf(mDisplayValues[i]);
+    }
+    if (i == MIDDLE_INDEX) {
+      canvas.drawText(scrollSelectorValue,x,y - ((paint.descent() + paint.ascent()) / 2) - offset,paint);
+    }
+ else {
+      canvas.drawText(scrollSelectorValue,x,y - ((mPaint.descent() + mPaint.ascent()) / 2) - offset,mPaint);
+    }
+    y+=elementHeight;
+  }
+}
