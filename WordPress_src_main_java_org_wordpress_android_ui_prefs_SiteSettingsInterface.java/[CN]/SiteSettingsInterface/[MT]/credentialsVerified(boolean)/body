@@ -1,14 +1,5 @@
 {
-  if (valid) {
-    if (!mSettings.hasVerifiedCredentials) {
-      notifyCredentialsVerifiedOnUiThread(null);
-    }
-    mRemoteSettings.hasVerifiedCredentials=mSettings.hasVerifiedCredentials=true;
-  }
- else {
-    if (mSettings.hasVerifiedCredentials) {
-      notifyCredentialsVerifiedOnUiThread(new AuthenticationError());
-    }
-    mRemoteSettings.hasVerifiedCredentials=mSettings.hasVerifiedCredentials=false;
-  }
+  Exception e=valid ? null : new AuthenticationError();
+  if (mSettings.hasVerifiedCredentials != valid)   notifyCredentialsVerifiedOnUiThread(e);
+  mRemoteSettings.hasVerifiedCredentials=mSettings.hasVerifiedCredentials=valid;
 }
