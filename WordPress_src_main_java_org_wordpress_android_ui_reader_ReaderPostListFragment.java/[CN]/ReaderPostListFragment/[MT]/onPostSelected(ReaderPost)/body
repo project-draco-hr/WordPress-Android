@@ -13,6 +13,10 @@
       }
     }
   }
+  if (post.isXpost()) {
+    ReaderActivityLauncher.showReaderPostDetail(getActivity(),post.xpostBlogId,post.xpostPostId);
+    return;
+  }
   ReaderPostListType type=getPostListType();
   Map<String,Object> analyticsProperties=new HashMap<>();
 switch (type) {
@@ -27,5 +31,4 @@ analyticsProperties.put(AnalyticsTracker.READER_DETAIL_TYPE_KEY,AnalyticsTracker
 ReaderActivityLauncher.showReaderPostPagerForBlog(getActivity(),post.blogId,post.postId);
 break;
 }
-AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.READER_ARTICLE_OPENED,mCurrentBlogId != 0 ? mCurrentBlogId : null);
 }

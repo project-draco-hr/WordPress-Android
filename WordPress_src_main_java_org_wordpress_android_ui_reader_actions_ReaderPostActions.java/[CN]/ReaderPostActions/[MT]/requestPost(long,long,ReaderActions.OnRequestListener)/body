@@ -1,0 +1,33 @@
+{
+  String path="read/sites/" + blogId + "/posts/"+ postId+ "/?meta=site,likes";
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      ReaderPost post=ReaderPost.fromJson(jsonObject);
+      ReaderPostTable.addOrUpdatePost(post);
+      handlePostLikes(post,jsonObject);
+      if (requestListener != null) {
+        requestListener.onSuccess();
+      }
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.READER,volleyError);
+      if (requestListener != null) {
+        int statusCode=0;
+        JSONObject jsonObject=VolleyUtils.volleyErrorToJSON(volleyError);
+        if (jsonObject != null && jsonObject.has("code")) {
+          statusCode=jsonObject.optInt("code");
+        }
+        if (statusCode == 0) {
+          statusCode=VolleyUtils.statusCodeFromVolleyError(volleyError);
+        }
+        requestListener.onFailure(statusCode);
+      }
+    }
+  }
+;
+  AppLog.d(T.READER,"requesting post");
+  WordPress.getRestClientUtilsV1_2().get(path,null,null,listener,errorListener);
+}

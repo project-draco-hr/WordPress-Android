@@ -1,0 +1,18 @@
+{
+  Blog blog=(Blog)arguments[0];
+  if (blog == null) {
+    return false;
+  }
+  String postId=(String)arguments[1];
+  boolean isPage=(Boolean)arguments[2];
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
+  Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),postId};
+  try {
+    client.call(isPage ? Methods.DELETE_PAGE : Methods.DELETE_POST,params);
+    return true;
+  }
+ catch (  XMLRPCException|IOException|XmlPullParserException e) {
+    mErrorMessage=e.getMessage();
+    return false;
+  }
+}

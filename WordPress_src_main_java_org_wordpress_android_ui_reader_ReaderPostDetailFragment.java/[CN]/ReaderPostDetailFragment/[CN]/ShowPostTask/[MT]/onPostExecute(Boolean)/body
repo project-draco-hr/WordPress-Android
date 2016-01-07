@@ -1,13 +1,15 @@
 {
   mIsPostTaskRunning=false;
-  if (!isAdded()) {
-    return;
-  }
+  if (!isAdded())   return;
+  getActivity().invalidateOptionsMenu();
   if (!result) {
     if (!mHasAlreadyRequestedPost) {
       mHasAlreadyRequestedPost=true;
       AppLog.i(T.READER,"reader post detail > post not found, requesting it");
       requestPost();
+    }
+ else     if (!TextUtils.isEmpty(mErrorMessage)) {
+      showError(mErrorMessage);
     }
     return;
   }
@@ -44,7 +46,7 @@
     txtBlogName.setVisibility(View.VISIBLE);
   }
  else   if (mPost.hasBlogUrl()) {
-    txtBlogName.setText(UrlUtils.getDomainFromUrl(mPost.getBlogUrl()));
+    txtBlogName.setText(UrlUtils.getHost(mPost.getBlogUrl()));
     txtBlogName.setVisibility(View.VISIBLE);
   }
  else {
@@ -67,7 +69,7 @@
   }
   String dateLine;
   if (mPost.hasBlogUrl()) {
-    dateLine=UrlUtils.getDomainFromUrl(mPost.getBlogUrl()) + " \u2022 " + DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished());
+    dateLine=UrlUtils.getHost(mPost.getBlogUrl()) + " \u2022 " + DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished());
   }
  else {
     dateLine=DateTimeUtils.javaDateToTimeSpan(mPost.getDatePublished());

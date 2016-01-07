@@ -1,0 +1,9 @@
+{
+  if (!hasPagerAdapter() || mTrackedPositions.contains(position))   return;
+  ReaderBlogIdPostId idPair=getPagerAdapter().getBlogIdPostIdAtPosition(position);
+  if (idPair == null)   return;
+  AppLog.d(AppLog.T.READER,"reader pager > tracking post at position " + position);
+  mTrackedPositions.add(position);
+  ReaderPostActions.bumpPageViewForPost(idPair.getBlogId(),idPair.getPostId());
+  AnalyticsUtils.trackWithReaderPostDetails(AnalyticsTracker.Stat.READER_ARTICLE_OPENED,ReaderPostTable.getPost(idPair.getBlogId(),idPair.getPostId(),true));
+}

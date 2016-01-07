@@ -1,0 +1,20 @@
+{
+  if (!NotificationsUtils.isNotificationsEnabled(WordPress.getContext())) {
+    return;
+  }
+  if (properties == null) {
+    properties=new HashMap<>();
+  }
+  String notificationID=noteBundle.getString(PUSH_ARG_NOTE_ID,"");
+  if (!TextUtils.isEmpty(notificationID)) {
+    for (    String currentPropertyToCopy : propertiesToCopyIntoAnalytics) {
+      if (noteBundle.containsKey(currentPropertyToCopy)) {
+        properties.put("push_notification_" + currentPropertyToCopy,noteBundle.get(currentPropertyToCopy));
+      }
+    }
+    SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
+    String lastRegisteredGCMToken=preferences.getString(NotificationsUtils.WPCOM_PUSH_DEVICE_TOKEN,null);
+    properties.put("push_notification_token",lastRegisteredGCMToken);
+    AnalyticsTracker.track(stat,properties);
+  }
+}

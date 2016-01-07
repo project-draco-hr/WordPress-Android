@@ -6,6 +6,7 @@
   post.postId=json.optLong("ID");
   post.blogId=json.optLong("site_ID");
   post.feedId=json.optLong("feed_ID");
+  post.feedItemId=json.optLong("feed_item_ID");
   if (json.has("pseudo_ID")) {
     post.pseudoId=JSONUtils.getString(json,"pseudo_ID");
   }
@@ -35,19 +36,9 @@
     post.numReplies=json.optInt("comment_count");
   }
   assignAuthorFromJson(post,json.optJSONObject("author"));
-  JSONObject jsonEditorial=json.optJSONObject("editorial");
-  if (jsonEditorial != null) {
-    post.blogId=jsonEditorial.optLong("blog_id");
-    post.blogName=JSONUtils.getStringDecoded(jsonEditorial,"blog_name");
-    post.featuredImage=ReaderImageScanner.getImageUrlFromFPFeaturedImageUrl(JSONUtils.getString(jsonEditorial,"image"));
-    post.setPrimaryTag(JSONUtils.getString(jsonEditorial,"highlight_topic_title"));
-    post.published=JSONUtils.getString(jsonEditorial,"displayed_on");
-  }
- else {
-    post.featuredImage=JSONUtils.getString(json,"featured_image");
-    post.blogName=JSONUtils.getStringDecoded(json,"site_name");
-    post.published=JSONUtils.getString(json,"date");
-  }
+  post.featuredImage=JSONUtils.getString(json,"featured_image");
+  post.blogName=JSONUtils.getStringDecoded(json,"site_name");
+  post.published=JSONUtils.getString(json,"date");
   String likeDate=JSONUtils.getString(json,"date_liked");
   if (!TextUtils.isEmpty(likeDate)) {
     post.timestamp=DateTimeUtils.iso8601ToTimestamp(likeDate);
@@ -78,6 +69,7 @@
   if (jsonDiscover != null) {
     post.setDiscoverJson(jsonDiscover.toString());
   }
+  assignXpostIdsFromJson(post,json.optJSONArray("metadata"));
   if (!post.hasFeaturedImage()) {
     JSONObject jsonMedia=json.optJSONObject("featured_media");
     if (jsonMedia != null && jsonMedia.length() > 0) {

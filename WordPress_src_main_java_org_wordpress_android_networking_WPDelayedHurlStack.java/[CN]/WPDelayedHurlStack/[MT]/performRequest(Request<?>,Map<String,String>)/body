@@ -1,16 +1,19 @@
 {
   if (request.getUrl() != null) {
-    if (!StringUtils.getHost(request.getUrl()).endsWith("wordpress.com") && mCurrentBlog != null && mCurrentBlog.hasValidHTTPAuthCredentials()) {
+    if (!WPUrlUtils.isWordPressCom(request.getUrl()) && mCurrentBlog != null && mCurrentBlog.hasValidHTTPAuthCredentials()) {
       String creds=String.format("%s:%s",mCurrentBlog.getHttpuser(),mCurrentBlog.getHttppassword());
       String auth="Basic " + Base64.encodeToString(creds.getBytes(),Base64.DEFAULT);
       additionalHeaders.put("Authorization",auth);
     }
-    if (StringUtils.getHost(request.getUrl()).endsWith("files.wordpress.com") && mCtx != null && AccountHelper.isSignedInWordPressDotCom()) {
+    if (WPUrlUtils.safeToAddWordPressComAuthToken(request.getUrl()) && mCtx != null && AccountHelper.isSignedInWordPressDotCom()) {
       additionalHeaders.put("Authorization","Bearer " + AccountHelper.getDefaultAccount().getAccessToken());
     }
   }
   additionalHeaders.put("User-Agent",WordPress.getUserAgent());
   String url=request.getUrl();
+  if (additionalHeaders.containsKey("Authorization")) {
+    url=UrlUtils.makeHttps(url);
+  }
   HashMap<String,String> map=new HashMap<String,String>();
   map.putAll(request.getHeaders());
   map.putAll(additionalHeaders);
