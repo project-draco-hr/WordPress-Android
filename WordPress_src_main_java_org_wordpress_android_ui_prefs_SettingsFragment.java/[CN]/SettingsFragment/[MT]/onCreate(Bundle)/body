@@ -2,20 +2,6 @@
   super.onCreate(savedInstanceState);
   addPreferencesFromResource(R.xml.settings);
   mPreferenceScreen=(PreferenceScreen)findPreference(getActivity().getString(R.string.pref_key_settings_root));
-  OnPreferenceChangeListener preferenceChangeListener=new OnPreferenceChangeListener(){
-    @Override public boolean onPreferenceChange(    Preference preference,    Object newValue){
-      if (newValue != null) {
-        preference.setSummary(newValue.toString());
-      }
-      ActivityUtils.hideKeyboard(getActivity());
-      return true;
-    }
-  }
-;
-  mTaglineTextPreference=(WPEditTextPreference)findPreference(getString(R.string.pref_key_post_sig));
-  if (mTaglineTextPreference != null) {
-    mTaglineTextPreference.setOnPreferenceChangeListener(preferenceChangeListener);
-  }
   mUsernamePreference=findPreference(getString(R.string.pref_key_username));
   mUsernamePreference.setSummary(AccountHelper.getDefaultAccount().getUserName());
   findPreference(getString(R.string.pref_key_language)).setOnPreferenceClickListener(this);
@@ -23,6 +9,5 @@
   findPreference(getString(R.string.pref_key_oss_licenses)).setOnPreferenceClickListener(this);
   findPreference(getString(R.string.pref_key_reset_shared_pref)).setOnPreferenceClickListener(this);
   mSettings=PreferenceManager.getDefaultSharedPreferences(getActivity());
-  updatePostSignature();
   checkWordPressComOnlyFields();
 }
