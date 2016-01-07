@@ -11,6 +11,9 @@
     }
     @TargetApi(Build.VERSION_CODES.LOLLIPOP) @Override public WebResourceResponse shouldInterceptRequest(    WebView view,    WebResourceRequest request){
       String url=request.getUrl().toString();
+      if (!URLUtil.isNetworkUrl(url)) {
+        return super.shouldInterceptRequest(view,request);
+      }
       try {
         Map<String,String> headerMap=request.getRequestHeaders();
         for (        Map.Entry<String,String> entry : mHeaderMap.entrySet()) {
@@ -33,6 +36,9 @@
  * Compatibility method for API < 21
  */
     @SuppressWarnings("deprecation") @Override public WebResourceResponse shouldInterceptRequest(    WebView view,    String url){
+      if (!URLUtil.isNetworkUrl(url)) {
+        return super.shouldInterceptRequest(view,url);
+      }
       try {
         Map<String,String> headerMap=new HashMap<>(mHeaderMap);
         String authHeader=mAuthHeaderRequestListener.onAuthHeaderRequested(UrlUtils.makeHttps(url));
