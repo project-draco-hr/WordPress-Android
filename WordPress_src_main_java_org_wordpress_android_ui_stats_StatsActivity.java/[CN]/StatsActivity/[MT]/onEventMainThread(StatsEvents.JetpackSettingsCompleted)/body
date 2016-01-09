@@ -4,7 +4,11 @@
   }
   mSwipeToRefreshHelper.setRefreshing(false);
   if (!event.isError) {
-    if (StatsUtils.getBlogId(mLocalBlogID) == null) {
+    final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
+    if (currentBlog == null) {
+      return;
+    }
+    if (currentBlog.getDotComBlogId() == null) {
       showJetpackMissingAlert();
     }
  else {
