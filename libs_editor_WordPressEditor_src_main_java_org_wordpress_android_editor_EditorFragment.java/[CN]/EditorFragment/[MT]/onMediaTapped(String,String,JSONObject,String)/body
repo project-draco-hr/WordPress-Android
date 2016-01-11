@@ -46,9 +46,22 @@ return;
 ImageSettingsDialogFragment imageSettingsDialogFragment=new ImageSettingsDialogFragment();
 imageSettingsDialogFragment.setTargetFragment(this,ImageSettingsDialogFragment.IMAGE_SETTINGS_DIALOG_REQUEST_CODE);
 Bundle dialogBundle=new Bundle();
-dialogBundle.putString("imageMeta",meta.toString());
 dialogBundle.putString("maxWidth",mBlogSettingMaxImageWidth);
 dialogBundle.putBoolean("featuredImageSupported",mFeaturedImageSupported);
+HashMap<String,String> headerMap=new HashMap<>(mCustomHttpHeaders);
+try {
+final String imageSrc=meta.getString("src");
+String authHeader=mEditorFragmentListener.onAuthHeaderRequested(UrlUtils.makeHttps(imageSrc));
+if (authHeader.length() > 0) {
+meta.put("src",UrlUtils.makeHttps(imageSrc));
+headerMap.put("Authorization",authHeader);
+}
+}
+ catch (JSONException e) {
+AppLog.e(T.EDITOR,"Could not retrieve image url from JSON metadata");
+}
+dialogBundle.putSerializable("headerMap",headerMap);
+dialogBundle.putString("imageMeta",meta.toString());
 String imageId=JSONUtils.getString(meta,"attachment_id");
 if (!imageId.isEmpty()) {
 dialogBundle.putBoolean("isFeatured",mFeaturedImageId == Integer.parseInt(imageId));

@@ -14,7 +14,12 @@
         }
       }
  else {
-        inputStream=(new URL(imageUri.toString())).openStream();
+        if (headers != null) {
+          inputStream=HTTPUtils.setupUrlConnection(imageUri.toString(),headers).getInputStream();
+        }
+ else {
+          inputStream=(new URL(imageUri.toString())).openStream();
+        }
       }
       String fileName="thumb-" + System.currentTimeMillis();
       File f=new File(cacheDir,fileName);
