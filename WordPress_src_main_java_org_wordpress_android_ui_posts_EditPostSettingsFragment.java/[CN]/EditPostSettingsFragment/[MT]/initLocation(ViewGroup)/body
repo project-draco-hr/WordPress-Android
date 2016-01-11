@@ -1,0 +1,37 @@
+{
+  if (!mPost.supportsLocation())   return;
+  View locationRootView=((ViewStub)rootView.findViewById(R.id.stub_post_location_settings)).inflate();
+  TextView locationLabel=((TextView)locationRootView.findViewById(R.id.locationLabel));
+  locationLabel.setText(getResources().getString(R.string.location).toUpperCase());
+  mLocationText=(TextView)locationRootView.findViewById(R.id.locationText);
+  mLocationText.setOnClickListener(this);
+  mLocationAddSection=locationRootView.findViewById(R.id.sectionLocationAdd);
+  mLocationSearchSection=locationRootView.findViewById(R.id.sectionLocationSearch);
+  mLocationViewSection=locationRootView.findViewById(R.id.sectionLocationView);
+  Button addLocation=(Button)locationRootView.findViewById(R.id.addLocation);
+  addLocation.setOnClickListener(this);
+  mButtonSearchLocation=(Button)locationRootView.findViewById(R.id.searchLocation);
+  mButtonSearchLocation.setOnClickListener(this);
+  mLocationEditText=(EditText)locationRootView.findViewById(R.id.searchLocationText);
+  mLocationEditText.setOnEditorActionListener(this);
+  mLocationEditText.addTextChangedListener(mLocationEditTextWatcher);
+  Button updateLocation=(Button)locationRootView.findViewById(R.id.updateLocation);
+  Button removeLocation=(Button)locationRootView.findViewById(R.id.removeLocation);
+  updateLocation.setOnClickListener(this);
+  removeLocation.setOnClickListener(this);
+  if (!checkForLocationPermission())   return;
+  if (mPost.hasLocation()) {
+    showLocationView();
+    PostLocation location=mPost.getLocation();
+    setLocation(location.getLatitude(),location.getLongitude());
+  }
+ else {
+    EditPostActivity activity=(EditPostActivity)getActivity();
+    if (SiteSettingsInterface.getGeotagging(activity) && activity.isNewPost()) {
+      searchLocation();
+    }
+ else {
+      showLocationAdd();
+    }
+  }
+}

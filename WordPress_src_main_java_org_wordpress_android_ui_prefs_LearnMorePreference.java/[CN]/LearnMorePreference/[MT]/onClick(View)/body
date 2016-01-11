@@ -1,0 +1,22 @@
+{
+  if (mDialog != null)   return;
+  AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.SITE_SETTINGS_LEARN_MORE_CLICKED);
+  Context context=getContext();
+  mDialog=new Dialog(context);
+  mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+  mDialog.setOnDismissListener(this);
+  mDialog.setContentView(R.layout.learn_more_pref_screen);
+  WebView webView=new WebView(context);
+  webView.setWebViewClient(new WebViewClient(){
+    @Override public void onPageFinished(    WebView webView,    String url){
+      super.onPageFinished(webView,url);
+      if (mDialog != null) {
+        AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.SITE_SETTINGS_LEARN_MORE_LOADED);
+        mDialog.setContentView(webView);
+      }
+    }
+  }
+);
+  webView.loadUrl(WP_SUPPORT_URL);
+  mDialog.show();
+}

@@ -3,12 +3,12 @@
     AppLog.w(AppLog.T.STATS,"StatsActivity > cannot check credentials since no internet connection available");
     return false;
   }
-  final String blogId=StatsUtils.getBlogId(mLocalBlogID);
   final Blog currentBlog=WordPress.getBlog(mLocalBlogID);
   if (currentBlog == null) {
     AppLog.e(T.STATS,"The blog with local_blog_id " + mLocalBlogID + " cannot be loaded from the DB.");
     return false;
   }
+  final String blogId=currentBlog.getDotComBlogId();
   if (blogId != null) {
     if (!currentBlog.isDotcomFlag() && !currentBlog.hasValidJetpackCredentials() && mResultCode != RESULT_CANCELED) {
       if (AccountHelper.isSignedInWordPressDotCom()) {
