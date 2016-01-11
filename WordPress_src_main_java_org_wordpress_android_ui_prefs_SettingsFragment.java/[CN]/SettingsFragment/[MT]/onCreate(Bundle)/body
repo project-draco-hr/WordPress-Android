@@ -3,7 +3,11 @@
   addPreferencesFromResource(R.xml.settings);
   mPreferenceScreen=(PreferenceScreen)findPreference(getActivity().getString(R.string.pref_key_settings_root));
   mUsernamePreference=findPreference(getString(R.string.pref_key_username));
-  mUsernamePreference.setSummary(AccountHelper.getDefaultAccount().getUserName());
+  mEmailPreference=(SummaryEditTextPreference)findPreference(getString(R.string.pref_key_email));
+  Account account=AccountHelper.getDefaultAccount();
+  mUsernamePreference.setSummary(account.getUserName());
+  mEmailPreference.setSummary(account.getEmail());
+  mEmailPreference.setOnPreferenceChangeListener(this);
   findPreference(getString(R.string.pref_key_language)).setOnPreferenceClickListener(this);
   findPreference(getString(R.string.pref_key_app_about)).setOnPreferenceClickListener(this);
   findPreference(getString(R.string.pref_key_oss_licenses)).setOnPreferenceClickListener(this);
