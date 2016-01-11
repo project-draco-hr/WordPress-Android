@@ -1,0 +1,17 @@
+{
+  try {
+    int num=response.getInt(CAT_NUM_POSTS_KEY);
+    JSONArray categories=response.getJSONArray(CATEGORIES_KEY);
+    CategoryModel[] models=new CategoryModel[num];
+    for (int i=0; i < num; ++i) {
+      JSONObject category=categories.getJSONObject(i);
+      models[i]=deserializeCategoryFromJson(category);
+    }
+    AppLog.d(AppLog.T.API,"Successfully fetched WP.com categories");
+    return models;
+  }
+ catch (  JSONException exception) {
+    AppLog.d(AppLog.T.API,"Error parsing WP.com categories response:" + response);
+    return null;
+  }
+}
