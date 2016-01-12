@@ -40,15 +40,17 @@
       super.onPageSelected(position);
       onShowHideToolbar(true);
       trackPostAtPositionIfNeeded(position);
-    }
-    @Override public void onPageScrollStateChanged(    int state){
-      super.onPageScrollStateChanged(state);
-      if (state == ViewPager.SCROLL_STATE_DRAGGING) {
-        ReaderPostDetailFragment fragment=getActiveDetailFragment();
-        if (fragment != null) {
-          fragment.pauseWebView();
+      if (mLastSelectedPosition > -1 && mLastSelectedPosition != position) {
+        ReaderPostDetailFragment lastFragment=getDetailFragmentAtPosition(mLastSelectedPosition);
+        if (lastFragment != null) {
+          lastFragment.pauseWebView();
         }
       }
+      ReaderPostDetailFragment thisFragment=getDetailFragmentAtPosition(position);
+      if (thisFragment != null) {
+        thisFragment.resumeWebViewIfPaused();
+      }
+      mLastSelectedPosition=position;
     }
   }
 );
