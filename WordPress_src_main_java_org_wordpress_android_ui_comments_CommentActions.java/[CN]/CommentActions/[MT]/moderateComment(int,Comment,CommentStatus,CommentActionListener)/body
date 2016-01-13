@@ -11,22 +11,19 @@
   final Handler handler=new Handler();
   new Thread(){
     @Override public void run(){
-      CommentActions.moderateCommentRestApi(blog.getRemoteBlogId(),comment.commentID,newStatus,new CommentActions.CommentActionListener(){
-        @Override public void onActionResult(        final boolean succeeded){
-          if (succeeded) {
-            CommentTable.updateCommentStatus(blog.getLocalTableBlogId(),comment.commentID,CommentStatus.toString(newStatus));
-          }
-          if (actionListener != null) {
-            handler.post(new Runnable(){
-              @Override public void run(){
-                actionListener.onActionResult(succeeded);
-              }
-            }
-);
+      XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
+      final boolean success=ApiHelper.editComment(blog,comment,newStatus);
+      if (success) {
+        CommentTable.updateCommentStatus(blog.getLocalTableBlogId(),comment.commentID,CommentStatus.toString(newStatus));
+      }
+      if (actionListener != null) {
+        handler.post(new Runnable(){
+          @Override public void run(){
+            actionListener.onActionResult(success);
           }
         }
-      }
 );
+      }
     }
   }
 .start();

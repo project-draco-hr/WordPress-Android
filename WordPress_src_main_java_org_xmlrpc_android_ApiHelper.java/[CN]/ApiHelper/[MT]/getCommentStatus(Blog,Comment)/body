@@ -1,0 +1,21 @@
+{
+  if (blog == null) {
+    return null;
+  }
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
+  Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),Long.toString(comment.commentID)};
+  try {
+    Map<?,?> contentHash=(Map<?,?>)client.call(Method.GET_COMMENT,params);
+    return CommentStatus.fromString(contentHash.get("status").toString());
+  }
+ catch (  XMLRPCException e) {
+    AppLog.e(T.COMMENTS,"Error while getting comment",e);
+  }
+catch (  IOException e) {
+    AppLog.e(T.COMMENTS,"Error while getting comment",e);
+  }
+catch (  XmlPullParserException e) {
+    AppLog.e(T.COMMENTS,"Error while getting comment",e);
+  }
+  return null;
+}
