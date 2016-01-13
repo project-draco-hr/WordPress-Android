@@ -1,9 +1,14 @@
 {
   String blogId=String.valueOf(WordPress.currentBlog.getLocalTableBlogId());
-  Cursor cursor=WordPress.wpDB.getMediaFileByVideoPressId(blogId,videoId);
-  String path="";
-  if (cursor != null && cursor.moveToFirst()) {
-    path=cursor.getString(cursor.getColumnIndex("fileURL"));
+  String path=WordPressMediaUtils.getNetworkVideoUrlFromVideoPressId(blogId,videoId);
+  if (path.isEmpty()) {
+    if (PermissionUtils.checkAndRequestCameraAndStoragePermissions(this,MEDIA_PERMISSION_REQUEST_CODE)) {
+      if (mPendingVideoPressInfoRequests == null) {
+        mPendingVideoPressInfoRequests=new ArrayList<>();
+      }
+      mPendingVideoPressInfoRequests.add(videoId);
+      refreshBlogMedia();
+    }
   }
-  return path;
+  mEditorFragment.setUrlForVideoPressId(videoId,path,"");
 }

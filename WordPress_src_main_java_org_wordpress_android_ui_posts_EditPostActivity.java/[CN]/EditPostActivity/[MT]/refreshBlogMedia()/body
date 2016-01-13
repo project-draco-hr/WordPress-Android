@@ -5,6 +5,19 @@
     ApiHelper.SyncMediaLibraryTask.Callback callback=new ApiHelper.SyncMediaLibraryTask.Callback(){
       @Override public void onSuccess(      int count){
         mBlogMediaStatus=1;
+        runOnUiThread(new Runnable(){
+          @Override public void run(){
+            if (!mPendingVideoPressInfoRequests.isEmpty()) {
+              for (              String videoId : mPendingVideoPressInfoRequests) {
+                String blogId=String.valueOf(WordPress.currentBlog.getLocalTableBlogId());
+                String path=WordPressMediaUtils.getNetworkVideoUrlFromVideoPressId(blogId,videoId);
+                mEditorFragment.setUrlForVideoPressId(videoId,path,"");
+              }
+              mPendingVideoPressInfoRequests.clear();
+            }
+          }
+        }
+);
       }
       @Override public void onFailure(      final ApiHelper.ErrorType errorType,      String errorMessage,      Throwable throwable){
         mBlogMediaStatus=0;
