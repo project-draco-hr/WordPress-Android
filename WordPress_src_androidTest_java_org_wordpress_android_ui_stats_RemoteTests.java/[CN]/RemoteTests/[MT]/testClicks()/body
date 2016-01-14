@@ -1,0 +1,25 @@
+{
+  StatsRestRequestAbstractListener listener=new StatsRestRequestAbstractListener(){
+    @Override void parseResponse(    JSONObject response) throws JSONException {
+      ClicksModel model=new ClicksModel("123456",response);
+      assertEquals(model.getTotalClicks(),2);
+      assertEquals(model.getOtherClicks(),0);
+      assertNotNull(model.getClickGroups());
+      assertEquals(model.getClickGroups().size(),2);
+      ClickGroupModel first=model.getClickGroups().get(0);
+      assertEquals(first.getIcon(),"");
+      assertEquals(first.getUrl(),"http://astralbodies.net/blog/2013/10/31/paying-attention-at-automattic/");
+      assertEquals(first.getName(),"astralbodies.net/blog/2013/10/31/paying-attention-at-automattic/");
+      assertEquals(first.getViews(),1);
+      assertNull(first.getClicks());
+      ClickGroupModel second=model.getClickGroups().get(1);
+      assertEquals(second.getIcon(),"");
+      assertEquals(second.getUrl(),"https://devforums.apple.com/thread/86137");
+      assertEquals(second.getName(),"devforums.apple.com/thread/86137");
+      assertEquals(second.getViews(),1);
+      assertNull(second.getClicks());
+    }
+  }
+;
+  mRestClient.makeRequest(Request.Method.POST,"https://public-api.wordpress.com/rest/v1.1/sites/123456/stats/clicks",null,listener,errListener);
+}
