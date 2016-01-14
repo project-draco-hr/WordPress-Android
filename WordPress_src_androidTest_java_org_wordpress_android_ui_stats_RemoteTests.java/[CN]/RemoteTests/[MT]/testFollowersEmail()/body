@@ -1,0 +1,28 @@
+{
+  StatsRestRequestAbstractListener listener=new StatsRestRequestAbstractListener(){
+    @Override void parseResponse(    JSONObject response) throws JSONException {
+      FollowersModel model=new FollowersModel("123456",response);
+      assertEquals(model.getTotalEmail(),2931);
+      assertEquals(model.getTotalWPCom(),7926165);
+      assertEquals(model.getTotal(),2931);
+      assertEquals(model.getPage(),1);
+      assertEquals(model.getPages(),419);
+      assertNotNull(model.getFollowers());
+      assertEquals(model.getFollowers().size(),7);
+      FollowerModel first=model.getFollowers().get(0);
+      assertEquals(first.getAvatar(),"https://2.gravatar.com/avatar/e82142697283897ad7444810e5975895?s=64" + "&amp;d=https%3A%2F%2F2.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D64&amp;r=G");
+      assertEquals(first.getLabel(),"user1@example.com");
+      assertNull(first.getURL());
+      assertNull(first.getFollowData());
+      assertEquals(first.getDateSubscribed(),"2014-12-16T11:24:41+00:00");
+      FollowerModel last=model.getFollowers().get(6);
+      assertEquals(last.getAvatar(),"https://0.gravatar.com/avatar/3b37f38b63ce4f595cc5cfbaadb10938?s=64" + "&amp;d=https%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D64&amp;r=G");
+      assertEquals(last.getLabel(),"user7@example.com");
+      assertNull(last.getURL());
+      assertNull(last.getFollowData());
+      assertEquals(last.getDateSubscribed(),"2014-12-15T15:09:01+00:00");
+    }
+  }
+;
+  mRestClient.makeRequest(Request.Method.POST,"https://public-api.wordpress.com/rest/v1.1/sites/123456/stats/followers",null,listener,errListener);
+}
