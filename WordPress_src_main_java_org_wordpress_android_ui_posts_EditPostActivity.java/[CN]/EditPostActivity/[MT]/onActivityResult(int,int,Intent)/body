@@ -52,6 +52,7 @@ break;
 case RequestCodes.VIDEO_LIBRARY:
 Uri videoUri=data.getData();
 fetchMedia(videoUri);
+AnalyticsUtils.trackWithBlogDetails(Stat.EDITOR_ADDED_VIDEO_VIA_LOCAL_LIBRARY,WordPress.getBlog(mPost.getLocalTableBlogId()));
 break;
 case RequestCodes.TAKE_VIDEO:
 if (resultCode == Activity.RESULT_OK) {
@@ -59,6 +60,7 @@ Uri capturedVideoUri=MediaUtils.getLastRecordedVideoUri(this);
 if (!addMedia(capturedVideoUri)) {
 ToastUtils.showToast(this,R.string.gallery_error,Duration.SHORT);
 }
+AnalyticsUtils.trackWithBlogDetails(Stat.EDITOR_ADDED_VIDEO_VIA_LOCAL_LIBRARY,WordPress.getBlog(mPost.getLocalTableBlogId()));
 }
  else if (TextUtils.isEmpty(mEditorFragment.getContent())) {
 WordPress.wpDB.deletePost(getPost());
