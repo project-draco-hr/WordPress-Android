@@ -1,0 +1,36 @@
+{
+  if (blog == null) {
+    return false;
+  }
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
+  Map<String,String> postHash=new HashMap<>();
+  postHash.put("status",CommentStatus.toString(newStatus));
+  postHash.put("content",comment.getCommentText());
+  postHash.put("author",comment.getAuthorName());
+  postHash.put("author_url",comment.getAuthorUrl());
+  postHash.put("author_email",comment.getAuthorEmail());
+  Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),Long.toString(comment.commentID),postHash};
+  try {
+    Object result=client.call(Method.EDIT_COMMENT,params);
+    return (result != null && Boolean.parseBoolean(result.toString()));
+  }
+ catch (  XMLRPCFault xmlrpcFault) {
+    if (xmlrpcFault.getFaultCode() == 500) {
+      CommentStatus remoteStatus=getCommentStatus(blog,comment);
+      if (remoteStatus != null && remoteStatus.equals(newStatus)) {
+        return true;
+      }
+    }
+    AppLog.e(T.COMMENTS,"Error while editing comment",xmlrpcFault);
+  }
+catch (  XMLRPCException e) {
+    AppLog.e(T.COMMENTS,"Error while editing comment",e);
+  }
+catch (  IOException e) {
+    AppLog.e(T.COMMENTS,"Error while editing comment",e);
+  }
+catch (  XmlPullParserException e) {
+    AppLog.e(T.COMMENTS,"Error while editing comment",e);
+  }
+  return false;
+}
