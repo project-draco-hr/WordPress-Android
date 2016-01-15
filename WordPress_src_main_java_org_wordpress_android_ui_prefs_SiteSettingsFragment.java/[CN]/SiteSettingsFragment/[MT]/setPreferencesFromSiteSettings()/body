@@ -1,0 +1,27 @@
+{
+  mLocationPref.setChecked(mSiteSettings.getLocation());
+  changeEditTextPreferenceValue(mTitlePref,mSiteSettings.getTitle());
+  changeEditTextPreferenceValue(mTaglinePref,mSiteSettings.getTagline());
+  changeEditTextPreferenceValue(mAddressPref,mSiteSettings.getAddress());
+  changeEditTextPreferenceValue(mUsernamePref,mSiteSettings.getUsername());
+  changeEditTextPreferenceValue(mPasswordPref,mSiteSettings.getPassword());
+  changeLanguageValue(mSiteSettings.getLanguageCode());
+  setDetailListPreferenceValue(mPrivacyPref,String.valueOf(mSiteSettings.getPrivacy()),mSiteSettings.getPrivacyDescription());
+  setDetailListPreferenceValue(mImageWidthPref,mBlog.getMaxImageWidth(),mBlog.getMaxImageWidth());
+  setCategories();
+  setPostFormats();
+  setAllowComments(mSiteSettings.getAllowComments());
+  setSendPingbacks(mSiteSettings.getSendPingbacks());
+  setReceivePingbacks(mSiteSettings.getReceivePingbacks());
+  setDetailListPreferenceValue(mSortByPref,String.valueOf(mSiteSettings.getCommentSorting()),mSiteSettings.getSortingDescription());
+  setDetailListPreferenceValue(mThreadingPref,String.valueOf(mSiteSettings.getThreadingLevels()),mSiteSettings.getThreadingDescription());
+  int approval=mSiteSettings.getManualApproval() ? mSiteSettings.getUseCommentWhitelist() ? 0 : -1 : 1;
+  setDetailListPreferenceValue(mWhitelistPref,String.valueOf(approval),getWhitelistSummary(approval));
+  mMultipleLinksPref.setSummary(getResources().getQuantityString(R.plurals.site_settings_multiple_links_summary,mSiteSettings.getMultipleLinks(),mSiteSettings.getMultipleLinks()));
+  mUploadAndLinkPref.setChecked(mBlog.isFullSizeImage());
+  mIdentityRequiredPreference.setChecked(mSiteSettings.getIdentityRequired());
+  mUserAccountRequiredPref.setChecked(mSiteSettings.getUserAccountRequired());
+  mThreadingPref.setValue(String.valueOf(mSiteSettings.getThreadingLevels()));
+  mCloseAfterPref.setSummary(mSiteSettings.getCloseAfterDescription());
+  mPagingPref.setSummary(mSiteSettings.getPagingDescription());
+}
