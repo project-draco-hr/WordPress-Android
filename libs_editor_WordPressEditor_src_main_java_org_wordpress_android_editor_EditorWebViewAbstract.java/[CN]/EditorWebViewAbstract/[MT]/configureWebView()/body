@@ -14,21 +14,21 @@
       if (!URLUtil.isNetworkUrl(url)) {
         return super.shouldInterceptRequest(view,request);
       }
-      try {
-        Map<String,String> headerMap=request.getRequestHeaders();
-        for (        Map.Entry<String,String> entry : mHeaderMap.entrySet()) {
-          headerMap.put(entry.getKey(),entry.getValue());
-        }
-        String authHeader=mAuthHeaderRequestListener.onAuthHeaderRequested(UrlUtils.makeHttps(url));
-        if (StringUtils.notNullStr(authHeader).length() > 0) {
+      String authHeader=mAuthHeaderRequestListener.onAuthHeaderRequested(UrlUtils.makeHttps(url));
+      if (StringUtils.notNullStr(authHeader).length() > 0) {
+        try {
           url=UrlUtils.makeHttps(url);
+          Map<String,String> headerMap=request.getRequestHeaders();
+          for (          Map.Entry<String,String> entry : mHeaderMap.entrySet()) {
+            headerMap.put(entry.getKey(),entry.getValue());
+          }
           headerMap.put("Authorization",authHeader);
+          HttpURLConnection conn=HTTPUtils.setupUrlConnection(url,headerMap);
+          return new WebResourceResponse(conn.getContentType(),conn.getContentEncoding(),conn.getInputStream());
         }
-        HttpURLConnection conn=HTTPUtils.setupUrlConnection(url,headerMap);
-        return new WebResourceResponse(conn.getContentType(),conn.getContentEncoding(),conn.getInputStream());
-      }
- catch (      IOException e) {
-        AppLog.e(AppLog.T.EDITOR,e);
+ catch (        IOException e) {
+          AppLog.e(AppLog.T.EDITOR,e);
+        }
       }
       return super.shouldInterceptRequest(view,request);
     }
@@ -39,18 +39,18 @@
       if (!URLUtil.isNetworkUrl(url)) {
         return super.shouldInterceptRequest(view,url);
       }
-      try {
-        Map<String,String> headerMap=new HashMap<>(mHeaderMap);
-        String authHeader=mAuthHeaderRequestListener.onAuthHeaderRequested(UrlUtils.makeHttps(url));
-        if (StringUtils.notNullStr(authHeader).length() > 0) {
+      String authHeader=mAuthHeaderRequestListener.onAuthHeaderRequested(UrlUtils.makeHttps(url));
+      if (StringUtils.notNullStr(authHeader).length() > 0) {
+        try {
           url=UrlUtils.makeHttps(url);
+          Map<String,String> headerMap=new HashMap<>(mHeaderMap);
           headerMap.put("Authorization",authHeader);
+          HttpURLConnection conn=HTTPUtils.setupUrlConnection(url,headerMap);
+          return new WebResourceResponse(conn.getContentType(),conn.getContentEncoding(),conn.getInputStream());
         }
-        HttpURLConnection conn=HTTPUtils.setupUrlConnection(url,headerMap);
-        return new WebResourceResponse(conn.getContentType(),conn.getContentEncoding(),conn.getInputStream());
-      }
- catch (      IOException e) {
-        AppLog.e(AppLog.T.EDITOR,e);
+ catch (        IOException e) {
+          AppLog.e(AppLog.T.EDITOR,e);
+        }
       }
       return super.shouldInterceptRequest(view,url);
     }
