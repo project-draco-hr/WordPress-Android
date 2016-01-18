@@ -1,7 +1,9 @@
 {
-  Blog currentBlog=WordPress.getCurrentBlog();
+  final Blog currentBlog=WordPress.getCurrentBlog();
   WordPress.getRestClientUtils().deleteSite(currentBlog.getDotComBlogId(),new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject response){
+      WordPress.wpDB.deleteBlog(getActivity(),currentBlog.getLocalTableBlogId());
+      getActivity().setResult(Activity.RESULT_FIRST_USER);
       getActivity().finish();
     }
   }
