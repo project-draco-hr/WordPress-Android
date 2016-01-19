@@ -1,7 +1,7 @@
 {
   String blogId=String.valueOf(WordPress.currentBlog.getLocalTableBlogId());
-  String path=WordPressMediaUtils.getNetworkVideoUrlFromVideoPressId(blogId,videoId);
-  if (path.isEmpty()) {
+  String videoUrl=WordPressMediaUtils.getNetworkVideoUrlFromVideoPressId(blogId,videoId);
+  if (videoUrl.isEmpty()) {
     if (PermissionUtils.checkAndRequestCameraAndStoragePermissions(this,MEDIA_PERMISSION_REQUEST_CODE)) {
       if (mPendingVideoPressInfoRequests == null) {
         mPendingVideoPressInfoRequests=new ArrayList<>();
@@ -10,5 +10,6 @@
       refreshBlogMedia();
     }
   }
-  mEditorFragment.setUrlForVideoPressId(videoId,path,"");
+  String posterUrl=WordPressMediaUtils.getVideoPressVideoPosterFromURL(videoUrl);
+  mEditorFragment.setUrlForVideoPressId(videoId,videoUrl,posterUrl);
 }
