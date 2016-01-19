@@ -1,0 +1,24 @@
+{
+  if (getView() != null) {
+    if (mEmailSnackbar == null || !mEmailSnackbar.isShown()) {
+      View.OnClickListener clickListener=new View.OnClickListener(){
+        @Override public void onClick(        View v){
+          Map<String,String> params=new HashMap<>();
+          params.put(Account.RestParam.toString(Account.RestParam.EMAIL_CHANGE_PENDING),"false");
+          AccountHelper.getDefaultAccount().postAccountSettings(params);
+          if (mEmailSnackbar != null && mEmailSnackbar.isShown()) {
+            mEmailSnackbar.dismiss();
+          }
+        }
+      }
+;
+      mEmailSnackbar=Snackbar.make(getView(),"",Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.button_revert),clickListener);
+      TextView textView=(TextView)mEmailSnackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
+      textView.setMaxLines(4);
+    }
+    mEmailSnackbar.setText(getString(R.string.pending_email_change_snackbar,newEmail));
+    if (!mEmailSnackbar.isShown()) {
+      mEmailSnackbar.show();
+    }
+  }
+}
