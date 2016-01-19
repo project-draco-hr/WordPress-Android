@@ -1,8 +1,14 @@
 {
   if (newValue == null)   return false;
   if (preference == mEmailPreference) {
-    updateEmail(newValue.toString());
-    showPendingEmailChangeSnackbar(newValue.toString());
+    Account account=AccountHelper.getDefaultAccount();
+    if (account.getEmail().equals(newValue.toString())) {
+      cancelPendingEmailChange();
+    }
+ else {
+      updateEmail(newValue.toString());
+      showPendingEmailChangeSnackbar(newValue.toString());
+    }
     return false;
   }
   return true;
