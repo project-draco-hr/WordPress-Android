@@ -1,28 +1,6 @@
 {
   AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
-  builder.setMessage("Confirm by entering the primary domain below.");
-  builder.setTitle("Delete the entire site?");
-  View view=getActivity().getLayoutInflater().inflate(R.layout.delete_site_dialog,null);
-  mUrlConfirmation=(EditText)view.findViewById(R.id.url_confirmation);
-  mUrlConfirmation.setHint("kwonye.wordpress.com");
-  mUrlConfirmation.addTextChangedListener(this);
-  builder.setView(view);
-  builder.setNegativeButton("CANCEL",new DialogInterface.OnClickListener(){
-    @Override public void onClick(    DialogInterface dialog,    int which){
-      dismiss();
-    }
-  }
-);
-  builder.setPositiveButton("DELETE",new DialogInterface.OnClickListener(){
-    @Override public void onClick(    DialogInterface dialog,    int which){
-      Fragment target=getTargetFragment();
-      if (target != null) {
-        target.onActivityResult(getTargetRequestCode(),Activity.RESULT_OK,null);
-      }
-      dismiss();
-    }
-  }
-);
+  configureAlertViewBuilder(builder);
   mDeleteSiteDialog=builder.create();
   mDeleteSiteDialog.setOnShowListener(this);
   return mDeleteSiteDialog;
