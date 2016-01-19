@@ -1,13 +1,14 @@
 {
   super.onResume();
-  updateBlogNameView();
+  final Blog blog=WordPress.getBlog(mBlogLocalId);
+  refreshBlogDetails(blog);
   if (ServiceUtils.isServiceRunning(getActivity(),StatsService.class)) {
     getActivity().stopService(new Intent(getActivity(),StatsService.class));
   }
   long delayMs=getResources().getInteger(R.integer.fab_animation_delay);
   new Handler().postDelayed(new Runnable(){
     @Override public void run(){
-      if (isAdded() && mBlog != null && (mFabView.getVisibility() != View.VISIBLE || mFabView.getTranslationY() != 0)) {
+      if (isAdded() && blog != null && (mFabView.getVisibility() != View.VISIBLE || mFabView.getTranslationY() != 0)) {
         AniUtils.showFab(mFabView,true);
       }
     }
