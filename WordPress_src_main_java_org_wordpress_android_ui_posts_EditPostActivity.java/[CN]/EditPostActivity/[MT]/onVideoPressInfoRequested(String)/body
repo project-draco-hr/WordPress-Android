@@ -3,11 +3,16 @@
   String videoUrl=WordPress.wpDB.getMediaUrlByVideoPressId(blogId,videoId);
   if (videoUrl.isEmpty()) {
     if (PermissionUtils.checkAndRequestCameraAndStoragePermissions(this,MEDIA_PERMISSION_REQUEST_CODE)) {
-      if (mPendingVideoPressInfoRequests == null) {
-        mPendingVideoPressInfoRequests=new ArrayList<>();
+      runOnUiThread(new Runnable(){
+        @Override public void run(){
+          if (mPendingVideoPressInfoRequests == null) {
+            mPendingVideoPressInfoRequests=new ArrayList<>();
+          }
+          mPendingVideoPressInfoRequests.add(videoId);
+          refreshBlogMedia();
+        }
       }
-      mPendingVideoPressInfoRequests.add(videoId);
-      refreshBlogMedia();
+);
     }
   }
   String posterUrl=WordPressMediaUtils.getVideoPressVideoPosterFromURL(videoUrl);
