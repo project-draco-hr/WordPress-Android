@@ -39,21 +39,7 @@ getMySiteFragment().onActivityResult(requestCode,resultCode,data);
 break;
 case RequestCodes.BLOG_SETTINGS:
 if (resultCode == SiteSettingsFragment.RESULT_BLOG_REMOVED) {
-if (!AccountHelper.isSignedIn()) {
-ActivityLauncher.showSignInForResult(this);
-}
- else {
-MySiteFragment mySiteFragment=getMySiteFragment();
-if (mySiteFragment != null) {
-Blog currentBlog=WordPress.getCurrentBlog();
-if (currentBlog == null) {
-mySiteFragment.setBlog(null);
-}
- else {
-ActivityLauncher.showSitePickerForResult(this,currentBlog.getLocalTableBlogId());
-}
-}
-}
+handleBlogRemoved();
 }
 break;
 case RequestCodes.ACCOUNT_SETTINGS:
