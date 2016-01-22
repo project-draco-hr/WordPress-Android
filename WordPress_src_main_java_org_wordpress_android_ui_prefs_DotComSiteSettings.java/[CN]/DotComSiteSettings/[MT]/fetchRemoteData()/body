@@ -7,7 +7,11 @@
       mRemoteSettings.localTableId=mBlog.getRemoteBlogId();
       deserializeDotComRestResponse(mBlog,response);
       if (!mRemoteSettings.equals(mSettings)) {
+        final Map<String,String> currentPostFormats=mSettings.postFormats;
+        final String[] currentPostFormatKeys=mSettings.postFormatKeys;
         mSettings.copyFrom(mRemoteSettings);
+        mSettings.postFormats=currentPostFormats;
+        mSettings.postFormatKeys=currentPostFormatKeys;
         SiteSettingsTable.saveSettings(mSettings);
         notifyUpdatedOnUiThread(null);
       }
