@@ -1,13 +1,13 @@
 {
   if (setCurrentBlogToLastActive() == null) {
-    List<Map<String,Object>> accounts=WordPress.wpDB.getVisibleBlogs();
-    if (accounts.size() > 0) {
-      int id=Integer.valueOf(accounts.get(0).get("id").toString());
-      setCurrentBlog(id);
-      wpDB.updateLastBlogId(id);
+    int blogId=0;
+    if (WordPress.wpDB.getNumVisibleBlogs() > 0) {
+      blogId=WordPress.wpDB.getFirstVisibleBlogId();
     }
- else {
-      attemptToRestoreHiddenBlog();
+ else     if (WordPress.wpDB.getNumHiddenBlogs() > 0) {
+      blogId=WordPress.wpDB.getFirstHiddenBlog();
     }
+    setCurrentBlogAndSetVisible(blogId);
+    wpDB.updateLastBlogId(blogId);
   }
 }
