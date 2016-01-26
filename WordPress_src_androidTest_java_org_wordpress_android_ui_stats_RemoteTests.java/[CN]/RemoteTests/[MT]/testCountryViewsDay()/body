@@ -1,0 +1,23 @@
+{
+  StatsRestRequestAbstractListener listener=new StatsRestRequestAbstractListener(){
+    @Override void parseResponse(    JSONObject response) throws JSONException {
+      GeoviewsModel model=new GeoviewsModel("123456",response);
+      assertEquals(model.getOtherViews(),17);
+      assertEquals(model.getTotalViews(),55);
+      assertNotNull(model.getCountries());
+      assertEquals(model.getCountries().size(),10);
+      GeoviewModel first=model.getCountries().get(0);
+      assertEquals(first.getCountryFullName(),"United States");
+      assertEquals(first.getFlagIconURL(),"https://secure.gravatar.com/blavatar/5a83891a81b057fed56930a6aaaf7b3c?s=48");
+      assertEquals(first.getFlatFlagIconURL(),"https://secure.gravatar.com/blavatar/9f4faa5ad0c723474f7a6d810172447c?s=48");
+      assertEquals(first.getViews(),8);
+      GeoviewModel second=model.getCountries().get(1);
+      assertEquals(second.getCountryFullName(),"Taiwan");
+      assertEquals(second.getFlagIconURL(),"https://secure.gravatar.com/blavatar/f983fff0dda7387746b697cfd865e657?s=48");
+      assertEquals(second.getFlatFlagIconURL(),"https://secure.gravatar.com/blavatar/2c224480a40527ee89d7340d4396e8e6?s=48");
+      assertEquals(second.getViews(),6);
+    }
+  }
+;
+  mRestClient.makeRequest(Request.Method.POST,"https://public-api.wordpress.com/rest/v1.1/sites/123456/stats/country-views",null,listener,errListener);
+}

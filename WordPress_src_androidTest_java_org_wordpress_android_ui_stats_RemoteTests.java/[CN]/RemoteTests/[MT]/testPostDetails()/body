@@ -1,0 +1,33 @@
+{
+  StatsRestRequestAbstractListener listener=new StatsRestRequestAbstractListener(){
+    @Override void parseResponse(    JSONObject response) throws JSONException {
+      PostViewsModel model=new PostViewsModel(response);
+      assertNotNull(model.getOriginalResponse());
+      assertEquals(model.getDate(),"2015-03-04");
+      assertEquals(model.getHighestMonth(),278);
+      assertEquals(model.getHighestDayAverage(),8);
+      assertEquals(model.getHighestWeekAverage(),8);
+      assertNotNull(model.getDayViews());
+      assertEquals(model.getDayViews()[0].getViews(),0);
+      assertEquals(model.getDayViews()[0].getPeriod(),"2014-06-04");
+      assertEquals(model.getDayViews()[model.getDayViews().length - 1].getViews(),8);
+      assertEquals(model.getDayViews()[model.getDayViews().length - 1].getPeriod(),"2015-03-04");
+      assertNotNull(model.getYears().size());
+      assertEquals(model.getYears().size(),2);
+      assertEquals(model.getYears().get(0).getTotal(),1097);
+      assertEquals(model.getYears().get(0).getLabel(),"2014");
+      assertEquals(model.getYears().get(0).getMonths().size(),7);
+      assertEquals(model.getYears().get(0).getMonths().get(0).getMonth(),"6");
+      assertEquals(model.getYears().get(1).getTotal(),226);
+      assertEquals(model.getYears().get(1).getLabel(),"2015");
+      assertNotNull(model.getWeeks().size());
+      assertEquals(model.getWeeks().size(),6);
+      assertNotNull(model.getAverages());
+      assertEquals(model.getAverages().size(),2);
+      assertEquals(model.getAverages().get(0).getTotal(),5);
+      assertEquals(model.getAverages().get(0).getLabel(),"2014");
+    }
+  }
+;
+  mRestClient.makeRequest(Request.Method.POST,"https://public-api.wordpress.com/rest/v1.1/sites/123456/stats/post/123",null,listener,errListener);
+}
