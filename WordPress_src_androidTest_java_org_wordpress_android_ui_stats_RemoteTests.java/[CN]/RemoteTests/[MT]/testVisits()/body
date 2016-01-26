@@ -1,0 +1,20 @@
+{
+  StatsRestRequestAbstractListener listener=new StatsRestRequestAbstractListener(){
+    @Override void parseResponse(    JSONObject response) throws JSONException {
+      VisitsModel model=new VisitsModel("123456",response);
+      assertNotNull(model.getVisits());
+      assertNotNull(model.getUnit());
+      assertNotNull(model.getDate());
+      assertEquals(model.getVisits().size(),30);
+      assertEquals(model.getUnit(),"day");
+      VisitModel visitModel=model.getVisits().get(0);
+      assertEquals(visitModel.getViews(),7808);
+      assertEquals(visitModel.getVisitors(),4331);
+      assertEquals(visitModel.getLikes(),0);
+      assertEquals(visitModel.getComments(),0);
+      assertEquals(visitModel.getPeriod(),"2014-10-08");
+    }
+  }
+;
+  mRestClient.makeRequest(Request.Method.POST,"https://public-api.wordpress.com/rest/v1.1/sites/123456/stats/visits",null,listener,errListener);
+}
