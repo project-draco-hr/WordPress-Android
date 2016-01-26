@@ -1,0 +1,28 @@
+{
+  StatsRestRequestAbstractListener listener=new StatsRestRequestAbstractListener(){
+    @Override void parseResponse(    JSONObject response) throws JSONException {
+      TagsContainerModel model=new TagsContainerModel("123456",response);
+      assertEquals(model.getDate(),"2014-12-16");
+      assertNotNull(model.getTags());
+      assertEquals(model.getTags().size(),10);
+      TagsModel tag=model.getTags().get(0);
+      assertEquals(tag.getViews(),461);
+      assertNotNull(tag.getTags());
+      assertEquals(tag.getTags().size(),1);
+      assertNotNull(tag.getTags());
+      assertEquals(tag.getTags().get(0).getName(),"Uncategorized");
+      assertEquals(tag.getTags().get(0).getType(),"category");
+      assertEquals(tag.getTags().get(0).getLink(),"http://astralbodi.es/category/uncategorized/");
+      tag=model.getTags().get(9);
+      assertEquals(tag.getViews(),41);
+      assertEquals(tag.getTags().get(0).getName(),"networking");
+      assertEquals(tag.getTags().get(0).getType(),"tag");
+      assertEquals(tag.getTags().get(0).getLink(),"http://astralbodi.es/tag/networking/");
+      assertEquals(tag.getTags().get(1).getName(),"unix");
+      assertEquals(tag.getTags().get(1).getType(),"tag");
+      assertEquals(tag.getTags().get(1).getLink(),"http://astralbodi.es/tag/unix/");
+    }
+  }
+;
+  mRestClient.makeRequest(Request.Method.POST,"https://public-api.wordpress.com/rest/v1.1/sites/123456/stats/tags",null,listener,errListener);
+}

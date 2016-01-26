@@ -1,0 +1,17 @@
+{
+  StatsRestRequestAbstractListener listener=new StatsRestRequestAbstractListener(){
+    @Override void parseResponse(    JSONObject response) throws JSONException {
+      InsightsTodayModel model=new InsightsTodayModel("123456",response);
+      assertEquals(model.getDate(),"2014-10-28");
+      assertEquals(model.getBlogID(),"123456");
+      assertEquals(model.getViews(),56);
+      assertEquals(model.getVisitors(),44);
+      assertEquals(model.getLikes(),1);
+      assertEquals(model.getReblogs(),2);
+      assertEquals(model.getComments(),3);
+      assertEquals(model.getFollowers(),56);
+    }
+  }
+;
+  mRestClient.makeRequest(Request.Method.POST,"https://public-api.wordpress.com/rest/v1.1/sites/123456/stats/summary",null,listener,errListener);
+}

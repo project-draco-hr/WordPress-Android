@@ -4,16 +4,9 @@
     mFormatPref.setSummary(mSiteSettings.getDefaultPostFormatDisplay());
     return;
   }
-  Map<String,String> formats=mSiteSettings.getFormats();
-  String[] formatKeys=mSiteSettings.getFormatKeys();
-  String[] entries=new String[formatKeys.length];
-  String[] values=new String[formatKeys.length];
-  for (int i=0; i < entries.length; ++i) {
-    entries[i]=formats.get(formatKeys[i]);
-    values[i]=formatKeys[i];
-  }
-  mFormatPref.setEntries(entries);
-  mFormatPref.setEntryValues(values);
+  final Map<String,String> postFormats=new HashMap<>(mSiteSettings.getFormats());
+  mFormatPref.setEntries(postFormats.values().toArray(new String[0]));
+  mFormatPref.setEntryValues(postFormats.keySet().toArray(new String[0]));
   mFormatPref.setValue(String.valueOf(mSiteSettings.getDefaultPostFormat()));
   mFormatPref.setSummary(mSiteSettings.getDefaultPostFormatDisplay());
 }

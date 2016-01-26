@@ -1,0 +1,25 @@
+{
+  StatsRestRequestAbstractListener listener=new StatsRestRequestAbstractListener(){
+    @Override void parseResponse(    JSONObject response) throws JSONException {
+      TopPostsAndPagesModel model=new TopPostsAndPagesModel("123456",response);
+      assertNotNull(model.getTopPostsAndPages());
+      assertEquals(model.getTopPostsAndPages().size(),10);
+      PostModel postModel=model.getTopPostsAndPages().get(0);
+      assertEquals(postModel.getItemID(),"39806");
+      assertEquals(postModel.getTotals(),2420);
+      assertEquals(postModel.getTitle(),"Home");
+      assertEquals(postModel.getUrl(),"http://automattic.com/home/");
+      assertEquals(postModel.getDate(),StatsUtils.toMs("2011-08-30 21:47:38"));
+      assertEquals(postModel.getPostType(),"page");
+      postModel=model.getTopPostsAndPages().get(9);
+      assertEquals(postModel.getItemID(),"39254");
+      assertEquals(postModel.getTotals(),56);
+      assertEquals(postModel.getTitle(),"Growth Explorer");
+      assertEquals(postModel.getUrl(),"http://automattic.com/work-with-us/growth-explorer/");
+      assertEquals(postModel.getDate(),StatsUtils.toMs("2011-08-25 19:37:27"));
+      assertEquals(postModel.getPostType(),"page");
+    }
+  }
+;
+  mRestClient.makeRequest(Request.Method.POST,"https://public-api.wordpress.com/rest/v1.1/sites/123456/stats/top-posts",null,listener,errListener);
+}
