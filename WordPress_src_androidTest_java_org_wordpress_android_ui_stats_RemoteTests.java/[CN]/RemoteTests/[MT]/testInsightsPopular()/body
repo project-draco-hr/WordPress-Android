@@ -1,0 +1,12 @@
+{
+  StatsRestRequestAbstractListener listener=new StatsRestRequestAbstractListener(){
+    @Override void parseResponse(    JSONObject response) throws JSONException {
+      InsightsPopularModel model=new InsightsPopularModel("123456",response);
+      assertEquals(model.getHighestHour(),9);
+      assertEquals(model.getHighestDayOfWeek(),5);
+      assertEquals(model.getHighestDayPercent(),30.532081377152);
+    }
+  }
+;
+  mRestClient.makeRequest(Request.Method.POST,"https://public-api.wordpress.com/rest/v1.1/sites/123456/stats/insights",null,listener,errListener);
+}
