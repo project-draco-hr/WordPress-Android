@@ -1,0 +1,21 @@
+{
+  try {
+    URL url=new URL(exportUrl);
+    HttpURLConnection urlConnection=(HttpURLConnection)url.openConnection();
+    urlConnection.connect();
+    File SDCardRoot=Environment.getExternalStorageDirectory();
+    File file=new File(SDCardRoot,"Downloadsxx.xml");
+    FileOutputStream fileOutput=new FileOutputStream(file);
+    InputStream inputStream=urlConnection.getInputStream();
+    byte[] buffer=new byte[1024];
+    int bufferLength=0;
+    while ((bufferLength=inputStream.read(buffer)) > 0) {
+      fileOutput.write(buffer,0,bufferLength);
+    }
+    fileOutput.close();
+  }
+ catch (  java.io.IOException e) {
+    e.printStackTrace();
+  }
+  return null;
+}
