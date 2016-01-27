@@ -1,10 +1,9 @@
 {
   try {
-    URL url=new URL(exportUrl);
+    URL url=new URL(mDownloadContentHeader.url);
     HttpURLConnection urlConnection=(HttpURLConnection)url.openConnection();
     urlConnection.connect();
-    File SDCardRoot=Environment.getExternalStorageDirectory();
-    File file=new File(SDCardRoot,"Downloadsxx.xml");
+    File file=new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),mDownloadContentHeader.fileNameFromDisposition());
     FileOutputStream fileOutput=new FileOutputStream(file);
     InputStream inputStream=urlConnection.getInputStream();
     byte[] buffer=new byte[1024];
@@ -13,7 +12,8 @@
       fileOutput.write(buffer,0,bufferLength);
     }
     fileOutput.close();
-    downloadManager.addCompletedDownload("Downloa","Yuppers",true,"string/xml",file.getPath(),file.length(),true);
+    DownloadManager downloadManager=(DownloadManager)getSystemService(DOWNLOAD_SERVICE);
+    downloadManager.addCompletedDownload(mDownloadContentHeader.fileNameFromDisposition(),"WordPress.com export file",true,mDownloadContentHeader.mimeType,file.getPath(),file.length(),true);
   }
  catch (  java.io.IOException e) {
     e.printStackTrace();
