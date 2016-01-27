@@ -1,0 +1,19 @@
+{
+  final Blog currentBlog=WordPress.getCurrentBlog();
+  if (currentBlog.isDotcomFlag()) {
+    final ProgressDialog progressDialog=ProgressDialog.show(getActivity(),"",getString(R.string.delete_site_progress),true,false);
+    WordPress.getRestClientUtils().deleteSite(currentBlog.getDotComBlogId(),new RestRequest.Listener(){
+      @Override public void onResponse(      JSONObject response){
+        progressDialog.dismiss();
+        removeBlog();
+      }
+    }
+,new RestRequest.ErrorListener(){
+      @Override public void onErrorResponse(      VolleyError error){
+        progressDialog.dismiss();
+        handleDeleteSiteError();
+      }
+    }
+);
+  }
+}
