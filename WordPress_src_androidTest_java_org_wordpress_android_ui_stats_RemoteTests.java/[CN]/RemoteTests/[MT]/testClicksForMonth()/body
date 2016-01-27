@@ -1,0 +1,38 @@
+{
+  StatsRestRequestAbstractListener listener=new StatsRestRequestAbstractListener(){
+    @Override void parseResponse(    JSONObject response) throws JSONException {
+      ClicksModel model=new ClicksModel("1234567890",response);
+      assertEquals(model.getTotalClicks(),9);
+      assertEquals(model.getOtherClicks(),0);
+      assertNotNull(model.getClickGroups());
+      assertEquals(model.getClickGroups().size(),6);
+      ClickGroupModel first=model.getClickGroups().get(0);
+      assertEquals(first.getIcon(),"");
+      assertEquals(first.getUrl(),"http://wp.com/");
+      assertEquals(first.getName(),"wp.com");
+      assertEquals(first.getViews(),3);
+      assertNull(first.getClicks());
+      ClickGroupModel second=model.getClickGroups().get(1);
+      assertEquals(second.getIcon(),"");
+      assertNull(second.getUrl());
+      assertEquals(second.getName(),"blog.wordpress.tv");
+      assertEquals(second.getViews(),2);
+      assertNotNull(second.getClicks());
+      assertEquals(second.getClicks().size(),2);
+      SingleItemModel firstChild=second.getClicks().get(0);
+      assertNotNull(firstChild);
+      assertEquals(firstChild.getUrl(),"http://blog.wordpress.tv/2014/10/03/build-your-audience-recent-wordcamp-videos-from-experienced-content-creators/");
+      assertEquals(firstChild.getTitle(),"blog.wordpress.tv/2014/10/03/build-your-audience-recent-wordcamp-videos-from-experienced-content-creators/");
+      assertEquals(firstChild.getTotals(),1);
+      assertEquals(firstChild.getIcon(),"");
+      SingleItemModel secondChild=second.getClicks().get(1);
+      assertNotNull(secondChild);
+      assertEquals(secondChild.getUrl(),"http://blog.wordpress.tv/2014/10/29/wordcamp-san-francisco-2014-state-of-the-word-keynote/");
+      assertEquals(secondChild.getTitle(),"blog.wordpress.tv/2014/10/29/wordcamp-san-francisco-2014-state-of-the-word-keynote/");
+      assertEquals(secondChild.getTotals(),1);
+      assertEquals(secondChild.getIcon(),"");
+    }
+  }
+;
+  mRestClient.makeRequest(Request.Method.POST,"https://public-api.wordpress.com/rest/v1.1/sites/1234567890/stats/clicks",null,listener,errListener);
+}
