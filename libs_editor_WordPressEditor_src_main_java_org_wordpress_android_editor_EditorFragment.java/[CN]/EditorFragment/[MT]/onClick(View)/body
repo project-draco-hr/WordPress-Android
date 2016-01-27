@@ -1,6 +1,7 @@
 {
   int id=v.getId();
   if (id == R.id.format_bar_button_html) {
+    AnalyticsTracker.track(Stat.EDITOR_TAPPED_HTML);
     if (!mUploadingMediaIds.isEmpty()) {
       ((ToggleButton)v).setChecked(false);
       if (isAdded()) {
@@ -32,6 +33,7 @@
     }
   }
  else   if (id == R.id.format_bar_button_media) {
+    AnalyticsTracker.track(Stat.EDITOR_TAPPED_IMAGE);
     ((ToggleButton)v).setChecked(false);
     if (mSourceView.getVisibility() == View.VISIBLE) {
       ToastUtils.showToast(getActivity(),R.string.alert_insert_image_html_mode,ToastUtils.Duration.LONG);
@@ -46,8 +48,10 @@
  else   if (id == R.id.format_bar_button_link) {
     if (!((ToggleButton)v).isChecked()) {
       mWebView.execJavaScriptFromString("ZSSEditor.unlink();");
+      AnalyticsTracker.track(Stat.EDITOR_TAPPED_UNLINK);
       return;
     }
+    AnalyticsTracker.track(Stat.EDITOR_TAPPED_LINK);
     ((ToggleButton)v).setChecked(false);
     LinkDialogFragment linkDialogFragment=new LinkDialogFragment();
     linkDialogFragment.setTargetFragment(this,LinkDialogFragment.LINK_DIALOG_REQUEST_CODE_ADD);
