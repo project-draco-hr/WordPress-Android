@@ -5,18 +5,15 @@
     actionBar.setHomeButtonEnabled(true);
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
-  setContentView(R.layout.settings_activity);
   FragmentManager fragmentManager=getFragmentManager();
-  if (savedInstanceState == null) {
+  Fragment settingsFragment=fragmentManager.findFragmentByTag(KEY_SETTINGS_FRAGMENT);
+  Fragment passcodeFragment=fragmentManager.findFragmentByTag(KEY_PASSCODE_FRAGMENT);
+  if (settingsFragment == null || passcodeFragment == null) {
     Bundle passcodeArgs=new Bundle();
     passcodeArgs.putBoolean(PasscodePreferenceFragment.KEY_SHOULD_INFLATE,false);
-    mSettingsFragment=new SettingsFragment();
-    mPasscodePreferenceFragment=new PasscodePreferenceFragment();
-    mPasscodePreferenceFragment.setArguments(passcodeArgs);
-    fragmentManager.beginTransaction().add(R.id.fragment_container,mSettingsFragment).add(R.id.fragment_container,mPasscodePreferenceFragment).commit();
-  }
- else {
-    mSettingsFragment=(SettingsFragment)fragmentManager.getFragment(savedInstanceState,KEY_SETTINGS_FRAGMENT);
-    mPasscodePreferenceFragment=(PasscodePreferenceFragment)fragmentManager.getFragment(savedInstanceState,KEY_PASSCODE_FRAGMENT);
+    settingsFragment=new SettingsFragment();
+    passcodeFragment=new PasscodePreferenceFragment();
+    passcodeFragment.setArguments(passcodeArgs);
+    fragmentManager.beginTransaction().replace(android.R.id.content,passcodeFragment,KEY_PASSCODE_FRAGMENT).add(android.R.id.content,settingsFragment,KEY_SETTINGS_FRAGMENT).commit();
   }
 }
