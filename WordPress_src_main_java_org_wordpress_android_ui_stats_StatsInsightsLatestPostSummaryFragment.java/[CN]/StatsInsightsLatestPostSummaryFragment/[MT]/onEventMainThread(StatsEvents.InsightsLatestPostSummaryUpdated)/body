@@ -1,0 +1,20 @@
+{
+  if (!shouldUpdateFragmentOnUpdateEvent(event)) {
+    return;
+  }
+  mInsightsLatestPostModel=event.mInsightsLatestPostModel;
+  View mainView=getView();
+  if (mainView != null) {
+    mainView.setVisibility(mInsightsLatestPostModel.isLatestPostAvailable() ? View.VISIBLE : View.GONE);
+  }
+  if (!mInsightsLatestPostModel.isLatestPostAvailable()) {
+    return;
+  }
+  if (mInsightsLatestPostModel.getPostViewsCount() == Integer.MIN_VALUE) {
+    refreshStats(mInsightsLatestPostModel.getPostID(),new StatsService.StatsEndpointsEnum[]{StatsService.StatsEndpointsEnum.INSIGHTS_LATEST_POST_VIEWS});
+    showPlaceholderUI();
+  }
+ else {
+    updateUI();
+  }
+}

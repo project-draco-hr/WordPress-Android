@@ -1,0 +1,46 @@
+{
+  super.updateUI();
+  if (!isAdded() || !hasDataAvailable()) {
+    return;
+  }
+  if (!mInsightsLatestPostModel.isLatestPostAvailable()) {
+    return;
+  }
+  TextView moduleTitle=(TextView)getView().findViewById(R.id.stats_module_title);
+  moduleTitle.setOnClickListener(ViewsTabOnClickListener);
+  moduleTitle.setTextColor(getResources().getColor(R.color.stats_link_text_color));
+  LinearLayout ll=(LinearLayout)getActivity().getLayoutInflater().inflate(R.layout.stats_insights_latest_post_item,(ViewGroup)mResultContainer.getRootView(),false);
+  String trendLabel=getString(R.string.stats_insights_latest_post_trend);
+  String sinceLabel=StatsUtils.getSinceLabel(getActivity(),mInsightsLatestPostModel.getPostDate()).toLowerCase();
+  String postTitle=StringEscapeUtils.unescapeHtml(mInsightsLatestPostModel.getPostTitle());
+  final String trendLabelFormatted=String.format(trendLabel,sinceLabel,postTitle);
+  int startIndex, endIndex;
+  startIndex=trendLabelFormatted.indexOf(postTitle);
+  endIndex=startIndex + postTitle.length() + 1;
+  Spannable descriptionTextToSpan=new SpannableString(trendLabelFormatted);
+  descriptionTextToSpan.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.stats_link_text_color)),startIndex,endIndex,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+  TextView trendLabelTextField=(TextView)ll.findViewById(R.id.stats_post_trend_label);
+  trendLabelTextField.setText(descriptionTextToSpan);
+  trendLabelTextField.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      StatsUtils.openPostInReaderOrInAppWebview(getActivity(),mInsightsLatestPostModel.getBlogID(),String.valueOf(mInsightsLatestPostModel.getPostID()),StatsConstants.ITEM_TYPE_POST,mInsightsLatestPostModel.getPostURL());
+    }
+  }
+);
+  LinearLayout tabs=(LinearLayout)ll.findViewById(R.id.stats_latest_post_tabs);
+  for (int i=0; i < tabs.getChildCount(); i++) {
+    LinearLayout currentTab=(LinearLayout)tabs.getChildAt(i);
+switch (i) {
+case 0:
+      setupTab(currentTab,FormatUtils.formatDecimal(mInsightsLatestPostModel.getPostViewsCount()),StatsVisitorsAndViewsFragment.OverviewLabel.VIEWS);
+    break;
+case 1:
+  setupTab(currentTab,FormatUtils.formatDecimal(mInsightsLatestPostModel.getPostLikeCount()),StatsVisitorsAndViewsFragment.OverviewLabel.LIKES);
+break;
+case 2:
+setupTab(currentTab,FormatUtils.formatDecimal(mInsightsLatestPostModel.getPostCommentCount()),StatsVisitorsAndViewsFragment.OverviewLabel.COMMENTS);
+break;
+}
+}
+mResultContainer.addView(ll);
+}

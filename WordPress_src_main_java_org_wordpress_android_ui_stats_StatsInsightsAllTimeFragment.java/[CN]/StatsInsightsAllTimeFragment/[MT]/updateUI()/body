@@ -1,0 +1,18 @@
+{
+  super.updateUI();
+  if (!isAdded() || !hasDataAvailable()) {
+    return;
+  }
+  LinearLayout ll=(LinearLayout)getActivity().getLayoutInflater().inflate(R.layout.stats_insights_all_time_item,(ViewGroup)mResultContainer.getRootView(),false);
+  TextView postsTextView=(TextView)ll.findViewById(R.id.stats_all_time_posts);
+  TextView viewsTextView=(TextView)ll.findViewById(R.id.stats_all_time_views);
+  TextView visitorsTextView=(TextView)ll.findViewById(R.id.stats_all_time_visitors);
+  TextView besteverTextView=(TextView)ll.findViewById(R.id.stats_all_time_bestever);
+  TextView besteverDateTextView=(TextView)ll.findViewById(R.id.stats_all_time_bestever_date);
+  postsTextView.setText(FormatUtils.formatDecimal(mInsightsAllTimeModel.getPosts()));
+  viewsTextView.setText(FormatUtils.formatDecimal(mInsightsAllTimeModel.getViews()));
+  visitorsTextView.setText(FormatUtils.formatDecimal(mInsightsAllTimeModel.getVisitors()));
+  besteverTextView.setText(FormatUtils.formatDecimal(mInsightsAllTimeModel.getViewsBestDayTotal()));
+  besteverDateTextView.setText(StatsUtils.parseDate(mInsightsAllTimeModel.getViewsBestDay(),StatsConstants.STATS_INPUT_DATE_FORMAT,"MMMM dd, yyyy"));
+  mResultContainer.addView(ll);
+}
