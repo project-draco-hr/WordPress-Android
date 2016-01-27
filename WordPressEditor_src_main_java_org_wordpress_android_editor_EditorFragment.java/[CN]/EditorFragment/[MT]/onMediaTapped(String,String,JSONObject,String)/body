@@ -30,6 +30,7 @@ case "failed":
 mEditorFragmentListener.onMediaRetryClicked(mediaId);
 mWebView.post(new Runnable(){
 @Override public void run(){
+AnalyticsTracker.track(Stat.EDITOR_UPLOAD_MEDIA_RETRIED);
 mWebView.execJavaScriptFromString("ZSSEditor.unmarkImageUploadFailed(" + mediaId + ");");
 mWebView.execJavaScriptFromString("ZSSEditor.setProgressOnImage(" + mediaId + ", "+ 0+ ");");
 mFailedMediaIds.remove(mediaId);
@@ -43,12 +44,26 @@ FragmentManager fragmentManager=getFragmentManager();
 if (fragmentManager.findFragmentByTag(ImageSettingsDialogFragment.IMAGE_SETTINGS_DIALOG_TAG) != null) {
 return;
 }
+AnalyticsTracker.track(Stat.EDITOR_EDITED_IMAGE);
 ImageSettingsDialogFragment imageSettingsDialogFragment=new ImageSettingsDialogFragment();
 imageSettingsDialogFragment.setTargetFragment(this,ImageSettingsDialogFragment.IMAGE_SETTINGS_DIALOG_REQUEST_CODE);
 Bundle dialogBundle=new Bundle();
-dialogBundle.putString("imageMeta",meta.toString());
 dialogBundle.putString("maxWidth",mBlogSettingMaxImageWidth);
 dialogBundle.putBoolean("featuredImageSupported",mFeaturedImageSupported);
+HashMap<String,String> headerMap=new HashMap<>(mCustomHttpHeaders);
+try {
+final String imageSrc=meta.getString("src");
+String authHeader=mEditorFragmentListener.onAuthHeaderRequested(UrlUtils.makeHttps(imageSrc));
+if (authHeader.length() > 0) {
+meta.put("src",UrlUtils.makeHttps(imageSrc));
+headerMap.put("Authorization",authHeader);
+}
+}
+ catch (JSONException e) {
+AppLog.e(T.EDITOR,"Could not retrieve image url from JSON metadata");
+}
+dialogBundle.putSerializable("headerMap",headerMap);
+dialogBundle.putString("imageMeta",meta.toString());
 String imageId=JSONUtils.getString(meta,"attachment_id");
 if (!imageId.isEmpty()) {
 dialogBundle.putBoolean("isFeatured",mFeaturedImageId == Integer.parseInt(imageId));
@@ -57,6 +72,7 @@ imageSettingsDialogFragment.setArguments(dialogBundle);
 FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
 fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 fragmentTransaction.add(android.R.id.content,imageSettingsDialogFragment,ImageSettingsDialogFragment.IMAGE_SETTINGS_DIALOG_TAG).addToBackStack(null).commit();
+mWebView.notifyVisibilityChanged(false);
 break;
 }
 }

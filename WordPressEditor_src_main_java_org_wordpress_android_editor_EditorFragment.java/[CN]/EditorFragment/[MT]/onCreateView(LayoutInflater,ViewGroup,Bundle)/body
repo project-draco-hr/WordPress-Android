@@ -4,11 +4,18 @@
     mHideActionBarOnSoftKeyboardUp=true;
   }
   mWaitingMediaFiles=new ConcurrentHashMap<>();
+  mWaitingGalleries=Collections.newSetFromMap(new ConcurrentHashMap<MediaGallery,Boolean>());
   mUploadingMediaIds=new HashSet<>();
   mFailedMediaIds=new HashSet<>();
   mWebView=(EditorWebViewAbstract)view.findViewById(R.id.webview);
   mWebView.setOnTouchListener(this);
   mWebView.setOnImeBackListener(this);
+  mWebView.setAuthHeaderRequestListener(this);
+  if (mCustomHttpHeaders != null && mCustomHttpHeaders.size() > 0) {
+    for (    Map.Entry<String,String> entry : mCustomHttpHeaders.entrySet()) {
+      mWebView.setCustomHeader(entry.getKey(),entry.getValue());
+    }
+  }
   mWebView.addOnLayoutChangeListener(new View.OnLayoutChangeListener(){
     @Override public void onLayoutChange(    View v,    int left,    int top,    int right,    int bottom,    int oldLeft,    int oldTop,    int oldRight,    int oldBottom){
       mWebView.post(new Runnable(){

@@ -14,7 +14,17 @@
         }
       }
  else {
-        inputStream=(new URL(imageUri.toString())).openStream();
+        if (headers == null) {
+          headers=Collections.emptyMap();
+        }
+        HttpURLConnection conn=HTTPUtils.setupUrlConnection(imageUri.toString(),headers);
+        int responseCode=conn.getResponseCode();
+        if (responseCode != HttpURLConnection.HTTP_OK) {
+          if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP || responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
+            conn=HTTPUtils.setupUrlConnection(conn.getHeaderField("Location"),headers);
+          }
+        }
+        inputStream=conn.getInputStream();
       }
       String fileName="thumb-" + System.currentTimeMillis();
       File f=new File(cacheDir,fileName);

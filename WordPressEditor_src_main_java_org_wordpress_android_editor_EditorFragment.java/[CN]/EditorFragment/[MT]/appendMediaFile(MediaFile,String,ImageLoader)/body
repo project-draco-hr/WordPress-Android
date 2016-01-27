@@ -8,12 +8,14 @@
       if (URLUtil.isNetworkUrl(mediaUrl)) {
         String mediaId=mediaFile.getMediaId();
         mWebView.execJavaScriptFromString("ZSSEditor.insertImage('" + mediaUrl + "', '"+ mediaId+ "');");
+        AnalyticsTracker.track(Stat.EDITOR_ADDED_PHOTO_VIA_WP_MEDIA_LIBRARY);
       }
  else {
         String id=mediaFile.getMediaId();
         mWebView.execJavaScriptFromString("ZSSEditor.insertLocalImage(" + id + ", '"+ mediaUrl+ "');");
         mWebView.execJavaScriptFromString("ZSSEditor.setProgressOnImage(" + id + ", "+ 0+ ");");
         mUploadingMediaIds.add(id);
+        AnalyticsTracker.track(Stat.EDITOR_ADDED_PHOTO_VIA_LOCAL_LIBRARY);
       }
     }
   }

@@ -9,6 +9,51 @@
     @Override public void onReceivedError(    WebView view,    int errorCode,    String description,    String failingUrl){
       AppLog.e(AppLog.T.EDITOR,description);
     }
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP) @Override public WebResourceResponse shouldInterceptRequest(    WebView view,    WebResourceRequest request){
+      String url=request.getUrl().toString();
+      if (!URLUtil.isNetworkUrl(url)) {
+        return super.shouldInterceptRequest(view,request);
+      }
+      String authHeader=mAuthHeaderRequestListener.onAuthHeaderRequested(UrlUtils.makeHttps(url));
+      if (StringUtils.notNullStr(authHeader).length() > 0) {
+        try {
+          url=UrlUtils.makeHttps(url);
+          Map<String,String> headerMap=request.getRequestHeaders();
+          for (          Map.Entry<String,String> entry : mHeaderMap.entrySet()) {
+            headerMap.put(entry.getKey(),entry.getValue());
+          }
+          headerMap.put("Authorization",authHeader);
+          HttpURLConnection conn=HTTPUtils.setupUrlConnection(url,headerMap);
+          return new WebResourceResponse(conn.getContentType(),conn.getContentEncoding(),conn.getInputStream());
+        }
+ catch (        IOException e) {
+          AppLog.e(AppLog.T.EDITOR,e);
+        }
+      }
+      return super.shouldInterceptRequest(view,request);
+    }
+    /** 
+ * Compatibility method for API < 21
+ */
+    @SuppressWarnings("deprecation") @Override public WebResourceResponse shouldInterceptRequest(    WebView view,    String url){
+      if (!URLUtil.isNetworkUrl(url)) {
+        return super.shouldInterceptRequest(view,url);
+      }
+      String authHeader=mAuthHeaderRequestListener.onAuthHeaderRequested(UrlUtils.makeHttps(url));
+      if (StringUtils.notNullStr(authHeader).length() > 0) {
+        try {
+          url=UrlUtils.makeHttps(url);
+          Map<String,String> headerMap=new HashMap<>(mHeaderMap);
+          headerMap.put("Authorization",authHeader);
+          HttpURLConnection conn=HTTPUtils.setupUrlConnection(url,headerMap);
+          return new WebResourceResponse(conn.getContentType(),conn.getContentEncoding(),conn.getInputStream());
+        }
+ catch (        IOException e) {
+          AppLog.e(AppLog.T.EDITOR,e);
+        }
+      }
+      return super.shouldInterceptRequest(view,url);
+    }
   }
 );
   this.setWebChromeClient(new WebChromeClient(){
