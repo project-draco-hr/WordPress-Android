@@ -4,11 +4,13 @@
   }
  else {
     Blog blog=WordPress.getCurrentBlog();
-    if (blog == null) {
-      showSiteFragmentNoSites();
+    MySiteFragment mySiteFragment=getMySiteFragment();
+    if (mySiteFragment != null) {
+      mySiteFragment.setBlog(blog);
     }
- else {
-      showSitePicker(blog);
+    if (blog != null) {
+      int blogId=blog.getLocalTableBlogId();
+      ActivityLauncher.showSitePickerForResult(this,blogId);
     }
   }
 }
