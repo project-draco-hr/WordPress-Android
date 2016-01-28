@@ -1,4 +1,5 @@
 {
+  EventBus.getDefault().post(new StatsEvents.UpdateStatusChanged(true));
   String cachedStats=getCachedStats(blogId,timeframe,date,sectionToUpdate,maxResultsRequested,pageRequested);
   if (cachedStats != null) {
     BaseStatsModel mResponseObjectModel;
@@ -16,7 +17,6 @@
   }
   final RestClientUtils restClientUtils=WordPress.getRestClientUtilsV1_1();
   String period=timeframe.getLabelForRestCall();
-  EventBus.getDefault().post(new StatsEvents.UpdateStatusChanged(true));
   RestListener vListener=new RestListener(sectionToUpdate,blogId,timeframe,date,maxResultsRequested,pageRequested);
   final String periodDateMaxPlaceholder="?period=%s&date=%s&max=%s";
   String path=String.format("/sites/%s/stats/" + sectionToUpdate.getRestEndpointPath(),blogId);
