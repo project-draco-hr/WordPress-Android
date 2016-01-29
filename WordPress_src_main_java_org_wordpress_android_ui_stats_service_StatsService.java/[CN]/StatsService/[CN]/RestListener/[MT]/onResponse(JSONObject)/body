@@ -1,6 +1,7 @@
 {
   singleThreadNetworkHandler.submit(new Thread(){
     @Override public void run(){
+      BaseStatsModel mResponseObjectModel=null;
       if (response != null) {
         try {
           mResponseObjectModel=StatsUtils.parseResponse(mEndpointName,mRequestBlogId,response);
@@ -14,7 +15,7 @@
           AppLog.e(AppLog.T.STATS,e);
         }
       }
-      EventBus.getDefault().post(new StatsEvents.SectionUpdated(mEndpointName,mRequestBlogId,mTimeframe,mDate,mMaxResultsRequested,mPageRequested,mResponseObjectModel));
+      EventBus.getDefault().post(mEndpointName.getEndpointUpdateEvent(mRequestBlogId,mTimeframe,mDate,mMaxResultsRequested,mPageRequested,mResponseObjectModel));
       updateWidgetsUI(mRequestBlogId,mEndpointName,mTimeframe,mDate,mPageRequested,mResponseObjectModel);
       checkAllRequestsFinished(currentRequest);
     }

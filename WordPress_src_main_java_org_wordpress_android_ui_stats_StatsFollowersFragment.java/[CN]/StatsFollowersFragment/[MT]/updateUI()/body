@@ -2,18 +2,13 @@
   if (!isAdded()) {
     return;
   }
-  mTopPagerContainer.setVisibility(View.VISIBLE);
-  mTotalsLabel.setVisibility(View.VISIBLE);
-  if (mDatamodels == null) {
+  if (!hasDataAvailable()) {
     showHideNoResultsUI(true);
     mTotalsLabel.setText(getTotalFollowersLabel(0));
     return;
   }
-  if (isErrorResponse()) {
-    showErrorUI();
-    return;
-  }
-  final FollowersModel followersModel=(FollowersModel)mDatamodels[mTopPagerSelectedButtonIndex];
+  mTotalsLabel.setVisibility(View.VISIBLE);
+  final FollowersModel followersModel=getCurrentDataModel();
   if (followersModel != null && followersModel.getFollowers() != null && followersModel.getFollowers().size() > 0) {
     ArrayAdapter adapter=new DotComFollowerAdapter(getActivity(),followersModel.getFollowers());
     StatsUIHelper.reloadLinearLayout(getActivity(),adapter,mList,getMaxNumberOfItemsToShowInList());
@@ -40,7 +35,7 @@
           View.OnClickListener clickListener=new View.OnClickListener(){
             @Override public void onClick(            View v){
               setNavigationButtonsEnabled(false);
-              refreshStats(followersModel.getPage() - 1,new StatsService.StatsEndpointsEnum[]{getSectionsToUpdate()[mTopPagerSelectedButtonIndex]});
+              refreshStats(followersModel.getPage() - 1,new StatsService.StatsEndpointsEnum[]{sectionsToUpdate()[mTopPagerSelectedButtonIndex]});
             }
           }
 ;
@@ -55,7 +50,7 @@
           View.OnClickListener clickListener=new View.OnClickListener(){
             @Override public void onClick(            View v){
               setNavigationButtonsEnabled(false);
-              refreshStats(followersModel.getPage() + 1,new StatsService.StatsEndpointsEnum[]{getSectionsToUpdate()[mTopPagerSelectedButtonIndex]});
+              refreshStats(followersModel.getPage() + 1,new StatsService.StatsEndpointsEnum[]{sectionsToUpdate()[mTopPagerSelectedButtonIndex]});
             }
           }
 ;
@@ -78,4 +73,5 @@
     mBottomPaginationContainer.setVisibility(View.GONE);
     mTotalsLabel.setText(getTotalFollowersLabel(0));
   }
+  mTopPagerContainer.setVisibility(View.VISIBLE);
 }

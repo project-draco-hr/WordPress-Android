@@ -30,8 +30,12 @@
   String blacklistKeys=getStringFromCursor(cursor,BLACKLIST_KEYS_COLUMN_NAME);
   holdForModeration=new ArrayList<>();
   blacklist=new ArrayList<>();
-  Collections.addAll(holdForModeration,moderationKeys.split("\n"));
-  Collections.addAll(blacklist,blacklistKeys.split("\n"));
+  if (!TextUtils.isEmpty(moderationKeys)) {
+    Collections.addAll(holdForModeration,moderationKeys.split("\n"));
+  }
+  if (!TextUtils.isEmpty(blacklistKeys)) {
+    Collections.addAll(blacklist,blacklistKeys.split("\n"));
+  }
   setRelatedPostsFlags(Math.max(0,getIntFromCursor(cursor,RELATED_POSTS_COLUMN_NAME)));
   String cachedCategories=getStringFromCursor(cursor,CATEGORIES_COLUMN_NAME);
   String cachedFormats=getStringFromCursor(cursor,POST_FORMATS_COLUMN_NAME);
