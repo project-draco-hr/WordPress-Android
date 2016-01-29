@@ -1,0 +1,13 @@
+{
+  StatsRestRequestAbstractListener listener=new StatsRestRequestAbstractListener(){
+    @Override void parseResponse(    JSONObject response) throws JSONException {
+      VideoPlaysModel model=new VideoPlaysModel("123456",response);
+      assertEquals(model.getOtherPlays(),0);
+      assertEquals(model.getTotalPlays(),0);
+      assertNotNull(model.getPlays());
+      assertEquals(model.getPlays().size(),0);
+    }
+  }
+;
+  mRestClient.makeRequest(Request.Method.POST,"https://public-api.wordpress.com/rest/v1.1/sites/123456/stats/video-plays",null,listener,errListener);
+}

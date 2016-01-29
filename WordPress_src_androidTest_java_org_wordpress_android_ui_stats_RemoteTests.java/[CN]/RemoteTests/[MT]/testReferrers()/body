@@ -1,0 +1,48 @@
+{
+  StatsRestRequestAbstractListener listener=new StatsRestRequestAbstractListener(){
+    @Override void parseResponse(    JSONObject response) throws JSONException {
+      ReferrersModel model=new ReferrersModel("123456",response);
+      assertEquals(model.getTotalViews(),2161);
+      assertEquals(model.getOtherViews(),938);
+      assertNotNull(model.getGroups());
+      assertEquals(model.getGroups().size(),10);
+      ReferrerGroupModel gModel=model.getGroups().get(0);
+      assertEquals(gModel.getName(),"Search Engines");
+      assertEquals(gModel.getGroupId(),"Search Engines");
+      assertEquals(gModel.getIcon(),"https://wordpress.com/i/stats/search-engine.png");
+      assertEquals(gModel.getTotal(),480);
+      assertNotNull(gModel.getResults());
+      assertEquals(gModel.getResults().size(),7);
+      ReferrerResultModel refResultModel=gModel.getResults().get(0);
+      assertEquals(refResultModel.getName(),"Google Search");
+      assertEquals(refResultModel.getIcon(),"https://secure.gravatar.com/blavatar/6741a05f4bc6e5b65f504c4f3df388a1?s=48");
+      assertEquals(refResultModel.getViews(),461);
+      assertNotNull(refResultModel.getChildren());
+      assertNull(refResultModel.getUrl());
+      SingleItemModel child=refResultModel.getChildren().get(0);
+      assertEquals(child.getUrl(),"http://www.google.com/");
+      assertEquals(child.getTitle(),"google.com");
+      assertEquals(child.getIcon(),"https://secure.gravatar.com/blavatar/ff90821feeb2b02a33a6f9fc8e5f3fcd?s=48");
+      assertEquals(child.getTotals(),176);
+      child=refResultModel.getChildren().get(10);
+      assertEquals(child.getUrl(),"http://www.google.co.jp");
+      assertEquals(child.getTitle(),"google.co.jp");
+      assertEquals(child.getIcon(),"https://secure.gravatar.com/blavatar/a28b8206a6562f6098688508d4665905?s=48");
+      assertEquals(child.getTotals(),6);
+      gModel=model.getGroups().get(6);
+      assertEquals(gModel.getName(),"ma.tt");
+      assertEquals(gModel.getGroupId(),"ma.tt");
+      assertEquals(gModel.getIcon(),"https://secure.gravatar.com/blavatar/733a27a6b983dd89d6dd64d0445a3e8e?s=48");
+      assertEquals(gModel.getTotal(),56);
+      assertNotNull(gModel.getResults());
+      assertEquals(gModel.getResults().size(),11);
+      refResultModel=gModel.getResults().get(0);
+      assertEquals(refResultModel.getName(),"ma.tt");
+      assertEquals(refResultModel.getUrl(),"http://ma.tt/");
+      assertEquals(refResultModel.getIcon(),"");
+      assertEquals(refResultModel.getViews(),34);
+    }
+  }
+;
+  mRestClient.makeRequest(Request.Method.POST,"https://public-api.wordpress.com/rest/v1.1/sites/123456/stats/referrers",null,listener,errListener);
+}
