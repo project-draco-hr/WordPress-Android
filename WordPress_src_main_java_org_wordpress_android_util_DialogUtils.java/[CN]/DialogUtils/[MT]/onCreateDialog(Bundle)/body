@@ -1,11 +1,16 @@
 {
-  LayoutInflater layoutInflater=LayoutInflater.from(context);
+  LayoutInflater layoutInflater=LayoutInflater.from(mContext);
   View promptView=layoutInflater.inflate(R.layout.my_profile_dialog,null);
-  AlertDialog.Builder alertDialogBuilder=new AlertDialog.Builder(context);
+  AlertDialog.Builder alertDialogBuilder=new AlertDialog.Builder(mContext);
   alertDialogBuilder.setView(promptView);
   final WPTextView textView=(WPTextView)promptView.findViewById(R.id.my_profile_dialog_label);
   final OpenSansEditText editText=(OpenSansEditText)promptView.findViewById(R.id.my_profile_dialog_input);
   final WPTextView hintView=(WPTextView)promptView.findViewById(R.id.my_profile_dialog_hint);
+  Bundle args=getArguments();
+  String title=args.getString(TITLE_TAG);
+  String hint=args.getString(HINT_TAG);
+  Boolean isMultiline=args.getBoolean(IS_MULTILINE_TAG);
+  String initialText=args.getString(INITIAL_TEXT_TAG);
   textView.setText(title);
   if (!TextUtils.isEmpty(hint)) {
     hintView.setText(hint);
@@ -22,7 +27,7 @@
   }
   alertDialogBuilder.setCancelable(true).setPositiveButton(R.string.ok,new DialogInterface.OnClickListener(){
     public void onClick(    DialogInterface dialog,    int id){
-      callback.onSuccessfulInput(editText.getText().toString());
+      mCallback.onSuccessfulInput(editText.getText().toString());
     }
   }
 ).setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener(){
@@ -31,6 +36,5 @@
     }
   }
 );
-  AlertDialog alert=alertDialogBuilder.create();
-  alert.show();
+  return alertDialogBuilder.create();
 }
