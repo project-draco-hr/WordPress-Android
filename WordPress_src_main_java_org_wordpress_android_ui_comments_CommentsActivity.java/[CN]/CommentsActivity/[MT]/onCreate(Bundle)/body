@@ -15,7 +15,8 @@
     mCurrentCommentStatusType=AppPrefs.getCommentsStatusFilter();
   }
   if (savedInstanceState == null) {
-    Fragment commentsListFragment=new CommentsListFragment();
+    CommentsListFragment commentsListFragment=new CommentsListFragment();
+    commentsListFragment.setCommentStatusFilter(mCurrentCommentStatusType);
     getFragmentManager().beginTransaction().add(R.id.layout_fragment_container,commentsListFragment,getString(R.string.fragment_tag_comment_list)).commitAllowingStateLoss();
   }
  else {
@@ -41,6 +42,7 @@
         AppLog.d(AppLog.T.STATS,"NEW STATUS : " + selectedCommentStatus.getLabel());
         mCurrentCommentStatusType=selectedCommentStatus;
         AppPrefs.setCommentsStatusFilter(mCurrentCommentStatusType);
+        updateCommentList();
       }
       @Override public void onNothingSelected(      AdapterView<?> parent){
       }

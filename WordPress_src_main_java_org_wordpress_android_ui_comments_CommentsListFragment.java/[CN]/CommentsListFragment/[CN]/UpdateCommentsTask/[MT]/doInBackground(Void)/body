@@ -20,6 +20,11 @@
  else {
     hPost.put("number",COMMENTS_PER_PAGE);
   }
+  if (mStatusFilter != null) {
+    if (!mStatusFilter.equals(CommentStatus.UNKNOWN)) {
+      hPost.put("status",CommentStatus.toRESTString(mStatusFilter));
+    }
+  }
   Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),hPost};
   try {
     return ApiHelper.refreshComments(blog,params);

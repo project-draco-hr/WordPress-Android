@@ -1,4 +1,5 @@
 {
+  boolean isRefreshing=mSwipeToRefreshHelper.isRefreshing();
   mIsUpdatingComments=false;
   mUpdateCommentsTask=null;
   if (!isAdded())   return;
@@ -27,6 +28,9 @@ if (comments != null && comments.size() > 0) {
 getAdapter().loadComments();
 }
  else {
+if (isRefreshing) {
+getAdapter().clearComments();
+}
 updateEmptyView(EmptyViewMessageType.NO_CONTENT);
 }
 }
