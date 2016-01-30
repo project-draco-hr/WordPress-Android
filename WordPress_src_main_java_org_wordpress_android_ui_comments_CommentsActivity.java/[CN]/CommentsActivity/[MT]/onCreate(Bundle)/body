@@ -8,6 +8,12 @@
     actionBar.setDisplayShowTitleEnabled(false);
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
+  if (getIntent() != null && getIntent().hasExtra(SAVED_COMMENTS_STATUS_TYPE)) {
+    mCurrentCommentStatusType=(CommentStatus)getIntent().getSerializableExtra(SAVED_COMMENTS_STATUS_TYPE);
+  }
+ else {
+    mCurrentCommentStatusType=AppPrefs.getCommentsStatusFilter();
+  }
   if (savedInstanceState == null) {
     Fragment commentsListFragment=new CommentsListFragment();
     getFragmentManager().beginTransaction().add(R.id.layout_fragment_container,commentsListFragment,getString(R.string.fragment_tag_comment_list)).commitAllowingStateLoss();
@@ -34,6 +40,7 @@
         }
         AppLog.d(AppLog.T.STATS,"NEW STATUS : " + selectedCommentStatus.getLabel());
         mCurrentCommentStatusType=selectedCommentStatus;
+        AppPrefs.setCommentsStatusFilter(mCurrentCommentStatusType);
       }
       @Override public void onNothingSelected(      AdapterView<?> parent){
       }
