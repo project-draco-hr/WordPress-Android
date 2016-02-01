@@ -3,5 +3,14 @@
   mUsernamePreference.setSummary(account.getUserName());
   mEmailPreference.setSummary(account.getEmail());
   mWebAddressPreference.setSummary(account.getWebAddress());
+  List<Map<String,Object>> blogList=WordPress.wpDB.getBlogsBy("dotcomFlag=1",null);
+  mPrimarySitePreference.setEntries(BlogUtils.getBlogNamesFromAccountMapList(blogList));
+  mPrimarySitePreference.setEntryValues(BlogUtils.getBlogIdsFromAccountMapList(blogList));
+  mPrimarySitePreference.setDetails(BlogUtils.getHomeURLOrHostNamesFromAccountMapList(blogList));
+  mPrimarySitePreference.setValue("" + account.getPrimaryBlogId());
+  Blog primaryBlog=WordPress.wpDB.getBlogForDotComBlogId("" + account.getPrimaryBlogId());
+  if (primaryBlog != null) {
+    mPrimarySitePreference.setSummary(UrlUtils.getHost(primaryBlog.getHomeURL()));
+  }
   checkIfEmailChangeIsPending();
 }
