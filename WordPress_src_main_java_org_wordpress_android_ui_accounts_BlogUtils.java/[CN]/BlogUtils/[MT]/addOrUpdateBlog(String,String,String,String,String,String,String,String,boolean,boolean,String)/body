@@ -15,15 +15,24 @@
     blog.setWpVersion("");
     blog.setAdmin(isAdmin);
     blog.setHidden(!isVisible);
+    blog.setPlanID(planID);
     WordPress.wpDB.saveBlog(blog);
     return true;
   }
  else {
     int localTableBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogIdAndXmlRpcUrl(Integer.parseInt(blogId),xmlRpcUrl);
     try {
+      boolean blogUpdated=false;
       blog=WordPress.wpDB.instantiateBlogByLocalId(localTableBlogId);
       if (!blogName.equals(blog.getBlogName())) {
         blog.setBlogName(blogName);
+        blogUpdated=true;
+      }
+      if (!planID.equals(blog.getPlanID())) {
+        blog.setPlanID(planID);
+        blogUpdated=true;
+      }
+      if (blogUpdated) {
         WordPress.wpDB.saveBlog(blog);
         return true;
       }
