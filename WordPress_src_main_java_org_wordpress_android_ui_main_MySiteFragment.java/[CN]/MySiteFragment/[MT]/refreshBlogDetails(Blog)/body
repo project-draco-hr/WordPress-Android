@@ -37,4 +37,22 @@
   String blogTitle=TextUtils.isEmpty(blogName) ? homeURL : blogName;
   mBlogTitleTextView.setText(blogTitle);
   mBlogSubtitleTextView.setText(homeURL);
+  if (blog.getPlanID() != 0) {
+    WordPress.getRestClientUtils().get("sites/" + blog.getDotComBlogId() + "/plans",new RestRequest.Listener(){
+      @Override public void onResponse(      JSONObject response){
+        if (response != null) {
+          AppLog.d(AppLog.T.UTILS,response.toString());
+        }
+ else {
+        }
+      }
+    }
+,new RestRequest.ErrorListener(){
+      @Override public void onErrorResponse(      VolleyError volleyError){
+        AppLog.e(AppLog.T.UTILS,"Error",volleyError);
+      }
+    }
+);
+  }
+  mPlansContainer.setVisibility(blog.getPlanID() != 0 ? View.VISIBLE : View.GONE);
 }
