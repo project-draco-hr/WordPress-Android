@@ -21,10 +21,33 @@
   mProductType=planJSONObject.getString("product_type");
   String rawAvailable=planJSONObject.optString("available");
   isAvailable="yes".equals(rawAvailable) || "1".equals(rawAvailable) || "true".equals(rawAvailable);
-  mWidth=planJSONObject.getInt("width");
-  mHeight=planJSONObject.getInt("height");
   mBillPeriodLabel=planJSONObject.getString("bill_period_label");
   mPrice=planJSONObject.getString("price");
   mFormattedPrice=planJSONObject.getString("formatted_price");
   mRawPrice=planJSONObject.getInt("raw_price");
+  mWidth=planJSONObject.optInt("width");
+  mHeight=planJSONObject.optInt("height");
+  mSaving=planJSONObject.optLong("saving",0L);
+  mOriginal=planJSONObject.optLong("original",mCost);
+  mFormattedOriginalPrice=planJSONObject.optString("formatted_original_price");
+  mSupportDocument=planJSONObject.optString("support_document");
+  mCapability=planJSONObject.optString("capability");
+  mStore=planJSONObject.optInt("store");
+  mMulti=planJSONObject.optInt("multi");
+  if (planJSONObject.has("bundle_product_ids")) {
+    JSONArray bundleIDS=planJSONObject.getJSONArray("bundle_product_ids");
+    mBundleProductIds=new ArrayList<>(bundleIDS.length());
+    for (int i=0; i < bundleIDS.length(); i++) {
+      int currentBundleID=bundleIDS.getInt(i);
+      mBundleProductIds.add(currentBundleID);
+    }
+  }
+  if (planJSONObject.has("feature_1")) {
+    mFeatures=new ArrayList<>();
+    for (int i=1; i < 50; i++) {
+      if (planJSONObject.has("feature_" + i)) {
+        mFeatures.add(planJSONObject.getString("feature_" + i));
+      }
+    }
+  }
 }
