@@ -1,11 +1,14 @@
 {
+  if (!NetworkUtils.isNetworkAvailable(ctx)) {
+    return false;
+  }
   Map<String,String> params=getDefaultRestCallParameters();
   WordPress.getRestClientUtils().get("plans/",params,null,new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject response){
       if (response != null) {
         AppLog.d(AppLog.T.PLANS,response.toString());
         AppPrefs.setGlobalPlans(response.toString());
-        downloadFeatures(null,null);
+        downloadFeatures(ctx,null,null);
       }
       if (listener != null) {
         listener.onResponse(response);
@@ -21,4 +24,5 @@
     }
   }
 );
+  return true;
 }
