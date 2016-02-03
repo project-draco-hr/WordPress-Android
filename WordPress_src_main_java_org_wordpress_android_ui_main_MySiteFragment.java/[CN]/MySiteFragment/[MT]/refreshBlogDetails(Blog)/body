@@ -37,7 +37,7 @@
   String blogTitle=TextUtils.isEmpty(blogName) ? homeURL : blogName;
   mBlogTitleTextView.setText(blogTitle);
   mBlogSubtitleTextView.setText(homeURL);
-  if (blog.getPlanID() != 0) {
+  if (PlansUtils.isPlanFeatureAvailableForBlog(blog)) {
     WordPress.getRestClientUtils().get("sites/" + blog.getDotComBlogId() + "/plans",new RestRequest.Listener(){
       @Override public void onResponse(      JSONObject response){
         if (response != null) {
@@ -54,5 +54,5 @@
     }
 );
   }
-  mPlansContainer.setVisibility(blog.getPlanID() != 0 ? View.VISIBLE : View.GONE);
+  mPlansContainer.setVisibility(PlansUtils.isPlanFeatureAvailableForBlog(blog) ? View.VISIBLE : View.GONE);
 }
