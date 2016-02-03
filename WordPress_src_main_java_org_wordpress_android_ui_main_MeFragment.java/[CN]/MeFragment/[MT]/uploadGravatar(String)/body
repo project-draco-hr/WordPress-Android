@@ -1,0 +1,31 @@
+{
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      if (jsonObject != null) {
+        try {
+          AppLog.d(AppLog.T.API,jsonObject.toString(2));
+        }
+ catch (        JSONException e) {
+          AppLog.e(AppLog.T.API,e);
+        }
+      }
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(AppLog.T.API,volleyError);
+      AppLog.d(AppLog.T.API,"reponse: " + new String(volleyError.networkResponse.data));
+    }
+  }
+;
+  File file=new File(filePath);
+  if (!file.exists()) {
+    return;
+  }
+  final RestRequest request=WordPress.getGravatarRestClientUtilsV1().newPostRequest("upload-image",null,listener,errorListener);
+  MultipartRequest multipartRequest=new MultipartRequest(request,listener,errorListener);
+  multipartRequest.addPart("filedata",file);
+  multipartRequest.addPart("account","stefanostogoulidis+stefanosuser@gmail.com");
+  WordPress.getGravatarRestClientUtilsV1().post(multipartRequest,null,errorListener);
+}
