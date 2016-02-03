@@ -19,7 +19,7 @@
   mCost=planJSONObject.getLong("cost");
   mBillPeriod=planJSONObject.getInt("bill_period");
   mProductType=planJSONObject.getString("product_type");
-  isAvailable=JSONUtils.isStringTrue(planJSONObject,"available");
+  mIsAvailable=JSONUtils.getBool(planJSONObject,"available");
   mBillPeriodLabel=planJSONObject.getString("bill_period_label");
   mPrice=planJSONObject.getString("price");
   mFormattedPrice=planJSONObject.getString("formatted_price");
@@ -41,12 +41,9 @@
       mBundleProductIds.add(currentBundleID);
     }
   }
-  if (planJSONObject.has("feature_1")) {
-    mFeatures=new ArrayList<>();
-    for (int i=1; i < 50; i++) {
-      if (planJSONObject.has("feature_" + i)) {
-        mFeatures.add(planJSONObject.getString("feature_" + i));
-      }
-    }
+  int featureNumber=1;
+  while (planJSONObject.has("feature_" + featureNumber)) {
+    mFeatures.add(planJSONObject.getString("feature_" + featureNumber));
+    featureNumber++;
   }
 }
