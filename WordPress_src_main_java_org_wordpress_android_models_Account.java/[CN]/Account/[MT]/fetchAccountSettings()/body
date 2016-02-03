@@ -4,7 +4,7 @@
       if (jsonObject != null) {
         updateAccountSettingsFromRestResponse(jsonObject);
         save();
-        EventBus.getDefault().post(new PrefsEvents.MyProfileDetailsChanged());
+        EventBus.getDefault().post(new PrefsEvents.AccountSettingsFetchSuccess());
       }
     }
   }
@@ -12,7 +12,7 @@
   RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.e(T.API,volleyError);
-      EventBus.getDefault().post(new PrefsEvents.MyProfileDataLoadSaveError(volleyError));
+      EventBus.getDefault().post(new PrefsEvents.AccountSettingsFetchError(volleyError));
     }
   }
 ;
