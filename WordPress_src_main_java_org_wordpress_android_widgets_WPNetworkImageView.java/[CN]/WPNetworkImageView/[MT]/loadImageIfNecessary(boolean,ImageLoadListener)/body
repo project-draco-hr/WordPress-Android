@@ -47,18 +47,21 @@
       if (statusCode == 404) {
         mUrlSkipList.add(mUrl);
       }
+      if (imageLoadListener != null) {
+        imageLoadListener.onError();
+      }
     }
     @Override public void onResponse(    final ImageLoader.ImageContainer response,    boolean isImmediate){
       if (isImmediate && isInLayoutPass) {
         post(new Runnable(){
           @Override public void run(){
-            handleResponse(response,true);
+            handleResponse(response,true,imageLoadListener);
           }
         }
 );
       }
  else {
-        handleResponse(response,isImmediate);
+        handleResponse(response,isImmediate,imageLoadListener);
       }
     }
   }

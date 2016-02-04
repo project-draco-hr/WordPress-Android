@@ -2,6 +2,15 @@
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       if (jsonObject != null) {
+        loadAvatar(AccountHelper.getDefaultAccount(),true,new WPNetworkImageView.ImageLoadListener(){
+          @Override public void onLoaded(){
+            mProgressBar.setVisibility(View.GONE);
+          }
+          @Override public void onError(){
+            mProgressBar.setVisibility(View.GONE);
+          }
+        }
+);
         try {
           AppLog.d(AppLog.T.API,jsonObject.toString(2));
         }
@@ -23,6 +32,7 @@
   if (!file.exists()) {
     return;
   }
+  mProgressBar.setVisibility(View.VISIBLE);
   final RestRequest request=WordPress.getGravatarRestClientUtilsV1().newPostRequest("upload-image",null,listener,errorListener);
   MultipartRequest multipartRequest=new MultipartRequest(request,listener,errorListener);
   multipartRequest.addPart("filedata",file);
