@@ -9,6 +9,7 @@
   mBlogSubtitleTextView=(WPTextView)rootView.findViewById(R.id.my_site_subtitle_label);
   mLookAndFeelHeader=(LinearLayout)rootView.findViewById(R.id.my_site_look_and_feel_header);
   mThemesContainer=(RelativeLayout)rootView.findViewById(R.id.row_themes);
+  mPlanContainer=(RelativeLayout)rootView.findViewById(R.id.row_plan);
   mConfigurationHeader=rootView.findViewById(R.id.row_configuration);
   mSettingsView=rootView.findViewById(R.id.row_settings);
   mScrollView=(ScrollView)rootView.findViewById(R.id.scroll_view);
@@ -36,6 +37,17 @@
   rootView.findViewById(R.id.row_stats).setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
       ActivityLauncher.viewBlogStats(getActivity(),mBlogLocalId);
+    }
+  }
+);
+  mPlanContainer.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      Blog current=WordPress.getBlog(mBlogLocalId);
+      Plan currentBlogPlan=PlansUtils.getGlobalPlan(current.getPlanID());
+      String desc=currentBlogPlan != null ? currentBlogPlan.getDescription() : "Unknown";
+      String title=currentBlogPlan != null ? currentBlogPlan.getProductName() : "Unknown";
+      Dialog dlg=new AlertDialog.Builder(getActivity()).setTitle(title).setPositiveButton(android.R.string.ok,null).setMessage(desc).create();
+      dlg.show();
     }
   }
 );

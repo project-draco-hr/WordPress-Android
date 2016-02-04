@@ -1,0 +1,49 @@
+{
+  mProductID=planJSONObject.getLong("product_id");
+  mProductName=planJSONObject.getString("product_name");
+  mProductNameEnglish=planJSONObject.getString("product_name_en");
+  JSONObject priceJSONObject=planJSONObject.getJSONObject("prices");
+  JSONArray priceKeys=priceJSONObject.names();
+  if (priceKeys != null) {
+    for (int i=0; i < priceKeys.length(); i++) {
+      String currentKey=priceKeys.getString(i);
+      int currentPrice=priceJSONObject.getInt(currentKey);
+      mPrices.put(currentKey,currentPrice);
+    }
+  }
+  mProductNameShort=planJSONObject.getString("product_name_short");
+  mProductSlug=planJSONObject.getString("product_slug");
+  mTagline=planJSONObject.getString("tagline");
+  mShortdesc=planJSONObject.getString("shortdesc");
+  mDescription=planJSONObject.getString("description");
+  mCost=planJSONObject.getLong("cost");
+  mBillPeriod=planJSONObject.getInt("bill_period");
+  mProductType=planJSONObject.getString("product_type");
+  mIsAvailable=JSONUtils.getBool(planJSONObject,"available");
+  mBillPeriodLabel=planJSONObject.getString("bill_period_label");
+  mPrice=planJSONObject.getString("price");
+  mFormattedPrice=planJSONObject.getString("formatted_price");
+  mRawPrice=planJSONObject.getInt("raw_price");
+  mWidth=planJSONObject.optInt("width");
+  mHeight=planJSONObject.optInt("height");
+  mSaving=planJSONObject.optLong("saving",0L);
+  mOriginal=planJSONObject.optLong("original",mCost);
+  mFormattedOriginalPrice=planJSONObject.optString("formatted_original_price");
+  mSupportDocument=planJSONObject.optString("support_document");
+  mCapability=planJSONObject.optString("capability");
+  mStore=planJSONObject.optInt("store");
+  mMulti=planJSONObject.optInt("multi");
+  if (planJSONObject.has("bundle_product_ids")) {
+    JSONArray bundleIDS=planJSONObject.getJSONArray("bundle_product_ids");
+    mBundleProductIds=new ArrayList<>(bundleIDS.length());
+    for (int i=0; i < bundleIDS.length(); i++) {
+      int currentBundleID=bundleIDS.getInt(i);
+      mBundleProductIds.add(currentBundleID);
+    }
+  }
+  int featureNumber=1;
+  while (planJSONObject.has("feature_" + featureNumber)) {
+    mFeatures.add(planJSONObject.getString("feature_" + featureNumber));
+    featureNumber++;
+  }
+}
