@@ -1,0 +1,14 @@
+{
+  if (mIsUpdatingStats || mThereWasAnErrorLoadingStats) {
+    return;
+  }
+  if (!StringUtils.isEmpty(AppPrefs.getStatsWidgetsKeys())) {
+    return;
+  }
+  AppPrefs.bumpAnalyticsForStatsWidgetPromo();
+  int counter=AppPrefs.getAnalyticsForStatsWidgetPromo();
+  if (counter == 3 || counter == 1000 || counter == 10000) {
+    DialogFragment newFragment=StatsWidgetPromoDialogFragment.newInstance();
+    newFragment.show(getFragmentManager(),"promote_widget_dialog");
+  }
+}
