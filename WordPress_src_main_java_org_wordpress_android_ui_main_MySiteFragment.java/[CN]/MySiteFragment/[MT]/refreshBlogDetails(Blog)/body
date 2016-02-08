@@ -37,5 +37,12 @@
   String blogTitle=TextUtils.isEmpty(blogName) ? homeURL : blogName;
   mBlogTitleTextView.setText(blogTitle);
   mBlogSubtitleTextView.setText(homeURL);
-  mPlanContainer.setVisibility(PlansUtils.isPlanFeatureAvailableForBlog(blog) ? View.VISIBLE : View.GONE);
+  Plan currentBlogPlan=PlansUtils.getGlobalPlan(blog.getPlanID());
+  if (currentBlogPlan != null) {
+    mCurrentPlanNameTextView.setText(currentBlogPlan.getProductNameShort());
+    mPlanContainer.setVisibility(View.VISIBLE);
+  }
+ else {
+    mPlanContainer.setVisibility(View.GONE);
+  }
 }
