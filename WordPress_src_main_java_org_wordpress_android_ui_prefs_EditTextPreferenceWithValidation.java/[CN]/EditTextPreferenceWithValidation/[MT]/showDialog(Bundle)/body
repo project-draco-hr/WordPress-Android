@@ -1,0 +1,24 @@
+{
+  super.showDialog(state);
+  final AlertDialog dialog=(AlertDialog)getDialog();
+  dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      String error=null;
+      CharSequence text=getEditText().getText();
+      if (mValidationType == ValidationType.EMAIL) {
+        error=validateEmail(text);
+      }
+ else       if (!TextUtils.isEmpty(text) && mValidationType == ValidationType.URL) {
+        error=validateUrl(text);
+      }
+      if (error != null) {
+        getEditText().setError(error);
+      }
+ else {
+        callChangeListener(text);
+        dialog.dismiss();
+      }
+    }
+  }
+);
+}
