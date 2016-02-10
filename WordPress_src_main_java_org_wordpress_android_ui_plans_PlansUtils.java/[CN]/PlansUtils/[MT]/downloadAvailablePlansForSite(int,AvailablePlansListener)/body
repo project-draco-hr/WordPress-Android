@@ -1,8 +1,6 @@
 {
+  final Blog blog=WordPress.getBlog(localTableBlogID);
   if (blog == null || !PlansUtils.isPlanFeatureAvailableForBlog(blog)) {
-    return false;
-  }
-  if (!force && PlansUtils.getAvailablePlansForSite(blog) != null) {
     return false;
   }
   Map<String,String> params=getDefaultRestCallParameters();
@@ -21,7 +19,6 @@
               plans.add(currentPlan);
             }
           }
-          availablePlansForSites.put(blog.getLocalTableBlogId(),plans);
           if (listener != null) {
             listener.onResponse(plans);
           }
@@ -37,7 +34,7 @@
   }
 ,new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
-      AppLog.e(AppLog.T.UTILS,"Error",volleyError);
+      AppLog.e(AppLog.T.UTILS,"Error downloading plans",volleyError);
       if (listener != null) {
         listener.onError(volleyError);
       }

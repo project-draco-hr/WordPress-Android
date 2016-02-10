@@ -1,0 +1,18 @@
+{
+  super.onResume();
+  if (mAvailablePlans == null) {
+    if (!NetworkUtils.checkConnection(this)) {
+      finish();
+      return;
+    }
+    boolean enqueued=PlansUtils.downloadAvailablePlansForSite(mLocalBlogID,mPlansDownloadListener);
+    if (!enqueued) {
+      Toast.makeText(PlansActivity.this,R.string.plans_loading_error,Toast.LENGTH_LONG).show();
+      finish();
+    }
+    setupLoadingUI();
+  }
+ else {
+    setupPlansUI();
+  }
+}
