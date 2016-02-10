@@ -10,12 +10,9 @@
     c=getReadableDb().rawQuery("SELECT * FROM " + COMMENTS_TABLE + " WHERE blog_id=? AND (status=? OR status=?)  ORDER BY published DESC",args);
   }
   try {
-    if (c.moveToFirst()) {
-      do {
-        Comment comment=getCommentFromCursor(c);
-        comments.add(comment);
-      }
- while (c.moveToNext());
+    while (c.moveToNext()) {
+      Comment comment=getCommentFromCursor(c);
+      comments.add(comment);
     }
     return comments;
   }
