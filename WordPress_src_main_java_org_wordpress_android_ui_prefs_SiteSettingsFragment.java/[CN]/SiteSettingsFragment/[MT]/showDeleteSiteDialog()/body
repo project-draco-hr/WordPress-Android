@@ -1,14 +1,6 @@
 {
   Bundle args=new Bundle();
-  String url;
-  try {
-    URI uri=new URI(mBlog.getHomeURL());
-    url=uri.getHost();
-  }
- catch (  URISyntaxException e) {
-    url=StringUtils.unescapeHTML(mBlog.getHomeURL().replaceFirst(ADDRESS_FORMAT_REGEX,""));
-  }
-  args.putString(DeleteSiteDialogFragment.SITE_DOMAIN_KEY,url);
+  args.putString(DeleteSiteDialogFragment.SITE_DOMAIN_KEY,UrlUtils.getHost(mBlog.getHomeURL()));
   DeleteSiteDialogFragment deleteSiteDialogFragment=new DeleteSiteDialogFragment();
   deleteSiteDialogFragment.setArguments(args);
   deleteSiteDialogFragment.setTargetFragment(this,DELETE_SITE_REQUEST_CODE);
