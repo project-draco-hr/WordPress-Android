@@ -13,7 +13,10 @@
     changeEditTextPreferenceValue(mAddressPref,mSiteSettings.getAddress());
   }
  else   if (preference == mLanguagePref) {
-    mSiteSettings.setLanguageCode(newValue.toString());
+    if (!mSiteSettings.setLanguageCode(newValue.toString())) {
+      AppLog.w(AppLog.T.SETTINGS,"Unknown language code " + newValue.toString() + " selected in Site Settings.");
+      ToastUtils.showToast(getActivity(),R.string.site_settings_unknown_language_code_error);
+    }
     changeLanguageValue(mSiteSettings.getLanguageCode());
   }
  else   if (preference == mPrivacyPref) {
@@ -31,12 +34,7 @@
   }
  else   if (preference == mCloseAfterPref) {
     mSiteSettings.setCloseAfter(Integer.parseInt(newValue.toString()));
-    if (mSiteSettings.getShouldCloseAfter()) {
-      mCloseAfterPref.setSummary(mSiteSettings.getCloseAfterDescription());
-    }
- else {
-      mCloseAfterPref.setSummary(mSiteSettings.getCloseAfterDescription(0));
-    }
+    mCloseAfterPref.setSummary(mSiteSettings.getCloseAfterDescription());
   }
  else   if (preference == mSortByPref) {
     mSiteSettings.setCommentSorting(Integer.parseInt(newValue.toString()));
@@ -44,7 +42,7 @@
   }
  else   if (preference == mThreadingPref) {
     mSiteSettings.setThreadingLevels(Integer.parseInt(newValue.toString()));
-    setDetailListPreferenceValue(mThreadingPref,newValue.toString(),mSiteSettings.getThreadingDescription());
+    mThreadingPref.setSummary(mSiteSettings.getThreadingDescription());
   }
  else   if (preference == mPagingPref) {
     mSiteSettings.setPagingCount(Integer.parseInt(newValue.toString()));
