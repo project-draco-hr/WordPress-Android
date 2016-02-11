@@ -1,24 +1,36 @@
 {
   super.showDialog(state);
+  Typeface typeface=TypefaceCache.getTypeface(getContext(),TypefaceCache.FAMILY_OPEN_SANS,Typeface.BOLD,TypefaceCache.VARIATION_LIGHT);
+  int buttonColor=ContextCompat.getColor(getContext(),R.color.blue_medium);
   final AlertDialog dialog=(AlertDialog)getDialog();
-  dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View v){
-      String error=null;
-      CharSequence text=getEditText().getText();
-      if (mValidationType == ValidationType.EMAIL) {
-        error=validateEmail(text);
-      }
- else       if (!TextUtils.isEmpty(text) && mValidationType == ValidationType.URL) {
-        error=validateUrl(text);
-      }
-      if (error != null) {
-        getEditText().setError(error);
-      }
+  Button positiveButton=dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+  Button negativeButton=dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+  if (positiveButton != null) {
+    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        String error=null;
+        CharSequence text=getEditText().getText();
+        if (mValidationType == ValidationType.EMAIL) {
+          error=validateEmail(text);
+        }
+ else         if (!TextUtils.isEmpty(text) && mValidationType == ValidationType.URL) {
+          error=validateUrl(text);
+        }
+        if (error != null) {
+          getEditText().setError(error);
+        }
  else {
-        callChangeListener(text);
-        dialog.dismiss();
+          callChangeListener(text);
+          dialog.dismiss();
+        }
       }
     }
-  }
 );
+    positiveButton.setTextColor(buttonColor);
+    positiveButton.setTypeface(typeface);
+  }
+  if (negativeButton != null) {
+    negativeButton.setTextColor(buttonColor);
+    negativeButton.setTypeface(typeface);
+  }
 }
