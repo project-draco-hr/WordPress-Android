@@ -32,7 +32,12 @@
         conf.locale=new Locale(localString);
       }
       res.updateConfiguration(conf,dm);
-      mSettings.edit().putString(LANGUAGE_PREF_KEY,localeMap.get(values[position])).apply();
+      if (position > 0) {
+        mSettings.edit().putString(LANGUAGE_PREF_KEY,localeMap.get(values[position])).apply();
+      }
+ else {
+        mSettings.edit().remove(LANGUAGE_PREF_KEY).apply();
+      }
       if (position != 0) {
         Map<String,Object> properties=new HashMap<String,Object>();
         properties.put("forced_app_locale",conf.locale.toString());
