@@ -1,11 +1,11 @@
 {
-  if (mAvailablePlans == null) {
+  if (mAvailablePlans == null || mAvailablePlans.size() == 0) {
     return;
   }
   final ProgressBar progress=(ProgressBar)findViewById(R.id.progress_loading_plans);
   progress.setVisibility(View.GONE);
   mViewPager.setVisibility(View.VISIBLE);
-  mViewPager.setOffscreenPageLimit(NUM_TABS - 1);
+  mViewPager.setOffscreenPageLimit(mAvailablePlans.size() - 1);
   mViewPager.setAdapter(getPageAdapter());
   mTabLayout.setVisibility(View.VISIBLE);
   mTabLayout.setTabMode(TabLayout.MODE_FIXED);
@@ -14,10 +14,10 @@
   mTabLayout.setTabTextColors(normalColor,selectedColor);
   mTabLayout.setupWithViewPager(mViewPager);
   if (mViewpagerPosSelected == NO_PREV_POS_SELECTED_VIEWPAGER) {
-    Blog currentBlog=WordPress.getBlog(mLocalBlogID);
-    if (currentBlog != null) {
-      long planID=currentBlog.getPlanID();
-      mViewpagerPosSelected=getPageAdapter().getPositionOfPlan(planID);
+    for (    SitePlan currentSitePlan : mAvailablePlans) {
+      if (currentSitePlan.isCurrentPlan()) {
+        mViewpagerPosSelected=getPageAdapter().getPositionOfPlan(currentSitePlan.getProductID());
+      }
     }
   }
   if (getPageAdapter().isValidPosition(mViewpagerPosSelected)) {

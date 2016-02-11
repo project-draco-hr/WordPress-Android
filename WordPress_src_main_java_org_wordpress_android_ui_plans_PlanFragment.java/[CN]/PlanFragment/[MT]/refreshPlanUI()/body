@@ -1,5 +1,42 @@
 {
-  if (mCurrentPlan != null) {
-    mPlanDetailsRawTextView.setText(mCurrentPlan.getProductName() + " " + mCurrentPlan.getFormattedPrice());
+  if (!isAdded()) {
+    return;
   }
+  if (mCurrentSitePlan == null) {
+    return;
+  }
+switch ((int)mCurrentSitePlan.getProductID()) {
+case 1:
+case 2002:
+    mPlanImageView.setImageDrawable(getResources().getDrawable(R.drawable.plan_beginner));
+  break;
+case 2000:
+case 1003:
+mPlanImageView.setImageDrawable(getResources().getDrawable(R.drawable.plan_premium));
+break;
+case 1008:
+case 2001:
+mPlanImageView.setImageDrawable(getResources().getDrawable(R.drawable.plan_business));
+break;
+default :
+mPlanImageView.setVisibility(View.GONE);
+}
+addTextView(mCurrentPlanDetails.getTagline());
+addTextView(mCurrentPlanDetails.getFormattedPrice());
+addTextView(mCurrentPlanDetails.getBillPeriodLabel());
+addTextView("");
+addTextView("Features available:");
+List<Feature> features=PlansUtils.getPlanFeatures(mCurrentSitePlan.getProductID());
+if (features != null) {
+for (Feature current : features) {
+addTextView(current.getTitle());
+}
+}
+addTextView("");
+if (mCurrentSitePlan.isCurrentPlan()) {
+addTextView("Your current Plan.");
+}
+ else {
+addTextView("Upgrade to this Plan.");
+}
 }
