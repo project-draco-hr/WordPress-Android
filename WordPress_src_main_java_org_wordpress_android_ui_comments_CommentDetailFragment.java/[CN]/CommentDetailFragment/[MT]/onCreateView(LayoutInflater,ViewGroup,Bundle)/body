@@ -53,7 +53,27 @@
 );
   mBtnTrashComment.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
-      moderateComment(CommentStatus.TRASH);
+      if (mComment.getStatusEnum() == CommentStatus.TRASH) {
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(getActivity());
+        dialogBuilder.setTitle(getResources().getText(R.string.sure_to_delete_comment_title));
+        dialogBuilder.setMessage(getResources().getText(R.string.sure_to_delete_comment));
+        dialogBuilder.setPositiveButton(getResources().getText(R.string.yes),new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+            moderateComment(CommentStatus.DELETE);
+          }
+        }
+);
+        dialogBuilder.setNegativeButton(getResources().getText(R.string.no),new DialogInterface.OnClickListener(){
+          public void onClick(          DialogInterface dialog,          int whichButton){
+          }
+        }
+);
+        dialogBuilder.setCancelable(true);
+        dialogBuilder.create().show();
+      }
+ else {
+        moderateComment(CommentStatus.TRASH);
+      }
     }
   }
 );
