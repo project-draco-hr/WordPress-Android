@@ -7,10 +7,6 @@
     mErrorType=ErrorType.INVALID_CURRENT_BLOG;
     return null;
   }
-  if (!mHasCheckedDeletedComments && !mIsLoadingMore) {
-    mHasCheckedDeletedComments=true;
-    ApiHelper.removeDeletedComments(blog);
-  }
   Map<String,Object> hPost=new HashMap<>();
   if (mIsLoadingMore) {
     int numExisting=getAdapter().getItemCount();
@@ -19,6 +15,11 @@
   }
  else {
     hPost.put("number",COMMENTS_PER_PAGE);
+  }
+  if (mStatusFilter != null) {
+    if (!mStatusFilter.equals(CommentStatus.UNKNOWN)) {
+      hPost.put("status",CommentStatus.toString(mStatusFilter));
+    }
   }
   Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),hPost};
   try {

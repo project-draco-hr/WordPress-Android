@@ -8,8 +8,11 @@
   Locale newLocale=WPPrefUtils.languageLocale(languageCode);
   conf.locale=newLocale;
   res.updateConfiguration(conf,res.getDisplayMetrics());
-  mSettings.edit().putString(LANGUAGE_PREF_KEY,newLocale.toString()).apply();
-  if (!Locale.getDefault().equals(newLocale)) {
+  if (Locale.getDefault().equals(newLocale)) {
+    mSettings.edit().remove(LANGUAGE_PREF_KEY).apply();
+  }
+ else {
+    mSettings.edit().putString(LANGUAGE_PREF_KEY,newLocale.toString()).apply();
     Map<String,Object> properties=new HashMap<>();
     properties.put("forced_app_locale",conf.locale.toString());
     AnalyticsTracker.track(Stat.ACCOUNT_SETTINGS_LANGUAGE_SELECTION_FORCED,properties);
