@@ -86,6 +86,9 @@
       }
     }
   }
+  if (!post.hasFeaturedImage() && post.hasAttachments()) {
+    post.featuredImage=new ImageSizeMap(post.attachmentsJson).getLargestImageUrl(ReaderConstants.MIN_FEATURED_IMAGE_WIDTH);
+  }
   if (!post.hasFeaturedImage() && post.hasText() && post.text.contains("<img")) {
     post.featuredImage=new ReaderImageScanner(post.text,post.isPrivate).getLargestImage(ReaderConstants.MIN_FEATURED_IMAGE_WIDTH);
   }
