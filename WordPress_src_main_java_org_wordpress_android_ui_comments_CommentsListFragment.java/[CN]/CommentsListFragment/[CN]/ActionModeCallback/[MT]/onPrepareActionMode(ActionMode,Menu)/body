@@ -5,9 +5,16 @@
   boolean hasUnapproved=hasSelection && selectedComments.hasAnyWithStatus(CommentStatus.UNAPPROVED);
   boolean hasSpam=hasSelection && selectedComments.hasAnyWithStatus(CommentStatus.SPAM);
   boolean hasAnyNonSpam=hasSelection && selectedComments.hasAnyWithoutStatus(CommentStatus.SPAM);
-  setItemEnabled(menu,R.id.menu_approve,hasUnapproved || hasSpam);
+  boolean hasTrash=hasSelection && selectedComments.hasAnyWithStatus(CommentStatus.TRASH);
+  setItemEnabled(menu,R.id.menu_approve,hasUnapproved || hasSpam || hasTrash);
   setItemEnabled(menu,R.id.menu_unapprove,hasApproved);
   setItemEnabled(menu,R.id.menu_spam,hasAnyNonSpam);
   setItemEnabled(menu,R.id.menu_trash,hasSelection);
+  final MenuItem trashItem=menu.findItem(R.id.menu_trash);
+  if (trashItem != null) {
+    if (mCommentStatusFilter != null && mCommentStatusFilter.equals(CommentStatus.TRASH)) {
+      trashItem.setTitle(R.string.mnu_comment_delete_permanently);
+    }
+  }
   return true;
 }
