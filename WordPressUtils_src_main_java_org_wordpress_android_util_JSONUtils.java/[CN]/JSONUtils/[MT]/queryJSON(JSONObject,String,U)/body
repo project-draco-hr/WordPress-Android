@@ -1,0 +1,70 @@
+{
+  if (source == null) {
+    AppLog.e(T.UTILS,"Parameter source is null, can't query a null object");
+    return defaultObject;
+  }
+  if (query == null) {
+    AppLog.e(T.UTILS,"Parameter query is null");
+    return defaultObject;
+  }
+  int nextSeperator=query.indexOf(QUERY_SEPERATOR);
+  int nextIndexStart=query.indexOf(QUERY_ARRAY_INDEX_START);
+  if (nextSeperator == -1 && nextIndexStart == -1) {
+    try {
+      if (!source.has(query)) {
+        return defaultObject;
+      }
+      Object result=source.get(query);
+      if (result.getClass().isAssignableFrom(defaultObject.getClass())) {
+        return (U)result;
+      }
+ else {
+        AppLog.w(T.UTILS,String.format("The returned object type %s is not assignable to the type %s. Using default!",result.getClass(),defaultObject.getClass()));
+        return defaultObject;
+      }
+    }
+ catch (    java.lang.ClassCastException e) {
+      AppLog.e(T.UTILS,"Unable to cast the object to " + defaultObject.getClass().getName(),e);
+      return defaultObject;
+    }
+catch (    JSONException e) {
+      AppLog.e(T.UTILS,"Unable to get the Key from the input object. Key:" + query,e);
+      return defaultObject;
+    }
+  }
+  int endQuery;
+  if (nextSeperator == -1 || nextIndexStart == -1) {
+    endQuery=Math.max(nextSeperator,nextIndexStart);
+  }
+ else {
+    endQuery=Math.min(nextSeperator,nextIndexStart);
+  }
+  String nextQuery=query.substring(endQuery);
+  String key=query.substring(0,endQuery);
+  try {
+    if (nextQuery.indexOf(QUERY_SEPERATOR) == 0) {
+      return queryJSON(source.getJSONObject(key),nextQuery.substring(1),defaultObject);
+    }
+ else     if (nextQuery.indexOf(QUERY_ARRAY_INDEX_START) == 0) {
+      return queryJSON(source.getJSONArray(key),nextQuery,defaultObject);
+    }
+ else     if (!nextQuery.equals("")) {
+      return defaultObject;
+    }
+    Object result=source.get(key);
+    if (result.getClass().isAssignableFrom(defaultObject.getClass())) {
+      return (U)result;
+    }
+ else {
+      AppLog.w(T.UTILS,String.format("The returned object type %s is not assignable to the type %s. Using default!",result.getClass(),defaultObject.getClass()));
+      return defaultObject;
+    }
+  }
+ catch (  java.lang.ClassCastException e) {
+    AppLog.e(T.UTILS,"Unable to cast the object to " + defaultObject.getClass().getName(),e);
+    return defaultObject;
+  }
+catch (  JSONException e) {
+    return defaultObject;
+  }
+}

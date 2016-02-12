@@ -1,0 +1,37 @@
+{
+  File file=new File(path);
+  if (!file.exists()) {
+    return path;
+  }
+  String mimeType=MediaUtils.getMediaFileMimeType(file);
+  if (mimeType.equals("image/gif")) {
+    return path;
+  }
+  String fileName=MediaUtils.getMediaFileName(file,mimeType);
+  String fileExtension=MimeTypeMap.getFileExtensionFromUrl(fileName).toLowerCase();
+  int[] dimensions=getImageSize(Uri.fromFile(file),context);
+  int orientation=getImageOrientation(context,path);
+  if (dimensions[0] <= maxWidth) {
+    return path;
+  }
+  byte[] bytes=ImageUtils.createThumbnailFromUri(context,Uri.parse(path),maxWidth,fileExtension,orientation);
+  if (bytes != null) {
+    try {
+      File resizedImageFile=File.createTempFile("wp-image-",fileExtension);
+      FileOutputStream out=new FileOutputStream(resizedImageFile);
+      out.write(bytes);
+      out.close();
+      String tempFilePath=resizedImageFile.getPath();
+      if (!TextUtils.isEmpty(tempFilePath)) {
+        return tempFilePath;
+      }
+ else {
+        AppLog.e(AppLog.T.POSTS,"Failed to create resized image");
+      }
+    }
+ catch (    IOException e) {
+      AppLog.e(AppLog.T.POSTS,"Failed to create image temp file");
+    }
+  }
+  return path;
+}

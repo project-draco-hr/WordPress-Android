@@ -1,0 +1,57 @@
+{
+  if (source == null) {
+    AppLog.e(T.UTILS,"Parameter source is null, can't query a null object");
+    return defaultObject;
+  }
+  if (query == null) {
+    AppLog.e(T.UTILS,"Parameter query is null");
+    return defaultObject;
+  }
+  int indexStart=query.indexOf(QUERY_ARRAY_INDEX_START);
+  int indexEnd=query.indexOf(QUERY_ARRAY_INDEX_END);
+  if (indexStart == -1 || indexEnd == -1 || indexStart > indexEnd) {
+    return defaultObject;
+  }
+  String indexStr=query.substring(indexStart + 1,indexEnd);
+  int index;
+  if (indexStr.equals(QUERY_ARRAY_FIRST)) {
+    index=0;
+  }
+ else   if (indexStr.equals(QUERY_ARRAY_LAST)) {
+    index=-1;
+  }
+ else {
+    index=Integer.parseInt(indexStr);
+  }
+  if (index < 0) {
+    index=source.length() + index;
+  }
+  String remainingQuery=query.substring(indexEnd + 1);
+  try {
+    if (remainingQuery.indexOf(QUERY_ARRAY_INDEX_START) == 0) {
+      return queryJSON(source.getJSONArray(index),remainingQuery,defaultObject);
+    }
+ else     if (remainingQuery.indexOf(QUERY_SEPERATOR) == 0) {
+      return queryJSON(source.getJSONObject(index),remainingQuery.substring(1),defaultObject);
+    }
+ else     if (!remainingQuery.equals("")) {
+      AppLog.w(T.UTILS,String.format("Incorrect query for next object %s",remainingQuery));
+      return defaultObject;
+    }
+    Object result=source.get(index);
+    if (result.getClass().isAssignableFrom(defaultObject.getClass())) {
+      return (U)result;
+    }
+ else {
+      AppLog.w(T.UTILS,String.format("The returned object type %s is not assignable to the type %s. Using default!",result.getClass(),defaultObject.getClass()));
+      return defaultObject;
+    }
+  }
+ catch (  java.lang.ClassCastException e) {
+    AppLog.e(T.UTILS,"Unable to cast the object to " + defaultObject.getClass().getName(),e);
+    return defaultObject;
+  }
+catch (  JSONException e) {
+    return defaultObject;
+  }
+}
