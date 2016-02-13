@@ -23,11 +23,20 @@
   mediaFile.setHeight(cursor.getInt(cursor.getColumnIndex("height")));
   mediaFile.setMimeType(mimeType);
   mediaFile.setFileName(cursor.getString(cursor.getColumnIndex("fileName")));
-  mediaFile.setThumbnailURL(cursor.getString(cursor.getColumnIndex("thumbnailURL")));
   mediaFile.setDateCreatedGMT(cursor.getLong(cursor.getColumnIndex("date_created_gmt")));
   mediaFile.setVideoPressShortCode(cursor.getString(cursor.getColumnIndex("videoPressShortcode")));
-  mediaFile.setFileURL(cursor.getString(cursor.getColumnIndex("fileURL")));
+  mediaFile.setFileURL(url);
   mediaFile.setVideo(isVideo);
+  String thumbnailUrl=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_THUMBNAIL_URL));
+  if (isVideo && !MediaUtils.isValidImage(thumbnailUrl)) {
+    if (WPUrlUtils.isWordPressCom(url)) {
+      thumbnailUrl=WordPressMediaUtils.getVideoPressVideoPosterFromURL(url);
+    }
+ else {
+      thumbnailUrl="";
+    }
+  }
+  mediaFile.setThumbnailURL(thumbnailUrl);
   WordPress.wpDB.saveMediaFile(mediaFile);
   cursor.close();
   return mediaFile;
