@@ -5,6 +5,7 @@
   }
   if (newStatus == CommentStatus.APPROVED || newStatus == CommentStatus.UNAPPROVED) {
     getListFragment().setCommentIsModerating(comment.commentID,true);
+    getListFragment().updateEmptyView(EmptyViewMessageType.NO_CONTENT);
     CommentActions.moderateComment(accountId,comment,newStatus,new CommentActions.CommentActionListener(){
       @Override public void onActionResult(      boolean succeeded){
         if (isFinishing() || !hasListFragment()) {
@@ -15,6 +16,7 @@
           reloadCommentList();
         }
  else {
+          getListFragment().updateEmptyView(EmptyViewMessageType.NO_CONTENT);
           ToastUtils.showToast(CommentsActivity.this,R.string.error_moderate_comment,ToastUtils.Duration.LONG);
         }
       }
@@ -25,6 +27,7 @@
     mTrashedComments.add(comment);
     getListFragment().removeComment(comment);
     getListFragment().setCommentIsModerating(comment.commentID,true);
+    getListFragment().updateEmptyView(EmptyViewMessageType.NO_CONTENT);
     String message=(newStatus == CommentStatus.TRASH ? getString(R.string.comment_trashed) : newStatus == CommentStatus.SPAM ? getString(R.string.comment_spammed) : getString(R.string.comment_deleted_permanently));
     View.OnClickListener undoListener=new View.OnClickListener(){
       @Override public void onClick(      View v){
@@ -51,6 +54,9 @@
             if (!succeeded) {
               getListFragment().loadComments();
               ToastUtils.showToast(CommentsActivity.this,R.string.error_moderate_comment,ToastUtils.Duration.LONG);
+            }
+ else {
+              getListFragment().updateEmptyView(EmptyViewMessageType.NO_CONTENT);
             }
           }
         }
