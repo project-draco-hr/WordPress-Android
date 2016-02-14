@@ -8,7 +8,7 @@
   new Thread(){
     @Override public void run(){
       XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
-      Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),comment.commentID,forceDelete};
+      Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),comment.commentID,deletePermanently};
       Object result;
       try {
         result=client.call(Method.DELETE_COMMENT,params);
@@ -26,7 +26,16 @@ catch (      XmlPullParserException e) {
         result=null;
       }
       final boolean success=(result != null && Boolean.parseBoolean(result.toString()));
-      if (success)       CommentTable.deleteComment(accountId,comment.commentID);
+      if (success) {
+        if (deletePermanently) {
+          CommentTable.deleteComment(accountId,comment.commentID);
+        }
+ else {
+          Blog blog=WordPress.getBlog(accountId);
+          String newStatusStr=CommentStatus.toString(CommentStatus.TRASH);
+          CommentTable.updateCommentStatus(blog.getLocalTableBlogId(),comment.commentID,newStatusStr);
+        }
+      }
       if (actionListener != null) {
         handler.post(new Runnable(){
           @Override public void run(){

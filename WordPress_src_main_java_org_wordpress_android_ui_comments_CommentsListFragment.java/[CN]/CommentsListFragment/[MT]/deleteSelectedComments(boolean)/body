@@ -1,6 +1,6 @@
 {
   if (!NetworkUtils.checkConnection(getActivity()))   return;
-  final int dlgId=forceDelete ? CommentDialogs.ID_COMMENT_DLG_DELETING : CommentDialogs.ID_COMMENT_DLG_TRASHING;
+  final int dlgId=deletePermanently ? CommentDialogs.ID_COMMENT_DLG_DELETING : CommentDialogs.ID_COMMENT_DLG_TRASHING;
   final CommentList selectedComments=getAdapter().getSelectedComments();
   getActivity().showDialog(dlgId);
   CommentActions.OnCommentsModeratedListener listener=new CommentActions.OnCommentsModeratedListener(){
@@ -19,7 +19,7 @@
   }
 ;
   CommentStatus newStatus=CommentStatus.TRASH;
-  if (forceDelete) {
+  if (deletePermanently) {
     newStatus=CommentStatus.DELETE;
   }
   CommentActions.moderateComments(WordPress.getCurrentLocalTableBlogId(),selectedComments,newStatus,listener);
