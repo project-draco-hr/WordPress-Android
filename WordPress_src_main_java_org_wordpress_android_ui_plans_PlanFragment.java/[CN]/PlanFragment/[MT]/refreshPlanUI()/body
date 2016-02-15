@@ -2,27 +2,72 @@
   if (!isAdded()) {
     return;
   }
-  if (mCurrentSitePlan == null) {
+  if (mSitePlan == null) {
     return;
   }
-  ImageView imgPlan=(ImageView)mPlanDetailsOuterContainer.findViewById(R.id.plan_icon);
-  int pictureResID=PlansUIHelper.getPrimaryImageResIDForPlan(mCurrentSitePlan.getProductID());
+  ImageView imgPlan=(ImageView)mPlanContainerView.findViewById(R.id.plan_icon);
+  int pictureResID=PlansUIHelper.getPrimaryImageResIDForPlan(mSitePlan.getProductID());
   if (pictureResID == PlansUIHelper.NO_PICTURE_FOR_PLAN_RES_ID) {
     imgPlan.setVisibility(View.GONE);
   }
  else {
     imgPlan.setImageDrawable(getResources().getDrawable(pictureResID));
   }
-  TextView txtProductName=(TextView)mPlanDetailsOuterContainer.findViewById(R.id.text_product_name);
-  String productShortName=mCurrentPlanDetails.getProductNameShort();
-  String productName=mCurrentPlanDetails.getProductName().replace(productShortName,"<b>" + productShortName + "</b>");
+  TextView txtProductName=(TextView)mPlanContainerView.findViewById(R.id.text_product_name);
+  String productShortName=mPlanDetails.getProductNameShort();
+  String productName=mPlanDetails.getProductName().replace(productShortName,"<b>" + productShortName + "</b>");
   txtProductName.setText(Html.fromHtml(productName));
-  TextView txtTagLine=(TextView)mPlanDetailsOuterContainer.findViewById(R.id.text_tagline);
-  txtTagLine.setText(mCurrentPlanDetails.getTagline());
-  List<Feature> features=PlansUtils.getPlanFeatures(mCurrentSitePlan.getProductID());
+  TextView txtTagLine=(TextView)mPlanContainerView.findViewById(R.id.text_tagline);
+  txtTagLine.setText(mPlanDetails.getTagline());
+  List<Feature> features=PlansUtils.getPlanFeatures(mSitePlan.getProductID());
   if (features != null) {
     for (    Feature feature : features) {
       addFeature(feature);
     }
+  }
+  boolean showPurchaseButton;
+  if (mSitePlan.isCurrentPlan()) {
+    showPurchaseButton=false;
+  }
+ else {
+    long currentPlanId=WordPress.wpDB.getPlanIdForLocalTableBlogId((int)mSitePlan.getBlogLocalTableID());
+    long thisPlanId=mSitePlan.getProductID();
+    if (currentPlanId == PlansConstants.FREE_PLAN_ID) {
+      showPurchaseButton=true;
+    }
+ else     if (currentPlanId == PlansConstants.PREMIUM_PLAN_ID) {
+      showPurchaseButton=(thisPlanId == PlansConstants.FREE_PLAN_ID);
+    }
+ else     if (currentPlanId == PlansConstants.BUSINESS_PLAN_ID) {
+      showPurchaseButton=false;
+    }
+ else     if (currentPlanId == PlansConstants.JETPACK_FREE_PLAN_ID) {
+      showPurchaseButton=true;
+    }
+ else     if (currentPlanId == PlansConstants.JETPACK_PREMIUM_PLAN_ID) {
+      showPurchaseButton=(thisPlanId == PlansConstants.JETPACK_BUSINESS_PLAN_ID);
+    }
+ else     if (currentPlanId == PlansConstants.JETPACK_BUSINESS_PLAN_ID) {
+      showPurchaseButton=false;
+    }
+ else {
+      showPurchaseButton=true;
+    }
+  }
+  ViewGroup framePurchase=(ViewGroup)getView().findViewById(R.id.frame_purchase);
+  TextView txtPurchase=(TextView)framePurchase.findViewById(R.id.text_purchase);
+  if (showPurchaseButton) {
+    String purchase=mPlanDetails.getFormattedPrice() + " | <b>" + getActivity().getString(R.string.plan_purchase_now)+ "</b>";
+    txtPurchase.setText(Html.fromHtml(purchase));
+    txtPurchase.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ToastUtils.showToast(v.getContext(),"Not implemented yet");
+      }
+    }
+);
+    framePurchase.setVisibility(View.VISIBLE);
+  }
+ else {
+    framePurchase.setVisibility(View.GONE);
   }
 }
