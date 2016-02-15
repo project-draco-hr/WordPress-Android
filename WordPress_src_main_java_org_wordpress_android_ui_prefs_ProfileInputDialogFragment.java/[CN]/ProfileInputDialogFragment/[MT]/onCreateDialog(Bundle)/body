@@ -1,7 +1,7 @@
 {
-  LayoutInflater layoutInflater=LayoutInflater.from(mContext);
+  LayoutInflater layoutInflater=LayoutInflater.from(getActivity());
   View promptView=layoutInflater.inflate(R.layout.my_profile_dialog,null);
-  AlertDialog.Builder alertDialogBuilder=new AlertDialog.Builder(mContext);
+  AlertDialog.Builder alertDialogBuilder=new AlertDialog.Builder(getActivity());
   alertDialogBuilder.setView(promptView);
   final WPTextView textView=(WPTextView)promptView.findViewById(R.id.my_profile_dialog_label);
   final OpenSansEditText editText=(OpenSansEditText)promptView.findViewById(R.id.my_profile_dialog_input);
@@ -27,7 +27,13 @@
   }
   alertDialogBuilder.setCancelable(true).setPositiveButton(R.string.ok,new DialogInterface.OnClickListener(){
     public void onClick(    DialogInterface dialog,    int id){
-      mCallback.onSuccessfulInput(editText.getText().toString());
+      if (getActivity() instanceof Callback) {
+        ((Callback)getActivity()).onSuccessfulInput(editText.getText().toString());
+      }
+ else {
+        String error=getActivity() + "is not an instance of ProfileInputDialogFragment Callback";
+        AppLog.e(AppLog.T.UTILS,error);
+      }
     }
   }
 ).setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener(){
