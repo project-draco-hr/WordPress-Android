@@ -28,7 +28,8 @@
     Comment comment=new Comment(postID,commentID,authorName,pubDate,content,status,postTitle,authorURL,authorEmail,null);
     comments.add(comment);
   }
-  int localBlogId=blog.getLocalTableBlogId();
-  CommentTable.saveComments(localBlogId,comments);
+  if (dbCallback != null) {
+    dbCallback.onDataReadyToSave(comments);
+  }
   return comments;
 }
