@@ -1,0 +1,46 @@
+{
+  final Blog currentBlog=WordPress.getCurrentBlog();
+  WordPress.getRestClientUtils().getSitePurchases(currentBlog.getDotComBlogId(),new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject response){
+      try {
+        JSONArray purchases=response.getJSONArray("originalResponse");
+        if (hasActivePurchases(purchases)) {
+          AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+          builder.setTitle("Premium Upgrades");
+          builder.setMessage("You have active premium upgrades on your site. Please cancel your upgrades prior to deleting your site.");
+          builder.setPositiveButton("Ok",new DialogInterface.OnClickListener(){
+            @Override public void onClick(            DialogInterface dialog,            int which){
+            }
+          }
+);
+        }
+ else {
+          showDeleteSiteDialog();
+        }
+      }
+ catch (      JSONException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+,new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+    }
+  }
+);
+  if (currentBlog.isDotcomFlag()) {
+    final ProgressDialog progressDialog=ProgressDialog.show(getActivity(),"","Exporting content...",true,true);
+    WordPress.getRestClientUtils().exportContentAll(currentBlog.getDotComBlogId(),new RestRequest.Listener(){
+      @Override public void onResponse(      JSONObject response){
+        progressDialog.dismiss();
+        ToastUtils.showToast(getActivity(),"Export started");
+      }
+    }
+,new RestRequest.ErrorListener(){
+      @Override public void onErrorResponse(      VolleyError error){
+        progressDialog.dismiss();
+      }
+    }
+);
+  }
+}
