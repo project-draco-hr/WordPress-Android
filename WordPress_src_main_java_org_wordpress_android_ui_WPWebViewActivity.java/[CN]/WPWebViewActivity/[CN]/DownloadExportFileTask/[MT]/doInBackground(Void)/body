@@ -1,0 +1,22 @@
+{
+  try {
+    URL url=new URL(mDownloadContentHeader.url);
+    HttpURLConnection urlConnection=(HttpURLConnection)url.openConnection();
+    urlConnection.connect();
+    File file=new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),mDownloadContentHeader.fileNameFromDisposition());
+    FileOutputStream fileOutput=new FileOutputStream(file);
+    InputStream inputStream=urlConnection.getInputStream();
+    byte[] buffer=new byte[1024];
+    int bufferLength=0;
+    while ((bufferLength=inputStream.read(buffer)) > 0) {
+      fileOutput.write(buffer,0,bufferLength);
+    }
+    fileOutput.close();
+    DownloadManager downloadManager=(DownloadManager)getSystemService(DOWNLOAD_SERVICE);
+    downloadManager.addCompletedDownload(mDownloadContentHeader.fileNameFromDisposition(),"WordPress.com export file",true,mDownloadContentHeader.mimeType,file.getPath(),file.length(),true);
+  }
+ catch (  java.io.IOException e) {
+    e.printStackTrace();
+  }
+  return null;
+}
