@@ -1,0 +1,26 @@
+{
+  if (!NetworkUtils.checkConnection(getActivity()))   return;
+  final int dlgId=deletePermanently ? CommentDialogs.ID_COMMENT_DLG_DELETING : CommentDialogs.ID_COMMENT_DLG_TRASHING;
+  final CommentList selectedComments=getAdapter().getSelectedComments();
+  getActivity().showDialog(dlgId);
+  CommentActions.OnCommentsModeratedListener listener=new CommentActions.OnCommentsModeratedListener(){
+    @Override public void onCommentsModerated(    final CommentList deletedComments){
+      if (!isAdded())       return;
+      finishActionMode();
+      dismissDialog(dlgId);
+      if (deletedComments.size() > 0) {
+        getAdapter().clearSelectedComments();
+        getAdapter().deleteComments(deletedComments);
+      }
+ else {
+        ToastUtils.showToast(getActivity(),R.string.error_moderate_comment);
+      }
+    }
+  }
+;
+  CommentStatus newStatus=CommentStatus.TRASH;
+  if (deletePermanently) {
+    newStatus=CommentStatus.DELETE;
+  }
+  CommentActions.moderateComments(WordPress.getCurrentLocalTableBlogId(),selectedComments,newStatus,listener);
+}
