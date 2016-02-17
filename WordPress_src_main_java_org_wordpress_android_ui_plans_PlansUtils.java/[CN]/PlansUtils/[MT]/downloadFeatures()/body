@@ -1,7 +1,4 @@
 {
-  if (!NetworkUtils.isNetworkAvailable(ctx)) {
-    return false;
-  }
   Map<String,String> params=getDefaultRestCallParameters();
   WordPress.getRestClientUtils().get("plans/features/",params,null,new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject response){
@@ -12,17 +9,11 @@
  else {
         AppLog.w(AppLog.T.PLANS,"Unexpected empty response from server when downloading Features!");
       }
-      if (listener != null) {
-        listener.onResponse(response);
-      }
     }
   }
 ,new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.e(AppLog.T.PLANS,"Error Loading Plans/Features",volleyError);
-      if (errorListener != null) {
-        errorListener.onErrorResponse(volleyError);
-      }
     }
   }
 );

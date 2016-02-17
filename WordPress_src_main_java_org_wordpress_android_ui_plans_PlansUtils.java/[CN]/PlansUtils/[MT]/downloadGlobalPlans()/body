@@ -1,29 +1,20 @@
 {
-  if (!NetworkUtils.isNetworkAvailable(ctx)) {
-    return false;
-  }
   Map<String,String> params=getDefaultRestCallParameters();
   WordPress.getRestClientUtilsV1_2().get("plans/",params,null,new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject response){
       if (response != null) {
         AppLog.d(AppLog.T.PLANS,response.toString());
         AppPrefs.setGlobalPlans(response.toString());
-        downloadFeatures(ctx,null,null);
+        downloadFeatures();
       }
  else {
         AppLog.w(AppLog.T.PLANS,"Empty response downloading global Plans!");
-      }
-      if (listener != null) {
-        listener.onResponse(response);
       }
     }
   }
 ,new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.e(AppLog.T.PLANS,"Error loading plans/",volleyError);
-      if (errorListener != null) {
-        errorListener.onErrorResponse(volleyError);
-      }
     }
   }
 );
