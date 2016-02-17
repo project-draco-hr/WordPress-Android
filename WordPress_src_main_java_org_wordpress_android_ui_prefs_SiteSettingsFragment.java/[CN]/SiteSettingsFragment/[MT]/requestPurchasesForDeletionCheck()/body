@@ -13,6 +13,12 @@
             }
           }
 );
+          builder.setNegativeButton("Show purchases",new DialogInterface.OnClickListener(){
+            @Override public void onClick(            DialogInterface dialog,            int which){
+              WPWebViewActivity.openUrlByUsingWPCOMCredentials(getActivity(),"https://wordpress.com/purchases?preview=true&iframe=true",AccountHelper.getCurrentUsernameForBlog(currentBlog));
+            }
+          }
+);
           builder.show();
         }
  else {
@@ -26,6 +32,8 @@
   }
 ,new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError error){
+      ToastUtils.showToast(getActivity(),"Something went wrong. Please contact support");
+      AppLog.e(AppLog.T.MAIN,error.toString());
     }
   }
 );
