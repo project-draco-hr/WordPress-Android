@@ -1,14 +1,14 @@
 {
   if (languageCodes == null || languageCodes.length < 1)   return null;
-  String[] entryStrings=new String[languageCodes.length];
+  ArrayList<String> entryStrings=new ArrayList<>(languageCodes.length);
   for (int i=0; i < languageCodes.length; ++i) {
-    entryStrings[i]=StringUtils.capitalize(getLanguageString(languageCodes[i].toString(),locale)) + "__" + languageCodes[i];
+    entryStrings.add(i,StringUtils.capitalize(getLanguageString(languageCodes[i].toString(),locale)) + "__" + languageCodes[i]);
   }
-  Arrays.sort(entryStrings);
+  Collections.sort(entryStrings,Collator.getInstance(locale));
   String[] sortedEntries=new String[languageCodes.length];
   String[] sortedValues=new String[languageCodes.length];
-  for (int i=0; i < entryStrings.length; ++i) {
-    String[] split=entryStrings[i].split("__");
+  for (int i=0; i < entryStrings.size(); ++i) {
+    String[] split=entryStrings.get(i).split("__");
     sortedEntries[i]=split[0];
     sortedValues[i]=split[1];
   }
