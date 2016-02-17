@@ -30,7 +30,6 @@ case "failed":
 mEditorFragmentListener.onMediaRetryClicked(mediaId);
 mWebView.post(new Runnable(){
 @Override public void run(){
-AnalyticsTracker.track(Stat.EDITOR_UPLOAD_MEDIA_RETRIED);
 mWebView.execJavaScriptFromString("ZSSEditor.unmarkImageUploadFailed(" + mediaId + ");");
 mWebView.execJavaScriptFromString("ZSSEditor.setProgressOnImage(" + mediaId + ", "+ 0+ ");");
 mFailedMediaIds.remove(mediaId);
@@ -44,7 +43,7 @@ FragmentManager fragmentManager=getFragmentManager();
 if (fragmentManager.findFragmentByTag(ImageSettingsDialogFragment.IMAGE_SETTINGS_DIALOG_TAG) != null) {
 return;
 }
-AnalyticsTracker.track(Stat.EDITOR_EDITED_IMAGE);
+mEditorFragmentListener.onTrackableEvent(TrackableEvent.IMAGE_EDITED);
 ImageSettingsDialogFragment imageSettingsDialogFragment=new ImageSettingsDialogFragment();
 imageSettingsDialogFragment.setTargetFragment(this,ImageSettingsDialogFragment.IMAGE_SETTINGS_DIALOG_REQUEST_CODE);
 Bundle dialogBundle=new Bundle();

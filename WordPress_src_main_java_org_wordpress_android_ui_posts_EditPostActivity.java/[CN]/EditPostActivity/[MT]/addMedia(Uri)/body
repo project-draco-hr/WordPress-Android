@@ -1,14 +1,16 @@
 {
-  if (imageUri != null && !MediaUtils.isInMediaStore(imageUri) && !imageUri.toString().startsWith("/")) {
-    imageUri=MediaUtils.downloadExternalMedia(this,imageUri);
+  if (mediaUri != null && !MediaUtils.isInMediaStore(mediaUri) && !mediaUri.toString().startsWith("/")) {
+    mediaUri=MediaUtils.downloadExternalMedia(this,mediaUri);
   }
-  if (imageUri == null) {
+  if (mediaUri == null) {
     return false;
   }
+  boolean isVideo=MediaUtils.isVideo(mediaUri.toString());
+  trackAddMediaEvents(isVideo,false);
   if (mShowNewEditor) {
-    return addMediaVisualEditor(imageUri);
+    return addMediaVisualEditor(mediaUri);
   }
  else {
-    return addMediaLegacyEditor(imageUri);
+    return addMediaLegacyEditor(mediaUri,isVideo);
   }
 }

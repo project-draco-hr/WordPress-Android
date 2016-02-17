@@ -3,7 +3,11 @@
     return;
   }
   String htmlEditor=Utils.getHtmlFromFile(getActivity(),"android-editor.html");
+  if (htmlEditor != null) {
+    htmlEditor=htmlEditor.replace("%%TITLE%%",getString(R.string.visual_editor));
+  }
   mWebView.addJavascriptInterface(new JsCallbackReceiver(this),JS_CALLBACK_HANDLER);
+  mWebView.addJavascriptInterface(new NativeStateJsInterface(getActivity().getApplicationContext()),JS_STATE_INTERFACE);
   mWebView.loadDataWithBaseURL("file:///android_asset/",htmlEditor,"text/html","utf-8","");
   if (mDebugModeEnabled) {
     enableWebDebugging(true);
