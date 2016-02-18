@@ -1,0 +1,31 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.plan_post_purchase_activity);
+  mTxtSkip=(TextView)findViewById(R.id.text_skip);
+  mTxtNext=(TextView)findViewById(R.id.text_next);
+  mIndicatorContainerView=(ViewGroup)findViewById(R.id.layout_indicator_container);
+  mViewPager=(WPViewPager)findViewById(R.id.viewpager);
+  mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+    @Override public void onPageSelected(    int position){
+      updateIndicators();
+      updateButtons();
+    }
+  }
+);
+  mViewPager.setAdapter(getPageAdapter());
+  mTxtSkip.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      finish();
+    }
+  }
+);
+  mTxtNext.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      gotoNextPage();
+    }
+  }
+);
+  for (int i=0; i < NUM_PAGES; i++) {
+    getIndicator(i).setOnClickListener(mIndicatorClickListener);
+  }
+}

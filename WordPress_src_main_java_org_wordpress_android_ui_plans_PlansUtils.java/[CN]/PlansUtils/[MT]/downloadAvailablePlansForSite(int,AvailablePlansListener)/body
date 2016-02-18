@@ -1,15 +1,15 @@
 {
   final Blog blog=WordPress.getBlog(localTableBlogID);
-  if (blog == null || !PlansUtils.isPlanFeatureAvailableForBlog(blog)) {
+  if (blog == null || !isPlanFeatureAvailableForBlog(blog)) {
     return false;
   }
   Map<String,String> params=getDefaultRestCallParameters();
   WordPress.getRestClientUtils().get("sites/" + blog.getDotComBlogId() + "/plans",params,null,new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject response){
       if (response == null) {
-        AppLog.w(AppLog.T.PLANS,"Unexpected empty response from server!");
+        AppLog.w(AppLog.T.PLANS,"Unexpected empty response from server");
         if (listener != null) {
-          listener.onError(new Exception("Unexpected empty response from server!"));
+          listener.onError();
         }
         return;
       }
@@ -32,7 +32,7 @@
  catch (      JSONException e) {
         AppLog.e(AppLog.T.PLANS,"Can't parse the plans list returned from the server",e);
         if (listener != null) {
-          listener.onError(e);
+          listener.onError();
         }
       }
     }
@@ -41,7 +41,7 @@
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.e(AppLog.T.UTILS,"Error downloading site plans for the site with ID " + blog.getDotComBlogId(),volleyError);
       if (listener != null) {
-        listener.onError(volleyError);
+        listener.onError();
       }
     }
   }

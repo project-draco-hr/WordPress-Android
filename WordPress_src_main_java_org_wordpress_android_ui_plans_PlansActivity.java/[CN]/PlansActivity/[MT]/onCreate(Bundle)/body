@@ -3,8 +3,9 @@
   setContentView(R.layout.plans_activity);
   if (savedInstanceState != null) {
     mLocalBlogID=savedInstanceState.getInt(ARG_LOCAL_TABLE_BLOG_ID);
-    if (savedInstanceState.getSerializable(ARG_LOCAL_AVAILABLE_PLANS) instanceof SitePlan[]) {
-      mAvailablePlans=(SitePlan[])savedInstanceState.getSerializable(ARG_LOCAL_AVAILABLE_PLANS);
+    Serializable serializable=savedInstanceState.getSerializable(ARG_LOCAL_AVAILABLE_PLANS);
+    if (serializable instanceof SitePlan[]) {
+      mAvailablePlans=(SitePlan[])serializable;
     }
     mViewpagerPosSelected=savedInstanceState.getInt(SAVED_VIEWPAGER_POS,NO_PREV_POS_SELECTED_VIEWPAGER);
   }
@@ -13,7 +14,7 @@
   }
   if (WordPress.getBlog(mLocalBlogID) == null) {
     AppLog.e(AppLog.T.STATS,"The blog with local_blog_id " + mLocalBlogID + " cannot be loaded from the DB.");
-    Toast.makeText(this,R.string.plans_no_blog,Toast.LENGTH_LONG).show();
+    Toast.makeText(this,R.string.plans_loading_error,Toast.LENGTH_LONG).show();
     finish();
     return;
   }
@@ -29,9 +30,15 @@
 );
   ActionBar actionBar=getSupportActionBar();
   if (actionBar != null) {
-    actionBar.setTitle(getString(R.string.plan));
+    actionBar.setTitle(getString(R.string.plans));
     actionBar.setElevation(0.0f);
     actionBar.setDisplayShowTitleEnabled(true);
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
+  mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+    @Override public void onPageSelected(    int position){
+      updatePurchaseUI(position);
+    }
+  }
+);
 }

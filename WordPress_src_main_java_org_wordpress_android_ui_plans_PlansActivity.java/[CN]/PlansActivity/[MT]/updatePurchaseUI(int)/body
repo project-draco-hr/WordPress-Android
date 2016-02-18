@@ -1,0 +1,55 @@
+{
+  Fragment fragment=getPageAdapter().getItem(position);
+  if (!(fragment instanceof PlanFragment)) {
+    return;
+  }
+  SitePlan sitePlan=((PlanFragment)fragment).getSitePlan();
+  Plan planDetails=((PlanFragment)fragment).getPlanDetails();
+  boolean showPurchaseButton;
+  if (sitePlan.isCurrentPlan()) {
+    showPurchaseButton=false;
+  }
+ else {
+    long currentPlanId=WordPress.wpDB.getPlanIdForLocalTableBlogId(mLocalBlogID);
+    long thisPlanId=sitePlan.getProductID();
+    if (currentPlanId == PlansConstants.FREE_PLAN_ID) {
+      showPurchaseButton=true;
+    }
+ else     if (currentPlanId == PlansConstants.PREMIUM_PLAN_ID) {
+      showPurchaseButton=(thisPlanId == PlansConstants.FREE_PLAN_ID);
+    }
+ else     if (currentPlanId == PlansConstants.BUSINESS_PLAN_ID) {
+      showPurchaseButton=false;
+    }
+ else     if (currentPlanId == PlansConstants.JETPACK_FREE_PLAN_ID) {
+      showPurchaseButton=true;
+    }
+ else     if (currentPlanId == PlansConstants.JETPACK_PREMIUM_PLAN_ID) {
+      showPurchaseButton=(thisPlanId == PlansConstants.JETPACK_BUSINESS_PLAN_ID);
+    }
+ else     if (currentPlanId == PlansConstants.JETPACK_BUSINESS_PLAN_ID) {
+      showPurchaseButton=false;
+    }
+ else {
+      showPurchaseButton=true;
+    }
+  }
+  ViewGroup framePurchase=(ViewGroup)findViewById(R.id.frame_purchase);
+  if (showPurchaseButton) {
+    String purchase=planDetails.getFormattedPrice() + " | <b>" + getString(R.string.plan_purchase_now)+ "</b>";
+    TextView txtPurchase=(TextView)framePurchase.findViewById(R.id.text_purchase);
+    txtPurchase.setText(Html.fromHtml(purchase));
+    txtPurchase.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        startPurchaseProcess();
+      }
+    }
+);
+  }
+  if (showPurchaseButton && framePurchase.getVisibility() != View.VISIBLE) {
+    AniUtils.animateBottomBar(framePurchase,true);
+  }
+ else   if (!showPurchaseButton && framePurchase.getVisibility() == View.VISIBLE) {
+    AniUtils.animateBottomBar(framePurchase,false);
+  }
+}
