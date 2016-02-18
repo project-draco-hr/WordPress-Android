@@ -11,18 +11,24 @@ builder.setPositiveButton(R.string.stop_upload_button,new DialogInterface.OnClic
     mEditorFragmentListener.onMediaUploadCancelClicked(mediaId,true);
     mWebView.post(new Runnable(){
       @Override public void run(){
-        mWebView.execJavaScriptFromString("ZSSEditor.removeImage(" + mediaId + ");");
-        mUploadingMedia.remove(mediaId);
-      }
-    }
-);
-    dialog.dismiss();
+switch (mediaType) {
+case IMAGE:
+          mWebView.execJavaScriptFromString("ZSSEditor.removeImage(" + mediaId + ");");
+        break;
+case VIDEO:
+      mWebView.execJavaScriptFromString("ZSSEditor.removeVideo(" + mediaId + ");");
   }
+  mUploadingMedia.remove(mediaId);
+}
+}
+);
+dialog.dismiss();
+}
 }
 );
 builder.setNegativeButton(getString(R.string.cancel),new DialogInterface.OnClickListener(){
 public void onClick(DialogInterface dialog,int id){
-  dialog.dismiss();
+dialog.dismiss();
 }
 }
 );
