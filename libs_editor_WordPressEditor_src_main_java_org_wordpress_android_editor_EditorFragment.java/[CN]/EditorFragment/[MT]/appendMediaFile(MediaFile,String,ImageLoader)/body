@@ -7,7 +7,13 @@
     @Override public void run(){
       if (URLUtil.isNetworkUrl(mediaUrl)) {
         String mediaId=mediaFile.getMediaId();
-        mWebView.execJavaScriptFromString("ZSSEditor.insertImage('" + mediaUrl + "', '"+ mediaId+ "');");
+        if (mediaFile.isVideo()) {
+          String videoPressId=ShortcodeUtils.getVideoPressIdFromShortCode(mediaFile.getVideoPressShortCode());
+          mWebView.execJavaScriptFromString("ZSSEditor.insertVideo('" + mediaUrl + "', '"+ mediaFile.getThumbnailURL()+ "', '"+ videoPressId+ "');");
+        }
+ else {
+          mWebView.execJavaScriptFromString("ZSSEditor.insertImage('" + mediaUrl + "', '"+ mediaId+ "');");
+        }
       }
  else {
         String id=mediaFile.getMediaId();
