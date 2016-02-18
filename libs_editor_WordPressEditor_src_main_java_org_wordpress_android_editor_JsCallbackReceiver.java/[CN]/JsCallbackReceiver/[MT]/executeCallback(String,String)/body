@@ -42,6 +42,7 @@ List<String> mediaIds=new ArrayList<>();
 mediaIds.add("id");
 mediaIds.add("url");
 mediaIds.add("meta");
+mediaIds.add("type");
 Set<String> mediaDataSet=Utils.splitValuePairDelimitedString(params,JS_CALLBACK_DELIMITER,mediaIds);
 Map<String,String> mediaDataMap=Utils.buildMapFromKeyValuePairs(mediaDataSet);
 String mediaId=mediaDataMap.get("id");
@@ -49,6 +50,7 @@ String mediaUrl=mediaDataMap.get("url");
 if (mediaUrl != null) {
 mediaUrl=Utils.decodeHtml(mediaUrl);
 }
+MediaType mediaType=MediaType.fromString(mediaDataMap.get("type"));
 String mediaMeta=mediaDataMap.get("meta");
 JSONObject mediaMetaJson=new JSONObject();
 if (mediaMeta != null) {
@@ -69,7 +71,7 @@ e.printStackTrace();
 AppLog.d(AppLog.T.EDITOR,"Media meta data from callback-image-tap was not JSON-formatted");
 }
 }
-mListener.onMediaTapped(mediaId,mediaUrl,mediaMetaJson,uploadStatus);
+mListener.onMediaTapped(mediaId,mediaType,mediaMetaJson,uploadStatus);
 break;
 case CALLBACK_LINK_TAP:
 AppLog.d(AppLog.T.EDITOR,"Link tapped, " + params);

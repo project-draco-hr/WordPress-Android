@@ -1,4 +1,7 @@
 {
+  if (mediaType == null) {
+    return;
+  }
 switch (uploadStatus) {
 case "uploading":
     AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
@@ -33,12 +36,15 @@ mWebView.post(new Runnable(){
 mWebView.execJavaScriptFromString("ZSSEditor.unmarkImageUploadFailed(" + mediaId + ");");
 mWebView.execJavaScriptFromString("ZSSEditor.setProgressOnImage(" + mediaId + ", "+ 0+ ");");
 mFailedMediaIds.remove(mediaId);
-mUploadingMedia.put(mediaId,MediaType.IMAGE);
+mUploadingMedia.put(mediaId,mediaType);
 }
 }
 );
 break;
 default :
+if (!mediaType.equals(MediaType.IMAGE)) {
+return;
+}
 FragmentManager fragmentManager=getFragmentManager();
 if (fragmentManager.findFragmentByTag(ImageSettingsDialogFragment.IMAGE_SETTINGS_DIALOG_TAG) != null) {
 return;
