@@ -1,0 +1,21 @@
+{
+  final MediaType mediaType=mUploadingMedia.get(localMediaId);
+  if (mediaType != null) {
+    mWebView.post(new Runnable(){
+      @Override public void run(){
+        String remoteUrl=mediaFile.getFileURL();
+        if (mediaType.equals(MediaType.IMAGE)) {
+          String remoteMediaId=mediaFile.getMediaId();
+          mWebView.execJavaScriptFromString("ZSSEditor.replaceLocalImageWithRemoteImage(" + localMediaId + ", '"+ remoteMediaId+ "', '"+ remoteUrl+ "');");
+        }
+ else         if (mediaType.equals(MediaType.VIDEO)) {
+          String posterUrl=mediaFile.getThumbnailURL();
+          String videoPressId=ShortcodeUtils.getVideoPressIdFromShortCode(mediaFile.getVideoPressShortCode());
+          mWebView.execJavaScriptFromString("ZSSEditor.replaceLocalVideoWithRemoteVideo(" + localMediaId + ", '"+ remoteUrl+ "', '"+ posterUrl+ "', '"+ videoPressId+ "');");
+        }
+        mUploadingMedia.remove(localMediaId);
+      }
+    }
+);
+  }
+}
