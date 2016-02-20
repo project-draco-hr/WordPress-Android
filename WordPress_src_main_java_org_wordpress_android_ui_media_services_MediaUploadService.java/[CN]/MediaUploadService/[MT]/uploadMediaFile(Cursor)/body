@@ -22,17 +22,14 @@
       WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,MediaUploadState.FAILED);
       mUploadInProgress=false;
       mCurrentUploadMediaId="";
-      String errorMessageToDisplay=null;
-      if (throwable instanceof XMLRPCFault) {
-        XMLRPCFault xmlrpcFault=((XMLRPCFault)throwable);
-        if (xmlrpcFault.getFaultCode() == 401) {
-          errorMessageToDisplay=getString(R.string.media_error_no_permission_upload);
-        }
+      MediaEvents.MediaUploadFailed event;
+      if (errorMessage == null) {
+        event=new MediaEvents.MediaUploadFailed(mediaId,getString(R.string.upload_failed),true);
       }
-      if (errorMessageToDisplay == null) {
-        errorMessageToDisplay=getString(R.string.upload_failed);
+ else {
+        event=new MediaEvents.MediaUploadFailed(mediaId,errorMessage);
       }
-      EventBus.getDefault().post(new MediaEvents.MediaUploadFailed(mediaId,errorMessageToDisplay));
+      EventBus.getDefault().post(event);
       mHandler.post(mFetchQueueTask);
       if (errorType != ErrorType.NETWORK_XMLRPC) {
         CrashlyticsUtils.logException(throwable,ExceptionType.SPECIFIC,T.MEDIA,errorMessage);
