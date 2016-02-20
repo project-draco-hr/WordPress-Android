@@ -37,26 +37,35 @@
     resultMap=(HashMap<?,?>)client.call(Method.UPLOAD_FILE,apiParams,tempFile);
   }
  catch (  ClassCastException cce) {
-    setError(ErrorType.INVALID_RESULT,cce.getMessage(),cce);
+    setError(ErrorType.INVALID_RESULT,null,cce);
+    return null;
+  }
+catch (  XMLRPCFault e) {
+    if (e.getFaultCode() == 401) {
+      setError(ErrorType.NETWORK_XMLRPC,mContext.getString(R.string.media_error_no_permission_upload),e);
+    }
+ else {
+      setError(ErrorType.NETWORK_XMLRPC,e.getFaultString(),e);
+    }
     return null;
   }
 catch (  XMLRPCException e) {
-    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
+    setError(ErrorType.NETWORK_XMLRPC,null,e);
     return null;
   }
 catch (  IOException e) {
-    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
+    setError(ErrorType.NETWORK_XMLRPC,null,e);
     return null;
   }
 catch (  XmlPullParserException e) {
-    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
+    setError(ErrorType.NETWORK_XMLRPC,null,e);
     return null;
   }
   if (resultMap != null && resultMap.containsKey("id")) {
     return resultMap;
   }
  else {
-    setError(ErrorType.INVALID_RESULT,"Invalid result");
+    setError(ErrorType.INVALID_RESULT,null);
   }
   return null;
 }

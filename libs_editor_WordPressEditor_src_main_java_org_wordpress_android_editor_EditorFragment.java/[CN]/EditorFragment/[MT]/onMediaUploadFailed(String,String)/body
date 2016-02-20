@@ -1,0 +1,17 @@
+{
+  mWebView.post(new Runnable(){
+    @Override public void run(){
+      MediaType mediaType=mUploadingMedia.get(mediaId);
+switch (mediaType) {
+case IMAGE:
+        mWebView.execJavaScriptFromString("ZSSEditor.markImageUploadFailed(" + mediaId + ", '"+ errorMessage.replace("'","\\'").replace("\"","\\\"")+ "');");
+      break;
+case VIDEO:
+    mWebView.execJavaScriptFromString("ZSSEditor.markVideoUploadFailed(" + mediaId + ", '"+ errorMessage.replace("'","\\'").replace("\"","\\\"")+ "');");
+}
+mFailedMediaIds.add(mediaId);
+mUploadingMedia.remove(mediaId);
+}
+}
+);
+}
