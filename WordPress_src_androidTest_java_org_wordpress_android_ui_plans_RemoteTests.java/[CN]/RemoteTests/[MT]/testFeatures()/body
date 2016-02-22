@@ -1,45 +1,33 @@
 {
   PlansRestRequestAbstractListener listener=new PlansRestRequestAbstractListener(){
     @Override void parseResponse(    JSONObject response) throws JSONException {
-      List<Long> plansIDS=new ArrayList<>();
-      plansIDS.add(1L);
-      plansIDS.add(1003L);
-      plansIDS.add(1008L);
-      plansIDS.add(2000L);
-      plansIDS.add(2001L);
-      plansIDS.add(2002L);
       List<Feature> features=new ArrayList<>();
       JSONArray featuresArray=response.getJSONArray("originalResponse");
       for (int i=0; i < featuresArray.length(); i++) {
         JSONObject currentFeatureJSON=featuresArray.getJSONObject(i);
-        Feature currentFeature=new Feature(currentFeatureJSON,plansIDS);
+        Feature currentFeature=new Feature(currentFeatureJSON);
         features.add(currentFeature);
       }
       assertEquals(16,features.size());
       Feature currentFeatures=features.get(0);
-      assertEquals("Free Blog",currentFeatures.getTitle());
+      assertEquals("WordPress.com Site",currentFeatures.getTitle());
       assertEquals("free-blog",currentFeatures.getProductSlug());
-      Hashtable<Long,String> planIDToDescription=new Hashtable<>();
-      planIDToDescription.put(1L,"true");
-      planIDToDescription.put(1003L,"true");
-      planIDToDescription.put(1008L,"true");
-      assertEquals(planIDToDescription,currentFeatures.getPlanIDToDescription());
-      assertEquals("Get a free blog on WordPress.com.",currentFeatures.getDescription());
+      assertEquals("Your own space to create posts and pages with basic customization.",currentFeatures.getDescription());
+      assertEquals("Your own space to create posts and pages with basic customization.",currentFeatures.getDescriptionForPlan(1L));
+      assertEquals("Your own space to create posts and pages with basic customization.",currentFeatures.getDescriptionForPlan(1003L));
+      assertEquals("Your own space to create posts and pages with basic customization.",currentFeatures.getDescriptionForPlan(1008L));
       assertEquals(false,currentFeatures.isNotPartOfFreeTrial());
       currentFeatures=features.get(15);
       assertEquals("Support",currentFeatures.getTitle());
       assertEquals("support",currentFeatures.getProductSlug());
-      planIDToDescription=new Hashtable<>();
-      planIDToDescription.put(1L,"Community");
-      planIDToDescription.put(1003L,"Direct email");
-      planIDToDescription.put(1008L,"Live chat");
-      planIDToDescription.put(2002L,"Direct email");
-      planIDToDescription.put(2000L,"Expert security support");
-      planIDToDescription.put(2001L,"Priority security support");
       assertEquals("For those times when you can't find an answer on our Support site",currentFeatures.getDescription());
+      assertEquals("Find answers to your questions in our community forum.",currentFeatures.getDescriptionForPlan(1L));
+      assertEquals("Community support",currentFeatures.getTitleForPlan(1L));
+      assertEquals("The kind of support we offer for Jetpack Business.",currentFeatures.getDescriptionForPlan(2001L));
+      assertEquals("Priority security support",currentFeatures.getTitleForPlan(2001L));
       assertEquals(false,currentFeatures.isNotPartOfFreeTrial());
     }
   }
 ;
-  mRestClient.makeRequest(Request.Method.POST,"https://public-api.wordpress.com/rest/v1/plans/features",null,listener,errListener);
+  mRestClientV1_2.makeRequest(Request.Method.POST,"https://public-api.wordpress.com/rest/v1.2/plans/features",null,listener,errListener);
 }
