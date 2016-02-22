@@ -19,20 +19,7 @@
   txtProductName.setText(Html.fromHtml(productName));
   TextView txtTagLine=(TextView)mPlanContainerView.findViewById(R.id.text_tagline);
   txtTagLine.setText(mPlanDetails.getTagline());
-  HashMap<String,Feature> globalFeatures=PlansUtils.getFeatures();
-  ArrayList<PlanFeaturesHighlightSection> sectionsToHighlight=mPlanDetails.getFeaturesHighlightSections();
-  if (globalFeatures != null && sectionsToHighlight != null) {
-    for (    PlanFeaturesHighlightSection currentSection : sectionsToHighlight) {
-      String sectionTitle=currentSection.getTitle();
-      ArrayList<String> featuresToHighlight=currentSection.getFeatures();
-      for (      String currentFeatureSlug : featuresToHighlight) {
-        Feature currentFeature=globalFeatures.get(currentFeatureSlug);
-        if (currentFeature != null) {
-          addFeature(currentFeature);
-        }
-      }
-    }
-  }
+  addFeaturesToHighlight();
   if (mPlanContainerView.getVisibility() != View.VISIBLE) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       revealContainer();
