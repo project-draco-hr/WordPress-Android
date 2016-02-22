@@ -3,18 +3,14 @@
   if (TextUtils.isEmpty(featuresString)) {
     return null;
   }
-  List<Long> plansIDS=getGlobalPlansIDS();
-  if (plansIDS == null || plansIDS.size() == 0) {
-    return null;
-  }
-  List<Feature> features=new ArrayList<>();
+  HashMap<String,Feature> features=new HashMap<>();
   try {
     JSONObject featuresJSONObject=new JSONObject(featuresString);
     JSONArray featuresArray=featuresJSONObject.getJSONArray("originalResponse");
     for (int i=0; i < featuresArray.length(); i++) {
       JSONObject currentFeatureJSON=featuresArray.getJSONObject(i);
-      Feature currentFeature=new Feature(currentFeatureJSON,plansIDS);
-      features.add(currentFeature);
+      Feature currentFeature=new Feature(currentFeatureJSON);
+      features.put(currentFeature.getProductSlug(),currentFeature);
     }
   }
  catch (  JSONException e) {
