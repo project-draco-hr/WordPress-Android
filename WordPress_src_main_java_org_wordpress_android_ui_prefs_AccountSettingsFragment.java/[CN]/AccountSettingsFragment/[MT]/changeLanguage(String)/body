@@ -1,0 +1,25 @@
+{
+  if (mLanguagePreference == null || TextUtils.isEmpty(languageCode))   return;
+  Resources res=getResources();
+  Configuration conf=res.getConfiguration();
+  Locale currentLocale=conf.locale != null ? conf.locale : Locale.getDefault();
+  if (currentLocale.toString().equals(languageCode))   return;
+  updateLanguagePreference(languageCode);
+  Locale newLocale=WPPrefUtils.languageLocale(languageCode);
+  conf.locale=newLocale;
+  res.updateConfiguration(conf,res.getDisplayMetrics());
+  if (Locale.getDefault().equals(newLocale)) {
+    mSettings.edit().remove(LANGUAGE_PREF_KEY).apply();
+  }
+ else {
+    mSettings.edit().putString(LANGUAGE_PREF_KEY,newLocale.toString()).apply();
+    Map<String,Object> properties=new HashMap<>();
+    properties.put("forced_app_locale",conf.locale.toString());
+    AnalyticsTracker.track(Stat.ACCOUNT_SETTINGS_LANGUAGE_SELECTION_FORCED,properties);
+  }
+  AnalyticsUtils.refreshMetadata();
+  Intent refresh=new Intent(getActivity(),getActivity().getClass());
+  startActivity(refresh);
+  getActivity().setResult(LANGUAGE_CHANGED);
+  getActivity().finish();
+}

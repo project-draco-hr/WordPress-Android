@@ -1,0 +1,24 @@
+{
+  super.onCreate(savedInstanceState);
+  setRetainInstance(true);
+  addPreferencesFromResource(R.xml.settings);
+  mPreferenceScreen=(PreferenceScreen)findPreference(getActivity().getString(R.string.pref_key_settings_root));
+  mUsernamePreference=findPreference(getString(R.string.pref_key_username));
+  mEmailPreference=(EditTextPreferenceWithValidation)findPreference(getString(R.string.pref_key_email));
+  mPrimarySitePreference=(DetailListPreference)findPreference(getString(R.string.pref_key_primary_site));
+  mWebAddressPreference=(EditTextPreferenceWithValidation)findPreference(getString(R.string.pref_key_web_address));
+  mLanguagePreference=(DetailListPreference)findPreference(getString(R.string.pref_key_language));
+  mEmailPreference.getEditText().setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+  mEmailPreference.setValidationType(EditTextPreferenceWithValidation.ValidationType.EMAIL);
+  mWebAddressPreference.getEditText().setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
+  mWebAddressPreference.setValidationType(EditTextPreferenceWithValidation.ValidationType.URL);
+  mEmailPreference.setOnPreferenceChangeListener(this);
+  mPrimarySitePreference.setOnPreferenceChangeListener(this);
+  mWebAddressPreference.setOnPreferenceChangeListener(this);
+  mLanguagePreference.setOnPreferenceChangeListener(this);
+  findPreference(getString(R.string.pref_key_language)).setOnPreferenceClickListener(this);
+  findPreference(getString(R.string.pref_key_app_about)).setOnPreferenceClickListener(this);
+  findPreference(getString(R.string.pref_key_oss_licenses)).setOnPreferenceClickListener(this);
+  mSettings=PreferenceManager.getDefaultSharedPreferences(getActivity());
+  checkWordPressComOnlyFields();
+}
