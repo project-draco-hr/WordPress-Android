@@ -1,0 +1,19 @@
+{
+  HashMap<String,Feature> globalFeatures=PlansUtils.getFeatures();
+  if (globalFeatures == null) {
+    AppLog.d(AppLog.T.PLANS,"no global features");
+    return;
+  }
+  ArrayList<PlanFeaturesHighlightSection> sectionsToHighlight=mPlanDetails.getFeaturesHighlightSections();
+  if (sectionsToHighlight == null) {
+    AppLog.d(AppLog.T.PLANS,"no sections to highlight");
+    return;
+  }
+  for (  PlanFeaturesHighlightSection section : sectionsToHighlight) {
+    addSectionTitle(section.getTitle());
+    ArrayList<String> featuresToHighlight=section.getFeatures();
+    for (    String featureSlug : featuresToHighlight) {
+      addFeature(globalFeatures.get(featureSlug));
+    }
+  }
+}
