@@ -2,12 +2,19 @@
   if (!isAdded()) {
     return;
   }
+  ProfilingUtils.split("EditorFragment.initJsEditor");
   String htmlEditor=Utils.getHtmlFromFile(getActivity(),"android-editor.html");
   if (htmlEditor != null) {
     htmlEditor=htmlEditor.replace("%%TITLE%%",getString(R.string.visual_editor));
+    htmlEditor=htmlEditor.replace("%%ANDROID_API_LEVEL%%",String.valueOf(Build.VERSION.SDK_INT));
+    htmlEditor=htmlEditor.replace("%%LOCALIZED_STRING_INIT%%","nativeState.localizedStringEdit = '" + getString(R.string.edit) + "';\n"+ "nativeState.localizedStringUploading = '"+ getString(R.string.uploading)+ "';\n"+ "nativeState.localizedStringUploadingGallery = '"+ getString(R.string.uploading_gallery_placeholder)+ "';\n");
   }
-  mWebView.addJavascriptInterface(new JsCallbackReceiver(this),JS_CALLBACK_HANDLER);
-  mWebView.addJavascriptInterface(new NativeStateJsInterface(getActivity().getApplicationContext()),JS_STATE_INTERFACE);
+  if (Build.VERSION.SDK_INT < 17) {
+    mWebView.setJsCallbackReceiver(new JsCallbackReceiver(this));
+  }
+ else {
+    mWebView.addJavascriptInterface(new JsCallbackReceiver(this),JS_CALLBACK_HANDLER);
+  }
   mWebView.loadDataWithBaseURL("file:///android_asset/",htmlEditor,"text/html","utf-8","");
   if (mDebugModeEnabled) {
     enableWebDebugging(true);
