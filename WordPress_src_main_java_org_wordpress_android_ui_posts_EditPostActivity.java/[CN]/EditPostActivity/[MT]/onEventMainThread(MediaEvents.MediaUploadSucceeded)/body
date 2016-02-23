@@ -21,6 +21,12 @@
     }
   }
   if (mEditorMediaUploadListener != null) {
-    mEditorMediaUploadListener.onMediaUploadSucceeded(event.mLocalMediaId,event.mRemoteMediaId,event.mRemoteMediaUrl);
+    MediaFile mediaFile=new MediaFile();
+    mediaFile.setPostID(getPost().getLocalTablePostId());
+    mediaFile.setMediaId(event.mRemoteMediaId);
+    mediaFile.setFileURL(event.mRemoteMediaUrl);
+    mediaFile.setVideoPressShortCode(event.mSecondaryRemoteMediaId);
+    mediaFile.setThumbnailURL(WordPressMediaUtils.getVideoPressVideoPosterFromURL(event.mRemoteMediaUrl));
+    mEditorMediaUploadListener.onMediaUploadSucceeded(event.mLocalMediaId,mediaFile);
   }
 }

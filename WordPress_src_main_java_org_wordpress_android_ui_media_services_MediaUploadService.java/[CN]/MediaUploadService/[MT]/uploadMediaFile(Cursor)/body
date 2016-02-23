@@ -13,9 +13,9 @@
   mediaFile.setMimeType(mimeType);
   mCurrentUploadMediaId=mediaId;
   mCurrentUploadMediaTask=new ApiHelper.UploadMediaTask(mContext,mediaFile,new ApiHelper.UploadMediaTask.Callback(){
-    @Override public void onSuccess(    String remoteId,    String remoteUrl){
+    @Override public void onSuccess(    String remoteId,    String remoteUrl,    String secondaryId){
       WordPress.wpDB.updateMediaLocalToRemoteId(blogIdStr,mediaId,remoteId);
-      EventBus.getDefault().post(new MediaEvents.MediaUploadSucceeded(blogIdStr,mediaId,remoteId,remoteUrl));
+      EventBus.getDefault().post(new MediaEvents.MediaUploadSucceeded(blogIdStr,mediaId,remoteId,remoteUrl,secondaryId));
       fetchMediaFile(remoteId);
     }
     @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
