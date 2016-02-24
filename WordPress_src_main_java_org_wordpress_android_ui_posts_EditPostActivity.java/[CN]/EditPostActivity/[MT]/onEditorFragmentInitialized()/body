@@ -1,3 +1,13 @@
 {
   fillContentEditorFields();
+  if (mEditorFragment instanceof EditorFragment) {
+    ((EditorFragment)mEditorFragment).setWebViewErrorListener(new ErrorListener(){
+      @Override public void onJavaScriptError(      String sourceFile,      int lineNumber,      String message){
+        CrashlyticsUtils.logException(new Exception(message),ExceptionType.SPECIFIC,T.EDITOR,String.format(Locale.US,"%s:%d: %s",sourceFile,lineNumber,message));
+      }
+      @Override public void onJavaScriptAlert(      String url,      String message){
+      }
+    }
+);
+  }
 }
