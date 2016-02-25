@@ -1,4 +1,12 @@
 {
-  mAvailablePlans=event.getSitePlans();
+  List<SitePlan> plans=event.getPlans();
+  mAvailablePlans=new SitePlan[plans.size()];
+  plans.toArray(mAvailablePlans);
+  Arrays.sort(mAvailablePlans,new Comparator<SitePlan>(){
+    @Override public int compare(    SitePlan lhs,    SitePlan rhs){
+      return PlansUtils.compareProducts(lhs.getProductID(),rhs.getProductID());
+    }
+  }
+);
   setupPlansUI();
 }

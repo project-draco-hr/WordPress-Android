@@ -1,12 +1,12 @@
 {
-  if (mAvailablePlans == null || mAvailablePlans.size() == 0) {
+  if (mAvailablePlans == null || mAvailablePlans.length == 0) {
     Toast.makeText(PlansActivity.this,R.string.plans_loading_error,Toast.LENGTH_LONG).show();
     finish();
     return;
   }
   hideProgress();
   mViewPager.setVisibility(View.VISIBLE);
-  mViewPager.setOffscreenPageLimit(mAvailablePlans.size() - 1);
+  mViewPager.setOffscreenPageLimit(mAvailablePlans.length - 1);
   mViewPager.setAdapter(getPageAdapter());
   mTabLayout.setVisibility(View.VISIBLE);
   mTabLayout.setTabMode(TabLayout.MODE_FIXED);
@@ -15,9 +15,9 @@
   mTabLayout.setTabTextColors(normalColor,selectedColor);
   mTabLayout.setupWithViewPager(mViewPager);
   if (mViewpagerPosSelected == NO_PREV_POS_SELECTED_VIEWPAGER) {
-    for (    SitePlan sitePlan : mAvailablePlans) {
-      if (sitePlan.isCurrentPlan()) {
-        mViewpagerPosSelected=getPageAdapter().getPositionOfPlan(sitePlan.getProductID());
+    for (    SitePlan currentSitePlan : mAvailablePlans) {
+      if (currentSitePlan.isCurrentPlan()) {
+        mViewpagerPosSelected=getPageAdapter().getPositionOfPlan(currentSitePlan.getProductID());
       }
     }
   }
