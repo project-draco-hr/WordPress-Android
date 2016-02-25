@@ -8,18 +8,19 @@
         return;
       }
       AppLog.d(AppLog.T.PLANS,response.toString());
-      List<SitePlan> plans=new ArrayList<>();
+      SitePlanList sitePlans=new SitePlanList();
       try {
         JSONArray planIDs=response.names();
         if (planIDs != null) {
           for (int i=0; i < planIDs.length(); i++) {
             String currentKey=planIDs.getString(i);
             JSONObject currentPlanJSON=response.getJSONObject(currentKey);
-            SitePlan currentPlan=new SitePlan(Long.valueOf(currentKey),currentPlanJSON,mLocalBlogId);
-            plans.add(currentPlan);
+            SitePlan sitePlan=new SitePlan(Long.valueOf(currentKey),currentPlanJSON,mLocalBlogId);
+            sitePlans.add(sitePlan);
           }
         }
-        notifySuccess(plans);
+        sitePlans.sortPlans();
+        notifySuccess(sitePlans);
       }
  catch (      JSONException e) {
         AppLog.e(AppLog.T.PLANS,"Can't parse the plans list returned from the server",e);
