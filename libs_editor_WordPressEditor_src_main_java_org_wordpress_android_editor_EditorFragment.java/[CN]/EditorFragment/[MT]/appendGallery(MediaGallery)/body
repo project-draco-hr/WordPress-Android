@@ -1,2 +1,14 @@
 {
+  if (!mDomHasLoaded) {
+    mWaitingGalleries.add(mediaGallery);
+    return;
+  }
+  if (mediaGallery.getIds().isEmpty()) {
+    mUploadingMediaGallery=mediaGallery;
+    mWebView.execJavaScriptFromString("ZSSEditor.insertLocalGallery('" + mediaGallery.getUniqueId() + "');");
+  }
+ else {
+    mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').focus();");
+    mWebView.execJavaScriptFromString("ZSSEditor.insertGallery('" + mediaGallery.getIdsStr() + "', '"+ mediaGallery.getType()+ "', "+ mediaGallery.getNumColumns()+ ");");
+  }
 }
