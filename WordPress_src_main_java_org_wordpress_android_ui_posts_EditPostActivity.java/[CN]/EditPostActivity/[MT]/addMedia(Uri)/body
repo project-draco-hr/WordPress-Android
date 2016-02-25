@@ -1,25 +1,16 @@
 {
-  if (imageUri != null && !MediaUtils.isInMediaStore(imageUri) && !imageUri.toString().startsWith("/")) {
-    imageUri=MediaUtils.downloadExternalMedia(this,imageUri);
+  if (mediaUri != null && !MediaUtils.isInMediaStore(mediaUri) && !mediaUri.toString().startsWith("/")) {
+    mediaUri=MediaUtils.downloadExternalMedia(this,mediaUri);
   }
-  if (imageUri == null) {
+  if (mediaUri == null) {
     return false;
   }
-  String mediaTitle;
-  if (MediaUtils.isVideo(imageUri.toString())) {
-    mediaTitle=getResources().getString(R.string.video);
+  boolean isVideo=MediaUtils.isVideo(mediaUri.toString());
+  trackAddMediaEvents(isVideo,false);
+  if (mShowNewEditor) {
+    return addMediaVisualEditor(mediaUri);
   }
  else {
-    mediaTitle=ImageUtils.getTitleForWPImageSpan(this,imageUri.getEncodedPath());
+    return addMediaLegacyEditor(mediaUri,isVideo);
   }
-  MediaFile mediaFile=new MediaFile();
-  mediaFile.setPostID(getPost().getLocalTablePostId());
-  mediaFile.setTitle(mediaTitle);
-  mediaFile.setFilePath(imageUri.toString());
-  if (imageUri.getEncodedPath() != null) {
-    mediaFile.setVideo(MediaUtils.isVideo(imageUri.toString()));
-  }
-  WordPress.wpDB.saveMediaFile(mediaFile);
-  mEditorFragment.appendMediaFile(mediaFile,mediaFile.getFilePath(),WordPress.imageLoader);
-  return true;
 }

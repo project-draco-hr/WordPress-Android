@@ -1,6 +1,8 @@
 {
   super.onCreate(savedInstanceState);
   setContentView(R.layout.new_edit_post_activity);
+  PreferenceManager.setDefaultValues(this,R.xml.settings,false);
+  mShowNewEditor=AppPrefs.isVisualEditorEnabled();
   final ActionBar actionBar=getSupportActionBar();
   if (actionBar != null) {
     actionBar.setDisplayHomeAsUpEnabled(true);
@@ -52,6 +54,9 @@
       }
     }
     mEditorFragment=(EditorFragmentAbstract)fragmentManager.getFragment(savedInstanceState,STATE_KEY_EDITOR_FRAGMENT);
+    if (mEditorFragment instanceof EditorMediaUploadListener) {
+      mEditorMediaUploadListener=(EditorMediaUploadListener)mEditorFragment;
+    }
   }
   if (mHasSetPostContent=mEditorFragment != null) {
     mEditorFragment.setImageLoader(WordPress.imageLoader);
