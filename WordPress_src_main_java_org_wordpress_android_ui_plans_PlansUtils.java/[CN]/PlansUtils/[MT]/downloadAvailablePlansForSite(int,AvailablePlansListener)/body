@@ -1,15 +1,10 @@
 {
-  final Blog blog=WordPress.getBlog(localTableBlogID);
-  if (blog == null || blog.getPlanID() == 0) {
-    return false;
-  }
-  WordPress.getRestClientUtils().get("sites/" + blog.getDotComBlogId() + "/plans",WordPress.getRestLocaleParams(),null,new RestRequest.Listener(){
+  int remoteBlogId=WordPress.wpDB.getRemoteBlogIdForLocalTableBlogId(localTableBlogID);
+  WordPress.getRestClientUtils().get("sites/" + remoteBlogId + "/plans",WordPress.getRestLocaleParams(),null,new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject response){
       if (response == null) {
         AppLog.w(AppLog.T.PLANS,"Unexpected empty response from server");
-        if (listener != null) {
-          listener.onError();
-        }
+        listener.onError();
         return;
       }
       AppLog.d(AppLog.T.PLANS,response.toString());
@@ -20,30 +15,23 @@
           for (int i=0; i < planIDs.length(); i++) {
             String currentKey=planIDs.getString(i);
             JSONObject currentPlanJSON=response.getJSONObject(currentKey);
-            SitePlan currentPlan=new SitePlan(Long.valueOf(currentKey),currentPlanJSON,blog);
+            SitePlan currentPlan=new SitePlan(Long.valueOf(currentKey),currentPlanJSON,localTableBlogID);
             plans.add(currentPlan);
           }
         }
-        if (listener != null) {
-          listener.onResponse(plans);
-        }
+        listener.onResponse(plans);
       }
  catch (      JSONException e) {
         AppLog.e(AppLog.T.PLANS,"Can't parse the plans list returned from the server",e);
-        if (listener != null) {
-          listener.onError();
-        }
+        listener.onError();
       }
     }
   }
 ,new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
-      AppLog.e(AppLog.T.UTILS,"Error downloading site plans for the site with ID " + blog.getDotComBlogId(),volleyError);
-      if (listener != null) {
-        listener.onError();
-      }
+      AppLog.e(AppLog.T.UTILS,"Error downloading site plans",volleyError);
+      listener.onError();
     }
   }
 );
-  return true;
 }
