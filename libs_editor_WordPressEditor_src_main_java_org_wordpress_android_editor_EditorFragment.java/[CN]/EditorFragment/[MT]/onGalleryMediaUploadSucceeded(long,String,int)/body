@@ -1,0 +1,15 @@
+{
+  if (galleryId == mUploadingMediaGallery.getUniqueId()) {
+    ArrayList<String> mediaIds=mUploadingMediaGallery.getIds();
+    mediaIds.add(remoteMediaId);
+    mUploadingMediaGallery.setIds(mediaIds);
+    if (remaining == 0) {
+      mWebView.post(new Runnable(){
+        @Override public void run(){
+          mWebView.execJavaScriptFromString("ZSSEditor.replacePlaceholderGallery('" + galleryId + "', '"+ mUploadingMediaGallery.getIdsStr()+ "', '"+ mUploadingMediaGallery.getType()+ "', "+ mUploadingMediaGallery.getNumColumns()+ ");");
+        }
+      }
+);
+    }
+  }
+}
