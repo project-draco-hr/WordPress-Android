@@ -5,13 +5,15 @@
   if (mSitePlan == null) {
     return;
   }
-  ImageView imgPlan=(ImageView)mPlanContainerView.findViewById(R.id.plan_icon);
-  int pictureResID=PlansUIHelper.getPrimaryImageResIDForPlan(mSitePlan.getProductID());
-  if (pictureResID == PlansUIHelper.NO_PICTURE_FOR_PLAN_RES_ID) {
-    imgPlan.setVisibility(View.GONE);
+  int iconSize=getActivity().getResources().getDimensionPixelSize(R.dimen.plan_icon_size);
+  NetworkImageView imgPlan=(NetworkImageView)mPlanContainerView.findViewById(R.id.image_plan_icon);
+  String iconUrl=PlansUtils.getIconUrlForPlan(mSitePlan.getProductID(),iconSize);
+  if (!TextUtils.isEmpty(iconUrl)) {
+    imgPlan.setImageUrl(iconUrl,WordPress.imageLoader);
+    imgPlan.setVisibility(View.VISIBLE);
   }
  else {
-    imgPlan.setImageDrawable(getResources().getDrawable(pictureResID));
+    imgPlan.setVisibility(View.GONE);
   }
   TextView txtProductName=(TextView)mPlanContainerView.findViewById(R.id.text_product_name);
   String productShortName=mPlanDetails.getProductNameShort();
