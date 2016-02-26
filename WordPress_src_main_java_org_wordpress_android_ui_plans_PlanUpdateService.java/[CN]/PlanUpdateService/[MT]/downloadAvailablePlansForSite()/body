@@ -1,5 +1,5 @@
 {
-  int remoteBlogId=WordPress.wpDB.getRemoteBlogIdForLocalTableBlogId(localBlogId);
+  int remoteBlogId=WordPress.wpDB.getRemoteBlogIdForLocalTableBlogId(mLocalBlogId);
   WordPress.getRestClientUtils().get("sites/" + remoteBlogId + "/plans",WordPress.getRestLocaleParams(),null,new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject response){
       if (response == null) {
@@ -15,7 +15,7 @@
           for (int i=0; i < planIDs.length(); i++) {
             String currentKey=planIDs.getString(i);
             JSONObject currentPlanJSON=response.getJSONObject(currentKey);
-            SitePlan currentPlan=new SitePlan(Long.valueOf(currentKey),currentPlanJSON,localBlogId);
+            SitePlan currentPlan=new SitePlan(Long.valueOf(currentKey),currentPlanJSON,mLocalBlogId);
             mSitePlans.add(currentPlan);
           }
         }
