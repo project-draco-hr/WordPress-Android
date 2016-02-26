@@ -1,0 +1,11 @@
+{
+  if (mLastAutoUpdateDt != null) {
+    int minutesSinceLastUpdate=DateTimeUtils.minutesBetween(mLastAutoUpdateDt,new Date());
+    if (minutesSinceLastUpdate < 120) {
+      return;
+    }
+  }
+  AppLog.d(T.READER,"reader post list > updating tags and blogs");
+  mLastAutoUpdateDt=new Date();
+  ReaderUpdateService.startService(getActivity(),EnumSet.of(UpdateTask.TAGS,UpdateTask.FOLLOWED_BLOGS));
+}

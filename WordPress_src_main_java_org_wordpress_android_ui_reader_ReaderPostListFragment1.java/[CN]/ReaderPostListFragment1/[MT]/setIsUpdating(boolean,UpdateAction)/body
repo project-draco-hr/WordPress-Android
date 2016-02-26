@@ -1,0 +1,18 @@
+{
+  if (!isAdded() || mIsUpdating == isUpdating) {
+    return;
+  }
+  if (updateAction == UpdateAction.REQUEST_OLDER) {
+    showLoadingProgress(isUpdating);
+  }
+ else   if (isUpdating && isPostAdapterEmpty()) {
+    mRecyclerView.setRefreshing(true);
+  }
+ else   if (!isUpdating) {
+    mRecyclerView.setRefreshing(false);
+  }
+  mIsUpdating=isUpdating;
+  if (mRecyclerView != null && !mRecyclerView.isRefreshing()) {
+    mRecyclerView.setSwipeToRefreshEnabled(!isUpdating);
+  }
+}

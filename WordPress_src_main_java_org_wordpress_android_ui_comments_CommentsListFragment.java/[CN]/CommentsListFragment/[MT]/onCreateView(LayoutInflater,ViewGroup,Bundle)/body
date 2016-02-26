@@ -3,8 +3,14 @@
   mFilteredCommentsView=(FilteredRecyclerView)view.findViewById(R.id.filtered_recycler_view);
   mFilteredCommentsView.setLogT(AppLog.T.COMMENTS);
   mFilteredCommentsView.setFilterListener(new FilteredRecyclerView.FilterListener(){
-    @Override public FilterCriteria[] onLoadFilterCriteriaOptions(){
-      return commentStatuses;
+    @Override public List<FilterCriteria> onLoadFilterCriteriaOptions(){
+      ArrayList<FilterCriteria> criterias=new ArrayList();
+      for (      CommentStatus criteria : commentStatuses) {
+        criterias.add(criteria);
+      }
+      return criterias;
+    }
+    @Override public void onLoadFilterCriteriaOptionsAsync(    FilteredRecyclerView.FilterCriteriaAsyncLoaderListener listener){
     }
     @Override public void onLoadData(){
       updateComments(false);
@@ -45,6 +51,8 @@ break;
 }
 return getString(stringId);
 }
+}
+@Override public void onShowCustomEmptyView(EmptyViewMessageType emptyViewMsgType){
 }
 }
 );

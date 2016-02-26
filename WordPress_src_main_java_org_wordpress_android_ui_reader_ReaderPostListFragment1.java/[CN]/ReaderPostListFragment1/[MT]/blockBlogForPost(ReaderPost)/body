@@ -1,0 +1,24 @@
+{
+  if (post == null || !isAdded() || !hasPostAdapter() || !NetworkUtils.checkConnection(getActivity())) {
+    return;
+  }
+  ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
+    @Override public void onActionResult(    boolean succeeded){
+      if (!succeeded && isAdded()) {
+        ToastUtils.showToast(getActivity(),R.string.reader_toast_err_block_blog,ToastUtils.Duration.LONG);
+      }
+    }
+  }
+;
+  final BlockedBlogResult blockResult=ReaderBlogActions.blockBlogFromReader(post.blogId,actionListener);
+  AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.READER_BLOG_BLOCKED,mCurrentBlogId != 0 ? mCurrentBlogId : null);
+  getPostAdapter().removePostsInBlog(post.blogId);
+  View.OnClickListener undoListener=new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      ReaderBlogActions.undoBlockBlogFromReader(blockResult);
+      refreshPosts();
+    }
+  }
+;
+  Snackbar.make(getView(),getString(R.string.reader_toast_blog_blocked),Snackbar.LENGTH_LONG).setAction(R.string.undo,undoListener).show();
+}

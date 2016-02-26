@@ -1,6 +1,21 @@
 {
   mFilterListener=filterListener;
   mFilterCriteriaOptions=mFilterListener.onLoadFilterCriteriaOptions();
-  initAdapter();
-  setCurrentFilter(mFilterListener.onRecallSelection());
+  if (mFilterCriteriaOptions == null) {
+    mFilterListener.onLoadFilterCriteriaOptionsAsync(new FilterCriteriaAsyncLoaderListener(){
+      @Override public void onFilterCriteriasLoaded(      List<FilterCriteria> criteriaList){
+        if (criteriaList != null) {
+          mFilterCriteriaOptions=new ArrayList<FilterCriteria>();
+          mFilterCriteriaOptions.addAll(criteriaList);
+          initAdapter();
+          setCurrentFilter(mFilterListener.onRecallSelection());
+        }
+      }
+    }
+);
+  }
+ else {
+    initAdapter();
+    setCurrentFilter(mFilterListener.onRecallSelection());
+  }
 }

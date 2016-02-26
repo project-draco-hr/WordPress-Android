@@ -1,0 +1,20 @@
+{
+  if (!isAdded() || !isNewPostsBarShowing() || mIsAnimatingOutNewPostsBar) {
+    return;
+  }
+  mIsAnimatingOutNewPostsBar=true;
+  Animation.AnimationListener listener=new Animation.AnimationListener(){
+    @Override public void onAnimationStart(    Animation animation){
+    }
+    @Override public void onAnimationEnd(    Animation animation){
+      if (isAdded()) {
+        mNewPostsBar.setVisibility(View.GONE);
+        mIsAnimatingOutNewPostsBar=false;
+      }
+    }
+    @Override public void onAnimationRepeat(    Animation animation){
+    }
+  }
+;
+  AniUtils.startAnimation(mNewPostsBar,R.anim.reader_top_bar_out,listener);
+}

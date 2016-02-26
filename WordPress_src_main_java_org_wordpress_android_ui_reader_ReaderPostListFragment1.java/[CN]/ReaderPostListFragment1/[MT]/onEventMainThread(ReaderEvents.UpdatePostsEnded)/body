@@ -1,0 +1,20 @@
+{
+  if (!isAdded())   return;
+  setIsUpdating(false,event.getAction());
+  if (event.getReaderTag() != null && !isCurrentTag(event.getReaderTag())) {
+    return;
+  }
+  if (event.getResult() == ReaderActions.UpdateResult.HAS_NEW && event.getAction() == UpdateAction.REQUEST_NEWER && getPostListType() == ReaderPostListType.TAG_FOLLOWED && !isPostAdapterEmpty() && (!isAdded() || !mRecyclerView.isFirstPostVisible())) {
+    showNewPostsBar();
+  }
+ else   if (event.getResult().isNewOrChanged()) {
+    refreshPosts();
+  }
+ else {
+    boolean requestFailed=(event.getResult() == ReaderActions.UpdateResult.FAILED);
+    setEmptyTitleAndDescription(requestFailed);
+    if (event.getAction() == UpdateAction.REQUEST_OLDER_THAN_GAP) {
+      reloadPosts();
+    }
+  }
+}

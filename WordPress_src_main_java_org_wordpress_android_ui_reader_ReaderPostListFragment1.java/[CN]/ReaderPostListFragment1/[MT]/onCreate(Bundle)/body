@@ -1,0 +1,25 @@
+{
+  super.onCreate(savedInstanceState);
+  if (savedInstanceState != null) {
+    AppLog.d(T.READER,"reader post list > restoring instance state");
+    if (savedInstanceState.containsKey(ReaderConstants.ARG_TAG)) {
+      mCurrentTag=(ReaderTag)savedInstanceState.getSerializable(ReaderConstants.ARG_TAG);
+    }
+    if (savedInstanceState.containsKey(ReaderConstants.ARG_BLOG_ID)) {
+      mCurrentBlogId=savedInstanceState.getLong(ReaderConstants.ARG_BLOG_ID);
+    }
+    if (savedInstanceState.containsKey(ReaderConstants.ARG_FEED_ID)) {
+      mCurrentFeedId=savedInstanceState.getLong(ReaderConstants.ARG_FEED_ID);
+    }
+    if (savedInstanceState.containsKey(ReaderConstants.ARG_POST_LIST_TYPE)) {
+      mPostListType=(ReaderPostListType)savedInstanceState.getSerializable(ReaderConstants.ARG_POST_LIST_TYPE);
+    }
+    if (getPostListType() == ReaderPostListType.TAG_PREVIEW) {
+      mTagPreviewHistory.restoreInstance(savedInstanceState);
+    }
+    mRestorePosition=savedInstanceState.getInt(ReaderConstants.KEY_RESTORE_POSITION);
+    mWasPaused=savedInstanceState.getBoolean(ReaderConstants.KEY_WAS_PAUSED);
+    mHasUpdatedPosts=savedInstanceState.getBoolean(ReaderConstants.KEY_ALREADY_UPDATED);
+    mFirstLoad=savedInstanceState.getBoolean(ReaderConstants.KEY_FIRST_LOAD);
+  }
+}
