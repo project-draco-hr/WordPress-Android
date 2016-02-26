@@ -7,10 +7,10 @@
   mRecyclerView.setLogT(AppLog.T.READER);
   mRecyclerView.setCustomEmptyView(mEmptyView);
   mRecyclerView.setFilterListener(new FilteredRecyclerView.FilterListener(){
-    @Override public List<FilterCriteria> onLoadFilterCriteriaOptions(){
+    @Override public List<FilterCriteria> onLoadFilterCriteriaOptions(    boolean refresh){
       return null;
     }
-    @Override public void onLoadFilterCriteriaOptionsAsync(    FilteredRecyclerView.FilterCriteriaAsyncLoaderListener listener){
+    @Override public void onLoadFilterCriteriaOptionsAsync(    FilteredRecyclerView.FilterCriteriaAsyncLoaderListener listener,    boolean refresh){
       loadTags(listener);
     }
     @Override public void onLoadData(){
@@ -60,7 +60,7 @@ boolean skipFirstItem=(getPostListType() == ReaderPostListType.TAG_FOLLOWED);
 mRecyclerView.getInternalRecyclerView().addItemDecoration(new RecyclerItemDecoration(spacingHorizontal,spacingVertical,skipFirstItem));
 if (!ReaderUtils.isLoggedOutReader()) {
 View settingsControl=inflater.inflate(R.layout.filtered_recyclerview_settings_control,null);
-mRecyclerView.addCustomControl(settingsControl,new View.OnClickListener(){
+mRecyclerView.addToolbarCustomControl(settingsControl,new View.OnClickListener(){
 @Override public void onClick(View v){
 ReaderActivityLauncher.showReaderSubs(v.getContext());
 }
