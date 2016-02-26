@@ -1,0 +1,21 @@
+{
+  Post post=getPost();
+  if (post == null) {
+    return;
+  }
+  if (!isAutoSave) {
+  }
+  String moreTag="<!--more-->";
+  post.setTitle(title);
+  if (post.isLocalDraft() && content.contains(moreTag)) {
+    post.setDescription(content.substring(0,content.indexOf(moreTag)));
+    post.setMoreText(content.substring(content.indexOf(moreTag) + moreTag.length(),content.length()));
+  }
+ else {
+    post.setDescription(content);
+    post.setMoreText("");
+  }
+  if (!post.isLocalDraft()) {
+    post.setLocalChange(true);
+  }
+}

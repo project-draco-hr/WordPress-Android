@@ -3,11 +3,13 @@
     mEditorFragment.setFeaturedImageSupported(WordPress.getCurrentBlog().isFeaturedImageCapable());
     mEditorFragment.setBlogSettingMaxImageWidth(WordPress.getCurrentBlog().getMaxImageWidth());
   }
+  mEditorFragment.setContentPlaceholder(getString(R.string.editor_content_placeholder));
+  mEditorFragment.setTitlePlaceholder(getString(mIsPage ? R.string.editor_page_title_placeholder : R.string.editor_post_title_placeholder));
   Post post=getPost();
   if (post != null) {
     if (!TextUtils.isEmpty(post.getContent()) && !mHasSetPostContent) {
       mHasSetPostContent=true;
-      if (post.isLocalDraft()) {
+      if (post.isLocalDraft() && !mShowNewEditor) {
         new LoadPostContentTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,post.getContent().replaceAll("\uFFFC",""));
       }
  else {
@@ -18,6 +20,7 @@
       mEditorFragment.setTitle(post.getTitle());
     }
     mEditorFragment.setLocalDraft(post.isLocalDraft());
+    mEditorFragment.setFeaturedImageId(mPost.getFeaturedImageId());
   }
   String action=getIntent().getAction();
   int quickMediaType=getIntent().getIntExtra("quick-media",-1);
