@@ -1,36 +1,36 @@
 {
-  int remoteBlogId=WordPress.wpDB.getRemoteBlogIdForLocalTableBlogId(mLocalBlogId);
+  int remoteBlogId=WordPress.wpDB.getRemoteBlogIdForLocalTableBlogId(localBlogId);
   WordPress.getRestClientUtils().get("sites/" + remoteBlogId + "/plans",WordPress.getRestLocaleParams(),null,new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject response){
       if (response == null) {
         AppLog.w(AppLog.T.PLANS,"Unexpected empty response from server");
-        notifyFailure();
+        requestFailed();
         return;
       }
       AppLog.d(AppLog.T.PLANS,response.toString());
-      List<SitePlan> plans=new ArrayList<>();
+      mSitePlans.clear();
       try {
         JSONArray planIDs=response.names();
         if (planIDs != null) {
           for (int i=0; i < planIDs.length(); i++) {
             String currentKey=planIDs.getString(i);
             JSONObject currentPlanJSON=response.getJSONObject(currentKey);
-            SitePlan currentPlan=new SitePlan(Long.valueOf(currentKey),currentPlanJSON,mLocalBlogId);
-            plans.add(currentPlan);
+            SitePlan currentPlan=new SitePlan(Long.valueOf(currentKey),currentPlanJSON,localBlogId);
+            mSitePlans.add(currentPlan);
           }
         }
-        notifySuccess(plans);
+        requestCompleted();
       }
  catch (      JSONException e) {
         AppLog.e(AppLog.T.PLANS,"Can't parse the plans list returned from the server",e);
-        notifyFailure();
+        requestFailed();
       }
     }
   }
 ,new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.e(AppLog.T.UTILS,"Error downloading site plans",volleyError);
-      notifyFailure();
+      requestFailed();
     }
   }
 );

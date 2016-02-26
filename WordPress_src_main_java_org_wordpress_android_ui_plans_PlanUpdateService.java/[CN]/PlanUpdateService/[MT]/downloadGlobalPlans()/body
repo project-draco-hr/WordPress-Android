@@ -4,18 +4,18 @@
       if (response != null) {
         AppLog.d(AppLog.T.PLANS,response.toString());
         AppPrefs.setGlobalPlans(response.toString());
-        downloadPlanFeatures();
+        requestCompleted();
       }
  else {
         AppLog.w(AppLog.T.PLANS,"Empty response downloading global Plans");
-        notifyFailure();
+        requestFailed();
       }
     }
   }
 ,new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.e(AppLog.T.PLANS,"Error loading plans",volleyError);
-      notifyFailure();
+      requestFailed();
     }
   }
 );
