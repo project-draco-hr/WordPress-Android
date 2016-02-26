@@ -5,10 +5,8 @@
     return;
   }
   hideProgress();
-  mViewPager.setVisibility(View.VISIBLE);
   mViewPager.setOffscreenPageLimit(mAvailablePlans.length - 1);
   mViewPager.setAdapter(getPageAdapter());
-  mTabLayout.setVisibility(View.VISIBLE);
   mTabLayout.setTabMode(TabLayout.MODE_FIXED);
   int normalColor=getResources().getColor(R.color.blue_light);
   int selectedColor=getResources().getColor(R.color.white);
@@ -23,5 +21,14 @@
   }
   if (getPageAdapter().isValidPosition(mViewpagerPosSelected)) {
     mViewPager.setCurrentItem(mViewpagerPosSelected);
+  }
+  if (mViewPager.getVisibility() != View.VISIBLE) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      revealViewPager();
+    }
+ else {
+      mViewPager.setVisibility(View.VISIBLE);
+      mTabLayout.setVisibility(View.VISIBLE);
+    }
   }
 }
