@@ -6,41 +6,66 @@
     setError(ErrorType.INVALID_CURRENT_BLOG,"current blog is null");
     return null;
   }
-  XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
+  final XMLRPCClientInterface client=XMLRPCFactory.instantiate(blog.getUri(),blog.getHttpuser(),blog.getHttppassword());
   Map<String,Object> data=new HashMap<String,Object>();
   data.put("name",mMediaFile.getFileName());
   data.put("type",mMediaFile.getMimeType());
   data.put("bits",mMediaFile);
   data.put("overwrite",true);
   Object[] apiParams={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),data};
+  final File tempFile=getTempFile(mContext);
+  if (client instanceof XMLRPCClient) {
+    ((XMLRPCClient)client).setOnBytesUploadedListener(new XMLRPCClient.OnBytesUploadedListener(){
+      @Override public void onBytesUploaded(      long uploadedBytes){
+        if (isCancelled()) {
+          ((XMLRPCClient)client).cancel();
+        }
+        if (tempFile == null || tempFile.length() == 0) {
+          return;
+        }
+        float fractionUploaded=uploadedBytes / (float)tempFile.length();
+        mCallback.onProgressUpdate(fractionUploaded);
+      }
+    }
+);
+  }
   if (mContext == null) {
     return null;
   }
   Map<?,?> resultMap;
   try {
-    resultMap=(HashMap<?,?>)client.call(Method.UPLOAD_FILE,apiParams,getTempFile(mContext));
+    resultMap=(HashMap<?,?>)client.call(Method.UPLOAD_FILE,apiParams,tempFile);
   }
  catch (  ClassCastException cce) {
-    setError(ErrorType.INVALID_RESULT,cce.getMessage(),cce);
+    setError(ErrorType.INVALID_RESULT,null,cce);
+    return null;
+  }
+catch (  XMLRPCFault e) {
+    if (e.getFaultCode() == 401) {
+      setError(ErrorType.NETWORK_XMLRPC,mContext.getString(R.string.media_error_no_permission_upload),e);
+    }
+ else {
+      setError(ErrorType.NETWORK_XMLRPC,e.getFaultString(),e);
+    }
     return null;
   }
 catch (  XMLRPCException e) {
-    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
+    setError(ErrorType.NETWORK_XMLRPC,null,e);
     return null;
   }
 catch (  IOException e) {
-    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
+    setError(ErrorType.NETWORK_XMLRPC,null,e);
     return null;
   }
 catch (  XmlPullParserException e) {
-    setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);
+    setError(ErrorType.NETWORK_XMLRPC,null,e);
     return null;
   }
   if (resultMap != null && resultMap.containsKey("id")) {
-    return (String)resultMap.get("id");
+    return resultMap;
   }
  else {
-    setError(ErrorType.INVALID_RESULT,"Invalid result");
+    setError(ErrorType.INVALID_RESULT,null);
   }
   return null;
 }
