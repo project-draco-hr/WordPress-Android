@@ -1,39 +1,108 @@
 {
-  String xmlrpcUrl;
+  String xmlrpcUrl=null;
   url=UrlUtils.convertUrlToPunycodeIfNeeded(url);
   url=UrlUtils.addUrlSchemeIfNeeded(url,false);
   if (!URLUtil.isValidUrl(url)) {
     mErrorMsgId=org.wordpress.android.R.string.invalid_site_url_message;
     return null;
   }
-  String rsdUrl;
-  try {
-    rsdUrl=UrlUtils.addUrlSchemeIfNeeded(getRsdUrl(url),false);
-  }
- catch (  SSLHandshakeException e) {
-    if (!WPUrlUtils.isWordPressCom(url)) {
-      mErroneousSslCertificate=true;
+  String[] urlToTry;
+  if (!url.endsWith("xmlrpc.php")) {
+    String guessedEndpointURL=url;
+    if (guessedEndpointURL.substring(guessedEndpointURL.length() - 1,guessedEndpointURL.length()).equals("/")) {
+      guessedEndpointURL=guessedEndpointURL.substring(0,guessedEndpointURL.length() - 1);
     }
-    AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
-    return null;
+    guessedEndpointURL+="/xmlrpc.php";
+    urlToTry=new String[2];
+    urlToTry[0]=guessedEndpointURL;
+    urlToTry[1]=url;
   }
-  try {
-    if (rsdUrl != null) {
-      xmlrpcUrl=UrlUtils.addUrlSchemeIfNeeded(ApiHelper.getXMLRPCUrl(rsdUrl),false);
-      if (xmlrpcUrl == null) {
-        xmlrpcUrl=UrlUtils.addUrlSchemeIfNeeded(rsdUrl.replace("?rsd",""),false);
+ else {
+    urlToTry=new String[1];
+    urlToTry[0]=url;
+  }
+  for (  String currentURL : urlToTry) {
+    try {
+      Object[] methods=(Object[])doSystemListMethodsXMLRPC(currentURL);
+      if (validateListMethodsResponse(methods)) {
+        xmlrpcUrl=currentURL;
+        break;
+      }
+ else {
+        mErrorMsgId=org.wordpress.android.R.string.xmlrpc_missing_method_error;
       }
     }
- else {
-      xmlrpcUrl=UrlUtils.addUrlSchemeIfNeeded(getXmlrpcByUserEnteredPath(url),false);
+ catch (    XMLRPCException e) {
+      AppLog.i(T.NUX,"system.listMethods failed on: " + currentURL);
+      if (isHTTPAuthErrorMessage(e)) {
+        mHttpAuthRequired=true;
+        return null;
+      }
+    }
+catch (    SSLHandshakeException e) {
+      if (!WPUrlUtils.isWordPressCom(currentURL)) {
+        mErroneousSslCertificate=true;
+      }
+      AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
+      return null;
+    }
+catch (    SSLPeerUnverifiedException e) {
+      if (!WPUrlUtils.isWordPressCom(currentURL)) {
+        mErroneousSslCertificate=true;
+      }
+      AppLog.w(T.NUX,"SSLPeerUnverifiedException failed. Erroneous SSL certificate detected.");
+      return null;
+    }
+catch (    IOException e) {
+      AnalyticsTracker.track(Stat.LOGIN_FAILED_TO_GUESS_XMLRPC);
+      AppLog.i(T.NUX,"system.listMethods failed on: " + currentURL);
+      if (isHTTPAuthErrorMessage(e)) {
+        mHttpAuthRequired=true;
+        return null;
+      }
+    }
+catch (    XmlPullParserException e) {
+      AnalyticsTracker.track(Stat.LOGIN_FAILED_TO_GUESS_XMLRPC);
+      AppLog.i(T.NUX,"system.listMethods failed on: " + currentURL);
+      if (isHTTPAuthErrorMessage(e)) {
+        mHttpAuthRequired=true;
+        return null;
+      }
+    }
+catch (    IllegalArgumentException e) {
+      CrashlyticsUtils.setString(ExtraKey.ENTERED_URL,currentURL);
+      CrashlyticsUtils.logException(e,ExceptionType.SPECIFIC,T.NUX);
+      mErrorMsgId=org.wordpress.android.R.string.invalid_site_url_message;
+      return null;
     }
   }
- catch (  SSLHandshakeException e) {
-    if (!WPUrlUtils.isWordPressCom(url)) {
-      mErroneousSslCertificate=true;
+  if (xmlrpcUrl == null) {
+    String rsdUrl;
+    try {
+      rsdUrl=UrlUtils.addUrlSchemeIfNeeded(getRsdUrl(url),false);
     }
-    AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
-    return null;
+ catch (    SSLHandshakeException e) {
+      if (!WPUrlUtils.isWordPressCom(url)) {
+        mErroneousSslCertificate=true;
+      }
+      AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
+      return null;
+    }
+    try {
+      if (rsdUrl != null) {
+        xmlrpcUrl=UrlUtils.addUrlSchemeIfNeeded(ApiHelper.getXMLRPCUrl(rsdUrl),false);
+        if (xmlrpcUrl == null) {
+          xmlrpcUrl=UrlUtils.addUrlSchemeIfNeeded(rsdUrl.replace("?rsd",""),false);
+        }
+      }
+    }
+ catch (    SSLHandshakeException e) {
+      if (!WPUrlUtils.isWordPressCom(url)) {
+        mErroneousSslCertificate=true;
+      }
+      AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
+      return null;
+    }
   }
   return xmlrpcUrl;
 }

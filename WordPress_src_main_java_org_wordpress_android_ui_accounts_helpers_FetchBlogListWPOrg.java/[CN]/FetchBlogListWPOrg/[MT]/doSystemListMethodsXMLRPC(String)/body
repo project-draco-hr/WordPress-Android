@@ -1,0 +1,10 @@
+{
+  if (!UrlUtils.isValidUrlAndHostNotNull(url)) {
+    AppLog.e(T.NUX,"invalid URL: " + url);
+    mErrorMsgId=org.wordpress.android.R.string.invalid_site_url_message;
+    return null;
+  }
+  URI uri=URI.create(url);
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(uri,mHttpUsername,mHttpPassword);
+  return client.call(Method.LIST_METHODS);
+}
