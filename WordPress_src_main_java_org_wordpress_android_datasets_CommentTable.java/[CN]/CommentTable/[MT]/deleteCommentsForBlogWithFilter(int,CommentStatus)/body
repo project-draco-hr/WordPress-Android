@@ -1,0 +1,10 @@
+{
+  if (CommentStatus.UNKNOWN.equals(filter)) {
+    String[] args={Integer.toString(localBlogId),CommentStatus.toString(CommentStatus.APPROVED),CommentStatus.toString(CommentStatus.UNAPPROVED),CommentStatus.toRESTString(CommentStatus.APPROVED),CommentStatus.toRESTString(CommentStatus.UNAPPROVED)};
+    return getWritableDb().delete(COMMENTS_TABLE,"blog_id=? AND (status=? OR status=? OR status=? OR status=?)",args);
+  }
+ else {
+    String[] args={Integer.toString(localBlogId),CommentStatus.toString(filter),CommentStatus.toRESTString(filter)};
+    return getWritableDb().delete(COMMENTS_TABLE,"blog_id=? AND (status=? OR status=?)",args);
+  }
+}
