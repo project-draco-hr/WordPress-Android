@@ -1,20 +1,29 @@
 {
   super.onActivityResult(requestCode,resultCode,data);
-  if (data == null) {
-    return;
-  }
-  String path;
 switch (requestCode) {
-case RequestCodes.PICTURE_LIBRARY:
-    Uri imageUri=data.getData();
-  startCropActivity(imageUri);
-break;
+case RequestCodes.PICTURE_LIBRARY_OR_CAPTURE:
+    if (resultCode == Activity.RESULT_OK) {
+      Uri imageUri;
+      if (data == null || data.getData() == null) {
+        imageUri=Uri.fromFile(new File(mMediaCapturePath));
+      }
+ else {
+        imageUri=data.getData();
+      }
+      if (imageUri != null) {
+        startCropActivity(imageUri);
+      }
+ else {
+        AppLog.e(AppLog.T.UTILS,"Can't resolve picked or captured image");
+      }
+    }
+  break;
 case RequestCodes.CROP_PHOTO:
 if (resultCode == Activity.RESULT_OK) {
-fetchMedia(Crop.getOutput(data));
+  fetchMedia(Crop.getOutput(data));
 }
  else if (resultCode == Crop.RESULT_ERROR) {
-AppLog.e(AppLog.T.API,Crop.getError(data).getMessage());
+  AppLog.e(AppLog.T.API,Crop.getError(data).getMessage());
 }
 break;
 }
