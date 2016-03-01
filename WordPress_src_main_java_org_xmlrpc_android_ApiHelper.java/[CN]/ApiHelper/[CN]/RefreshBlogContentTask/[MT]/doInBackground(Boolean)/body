@@ -7,7 +7,7 @@
     Object[] vParams={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword(),hPost};
     Object versionResult=null;
     try {
-      versionResult=client.call(Methods.GET_OPTIONS,vParams);
+      versionResult=client.call(Method.GET_OPTIONS,vParams);
     }
  catch (    ClassCastException cce) {
       setError(ErrorType.INVALID_RESULT,cce.getMessage(),cce);
@@ -34,7 +34,7 @@ catch (    Exception e) {
   }
   Object[] userParams={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword()};
   try {
-    Map<String,Object> userInfos=(HashMap<String,Object>)client.call(ApiHelper.Methods.GET_PROFILE,userParams);
+    Map<String,Object> userInfos=(HashMap<String,Object>)client.call(Method.GET_PROFILE,userParams);
     updateBlogAdmin(userInfos);
   }
  catch (  ClassCastException cce) {
@@ -54,7 +54,14 @@ catch (  XmlPullParserException e) {
   hPost.put("number",30);
   Object[] commentParams={mBlog.getRemoteBlogId(),mBlog.getUsername(),mBlog.getPassword(),hPost};
   try {
-    ApiHelper.refreshComments(mBlog,commentParams);
+    ApiHelper.refreshComments(mBlog,commentParams,new DatabasePersistCallback(){
+      @Override public void onDataReadyToSave(      List list){
+        int localBlogId=mBlog.getLocalTableBlogId();
+        CommentTable.deleteCommentsForBlog(localBlogId);
+        CommentTable.saveComments(localBlogId,(CommentList)list);
+      }
+    }
+);
   }
  catch (  Exception e) {
     setError(ErrorType.NETWORK_XMLRPC,e.getMessage(),e);

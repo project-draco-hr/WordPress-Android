@@ -1,0 +1,54 @@
+{
+  Context context=getContext();
+  Resources res=context.getResources();
+  AlertDialog.Builder builder=new AlertDialog.Builder(context,R.style.Calypso_AlertDialog);
+  mWhichButtonClicked=DialogInterface.BUTTON_NEGATIVE;
+  builder.setPositiveButton(R.string.ok,this);
+  builder.setNegativeButton(res.getString(R.string.cancel).toUpperCase(),this);
+  if (mDetails == null) {
+    mDetails=new String[getEntries() == null ? 1 : getEntries().length];
+  }
+  mListAdapter=new DetailListAdapter(getContext(),R.layout.detail_list_preference,mDetails);
+  mStartingValue=getValue();
+  mSelectedIndex=findIndexOfValue(mStartingValue);
+  builder.setSingleChoiceItems(mListAdapter,mSelectedIndex,new DialogInterface.OnClickListener(){
+    public void onClick(    DialogInterface dialog,    int which){
+      mSelectedIndex=which;
+    }
+  }
+);
+  View titleView=View.inflate(getContext(),R.layout.detail_list_preference_title,null);
+  if (titleView != null) {
+    TextView titleText=(TextView)titleView.findViewById(R.id.title);
+    if (titleText != null) {
+      titleText.setText(getTitle());
+    }
+    builder.setCustomTitle(titleView);
+  }
+ else {
+    builder.setTitle(getTitle());
+  }
+  if ((mDialog=builder.create()) == null)   return;
+  if (state != null) {
+    mDialog.onRestoreInstanceState(state);
+  }
+  mDialog.setOnDismissListener(this);
+  mDialog.show();
+  ListView listView=mDialog.getListView();
+  Button positive=mDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+  Button negative=mDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+  Typeface typeface=TypefaceCache.getTypeface(getContext(),TypefaceCache.FAMILY_OPEN_SANS,Typeface.BOLD,TypefaceCache.VARIATION_LIGHT);
+  if (listView != null) {
+    listView.setDividerHeight(0);
+    listView.setClipToPadding(true);
+    listView.setPadding(0,0,0,res.getDimensionPixelSize(R.dimen.site_settings_divider_height));
+  }
+  if (positive != null) {
+    positive.setTextColor(res.getColor(R.color.blue_medium));
+    positive.setTypeface(typeface);
+  }
+  if (negative != null) {
+    negative.setTextColor(res.getColor(R.color.blue_medium));
+    negative.setTypeface(typeface);
+  }
+}

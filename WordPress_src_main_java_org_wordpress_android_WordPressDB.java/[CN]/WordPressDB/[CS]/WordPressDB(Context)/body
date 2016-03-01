@@ -7,6 +7,7 @@
   db.execSQL(CREATE_TABLE_QUICKPRESS_SHORTCUTS);
   db.execSQL(CREATE_TABLE_MEDIA);
   db.execSQL(CREATE_TABLE_THEMES);
+  SiteSettingsTable.createTable(db);
   CommentTable.createTables(db);
   SuggestionTable.createTables(db);
   int currentVersion=db.getVersion();
@@ -124,6 +125,18 @@ ctx.deleteDatabase("simperium-store");
 currentVersion++;
 case 37:
 resetThemeTable();
+currentVersion++;
+case 38:
+updateDotcomFlag();
+currentVersion++;
+case 39:
+AccountTable.migrationAddFirstNameLastNameAboutMeFields(db);
+currentVersion++;
+case 40:
+AccountTable.migrationAddDateFields(db);
+currentVersion++;
+case 41:
+AccountTable.migrationAddAccountSettingsFields(db);
 currentVersion++;
 }
 db.setVersion(DATABASE_VERSION);

@@ -1,0 +1,25 @@
+{
+  fetchCategories();
+  WordPress.getRestClientUtils().getGeneralSettings(String.valueOf(mBlog.getRemoteBlogId()),new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject response){
+      AppLog.d(AppLog.T.API,"Received response to Settings REST request.");
+      credentialsVerified(true);
+      mRemoteSettings.localTableId=mBlog.getRemoteBlogId();
+      deserializeDotComRestResponse(mBlog,response);
+      if (!mRemoteSettings.equals(mSettings)) {
+        final Map<String,String> currentPostFormats=mSettings.postFormats;
+        mSettings.copyFrom(mRemoteSettings);
+        mSettings.postFormats=currentPostFormats;
+        SiteSettingsTable.saveSettings(mSettings);
+        notifyUpdatedOnUiThread(null);
+      }
+    }
+  }
+,new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+      AppLog.w(AppLog.T.API,"Error response to Settings REST request: " + error);
+      notifyUpdatedOnUiThread(error);
+    }
+  }
+);
+}

@@ -1,0 +1,36 @@
+{
+  LayoutInflater inflater=getActivity().getLayoutInflater();
+  View v=inflater.inflate(R.layout.related_posts_dialog,null,false);
+  mShowRelatedPosts=(WPSwitch)v.findViewById(R.id.toggle_related_posts_switch);
+  mShowHeader=(CheckBox)v.findViewById(R.id.show_header_checkbox);
+  mShowImages=(CheckBox)v.findViewById(R.id.show_images_checkbox);
+  mPreviewHeader=(TextView)v.findViewById(R.id.preview_header);
+  mRelatedPostsListHeader=(TextView)v.findViewById(R.id.related_posts_list_header);
+  mRelatedPostsList=(LinearLayout)v.findViewById(R.id.related_posts_list);
+  mPreviewImages=new ArrayList<>();
+  mPreviewImages.add((ImageView)v.findViewById(R.id.related_post_image1));
+  mPreviewImages.add((ImageView)v.findViewById(R.id.related_post_image2));
+  mPreviewImages.add((ImageView)v.findViewById(R.id.related_post_image3));
+  Bundle args=getArguments();
+  if (args != null) {
+    mShowRelatedPosts.setChecked(args.getBoolean(SHOW_RELATED_POSTS_KEY));
+    mShowHeader.setChecked(args.getBoolean(SHOW_HEADER_KEY));
+    mShowImages.setChecked(args.getBoolean(SHOW_IMAGES_KEY));
+  }
+  toggleShowHeader(mShowHeader.isChecked());
+  toggleShowImages(mShowImages.isChecked());
+  mShowRelatedPosts.setOnCheckedChangeListener(this);
+  mShowHeader.setOnCheckedChangeListener(this);
+  mShowImages.setOnCheckedChangeListener(this);
+  toggleViews(mShowRelatedPosts.isChecked());
+  AlertDialog.Builder builder=new AlertDialog.Builder(getActivity(),R.style.Calypso_AlertDialog);
+  View titleView=inflater.inflate(R.layout.detail_list_preference_title,null);
+  TextView titleText=((TextView)titleView.findViewById(R.id.title));
+  titleText.setText(R.string.site_settings_related_posts_title);
+  titleText.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.WRAP_CONTENT));
+  builder.setCustomTitle(titleView);
+  builder.setPositiveButton(R.string.ok,this);
+  builder.setNegativeButton(R.string.cancel,this);
+  builder.setView(v);
+  return builder.create();
+}

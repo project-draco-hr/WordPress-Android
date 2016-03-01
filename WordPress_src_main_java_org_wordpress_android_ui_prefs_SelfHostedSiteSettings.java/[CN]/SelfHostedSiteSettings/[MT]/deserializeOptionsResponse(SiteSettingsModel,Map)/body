@@ -1,0 +1,61 @@
+{
+  if (mBlog == null || response == null)   return;
+  model.username=mBlog.getUsername();
+  model.password=mBlog.getPassword();
+  model.address=getNestedMapValue(response,BLOG_URL_KEY);
+  model.title=getNestedMapValue(response,BLOG_TITLE_KEY);
+  model.tagline=getNestedMapValue(response,BLOG_TAGLINE_KEY);
+  model.privacy=Integer.valueOf(getNestedMapValue(response,PRIVACY_KEY));
+  model.defaultCategory=Integer.valueOf(getNestedMapValue(response,DEF_CATEGORY_KEY));
+  model.defaultPostFormat=getNestedMapValue(response,DEF_POST_FORMAT_KEY);
+  model.allowComments=OPTION_ALLOWED.equals(getNestedMapValue(response,ALLOW_COMMENTS_KEY));
+  model.receivePingbacks=OPTION_ALLOWED.equals(getNestedMapValue(response,RECEIVE_PINGBACKS_KEY));
+  String sendPingbacks=getNestedMapValue(response,SEND_PINGBACKS_KEY);
+  String approvalRequired=getNestedMapValue(response,COMMENT_MODERATION_KEY);
+  String identityRequired=getNestedMapValue(response,REQUIRE_IDENTITY_KEY);
+  String accountRequired=getNestedMapValue(response,REQUIRE_USER_ACCOUNT_KEY);
+  String knownUsers=getNestedMapValue(response,WHITELIST_KNOWN_USERS_KEY);
+  model.sendPingbacks=!TextUtils.isEmpty(sendPingbacks) && Integer.valueOf(sendPingbacks) > 0;
+  model.commentApprovalRequired=!TextUtils.isEmpty(approvalRequired) && Boolean.valueOf(approvalRequired);
+  model.commentsRequireIdentity=!TextUtils.isEmpty(identityRequired) && Integer.valueOf(identityRequired) > 0;
+  model.commentsRequireUserAccount=!TextUtils.isEmpty(accountRequired) && Integer.valueOf(identityRequired) > 0;
+  model.commentAutoApprovalKnownUsers=!TextUtils.isEmpty(knownUsers) && Boolean.valueOf(knownUsers);
+  model.maxLinks=Integer.valueOf(getNestedMapValue(response,MAX_LINKS_KEY));
+  mRemoteSettings.holdForModeration=new ArrayList<>();
+  mRemoteSettings.blacklist=new ArrayList<>();
+  String modKeys=getNestedMapValue(response,MODERATION_KEYS_KEY);
+  if (modKeys.length() > 0) {
+    Collections.addAll(mRemoteSettings.holdForModeration,modKeys.split("\n"));
+  }
+  String blacklistKeys=getNestedMapValue(response,BLACKLIST_KEYS_KEY);
+  if (blacklistKeys.length() > 0) {
+    Collections.addAll(mRemoteSettings.blacklist,blacklistKeys.split("\n"));
+  }
+  String close=getNestedMapValue(response,CLOSE_OLD_COMMENTS_KEY);
+  if (!TextUtils.isEmpty(close) && Boolean.valueOf(close)) {
+    mRemoteSettings.closeCommentAfter=Integer.valueOf(getNestedMapValue(response,CLOSE_OLD_COMMENTS_DAYS_KEY));
+  }
+ else {
+    mRemoteSettings.closeCommentAfter=0;
+  }
+  String thread=getNestedMapValue(response,THREAD_COMMENTS_KEY);
+  if (!TextUtils.isEmpty(thread) && Integer.valueOf(thread) > 0) {
+    mRemoteSettings.threadingLevels=Integer.valueOf(getNestedMapValue(response,THREAD_COMMENTS_DEPTH_KEY));
+  }
+ else {
+    mRemoteSettings.threadingLevels=0;
+  }
+  String page=getNestedMapValue(response,PAGE_COMMENTS_KEY);
+  if (!TextUtils.isEmpty(page) && Boolean.valueOf(page)) {
+    mRemoteSettings.commentsPerPage=Integer.valueOf(getNestedMapValue(response,PAGE_COMMENT_COUNT_KEY));
+  }
+ else {
+    mRemoteSettings.commentsPerPage=0;
+  }
+  if (getNestedMapValue(response,COMMENT_SORT_ORDER_KEY).equals("asc")) {
+    mRemoteSettings.sortCommentsBy=ASCENDING_SORT;
+  }
+ else {
+    mRemoteSettings.sortCommentsBy=DESCENDING_SORT;
+  }
+}

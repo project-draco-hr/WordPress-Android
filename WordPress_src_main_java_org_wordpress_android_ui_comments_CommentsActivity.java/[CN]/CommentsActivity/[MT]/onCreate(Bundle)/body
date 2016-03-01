@@ -1,10 +1,29 @@
 {
-  super.onCreate(null);
+  super.onCreate(savedInstanceState);
   setContentView(R.layout.comment_activity);
   Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
   setSupportActionBar(toolbar);
-  getSupportActionBar().setDisplayShowTitleEnabled(true);
-  getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-  getSupportActionBar().setTitle(getString(R.string.tab_comments));
-  restoreSavedInstance(savedInstanceState);
+  ActionBar actionBar=getSupportActionBar();
+  if (actionBar != null) {
+    actionBar.setElevation(0);
+    actionBar.setTitle(R.string.comments);
+    actionBar.setDisplayShowTitleEnabled(true);
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
+  if (getIntent() != null && getIntent().hasExtra(SAVED_COMMENTS_STATUS_TYPE)) {
+    mCurrentCommentStatusType=(CommentStatus)getIntent().getSerializableExtra(SAVED_COMMENTS_STATUS_TYPE);
+  }
+ else {
+    mCurrentCommentStatusType=AppPrefs.getCommentsStatusFilter();
+  }
+  if (savedInstanceState == null) {
+    CommentsListFragment commentsListFragment=new CommentsListFragment();
+    commentsListFragment.setCommentStatusFilter(mCurrentCommentStatusType);
+    getFragmentManager().beginTransaction().add(R.id.layout_fragment_container,commentsListFragment,getString(R.string.fragment_tag_comment_list)).commitAllowingStateLoss();
+  }
+ else {
+    getIntent().putExtra(KEY_AUTO_REFRESHED,savedInstanceState.getBoolean(KEY_AUTO_REFRESHED));
+    getIntent().putExtra(KEY_EMPTY_VIEW_MESSAGE,savedInstanceState.getString(KEY_EMPTY_VIEW_MESSAGE));
+    mSelectedCommentId=savedInstanceState.getLong(KEY_SELECTED_COMMENT_ID);
+  }
 }

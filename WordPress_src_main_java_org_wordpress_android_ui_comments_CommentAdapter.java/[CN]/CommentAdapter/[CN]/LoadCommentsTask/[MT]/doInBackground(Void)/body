@@ -1,7 +1,13 @@
 {
-  int localBlogId=WordPress.getCurrentLocalTableBlogId();
-  tmpComments=CommentTable.getCommentsForBlog(localBlogId);
-  if (mComments.isSameList(tmpComments))   return false;
+  if (mStatusFilter == null) {
+    tmpComments=CommentTable.getCommentsForBlogWithFilter(mLocalBlogId,CommentStatus.UNKNOWN);
+  }
+ else {
+    tmpComments=CommentTable.getCommentsForBlogWithFilter(mLocalBlogId,mStatusFilter);
+  }
+  if (mComments.isSameList(tmpComments)) {
+    return false;
+  }
   for (  Comment comment : tmpComments) {
     comment.getDatePublished();
     comment.getUnescapedCommentText();

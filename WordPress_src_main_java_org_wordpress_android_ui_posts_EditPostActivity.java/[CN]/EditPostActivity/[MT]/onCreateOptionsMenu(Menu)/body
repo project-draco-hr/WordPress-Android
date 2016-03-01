@@ -1,11 +1,25 @@
 {
   super.onCreateOptionsMenu(menu);
   MenuInflater inflater=getMenuInflater();
-  inflater.inflate(R.menu.edit_post,menu);
+  if (mShowNewEditor) {
+    inflater.inflate(R.menu.edit_post,menu);
+  }
+ else {
+    inflater.inflate(R.menu.edit_post_legacy,menu);
+  }
   mTags=(SuggestionAutoCompleteText)findViewById(R.id.tags);
   if (mTags != null) {
     mTags.setTokenizer(new SuggestionAutoCompleteText.CommaTokenizer());
-    remoteBlogId=WordPress.getCurrentRemoteBlogId();
+    remoteBlogId=-1;
+    String blogID=WordPress.getCurrentRemoteBlogId();
+    if (blogID != null) {
+      try {
+        remoteBlogId=Integer.parseInt(blogID);
+      }
+ catch (      NumberFormatException e) {
+        AppLog.e(T.EDITOR,"The remote blog ID can't be parsed as Integer: " + remoteBlogId);
+      }
+    }
     mSuggestionServiceConnectionManager=new SuggestionServiceConnectionManager(this,remoteBlogId);
     mTagSuggestionAdapter=SuggestionUtils.setupTagSuggestions(remoteBlogId,this,mSuggestionServiceConnectionManager);
     if (mTagSuggestionAdapter != null) {

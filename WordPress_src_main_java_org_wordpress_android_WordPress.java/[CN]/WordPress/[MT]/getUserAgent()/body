@@ -1,6 +1,12 @@
 {
   if (mUserAgent == null) {
-    mUserAgent=USER_AGENT_APPNAME + "/" + PackageUtils.getVersionName(getContext())+ " (Android "+ Build.VERSION.RELEASE+ "; "+ Locale.getDefault().toString()+ "; "+ Build.MANUFACTURER+ " "+ Build.MODEL+ "/"+ Build.PRODUCT+ ")";
+    String defaultUserAgent=getDefaultUserAgent();
+    if (TextUtils.isEmpty(defaultUserAgent)) {
+      mUserAgent=USER_AGENT_APPNAME + "/" + PackageUtils.getVersionName(getContext());
+    }
+ else {
+      mUserAgent=defaultUserAgent + " " + USER_AGENT_APPNAME+ "/"+ PackageUtils.getVersionName(getContext());
+    }
   }
   return mUserAgent;
 }

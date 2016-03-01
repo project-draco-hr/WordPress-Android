@@ -1,0 +1,44 @@
+{
+  AlertDialog.Builder builder=new AlertDialog.Builder(getActivity(),R.style.Calypso_AlertDialog);
+  View view=View.inflate(getActivity(),R.layout.number_picker_dialog,null);
+  TextView switchText=(TextView)view.findViewById(R.id.number_picker_text);
+  mSwitch=(SwitchCompat)view.findViewById(R.id.number_picker_switch);
+  mHeaderText=(TextView)view.findViewById(R.id.number_picker_header);
+  mNumberPicker=(NumberPicker)view.findViewById(R.id.number_picker);
+  int value=mMinValue;
+  Bundle args=getArguments();
+  if (args != null) {
+    if (args.getBoolean(SHOW_SWITCH_KEY,false)) {
+      mSwitch.setVisibility(View.VISIBLE);
+      mSwitch.setText(args.getString(SWITCH_TITLE_KEY,""));
+      mSwitch.setChecked(args.getBoolean(SWITCH_ENABLED_KEY,false));
+      final View toggleContainer=view.findViewById(R.id.number_picker_toggleable);
+      toggleContainer.setEnabled(mSwitch.isChecked());
+      mNumberPicker.setEnabled(mSwitch.isChecked());
+    }
+ else {
+      mSwitch.setVisibility(View.GONE);
+    }
+    switchText.setText(args.getString(SWITCH_DESC_KEY,""));
+    mHeaderText.setText(args.getString(HEADER_TEXT_KEY,""));
+    mMinValue=args.getInt(MIN_VALUE_KEY,DEFAULT_MIN_VALUE);
+    mMaxValue=args.getInt(MAX_VALUE_KEY,DEFAULT_MAX_VALUE);
+    value=args.getInt(CUR_VALUE_KEY,mMinValue);
+    builder.setCustomTitle(getDialogTitleView(args.getString(TITLE_KEY,"")));
+  }
+  mNumberPicker.setFormatter(mFormat);
+  mNumberPicker.setMinValue(mMinValue);
+  mNumberPicker.setMaxValue(mMaxValue);
+  mNumberPicker.setValue(value);
+  mSwitch.setOnCheckedChangeListener(this);
+  if (TextUtils.isEmpty(switchText.getText())) {
+    switchText.setVisibility(View.GONE);
+  }
+  if (TextUtils.isEmpty(mHeaderText.getText())) {
+    mHeaderText.setVisibility(View.GONE);
+  }
+  builder.setPositiveButton(R.string.ok,this);
+  builder.setNegativeButton(R.string.cancel,this);
+  builder.setView(view);
+  return builder.create();
+}

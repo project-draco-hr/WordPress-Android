@@ -16,7 +16,6 @@ case MediaGalleryActivity.REQUEST_CODE:
   }
 break;
 case MediaGalleryPickerActivity.REQUEST_CODE:
-AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_ADDED_PHOTO_VIA_WP_MEDIA_LIBRARY,WordPress.getBlog(mPost.getLocalTableBlogId()));
 if (resultCode == Activity.RESULT_OK) {
 handleMediaGalleryPickerResult(data);
 }
@@ -24,7 +23,6 @@ break;
 case RequestCodes.PICTURE_LIBRARY:
 Uri imageUri=data.getData();
 fetchMedia(imageUri);
-AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_ADDED_PHOTO_VIA_LOCAL_LIBRARY,WordPress.getBlog(mPost.getLocalTableBlogId()));
 break;
 case RequestCodes.TAKE_PHOTO:
 if (resultCode == Activity.RESULT_OK) {
@@ -35,7 +33,6 @@ if (!addMedia(capturedImageUri)) {
 ToastUtils.showToast(this,R.string.gallery_error,Duration.SHORT);
 }
 this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,Uri.parse("file://" + Environment.getExternalStorageDirectory())));
-AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_ADDED_PHOTO_VIA_LOCAL_LIBRARY,WordPress.getBlog(mPost.getLocalTableBlogId()));
 }
  catch (RuntimeException e) {
 AppLog.e(T.POSTS,e);

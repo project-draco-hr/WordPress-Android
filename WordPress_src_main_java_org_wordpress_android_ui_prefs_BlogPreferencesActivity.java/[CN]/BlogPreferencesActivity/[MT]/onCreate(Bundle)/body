@@ -1,40 +1,57 @@
 {
   super.onCreate(savedInstanceState);
-  setContentView(R.layout.blog_preferences);
   Integer id=getIntent().getIntExtra(ARG_LOCAL_BLOG_ID,-1);
   blog=WordPress.getBlog(id);
-  if (blog == null) {
+  if (WordPress.getBlog(id) == null) {
     Toast.makeText(this,getString(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
     finish();
     return;
   }
-  ActionBar actionBar=getSupportActionBar();
-  if (actionBar != null) {
-    actionBar.setTitle(StringUtils.unescapeHTML(blog.getNameOrHostUrl()));
-    actionBar.setDisplayHomeAsUpEnabled(true);
-  }
-  mUsernameET=(EditText)findViewById(R.id.username);
-  mPasswordET=(EditText)findViewById(R.id.password);
-  mHttpUsernameET=(EditText)findViewById(R.id.httpuser);
-  mHttpPasswordET=(EditText)findViewById(R.id.httppassword);
-  mScaledImageWidthET=(EditText)findViewById(R.id.scaledImageWidth);
-  mFullSizeCB=(CheckBox)findViewById(R.id.fullSizeImage);
-  mScaledCB=(CheckBox)findViewById(R.id.scaledImage);
-  mImageWidthSpinner=(Spinner)findViewById(R.id.maxImageWidth);
-  Button removeBlogButton=(Button)findViewById(R.id.remove_account);
   if (blog.isDotcomFlag()) {
-    View credentialsRL=findViewById(R.id.sectionContent);
-    credentialsRL.setVisibility(View.GONE);
-    removeBlogButton.setVisibility(View.GONE);
+    ActionBar actionBar=getSupportActionBar();
+    if (actionBar != null) {
+      actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+      actionBar.setDisplayHomeAsUpEnabled(true);
+      actionBar.setCustomView(R.layout.preferences_actionbar);
+    }
+    FragmentManager fragmentManager=getFragmentManager();
+    Fragment siteSettingsFragment=fragmentManager.findFragmentByTag(KEY_SETTINGS_FRAGMENT);
+    if (siteSettingsFragment == null) {
+      siteSettingsFragment=new SiteSettingsFragment();
+      siteSettingsFragment.setArguments(getIntent().getExtras());
+      fragmentManager.beginTransaction().replace(android.R.id.content,siteSettingsFragment,KEY_SETTINGS_FRAGMENT).commit();
+    }
   }
  else {
-    removeBlogButton.setVisibility(View.VISIBLE);
-    removeBlogButton.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View view){
-        removeBlogWithConfirmation();
-      }
+    setContentView(R.layout.blog_preferences);
+    ActionBar actionBar=getSupportActionBar();
+    if (actionBar != null) {
+      actionBar.setTitle(StringUtils.unescapeHTML(blog.getNameOrHostUrl()));
+      actionBar.setDisplayHomeAsUpEnabled(true);
     }
+    mUsernameET=(EditText)findViewById(R.id.username);
+    mPasswordET=(EditText)findViewById(R.id.password);
+    mHttpUsernameET=(EditText)findViewById(R.id.httpuser);
+    mHttpPasswordET=(EditText)findViewById(R.id.httppassword);
+    mScaledImageWidthET=(EditText)findViewById(R.id.scaledImageWidth);
+    mFullSizeCB=(CheckBox)findViewById(R.id.fullSizeImage);
+    mScaledCB=(CheckBox)findViewById(R.id.scaledImage);
+    mImageWidthSpinner=(Spinner)findViewById(R.id.maxImageWidth);
+    Button removeBlogButton=(Button)findViewById(R.id.remove_account);
+    if (blog.isDotcomFlag()) {
+      View credentialsRL=findViewById(R.id.sectionContent);
+      credentialsRL.setVisibility(View.GONE);
+      removeBlogButton.setVisibility(View.GONE);
+    }
+ else {
+      removeBlogButton.setVisibility(View.VISIBLE);
+      removeBlogButton.setOnClickListener(new View.OnClickListener(){
+        @Override public void onClick(        View view){
+          removeBlogWithConfirmation();
+        }
+      }
 );
+    }
+    loadSettingsForBlog();
   }
-  loadSettingsForBlog();
 }

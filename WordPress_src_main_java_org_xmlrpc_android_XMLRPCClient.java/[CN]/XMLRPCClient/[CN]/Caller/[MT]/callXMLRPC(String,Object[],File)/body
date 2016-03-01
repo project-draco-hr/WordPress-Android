@@ -25,7 +25,7 @@
       if (statusCode == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
         if (!TextUtils.isEmpty(responseString) && responseString.contains("php fatal error") && responseString.contains("bytes exhausted")) {
           String newErrorMsg;
-          if (method.equals("wp.uploadFile")) {
+          if (method.equals(Method.UPLOAD_FILE)) {
             newErrorMsg="The server doesn't have enough memory to upload this file. You may need to increase the PHP memory limit on your site.";
           }
  else {
@@ -45,10 +45,13 @@
     }
 switch (e.getFaultCode()) {
 case 403:
-      EventBus.getDefault().post(new CoreEvents.InvalidCredentialsDetected());
-    break;
+      if ("wp.getPostFormats".equals(method) || "wp.getCommentStatusList".equals(method) || "wp.getPostStatusList".equals(method)|| "wp.getPageStatusList".equals(method)) {
+        break;
+      }
+    EventBus.getDefault().post(new CoreEvents.InvalidCredentialsDetected());
+  break;
 case 425:
-  EventBus.getDefault().post(new CoreEvents.TwoFactorAuthenticationDetected());
+EventBus.getDefault().post(new CoreEvents.TwoFactorAuthenticationDetected());
 break;
 default :
 break;

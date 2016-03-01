@@ -1,0 +1,16 @@
+{
+  super.onBindDialogView(view);
+  if (view == null)   return;
+  EditText editText=getEditText();
+  ViewParent oldParent=editText.getParent();
+  if (oldParent != view) {
+    if (oldParent != null && oldParent instanceof ViewGroup) {
+      ViewGroup groupParent=(ViewGroup)oldParent;
+      groupParent.removeView(editText);
+      groupParent.setPadding(groupParent.getPaddingLeft(),0,groupParent.getPaddingRight(),groupParent.getPaddingBottom());
+    }
+    onAddEditTextToDialogView(view,editText);
+  }
+  WPPrefUtils.layoutAsInput(editText);
+  editText.setSelection(editText.getText().length());
+}

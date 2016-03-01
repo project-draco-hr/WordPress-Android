@@ -1,0 +1,32 @@
+{
+  inflate(getContext(),R.layout.filtered_list_component,this);
+  int spacingHorizontal=0;
+  int spacingVertical=DisplayUtils.dpToPx(getContext(),1);
+  mRecycler=(RecyclerView)findViewById(R.id.recycler_view);
+  mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+  mRecycler.addItemDecoration(new RecyclerItemDecoration(spacingHorizontal,spacingVertical));
+  mEmptyView=(TextView)findViewById(R.id.empty_view);
+  mProgressLoadMore=(ProgressBar)findViewById(R.id.progress_loading);
+  mProgressLoadMore.setVisibility(View.GONE);
+  mSwipeToRefreshHelper=new SwipeToRefreshHelper(getContext(),(CustomSwipeRefreshLayout)findViewById(R.id.ptr_layout),new SwipeToRefreshHelper.RefreshListener(){
+    @Override public void onRefreshStarted(){
+      post(new Runnable(){
+        @Override public void run(){
+          if (!NetworkUtils.checkConnection(getContext())) {
+            mSwipeToRefreshHelper.setRefreshing(false);
+            updateEmptyView(EmptyViewMessageType.NETWORK_ERROR);
+            return;
+          }
+          if (mFilterListener != null) {
+            mFilterListener.onLoadData();
+          }
+        }
+      }
+);
+    }
+  }
+);
+  if (mSpinner == null) {
+    mSpinner=(Spinner)findViewById(R.id.filter_spinner);
+  }
+}

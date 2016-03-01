@@ -1,28 +1,15 @@
 {
-  if (data != null) {
-    final List<MediaItem> selectedContent=data.getParcelableArrayListExtra(MediaPickerActivity.SELECTED_CONTENT_RESULTS_KEY);
-    if (selectedContent != null && selectedContent.size() > 0) {
-      Integer localMediaAdded=0;
-      Integer libraryMediaAdded=0;
-      for (      MediaItem media : selectedContent) {
-        if (URLUtil.isNetworkUrl(media.getSource().toString())) {
-          addExistingMediaToEditor(media.getTag());
-          ++libraryMediaAdded;
-        }
+  if (data == null) {
+    return;
+  }
+  final List<MediaItem> selectedContent=data.getParcelableArrayListExtra(MediaPickerActivity.SELECTED_CONTENT_RESULTS_KEY);
+  if (selectedContent != null && selectedContent.size() > 0) {
+    for (    MediaItem media : selectedContent) {
+      if (URLUtil.isNetworkUrl(media.getSource().toString())) {
+        addExistingMediaToEditor(media.getTag());
+      }
  else {
-          addMedia(media.getSource());
-          ++localMediaAdded;
-        }
-      }
-      if (localMediaAdded > 0) {
-        Map<String,Object> analyticsProperties=new HashMap<>();
-        analyticsProperties.put(ANALYTIC_PROP_NUM_LOCAL_PHOTOS_ADDED,localMediaAdded);
-        AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_ADDED_PHOTO_VIA_LOCAL_LIBRARY,WordPress.getBlog(mPost.getLocalTableBlogId()),analyticsProperties);
-      }
-      if (libraryMediaAdded > 0) {
-        Map<String,Object> analyticsProperties=new HashMap<>();
-        analyticsProperties.put(ANALYTIC_PROP_NUM_WP_PHOTOS_ADDED,libraryMediaAdded);
-        AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_ADDED_PHOTO_VIA_WP_MEDIA_LIBRARY,WordPress.getBlog(mPost.getLocalTableBlogId()),analyticsProperties);
+        addMedia(media.getSource());
       }
     }
   }

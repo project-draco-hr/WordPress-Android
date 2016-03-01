@@ -1,16 +1,37 @@
 {
+  ProfilingUtils.split("EditorFragment.onDomLoaded");
   mWebView.post(new Runnable(){
     public void run(){
+      mDomHasLoaded=true;
       mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').setMultiline('true');");
       mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_title').setPlaceholderText('" + mTitlePlaceholder + "');");
       mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').setPlaceholderText('" + mContentPlaceholder + "');");
       updateVisualEditorFields();
+      mWebView.execJavaScriptFromString("ZSSEditor.markAllUploadingMediaAsFailed('" + getString(R.string.tap_to_try_again) + "');");
+      mWebView.execJavaScriptFromString("ZSSEditor.getFailedMedia();");
       hideActionBarIfNeeded();
       ToggleButton htmlButton=(ToggleButton)getActivity().findViewById(R.id.format_bar_button_html);
       htmlButton.setChecked(false);
       for (      ToggleButton button : mTagToggleButtonMap.values()) {
         button.setChecked(false);
       }
+      if (mWaitingMediaFiles.size() > 0) {
+        mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').focus();");
+        for (        Map.Entry<String,MediaFile> entry : mWaitingMediaFiles.entrySet()) {
+          appendMediaFile(entry.getValue(),entry.getKey(),null);
+        }
+        mWaitingMediaFiles.clear();
+      }
+      if (mWaitingGalleries.size() > 0) {
+        mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').focus();");
+        for (        MediaGallery mediaGallery : mWaitingGalleries) {
+          appendGallery(mediaGallery);
+        }
+        mWaitingGalleries.clear();
+      }
+      ProfilingUtils.split("EditorFragment.onDomLoaded completed");
+      ProfilingUtils.dump();
+      ProfilingUtils.stop();
     }
   }
 );

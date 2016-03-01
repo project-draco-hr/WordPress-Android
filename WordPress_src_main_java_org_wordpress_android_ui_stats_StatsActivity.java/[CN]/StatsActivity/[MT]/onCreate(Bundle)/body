@@ -10,7 +10,9 @@
   setSupportActionBar(toolbar);
   ActionBar actionBar=getSupportActionBar();
   if (actionBar != null) {
-    actionBar.setDisplayShowTitleEnabled(false);
+    actionBar.setElevation(0);
+    actionBar.setTitle(R.string.stats);
+    actionBar.setDisplayShowTitleEnabled(true);
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
   mSwipeToRefreshHelper=new SwipeToRefreshHelper(this,(CustomSwipeRefreshLayout)findViewById(R.id.ptr_layout),new RefreshListener(){
@@ -31,13 +33,14 @@
   }
 );
   setTitle(R.string.stats);
-  mOuterScrollView=(ScrollViewExt)findViewById(R.id.scroll_view_stats);
+  mOuterScrollView=(NestedScrollViewExt)findViewById(R.id.scroll_view_stats);
   mOuterScrollView.setScrollViewListener(this);
   if (savedInstanceState != null) {
     mResultCode=savedInstanceState.getInt(SAVED_WP_LOGIN_STATE);
     mLocalBlogID=savedInstanceState.getInt(ARG_LOCAL_TABLE_BLOG_ID);
     mCurrentTimeframe=(StatsTimeframe)savedInstanceState.getSerializable(SAVED_STATS_TIMEFRAME);
     mRequestedDate=savedInstanceState.getString(SAVED_STATS_REQUESTED_DATE);
+    mThereWasAnErrorLoadingStats=savedInstanceState.getBoolean(SAVED_THERE_WAS_AN_ERROR_LOADING_STATS);
     final int yScrollPosition=savedInstanceState.getInt(SAVED_STATS_SCROLL_POSITION);
     if (yScrollPosition != 0) {
       mOuterScrollView.postDelayed(new Runnable(){
@@ -77,9 +80,8 @@
     return;
   }
   createFragments(false);
-  if (mSpinner == null && toolbar != null) {
-    View view=View.inflate(this,R.layout.toolbar_spinner,toolbar);
-    mSpinner=(Spinner)view.findViewById(R.id.action_bar_spinner);
+  if (mSpinner == null) {
+    mSpinner=(Spinner)findViewById(R.id.filter_spinner);
     mTimeframeSpinnerAdapter=new TimeframeSpinnerAdapter(this,timeframes);
     mSpinner.setAdapter(mTimeframeSpinnerAdapter);
     mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){

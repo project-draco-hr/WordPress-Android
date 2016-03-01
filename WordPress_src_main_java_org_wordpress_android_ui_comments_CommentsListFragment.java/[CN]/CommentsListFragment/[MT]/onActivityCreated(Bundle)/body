@@ -1,7 +1,5 @@
 {
   super.onActivityCreated(savedInstanceState);
-  setUpListView();
-  getCommentAdapter().loadComments();
   Bundle extras=getActivity().getIntent().getExtras();
   if (extras != null) {
     mHasAutoRefreshedComments=extras.getBoolean(CommentsActivity.KEY_AUTO_REFRESHED);
@@ -12,13 +10,13 @@
     mEmptyViewMessageType=EmptyViewMessageType.NO_CONTENT;
   }
   if (!NetworkUtils.isNetworkAvailable(getActivity())) {
-    updateEmptyView(EmptyViewMessageType.NETWORK_ERROR);
+    mFilteredCommentsView.updateEmptyView(EmptyViewMessageType.NETWORK_ERROR);
     return;
   }
-  updateEmptyView(mEmptyViewMessageType);
+  mFilteredCommentsView.updateEmptyView(mEmptyViewMessageType);
   if (!mHasAutoRefreshedComments) {
     updateComments(false);
-    mSwipeToRefreshHelper.setRefreshing(true);
+    mFilteredCommentsView.setRefreshing(true);
     mHasAutoRefreshedComments=true;
   }
 }

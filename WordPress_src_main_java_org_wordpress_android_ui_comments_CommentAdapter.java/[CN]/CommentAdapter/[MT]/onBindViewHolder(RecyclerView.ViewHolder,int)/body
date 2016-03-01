@@ -1,0 +1,54 @@
+{
+  Comment comment=mComments.get(position);
+  CommentHolder holder=(CommentHolder)viewHolder;
+  if (isModeratingCommentId(comment.commentID)) {
+    holder.progressBar.setVisibility(View.VISIBLE);
+  }
+ else {
+    holder.progressBar.setVisibility(View.GONE);
+  }
+  holder.txtTitle.setText(Html.fromHtml(comment.getFormattedTitle()));
+  holder.txtComment.setText(comment.getUnescapedCommentText());
+  holder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(comment.getDatePublished()));
+  final boolean showStatus;
+switch (comment.getStatusEnum()) {
+case SPAM:
+    showStatus=true;
+  holder.txtStatus.setText(mStatusTextSpam);
+holder.txtStatus.setTextColor(mStatusColorSpam);
+break;
+case UNAPPROVED:
+showStatus=true;
+holder.txtStatus.setText(mStatusTextUnapproved);
+holder.txtStatus.setTextColor(mStatusColorUnapproved);
+break;
+default :
+showStatus=false;
+break;
+}
+holder.txtStatus.setVisibility(showStatus ? View.VISIBLE : View.GONE);
+int checkmarkVisibility;
+if (mEnableSelection && isItemSelected(position)) {
+checkmarkVisibility=View.VISIBLE;
+holder.containerView.setBackgroundColor(mSelectedColor);
+}
+ else {
+checkmarkVisibility=View.GONE;
+holder.imgAvatar.setImageUrl(comment.getAvatarForDisplay(mAvatarSz),WPNetworkImageView.ImageType.AVATAR);
+holder.containerView.setBackgroundColor(mUnselectedColor);
+}
+if (holder.imgCheckmark.getVisibility() != checkmarkVisibility) {
+holder.imgCheckmark.setVisibility(checkmarkVisibility);
+}
+boolean adjustComment=(showStatus && holder.txtTitle.getLineCount() <= 1);
+RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)holder.txtComment.getLayoutParams();
+if (adjustComment) {
+params.addRule(RelativeLayout.LEFT_OF,R.id.layout_date_status);
+}
+ else {
+params.addRule(RelativeLayout.LEFT_OF,0);
+}
+if (mOnLoadMoreListener != null && position >= getItemCount() - 1 && position >= CommentsListFragment.COMMENTS_PER_PAGE - 1) {
+mOnLoadMoreListener.onLoadMore();
+}
+}

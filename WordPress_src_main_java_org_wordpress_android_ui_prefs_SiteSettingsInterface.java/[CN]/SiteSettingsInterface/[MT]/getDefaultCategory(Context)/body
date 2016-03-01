@@ -1,0 +1,12 @@
+{
+  int id=siteSettingsPreferences(context).getInt(DEF_CATEGORY_PREF_KEY,0);
+  if (id != 0) {
+    CategoryModel category=new CategoryModel();
+    Cursor cursor=SiteSettingsTable.getCategory(id);
+    if (cursor != null && cursor.moveToFirst()) {
+      category.deserializeFromDatabase(cursor);
+      return category.name;
+    }
+  }
+  return "";
+}

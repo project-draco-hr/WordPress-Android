@@ -9,13 +9,16 @@
   mBlogSubtitleTextView=(WPTextView)rootView.findViewById(R.id.my_site_subtitle_label);
   mLookAndFeelHeader=(LinearLayout)rootView.findViewById(R.id.my_site_look_and_feel_header);
   mThemesContainer=(RelativeLayout)rootView.findViewById(R.id.row_themes);
+  mConfigurationHeader=rootView.findViewById(R.id.row_configuration);
+  mSettingsView=rootView.findViewById(R.id.row_settings);
+  mAdminView=(LinearLayout)rootView.findViewById(R.id.admin_section);
   mScrollView=(ScrollView)rootView.findViewById(R.id.scroll_view);
   mNoSiteView=(LinearLayout)rootView.findViewById(R.id.no_site_view);
   mNoSiteDrakeImageView=(ImageView)rootView.findViewById(R.id.my_site_no_site_view_drake);
   mFabView=rootView.findViewById(R.id.fab_button);
   mFabView.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
-      ActivityLauncher.addNewBlogPostOrPageForResult(getActivity(),mBlog,false);
+      ActivityLauncher.addNewBlogPostOrPageForResult(getActivity(),WordPress.getBlog(mBlogLocalId),false);
     }
   }
 );
@@ -33,9 +36,7 @@
 );
   rootView.findViewById(R.id.row_stats).setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
-      if (mBlog != null) {
-        ActivityLauncher.viewBlogStats(getActivity(),mBlog.getLocalTableBlogId());
-      }
+      ActivityLauncher.viewBlogStats(getActivity(),mBlogLocalId);
     }
   }
 );
@@ -75,15 +76,15 @@
     }
   }
 );
-  rootView.findViewById(R.id.row_settings).setOnClickListener(new View.OnClickListener(){
+  mSettingsView.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
-      ActivityLauncher.viewBlogSettingsForResult(getActivity(),mBlog);
+      ActivityLauncher.viewBlogSettingsForResult(getActivity(),WordPress.getBlog(mBlogLocalId));
     }
   }
 );
   rootView.findViewById(R.id.row_admin).setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
-      ActivityLauncher.viewBlogAdmin(getActivity(),mBlog);
+      ActivityLauncher.viewBlogAdmin(getActivity(),WordPress.getBlog(mBlogLocalId));
     }
   }
 );
@@ -93,6 +94,5 @@
     }
   }
 );
-  refreshBlogDetails();
   return rootView;
 }

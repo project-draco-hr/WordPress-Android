@@ -1,0 +1,104 @@
+{
+  if (newValue == null || !mEditingEnabled)   return false;
+  if (preference == mTitlePref) {
+    mSiteSettings.setTitle(newValue.toString());
+    changeEditTextPreferenceValue(mTitlePref,mSiteSettings.getTitle());
+  }
+ else   if (preference == mTaglinePref) {
+    mSiteSettings.setTagline(newValue.toString());
+    changeEditTextPreferenceValue(mTaglinePref,mSiteSettings.getTagline());
+  }
+ else   if (preference == mAddressPref) {
+    mSiteSettings.setAddress(newValue.toString());
+    changeEditTextPreferenceValue(mAddressPref,mSiteSettings.getAddress());
+  }
+ else   if (preference == mLanguagePref) {
+    if (!mSiteSettings.setLanguageCode(newValue.toString())) {
+      AppLog.w(AppLog.T.SETTINGS,"Unknown language code " + newValue.toString() + " selected in Site Settings.");
+      ToastUtils.showToast(getActivity(),R.string.site_settings_unknown_language_code_error);
+    }
+    changeLanguageValue(mSiteSettings.getLanguageCode());
+  }
+ else   if (preference == mPrivacyPref) {
+    mSiteSettings.setPrivacy(Integer.parseInt(newValue.toString()));
+    setDetailListPreferenceValue(mPrivacyPref,String.valueOf(mSiteSettings.getPrivacy()),mSiteSettings.getPrivacyDescription());
+  }
+ else   if (preference == mAllowCommentsPref || preference == mAllowCommentsNested) {
+    setAllowComments((Boolean)newValue);
+  }
+ else   if (preference == mSendPingbacksPref || preference == mSendPingbacksNested) {
+    setSendPingbacks((Boolean)newValue);
+  }
+ else   if (preference == mReceivePingbacksPref || preference == mReceivePingbacksNested) {
+    setReceivePingbacks((Boolean)newValue);
+  }
+ else   if (preference == mCloseAfterPref) {
+    mSiteSettings.setCloseAfter(Integer.parseInt(newValue.toString()));
+    mCloseAfterPref.setSummary(mSiteSettings.getCloseAfterDescription());
+  }
+ else   if (preference == mSortByPref) {
+    mSiteSettings.setCommentSorting(Integer.parseInt(newValue.toString()));
+    setDetailListPreferenceValue(mSortByPref,newValue.toString(),mSiteSettings.getSortingDescription());
+  }
+ else   if (preference == mThreadingPref) {
+    mSiteSettings.setThreadingLevels(Integer.parseInt(newValue.toString()));
+    mThreadingPref.setSummary(mSiteSettings.getThreadingDescription());
+  }
+ else   if (preference == mPagingPref) {
+    mSiteSettings.setPagingCount(Integer.parseInt(newValue.toString()));
+    mPagingPref.setSummary(mSiteSettings.getPagingDescription());
+  }
+ else   if (preference == mIdentityRequiredPreference) {
+    mSiteSettings.setIdentityRequired((Boolean)newValue);
+  }
+ else   if (preference == mUserAccountRequiredPref) {
+    mSiteSettings.setUserAccountRequired((Boolean)newValue);
+  }
+ else   if (preference == mWhitelistPref) {
+    updateWhitelistSettings(Integer.parseInt(newValue.toString()));
+  }
+ else   if (preference == mMultipleLinksPref) {
+    mSiteSettings.setMultipleLinks(Integer.parseInt(newValue.toString()));
+    mMultipleLinksPref.setSummary(getResources().getQuantityString(R.plurals.site_settings_multiple_links_summary,mSiteSettings.getMultipleLinks(),mSiteSettings.getMultipleLinks()));
+  }
+ else   if (preference == mUsernamePref) {
+    mSiteSettings.setUsername(newValue.toString());
+    changeEditTextPreferenceValue(mUsernamePref,mSiteSettings.getUsername());
+  }
+ else   if (preference == mPasswordPref) {
+    mSiteSettings.setPassword(newValue.toString());
+    changeEditTextPreferenceValue(mPasswordPref,mSiteSettings.getPassword());
+  }
+ else   if (preference == mLocationPref) {
+    mSiteSettings.setLocation((Boolean)newValue);
+  }
+ else   if (preference == mCategoryPref) {
+    mSiteSettings.setDefaultCategory(Integer.parseInt(newValue.toString()));
+    setDetailListPreferenceValue(mCategoryPref,newValue.toString(),mSiteSettings.getDefaultCategoryForDisplay());
+  }
+ else   if (preference == mFormatPref) {
+    mSiteSettings.setDefaultFormat(newValue.toString());
+    setDetailListPreferenceValue(mFormatPref,newValue.toString(),mSiteSettings.getDefaultPostFormatDisplay());
+  }
+ else   if (preference == mImageWidthPref) {
+    mBlog.setMaxImageWidth(newValue.toString());
+    setDetailListPreferenceValue(mImageWidthPref,mBlog.getMaxImageWidth(),mBlog.getMaxImageWidth());
+  }
+ else   if (preference == mUploadAndLinkPref) {
+    mBlog.setFullSizeImage(Boolean.valueOf(newValue.toString()));
+  }
+ else   if (preference == mRelatedPostsPref) {
+    mRelatedPostsPref.setSummary(newValue.toString());
+  }
+ else   if (preference == mModerationHoldPref) {
+    mModerationHoldPref.setSummary(mSiteSettings.getModerationHoldDescription());
+  }
+ else   if (preference == mBlacklistPref) {
+    mBlacklistPref.setSummary(mSiteSettings.getBlacklistDescription());
+  }
+ else {
+    return false;
+  }
+  mSiteSettings.saveSettings();
+  return true;
+}
