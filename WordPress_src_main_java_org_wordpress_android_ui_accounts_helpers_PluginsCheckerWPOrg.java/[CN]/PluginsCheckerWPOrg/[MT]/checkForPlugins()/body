@@ -1,0 +1,49 @@
+{
+  String responseHTML=null;
+  try {
+    responseHTML=ApiHelper.getResponse(BB_PLUGINS_LIST_URL);
+  }
+ catch (  IOException e) {
+    AppLog.e(AppLog.T.NUX,"Can't download the plugins list from the server!",e);
+  }
+  if (TextUtils.isEmpty(responseHTML)) {
+    AppLog.w(AppLog.T.NUX,"Without the list we can't check if the host has some BB plugins installed on it.");
+    return null;
+  }
+  JSONArray listOfPlugins;
+  try {
+    listOfPlugins=new JSONArray(responseHTML);
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.NUX,"Error while parsing the list of plugins returned from the server.",e);
+    return null;
+  }
+  String baseURL=getBaseURL(mOriginalURL);
+  if (!baseURL.contains("/plugins")) {
+    baseURL=baseURL + "/plugins/";
+  }
+  if (!URLUtil.isValidUrl(baseURL)) {
+    return null;
+  }
+  int respCode=openConnection(baseURL);
+  if (respCode != HttpURLConnection.HTTP_OK && respCode != 401 && respCode != 403) {
+    return null;
+  }
+  ArrayList<Plugin> listOfBBPlugins=new ArrayList<>();
+  for (int i=0; i < listOfPlugins.length(); i++) {
+    try {
+      JSONObject currentObject=listOfPlugins.getJSONObject(i);
+      respCode=openConnection(baseURL + currentObject.getString("name") + "/");
+      if (respCode != HttpURLConnection.HTTP_NOT_FOUND) {
+        Plugin currentBBPLugin=new Plugin();
+        currentBBPLugin.name=currentObject.getString("name");
+        currentBBPLugin.url=currentObject.getString("url");
+        listOfBBPlugins.add(currentBBPLugin);
+      }
+    }
+ catch (    JSONException e) {
+      AppLog.e(AppLog.T.NUX,"Error while parsing the " + i + " in the list of plugins returned from the server.",e);
+    }
+  }
+  return listOfBBPlugins;
+}
