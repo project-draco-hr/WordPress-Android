@@ -1,15 +1,15 @@
 {
-  String xmlrpcUrl=null;
-  String baseURL=null;
-  if (mSelfHostedUrl != null && mSelfHostedUrl.length() != 0) {
-    baseURL=UrlUtils.convertUrlToPunycodeIfNeeded(mSelfHostedUrl);
-    baseURL=UrlUtils.addUrlSchemeIfNeeded(baseURL,false);
-    if (!URLUtil.isValidUrl(baseURL)) {
-      mErrorMsgId=org.wordpress.android.R.string.invalid_site_url_message;
-      return null;
-    }
-    xmlrpcUrl=getSelfHostedXmlrpcUrl(baseURL);
+  if (TextUtils.isEmpty(mSelfHostedUrl)) {
+    mErrorMsgId=org.wordpress.android.R.string.invalid_site_url_message;
+    return null;
   }
+  String baseURL=UrlUtils.convertUrlToPunycodeIfNeeded(mSelfHostedUrl);
+  baseURL=UrlUtils.addUrlSchemeIfNeeded(baseURL,false);
+  if (!URLUtil.isValidUrl(baseURL)) {
+    mErrorMsgId=org.wordpress.android.R.string.invalid_site_url_message;
+    return null;
+  }
+  String xmlrpcUrl=getSelfHostedXmlrpcUrl(baseURL);
   if (xmlrpcUrl == null) {
     if (mErroneousSslCertificate || mHttpAuthRequired || mErrorMsgId == org.wordpress.android.R.string.xmlrpc_missing_method_error) {
       return null;
