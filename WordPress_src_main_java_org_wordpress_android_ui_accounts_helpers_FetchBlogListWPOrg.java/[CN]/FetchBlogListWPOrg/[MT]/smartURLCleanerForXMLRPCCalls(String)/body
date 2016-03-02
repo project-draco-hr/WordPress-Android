@@ -1,0 +1,28 @@
+{
+  String sanitizedURL=url;
+  try {
+    sanitizedURL=truncateURLAtPrefix(sanitizedURL,"wp-login.php");
+    sanitizedURL=truncateURLAtPrefix(sanitizedURL,"/wp-admin");
+    sanitizedURL=truncateURLAtPrefix(sanitizedURL,"/wp-content");
+    while (sanitizedURL.endsWith("/")) {
+      sanitizedURL=sanitizedURL.substring(0,sanitizedURL.length() - 1);
+    }
+  }
+ catch (  IllegalArgumentException e) {
+    AppLog.e(T.NUX,"Can't clean the original url: " + sanitizedURL,e);
+  }
+  ArrayList<String> urlsToTry=new ArrayList<>();
+  try {
+    urlsToTry.add(appendXMLRPCPath(sanitizedURL));
+  }
+ catch (  IllegalArgumentException e) {
+    AppLog.e(T.NUX,"Can't append 'xmlrpc.php' to the original url: " + url,e);
+  }
+  if (!urlsToTry.contains(sanitizedURL)) {
+    urlsToTry.add(sanitizedURL);
+  }
+  if (!urlsToTry.contains(url)) {
+    urlsToTry.add(url);
+  }
+  return urlsToTry;
+}

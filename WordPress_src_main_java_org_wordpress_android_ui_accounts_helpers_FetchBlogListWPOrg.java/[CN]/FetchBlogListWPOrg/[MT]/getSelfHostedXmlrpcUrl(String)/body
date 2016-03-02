@@ -1,38 +1,25 @@
 {
-  String xmlrpcUrl=null;
   url=UrlUtils.convertUrlToPunycodeIfNeeded(url);
   url=UrlUtils.addUrlSchemeIfNeeded(url,false);
   if (!URLUtil.isValidUrl(url)) {
     mErrorMsgId=org.wordpress.android.R.string.invalid_site_url_message;
     return null;
   }
-  if (url.contains("wp-login.php")) {
-    if (URLUtil.isValidUrl(url.substring(0,url.indexOf("wp-login.php")))) {
-      url=url.substring(0,url.indexOf("wp-login.php"));
-      AppLog.w(T.NUX,"URL inserted by the user rewritten to: " + url);
-    }
-  }
-  ArrayList<String> urlsToTry=new ArrayList<>();
-  if (!url.endsWith("xmlrpc.php")) {
-    String guessedEndpointURL=url;
-    if (guessedEndpointURL.substring(guessedEndpointURL.length() - 1,guessedEndpointURL.length()).equals("/")) {
-      guessedEndpointURL=guessedEndpointURL.substring(0,guessedEndpointURL.length() - 1);
-    }
-    guessedEndpointURL+="/xmlrpc.php";
-    if (URLUtil.isValidUrl(guessedEndpointURL)) {
-      urlsToTry.add(guessedEndpointURL);
-    }
-  }
-  urlsToTry.add(url);
+  ArrayList<String> urlsToTry=smartURLCleanerForXMLRPCCalls(url);
+  AppLog.i(T.NUX,"The app will call system.listMethods on the following URLs: " + urlsToTry);
   for (  String currentURL : urlsToTry) {
     try {
       Object[] methods=(Object[])doSystemListMethodsXMLRPC(currentURL);
+      AppLog.i(T.NUX,"system.listMethods replied with XML-RPC objects on the URL: " + currentURL);
+      AppLog.i(T.NUX,"Validating the XML-RPC response...");
       if (validateListMethodsResponse(methods)) {
-        xmlrpcUrl=currentURL;
-        break;
+        AppLog.i(T.NUX,"Validating ends with success!!! Endpoint found!!!");
+        return currentURL;
       }
  else {
+        AppLog.w(T.NUX,"Validating ends with error!!! Endpoint found but doesn't contain all the required methods.");
         mErrorMsgId=org.wordpress.android.R.string.xmlrpc_missing_method_error;
+        return null;
       }
     }
  catch (    XMLRPCException e) {
@@ -72,15 +59,39 @@ catch (    IllegalArgumentException e) {
       return null;
     }
   }
-  if (xmlrpcUrl == null) {
-    String rsdUrl;
+  AppLog.w(T.NUX,"The XML-RPC endpoint was not found by using our 'smart' cleaning approach. Time to start the Endpoint discovery process");
+  urlsToTry=smartURLCleanerForRSD(url);
+  AppLog.i(T.NUX,"The app will call the RSD discovery process on the following URLs: " + urlsToTry);
+  String xmlrpcUrl=null;
+  for (  String currentURL : urlsToTry) {
     try {
-      rsdUrl=UrlUtils.addUrlSchemeIfNeeded(getRsdUrl(url),false);
-      if (rsdUrl != null) {
-        xmlrpcUrl=UrlUtils.addUrlSchemeIfNeeded(ApiHelper.getXMLRPCUrl(rsdUrl),false);
+      AppLog.i(T.NUX,"Downloading the HTML content at the following URL: " + currentURL);
+      String responseHTML=ApiHelper.getResponse(currentURL);
+      if (TextUtils.isEmpty(responseHTML)) {
+        AppLog.w(T.NUX,"Content downloaded but it's empty or null. Skipping this URL");
+        continue;
+      }
+      String rsdUrl=getRSDMetaTagHrefRegEx(responseHTML);
+      if (rsdUrl == null) {
+        rsdUrl=getRSDMetaTagHref(responseHTML);
+      }
+      rsdUrl=UrlUtils.addUrlSchemeIfNeeded(rsdUrl,false);
+      if (rsdUrl == null) {
+        AppLog.i(T.NUX,"Can't find the RSD endpoint in the HTML document. Try to check the pingback tag, and the apiLink tag.");
+        xmlrpcUrl=UrlUtils.addUrlSchemeIfNeeded(getXMLRPCPingback(responseHTML),false);
         if (xmlrpcUrl == null) {
-          xmlrpcUrl=UrlUtils.addUrlSchemeIfNeeded(rsdUrl.replace("?rsd",""),false);
+          xmlrpcUrl=UrlUtils.addUrlSchemeIfNeeded(getXMLRPCApiLink(responseHTML),false);
         }
+      }
+ else {
+        AppLog.i(T.NUX,"RSD endpoint found at the following address: " + rsdUrl);
+        AppLog.i(T.NUX,"Getting the XML-RPC url by downloading the RSD doc");
+        String rsdEndpointDocument=ApiHelper.getResponse(rsdUrl);
+        xmlrpcUrl=UrlUtils.addUrlSchemeIfNeeded(getXMLRPCApiLink(rsdEndpointDocument),false);
+      }
+      if (xmlrpcUrl != null) {
+        AppLog.i(T.NUX,"Found the XML-RPC endpoint in the HTML document!!!");
+        break;
       }
     }
  catch (    SSLHandshakeException e) {
@@ -90,50 +101,54 @@ catch (    IllegalArgumentException e) {
       AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
       return null;
     }
-    if (URLUtil.isValidUrl(xmlrpcUrl)) {
-      try {
-        Object[] methods=(Object[])doSystemListMethodsXMLRPC(xmlrpcUrl);
-        if (!validateListMethodsResponse(methods)) {
-          mErrorMsgId=org.wordpress.android.R.string.xmlrpc_missing_method_error;
-          return null;
-        }
-      }
- catch (      XMLRPCException e) {
-        AppLog.e(T.NUX,"system.listMethods failed on: " + xmlrpcUrl,e);
-        if (isHTTPAuthErrorMessage(e)) {
-          mHttpAuthRequired=true;
-          return null;
-        }
-      }
-catch (      SSLHandshakeException|SSLPeerUnverifiedException e) {
-        if (!WPUrlUtils.isWordPressCom(xmlrpcUrl)) {
-          mErroneousSslCertificate=true;
-        }
-        AppLog.e(T.NUX,"SSL error. Erroneous SSL certificate detected.",e);
+  }
+  if (URLUtil.isValidUrl(xmlrpcUrl)) {
+    try {
+      Object[] methods=(Object[])doSystemListMethodsXMLRPC(xmlrpcUrl);
+      AppLog.i(T.NUX,"system.listMethods replied with XML-RPC objects on the URL: " + xmlrpcUrl);
+      AppLog.i(T.NUX,"Validating the XML-RPC response...");
+      if (!validateListMethodsResponse(methods)) {
+        mErrorMsgId=org.wordpress.android.R.string.xmlrpc_missing_method_error;
         return null;
       }
-catch (      IOException e) {
-        AnalyticsTracker.track(Stat.LOGIN_FAILED_TO_GUESS_XMLRPC);
-        AppLog.e(T.NUX,"system.listMethods failed on: " + xmlrpcUrl,e);
-        if (isHTTPAuthErrorMessage(e)) {
-          mHttpAuthRequired=true;
-          return null;
-        }
-      }
-catch (      XmlPullParserException e) {
-        AnalyticsTracker.track(Stat.LOGIN_FAILED_TO_GUESS_XMLRPC);
-        AppLog.e(T.NUX,"system.listMethods failed on: " + xmlrpcUrl,e);
-        if (isHTTPAuthErrorMessage(e)) {
-          mHttpAuthRequired=true;
-          return null;
-        }
-      }
-catch (      IllegalArgumentException e) {
-        CrashlyticsUtils.setString(ExtraKey.ENTERED_URL,xmlrpcUrl);
-        CrashlyticsUtils.logException(e,ExceptionType.SPECIFIC,T.NUX);
-        mErrorMsgId=org.wordpress.android.R.string.invalid_site_url_message;
+      AppLog.i(T.NUX,"Validating ends with success!!! Endpoint found!!!");
+      return xmlrpcUrl;
+    }
+ catch (    XMLRPCException e) {
+      AppLog.e(T.NUX,"system.listMethods failed on: " + xmlrpcUrl,e);
+      if (isHTTPAuthErrorMessage(e)) {
+        mHttpAuthRequired=true;
         return null;
       }
+    }
+catch (    SSLHandshakeException|SSLPeerUnverifiedException e) {
+      if (!WPUrlUtils.isWordPressCom(xmlrpcUrl)) {
+        mErroneousSslCertificate=true;
+      }
+      AppLog.e(T.NUX,"SSL error. Erroneous SSL certificate detected.",e);
+      return null;
+    }
+catch (    IOException e) {
+      AnalyticsTracker.track(Stat.LOGIN_FAILED_TO_GUESS_XMLRPC);
+      AppLog.e(T.NUX,"system.listMethods failed on: " + xmlrpcUrl,e);
+      if (isHTTPAuthErrorMessage(e)) {
+        mHttpAuthRequired=true;
+        return null;
+      }
+    }
+catch (    XmlPullParserException e) {
+      AnalyticsTracker.track(Stat.LOGIN_FAILED_TO_GUESS_XMLRPC);
+      AppLog.e(T.NUX,"system.listMethods failed on: " + xmlrpcUrl,e);
+      if (isHTTPAuthErrorMessage(e)) {
+        mHttpAuthRequired=true;
+        return null;
+      }
+    }
+catch (    IllegalArgumentException e) {
+      CrashlyticsUtils.setString(ExtraKey.ENTERED_URL,xmlrpcUrl);
+      CrashlyticsUtils.logException(e,ExceptionType.SPECIFIC,T.NUX);
+      mErrorMsgId=org.wordpress.android.R.string.invalid_site_url_message;
+      return null;
     }
   }
   return xmlrpcUrl;
