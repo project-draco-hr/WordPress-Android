@@ -1,12 +1,14 @@
 {
   if (TextUtils.isEmpty(mSelfHostedUrl)) {
     mErrorMsgId=org.wordpress.android.R.string.invalid_site_url_message;
+    trackInvalidInsertedURL(mSelfHostedUrl);
     return null;
   }
   String baseURL=UrlUtils.convertUrlToPunycodeIfNeeded(mSelfHostedUrl);
   baseURL=UrlUtils.addUrlSchemeIfNeeded(baseURL,false);
   if (!URLUtil.isValidUrl(baseURL)) {
     mErrorMsgId=org.wordpress.android.R.string.invalid_site_url_message;
+    trackInvalidInsertedURL(baseURL);
     return null;
   }
   String xmlrpcUrl=getSelfHostedXmlrpcUrl(baseURL);
@@ -21,6 +23,7 @@
   }
   if (!URLUtil.isValidUrl(xmlrpcUrl)) {
     mErrorMsgId=org.wordpress.android.R.string.invalid_site_url_message;
+    trackInvalidInsertedURL(xmlrpcUrl);
     return null;
   }
   URI xmlrpcUri;
