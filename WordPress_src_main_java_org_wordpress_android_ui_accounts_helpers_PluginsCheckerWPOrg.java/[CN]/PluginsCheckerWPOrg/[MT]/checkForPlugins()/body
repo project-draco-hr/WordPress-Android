@@ -1,11 +1,5 @@
 {
-  String responseHTML=null;
-  try {
-    responseHTML=ApiHelper.getResponse(BB_PLUGINS_LIST_URL);
-  }
- catch (  IOException|TimeoutError e) {
-    AppLog.e(AppLog.T.NUX,"Can't download the plugins list from the server!",e);
-  }
+  String responseHTML=downloadPluginsList();
   if (TextUtils.isEmpty(responseHTML)) {
     AppLog.w(AppLog.T.NUX,"Without the list we can't check if the host has some BB plugins installed on it.");
     return null;
@@ -22,23 +16,30 @@
   if (!baseURL.contains("/plugins")) {
     baseURL=baseURL + "/wp-content/plugins/";
   }
+  AppLog.i(AppLog.T.NUX,"The calculated plugins URL is the following: " + baseURL);
   if (!URLUtil.isValidUrl(baseURL)) {
+    AppLog.w(AppLog.T.NUX,"The calculated plugins URL isn't a valid URL. Returning now.");
     return null;
   }
   int respCode=openConnection(baseURL);
   if (respCode != HttpURLConnection.HTTP_OK && respCode != 401 && respCode != 403) {
+    AppLog.w(AppLog.T.NUX,"The request to plugins URL returned with an unexpected HTTP error code. Returning now.");
     return null;
   }
+  AppLog.i(AppLog.T.NUX,"Start checking the plugins list..");
   ArrayList<Plugin> listOfBBPlugins=new ArrayList<>();
   for (int i=0; i < listOfPlugins.length(); i++) {
     try {
       JSONObject currentObject=listOfPlugins.getJSONObject(i);
-      respCode=openConnection(baseURL + currentObject.getString("name") + "/");
+      String currentPluginURL=baseURL + currentObject.getString("name") + "/";
+      AppLog.i(AppLog.T.NUX,"Testing the following plugin " + currentPluginURL);
+      respCode=openConnection(currentPluginURL);
       if (respCode != HttpURLConnection.HTTP_NOT_FOUND) {
         Plugin currentBBPLugin=new Plugin();
         currentBBPLugin.name=currentObject.getString("name");
         currentBBPLugin.url=currentObject.getString("url");
         listOfBBPlugins.add(currentBBPLugin);
+        AppLog.i(AppLog.T.NUX,"Plugin found on the server: " + currentObject.getString("name"));
       }
     }
  catch (    JSONException e) {

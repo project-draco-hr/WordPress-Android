@@ -1,20 +1,23 @@
 {
   HttpURLConnection conn=null;
+  String response="";
   try {
-    URL requestURL=new URL(url);
-    conn=(HttpURLConnection)requestURL.openConnection();
+    URL url=new URL(BB_PLUGINS_LIST_URL);
+    conn=(HttpURLConnection)url.openConnection();
     conn.setReadTimeout(REQUEST_TIMEOUT_MS);
     conn.setConnectTimeout(REQUEST_TIMEOUT_MS);
     conn.setRequestProperty("User-Agent",USER_AGENT);
     conn.setUseCaches(false);
     conn.setRequestProperty("Connection","close");
     conn.setRequestMethod("GET");
-    conn.connect();
-    int respCode=conn.getResponseCode();
-    return respCode;
+    BufferedReader in=new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF-8"));
+    String inLine;
+    while ((inLine=in.readLine()) != null) {
+      response+=inLine;
+    }
   }
  catch (  Exception e) {
-    AppLog.e(AppLog.T.NUX,"Error while checking for the plugins folder on the server.",e);
+    AppLog.e(AppLog.T.NUX,"Error while downloading the plugins list from the server...",e);
   }
  finally {
     try {
@@ -25,5 +28,5 @@
  catch (    Exception e) {
     }
   }
-  return 0;
+  return response;
 }
