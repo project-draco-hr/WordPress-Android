@@ -14,10 +14,6 @@
     if (mErroneousSslCertificate || mHttpAuthRequired || mErrorMsgId == org.wordpress.android.R.string.xmlrpc_missing_method_error) {
       return null;
     }
-    if (isBBPluginInstalled(baseURL)) {
-      mErrorMsgId=org.wordpress.android.R.string.site_plugins_error;
-      return null;
-    }
     if (mErrorMsgId == 0) {
       mErrorMsgId=org.wordpress.android.R.string.no_site_error;
     }
@@ -70,18 +66,10 @@ catch (  SSLHandshakeException e) {
 catch (  ConnectTimeoutException e) {
     AppLog.e(T.NUX,"Timeout exception when calling wp.getUsersBlogs",e);
     mErrorMsgId=org.wordpress.android.R.string.site_timeout_error;
-    if (isBBPluginInstalled(xmlrpcUrl)) {
-      mErrorMsgId=org.wordpress.android.R.string.site_plugins_error;
-      return null;
-    }
   }
 catch (  IOException e) {
     AppLog.e(T.NUX,"Exception received from XMLRPC call wp.getUsersBlogs",e);
     mErrorMsgId=org.wordpress.android.R.string.no_site_error;
-    if (isBBPluginInstalled(xmlrpcUrl)) {
-      mErrorMsgId=org.wordpress.android.R.string.site_plugins_error;
-      return null;
-    }
   }
   mClientResponse=client.getResponse();
   return null;
