@@ -25,14 +25,7 @@ catch (  SSLHandshakeException|SSLPeerUnverifiedException e) {
     }
     AppLog.e(T.NUX,"SSL error. Erroneous SSL certificate detected.",e);
   }
-catch (  IOException e) {
-    AnalyticsTracker.track(Stat.LOGIN_FAILED_TO_GUESS_XMLRPC);
-    AppLog.e(T.NUX,"system.listMethods failed on: " + url,e);
-    if (isHTTPAuthErrorMessage(e)) {
-      mHttpAuthRequired=true;
-    }
-  }
-catch (  XmlPullParserException e) {
+catch (  IOException|XmlPullParserException e) {
     AnalyticsTracker.track(Stat.LOGIN_FAILED_TO_GUESS_XMLRPC);
     AppLog.e(T.NUX,"system.listMethods failed on: " + url,e);
     if (isHTTPAuthErrorMessage(e)) {

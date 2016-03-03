@@ -38,13 +38,21 @@
       }
  else {
         AppLog.i(T.NUX,"RSD endpoint found at the following address: " + rsdUrl);
-        AppLog.i(T.NUX,"Getting the XML-RPC url by downloading the RSD doc");
+        AppLog.i(T.NUX,"Downloading the RSD document...");
         String rsdEndpointDocument=ApiHelper.getResponse(rsdUrl);
+        if (TextUtils.isEmpty(rsdEndpointDocument)) {
+          AppLog.w(T.NUX,"Content downloaded but it's empty or null. Skipping this RSD document URL.");
+          continue;
+        }
+        AppLog.i(T.NUX,"Extracting the XML-RPC Endpoint address from the RSD document");
         xmlrpcUrl=UrlUtils.addUrlSchemeIfNeeded(getXMLRPCApiLink(rsdEndpointDocument),false);
       }
       if (xmlrpcUrl != null) {
         AppLog.i(T.NUX,"Found the XML-RPC endpoint in the HTML document!!!");
         break;
+      }
+ else {
+        AppLog.i(T.NUX,"XML-RPC endpoint NOT found analysing the URL: " + currentURL);
       }
     }
  catch (    SSLHandshakeException e) {
