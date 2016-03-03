@@ -34,7 +34,7 @@
   try {
     Object[] userBlogs=(Object[])client.call(Method.GET_BLOGS,params);
     if (userBlogs == null) {
-      mErrorMsgId=org.wordpress.android.R.string.xmlrpc_error;
+      mErrorMsgId=org.wordpress.android.R.string.xmlrpc_malformed_response_error;
       mClientResponse=client.getResponse();
       return null;
     }
@@ -66,6 +66,14 @@ catch (  SSLHandshakeException e) {
       mErroneousSslCertificate=true;
     }
     AppLog.w(T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
+  }
+catch (  ConnectTimeoutException e) {
+    AppLog.e(T.NUX,"Timeout exception when calling wp.getUsersBlogs",e);
+    mErrorMsgId=org.wordpress.android.R.string.site_timeout_error;
+    if (isBBPluginInstalled(xmlrpcUrl)) {
+      mErrorMsgId=org.wordpress.android.R.string.site_plugins_error;
+      return null;
+    }
   }
 catch (  IOException e) {
     AppLog.e(T.NUX,"Exception received from XMLRPC call wp.getUsersBlogs",e);
