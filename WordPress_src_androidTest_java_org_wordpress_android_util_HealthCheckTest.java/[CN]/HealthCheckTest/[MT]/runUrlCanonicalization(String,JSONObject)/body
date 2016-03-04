@@ -1,0 +1,16 @@
+{
+  final String inputUrl=testSetup.getJSONObject("input").getString("siteUrl");
+  final JSONObject output=testSetup.getJSONObject("output");
+  final String outputUrl=output.optString("siteUrl",null);
+  final JSONObject error=output.optJSONObject("error");
+  String canonicalizedUrl=null;
+  try {
+    canonicalizedUrl=HealthCheckUtils.canonicalizeSiteUrl(inputUrl);
+    assertNull(testCaseMessage("Testcase defines an error but no error occurred!",testCaseComment),error);
+  }
+ catch (  HealthCheckUtils.HealthCheckException hce) {
+    assertNotNull(testCaseMessage("Error occurred but testcase does not define an error!",testCaseComment),error);
+    assertEquals(testCaseMessage("Error message does not match the defined one!",testCaseComment),error.getString("message"),getInstrumentation().getTargetContext().getString(hce.errorMsgId));
+  }
+  assertEquals(testCaseMessage("Canonicalized URL does not match the defined one!",testCaseComment),outputUrl,canonicalizedUrl);
+}

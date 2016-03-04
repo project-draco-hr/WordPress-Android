@@ -1,0 +1,11 @@
+{
+  if (TextUtils.isEmpty(siteUrl)) {
+    throw new HealthCheckException(org.wordpress.android.R.string.invalid_site_url_message,siteUrl);
+  }
+  String baseURL=UrlUtils.convertUrlToPunycodeIfNeeded(siteUrl);
+  baseURL=UrlUtils.addUrlSchemeIfNeeded(baseURL,false);
+  if (!URLUtil.isValidUrl(baseURL)) {
+    throw new HealthCheckException(org.wordpress.android.R.string.invalid_site_url_message,baseURL);
+  }
+  return baseURL;
+}
