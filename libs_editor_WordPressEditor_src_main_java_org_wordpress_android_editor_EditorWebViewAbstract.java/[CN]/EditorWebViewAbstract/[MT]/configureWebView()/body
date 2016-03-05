@@ -13,7 +13,7 @@
       return true;
     }
     @Override public void onReceivedError(    WebView view,    int errorCode,    String description,    String failingUrl){
-      AppLog.e(AppLog.T.EDITOR,description);
+      AppLog.e(T.EDITOR,description);
     }
     @TargetApi(Build.VERSION_CODES.LOLLIPOP) @Override public WebResourceResponse shouldInterceptRequest(    WebView view,    WebResourceRequest request){
       String url=request.getUrl().toString();
@@ -33,7 +33,7 @@
           return new WebResourceResponse(conn.getContentType(),conn.getContentEncoding(),conn.getInputStream());
         }
  catch (        IOException e) {
-          AppLog.e(AppLog.T.EDITOR,e);
+          AppLog.e(T.EDITOR,e);
         }
       }
       return super.shouldInterceptRequest(view,request);
@@ -55,7 +55,7 @@
           return new WebResourceResponse(conn.getContentType(),conn.getContentEncoding(),conn.getInputStream());
         }
  catch (        IOException e) {
-          AppLog.e(AppLog.T.EDITOR,e);
+          AppLog.e(T.EDITOR,e);
         }
       }
       return super.shouldInterceptRequest(view,url);
@@ -64,11 +64,22 @@
 );
   this.setWebChromeClient(new WebChromeClient(){
     @Override public boolean onConsoleMessage(    @NonNull ConsoleMessage cm){
-      AppLog.d(AppLog.T.EDITOR,cm.message() + " -- From line " + cm.lineNumber()+ " of "+ cm.sourceId());
+      if (cm.messageLevel() == MessageLevel.ERROR) {
+        if (mErrorListener != null) {
+          mErrorListener.onJavaScriptError(cm.sourceId(),cm.lineNumber(),cm.message());
+        }
+        AppLog.e(T.EDITOR,cm.message() + " -- From line " + cm.lineNumber()+ " of "+ cm.sourceId());
+      }
+ else {
+        AppLog.d(T.EDITOR,cm.message() + " -- From line " + cm.lineNumber()+ " of "+ cm.sourceId());
+      }
       return true;
     }
     @Override public boolean onJsAlert(    WebView view,    String url,    String message,    JsResult result){
-      AppLog.d(AppLog.T.EDITOR,message);
+      AppLog.d(T.EDITOR,message);
+      if (mErrorListener != null) {
+        mErrorListener.onJavaScriptAlert(url,message);
+      }
       return true;
     }
   }
