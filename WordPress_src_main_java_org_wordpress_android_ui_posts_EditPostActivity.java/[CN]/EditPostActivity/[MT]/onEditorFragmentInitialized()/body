@@ -1,3 +1,14 @@
 {
   fillContentEditorFields();
+  if (mEditorFragment instanceof EditorFragment) {
+    mEditorFragment.setDebugModeEnabled(BuildConfig.DEBUG);
+    ((EditorFragment)mEditorFragment).setWebViewErrorListener(new ErrorListener(){
+      @Override public void onJavaScriptError(      String sourceFile,      int lineNumber,      String message){
+        CrashlyticsUtils.logException(new JavaScriptException(sourceFile,lineNumber,message),ExceptionType.SPECIFIC,T.EDITOR,String.format(Locale.US,"%s:%d: %s",sourceFile,lineNumber,message));
+      }
+      @Override public void onJavaScriptAlert(      String url,      String message){
+      }
+    }
+);
+  }
 }
