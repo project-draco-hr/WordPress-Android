@@ -1,0 +1,18 @@
+{
+  String[] args={Long.toString(personId)};
+  Cursor c=getReadableDb().rawQuery("SELECT * FROM " + PEOPLE_TABLE + " WHERE person_id=?",args);
+  try {
+    if (!c.moveToFirst()) {
+      return null;
+    }
+    String username=c.getString(c.getColumnIndex("user_name"));
+    String firstName=c.getString(c.getColumnIndex("first_name"));
+    String lastName=c.getString(c.getColumnIndex("last_name"));
+    String displayName=c.getString(c.getColumnIndex("display_name"));
+    String avatarUrl=c.getString(c.getColumnIndex("avatar_url"));
+    return new Person(personId,username,firstName,lastName,displayName,avatarUrl,null);
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+}
