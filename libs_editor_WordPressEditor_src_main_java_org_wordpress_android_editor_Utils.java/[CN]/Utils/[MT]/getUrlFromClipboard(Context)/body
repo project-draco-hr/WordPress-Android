@@ -1,0 +1,8 @@
+{
+  if (context == null)   return null;
+  ClipboardManager clipboard=(ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
+  ClipData data=clipboard != null ? clipboard.getPrimaryClip() : null;
+  if (data == null || data.getItemCount() <= 0)   return null;
+  String clipText=String.valueOf(data.getItemAt(0).getText());
+  return Patterns.WEB_URL.matcher(clipText).matches() ? clipText : null;
+}
