@@ -3,14 +3,8 @@
   mFilteredCommentsView=(FilteredRecyclerView)view.findViewById(R.id.filtered_recycler_view);
   mFilteredCommentsView.setLogT(AppLog.T.COMMENTS);
   mFilteredCommentsView.setFilterListener(new FilteredRecyclerView.FilterListener(){
-    @Override public List<FilterCriteria> onLoadFilterCriteriaOptions(    boolean refresh){
-      ArrayList<FilterCriteria> criterias=new ArrayList();
-      for (      CommentStatus criteria : commentStatuses) {
-        criterias.add(criteria);
-      }
-      return criterias;
-    }
-    @Override public void onLoadFilterCriteriaOptionsAsync(    FilteredRecyclerView.FilterCriteriaAsyncLoaderListener listener,    boolean refresh){
+    @Override public FilterCriteria[] onLoadFilterCriteriaOptions(){
+      return commentStatuses;
     }
     @Override public void onLoadData(){
       updateComments(false);
@@ -52,13 +46,7 @@ break;
 return getString(stringId);
 }
 }
-@Override public void onShowCustomEmptyView(EmptyViewMessageType emptyViewMsgType){
-}
 }
 );
-mFilteredCommentsView.setToolbarBackgroundColor(getResources().getColor(R.color.blue_medium));
-mFilteredCommentsView.setToolbarSpinnerTextColor(getResources().getColor(R.color.white));
-mFilteredCommentsView.setToolbarSpinnerDrawable(R.drawable.arrow);
-mFilteredCommentsView.setToolbarLeftAndRightPadding(getResources().getDimensionPixelSize(R.dimen.margin_filter_spinner),getResources().getDimensionPixelSize(R.dimen.margin_none));
 return view;
 }

@@ -1,0 +1,26 @@
+{
+  String thumbnailURL=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_THUMBNAIL_URL));
+  if (mIsCurrentBlogPhotonCapable) {
+    String imageURL=cursor.getString(cursor.getColumnIndex(WordPressDB.COLUMN_NAME_FILE_URL));
+    if (imageURL != null) {
+      thumbnailURL=PhotonUtils.getPhotonImageUrl(imageURL,mGridItemWidth,0);
+    }
+  }
+  if (thumbnailURL != null) {
+    Uri uri=Uri.parse(thumbnailURL);
+    String filepath=uri.getLastPathSegment();
+    int placeholderResId=WordPressMediaUtils.getPlaceholder(filepath);
+    imageView.setErrorImageResId(placeholderResId);
+    imageView.setDefaultImageResId(0);
+    if (MediaUtils.isValidImage(filepath)) {
+      imageView.setTag(thumbnailURL);
+      imageView.setImageUrl(thumbnailURL,mImageLoader);
+    }
+ else {
+      imageView.setImageResource(placeholderResId);
+    }
+  }
+ else {
+    imageView.setImageResource(0);
+  }
+}

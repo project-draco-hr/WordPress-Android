@@ -1,5 +1,4 @@
 {
-  ProfilingUtils.split("EditorFragment.onDomLoaded");
   mWebView.post(new Runnable(){
     public void run(){
       mDomHasLoaded=true;
@@ -7,8 +6,8 @@
       mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_title').setPlaceholderText('" + mTitlePlaceholder + "');");
       mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').setPlaceholderText('" + mContentPlaceholder + "');");
       updateVisualEditorFields();
-      mWebView.execJavaScriptFromString("ZSSEditor.markAllUploadingMediaAsFailed('" + getString(R.string.tap_to_try_again) + "');");
-      mWebView.execJavaScriptFromString("ZSSEditor.getFailedMedia();");
+      mWebView.execJavaScriptFromString("ZSSEditor.markAllUploadingImagesAsFailed();");
+      mWebView.execJavaScriptFromString("ZSSEditor.getFailedImages();");
       hideActionBarIfNeeded();
       ToggleButton htmlButton=(ToggleButton)getActivity().findViewById(R.id.format_bar_button_html);
       htmlButton.setChecked(false);
@@ -22,16 +21,6 @@
         }
         mWaitingMediaFiles.clear();
       }
-      if (mWaitingGalleries.size() > 0) {
-        mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').focus();");
-        for (        MediaGallery mediaGallery : mWaitingGalleries) {
-          appendGallery(mediaGallery);
-        }
-        mWaitingGalleries.clear();
-      }
-      ProfilingUtils.split("EditorFragment.onDomLoaded completed");
-      ProfilingUtils.dump();
-      ProfilingUtils.stop();
     }
   }
 );

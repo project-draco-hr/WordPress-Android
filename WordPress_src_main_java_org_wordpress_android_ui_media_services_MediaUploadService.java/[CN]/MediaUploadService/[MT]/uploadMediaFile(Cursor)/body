@@ -11,38 +11,36 @@
   mediaFile.setFileName(fileName);
   mediaFile.setFilePath(filePath);
   mediaFile.setMimeType(mimeType);
-  mCurrentUploadMediaId=mediaId;
-  mCurrentUploadMediaTask=new ApiHelper.UploadMediaTask(mContext,mediaFile,new ApiHelper.UploadMediaTask.Callback(){
-    @Override public void onSuccess(    String remoteId,    String remoteUrl,    String secondaryId){
-      WordPress.wpDB.updateMediaLocalToRemoteId(blogIdStr,mediaId,remoteId);
-      EventBus.getDefault().post(new MediaEvents.MediaUploadSucceeded(blogIdStr,mediaId,remoteId,remoteUrl,secondaryId));
-      fetchMediaFile(remoteId);
+  ApiHelper.UploadMediaTask task=new ApiHelper.UploadMediaTask(mContext,mediaFile,new ApiHelper.UploadMediaTask.Callback(){
+    @Override public void onSuccess(    String id){
+      WordPress.wpDB.updateMediaLocalToRemoteId(blogIdStr,mediaId,id);
+      EventBus.getDefault().post(new MediaEvents.MediaUploadSucceed(blogIdStr,mediaId,id));
+      fetchMediaFile(id);
     }
     @Override public void onFailure(    ApiHelper.ErrorType errorType,    String errorMessage,    Throwable throwable){
-      WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,MediaUploadState.FAILED);
+      WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,"failed");
       mUploadInProgress=false;
-      mCurrentUploadMediaId="";
-      MediaEvents.MediaUploadFailed event;
-      if (errorMessage == null) {
-        event=new MediaEvents.MediaUploadFailed(mediaId,getString(R.string.upload_failed),true);
+      String errorMessageToDisplay=null;
+      if (throwable instanceof XMLRPCFault) {
+        XMLRPCFault xmlrpcFault=((XMLRPCFault)throwable);
+        if (xmlrpcFault.getFaultCode() == 401) {
+          errorMessageToDisplay=getString(R.string.media_error_no_permission_upload);
+        }
       }
- else {
-        event=new MediaEvents.MediaUploadFailed(mediaId,errorMessage);
+      if (errorMessageToDisplay == null) {
+        errorMessageToDisplay=getString(R.string.upload_failed);
       }
-      EventBus.getDefault().post(event);
+      EventBus.getDefault().post(new MediaEvents.MediaUploadFailed(mediaId,errorMessageToDisplay));
       mHandler.post(mFetchQueueTask);
       if (errorType != ErrorType.NETWORK_XMLRPC) {
         CrashlyticsUtils.logException(throwable,ExceptionType.SPECIFIC,T.MEDIA,errorMessage);
       }
     }
-    @Override public void onProgressUpdate(    float progress){
-      EventBus.getDefault().post(new MediaEvents.MediaUploadProgress(mediaId,progress));
-    }
   }
 );
-  WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,MediaUploadState.UPLOADING);
+  WordPress.wpDB.updateMediaUploadState(blogIdStr,mediaId,"uploading");
   List<Object> apiArgs=new ArrayList<Object>();
   apiArgs.add(WordPress.getCurrentBlog());
-  mCurrentUploadMediaTask.execute(apiArgs);
+  task.execute(apiArgs);
   mHandler.post(mFetchQueueTask);
 }

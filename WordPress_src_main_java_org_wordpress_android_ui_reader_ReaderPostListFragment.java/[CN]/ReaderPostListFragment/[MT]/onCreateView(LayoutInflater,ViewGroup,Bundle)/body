@@ -1,86 +1,45 @@
 {
   final ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.reader_fragment_post_cards,container,false);
-  mRecyclerView=(FilteredRecyclerView)rootView.findViewById(R.id.reader_recycler_view);
+  mRecyclerView=(ReaderRecyclerView)rootView.findViewById(R.id.recycler_view);
   Context context=container.getContext();
-  mEmptyView=rootView.findViewById(R.id.empty_custom_view);
+  int spacingHorizontal=context.getResources().getDimensionPixelSize(R.dimen.reader_card_margin);
+  int spacingVertical=context.getResources().getDimensionPixelSize(R.dimen.reader_card_gutters);
+  boolean skipFirstItem=(getPostListType() == ReaderPostListType.TAG_FOLLOWED);
+  mRecyclerView.addItemDecoration(new RecyclerItemDecoration(spacingHorizontal,spacingVertical,skipFirstItem));
+  mNewPostsBar=rootView.findViewById(R.id.layout_new_posts);
+  mNewPostsBar.setVisibility(View.GONE);
+  mNewPostsBar.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View view){
+      scrollRecycleViewToPosition(0);
+      refreshPosts();
+    }
+  }
+);
+  mEmptyView=rootView.findViewById(R.id.empty_view);
   mEmptyView.findViewById(R.id.layout_box_images).setVisibility(shouldShowBoxAndPagesAnimation() ? View.VISIBLE : View.GONE);
-  mRecyclerView.setLogT(AppLog.T.READER);
-  mRecyclerView.setCustomEmptyView(mEmptyView);
-  mRecyclerView.setFilterListener(new FilteredRecyclerView.FilterListener(){
-    @Override public List<FilterCriteria> onLoadFilterCriteriaOptions(    boolean refresh){
-      return null;
-    }
-    @Override public void onLoadFilterCriteriaOptionsAsync(    FilteredRecyclerView.FilterCriteriaAsyncLoaderListener listener,    boolean refresh){
-      loadTags(listener);
-    }
-    @Override public void onLoadData(){
+  mProgress=(ProgressBar)rootView.findViewById(R.id.progress_footer);
+  mProgress.setVisibility(View.GONE);
+  mSwipeToRefreshHelper=new SwipeToRefreshHelper(getActivity(),(CustomSwipeRefreshLayout)rootView.findViewById(R.id.ptr_layout),new RefreshListener(){
+    @Override public void onRefreshStarted(){
       if (!isAdded()) {
         return;
       }
       if (!NetworkUtils.checkConnection(getActivity())) {
-        mRecyclerView.setRefreshing(false);
+        showSwipeToRefreshProgress(false);
         return;
       }
-      if (mFirstLoad) {
-        mRecyclerView.setRefreshing(false);
-        mFirstLoad=false;
-        return;
-      }
- else {
 switch (getPostListType()) {
 case TAG_FOLLOWED:
 case TAG_PREVIEW:
-          updatePostsWithTag(getCurrentTag(),UpdateAction.REQUEST_NEWER);
-        break;
+        updatePostsWithTag(getCurrentTag(),UpdateAction.REQUEST_NEWER);
+      break;
 case BLOG_PREVIEW:
-      updatePostsInCurrentBlogOrFeed(UpdateAction.REQUEST_NEWER);
-    break;
+    updatePostsInCurrentBlogOrFeed(UpdateAction.REQUEST_NEWER);
+  break;
 }
-mRecyclerView.setRefreshing(true);
-}
-}
-@Override public void onFilterSelected(int position,FilterCriteria criteria){
-onTagChanged((ReaderTag)criteria);
-}
-@Override public FilterCriteria onRecallSelection(){
-ReaderTag tag=AppPrefs.getReaderTag();
-return tag;
-}
-@Override public String onShowEmptyViewMessage(EmptyViewMessageType emptyViewMsgType){
-return null;
-}
-@Override public void onShowCustomEmptyView(EmptyViewMessageType emptyViewMsgType){
-setEmptyTitleAndDescription(EmptyViewMessageType.NETWORK_ERROR.equals(emptyViewMsgType) || EmptyViewMessageType.PERMISSION_ERROR.equals(emptyViewMsgType) || EmptyViewMessageType.GENERIC_ERROR.equals(emptyViewMsgType));
+showSwipeToRefreshProgress(true);
 }
 }
 );
-int spacingHorizontal=context.getResources().getDimensionPixelSize(R.dimen.reader_card_margin);
-int spacingVertical=context.getResources().getDimensionPixelSize(R.dimen.reader_card_gutters);
-mRecyclerView.addItemDecoration(new RecyclerItemDecoration(spacingHorizontal,spacingVertical,false));
-if (!ReaderUtils.isLoggedOutReader()) {
-View settingsControl=inflater.inflate(R.layout.filtered_recyclerview_settings_control,null);
-mRecyclerView.addToolbarCustomControl(settingsControl,new View.OnClickListener(){
-@Override public void onClick(View v){
-ReaderActivityLauncher.showReaderSubs(v.getContext());
-}
-}
-);
-ReaderUtils.setBackgroundToRoundRipple(settingsControl);
-}
-mRecyclerView.setToolbarBackgroundColor(getResources().getColor(R.color.blue_medium));
-mRecyclerView.setToolbarSpinnerTextColor(getResources().getColor(R.color.white));
-mRecyclerView.setToolbarSpinnerDrawable(R.drawable.arrow);
-mRecyclerView.setToolbarLeftAndRightPadding(getResources().getDimensionPixelSize(R.dimen.margin_medium) + spacingHorizontal,getResources().getDimensionPixelSize(R.dimen.margin_extra_large) + spacingHorizontal);
-mNewPostsBar=rootView.findViewById(R.id.layout_new_posts);
-mNewPostsBar.setVisibility(View.GONE);
-mNewPostsBar.setOnClickListener(new View.OnClickListener(){
-@Override public void onClick(View view){
-mRecyclerView.scrollRecycleViewToPosition(0);
-refreshPosts();
-}
-}
-);
-mProgress=(ProgressBar)rootView.findViewById(R.id.progress_footer);
-mProgress.setVisibility(View.GONE);
 return rootView;
 }

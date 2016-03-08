@@ -13,7 +13,12 @@
   mSelectedIndex=findIndexOfValue(mStartingValue);
   builder.setSingleChoiceItems(mListAdapter,mSelectedIndex,new DialogInterface.OnClickListener(){
     public void onClick(    DialogInterface dialog,    int which){
-      mSelectedIndex=which;
+      if (mSelectedIndex != which) {
+        mSelectedIndex=which;
+        mListAdapter.notifyDataSetChanged();
+        setValue(getEntryValues()[mSelectedIndex].toString());
+        notifyChanged();
+      }
     }
   }
 );
@@ -37,7 +42,7 @@
   ListView listView=mDialog.getListView();
   Button positive=mDialog.getButton(DialogInterface.BUTTON_POSITIVE);
   Button negative=mDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-  Typeface typeface=WPPrefUtils.getSemiboldTypeface(getContext());
+  Typeface typeface=TypefaceCache.getTypeface(getContext(),TypefaceCache.FAMILY_OPEN_SANS,Typeface.BOLD,TypefaceCache.VARIATION_LIGHT);
   if (listView != null) {
     listView.setDividerHeight(0);
     listView.setClipToPadding(true);

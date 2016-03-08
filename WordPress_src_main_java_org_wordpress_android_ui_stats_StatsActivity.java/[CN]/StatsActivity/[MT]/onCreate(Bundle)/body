@@ -10,9 +10,7 @@
   setSupportActionBar(toolbar);
   ActionBar actionBar=getSupportActionBar();
   if (actionBar != null) {
-    actionBar.setElevation(0);
-    actionBar.setTitle(R.string.stats);
-    actionBar.setDisplayShowTitleEnabled(true);
+    actionBar.setDisplayShowTitleEnabled(false);
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
   mSwipeToRefreshHelper=new SwipeToRefreshHelper(this,(CustomSwipeRefreshLayout)findViewById(R.id.ptr_layout),new RefreshListener(){
@@ -33,7 +31,7 @@
   }
 );
   setTitle(R.string.stats);
-  mOuterScrollView=(NestedScrollViewExt)findViewById(R.id.scroll_view_stats);
+  mOuterScrollView=(ScrollViewExt)findViewById(R.id.scroll_view_stats);
   mOuterScrollView.setScrollViewListener(this);
   if (savedInstanceState != null) {
     mResultCode=savedInstanceState.getInt(SAVED_WP_LOGIN_STATE);
@@ -80,8 +78,9 @@
     return;
   }
   createFragments(false);
-  if (mSpinner == null) {
-    mSpinner=(Spinner)findViewById(R.id.filter_spinner);
+  if (mSpinner == null && toolbar != null) {
+    View view=View.inflate(this,R.layout.toolbar_spinner,toolbar);
+    mSpinner=(Spinner)view.findViewById(R.id.action_bar_spinner);
     mTimeframeSpinnerAdapter=new TimeframeSpinnerAdapter(this,timeframes);
     mSpinner.setAdapter(mTimeframeSpinnerAdapter);
     mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
@@ -113,8 +112,6 @@
       }
     }
 );
-    Toolbar spinnerToolbar=(Toolbar)findViewById(R.id.toolbar_filter);
-    spinnerToolbar.setBackgroundColor(getResources().getColor(R.color.blue_medium));
   }
   selectCurrentTimeframeInActionBar();
   TextView otherRecentStatsMovedLabel=(TextView)findViewById(R.id.stats_other_recent_stats_moved);

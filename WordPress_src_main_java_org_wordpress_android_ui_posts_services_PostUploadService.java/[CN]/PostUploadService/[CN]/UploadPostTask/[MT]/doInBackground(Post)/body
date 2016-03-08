@@ -1,4 +1,5 @@
 {
+  mErrorUnavailableVideoPress=false;
   mPost=posts[0];
   mPostUploadNotifier=new PostUploadNotifier(mPost);
   String postTitle=TextUtils.isEmpty(mPost.getTitle()) ? getString(R.string.untitled) : mPost.getTitle();
@@ -106,18 +107,8 @@
       contentStruct.put("custom_fields",geo);
     }
   }
-  if (mUseLegacyMode) {
-    if (featuredImageID != -1) {
-      contentStruct.put("wp_post_thumbnail",featuredImageID);
-    }
-  }
- else   if (mPost.featuredImageHasChanged()) {
-    if (mPost.getFeaturedImageId() < 1 && !mPost.isLocalDraft()) {
-      contentStruct.put("wp_post_thumbnail","");
-    }
- else {
-      contentStruct.put("wp_post_thumbnail",mPost.getFeaturedImageId());
-    }
+  if (featuredImageID != -1) {
+    contentStruct.put("wp_post_thumbnail",featuredImageID);
   }
   if (!TextUtils.isEmpty(mPost.getQuickPostType())) {
     mClient.addQuickPostHeader(mPost.getQuickPostType());

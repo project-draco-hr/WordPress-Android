@@ -65,29 +65,39 @@
   m.put("bits",mediaFile);
   m.put("overwrite",true);
   Object[] params={1,mBlog.getUsername(),mBlog.getPassword(),m};
-  File tempFile;
-  try {
-    String fileExtension=MimeTypeMap.getFileExtensionFromUrl(videoName);
-    tempFile=createTempUploadFile(fileExtension);
-  }
- catch (  IOException e) {
-    mErrorMessage=getResources().getString(R.string.file_error_create);
-    return null;
-  }
-  Object result=uploadFileHelper(params,tempFile);
-  Map<?,?> resultMap=(HashMap<?,?>)result;
-  if (resultMap != null && resultMap.containsKey("url")) {
-    String resultURL=resultMap.get("url").toString();
-    if (resultMap.containsKey(MediaFile.VIDEOPRESS_SHORTCODE_ID)) {
-      resultURL=resultMap.get(MediaFile.VIDEOPRESS_SHORTCODE_ID).toString() + "\n";
+  FeatureSet featureSet=synchronousGetFeatureSet();
+  boolean selfHosted=WordPress.currentBlog != null && !WordPress.currentBlog.isDotcomFlag();
+  boolean isVideoEnabled=selfHosted || (featureSet != null && mFeatureSet.isVideopressEnabled());
+  if (isVideoEnabled) {
+    File tempFile;
+    try {
+      String fileExtension=MimeTypeMap.getFileExtensionFromUrl(videoName);
+      tempFile=createTempUploadFile(fileExtension);
+    }
+ catch (    IOException e) {
+      mErrorMessage=getResources().getString(R.string.file_error_create);
+      return null;
+    }
+    Object result=uploadFileHelper(params,tempFile);
+    Map<?,?> resultMap=(HashMap<?,?>)result;
+    if (resultMap != null && resultMap.containsKey("url")) {
+      String resultURL=resultMap.get("url").toString();
+      if (resultMap.containsKey(MediaFile.VIDEOPRESS_SHORTCODE_ID)) {
+        resultURL=resultMap.get(MediaFile.VIDEOPRESS_SHORTCODE_ID).toString() + "\n";
+      }
+ else {
+        resultURL=String.format("<video width=\"%s\" height=\"%s\" controls=\"controls\"><source src=\"%s\" type=\"%s\" /><a href=\"%s\">Click to view video</a>.</video>",xRes,yRes,resultURL,mimeType,resultURL);
+      }
+      return resultURL;
     }
  else {
-      resultURL=String.format("<video width=\"%s\" height=\"%s\" controls=\"controls\"><source src=\"%s\" type=\"%s\" /><a href=\"%s\">Click to view video</a>.</video>",xRes,yRes,resultURL,mimeType,resultURL);
+      mErrorMessage=mContext.getResources().getString(R.string.error_media_upload);
+      return null;
     }
-    return resultURL;
   }
  else {
-    mErrorMessage=mContext.getResources().getString(R.string.error_media_upload);
+    mErrorMessage=getString(R.string.media_no_video_message);
+    mErrorUnavailableVideoPress=true;
     return null;
   }
 }

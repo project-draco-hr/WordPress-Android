@@ -4,13 +4,32 @@
   }
   final List<MediaItem> selectedContent=data.getParcelableArrayListExtra(MediaPickerActivity.SELECTED_CONTENT_RESULTS_KEY);
   if (selectedContent != null && selectedContent.size() > 0) {
+    int localPhotoAdded=0, libraryPhotoAdded=0;
+    int localVideoAdded=0, libraryVideoAdded=0;
     for (    MediaItem media : selectedContent) {
+      String mediaSource=media.getSource().toString().toLowerCase();
       if (URLUtil.isNetworkUrl(media.getSource().toString())) {
         addExistingMediaToEditor(media.getTag());
+        if (MediaUtils.isVideo(mediaSource)) {
+          libraryVideoAdded++;
+        }
+ else         if (MediaUtils.isValidImage(mediaSource)) {
+          libraryPhotoAdded++;
+        }
       }
  else {
         addMedia(media.getSource());
+        if (MediaUtils.isVideo(mediaSource)) {
+          localVideoAdded++;
+        }
+ else         if (MediaUtils.isValidImage(mediaSource)) {
+          localPhotoAdded++;
+        }
       }
     }
+    trackMediaNumber(Stat.EDITOR_ADDED_PHOTO_VIA_LOCAL_LIBRARY,PROP_LOCAL_PHOTOS,localPhotoAdded);
+    trackMediaNumber(Stat.EDITOR_ADDED_PHOTO_VIA_WP_MEDIA_LIBRARY,PROP_LIBRARY_PHOTOS,libraryPhotoAdded);
+    trackMediaNumber(Stat.EDITOR_ADDED_VIDEO_VIA_LOCAL_LIBRARY,PROP_LOCAL_VIDEOS,localVideoAdded);
+    trackMediaNumber(Stat.EDITOR_ADDED_VIDEO_VIA_WP_MEDIA_LIBRARY,PROP_LIBRARY_VIDEOS,libraryVideoAdded);
   }
 }

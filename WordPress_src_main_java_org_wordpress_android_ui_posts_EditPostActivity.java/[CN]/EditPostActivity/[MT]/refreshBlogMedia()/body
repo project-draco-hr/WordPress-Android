@@ -5,20 +5,6 @@
     ApiHelper.SyncMediaLibraryTask.Callback callback=new ApiHelper.SyncMediaLibraryTask.Callback(){
       @Override public void onSuccess(      int count){
         mBlogMediaStatus=1;
-        runOnUiThread(new Runnable(){
-          @Override public void run(){
-            if (mPendingVideoPressInfoRequests != null && !mPendingVideoPressInfoRequests.isEmpty()) {
-              String blogId=String.valueOf(WordPress.currentBlog.getLocalTableBlogId());
-              for (              String videoId : mPendingVideoPressInfoRequests) {
-                String videoUrl=WordPress.wpDB.getMediaUrlByVideoPressId(blogId,videoId);
-                String posterUrl=WordPressMediaUtils.getVideoPressVideoPosterFromURL(videoUrl);
-                mEditorFragment.setUrlForVideoPressId(videoId,videoUrl,posterUrl);
-              }
-              mPendingVideoPressInfoRequests.clear();
-            }
-          }
-        }
-);
       }
       @Override public void onFailure(      final ApiHelper.ErrorType errorType,      String errorMessage,      Throwable throwable){
         mBlogMediaStatus=0;

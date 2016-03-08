@@ -7,8 +7,8 @@
   builder.setView(view).setPositiveButton(R.string.ok,new DialogInterface.OnClickListener(){
     @Override public void onClick(    DialogInterface dialog,    int id){
       Intent intent=new Intent();
-      intent.putExtra(LINK_DIALOG_ARG_URL,urlEditText.getText().toString());
-      intent.putExtra(LINK_DIALOG_ARG_TEXT,linkEditText.getText().toString());
+      intent.putExtra("linkURL",urlEditText.getText().toString());
+      intent.putExtra("linkText",linkEditText.getText().toString());
       getTargetFragment().onActivityResult(getTargetRequestCode(),getTargetRequestCode(),intent);
     }
   }
@@ -28,14 +28,12 @@
   }
   Bundle bundle=getArguments();
   if (bundle != null) {
-    linkEditText.setText(bundle.getString(LINK_DIALOG_ARG_TEXT));
-    String url=bundle.getString(LINK_DIALOG_ARG_URL);
+    linkEditText.setText(bundle.getString("linkText"));
+    String url=bundle.getString("linkURL");
     if (url != null) {
       urlEditText.setText(url);
     }
-    urlEditText.selectAll();
+    urlEditText.setSelection(urlEditText.length());
   }
-  AlertDialog dialog=builder.create();
-  dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-  return dialog;
+  return builder.create();
 }

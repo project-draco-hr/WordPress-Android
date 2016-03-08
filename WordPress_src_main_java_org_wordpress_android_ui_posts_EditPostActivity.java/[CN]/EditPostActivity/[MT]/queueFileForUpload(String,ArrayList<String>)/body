@@ -1,12 +1,12 @@
 {
   if (TextUtils.isEmpty(path)) {
     Toast.makeText(this,R.string.editor_toast_invalid_path,Toast.LENGTH_SHORT).show();
-    return null;
+    return;
   }
   File file=new File(path);
   if (!file.exists()) {
     Toast.makeText(this,R.string.file_not_found,Toast.LENGTH_SHORT).show();
-    return null;
+    return;
   }
   Blog blog=WordPress.getCurrentBlog();
   long currentTime=System.currentTimeMillis();
@@ -19,7 +19,6 @@
   mediaFile.setUploadState("queued");
   mediaFile.setDateCreatedGMT(currentTime);
   mediaFile.setMediaId(String.valueOf(currentTime));
-  mediaFile.setVideo(MediaUtils.isVideo(path));
   if (mimeType != null && mimeType.startsWith("image")) {
     BitmapFactory.Options bfo=new BitmapFactory.Options();
     bfo.inJustDecodeBounds=true;
@@ -35,5 +34,4 @@
   }
   saveMediaFile(mediaFile);
   startMediaUploadService();
-  return mediaFile;
 }
