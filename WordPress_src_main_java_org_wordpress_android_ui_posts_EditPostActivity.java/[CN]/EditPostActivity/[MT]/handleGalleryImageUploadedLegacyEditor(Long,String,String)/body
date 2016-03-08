@@ -1,0 +1,26 @@
+{
+  SpannableStringBuilder postContent;
+  if (mEditorFragment.getSpannedContent() != null) {
+    postContent=new SpannableStringBuilder(mEditorFragment.getSpannedContent());
+  }
+ else {
+    postContent=new SpannableStringBuilder(StringUtils.notNullStr((String)mEditorFragment.getContent()));
+  }
+  int selectionStart=0;
+  int selectionEnd=postContent.length();
+  MediaGalleryImageSpan[] gallerySpans=postContent.getSpans(selectionStart,selectionEnd,MediaGalleryImageSpan.class);
+  if (gallerySpans.length != 0) {
+    for (    MediaGalleryImageSpan gallerySpan : gallerySpans) {
+      MediaGallery gallery=gallerySpan.getMediaGallery();
+      if (gallery.getUniqueId() == galleryId) {
+        ArrayList<String> galleryIds=gallery.getIds();
+        galleryIds.add(remoteId);
+        gallery.setIds(galleryIds);
+        gallerySpan.setMediaGallery(gallery);
+        int spanStart=postContent.getSpanStart(gallerySpan);
+        int spanEnd=postContent.getSpanEnd(gallerySpan);
+        postContent.setSpan(gallerySpan,spanStart,spanEnd,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+      }
+    }
+  }
+}
