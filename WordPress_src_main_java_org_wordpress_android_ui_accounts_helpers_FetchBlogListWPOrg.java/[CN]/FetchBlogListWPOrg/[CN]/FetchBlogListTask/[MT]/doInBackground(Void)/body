@@ -1,21 +1,23 @@
 {
-  String baseUrl=null;
+  String baseUrl;
   try {
     baseUrl=HealthCheckUtils.canonicalizeSiteUrl(mSelfHostedUrl);
   }
  catch (  HealthCheckUtils.HealthCheckException hce) {
     mErrorMsgId=hce.errorMsgId;
+    mHttpAuthRequired=(hce.kind == HealthCheckUtils.HealthCheckException.Kind.HTTP_AUTH_REQUIRED);
+    mErroneousSslCertificate=(hce.kind == HealthCheckUtils.HealthCheckException.Kind.ERRONEOUS_SSL_CERTIFICATE);
     trackInvalidInsertedURL(hce.failedUrl);
     return null;
   }
-  String xmlrpcUrl=getSelfHostedXmlrpcUrl(baseUrl);
-  if (xmlrpcUrl == null) {
-    if (mErroneousSslCertificate || mHttpAuthRequired || mErrorMsgId == org.wordpress.android.R.string.xmlrpc_missing_method_error) {
-      return null;
-    }
-    if (mErrorMsgId == 0) {
-      mErrorMsgId=org.wordpress.android.R.string.no_site_error;
-    }
+  String xmlrpcUrl;
+  try {
+    xmlrpcUrl=HealthCheckUtils.getSelfHostedXmlrpcUrl(baseUrl,mHttpUsername,mHttpPassword);
+  }
+ catch (  HealthCheckUtils.HealthCheckException hce) {
+    mErrorMsgId=hce.errorMsgId;
+    mHttpAuthRequired=(hce.kind == HealthCheckUtils.HealthCheckException.Kind.HTTP_AUTH_REQUIRED);
+    mErroneousSslCertificate=(hce.kind == HealthCheckUtils.HealthCheckException.Kind.ERRONEOUS_SSL_CERTIFICATE);
     return null;
   }
   if (!URLUtil.isValidUrl(xmlrpcUrl)) {
