@@ -1,13 +1,15 @@
 {
+  final MockWebServer server=new MockWebServer();
+  testSetup=new JSONObject(testSetup.toString().replaceAll(sServerAddressMagicString,server.getHostName() + ":" + server.getPort()));
   final JSONObject input=testSetup.getJSONObject("input");
+  setupMockHttpServer(server,input);
+  final String inputUrl=input.isNull("siteUrl") ? server.url("").toString() : input.getString("siteUrl");
   final JSONObject output=testSetup.getJSONObject("output");
-  final String outputUrl=output.optString("siteUrl",null);
+  final String outputUrl=output.optString("xmlrpcEndpoint",null);
   final JSONObject error=output.optJSONObject("error");
-  MockWebServer server=setupMockHttpServer(input);
-  HttpUrl serverUrl=server.url("");
   String xmlrpcUrl=null;
   try {
-    xmlrpcUrl=HealthCheckUtils.getSelfHostedXmlrpcUrl(serverUrl.toString(),input.optString("username",null),input.optString("username",null));
+    xmlrpcUrl=HealthCheckUtils.getSelfHostedXmlrpcUrl(inputUrl,input.optString("username",null),input.optString("username",null));
     assertNull(testCaseMessage("Testcase defines an error but no error occurred!",testCaseComment),error);
   }
  catch (  HealthCheckUtils.HealthCheckException hce) {

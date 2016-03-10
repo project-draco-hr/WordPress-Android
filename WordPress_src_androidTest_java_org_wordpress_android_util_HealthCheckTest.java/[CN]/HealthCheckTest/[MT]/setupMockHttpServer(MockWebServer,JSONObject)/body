@@ -8,11 +8,14 @@
     RecordedRequest recordedRequest=new RecordedRequest(reqJson.getString("method") + " " + reqJson.getString("path")+ " HTTP/1.1",reqHeaders,null,0,null,0,null);
     final JSONObject respJson=reqRespJson.getJSONObject("response");
     Headers respHeaders=json2Headers(respJson.optJSONObject("headers"));
-    final MockResponse resp=new MockResponse().setResponseCode(respJson.getInt("statusCode")).setHeaders(respHeaders).setBody(respJson.optString("body"));
+    String body=respJson.optString("body");
+    if (body.startsWith(sServerResponsesMagicScheme)) {
+      body=stringFromAsset(getInstrumentation().getContext(),sAssetPathBase + body.substring(sServerResponsesMagicScheme.length()));
+    }
+    final MockResponse resp=new MockResponse().setResponseCode(respJson.getInt("statusCode")).setHeaders(respHeaders).setBody(body);
     mockRequestResponses.put(recordedRequest,resp);
   }
-  MockWebServer server=new MockWebServer();
-  final Dispatcher dispatcher=new Dispatcher(){
+  server.setDispatcher(new Dispatcher(){
     @Override public MockResponse dispatch(    RecordedRequest request) throws InterruptedException {
       for (      Map.Entry<RecordedRequest,MockResponse> reqResp : mockRequestResponses.entrySet()) {
         final RecordedRequest mockRequest=reqResp.getKey();
@@ -23,8 +26,6 @@
       return new MockResponse().setResponseCode(404).setBody("");
     }
   }
-;
-  server.setDispatcher(dispatcher);
-  server.start();
+);
   return server;
 }
