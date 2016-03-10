@@ -51,14 +51,14 @@
     }
  catch (    SSLHandshakeException e) {
       if (!WPUrlUtils.isWordPressCom(url)) {
-        throw new HealthCheckException(HealthCheckException.Kind.ERRONEOUS_SSL_CERTIFICATE,0,url,null);
+        throw new WPOrgUtilsException(WPOrgUtilsException.Kind.ERRONEOUS_SSL_CERTIFICATE,0,url,null);
       }
       AppLog.w(AppLog.T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
       return null;
     }
 catch (    TimeoutError e) {
       AppLog.w(AppLog.T.NUX,"Timeout error while connecting to the site: " + currentURL);
-      throw new HealthCheckException(HealthCheckException.Kind.SITE_TIME_OUT,org.wordpress.android.R.string.site_timeout_error,url,null);
+      throw new WPOrgUtilsException(WPOrgUtilsException.Kind.SITE_TIME_OUT,org.wordpress.android.R.string.site_timeout_error,url,null);
     }
   }
   if (URLUtil.isValidUrl(xmlrpcUrl)) {
@@ -66,5 +66,5 @@ catch (    TimeoutError e) {
       return xmlrpcUrl;
     }
   }
-  throw new HealthCheckException(HealthCheckException.Kind.NO_SITE_ERROR,org.wordpress.android.R.string.no_site_error,null,null);
+  throw new WPOrgUtilsException(WPOrgUtilsException.Kind.NO_SITE_ERROR,org.wordpress.android.R.string.no_site_error,null,null);
 }
