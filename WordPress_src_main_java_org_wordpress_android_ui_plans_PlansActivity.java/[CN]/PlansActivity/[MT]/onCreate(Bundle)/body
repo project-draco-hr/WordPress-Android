@@ -1,0 +1,47 @@
+{
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.plans_activity);
+  if (savedInstanceState != null) {
+    mLocalBlogID=savedInstanceState.getInt(ARG_LOCAL_TABLE_BLOG_ID);
+    Serializable serializable=savedInstanceState.getSerializable(ARG_LOCAL_AVAILABLE_PLANS);
+    if (serializable instanceof SitePlan[]) {
+      mAvailablePlans=(SitePlan[])serializable;
+    }
+    mViewpagerPosSelected=savedInstanceState.getInt(SAVED_VIEWPAGER_POS,NO_PREV_POS_SELECTED_VIEWPAGER);
+  }
+ else   if (getIntent() != null) {
+    mLocalBlogID=getIntent().getIntExtra(ARG_LOCAL_TABLE_BLOG_ID,-1);
+  }
+  if (WordPress.getBlog(mLocalBlogID) == null) {
+    AppLog.e(AppLog.T.STATS,"The blog with local_blog_id " + mLocalBlogID + " cannot be loaded from the DB.");
+    Toast.makeText(this,R.string.plans_loading_error,Toast.LENGTH_LONG).show();
+    finish();
+    return;
+  }
+  mViewPager=(WPViewPager)findViewById(R.id.viewpager);
+  mTabLayout=(TabLayout)findViewById(R.id.tab_layout);
+  Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
+  setSupportActionBar(toolbar);
+  toolbar.setNavigationOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      onBackPressed();
+    }
+  }
+);
+  ActionBar actionBar=getSupportActionBar();
+  if (actionBar != null) {
+    actionBar.setTitle(getString(R.string.plans));
+    actionBar.setElevation(0.0f);
+    actionBar.setDisplayShowTitleEnabled(true);
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
+  mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+    @Override public void onPageSelected(    int position){
+      updatePurchaseUI(position);
+    }
+  }
+);
+  if (AppPrefs.isInAppBillingAvailable()) {
+    startInAppBillingHelper();
+  }
+}
