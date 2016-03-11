@@ -1,0 +1,22 @@
+{
+  WordPress.getRestClientUtilsV1_2().get("plans/features/",WordPress.getRestLocaleParams(),null,new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject response){
+      if (response != null) {
+        AppLog.d(AppLog.T.PLANS,response.toString());
+        AppPrefs.setGlobalPlansFeatures(response.toString());
+        requestCompleted();
+      }
+ else {
+        AppLog.w(AppLog.T.PLANS,"Unexpected empty response from server when downloading Features");
+        requestFailed();
+      }
+    }
+  }
+,new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(AppLog.T.PLANS,"Error Loading Plans/Features",volleyError);
+      requestFailed();
+    }
+  }
+);
+}

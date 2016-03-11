@@ -1,0 +1,42 @@
+{
+  Fragment fragment=getPageAdapter().getItem(position);
+  if (!(fragment instanceof PlanFragment)) {
+    return;
+  }
+  SitePlan sitePlan=((PlanFragment)fragment).getSitePlan();
+  Plan globalPlan=PlansUtils.getGlobalPlan(sitePlan.getProductID());
+  if (globalPlan == null) {
+    AppLog.w(AppLog.T.PLANS,"unable to match global plan " + sitePlan.getProductID());
+    finish();
+    return;
+  }
+  boolean showPurchaseButton;
+  if (sitePlan.isCurrentPlan()) {
+    showPurchaseButton=false;
+  }
+ else {
+    long currentPlanProductId=WordPress.wpDB.getPlanIdForLocalTableBlogId(mLocalBlogID);
+    showPurchaseButton=(PlansUtils.compareProducts(sitePlan.getProductID(),currentPlanProductId) == PlansUtils.GREATER_PRODUCT);
+  }
+  ViewGroup framePurchase=(ViewGroup)findViewById(R.id.frame_purchase);
+  ViewGroup containerPurchase=(ViewGroup)findViewById(R.id.purchase_container);
+  if (showPurchaseButton) {
+    TextView txtPurchasePrice=(TextView)framePurchase.findViewById(R.id.text_purchase_price);
+    txtPurchasePrice.setText(PlansUtils.getPlanDisplayPrice(globalPlan));
+    containerPurchase.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        startPurchaseProcess();
+      }
+    }
+);
+  }
+ else {
+    containerPurchase.setOnClickListener(null);
+  }
+  if (showPurchaseButton && framePurchase.getVisibility() != View.VISIBLE) {
+    AniUtils.animateBottomBar(framePurchase,true);
+  }
+ else   if (!showPurchaseButton && framePurchase.getVisibility() == View.VISIBLE) {
+    AniUtils.animateBottomBar(framePurchase,false);
+  }
+}
