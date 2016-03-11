@@ -1,10 +1,16 @@
 {
   if (isValidPosition(position)) {
-    PlanFragment fragment=mFragmentMap.get(position);
-    if (fragment == null) {
-      fragment=getItem(position);
+    Plan planDetails=PlansUtils.getGlobalPlan(mSitePlans[position].getProductID());
+    if (planDetails == null) {
+      AppLog.w(AppLog.T.PLANS,"plans pager > empty plan details in getPageTitle");
+      return "";
     }
-    return fragment.getTitle();
+ else     if (mSitePlans[position].isCurrentPlan()) {
+      return UNICODE_CHECKMARK + " " + planDetails.getProductNameShort();
+    }
+ else {
+      return planDetails.getProductNameShort();
+    }
   }
   return super.getPageTitle(position);
 }
