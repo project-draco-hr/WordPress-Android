@@ -9,10 +9,10 @@
   final JSONObject error=output.optJSONObject("error");
   String xmlrpcUrl=null;
   try {
-    xmlrpcUrl=WPOrgUtils.getSelfHostedXmlrpcUrl(inputUrl,input.optString("username",null),input.optString("username",null));
+    xmlrpcUrl=new FetchBlogListWPOrg("","",inputUrl).getSelfHostedXmlrpcUrl(inputUrl,input.optString("username",null),input.optString("username",null));
     assertNull(testCaseMessage("Testcase defines an error but no error occurred!",testCaseComment),error);
   }
- catch (  WPOrgUtils.WPOrgUtilsException hce) {
+ catch (  FetchBlogListWPOrg.WPOrgUtilsException hce) {
     assertNotNull(testCaseMessage("Error occurred but testcase does not define an error!",testCaseComment),error);
     assertEquals(testCaseMessage("Error message does not match the defined one!",testCaseComment),error.getString("message"),getInstrumentation().getTargetContext().getString(hce.errorMsgId));
   }

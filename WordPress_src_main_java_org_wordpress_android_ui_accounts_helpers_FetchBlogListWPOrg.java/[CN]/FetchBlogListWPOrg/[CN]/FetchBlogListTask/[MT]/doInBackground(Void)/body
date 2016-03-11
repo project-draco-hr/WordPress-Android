@@ -1,18 +1,18 @@
 {
   try {
-    final String baseUrl=WPOrgUtils.canonicalizeSiteUrl(mSelfHostedUrl);
-    final String xmlrpcUrl=WPOrgUtils.getSelfHostedXmlrpcUrl(baseUrl,mHttpUsername,mHttpPassword);
+    final String baseUrl=canonicalizeSiteUrl(mSelfHostedUrl);
+    final String xmlrpcUrl=getSelfHostedXmlrpcUrl(baseUrl,mHttpUsername,mHttpPassword);
     if (!URLUtil.isValidUrl(xmlrpcUrl)) {
       mErrorMsgId=org.wordpress.android.R.string.invalid_site_url_message;
       trackInvalidInsertedURL(xmlrpcUrl);
       return null;
     }
-    return WPOrgUtils.getUserBlogList(URI.create(xmlrpcUrl),mUsername,mPassword,mHttpUsername,mHttpPassword);
+    return getUserBlogList(URI.create(xmlrpcUrl),mUsername,mPassword,mHttpUsername,mHttpPassword);
   }
- catch (  WPOrgUtils.WPOrgUtilsException hce) {
+ catch (  WPOrgUtilsException hce) {
     mErrorMsgId=hce.errorMsgId;
-    mHttpAuthRequired=(hce.kind == WPOrgUtils.WPOrgUtilsException.Kind.HTTP_AUTH_REQUIRED);
-    mErroneousSslCertificate=(hce.kind == WPOrgUtils.WPOrgUtilsException.Kind.ERRONEOUS_SSL_CERTIFICATE);
+    mHttpAuthRequired=(hce.kind == WPOrgUtilsException.Kind.HTTP_AUTH_REQUIRED);
+    mErroneousSslCertificate=(hce.kind == WPOrgUtilsException.Kind.ERRONEOUS_SSL_CERTIFICATE);
     trackInvalidInsertedURL(hce.failedUrl);
     return null;
   }
