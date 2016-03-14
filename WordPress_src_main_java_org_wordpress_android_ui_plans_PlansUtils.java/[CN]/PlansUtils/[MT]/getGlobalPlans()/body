@@ -1,0 +1,21 @@
+{
+  String plansString=AppPrefs.getGlobalPlans();
+  if (TextUtils.isEmpty(plansString)) {
+    return null;
+  }
+  List<Plan> plans=new ArrayList<>();
+  try {
+    JSONObject plansJSONObject=new JSONObject(plansString);
+    JSONArray plansArray=plansJSONObject.getJSONArray("originalResponse");
+    for (int i=0; i < plansArray.length(); i++) {
+      JSONObject currentPlanJSON=plansArray.getJSONObject(i);
+      Plan currentPlan=new Plan(currentPlanJSON);
+      plans.add(currentPlan);
+    }
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.PLANS,"Can't parse the plans list returned from the server",e);
+    return null;
+  }
+  return plans;
+}

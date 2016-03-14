@@ -1,0 +1,20 @@
+{
+  if (deviceCurrencyCode == null) {
+    Currency currency=Currency.getInstance(Locale.getDefault());
+    deviceCurrencyCode=currency.getCurrencyCode();
+    deviceCurrencySymbol=currency.getSymbol(Locale.getDefault());
+  }
+  String currencySymbol;
+  int priceValue;
+  Hashtable<String,Integer> pricesMap=plan.getPrices();
+  if (pricesMap.containsKey(deviceCurrencyCode)) {
+    currencySymbol=deviceCurrencySymbol;
+    priceValue=pricesMap.get(deviceCurrencyCode);
+    return currencySymbol + FormatUtils.formatInt(priceValue);
+  }
+ else {
+    currencySymbol=DOLLAR_SYMBOL;
+    priceValue=pricesMap.get(DOLLAR_ISO4217_CODE);
+    return currencySymbol + FormatUtils.formatInt(priceValue) + " "+ DOLLAR_ISO4217_CODE;
+  }
+}
