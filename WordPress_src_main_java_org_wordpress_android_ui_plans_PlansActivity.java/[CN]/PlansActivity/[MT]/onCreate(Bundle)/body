@@ -7,7 +7,6 @@
     if (serializable instanceof SitePlan[]) {
       mAvailablePlans=(SitePlan[])serializable;
     }
-    mViewpagerPosSelected=savedInstanceState.getInt(SAVED_VIEWPAGER_POS,NO_PREV_POS_SELECTED_VIEWPAGER);
   }
  else   if (getIntent() != null) {
     mLocalBlogID=getIntent().getIntExtra(ARG_LOCAL_TABLE_BLOG_ID,-1);
@@ -43,5 +42,12 @@
 );
   if (AppPrefs.isInAppBillingAvailable()) {
     startInAppBillingHelper();
+  }
+  if (mAvailablePlans == null) {
+    showProgress();
+    PlanUpdateService.startService(this,mLocalBlogID);
+  }
+ else {
+    setupPlansUI();
   }
 }
