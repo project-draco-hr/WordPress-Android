@@ -5,6 +5,7 @@
     WordPress.getRestClientUtils().exportContentAll(currentBlog.getDotComBlogId(),new RestRequest.Listener(){
       @Override public void onResponse(      JSONObject response){
         if (isAdded()) {
+          AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.SITE_SETTINGS_EXPORT_SITE_RESPONSE_OK);
           progressDialog.dismiss();
           Snackbar.make(getView(),R.string.export_email_sent,Snackbar.LENGTH_LONG).show();
         }
@@ -13,6 +14,9 @@
 ,new RestRequest.ErrorListener(){
       @Override public void onErrorResponse(      VolleyError error){
         if (isAdded()) {
+          HashMap<String,Object> errorProperty=new HashMap<>();
+          errorProperty.put(ANALYTICS_ERROR_PROPERTY_KEY,error.getMessage());
+          AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.SITE_SETTINGS_EXPORT_SITE_RESPONSE_ERROR,errorProperty);
           progressDialog.dismiss();
         }
       }
