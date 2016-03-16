@@ -1,0 +1,23 @@
+{
+  if (mAvailablePlans == null || mAvailablePlans.length == 0) {
+    Toast.makeText(PlansActivity.this,R.string.plans_loading_error,Toast.LENGTH_LONG).show();
+    finish();
+    return;
+  }
+  hideProgress();
+  mViewPager.setAdapter(getPageAdapter());
+  mTabLayout.setTabMode(TabLayout.MODE_FIXED);
+  int normalColor=getResources().getColor(R.color.blue_light);
+  int selectedColor=getResources().getColor(R.color.white);
+  mTabLayout.setTabTextColors(normalColor,selectedColor);
+  mTabLayout.setupWithViewPager(mViewPager);
+  if (mViewPager.getVisibility() != View.VISIBLE) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      revealViewPager();
+    }
+ else {
+      mViewPager.setVisibility(View.VISIBLE);
+      mTabLayout.setVisibility(View.VISIBLE);
+    }
+  }
+}
