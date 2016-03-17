@@ -18,12 +18,13 @@ case RequestCodes.PICTURE_LIBRARY_OR_CAPTURE:
       }
     }
   break;
-case RequestCodes.CROP_PHOTO:
+case UCrop.REQUEST_CROP:
 if (resultCode == Activity.RESULT_OK) {
-  fetchMedia(Crop.getOutput(data));
+  fetchMedia(UCrop.getOutput(data));
 }
- else if (resultCode == Crop.RESULT_ERROR) {
-  AppLog.e(AppLog.T.API,Crop.getError(data).getMessage());
+ else if (resultCode == UCrop.RESULT_ERROR) {
+  final Throwable cropError=UCrop.getError(data);
+  AppLog.e(AppLog.T.MAIN,"Image cropping failed!",cropError);
 }
 break;
 }
