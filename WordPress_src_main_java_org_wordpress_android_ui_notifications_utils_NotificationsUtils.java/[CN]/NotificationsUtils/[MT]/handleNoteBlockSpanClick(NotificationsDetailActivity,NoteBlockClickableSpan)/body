@@ -19,13 +19,12 @@ activity.showWebViewActivityForUrl(clickedSpan.getUrl());
 break;
 case STAT:
 case FOLLOW:
-int localTableSiteId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogId((int)clickedSpan.getSiteId());
-if (localTableSiteId > 0) {
-activity.showStatsActivityForSite(localTableSiteId,clickedSpan.getRangeType());
-}
- else if (!TextUtils.isEmpty(clickedSpan.getUrl())) {
+Blog blog=WordPress.wpDB.getBlogForDotComBlogId(String.valueOf(clickedSpan.getSiteId()));
+if (blog == null || blog.getLocalTableBlogId() <= 0 || (!blog.isDotcomFlag() && !blog.isJetpackPowered())) {
 activity.showWebViewActivityForUrl(clickedSpan.getUrl());
+break;
 }
+activity.showStatsActivityForSite(blog.getLocalTableBlogId(),clickedSpan.getRangeType());
 break;
 case LIKE:
 if (ReaderPostTable.postExists(clickedSpan.getSiteId(),clickedSpan.getId())) {
