@@ -43,7 +43,13 @@ mRecyclerView.setRefreshing(true);
 onTagChanged((ReaderTag)criteria);
 }
 @Override public FilterCriteria onRecallSelection(){
-return mCurrentTag;
+if (hasCurrentTag()) {
+return getCurrentTag();
+}
+ else {
+AppLog.w(T.READER,"reader post list > no current tag in onRecallSelection");
+return ReaderTag.getDefaultTag();
+}
 }
 @Override public String onShowEmptyViewMessage(EmptyViewMessageType emptyViewMsgType){
 return null;
