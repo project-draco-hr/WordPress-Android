@@ -1,10 +1,10 @@
 {
   if (setCurrentBlogToLastActive() == null) {
-    List<Map<String,Object>> accounts=WordPress.wpDB.getVisibleBlogs();
-    if (accounts.size() > 0) {
-      int id=Integer.valueOf(accounts.get(0).get("id").toString());
-      setCurrentBlog(id);
-      wpDB.updateLastBlogId(id);
+    int blogId=WordPress.wpDB.getFirstVisibleBlogId();
+    if (blogId == 0) {
+      blogId=WordPress.wpDB.getFirstHiddenBlogId();
     }
+    setCurrentBlogAndSetVisible(blogId);
+    wpDB.updateLastBlogId(blogId);
   }
 }

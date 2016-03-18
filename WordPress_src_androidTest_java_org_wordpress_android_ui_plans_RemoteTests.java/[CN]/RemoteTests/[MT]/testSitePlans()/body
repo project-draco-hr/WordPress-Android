@@ -1,0 +1,38 @@
+{
+  PlansRestRequestAbstractListener listener=new PlansRestRequestAbstractListener(){
+    @Override void parseResponse(    JSONObject response) throws JSONException {
+      List<Plan> plans=new ArrayList<>();
+      JSONArray plansArray=response.getJSONArray("originalResponse");
+      for (int i=0; i < plansArray.length(); i++) {
+        JSONObject currentPlanJSON=plansArray.getJSONObject(i);
+        Plan currentPlan=new Plan(currentPlanJSON);
+        plans.add(currentPlan);
+      }
+      assertEquals(3,plans.size());
+      Plan currentPlan=plans.get(0);
+      assertEquals(currentPlan.getDescription(),"Get a free blog and be on your way to publishing your first post in less than five minutes.");
+      assertEquals(currentPlan.getProductID(),1L);
+      assertEquals(currentPlan.getProductName(),"WordPress.com Free");
+      assertEquals(currentPlan.getBillPeriod(),-1);
+      assertEquals(currentPlan.getRawPrice(),0);
+      assertEquals(currentPlan.getCost(),0);
+      assertEquals(currentPlan.isAvailable(),true);
+      currentPlan=plans.get(1);
+      assertEquals(currentPlan.isFreeTrial(),false);
+      assertEquals(currentPlan.getBundleSubscriptionID(),"5683566");
+      assertEquals(currentPlan.getExpiry(),"2017-03-07");
+      assertEquals(currentPlan.getUserFacingExpiry(),"2017-03-04");
+      assertEquals(currentPlan.getSubscribedDate(),"2016-03-07 08:56:13");
+      currentPlan=plans.get(2);
+      assertEquals(currentPlan.getDescription(),"Everything included with Premium, as well as live chat support, and unlimited access to our premium themes.");
+      assertEquals(currentPlan.getProductID(),1008L);
+      assertEquals(currentPlan.getProductName(),"WordPress.com Business");
+      assertEquals(currentPlan.getBillPeriod(),365);
+      assertEquals(currentPlan.getRawPrice(),199);
+      assertEquals(currentPlan.getCost(),199);
+      assertEquals(currentPlan.isAvailable(),true);
+    }
+  }
+;
+  mRestClientV1_2.makeRequest(Request.Method.POST,"https://public-api.wordpress.com/rest/v1.2/sites/123456/plans",null,listener,errListener);
+}
