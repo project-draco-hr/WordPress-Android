@@ -1,0 +1,19 @@
+{
+  super.onCreate(savedInstanceState);
+  ActionBar actionBar=getSupportActionBar();
+  if (actionBar != null) {
+    actionBar.setHomeButtonEnabled(true);
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
+  FragmentManager fragmentManager=getFragmentManager();
+  mAppSettingsFragment=(AppSettingsFragment)fragmentManager.findFragmentByTag(KEY_APP_SETTINGS_FRAGMENT);
+  mPasscodePreferenceFragment=(PasscodePreferenceFragment)fragmentManager.findFragmentByTag(KEY_PASSCODE_FRAGMENT);
+  if (mAppSettingsFragment == null || mPasscodePreferenceFragment == null) {
+    Bundle passcodeArgs=new Bundle();
+    passcodeArgs.putBoolean(PasscodePreferenceFragment.KEY_SHOULD_INFLATE,false);
+    mAppSettingsFragment=new AppSettingsFragment();
+    mPasscodePreferenceFragment=new PasscodePreferenceFragment();
+    mPasscodePreferenceFragment.setArguments(passcodeArgs);
+    fragmentManager.beginTransaction().replace(android.R.id.content,mPasscodePreferenceFragment,KEY_PASSCODE_FRAGMENT).add(android.R.id.content,mAppSettingsFragment,KEY_APP_SETTINGS_FRAGMENT).commit();
+  }
+}
