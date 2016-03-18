@@ -1,24 +1,18 @@
 {
-  SitePlan sitePlan=getPageAdapter().getSitePlan(position);
-  Plan globalPlan=PlansUtils.getGlobalPlan(sitePlan.getProductID());
-  if (globalPlan == null) {
-    AppLog.w(AppLog.T.PLANS,"unable to match global plan " + sitePlan.getProductID());
-    finish();
-    return;
-  }
+  Plan plan=getPageAdapter().getPlan(position);
   boolean showPurchaseButton;
-  if (sitePlan.isCurrentPlan()) {
+  if (plan.isCurrentPlan()) {
     showPurchaseButton=false;
   }
  else {
     long currentPlanProductId=WordPress.wpDB.getPlanIdForLocalTableBlogId(mLocalBlogID);
-    showPurchaseButton=(PlansUtils.compareProducts(sitePlan.getProductID(),currentPlanProductId) == PlansUtils.GREATER_PRODUCT);
+    showPurchaseButton=plan.isAvailable() && plan.getProductID() > currentPlanProductId;
   }
   ViewGroup framePurchase=(ViewGroup)findViewById(R.id.frame_purchase);
   ViewGroup containerPurchase=(ViewGroup)findViewById(R.id.purchase_container);
   if (showPurchaseButton) {
     TextView txtPurchasePrice=(TextView)framePurchase.findViewById(R.id.text_purchase_price);
-    txtPurchasePrice.setText(PlansUtils.getPlanDisplayPrice(globalPlan));
+    txtPurchasePrice.setText(PlansUtils.getPlanDisplayPrice(plan));
     containerPurchase.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
         startPurchaseProcess();

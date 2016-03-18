@@ -1,0 +1,16 @@
+{
+  AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+  builder.setTitle(R.string.export_your_content);
+  String email=AccountHelper.getDefaultAccount().getEmail();
+  builder.setMessage(getString(R.string.export_your_content_message,email));
+  builder.setPositiveButton(R.string.site_settings_export_content_title,new DialogInterface.OnClickListener(){
+    @Override public void onClick(    DialogInterface dialog,    int which){
+      AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.SITE_SETTINGS_EXPORT_SITE_REQUESTED);
+      exportSite();
+    }
+  }
+);
+  builder.setNegativeButton(R.string.cancel,null);
+  builder.show();
+  AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.SITE_SETTINGS_EXPORT_SITE_ACCESSED);
+}
