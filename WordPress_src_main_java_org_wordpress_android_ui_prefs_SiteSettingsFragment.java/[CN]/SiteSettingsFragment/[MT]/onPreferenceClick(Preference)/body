@@ -13,8 +13,9 @@
     mEditingList=mSiteSettings.getBlacklistKeys();
     showListEditorDialog(R.string.site_settings_blacklist_title,R.string.site_settings_blacklist_description);
   }
- else   if (preference == mDeleteSitePref) {
-    removeBlogWithConfirmation();
+ else   if (preference == mStartOverPref) {
+    AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.SITE_SETTINGS_START_OVER_CONTACT_SUPPORT_CLICKED);
+    HelpshiftHelper.getInstance().showConversation(getActivity(),HelpshiftHelper.Tag.ORIGIN_START_OVER);
   }
  else   if (preference == mCloseAfterPref) {
     showCloseAfterDialog();
@@ -27,6 +28,13 @@
   }
  else   if (preference == mCategoryPref || preference == mFormatPref) {
     return !shouldShowListPreference((DetailListPreference)preference);
+  }
+ else   if (preference == mExportSitePref) {
+    showExportContentDialog();
+  }
+ else   if (preference == mDeleteSitePref) {
+    AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.SITE_SETTINGS_DELETE_SITE_ACCESSED);
+    requestPurchasesForDeletionCheck();
   }
  else {
     return false;
