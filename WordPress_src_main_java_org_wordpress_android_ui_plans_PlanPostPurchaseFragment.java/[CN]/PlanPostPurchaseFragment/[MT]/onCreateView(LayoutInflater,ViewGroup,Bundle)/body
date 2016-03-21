@@ -4,15 +4,49 @@
   TextView txtTitle=(TextView)rootView.findViewById(R.id.text_title);
   TextView txtDescription=(TextView)rootView.findViewById(R.id.text_description);
   Button button=(Button)rootView.findViewById(R.id.button);
-  image.setImageResource(R.drawable.penandink);
-  txtTitle.setText("This is the title");
-  txtDescription.setText("This is the description. It is a nice description and deserves to be respected.");
-  button.setText("Don\'t Press This");
-  button.setOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View v){
-      ToastUtils.showToast(v.getContext(),"You never listen");
-    }
-  }
+  int titleResId;
+  int textResId;
+  int buttonResId;
+switch (mPageNumber) {
+case PAGE_NUMBER_INTRO:
+    titleResId=R.string.plans_post_purchase_title_intro;
+  textResId=R.string.plans_post_purchase_text_intro;
+buttonResId=0;
+break;
+case PAGE_NUMBER_CUSTOMIZE:
+titleResId=R.string.plans_post_purchase_title_customize;
+textResId=R.string.plans_post_purchase_text_customize;
+buttonResId=R.string.plans_post_purchase_button_customize;
+break;
+case PAGE_NUMBER_VIDEO:
+titleResId=R.string.plans_post_purchase_title_video;
+textResId=R.string.plans_post_purchase_text_video;
+buttonResId=R.string.plans_post_purchase_button_video;
+break;
+case PAGE_NUMBER_THEMES:
+titleResId=R.string.plans_post_purchase_title_themes;
+textResId=R.string.plans_post_purchase_text_themes;
+buttonResId=R.string.plans_post_purchase_button_themes;
+break;
+default :
+AppLog.w(AppLog.T.PLANS,"invalid plans post-purchase page");
+throw new IllegalArgumentException("invalid plans post-purchase page");
+}
+txtTitle.setText(titleResId);
+txtDescription.setText(textResId);
+if (buttonResId != 0) {
+button.setVisibility(View.VISIBLE);
+button.setText(buttonResId);
+button.setOnClickListener(new View.OnClickListener(){
+@Override public void onClick(View v){
+handleButtonClick();
+}
+}
 );
-  return rootView;
+}
+ else {
+button.setVisibility(View.GONE);
+}
+image.setImageResource(R.drawable.penandink);
+return rootView;
 }
