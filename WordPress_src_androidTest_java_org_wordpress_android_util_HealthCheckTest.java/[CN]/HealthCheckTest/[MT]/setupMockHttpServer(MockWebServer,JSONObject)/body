@@ -1,0 +1,32 @@
+{
+  final Map<RecordedRequest,MockResponse> mockRequestResponses=new HashMap<>();
+  final JSONArray serverMock=requestResponsesJson.getJSONArray("serverMock");
+  for (int i=0; i < serverMock.length(); i++) {
+    final JSONObject reqRespJson=serverMock.getJSONObject(i);
+    final JSONObject reqJson=reqRespJson.getJSONObject("request");
+    Headers reqHeaders=json2Headers(reqJson.optJSONObject("headers"));
+    RecordedRequest recordedRequest=new RecordedRequest(reqJson.getString("method") + " " + reqJson.getString("path")+ " HTTP/1.1",reqHeaders,null,0,null,0,null);
+    final JSONObject respJson=reqRespJson.getJSONObject("response");
+    Headers respHeaders=json2Headers(respJson.optJSONObject("headers"));
+    String body=respJson.optString("body");
+    if (body.startsWith(sServerResponsesMagicScheme)) {
+      body=stringFromAsset(getInstrumentation().getContext(),sAssetPathBase + body.substring(sServerResponsesMagicScheme.length()));
+    }
+    body=replaceServerMagicName(server,body);
+    final MockResponse resp=new MockResponse().setResponseCode(respJson.getInt("statusCode")).setHeaders(respHeaders).setBody(body);
+    mockRequestResponses.put(recordedRequest,resp);
+  }
+  server.setDispatcher(new Dispatcher(){
+    @Override public MockResponse dispatch(    RecordedRequest request) throws InterruptedException {
+      for (      Map.Entry<RecordedRequest,MockResponse> reqResp : mockRequestResponses.entrySet()) {
+        final RecordedRequest mockRequest=reqResp.getKey();
+        if (mockRequest.getRequestLine().equals(request.getRequestLine())) {
+          return reqResp.getValue();
+        }
+      }
+      return new MockResponse().setResponseCode(404).setBody("");
+    }
+  }
+);
+  return server;
+}
