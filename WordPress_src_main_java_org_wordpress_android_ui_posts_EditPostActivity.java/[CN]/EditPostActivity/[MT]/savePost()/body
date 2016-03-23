@@ -1,4 +1,15 @@
 {
+  if (mEditorFragment.hasFailedMediaUploads()) {
+    AlertDialog.Builder builder=new AlertDialog.Builder(this);
+    builder.setMessage(R.string.editor_toast_failed_uploads).setPositiveButton(R.string.editor_remove_failed_uploads,new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int id){
+        mEditorFragment.removeAllFailedMediaUploads();
+      }
+    }
+).setNegativeButton(android.R.string.cancel,null);
+    builder.create().show();
+    return true;
+  }
   updatePostObject(false);
   if (!mPost.isPublishable()) {
     ToastUtils.showToast(this,R.string.error_publish_empty_post,Duration.SHORT);
