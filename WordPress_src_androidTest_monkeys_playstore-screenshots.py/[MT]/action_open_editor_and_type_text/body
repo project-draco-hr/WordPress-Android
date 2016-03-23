@@ -2,13 +2,12 @@ def action_open_editor_and_type_text(device, serialno):
     print 'open editor'
     for i in range(5):
         device.press('KEYCODE_DPAD_LEFT')
-    device.press('KEYCODE_DPAD_DOWN')
-    device.press('KEYCODE_ENTER')
-    time.sleep(1)
-    for word in settings.example_post_content.split():
-        device.type(word)
-        device.press('KEYCODE_SPACE')
     viewclient = ViewClient(device, serialno)
-    view = viewclient.findViewWithText(settings.example_post_content)
+    viewclient.dump()
+    view = viewclient.findViewById('org.wordpress.android:id/fab_button')
     view.touch()
-    time.sleep(1)
+    time.sleep(2)
+    viewclient.dump()
+    view = viewclient.findViewById('org.wordpress.android:id/post_content')
+    view.type(settings.example_post_content)
+    time.sleep(2)
