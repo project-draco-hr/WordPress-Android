@@ -1,0 +1,20 @@
+{
+  JSONArray testCases=jsonFromAsset(getInstrumentation().getContext(),sAssetPathBase + "health-check-xplat-testcases.json").getJSONArray("testcases");
+  for (int i=0; i < testCases.length(); i++) {
+    final JSONObject testCase=testCases.getJSONObject(i);
+    final String testCaseComment=testCase.getString("comment");
+    final JSONObject testSetup=testCase.getJSONObject("setup");
+    final String realm=testCase.getString("realm");
+switch (realm) {
+case "URL_CANONICALIZATION":
+      runUrlCanonicalization(testCaseComment,testSetup);
+    break;
+case "XMLPRC_DISCOVERY":
+  runXmlrpcDiscovery(testCaseComment,testSetup);
+break;
+default :
+assertTrue("health-check realm " + realm + " is not supported!",false);
+break;
+}
+}
+}
