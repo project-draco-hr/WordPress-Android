@@ -5,7 +5,7 @@ case RELATED_POSTS_REQUEST_CODE:
       mSiteSettings.setShowRelatedPosts(data.getBooleanExtra(RelatedPostsDialog.SHOW_RELATED_POSTS_KEY,false));
     mSiteSettings.setShowRelatedPostHeader(data.getBooleanExtra(RelatedPostsDialog.SHOW_HEADER_KEY,false));
   mSiteSettings.setShowRelatedPostImages(data.getBooleanExtra(RelatedPostsDialog.SHOW_IMAGES_KEY,false));
-mSiteSettings.saveSettings();
+onPreferenceChange(mRelatedPostsPref,mSiteSettings.getRelatedPostsDescription());
 break;
 case THREADING_REQUEST_CODE:
 int levels=data.getIntExtra(NumberPickerDialog.CUR_VALUE_KEY,-1);
@@ -24,6 +24,13 @@ case MULTIPLE_LINKS_REQUEST_CODE:
 int numLinks=data.getIntExtra(NumberPickerDialog.CUR_VALUE_KEY,-1);
 if (numLinks < 0 || numLinks == mSiteSettings.getMultipleLinks()) return;
 onPreferenceChange(mMultipleLinksPref,numLinks);
+break;
+}
+}
+ else {
+switch (requestCode) {
+case DELETE_SITE_REQUEST_CODE:
+deleteSite();
 break;
 }
 }

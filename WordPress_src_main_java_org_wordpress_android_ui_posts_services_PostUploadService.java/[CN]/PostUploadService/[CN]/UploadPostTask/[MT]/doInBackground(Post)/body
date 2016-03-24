@@ -1,5 +1,4 @@
 {
-  mErrorUnavailableVideoPress=false;
   mPost=posts[0];
   mPostUploadNotifier=new PostUploadNotifier(mPost);
   String postTitle=TextUtils.isEmpty(mPost.getTitle()) ? getString(R.string.untitled) : mPost.getTitle();
@@ -41,17 +40,6 @@
     }
   }
   Map<String,Object> contentStruct=new HashMap<String,Object>();
-  if (!mPost.isPage() && mPost.isLocalDraft()) {
-    SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(mContext);
-    if (prefs.getBoolean(getString(R.string.pref_key_post_sig_enabled),false)) {
-      String tagline=prefs.getString(getString(R.string.pref_key_post_sig),"");
-      if (!TextUtils.isEmpty(tagline)) {
-        String tag="\n\n<span class=\"post_sig\">" + tagline + "</span>\n\n";
-        if (TextUtils.isEmpty(moreContent))         descriptionContent+=tag;
- else         moreContent+=tag;
-      }
-    }
-  }
   if (!mPost.isPage()) {
     if (!TextUtils.isEmpty(mPost.getPostFormat())) {
       contentStruct.put("wp_post_format",mPost.getPostFormat());
@@ -118,8 +106,18 @@
       contentStruct.put("custom_fields",geo);
     }
   }
-  if (featuredImageID != -1) {
-    contentStruct.put("wp_post_thumbnail",featuredImageID);
+  if (mUseLegacyMode) {
+    if (featuredImageID != -1) {
+      contentStruct.put("wp_post_thumbnail",featuredImageID);
+    }
+  }
+ else   if (mPost.featuredImageHasChanged()) {
+    if (mPost.getFeaturedImageId() < 1 && !mPost.isLocalDraft()) {
+      contentStruct.put("wp_post_thumbnail","");
+    }
+ else {
+      contentStruct.put("wp_post_thumbnail",mPost.getFeaturedImageId());
+    }
   }
   if (!TextUtils.isEmpty(mPost.getQuickPostType())) {
     mClient.addQuickPostHeader(mPost.getQuickPostType());

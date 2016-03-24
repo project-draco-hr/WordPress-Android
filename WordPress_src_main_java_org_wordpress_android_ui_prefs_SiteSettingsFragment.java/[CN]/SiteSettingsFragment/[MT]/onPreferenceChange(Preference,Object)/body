@@ -1,5 +1,5 @@
 {
-  if (newValue == null)   return false;
+  if (newValue == null || !mEditingEnabled)   return false;
   if (preference == mTitlePref) {
     mSiteSettings.setTitle(newValue.toString());
     changeEditTextPreferenceValue(mTitlePref,mSiteSettings.getTitle());
@@ -20,7 +20,7 @@
     changeLanguageValue(mSiteSettings.getLanguageCode());
   }
  else   if (preference == mPrivacyPref) {
-    mSiteSettings.setPrivacy(Integer.valueOf(newValue.toString()));
+    mSiteSettings.setPrivacy(Integer.parseInt(newValue.toString()));
     setDetailListPreferenceValue(mPrivacyPref,String.valueOf(mSiteSettings.getPrivacy()),mSiteSettings.getPrivacyDescription());
   }
  else   if (preference == mAllowCommentsPref || preference == mAllowCommentsNested) {
@@ -59,7 +59,8 @@
   }
  else   if (preference == mMultipleLinksPref) {
     mSiteSettings.setMultipleLinks(Integer.parseInt(newValue.toString()));
-    mMultipleLinksPref.setSummary(getResources().getQuantityString(R.plurals.site_settings_multiple_links_summary,mSiteSettings.getMultipleLinks(),mSiteSettings.getMultipleLinks()));
+    String s=StringUtils.getQuantityString(getActivity(),R.string.site_settings_multiple_links_summary_zero,R.string.site_settings_multiple_links_summary_one,R.string.site_settings_multiple_links_summary_other,mSiteSettings.getMultipleLinks());
+    mMultipleLinksPref.setSummary(s);
   }
  else   if (preference == mUsernamePref) {
     mSiteSettings.setUsername(newValue.toString());
@@ -86,6 +87,15 @@
   }
  else   if (preference == mUploadAndLinkPref) {
     mBlog.setFullSizeImage(Boolean.valueOf(newValue.toString()));
+  }
+ else   if (preference == mRelatedPostsPref) {
+    mRelatedPostsPref.setSummary(newValue.toString());
+  }
+ else   if (preference == mModerationHoldPref) {
+    mModerationHoldPref.setSummary(mSiteSettings.getModerationHoldDescription());
+  }
+ else   if (preference == mBlacklistPref) {
+    mBlacklistPref.setSummary(mSiteSettings.getBlacklistDescription());
   }
  else {
     return false;

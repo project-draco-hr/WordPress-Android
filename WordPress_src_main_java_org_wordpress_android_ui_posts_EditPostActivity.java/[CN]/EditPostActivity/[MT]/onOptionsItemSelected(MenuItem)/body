@@ -1,28 +1,15 @@
 {
   int itemId=item.getItemId();
-  if (itemId == R.id.menu_save_post) {
-    updatePostObject(false);
-    if (!mPost.isPublishable()) {
-      ToastUtils.showToast(this,R.string.error_publish_empty_post,Duration.SHORT);
+  if (itemId == android.R.id.home) {
+    Fragment fragment=getFragmentManager().findFragmentByTag(ImageSettingsDialogFragment.IMAGE_SETTINGS_DIALOG_TAG);
+    if (fragment != null && fragment.isVisible()) {
       return false;
     }
-    savePost(false,false);
-    trackSavePostAnalytics();
-    if (!NetworkUtils.isNetworkAvailable(this)) {
-      ToastUtils.showToast(this,R.string.error_publish_no_network,Duration.SHORT);
-      return false;
-    }
-    PostUploadService.addPostToUpload(mPost);
-    startService(new Intent(this,PostUploadService.class));
-    setResult(RESULT_OK);
-    finish();
-    return true;
-  }
- else   if (itemId == R.id.menu_preview_post) {
-    mViewPager.setCurrentItem(PAGE_PREVIEW);
-  }
- else   if (itemId == android.R.id.home) {
     if (mViewPager.getCurrentItem() > PAGE_CONTENT) {
+      if (mViewPager.getCurrentItem() == PAGE_SETTINGS) {
+        mPost.setFeaturedImageId(mEditPostSettingsFragment.getFeaturedImageId());
+        mEditorFragment.setFeaturedImageId(mPost.getFeaturedImageId());
+      }
       mViewPager.setCurrentItem(PAGE_CONTENT);
       invalidateOptionsMenu();
     }
@@ -30,6 +17,25 @@
       saveAndFinish();
     }
     return true;
+  }
+  MediaUploadService mediaUploadService=MediaUploadService.getInstance();
+  if ((mediaUploadService != null && mediaUploadService.hasUploads()) || mEditorFragment.isUploadingMedia()) {
+    ToastUtils.showToast(this,R.string.editor_toast_uploading_please_wait,Duration.SHORT);
+    return false;
+  }
+  if (itemId == R.id.menu_save_post) {
+    return savePost();
+  }
+ else   if (itemId == R.id.menu_preview_post) {
+    mViewPager.setCurrentItem(PAGE_PREVIEW);
+  }
+ else   if (itemId == R.id.menu_post_settings) {
+    InputMethodManager imm=((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE));
+    imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(),0);
+    if (mShowNewEditor) {
+      mEditPostSettingsFragment.updateFeaturedImage(mPost.getFeaturedImageId());
+    }
+    mViewPager.setCurrentItem(PAGE_SETTINGS);
   }
   return false;
 }

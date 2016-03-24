@@ -1,0 +1,29 @@
+{
+  HttpURLConnection conn=null;
+  try {
+    URL requestURL=new URL(url);
+    conn=(HttpURLConnection)requestURL.openConnection();
+    conn.setReadTimeout(REQUEST_TIMEOUT_MS);
+    conn.setConnectTimeout(REQUEST_TIMEOUT_MS);
+    conn.setRequestProperty("User-Agent",USER_AGENT);
+    conn.setUseCaches(false);
+    conn.setRequestProperty("Connection","close");
+    conn.setRequestMethod("GET");
+    conn.connect();
+    int respCode=conn.getResponseCode();
+    return respCode;
+  }
+ catch (  Exception e) {
+    AppLog.e(AppLog.T.NUX,"Error while checking for the plugins folder on the server.",e);
+  }
+ finally {
+    try {
+      if (conn != null) {
+        conn.disconnect();
+      }
+    }
+ catch (    Exception e) {
+    }
+  }
+  return 0;
+}

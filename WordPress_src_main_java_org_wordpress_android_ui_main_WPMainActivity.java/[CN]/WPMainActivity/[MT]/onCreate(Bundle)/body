@@ -37,42 +37,53 @@
     }
   }
 );
+  mAppBarElevation=getResources().getDimensionPixelSize(R.dimen.appbar_elevation);
   mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
   mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener(){
     @Override public void onPageSelected(    int position){
       AppPrefs.setMainTabIndex(position);
 switch (position) {
-case WPMainTabAdapter.TAB_NOTIFS:
-        new UpdateLastSeenTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+case WPMainTabAdapter.TAB_MY_SITE:
+        setTabLayoutElevation(mAppBarElevation);
       break;
-  }
-  trackLastVisibleTab(position,true);
+case WPMainTabAdapter.TAB_READER:
+    setTabLayoutElevation(0);
+  break;
+case WPMainTabAdapter.TAB_ME:
+setTabLayoutElevation(mAppBarElevation);
+break;
+case WPMainTabAdapter.TAB_NOTIFS:
+setTabLayoutElevation(mAppBarElevation);
+new UpdateLastSeenTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+break;
+}
+trackLastVisibleTab(position,true);
 }
 @Override public void onPageScrollStateChanged(int state){
 }
 @Override public void onPageScrolled(int position,float positionOffset,int positionOffsetPixels){
-  if (position == WPMainTabAdapter.TAB_MY_SITE) {
-    EventBus.getDefault().post(new MainViewPagerScrolled(positionOffset));
-  }
+if (position == WPMainTabAdapter.TAB_MY_SITE) {
+EventBus.getDefault().post(new MainViewPagerScrolled(positionOffset));
+}
 }
 }
 );
 if (savedInstanceState == null) {
 if (AccountHelper.isSignedIn()) {
-  boolean openedFromPush=(getIntent() != null && getIntent().getBooleanExtra(ARG_OPENED_FROM_PUSH,false));
-  if (openedFromPush) {
-    getIntent().putExtra(ARG_OPENED_FROM_PUSH,false);
-    launchWithNoteId();
-  }
- else {
-    int position=AppPrefs.getMainTabIndex();
-    if (mTabAdapter.isValidPosition(position) && position != mViewPager.getCurrentItem()) {
-      mViewPager.setCurrentItem(position);
-    }
-  }
+boolean openedFromPush=(getIntent() != null && getIntent().getBooleanExtra(ARG_OPENED_FROM_PUSH,false));
+if (openedFromPush) {
+getIntent().putExtra(ARG_OPENED_FROM_PUSH,false);
+launchWithNoteId();
 }
  else {
-  ActivityLauncher.showSignInForResult(this,false);
+int position=AppPrefs.getMainTabIndex();
+if (mTabAdapter.isValidPosition(position) && position != mViewPager.getCurrentItem()) {
+mViewPager.setCurrentItem(position);
+}
+}
+}
+ else {
+ActivityLauncher.showSignInForResult(this,false);
 }
 }
 }
