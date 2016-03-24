@@ -1,5 +1,5 @@
 {
-  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+  RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       if (jsonObject != null) {
         loadAvatar(AccountHelper.getDefaultAccount(),true,new WPNetworkImageView.ImageLoadListener(){
@@ -33,9 +33,16 @@
     return;
   }
   mProgressBar.setVisibility(View.VISIBLE);
-  final RestRequest request=WordPress.getGravatarRestClientUtilsV1().newPostRequest("upload-image",null,listener,errorListener);
-  MultipartRequest multipartRequest=new MultipartRequest(request,listener,errorListener);
-  multipartRequest.addPart("filedata",file);
-  multipartRequest.addPart("account",AccountHelper.getDefaultAccount().getEmail());
-  WordPress.getGravatarRestClientUtilsV1().post(multipartRequest,null,errorListener);
+  RestClientUtils gravatarRestClientUtils=WordPress.getGravatarRestClientUtilsV1();
+  MultipartRequest multipartRequest;
+  try {
+    multipartRequest=new MultipartRequestBuilder().setResponseListener(listener).setResponseErrorListener(errorListener).addPart("filedata",file).addPart("account",AccountHelper.getDefaultAccount().getEmail()).build(gravatarRestClientUtils.pathToUrl("upload-image"));
+  }
+ catch (  IOException e) {
+    AppLog.e(AppLog.T.API,"Cannot make the Gravatar upload request!",e);
+    return;
+  }
+  if (multipartRequest != null) {
+    WordPress.getGravatarRestClientUtilsV1().post(multipartRequest,null,errorListener);
+  }
 }
