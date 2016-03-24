@@ -1,0 +1,16 @@
+{
+  String sanitizedURL=url;
+  try {
+    sanitizedURL=truncateURLAtPrefix(sanitizedURL,"wp-login.php");
+    sanitizedURL=truncateURLAtPrefix(sanitizedURL,"/wp-admin");
+    sanitizedURL=truncateURLAtPrefix(sanitizedURL,"/wp-content");
+    sanitizedURL=truncateURLAtPrefix(sanitizedURL,"/xmlrpc.php");
+  }
+ catch (  IllegalArgumentException e) {
+    AppLog.e(AppLog.T.NUX,"Can't clean the original url: " + sanitizedURL,e);
+  }
+  while (sanitizedURL.endsWith("/")) {
+    sanitizedURL=sanitizedURL.substring(0,sanitizedURL.length() - 1);
+  }
+  return sanitizedURL;
+}
