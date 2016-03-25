@@ -1,0 +1,49 @@
+{
+  if (data != null) {
+    int indexOfFirstXML=data.indexOf("<?xml");
+    if (indexOfFirstXML > 0) {
+      data=data.substring(indexOfFirstXML);
+    }
+    StringReader stringReader=new StringReader(data);
+    XmlPullParser parser=Xml.newPullParser();
+    try {
+      parser.setInput(stringReader);
+      int eventType=parser.getEventType();
+      while (eventType != XmlPullParser.END_DOCUMENT) {
+        String name;
+        String rel="";
+        String type="";
+        String href="";
+switch (eventType) {
+case XmlPullParser.START_TAG:
+          name=parser.getName();
+        if (name.equalsIgnoreCase("link")) {
+          for (int i=0; i < parser.getAttributeCount(); i++) {
+            String attrName=parser.getAttributeName(i);
+            String attrValue=parser.getAttributeValue(i);
+            if (attrName.equals("rel")) {
+              rel=attrValue;
+            }
+ else             if (attrName.equals("type"))             type=attrValue;
+ else             if (attrName.equals("href"))             href=attrValue;
+          }
+          if (rel.equals("EditURI") && type.equals("application/rsd+xml")) {
+            return href;
+          }
+        }
+      break;
+  }
+  eventType=parser.next();
+}
+}
+ catch (XmlPullParserException e) {
+AppLog.e(AppLog.T.API,e);
+return null;
+}
+catch (IOException e) {
+AppLog.e(AppLog.T.API,e);
+return null;
+}
+}
+return null;
+}
