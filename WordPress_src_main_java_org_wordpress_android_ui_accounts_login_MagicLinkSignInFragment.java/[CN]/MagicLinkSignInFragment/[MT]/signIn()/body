@@ -1,15 +1,19 @@
 {
-  if (mIsMagicLink) {
-    boolean isValidWPComEmail=true;
-    if (isValidWPComEmail) {
-      mListener.onMagicLinkRequestSuccess();
-    }
- else {
-      mPasswordLayout.setVisibility(View.VISIBLE);
-      mForgotPassword.setVisibility(View.VISIBLE);
-    }
+  if (mSelfHosted || isEnterPasswordMode()) {
+    super.signIn();
   }
  else {
-    super.signIn();
+    if (isUsernameEmail()) {
+      boolean isValidWPComEmail=false;
+      if (isValidWPComEmail) {
+        mListener.onMagicLinkRequestSuccess();
+      }
+ else {
+        showPasswordFieldAndFocus();
+      }
+    }
+ else {
+      showPasswordFieldAndFocus();
+    }
   }
 }
