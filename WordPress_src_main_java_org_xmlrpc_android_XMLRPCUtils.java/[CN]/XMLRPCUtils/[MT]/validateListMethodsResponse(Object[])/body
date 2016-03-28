@@ -1,0 +1,21 @@
+{
+  if (availableMethods == null) {
+    AppLog.e(AppLog.T.NUX,"The response of system.listMethods was empty!");
+    return false;
+  }
+  String[] requiredMethods={"wp.getUsersBlogs","wp.getPage","wp.getCommentStatusList","wp.newComment","wp.editComment","wp.deleteComment","wp.getComments","wp.getComment","wp.getOptions","wp.uploadFile","wp.newCategory","wp.getTags","wp.getCategories","wp.editPage","wp.deletePage","wp.newPage","wp.getPages"};
+  for (  String currentRequiredMethod : requiredMethods) {
+    boolean match=false;
+    for (    Object currentAvailableMethod : availableMethods) {
+      if ((currentAvailableMethod).equals(currentRequiredMethod)) {
+        match=true;
+        break;
+      }
+    }
+    if (!match) {
+      AppLog.e(AppLog.T.NUX,"The following XML-RPC method: " + currentRequiredMethod + " is missing on the"+ " server.");
+      return false;
+    }
+  }
+  return true;
+}

@@ -1,6 +1,6 @@
 {
   final Bucket.ObjectCursor<Note> objectCursor=(Bucket.ObjectCursor<Note>)cursor;
-  final String noteId=objectCursor.getSimperiumKey();
+  noteViewHolder.itemView.setTag(objectCursor.getSimperiumKey());
   Note.NoteTimeGroup timeGroup=Note.getTimeGroupForTimestamp(getLongForColumnName(objectCursor,Note.Schema.TIMESTAMP_INDEX));
   Note.NoteTimeGroup previousTimeGroup=null;
   if (objectCursor.getPosition() > 0 && objectCursor.moveToPrevious()) {
@@ -76,21 +76,15 @@
   noteViewHolder.imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
   boolean isUnread=SqlUtils.sqlToBool(getIntForColumnName(objectCursor,Note.Schema.UNREAD_INDEX));
   String noticonCharacter=getStringForColumnName(objectCursor,Note.Schema.NOTICON_INDEX);
-  if (!TextUtils.isEmpty(noticonCharacter)) {
-    noteViewHolder.noteIcon.setText(noticonCharacter);
-    if (commentStatus == CommentStatus.UNAPPROVED) {
-      noteViewHolder.noteIcon.setBackgroundResource(R.drawable.shape_oval_orange);
-    }
- else     if (isUnread) {
-      noteViewHolder.noteIcon.setBackgroundResource(R.drawable.shape_oval_blue_white_stroke);
-    }
- else {
-      noteViewHolder.noteIcon.setBackgroundResource(R.drawable.shape_oval_grey);
-    }
-    noteViewHolder.noteIcon.setVisibility(View.VISIBLE);
+  noteViewHolder.noteIcon.setText(noticonCharacter);
+  if (commentStatus == CommentStatus.UNAPPROVED) {
+    noteViewHolder.noteIcon.setBackgroundResource(R.drawable.shape_oval_orange);
+  }
+ else   if (isUnread) {
+    noteViewHolder.noteIcon.setBackgroundResource(R.drawable.shape_oval_blue_white_stroke);
   }
  else {
-    noteViewHolder.noteIcon.setVisibility(View.GONE);
+    noteViewHolder.noteIcon.setBackgroundResource(R.drawable.shape_oval_grey);
   }
   if (isUnread) {
     noteViewHolder.itemView.setBackgroundColor(mColorUnread);
@@ -98,12 +92,4 @@
  else {
     noteViewHolder.itemView.setBackgroundColor(mColorRead);
   }
-  noteViewHolder.itemView.setOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View v){
-      if (mOnNoteClickListener != null && noteId != null) {
-        mOnNoteClickListener.onClickNote(noteId);
-      }
-    }
-  }
-);
 }
