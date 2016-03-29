@@ -1,6 +1,6 @@
 {
   int remoteBlogId=WordPress.wpDB.getRemoteBlogIdForLocalTableBlogId(mLocalBlogId);
-  WordPress.getRestClientUtils().get("sites/" + remoteBlogId + "/plans",WordPress.getRestLocaleParams(),null,new RestRequest.Listener(){
+  WordPress.getRestClientUtilsV1_2().get("sites/" + remoteBlogId + "/plans",WordPress.getRestLocaleParams(),null,new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject response){
       if (response == null) {
         AppLog.w(AppLog.T.PLANS,"Unexpected empty response from server");
@@ -10,14 +10,11 @@
       AppLog.d(AppLog.T.PLANS,response.toString());
       mSitePlans.clear();
       try {
-        JSONArray planIDs=response.names();
-        if (planIDs != null) {
-          for (int i=0; i < planIDs.length(); i++) {
-            String currentKey=planIDs.getString(i);
-            JSONObject currentPlanJSON=response.getJSONObject(currentKey);
-            SitePlan currentPlan=new SitePlan(Long.valueOf(currentKey),currentPlanJSON,mLocalBlogId);
-            mSitePlans.add(currentPlan);
-          }
+        JSONArray plansArray=response.getJSONArray("originalResponse");
+        for (int i=0; i < plansArray.length(); i++) {
+          JSONObject currentPlanJSON=plansArray.getJSONObject(i);
+          Plan currentPlan=new Plan(currentPlanJSON);
+          mSitePlans.add(currentPlan);
         }
         requestCompleted();
       }
