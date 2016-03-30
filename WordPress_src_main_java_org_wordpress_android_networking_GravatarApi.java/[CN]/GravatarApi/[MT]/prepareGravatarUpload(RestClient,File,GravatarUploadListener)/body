@@ -1,0 +1,26 @@
+{
+  MultipartRequestBuilder multipartRequestBuilder=new MultipartRequestBuilder();
+  if (gravatarUploadListener != null) {
+    multipartRequestBuilder.setResponseListener(new RestRequest.Listener(){
+      @Override public void onResponse(      JSONObject jsonObject){
+        if (jsonObject != null) {
+          gravatarUploadListener.onSuccess();
+        }
+ else {
+          gravatarUploadListener.onError();
+        }
+      }
+    }
+);
+    multipartRequestBuilder.setResponseErrorListener(new RestRequest.ErrorListener(){
+      @Override public void onErrorResponse(      VolleyError volleyError){
+        AppLog.e(AppLog.T.API,volleyError);
+        gravatarUploadListener.onError();
+      }
+    }
+);
+  }
+  multipartRequestBuilder.addPart("filedata",file);
+  multipartRequestBuilder.addPart("account",AccountHelper.getDefaultAccount().getEmail());
+  return multipartRequestBuilder.build(restClient.getAbsoluteURL("upload-image"));
+}

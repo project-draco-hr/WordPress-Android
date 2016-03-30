@@ -1,0 +1,24 @@
+{
+  File file=new File(filePath);
+  if (!file.exists()) {
+    return;
+  }
+  mProgressBar.setVisibility(View.VISIBLE);
+  GravatarApi.uploadGravatar(file,new GravatarApi.GravatarUploadListener(){
+    @Override public void onSuccess(){
+      loadAvatar(AccountHelper.getDefaultAccount(),true,new WPNetworkImageView.ImageLoadListener(){
+        @Override public void onLoaded(){
+          mProgressBar.setVisibility(View.GONE);
+        }
+        @Override public void onError(){
+          mProgressBar.setVisibility(View.GONE);
+        }
+      }
+);
+    }
+    @Override public void onError(){
+      mProgressBar.setVisibility(View.GONE);
+    }
+  }
+);
+}

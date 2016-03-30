@@ -1,0 +1,18 @@
+{
+  RestRequest gravatarUploadRequest;
+  try {
+    gravatarUploadRequest=prepareGravatarUpload(WordPress.getGravatarRestClientUtilsV1().getRestClient(),file,gravatarUploadListener);
+  }
+ catch (  IOException e) {
+    AppLog.e(AppLog.T.API,"Cannot make the Gravatar upload request!",e);
+    gravatarUploadListener.onError();
+    return;
+  }
+  WordPress.getGravatarRestClientUtilsV1().post(gravatarUploadRequest,null,new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(AppLog.T.API,volleyError);
+      gravatarUploadListener.onError();
+    }
+  }
+);
+}
