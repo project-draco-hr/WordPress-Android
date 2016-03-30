@@ -1,8 +1,18 @@
 {
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
-      if (jsonObject != null && callback != null) {
-        callback.onSuccess(jsonObject);
+      if (jsonObject != null) {
+        try {
+          JSONArray jsonArray=jsonObject.getJSONArray("users");
+          List<Person> people=peopleListFromJSON(jsonArray,siteId);
+          PeopleTable.savePeople(people);
+          if (callback != null) {
+            callback.onSuccess();
+          }
+        }
+ catch (        JSONException e) {
+          AppLog.e(T.API,e);
+        }
       }
     }
   }
