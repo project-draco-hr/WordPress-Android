@@ -1,7 +1,7 @@
 {
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
-      if (jsonObject != null) {
+      if (jsonObject != null && callback != null) {
         callback.onSuccess(jsonObject);
       }
     }
@@ -10,7 +10,9 @@
   RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.e(T.API,volleyError);
-      callback.onError(volleyError);
+      if (callback != null) {
+        callback.onError(volleyError);
+      }
     }
   }
 ;
