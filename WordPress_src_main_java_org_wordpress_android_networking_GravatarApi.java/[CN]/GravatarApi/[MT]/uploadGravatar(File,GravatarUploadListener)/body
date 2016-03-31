@@ -1,16 +1,18 @@
 {
-  RestRequest gravatarUploadRequest;
-  try {
-    gravatarUploadRequest=prepareGravatarUpload(WordPress.getGravatarRestClientUtilsV1().getRestClient(),file,gravatarUploadListener);
-  }
- catch (  IOException e) {
-    AppLog.e(AppLog.T.API,"Cannot make the Gravatar upload request!",e);
-    gravatarUploadListener.onError();
-    return;
-  }
-  WordPress.getGravatarRestClientUtilsV1().post(gravatarUploadRequest,null,new RestRequest.ErrorListener(){
-    @Override public void onErrorResponse(    VolleyError volleyError){
-      AppLog.e(AppLog.T.API,volleyError);
+  GravatarClient client=ServiceGenerator.createService(GravatarClient.class,AccountHelper.getDefaultAccount().getAccessToken(),"Bearer");
+  MediaType MultiPartFormData=MediaType.parse("multipart/form-data");
+  RequestBody account=RequestBody.create(MultiPartFormData,AccountHelper.getDefaultAccount().getEmail());
+  MultipartBody.Part body=MultipartBody.Part.createFormData("filedata",file.getName(),RequestBody.create(MultiPartFormData,file));
+  client.uploadImage(account,body).enqueue(new Callback<GravatarUploadResponse>(){
+    @Override public void onResponse(    Call<GravatarUploadResponse> call,    Response<GravatarUploadResponse> response){
+      if (response.isSuccessful()) {
+        gravatarUploadListener.onSuccess();
+      }
+ else {
+        gravatarUploadListener.onError();
+      }
+    }
+    @Override public void onFailure(    Call<GravatarUploadResponse> call,    Throwable t){
       gravatarUploadListener.onError();
     }
   }
