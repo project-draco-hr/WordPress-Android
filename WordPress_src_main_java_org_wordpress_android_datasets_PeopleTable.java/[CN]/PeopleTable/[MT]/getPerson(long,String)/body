@@ -2,16 +2,8 @@
   String[] args={Long.toString(personId),siteID};
   Cursor c=getReadableDb().rawQuery("SELECT * FROM " + PEOPLE_TABLE + " WHERE person_id=? AND site_id=?",args);
   try {
-    if (!c.moveToFirst()) {
-      return null;
-    }
-    String username=c.getString(c.getColumnIndex("user_name"));
-    String firstName=c.getString(c.getColumnIndex("first_name"));
-    String lastName=c.getString(c.getColumnIndex("last_name"));
-    String displayName=c.getString(c.getColumnIndex("display_name"));
-    String avatarUrl=c.getString(c.getColumnIndex("avatar_url"));
-    Role role=Role.fromKey(c.getString(c.getColumnIndex("role")));
-    return new Person(personId,siteID,username,firstName,lastName,displayName,avatarUrl,role);
+    if (!c.moveToFirst())     return null;
+    return getPersonFromCursor(c,siteID);
   }
   finally {
     SqlUtils.closeCursor(c);
