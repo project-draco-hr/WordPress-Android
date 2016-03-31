@@ -3,14 +3,12 @@
     httpClient.addInterceptor(new Interceptor(){
       @Override public Response intercept(      Interceptor.Chain chain) throws IOException {
         Request original=chain.request();
-        Request.Builder requestBuilder=original.newBuilder().header("Accept","application/json").header("Authorization","Bearer " + token).method(original.method(),original.body());
+        Request.Builder requestBuilder=original.newBuilder().header("Authorization","Bearer " + token).method(original.method(),original.body());
         Request request=requestBuilder.build();
         return chain.proceed(request);
       }
     }
 );
   }
-  OkHttpClient client=httpClient.build();
-  Retrofit retrofit=builder.client(client).build();
-  return retrofit.create(serviceClass);
+  return httpClient.build();
 }
