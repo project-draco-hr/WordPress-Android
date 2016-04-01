@@ -1,7 +1,7 @@
 {
   super.onCreate(savedInstanceState);
-  mBlogLocalId=BlogUtils.getBlogLocalId(WordPress.getCurrentBlog());
-  mBlog=WordPress.getBlog(mBlogLocalId);
+  mLocalBlogId=BlogUtils.getBlogLocalId(WordPress.getCurrentBlog());
+  mBlog=WordPress.getBlog(mLocalBlogId);
   ActionBar actionBar=getSupportActionBar();
   if (actionBar != null) {
     actionBar.setHomeButtonEnabled(true);
@@ -11,7 +11,7 @@
   setTitle(R.string.people);
   if (mBlog != null) {
     ListView listView=(ListView)findViewById(android.R.id.list);
-    mPeopleAdapter=new PeopleAdapter(this,Long.parseLong(mBlog.getDotComBlogId()));
+    mPeopleAdapter=new PeopleAdapter(this,mLocalBlogId);
     listView.setAdapter(mPeopleAdapter);
     final Activity context=this;
     listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){

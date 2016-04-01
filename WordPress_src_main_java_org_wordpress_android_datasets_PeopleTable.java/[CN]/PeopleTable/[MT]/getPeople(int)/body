@@ -1,0 +1,15 @@
+{
+  List<Person> people=new ArrayList<>();
+  String[] args={Integer.toString(localTableBlogId)};
+  Cursor c=getReadableDb().rawQuery("SELECT * FROM " + PEOPLE_TABLE + " WHERE local_blog_id=?",args);
+  try {
+    while (c.moveToNext()) {
+      Person comment=getPersonFromCursor(c,localTableBlogId);
+      people.add(comment);
+    }
+    return people;
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+}
