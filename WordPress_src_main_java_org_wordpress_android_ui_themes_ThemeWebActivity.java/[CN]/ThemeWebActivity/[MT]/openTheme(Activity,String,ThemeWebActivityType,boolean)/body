@@ -1,6 +1,10 @@
 {
   String blogId=WordPress.getCurrentBlog().getDotComBlogId();
   Theme currentTheme=WordPress.wpDB.getTheme(blogId,themeId);
+  if (currentTheme == null) {
+    ToastUtils.showToast(activity,R.string.could_not_load_theme);
+    return;
+  }
   String url=getUrl(currentTheme,type,currentTheme.isPremium());
   openWPCOMURL(activity,url,currentTheme,WordPress.getCurrentBlog(),isCurrentTheme);
 }

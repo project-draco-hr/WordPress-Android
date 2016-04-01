@@ -1,6 +1,12 @@
 {
   super.onCreate(savedInstanceState);
   setContentView(R.layout.plan_post_purchase_activity);
+  if (savedInstanceState != null) {
+    mIsBusinessPlan=savedInstanceState.getBoolean(ARG_IS_BUSINESS_PLAN,false);
+  }
+ else {
+    mIsBusinessPlan=getIntent().getBooleanExtra(ARG_IS_BUSINESS_PLAN,false);
+  }
   mTxtSkip=(TextView)findViewById(R.id.text_skip);
   mTxtNext=(TextView)findViewById(R.id.text_next);
   mIndicatorContainerView=(ViewGroup)findViewById(R.id.layout_indicator_container);
@@ -29,7 +35,9 @@
     }
   }
 );
-  for (int i=0; i < NUM_PAGES; i++) {
+  int numPages=getNumPages();
+  for (int i=0; i < numPages; i++) {
     getIndicator(i).setOnClickListener(mIndicatorClickListener);
   }
+  getIndicator(PAGE_NUMBER_THEMES).setVisibility(numPages > 3 ? View.VISIBLE : View.GONE);
 }
