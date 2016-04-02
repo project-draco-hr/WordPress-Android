@@ -1,0 +1,10 @@
+{
+  if (!UrlUtils.isValidUrlAndHostNotNull(url)) {
+    AppLog.e(AppLog.T.NUX,"invalid URL: " + url);
+    throw new XMLRPCUtilsException(Kind.INVALID_URL,org.wordpress.android.R.string.invalid_site_url_message,url,null);
+  }
+  AppLog.i(AppLog.T.NUX,"Trying system.listMethods on the following URL: " + url);
+  URI uri=URI.create(url);
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(uri,httpUsername,httpPassword);
+  return client.call(ApiHelper.Method.LIST_METHODS);
+}

@@ -1,0 +1,48 @@
+{
+  XMLRPCClientInterface client=XMLRPCFactory.instantiate(xmlrpcUri,httpUsername,httpPassword);
+  Object[] params={username,password};
+  try {
+    Object[] userBlogs=(Object[])client.call(ApiHelper.Method.GET_BLOGS,params);
+    if (userBlogs == null) {
+      throw new XMLRPCUtilsException(Kind.XMLRPC_MALFORMED_RESPONSE,R.string.xmlrpc_malformed_response_error,xmlrpcUri.toString(),client.getResponse());
+    }
+    Arrays.sort(userBlogs,BlogUtils.BlogNameComparator);
+    List<Map<String,Object>> userBlogList=new ArrayList<>();
+    for (    Object blog : userBlogs) {
+      try {
+        userBlogList.add((Map<String,Object>)blog);
+      }
+ catch (      ClassCastException e) {
+        AppLog.e(AppLog.T.NUX,"invalid data received from XMLRPC call wp.getUsersBlogs");
+      }
+    }
+    return userBlogList;
+  }
+ catch (  XmlPullParserException parserException) {
+    AppLog.e(AppLog.T.NUX,"invalid data received from XMLRPC call wp.getUsersBlogs",parserException);
+    throw new XMLRPCUtilsException(Kind.XMLRPC_ERROR,R.string.xmlrpc_error,xmlrpcUri.toString(),client.getResponse());
+  }
+catch (  XMLRPCFault xmlRpcFault) {
+    AppLog.e(AppLog.T.NUX,"XMLRPCFault received from XMLRPC call wp.getUsersBlogs",xmlRpcFault);
+    throw new XMLRPCUtilsException(Kind.XMLRPC_ERROR,handleXmlRpcFault(xmlRpcFault),xmlrpcUri.toString(),client.getResponse());
+  }
+catch (  XMLRPCException xmlRpcException) {
+    AppLog.e(AppLog.T.NUX,"XMLRPCException received from XMLRPC call wp.getUsersBlogs",xmlRpcException);
+    throw new XMLRPCUtilsException(Kind.XMLRPC_ERROR,R.string.no_site_error,xmlrpcUri.toString(),client.getResponse());
+  }
+catch (  SSLHandshakeException e) {
+    if (!WPUrlUtils.isWordPressCom(xmlrpcUri.toString())) {
+      throw new XMLRPCUtilsException(Kind.ERRONEOUS_SSL_CERTIFICATE,0,xmlrpcUri.toString(),null);
+    }
+    AppLog.w(AppLog.T.NUX,"SSLHandshakeException failed. Erroneous SSL certificate detected.");
+  }
+catch (  ConnectTimeoutException e) {
+    AppLog.e(AppLog.T.NUX,"Timeout exception when calling wp.getUsersBlogs",e);
+    throw new XMLRPCUtilsException(Kind.SITE_TIME_OUT,R.string.site_timeout_error,xmlrpcUri.toString(),client.getResponse());
+  }
+catch (  IOException e) {
+    AppLog.e(AppLog.T.NUX,"Exception received from XMLRPC call wp.getUsersBlogs",e);
+    throw new XMLRPCUtilsException(Kind.XMLRPC_ERROR,R.string.no_site_error,xmlrpcUri.toString(),client.getResponse());
+  }
+  throw new XMLRPCUtilsException(Kind.XMLRPC_ERROR,R.string.no_site_error,xmlrpcUri.toString(),client.getResponse());
+}

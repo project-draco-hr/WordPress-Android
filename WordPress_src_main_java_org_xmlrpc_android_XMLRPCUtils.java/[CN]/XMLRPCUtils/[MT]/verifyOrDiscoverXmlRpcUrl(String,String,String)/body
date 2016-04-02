@@ -1,0 +1,11 @@
+{
+  String xmlrpcUrl=XMLRPCUtils.verifyXmlrpcUrl(siteUrl,httpUsername,httpPassword);
+  if (xmlrpcUrl == null) {
+    AppLog.w(AppLog.T.NUX,"The XML-RPC endpoint was not found by using our 'smart' cleaning approach" + ". Time to start the Endpoint discovery process");
+    xmlrpcUrl=XMLRPCUtils.discoverSelfHostedXmlrpcUrl(siteUrl,httpUsername,httpPassword);
+  }
+  if (!URLUtil.isValidUrl(xmlrpcUrl)) {
+    throw new XMLRPCUtilsException(Kind.NO_SITE_ERROR,R.string.invalid_site_url_message,xmlrpcUrl,null);
+  }
+  return xmlrpcUrl;
+}

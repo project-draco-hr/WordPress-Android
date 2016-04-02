@@ -23,28 +23,8 @@
     ToastUtils.showToast(this,R.string.editor_toast_uploading_please_wait,Duration.SHORT);
     return false;
   }
-  if (mEditorFragment.hasFailedMediaUploads()) {
-    ToastUtils.showToast(this,R.string.editor_toast_failed_uploads,Duration.SHORT);
-    return false;
-  }
   if (itemId == R.id.menu_save_post) {
-    updatePostObject(false);
-    if (!mPost.isPublishable()) {
-      ToastUtils.showToast(this,R.string.error_publish_empty_post,Duration.SHORT);
-      return false;
-    }
-    savePostToDb();
-    trackSavePostAnalytics();
-    if (!NetworkUtils.isNetworkAvailable(this)) {
-      ToastUtils.showToast(this,R.string.error_publish_no_network,Duration.SHORT);
-      return false;
-    }
-    PostUploadService.addPostToUpload(mPost);
-    PostUploadService.setLegacyMode(!mShowNewEditor);
-    startService(new Intent(this,PostUploadService.class));
-    setResult(RESULT_OK);
-    finish();
-    return true;
+    return savePost();
   }
  else   if (itemId == R.id.menu_preview_post) {
     mViewPager.setCurrentItem(PAGE_PREVIEW);

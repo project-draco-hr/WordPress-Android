@@ -2,6 +2,9 @@
   ProfilingUtils.split("EditorFragment.onDomLoaded");
   mWebView.post(new Runnable(){
     public void run(){
+      if (!isAdded()) {
+        return;
+      }
       mDomHasLoaded=true;
       mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').setMultiline('true');");
       mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_title').setPlaceholderText('" + mTitlePlaceholder + "');");
@@ -15,8 +18,10 @@
       for (      ToggleButton button : mTagToggleButtonMap.values()) {
         button.setChecked(false);
       }
+      boolean editorHasFocus=false;
       if (mWaitingMediaFiles.size() > 0) {
         mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').focus();");
+        editorHasFocus=true;
         for (        Map.Entry<String,MediaFile> entry : mWaitingMediaFiles.entrySet()) {
           appendMediaFile(entry.getValue(),entry.getKey(),null);
         }
@@ -24,11 +29,16 @@
       }
       if (mWaitingGalleries.size() > 0) {
         mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').focus();");
+        editorHasFocus=true;
         for (        MediaGallery mediaGallery : mWaitingGalleries) {
           appendGallery(mediaGallery);
         }
         mWaitingGalleries.clear();
       }
+      if (!editorHasFocus) {
+        mWebView.execJavaScriptFromString("ZSSEditor.focusFirstEditableField();");
+      }
+      ((InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(mWebView,InputMethodManager.SHOW_IMPLICIT);
       ProfilingUtils.split("EditorFragment.onDomLoaded completed");
       ProfilingUtils.dump();
       ProfilingUtils.stop();

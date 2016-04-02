@@ -1,0 +1,43 @@
+{
+  try {
+    Object[] methods=(Object[])doSystemListMethodsXMLRPC(url,httpUsername,httpPassword);
+    if (methods == null) {
+      AppLog.e(AppLog.T.NUX,"The response of system.listMethods was empty!");
+      return false;
+    }
+    AppLog.i(AppLog.T.NUX,"system.listMethods replied with XML-RPC objects on the URL: " + url);
+    AppLog.i(AppLog.T.NUX,"Validating the XML-RPC response...");
+    if (validateListMethodsResponse(methods)) {
+      AppLog.i(AppLog.T.NUX,"Validation ended with success!!! Endpoint found!!!");
+      return true;
+    }
+ else {
+      AppLog.w(AppLog.T.NUX,"Validation ended with errors!!! Endpoint found but doesn't contain all the " + "required methods.");
+      throw new XMLRPCUtilsException(Kind.MISSING_XMLRPC_METHOD,org.wordpress.android.R.string.xmlrpc_missing_method_error,url,null);
+    }
+  }
+ catch (  XMLRPCException e) {
+    AppLog.e(AppLog.T.NUX,"system.listMethods failed on: " + url,e);
+    if (isHTTPAuthErrorMessage(e)) {
+      throw new XMLRPCUtilsException(Kind.HTTP_AUTH_REQUIRED,0,url,null);
+    }
+  }
+catch (  SSLHandshakeException|SSLPeerUnverifiedException e) {
+    if (!WPUrlUtils.isWordPressCom(url)) {
+      throw new XMLRPCUtilsException(Kind.ERRONEOUS_SSL_CERTIFICATE,0,url,null);
+    }
+    AppLog.e(AppLog.T.NUX,"SSL error. Erroneous SSL certificate detected.",e);
+  }
+catch (  IOException|XmlPullParserException e) {
+    AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_FAILED_TO_GUESS_XMLRPC);
+    AppLog.e(AppLog.T.NUX,"system.listMethods failed on: " + url,e);
+    if (isHTTPAuthErrorMessage(e)) {
+      throw new XMLRPCUtilsException(Kind.HTTP_AUTH_REQUIRED,0,url,null);
+    }
+  }
+catch (  IllegalArgumentException e) {
+    AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_FAILED_TO_GUESS_XMLRPC);
+    throw new XMLRPCUtilsException(Kind.INVALID_URL,org.wordpress.android.R.string.invalid_site_url_message,url,null);
+  }
+  return false;
+}

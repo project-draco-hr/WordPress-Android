@@ -1,0 +1,21 @@
+{
+  final MockWebServer server=new MockWebServer();
+  testSetup=new JSONObject(replaceServerMagicName(server,testSetup.toString()));
+  final JSONObject input=testSetup.getJSONObject("input");
+  setupMockHttpServer(server,input);
+  final String inputUrl=input.isNull("siteUrl") ? server.url("").toString() : input.getString("siteUrl");
+  final JSONObject output=testSetup.getJSONObject("output");
+  final String outputUrl=output.optString("xmlrpcEndpoint",null);
+  final JSONObject error=output.optJSONObject("error");
+  String xmlrpcUrl=null;
+  try {
+    xmlrpcUrl=XMLRPCUtils.verifyOrDiscoverXmlRpcUrl(inputUrl,input.optString("username",null),input.optString("username",null));
+    assertNull(testCaseMessage("Testcase defines an error but no error occurred!",testCaseComment),error);
+  }
+ catch (  XMLRPCUtils.XMLRPCUtilsException hce) {
+    assertNotNull(testCaseMessage("Error occurred but testcase does not define an error!",testCaseComment),error);
+    assertEquals(testCaseMessage("Error message does not match the defined one!",testCaseComment),error.getString("message"),getInstrumentation().getTargetContext().getString(hce.errorMsgId));
+  }
+  assertEquals(testCaseMessage("XMLRPC URL does not match the defined one!",testCaseComment),outputUrl,xmlrpcUrl);
+  server.shutdown();
+}
