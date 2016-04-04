@@ -6,8 +6,21 @@
   }
 ,new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError error){
-      mListener.onMagicLinkRequestSuccess();
-      showPasswordFieldAndFocus();
+      String string=error.getMessage();
+      try {
+        JSONObject jsonResponse=new JSONObject(string);
+        String errorReason=jsonResponse.getString("error");
+        if (errorReason != null && errorReason.equals("taken")) {
+          mListener.onMagicLinkRequestSuccess();
+        }
+ else {
+          showPasswordFieldAndFocus();
+        }
+      }
+ catch (      JSONException e) {
+        e.printStackTrace();
+        showPasswordFieldAndFocus();
+      }
     }
   }
 );
