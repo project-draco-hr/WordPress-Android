@@ -1,7 +1,7 @@
 {
   super.onCreate(savedInstanceState);
-  mLocalBlogId=BlogUtils.getBlogLocalId(WordPress.getCurrentBlog());
-  mBlog=WordPress.getBlog(mLocalBlogId);
+  int localBlogId=BlogUtils.getBlogLocalId(WordPress.getCurrentBlog());
+  Blog blog=WordPress.getBlog(localBlogId);
   ActionBar actionBar=getSupportActionBar();
   if (actionBar != null) {
     actionBar.setHomeButtonEnabled(true);
@@ -9,9 +9,9 @@
   }
   setContentView(R.layout.people_management_activity);
   setTitle(R.string.people);
-  if (mBlog != null) {
+  if (blog != null) {
     ListView listView=(ListView)findViewById(android.R.id.list);
-    List<Person> peopleList=PeopleTable.getPeople(mLocalBlogId);
+    List<Person> peopleList=PeopleTable.getPeople(localBlogId);
     mPeopleAdapter=new PeopleAdapter(this,peopleList);
     listView.setAdapter(mPeopleAdapter);
     final Activity context=this;
@@ -22,6 +22,6 @@
       }
     }
 );
-    refreshUsersList();
+    refreshUsersList(blog.getDotComBlogId(),localBlogId);
   }
 }
