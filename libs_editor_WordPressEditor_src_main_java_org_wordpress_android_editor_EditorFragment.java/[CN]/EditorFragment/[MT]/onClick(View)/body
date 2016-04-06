@@ -1,37 +1,7 @@
 {
   int id=v.getId();
   if (id == R.id.format_bar_button_html) {
-    mEditorFragmentListener.onTrackableEvent(TrackableEvent.HTML_BUTTON_TAPPED);
-    if (!mUploadingMedia.isEmpty()) {
-      ((ToggleButton)v).setChecked(false);
-      if (isAdded()) {
-        ToastUtils.showToast(getActivity(),R.string.alert_html_toggle_uploading,ToastUtils.Duration.LONG);
-      }
-      return;
-    }
-    clearFormatBarButtons();
-    updateFormatBarEnabledState(true);
-    if (((ToggleButton)v).isChecked()) {
-      mSourceViewTitle.setText(getTitle());
-      SpannableString spannableContent=new SpannableString(getContent());
-      HtmlStyleUtils.styleHtmlForDisplay(spannableContent);
-      mSourceViewContent.setText(spannableContent);
-      mWebView.setVisibility(View.GONE);
-      mSourceView.setVisibility(View.VISIBLE);
-      mSourceViewContent.requestFocus();
-      mSourceViewContent.setSelection(0);
-      InputMethodManager imm=((InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE));
-      imm.showSoftInput(mSourceViewContent,InputMethodManager.SHOW_IMPLICIT);
-    }
- else {
-      mWebView.setVisibility(View.VISIBLE);
-      mSourceView.setVisibility(View.GONE);
-      mTitle=mSourceViewTitle.getText().toString();
-      mContentHtml=mSourceViewContent.getText().toString();
-      updateVisualEditorFields();
-      mWebView.execJavaScriptFromString("ZSSEditor.getFailedMedia();");
-      mWebView.execJavaScriptFromString("ZSSEditor.resetSelectionOnField('zss_field_content');");
-    }
+    checkForFailedUploadAndSwitchToHtmlMode((ToggleButton)v);
   }
  else   if (id == R.id.format_bar_button_media) {
     mEditorFragmentListener.onTrackableEvent(TrackableEvent.MEDIA_BUTTON_TAPPED);
