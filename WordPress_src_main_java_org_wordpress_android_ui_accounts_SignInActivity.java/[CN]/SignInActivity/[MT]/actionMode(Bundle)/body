@@ -1,15 +1,15 @@
 {
   int actionMode=SIGN_IN_REQUEST;
   if (extras != null) {
-    actionMode=extras.getInt(START_FRAGMENT_KEY,-1);
-    if (extras.containsKey(ARG_JETPACK_SITE_AUTH)) {
-      Blog jetpackBlog=WordPress.getBlog(extras.getInt(ARG_JETPACK_SITE_AUTH));
+    actionMode=extras.getInt(EXTRA_START_FRAGMENT,-1);
+    if (extras.containsKey(EXTRA_JETPACK_SITE_AUTH)) {
+      Blog jetpackBlog=WordPress.getBlog(extras.getInt(EXTRA_JETPACK_SITE_AUTH));
       if (jetpackBlog != null) {
-        String customMessage=extras.getString(ARG_JETPACK_MESSAGE_AUTH,null);
+        String customMessage=extras.getString(EXTRA_JETPACK_MESSAGE_AUTH,null);
         mSignInFragment.setBlogAndCustomMessageForJetpackAuth(jetpackBlog,customMessage);
       }
     }
- else     if (extras.containsKey(ARG_IS_AUTH_ERROR)) {
+ else     if (extras.containsKey(EXTRA_IS_AUTH_ERROR)) {
       mSignInFragment.showAuthErrorMessage();
     }
   }
@@ -20,4 +20,5 @@ case ADD_SELF_HOSTED_BLOG:
 default :
 break;
 }
+mSignInFragment.smartLockAutoFill();
 }
