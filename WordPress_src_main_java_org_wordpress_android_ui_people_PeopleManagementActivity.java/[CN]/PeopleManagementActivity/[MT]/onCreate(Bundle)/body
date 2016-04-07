@@ -1,9 +1,20 @@
 {
   super.onCreate(savedInstanceState);
+  int localBlogId=BlogUtils.getBlogLocalId(WordPress.getCurrentBlog());
+  Blog blog=WordPress.getBlog(localBlogId);
+  ActionBar actionBar=getSupportActionBar();
+  if (actionBar != null) {
+    actionBar.setHomeButtonEnabled(true);
+    actionBar.setDisplayHomeAsUpEnabled(true);
+  }
   setContentView(R.layout.people_management_activity);
+  setTitle(R.string.people);
   FragmentManager fragmentManager=getFragmentManager();
   if (mPeopleListFragment == null) {
     mPeopleListFragment=PeopleListFragment.newInstance();
     fragmentManager.beginTransaction().add(android.R.id.content,mPeopleListFragment).commit();
+  }
+  if (blog != null) {
+    refreshUsersList(blog.getDotComBlogId(),localBlogId);
   }
 }
