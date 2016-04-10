@@ -3,19 +3,14 @@
   String action=getIntent().getAction();
   Uri uri=getIntent().getData();
   if (Intent.ACTION_VIEW.equals(action) && uri != null) {
-    if (uri.equals("viewpost")) {
-      mBlogId=uri.getQueryParameter("blogId");
-      mPostId=uri.getQueryParameter("postId");
-      if (AccountHelper.isSignedInWordPressDotCom()) {
-        showPost();
-      }
- else {
-        Intent intent=new Intent(this,SignInActivity.class);
-        startActivityForResult(intent,INTENT_WELCOME);
-      }
+    mBlogId=uri.getQueryParameter("blogId");
+    mPostId=uri.getQueryParameter("postId");
+    if (AccountHelper.isSignedInWordPressDotCom()) {
+      showPost();
     }
  else {
-      finish();
+      Intent intent=new Intent(this,SignInActivity.class);
+      startActivityForResult(intent,INTENT_WELCOME);
     }
   }
 }
