@@ -1,0 +1,19 @@
+{
+  GoogleApiAvailability googleApiAvailability=GoogleApiAvailability.getInstance();
+  int connectionResult=googleApiAvailability.isGooglePlayServicesAvailable(activity);
+switch (connectionResult) {
+case ConnectionResult.SUCCESS:
+    return true;
+case ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED:
+  Dialog dialog=googleApiAvailability.getErrorDialog(activity,connectionResult,0);
+if (dialog != null) {
+  dialog.show();
+}
+default :
+case ConnectionResult.SERVICE_MISSING:
+case ConnectionResult.SERVICE_DISABLED:
+case ConnectionResult.SERVICE_INVALID:
+AppLog.w(T.NOTIFS,"Google Play Services unavailable, connection result: " + googleApiAvailability.getErrorString(connectionResult));
+}
+return false;
+}
