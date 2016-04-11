@@ -13,4 +13,17 @@
   }
   WPPrefUtils.layoutAsInput(editText);
   editText.setSelection(editText.getText().length());
+  TextView message=(TextView)view.findViewById(android.R.id.message);
+  WPPrefUtils.layoutAsDialogMessage(message);
+  ViewGroup.MarginLayoutParams layoutParams=(ViewGroup.MarginLayoutParams)message.getLayoutParams();
+  int leftMargin=0;
+  int bottomMargin=view.getResources().getDimensionPixelSize(R.dimen.margin_small);
+  if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
+    leftMargin=view.getResources().getDimensionPixelSize(R.dimen.margin_small);
+  }
+  if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+    leftMargin=view.getResources().getDimensionPixelSize(R.dimen.margin_large);
+  }
+  layoutParams.setMargins(leftMargin,layoutParams.topMargin,layoutParams.rightMargin,bottomMargin);
+  message.setLayoutParams(layoutParams);
 }
