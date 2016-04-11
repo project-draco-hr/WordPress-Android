@@ -1,0 +1,41 @@
+{
+  if (mIabHelper == null) {
+    return;
+  }
+  try {
+    Inventory inventory=mIabHelper.queryInventory(true,null,null);
+    List<Purchase> iaps=inventory.getAllPurchases();
+    for (    Purchase purchase : iaps) {
+      AppLog.d(AppLog.T.PLANS,"Original purchase JSON " + purchase.getOriginalJson());
+      try {
+        JSONObject developerPayload=new JSONObject(purchase.getDeveloperPayload());
+        Map<String,String> params=new HashMap<>();
+        params.put("blog_id",developerPayload.getString("blog_id"));
+        params.put("iap_sku",purchase.getSku());
+        params.put("iap_token",purchase.getToken());
+        params.put("iap_package_name",purchase.getPackageName());
+        params.put("client_id",BuildConfig.OAUTH_APP_ID);
+        params.put("client_secret",BuildConfig.OAUTH_APP_SECRET);
+        WordPress.getRestClientUtilsV1_1().post(IAP_ENDPOINT,params,null,new RestRequest.Listener(){
+          @Override public void onResponse(          JSONObject response){
+            if (response != null) {
+              AppLog.d(AppLog.T.PLANS,"Response from the server: " + response.toString());
+            }
+          }
+        }
+,new RestRequest.ErrorListener(){
+          @Override public void onErrorResponse(          VolleyError error){
+            AppLog.e(AppLog.T.PLANS,"Response from the server",error);
+          }
+        }
+);
+      }
+ catch (      JSONException e) {
+        AppLog.e(AppLog.T.PLANS,"Unable to parse IAP info - " + purchase.getOriginalJson(),e);
+      }
+    }
+  }
+ catch (  IabException e) {
+    AppLog.e(AppLog.T.PLANS,"Unable to refresh the inventory",e);
+  }
+}

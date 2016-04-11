@@ -9,6 +9,7 @@
   }
  catch (  JSONException e) {
     AppLog.e(AppLog.T.PLANS,"Can't add extra info to purchase data!",e);
+    return;
   }
   mIabHelper.launchSubscriptionPurchaseFlow(this,sku,PURCHASE_PLAN_REQUEST,new IabHelper.OnIabPurchaseFinishedListener(){
     public void onIabPurchaseFinished(    IabResult result,    Purchase info){
@@ -16,17 +17,17 @@
         AppLog.d(AppLog.T.PLANS,"IabResult: " + result.toString());
         if (result.isSuccess()) {
           if (info != null) {
+            WordPress.sUpdateWordPressComIAP.forceRun();
             AppLog.d(AppLog.T.PLANS,"Purchase: " + info.toString());
             AppLog.d(AppLog.T.PLANS,"You have bought the " + info.getSku() + ". Excellent choice, adventurer!");
             boolean isBusinessPlan=(mViewPager.getCurrentItem() == mViewPager.getAdapter().getCount() - 1);
             Intent intent=new Intent(PlansActivity.this,PlanPostPurchaseActivity.class);
             intent.putExtra(PlanPostPurchaseActivity.ARG_IS_BUSINESS_PLAN,isBusinessPlan);
-            intent.putExtra(PlanPostPurchaseActivity.ARG_LOCAL_TABLE_BLOG_ID,mLocalBlogID);
-            intent.putExtra(PlanPostPurchaseActivity.ARG_PURCHASE_SKU,info.getSku());
             startActivity(intent);
           }
         }
  else {
+          AppLog.e(AppLog.T.PLANS,"Purchase failure " + result.getMessage());
         }
       }
     }
