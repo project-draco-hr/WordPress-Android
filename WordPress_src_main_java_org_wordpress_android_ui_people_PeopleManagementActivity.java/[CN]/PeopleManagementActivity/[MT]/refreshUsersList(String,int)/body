@@ -2,11 +2,14 @@
   PeopleUtils.fetchUsers(dotComBlogId,localBlogId,new PeopleUtils.Callback(){
     @Override public void onSuccess(    List<Person> peopleList){
       PeopleTable.savePeople(peopleList);
-      if (mPeopleListFragment != null) {
-        mPeopleListFragment.refreshPeopleList();
+      FragmentManager fragmentManager=getFragmentManager();
+      PeopleListFragment peopleListFragment=(PeopleListFragment)fragmentManager.findFragmentByTag(KEY_PEOPLE_LIST_FRAGMENT);
+      PersonDetailFragment personDetailFragment=(PersonDetailFragment)fragmentManager.findFragmentByTag(KEY_PERSON_DETAIL_FRAGMENT);
+      if (peopleListFragment != null) {
+        peopleListFragment.refreshPeopleList();
       }
-      if (mPersonDetailFragment != null) {
-        mPersonDetailFragment.refreshPersonDetails();
+      if (personDetailFragment != null) {
+        personDetailFragment.refreshPersonDetails();
       }
     }
     @Override public void onError(    VolleyError error){
