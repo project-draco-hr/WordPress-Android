@@ -1,4 +1,13 @@
 {
-  PersonDetailFragment fragment=PersonDetailFragment.newInstance(person.getPersonID(),person.getLocalTableBlogId());
-  getFragmentManager().beginTransaction().replace(android.R.id.content,fragment).addToBackStack(null).commit();
+  long personID=person.getPersonID();
+  int localTableBlogID=person.getLocalTableBlogId();
+  if (mPersonDetailFragment == null) {
+    mPersonDetailFragment=PersonDetailFragment.newInstance(personID,localTableBlogID);
+  }
+ else {
+    mPersonDetailFragment.setPersonDetails(personID,localTableBlogID);
+  }
+  if (!mPersonDetailFragment.isAdded()) {
+    getFragmentManager().beginTransaction().replace(android.R.id.content,mPersonDetailFragment).addToBackStack(null).commit();
+  }
 }
