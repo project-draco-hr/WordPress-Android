@@ -6,13 +6,20 @@
   WordPress.getRestClientUtilsV1_1().sendLoginEmail(params,new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject response){
       if (mListener != null) {
+        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_REQUESTED);
         mListener.onMagicLinkSent();
       }
     }
   }
 ,new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError error){
-      String yup="yup";
+      HashMap<String,String> errorProperties=new HashMap<>();
+      errorProperties.put("error",error.getMessage());
+      AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_FAILED,errorProperties);
+      Snackbar.make(getView(),"Currently unavailable. Please enter your password",Snackbar.LENGTH_SHORT);
+      if (mListener != null) {
+        mListener.onEnterPasswordRequested();
+      }
     }
   }
 );
