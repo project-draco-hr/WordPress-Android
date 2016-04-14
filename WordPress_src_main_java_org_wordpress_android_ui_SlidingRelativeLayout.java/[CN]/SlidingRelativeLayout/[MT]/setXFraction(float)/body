@@ -1,4 +1,19 @@
 {
-  int width=getWidth();
-  setX((width > 0) ? (xFraction * width) : 0);
+  this.xFraction=fraction;
+  if (getWidth() == 0) {
+    if (preDrawListener == null) {
+      preDrawListener=new ViewTreeObserver.OnPreDrawListener(){
+        @Override public boolean onPreDraw(){
+          getViewTreeObserver().removeOnPreDrawListener(preDrawListener);
+          setXFraction(xFraction);
+          return true;
+        }
+      }
+;
+      getViewTreeObserver().addOnPreDrawListener(preDrawListener);
+    }
+    return;
+  }
+  float translationX=getWidth() * fraction;
+  setTranslationX(translationX);
 }
