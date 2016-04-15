@@ -1,4 +1,8 @@
 {
+  if (!NetworkUtils.isNetworkAvailable(this)) {
+    ToastUtils.showToast(this,R.string.error_publish_no_network,Duration.SHORT);
+    return false;
+  }
   if (mEditorFragment.hasFailedMediaUploads()) {
     AlertDialog.Builder builder=new AlertDialog.Builder(this);
     builder.setMessage(R.string.editor_toast_failed_uploads).setPositiveButton(R.string.editor_remove_failed_uploads,new DialogInterface.OnClickListener(){
@@ -10,21 +14,27 @@
     builder.create().show();
     return true;
   }
-  updatePostObject(false);
-  if (!mPost.isPublishable()) {
-    ToastUtils.showToast(this,R.string.error_publish_empty_post,Duration.SHORT);
-    return false;
+  new Thread(new Runnable(){
+    @Override public void run(){
+      updatePostObject(false);
+      savePostToDb();
+      if (!mPost.isPublishable()) {
+        mHandler.post(new Runnable(){
+          @Override public void run(){
+            ToastUtils.showToast(EditPostActivity.this,R.string.error_publish_empty_post,Duration.SHORT);
+          }
+        }
+);
+        return;
+      }
+      trackSavePostAnalytics();
+      PostUploadService.addPostToUpload(mPost);
+      PostUploadService.setLegacyMode(!mShowNewEditor);
+      startService(new Intent(EditPostActivity.this,PostUploadService.class));
+      setResult(RESULT_OK);
+      finish();
+    }
   }
-  savePostToDb();
-  trackSavePostAnalytics();
-  if (!NetworkUtils.isNetworkAvailable(this)) {
-    ToastUtils.showToast(this,R.string.error_publish_no_network,Duration.SHORT);
-    return false;
-  }
-  PostUploadService.addPostToUpload(mPost);
-  PostUploadService.setLegacyMode(!mShowNewEditor);
-  startService(new Intent(this,PostUploadService.class));
-  setResult(RESULT_OK);
-  finish();
+).start();
   return true;
 }
