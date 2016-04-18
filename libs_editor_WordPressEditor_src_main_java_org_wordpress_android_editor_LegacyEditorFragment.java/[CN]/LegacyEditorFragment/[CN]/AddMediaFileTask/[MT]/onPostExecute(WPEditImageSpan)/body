@@ -1,0 +1,38 @@
+{
+  int selectionStart=mStart;
+  int selectionEnd=mEnd;
+  if (selectionStart > selectionEnd) {
+    int temp=selectionEnd;
+    selectionEnd=selectionStart;
+    selectionStart=temp;
+  }
+  imageSpan.setPosition(selectionStart,selectionEnd);
+  int line, column=0;
+  if (mContentEditText.getLayout() != null) {
+    line=mContentEditText.getLayout().getLineForOffset(selectionStart);
+    column=selectionStart - mContentEditText.getLayout().getLineStart(line);
+  }
+  Editable s=mContentEditText.getText();
+  if (s == null) {
+    return;
+  }
+  WPImageSpan[] imageSpans=s.getSpans(selectionStart,selectionEnd,WPImageSpan.class);
+  if (imageSpans.length != 0) {
+    s.insert(selectionEnd,"\n\n");
+    selectionStart=selectionStart + 2;
+    selectionEnd=selectionEnd + 2;
+  }
+ else   if (column != 0) {
+    s.insert(selectionEnd,"\n");
+    selectionStart=selectionStart + 1;
+    selectionEnd=selectionEnd + 1;
+  }
+  s.insert(selectionStart," ");
+  s.setSpan(imageSpan,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+  AlignmentSpan.Standard as=new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER);
+  s.setSpan(as,selectionStart,selectionEnd + 1,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+  s.insert(selectionEnd + 1,"\n\n");
+  if (mImageLoader != null && URLUtil.isNetworkUrl(mImageUrl)) {
+    loadWPImageSpanThumbnail(mMediaFile,mImageUrl,mImageLoader);
+  }
+}
