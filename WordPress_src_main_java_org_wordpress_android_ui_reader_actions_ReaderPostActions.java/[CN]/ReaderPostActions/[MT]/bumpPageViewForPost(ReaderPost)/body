@@ -1,0 +1,31 @@
+{
+  if (post == null) {
+    return;
+  }
+  if (!post.isPrivate && WordPress.wpDB.isCurrentUserAdminOfRemoteBlogId(post.blogId)) {
+    AppLog.d(T.READER,"skipped bump page view - user is admin");
+    return;
+  }
+  Response.Listener<String> listener=new Response.Listener<String>(){
+    @Override public void onResponse(    String response){
+      AppLog.d(T.READER,"bump page view succeeded");
+    }
+  }
+;
+  Response.ErrorListener errorListener=new Response.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.READER,volleyError);
+      AppLog.w(T.READER,"bump page view failed");
+    }
+  }
+;
+  Request request=new StringRequest(Request.Method.GET,getTrackingPixelForPost(post),listener,errorListener){
+    @Override public Map<String,String> getHeaders() throws AuthFailureError {
+      Map<String,String> headers=new HashMap<>();
+      headers.put("Referer",TRACKING_REFERRER);
+      return headers;
+    }
+  }
+;
+  WordPress.requestQueue.add(request);
+}
