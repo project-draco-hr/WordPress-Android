@@ -12,7 +12,12 @@
       return;
     }
     if (currentBlog.getDotComBlogId() == null) {
-      showJetpackMissingAlert();
+      if (TextUtils.isEmpty(currentBlog.getJetpackVersion())) {
+        showJetpackNonConnectedAlert();
+      }
+ else {
+        showJetpackMissingAlert();
+      }
     }
  else {
       checkCredentials();
@@ -20,5 +25,6 @@
   }
  else {
     Toast.makeText(StatsActivity.this,R.string.error_refresh_stats,Toast.LENGTH_LONG).show();
+    finish();
   }
 }
