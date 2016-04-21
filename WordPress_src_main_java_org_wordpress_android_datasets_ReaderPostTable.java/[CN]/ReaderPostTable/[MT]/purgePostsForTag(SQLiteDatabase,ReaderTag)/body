@@ -4,7 +4,7 @@
     return 0;
   }
   int numToPurge=numPosts - MAX_POSTS_PER_TAG;
-  String[] args={tag.getTagName(),Integer.toString(tag.tagType.toInt()),Integer.toString(numToPurge)};
+  String[] args={tag.getTagSlug(),Integer.toString(tag.tagType.toInt()),Integer.toString(numToPurge)};
   String where="pseudo_id IN (" + "  SELECT tbl_posts.pseudo_id FROM tbl_posts, tbl_post_tags" + "  WHERE tbl_posts.pseudo_id = tbl_post_tags.pseudo_id"+ "  AND tbl_post_tags.tag_name=?"+ "  AND tbl_post_tags.tag_type=?"+ "  ORDER BY tbl_posts.timestamp"+ "  LIMIT ?"+ ")";
   int numDeleted=db.delete("tbl_post_tags",where,args);
   AppLog.d(AppLog.T.READER,String.format("reader post table > purged %d posts in tag %s",numDeleted,tag.getTagNameForLog()));

@@ -4,7 +4,10 @@
   }
   ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
     @Override public void onActionResult(    boolean succeeded){
-      if (!succeeded && !isFinishing()) {
+      if (succeeded) {
+        performUpdate(EnumSet.of(UpdateTask.TAGS));
+      }
+ else       if (!succeeded && !isFinishing()) {
         getPageAdapter().refreshFollowedTagFragment();
         ToastUtils.showToast(ReaderSubsActivity.this,R.string.reader_toast_err_add_tag);
         mLastAddedTagName=null;
@@ -12,12 +15,12 @@
     }
   }
 ;
-  ReaderTag tag=new ReaderTag(tagName,ReaderTagType.FOLLOWED);
+  ReaderTag tag=ReaderUtils.getTagFromTagName(tagName,ReaderTagType.FOLLOWED);
   if (ReaderTagActions.performTagAction(tag,TagAction.ADD,actionListener)) {
     AnalyticsTracker.track(AnalyticsTracker.Stat.READER_TAG_FOLLOWED);
-    mLastAddedTagName=tag.getTagName();
+    mLastAddedTagName=tag.getTagSlug();
     getPageAdapter().refreshFollowedTagFragment();
     String labelAddedTag=getString(R.string.reader_label_added_tag);
-    showInfoToast(String.format(labelAddedTag,tag.getCapitalizedTagName()));
+    showInfoToast(String.format(labelAddedTag,tag.getTagDisplayName()));
   }
 }
