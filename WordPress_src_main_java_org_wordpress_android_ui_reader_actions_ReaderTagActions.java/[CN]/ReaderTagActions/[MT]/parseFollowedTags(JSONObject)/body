@@ -1,0 +1,19 @@
+{
+  if (jsonObject == null) {
+    return null;
+  }
+  JSONArray jsonTags=jsonObject.optJSONArray("tags");
+  if (jsonTags == null || jsonTags.length() == 0) {
+    return null;
+  }
+  ReaderTagList tags=new ReaderTagList();
+  for (int i=0; i < jsonTags.length(); i++) {
+    JSONObject jsonThisTag=jsonTags.optJSONObject(i);
+    String tagTitle=JSONUtils.getStringDecoded(jsonThisTag,"title");
+    String tagDisplayName=JSONUtils.getStringDecoded(jsonThisTag,"display_name");
+    String tagSlug=JSONUtils.getStringDecoded(jsonThisTag,"slug");
+    String endpoint=JSONUtils.getString(jsonThisTag,"URL");
+    tags.add(new ReaderTag(tagSlug,tagDisplayName,tagTitle,endpoint,ReaderTagType.FOLLOWED));
+  }
+  return tags;
+}

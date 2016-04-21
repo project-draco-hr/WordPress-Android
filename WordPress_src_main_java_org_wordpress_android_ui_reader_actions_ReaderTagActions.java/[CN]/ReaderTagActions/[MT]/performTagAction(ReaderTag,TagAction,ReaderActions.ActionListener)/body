@@ -31,6 +31,10 @@ return false;
 com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
 @Override public void onResponse(JSONObject jsonObject){
 AppLog.i(T.READER,"tag action " + action.name() + " succeeded");
+if (action == TagAction.ADD) {
+ReaderTagList tags=parseFollowedTags(jsonObject);
+ReaderTagTable.replaceFollowedTags(tags);
+}
 if (actionListener != null) {
 actionListener.onActionResult(true);
 }

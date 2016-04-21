@@ -1,0 +1,21 @@
+{
+  if (tags == null || tags.size() == 0) {
+    return;
+  }
+  SQLiteDatabase db=ReaderDatabase.getWritableDb();
+  db.beginTransaction();
+  try {
+    try {
+      String[] args={Integer.toString(ReaderTagType.FOLLOWED.toInt())};
+      db.execSQL("DELETE FROM tbl_tags WHERE tag_type=?",args);
+      addOrUpdateTags(tags);
+      db.setTransactionSuccessful();
+    }
+ catch (    SQLException e) {
+      AppLog.e(T.READER,e);
+    }
+  }
+  finally {
+    db.endTransaction();
+  }
+}
