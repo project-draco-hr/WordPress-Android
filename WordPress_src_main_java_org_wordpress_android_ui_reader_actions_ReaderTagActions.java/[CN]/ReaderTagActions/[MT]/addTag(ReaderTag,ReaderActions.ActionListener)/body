@@ -7,7 +7,6 @@
   final String path="read/tags/" + tagNameForApi + "/mine/new";
   String endpoint="/read/tags/" + tagNameForApi + "/posts";
   ReaderTag newTag=new ReaderTag(tag.getTagSlug(),tag.getTagDisplayName(),tag.getTagTitle(),endpoint,ReaderTagType.FOLLOWED);
-  ReaderTagTable.addOrUpdateTag(newTag);
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       AppLog.i(T.READER,"add tag  succeeded");
@@ -32,6 +31,7 @@
     }
   }
 ;
+  ReaderTagTable.addOrUpdateTag(newTag);
   WordPress.getRestClientUtilsV1_1().post(path,listener,errorListener);
   return true;
 }

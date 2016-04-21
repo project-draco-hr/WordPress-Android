@@ -5,7 +5,6 @@
   }
   final String tagNameForApi=ReaderUtils.sanitizeWithDashes(tag.getTagSlug());
   final String path="read/tags/" + tagNameForApi + "/mine/delete";
-  ReaderTagTable.deleteTag(tag);
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       AppLog.i(T.READER,"delete tag succeeded");
@@ -28,6 +27,7 @@
     }
   }
 ;
+  ReaderTagTable.deleteTag(tag);
   WordPress.getRestClientUtilsV1_1().post(path,listener,errorListener);
   return true;
 }
