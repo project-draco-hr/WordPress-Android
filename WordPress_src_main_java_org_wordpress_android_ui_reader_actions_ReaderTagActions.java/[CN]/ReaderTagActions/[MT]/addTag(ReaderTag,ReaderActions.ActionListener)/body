@@ -1,0 +1,37 @@
+{
+  if (tag == null || tag.tagType == ReaderTagType.DEFAULT) {
+    ReaderActions.callActionListener(actionListener,false);
+    return false;
+  }
+  final String tagNameForApi=ReaderUtils.sanitizeWithDashes(tag.getTagSlug());
+  final String path="read/tags/" + tagNameForApi + "/mine/new";
+  String endpoint="/read/tags/" + tagNameForApi + "/posts";
+  ReaderTag newTag=new ReaderTag(tag.getTagSlug(),tag.getTagDisplayName(),tag.getTagTitle(),endpoint,ReaderTagType.FOLLOWED);
+  ReaderTagTable.addOrUpdateTag(newTag);
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      AppLog.i(T.READER,"add tag  succeeded");
+      ReaderTagList tags=parseFollowedTags(jsonObject);
+      ReaderTagTable.replaceFollowedTags(tags);
+      ReaderActions.callActionListener(actionListener,true);
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      String error=VolleyUtils.errStringFromVolleyError(volleyError);
+      if (error.equals("already_subscribed")) {
+        AppLog.w(T.READER,"add tag succeeded with error " + error);
+        ReaderActions.callActionListener(actionListener,true);
+        return;
+      }
+      AppLog.w(T.READER,"add tag failed");
+      AppLog.e(T.READER,volleyError);
+      ReaderTagTable.deleteTag(tag);
+      ReaderActions.callActionListener(actionListener,false);
+    }
+  }
+;
+  WordPress.getRestClientUtilsV1_1().post(path,listener,errorListener);
+  return true;
+}
