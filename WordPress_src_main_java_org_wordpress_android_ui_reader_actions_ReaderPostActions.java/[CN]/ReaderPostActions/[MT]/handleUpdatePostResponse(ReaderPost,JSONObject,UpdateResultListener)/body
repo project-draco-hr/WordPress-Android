@@ -9,6 +9,11 @@
   new Thread(){
     @Override public void run(){
       ReaderPost serverPost=ReaderPost.fromJson(jsonObject);
+      if (serverPost.feedId == 0 && localPost.feedId != 0) {
+        serverPost.feedId=localPost.feedId;
+        serverPost.feedItemId=localPost.feedItemId;
+        serverPost.isFollowedByCurrentUser=localPost.isFollowedByCurrentUser;
+      }
       boolean hasChanges=!serverPost.isSamePost(localPost);
       if (hasChanges) {
         AppLog.d(T.READER,"post updated");
