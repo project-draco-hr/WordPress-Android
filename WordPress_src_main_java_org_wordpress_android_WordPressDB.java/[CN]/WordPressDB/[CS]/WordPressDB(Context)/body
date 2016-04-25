@@ -13,7 +13,7 @@
   int currentVersion=db.getVersion();
   boolean isNewInstall=(currentVersion == 0);
   if (!isNewInstall && currentVersion != DATABASE_VERSION) {
-    AppLog.d(T.DB,"updgrading database from version " + currentVersion + " to "+ DATABASE_VERSION);
+    AppLog.d(T.DB,"upgrading database from version " + currentVersion + " to "+ DATABASE_VERSION);
   }
 switch (currentVersion) {
 case 0:
@@ -146,6 +146,9 @@ db.execSQL(ADD_BLOGS_PLAN_PRODUCT_NAME_SHORT);
 currentVersion++;
 case 44:
 PeopleTable.createTables(db);
+currentVersion++;
+case 45:
+db.execSQL(ADD_BLOGS_CAPABILITIES);
 currentVersion++;
 }
 db.setVersion(DATABASE_VERSION);
