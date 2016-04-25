@@ -3,12 +3,12 @@
   if (event != null) {
     String tagName=((ReaderEvents.TagAdded)event).getTagName();
     EventBus.getDefault().removeStickyEvent(event);
-    ReaderTag newTag=new ReaderTag(tagName,ReaderTagType.FOLLOWED);
+    ReaderTag newTag=ReaderUtils.getTagFromTagName(tagName,ReaderTagType.FOLLOWED);
     setCurrentTag(newTag);
   }
  else   if (!ReaderTagTable.tagExists(getCurrentTag())) {
     AppLog.d(T.READER,"reader post list > current tag no longer valid");
-    setCurrentTag(ReaderTag.getDefaultTag());
+    setCurrentTag(ReaderUtils.getDefaultTag());
   }
  else {
     refreshPosts();
