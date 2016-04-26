@@ -1,18 +1,19 @@
 {
-  if (WordPress.currentBlog == null) {
+  Blog currentBlog=WordPress.getCurrentBlog();
+  if (currentBlog == null) {
     return false;
   }
-  if (WordPress.currentBlog.getWpVersion() == null) {
+  if (currentBlog.getWpVersion() == null) {
     return true;
   }
-  if (WordPress.currentBlog.isDotcomFlag()) {
+  if (currentBlog.isDotcomFlag()) {
     return true;
   }
   Version minVersion;
   Version currentVersion;
   try {
     minVersion=new Version("3.5.2");
-    currentVersion=new Version(WordPress.currentBlog.getWpVersion());
+    currentVersion=new Version(currentBlog.getWpVersion());
     if (currentVersion.compareTo(minVersion) == -1) {
       return false;
     }

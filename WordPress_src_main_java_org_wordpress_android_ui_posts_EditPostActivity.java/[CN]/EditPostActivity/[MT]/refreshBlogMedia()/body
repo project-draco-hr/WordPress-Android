@@ -7,8 +7,9 @@
         mBlogMediaStatus=1;
         runOnUiThread(new Runnable(){
           @Override public void run(){
-            if (mPendingVideoPressInfoRequests != null && !mPendingVideoPressInfoRequests.isEmpty()) {
-              String blogId=String.valueOf(WordPress.currentBlog.getLocalTableBlogId());
+            Blog currentBlog=WordPress.getCurrentBlog();
+            if (currentBlog != null && mPendingVideoPressInfoRequests != null && !mPendingVideoPressInfoRequests.isEmpty()) {
+              String blogId=String.valueOf(currentBlog.getLocalTableBlogId());
               for (              String videoId : mPendingVideoPressInfoRequests) {
                 String videoUrl=WordPress.wpDB.getMediaUrlByVideoPressId(blogId,videoId);
                 String posterUrl=WordPressMediaUtils.getVideoPressVideoPosterFromURL(videoUrl);
