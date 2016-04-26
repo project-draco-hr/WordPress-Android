@@ -89,10 +89,21 @@
       }
  else       if (position == PAGE_PREVIEW) {
         setTitle(mPost.isPage() ? R.string.preview_page : R.string.preview_post);
-        savePostAsync();
-        if (mEditPostPreviewFragment != null) {
-          mEditPostPreviewFragment.loadPost();
+        savePostAsync(new AfterSavePostListener(){
+          @Override public void onPostSave(){
+            if (mEditPostPreviewFragment != null) {
+              runOnUiThread(new Runnable(){
+                @Override public void run(){
+                  if (mEditPostPreviewFragment != null) {
+                    mEditPostPreviewFragment.loadPost();
+                  }
+                }
+              }
+);
+            }
+          }
         }
+);
       }
     }
   }
