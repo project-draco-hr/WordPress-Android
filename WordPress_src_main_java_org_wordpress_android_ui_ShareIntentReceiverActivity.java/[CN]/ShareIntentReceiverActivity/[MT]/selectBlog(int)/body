@@ -1,13 +1,8 @@
 {
-  Blog currentBlog=WordPress.wpDB.instantiateBlogByLocalId(blogId);
-  if (currentBlog == null) {
+  WordPress.currentBlog=WordPress.wpDB.instantiateBlogByLocalId(blogId);
+  if (WordPress.currentBlog == null || WordPress.currentBlog.isHidden()) {
     return false;
   }
-  if (currentBlog.isHidden()) {
-    return false;
-  }
- else {
-    WordPress.wpDB.updateLastBlogId(currentBlog.getLocalTableBlogId());
-    return true;
-  }
+  WordPress.wpDB.updateLastBlogId(WordPress.currentBlog.getLocalTableBlogId());
+  return true;
 }

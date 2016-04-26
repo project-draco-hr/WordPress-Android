@@ -23,11 +23,8 @@
         addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME,quickPressShortcutName.getText().toString());
         addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,Intent.ShortcutIconResource.fromContext(AddQuickPressShortcutActivity.this,R.mipmap.app_icon));
         WordPress.wpDB.addQuickPressShortcut(accountIDs[position],quickPressShortcutName.getText().toString());
-        if (WordPress.getCurrentBlog() == null) {
-          Blog currentBlog=WordPress.wpDB.instantiateBlogByLocalId(accountIDs[position]);
-          if (currentBlog != null) {
-            WordPress.setCurrentBlog(currentBlog.getLocalTableBlogId());
-          }
+        if (WordPress.currentBlog == null) {
+          WordPress.currentBlog=WordPress.wpDB.instantiateBlogByLocalId(accountIDs[position]);
           WordPress.wpDB.updateLastBlogId(accountIDs[position]);
         }
         addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
