@@ -8,12 +8,16 @@
   if (mComments.isSameList(tmpComments)) {
     return false;
   }
+  int maxImageWidth=ImageUtils.getMaximumImageWidthForComment(mContext);
   for (  Comment comment : tmpComments) {
     comment.getDatePublished();
     comment.getUnescapedCommentText();
     comment.getUnescapedPostTitle();
     comment.getAvatarForDisplay(mAvatarSz);
     comment.getFormattedTitle();
+    String content=StringUtils.notNullStr(comment.getCommentText());
+    Spanned spanned=WPHtml.fromHtml(content,mContext,null,maxImageWidth);
+    comment.setUnescapedCommentWithDrawables(spanned);
   }
   return true;
 }
