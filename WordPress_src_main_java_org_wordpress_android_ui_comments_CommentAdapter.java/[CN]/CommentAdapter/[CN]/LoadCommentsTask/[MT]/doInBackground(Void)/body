@@ -8,15 +8,28 @@
   if (mComments.isSameList(tmpComments)) {
     return false;
   }
-  int maxImageWidth=ImageUtils.getMaximumImageWidthForComment(mContext);
+  final int maxImageWidth=ImageUtils.getMaximumImageWidthForComment(mContext);
+  WPHtml.ImageGetter imgGetter=new WPHtml.ImageGetter(){
+    @Override public Drawable getDrawable(    String source){
+      try {
+        Bitmap bmp=ImageUtils.getScaledBitmapAtLongestSide(BitmapFactory.decodeStream(new URL(source).openStream()),maxImageWidth);
+        BitmapDrawable drawable=new BitmapDrawable(mContext.getResources(),bmp);
+        drawable.setBounds(0,0,drawable.getIntrinsicWidth(),drawable.getIntrinsicHeight());
+        return drawable;
+      }
+ catch (      IOException exception) {
+        return null;
+      }
+    }
+  }
+;
   for (  Comment comment : tmpComments) {
     comment.getDatePublished();
-    comment.getUnescapedCommentText();
     comment.getUnescapedPostTitle();
     comment.getAvatarForDisplay(mAvatarSz);
     comment.getFormattedTitle();
     String content=StringUtils.notNullStr(comment.getCommentText());
-    Spanned spanned=WPHtml.fromHtml(content,mContext,null,maxImageWidth);
+    Spanned spanned=WPHtml.fromHtml(content,imgGetter,null,mContext,null,maxImageWidth);
     comment.setUnescapedCommentWithDrawables(spanned);
   }
   return true;
