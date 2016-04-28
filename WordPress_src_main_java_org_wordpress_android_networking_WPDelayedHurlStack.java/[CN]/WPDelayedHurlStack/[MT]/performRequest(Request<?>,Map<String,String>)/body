@@ -5,13 +5,13 @@
       String auth="Basic " + Base64.encodeToString(creds.getBytes(),Base64.DEFAULT);
       additionalHeaders.put("Authorization",auth);
     }
-    if (WPUrlUtils.safeToAddWordPressComAuthToken(request.getUrl()) && mCtx != null && AccountHelper.isSignedInWordPressDotCom()) {
+    if (WPUrlUtils.safeToAddWordPressComAuthToken(request.getUrl()) && mCtx != null && AccountHelper.isSignedInWordPressDotCom() && !hasAuthorizationHeader(request)) {
       additionalHeaders.put("Authorization","Bearer " + AccountHelper.getDefaultAccount().getAccessToken());
     }
   }
   additionalHeaders.put("User-Agent",WordPress.getUserAgent());
   String url=request.getUrl();
-  if (additionalHeaders.containsKey("Authorization")) {
+  if (additionalHeaders.containsKey("Authorization") || hasAuthorizationHeader(request)) {
     url=UrlUtils.makeHttps(url);
   }
   HashMap<String,String> map=new HashMap<String,String>();

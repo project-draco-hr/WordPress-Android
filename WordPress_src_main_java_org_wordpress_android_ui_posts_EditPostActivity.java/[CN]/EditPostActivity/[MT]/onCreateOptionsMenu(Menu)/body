@@ -20,10 +20,12 @@
         AppLog.e(T.EDITOR,"The remote blog ID can't be parsed as Integer: " + remoteBlogId);
       }
     }
-    mSuggestionServiceConnectionManager=new SuggestionServiceConnectionManager(this,remoteBlogId);
-    mTagSuggestionAdapter=SuggestionUtils.setupTagSuggestions(remoteBlogId,this,mSuggestionServiceConnectionManager);
-    if (mTagSuggestionAdapter != null) {
-      mTags.setAdapter(mTagSuggestionAdapter);
+    if (mSuggestionServiceConnectionManager == null) {
+      mSuggestionServiceConnectionManager=new SuggestionServiceConnectionManager(this,remoteBlogId);
+      mTagSuggestionAdapter=SuggestionUtils.setupTagSuggestions(remoteBlogId,this,mSuggestionServiceConnectionManager);
+      if (mTagSuggestionAdapter != null) {
+        mTags.setAdapter(mTagSuggestionAdapter);
+      }
     }
   }
   return true;
