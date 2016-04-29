@@ -21,7 +21,12 @@
         tagSlug=tagTitle;
       }
       String endpoint=JSONUtils.getString(jsonTopic,"URL");
-      topics.add(new ReaderTag(tagSlug,tagTitle,endpoint,topicType));
+      if (tagType == ReaderTagType.DEFAULT && endpoint.contains("/read/list/")) {
+        topics.add(new ReaderTag(tagSlug,tagTitle,endpoint,ReaderTagType.LIST));
+      }
+ else {
+        topics.add(new ReaderTag(tagSlug,tagTitle,endpoint,tagType));
+      }
     }
   }
   return topics;
