@@ -1,22 +1,4 @@
 {
-  if (level == ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
-    mIsInBackground=true;
-    String lastActivityString=AppPrefs.getLastActivityStr();
-    ActivityId lastActivity=ActivityId.getActivityIdFromName(lastActivityString);
-    Map<String,Object> properties=new HashMap<String,Object>();
-    properties.put("last_visible_screen",lastActivity.toString());
-    if (mApplicationOpenedDate != null) {
-      Date now=new Date();
-      properties.put("time_in_app",DateTimeUtils.secondsBetween(now,mApplicationOpenedDate));
-      mApplicationOpenedDate=null;
-    }
-    AnalyticsTracker.track(AnalyticsTracker.Stat.APPLICATION_CLOSED,properties);
-    AnalyticsTracker.endSession(false);
-    onAppGoesToBackground();
-  }
- else {
-    mIsInBackground=false;
-  }
   boolean evictBitmaps=false;
 switch (level) {
 case TRIM_MEMORY_COMPLETE:

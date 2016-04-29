@@ -1,0 +1,23 @@
+{
+  this.mActivityTransitionTimer=new Timer();
+  this.mActivityTransitionTimerTask=new TimerTask(){
+    public void run(){
+      AppLog.i(T.UTILS,"App goes to background");
+      mIsInBackground=true;
+      String lastActivityString=AppPrefs.getLastActivityStr();
+      ActivityId lastActivity=ActivityId.getActivityIdFromName(lastActivityString);
+      Map<String,Object> properties=new HashMap<String,Object>();
+      properties.put("last_visible_screen",lastActivity.toString());
+      if (mApplicationOpenedDate != null) {
+        Date now=new Date();
+        properties.put("time_in_app",DateTimeUtils.secondsBetween(now,mApplicationOpenedDate));
+        mApplicationOpenedDate=null;
+      }
+      AnalyticsTracker.track(AnalyticsTracker.Stat.APPLICATION_CLOSED,properties);
+      AnalyticsTracker.endSession(false);
+      ConnectionChangeReceiver.setEnabled(WordPress.this,false);
+    }
+  }
+;
+  this.mActivityTransitionTimer.schedule(mActivityTransitionTimerTask,MAX_ACTIVITY_TRANSITION_TIME_MS);
+}
