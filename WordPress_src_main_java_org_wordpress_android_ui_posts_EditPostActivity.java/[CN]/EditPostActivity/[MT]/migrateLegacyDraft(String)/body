@@ -1,0 +1,30 @@
+{
+  if (content.contains("<img src=\"null\" android-uri=\"")) {
+    Pattern pattern=Pattern.compile("<img src=\"null\" android-uri=\"([^\"]*)\".*>");
+    Matcher matcher=pattern.matcher(content);
+    StringBuffer stringBuffer=new StringBuffer();
+    while (matcher.find()) {
+      String path=null;
+      String stringUri=matcher.group(1);
+      Uri uri=Uri.parse(stringUri);
+      if (uri != null && stringUri.contains("content:")) {
+        path=getPathFromContentUri(uri);
+        if (path == null) {
+          continue;
+        }
+      }
+ else {
+        path=stringUri.replace("file://","");
+      }
+      MediaFile mediaFile=queueFileForUpload(path,null,"failed");
+      if (mediaFile == null) {
+        continue;
+      }
+      String replacement=getUploadErrorHtml(mediaFile.getMediaId(),mediaFile.getFilePath());
+      matcher.appendReplacement(stringBuffer,replacement);
+    }
+    matcher.appendTail(stringBuffer);
+    return stringBuffer.toString();
+  }
+  return content;
+}
