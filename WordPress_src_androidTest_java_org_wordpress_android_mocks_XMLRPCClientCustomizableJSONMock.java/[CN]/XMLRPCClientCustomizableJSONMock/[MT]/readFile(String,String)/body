@@ -9,7 +9,11 @@
       return TestUtils.injectDateInArray(gson.fromJson(jsonString,Object[].class));
     }
  catch (    Exception e) {
-      return TestUtils.injectDateInHashMap(TestUtils.stringMapToHashMap((StringMap)gson.fromJson(jsonString,Object.class)));
+      Type type=new TypeToken<HashMap<String,Object>>(){
+      }
+.getType();
+      HashMap<String,Object> map=gson.fromJson(jsonString,type);
+      return TestUtils.injectDateInHashMap(map);
     }
   }
  catch (  IOException e) {
