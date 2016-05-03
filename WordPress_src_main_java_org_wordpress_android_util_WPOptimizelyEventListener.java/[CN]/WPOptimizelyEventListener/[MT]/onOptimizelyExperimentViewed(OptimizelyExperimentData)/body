@@ -1,0 +1,10 @@
+{
+  Map<String,OptimizelyExperimentData> visitedExperiments=Optimizely.getVisitedExperiments();
+  for (  String experimentId : visitedExperiments.keySet()) {
+    OptimizelyExperimentData experiment=visitedExperiments.get(experimentId);
+    HashMap<String,String> abTestProperties=new HashMap<>();
+    abTestProperties.put(ABTEST_NAME,experiment.experimentName);
+    abTestProperties.put(ABTEST_VARIATION,experiment.variationName);
+    AnalyticsTracker.track(AnalyticsTracker.Stat.ABTEST_START,abTestProperties);
+  }
+}
