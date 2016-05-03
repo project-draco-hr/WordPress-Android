@@ -15,7 +15,15 @@
     finish();
   }
   if (TextUtils.isEmpty(authURL) && TextUtils.isEmpty(username) && TextUtils.isEmpty(password)) {
-    loadUrl(addressToLoad,getExtraHeaders());
+    String referrerUrl=extras.getString(REFERRER_URL);
+    if (!TextUtils.isEmpty(referrerUrl)) {
+      Map<String,String> headers=new HashMap<>();
+      headers.put("Referer",referrerUrl);
+      loadUrl(addressToLoad,headers);
+    }
+ else {
+      loadUrl(addressToLoad);
+    }
   }
  else {
     if (TextUtils.isEmpty(authURL) || !UrlUtils.isValidUrlAndHostNotNull(authURL)) {

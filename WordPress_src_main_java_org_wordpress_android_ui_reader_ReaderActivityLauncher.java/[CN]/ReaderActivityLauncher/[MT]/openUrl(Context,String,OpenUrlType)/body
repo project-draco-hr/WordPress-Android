@@ -3,21 +3,9 @@
     return;
   }
   if (openUrlType == OpenUrlType.INTERNAL) {
-    if (WPUrlUtils.isWordPressCom(url)) {
-      WPWebViewActivity.openUrlByUsingWPCOMCredentials(context,url,AccountHelper.getDefaultAccount().getUserName());
-    }
- else {
-      WPWebViewActivity.openURL(context,url);
-    }
+    openUrlInternal(context,url);
   }
  else {
-    try {
-      Intent intent=new Intent(Intent.ACTION_VIEW,Uri.parse(url));
-      context.startActivity(intent);
-    }
- catch (    ActivityNotFoundException e) {
-      String readerToastErrorUrlIntent=context.getString(R.string.reader_toast_err_url_intent);
-      ToastUtils.showToast(context,String.format(readerToastErrorUrlIntent,url),ToastUtils.Duration.LONG);
-    }
+    openUrlExternal(context,url);
   }
 }
