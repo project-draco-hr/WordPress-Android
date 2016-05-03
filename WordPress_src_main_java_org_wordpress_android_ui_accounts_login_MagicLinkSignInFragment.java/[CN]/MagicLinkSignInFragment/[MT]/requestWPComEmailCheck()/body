@@ -1,0 +1,25 @@
+{
+  WordPress.getRestClientUtilsV0().isAvailable(mUsername,new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject response){
+      try {
+        String errorReason=response.getString(REASON_ERROR);
+        if (errorReason != null && errorReason.equals(REASON_ERROR_TAKEN) && mListener != null) {
+          mListener.onMagicLinkRequestSuccess(mUsername);
+        }
+ else {
+          showPasswordFieldAndFocus();
+        }
+      }
+ catch (      JSONException e) {
+        e.printStackTrace();
+        showPasswordFieldAndFocus();
+      }
+    }
+  }
+,new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError error){
+      showPasswordFieldAndFocus();
+    }
+  }
+);
+}
