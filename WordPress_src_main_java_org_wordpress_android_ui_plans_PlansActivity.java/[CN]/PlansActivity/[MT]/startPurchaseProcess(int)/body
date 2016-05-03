@@ -1,4 +1,23 @@
 {
+  final Plan plan=getPageAdapter().getPlan(position);
+  if (isUpgradeButtonAvailable(position)) {
+    String upgradeText=getString(R.string.plan_upgrade_contact_support_text,plan.getProductName());
+    AlertDialog.Builder builder=new AlertDialog.Builder(this);
+    builder.setMessage(upgradeText).setTitle(getString(R.string.plan_upgrade_not_available));
+    builder.setPositiveButton(R.string.yes,new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int id){
+        HelpshiftHelper.getInstance().showConversation(PlansActivity.this,HelpshiftHelper.Tag.ORIGIN_UNKNOWN);
+      }
+    }
+);
+    builder.setNegativeButton(R.string.no,new DialogInterface.OnClickListener(){
+      public void onClick(      DialogInterface dialog,      int id){
+      }
+    }
+);
+    builder.create().show();
+    return;
+  }
   String sku=plan.getAndroidSKU();
   Blog currentBlog=WordPress.getBlog(mLocalBlogID);
   JSONObject extraData=new JSONObject();

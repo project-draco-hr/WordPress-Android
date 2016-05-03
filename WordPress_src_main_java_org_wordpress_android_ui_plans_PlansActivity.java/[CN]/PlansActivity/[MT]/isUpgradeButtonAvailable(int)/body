@@ -1,0 +1,11 @@
+{
+  long currentPlanProductId=WordPress.wpDB.getPlanIdForLocalTableBlogId(mLocalBlogID);
+  if (isBuyButtonAvailable(position) || PlansUtils.isFreePlan(currentPlanProductId)) {
+    return false;
+  }
+  final Plan plan=getPageAdapter().getPlan(position);
+  if (PlansUtils.isFreePlan(plan) || currentPlanProductId > plan.getProductID()) {
+    return false;
+  }
+  return plan.isAvailable() && !plan.isCurrentPlan();
+}

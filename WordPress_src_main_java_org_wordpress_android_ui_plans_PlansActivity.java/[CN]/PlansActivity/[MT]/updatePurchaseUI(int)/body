@@ -1,21 +1,21 @@
 {
   final Plan plan=getPageAdapter().getPlan(position);
-  boolean showPurchaseButton;
-  if (plan.isCurrentPlan()) {
-    showPurchaseButton=false;
-  }
- else {
-    long currentPlanProductId=WordPress.wpDB.getPlanIdForLocalTableBlogId(mLocalBlogID);
-    showPurchaseButton=plan.isAvailable() && plan.getProductID() > currentPlanProductId;
-  }
+  boolean showPurchaseButton=isBuyButtonAvailable(position) || isUpgradeButtonAvailable(position);
   ViewGroup framePurchase=(ViewGroup)findViewById(R.id.frame_purchase);
   ViewGroup containerPurchase=(ViewGroup)findViewById(R.id.purchase_container);
   if (showPurchaseButton) {
     TextView txtPurchasePrice=(TextView)framePurchase.findViewById(R.id.text_purchase_price);
     txtPurchasePrice.setText(PlansUtils.getPlanDisplayPrice(plan));
+    TextView txtPurchaseLabel=(TextView)framePurchase.findViewById(R.id.text_purchase_label);
+    if (isBuyButtonAvailable(position)) {
+      txtPurchaseLabel.setText(getString(R.string.plan_purchase_now));
+    }
+ else     if (isUpgradeButtonAvailable(position)) {
+      txtPurchaseLabel.setText(getString(R.string.plan_upgrade_now));
+    }
     containerPurchase.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
-        startPurchaseProcess(plan);
+        startPurchaseProcess(position);
       }
     }
 );
