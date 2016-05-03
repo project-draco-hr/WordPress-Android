@@ -1,0 +1,13 @@
+{
+  String token=AccountHelper.getDefaultAccount().getAccessToken();
+  if (siteId != null) {
+    Blog blog=WordPress.wpDB.getBlogForDotComBlogId(siteId);
+    if (blog != null) {
+      String jetpackToken=blog.getApi_key();
+      if (jetpackToken != null && jetpackToken.length() == 64 && !blog.isDotcomFlag()) {
+        token=jetpackToken;
+      }
+    }
+  }
+  return token;
+}

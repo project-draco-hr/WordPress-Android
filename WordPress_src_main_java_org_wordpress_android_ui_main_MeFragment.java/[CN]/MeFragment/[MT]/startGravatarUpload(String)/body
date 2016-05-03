@@ -1,0 +1,27 @@
+{
+  File file=new File(filePath);
+  if (!file.exists()) {
+    Toast.makeText(getActivity(),getString(R.string.error_locating_image),Toast.LENGTH_SHORT).show();
+    return;
+  }
+  mProgressBar.setVisibility(View.VISIBLE);
+  GravatarApi.uploadGravatar(file,new GravatarApi.GravatarUploadListener(){
+    @Override public void onSuccess(){
+      loadAvatar(AccountHelper.getDefaultAccount(),filePath,new WPNetworkImageView.ImageLoadListener(){
+        @Override public void onLoaded(){
+          mProgressBar.setVisibility(View.GONE);
+        }
+        @Override public void onError(){
+          mProgressBar.setVisibility(View.GONE);
+          Toast.makeText(getActivity(),getString(R.string.error_refreshing_gravatar),Toast.LENGTH_SHORT).show();
+        }
+      }
+);
+    }
+    @Override public void onError(){
+      mProgressBar.setVisibility(View.GONE);
+      Toast.makeText(getActivity(),getString(R.string.error_updating_gravatar),Toast.LENGTH_SHORT).show();
+    }
+  }
+);
+}

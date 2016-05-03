@@ -1,0 +1,15 @@
+{
+  List<String> toRequest=new ArrayList<>();
+  for (  String permission : permissionList) {
+    Context context=fragment.getActivity();
+    if (context != null && ContextCompat.checkSelfPermission(context,permission) != PackageManager.PERMISSION_GRANTED) {
+      toRequest.add(permission);
+    }
+  }
+  if (toRequest.size() > 0) {
+    String[] requestedPermissions=toRequest.toArray(new String[toRequest.size()]);
+    FragmentCompat.requestPermissions(fragment,requestedPermissions,requestCode);
+    return false;
+  }
+  return true;
+}
