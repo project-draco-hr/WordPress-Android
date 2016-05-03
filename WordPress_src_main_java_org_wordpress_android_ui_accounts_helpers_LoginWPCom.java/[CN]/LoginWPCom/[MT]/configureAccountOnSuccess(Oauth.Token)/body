@@ -1,0 +1,16 @@
+{
+  if (mJetpackBlog != null) {
+    mJetpackBlog.setApi_key(token.toString());
+    mJetpackBlog.setDotcom_username(mUsername);
+    WordPress.wpDB.saveBlog(mJetpackBlog);
+  }
+  Account account=AccountHelper.getDefaultAccount();
+  if (mJetpackBlog == null) {
+    account.setAccessToken(token.toString());
+    account.setUserName(mUsername);
+    account.save();
+    account.fetchAccountDetails();
+  }
+  SimperiumUtils.configureSimperium(WordPress.getContext(),token.toString());
+  mCallback.onSuccess();
+}
