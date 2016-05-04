@@ -10,10 +10,12 @@
   }
   for (  Comment comment : tmpComments) {
     comment.getDatePublished();
-    comment.getUnescapedCommentText();
     comment.getUnescapedPostTitle();
     comment.getAvatarForDisplay(mAvatarSz);
     comment.getFormattedTitle();
+    String content=StringUtils.notNullStr(comment.getCommentText());
+    Spanned spanned=WPHtml.fromHtml(content,null,null,mContext,null,0);
+    comment.setUnescapedCommentWithDrawables(spanned);
   }
   return true;
 }

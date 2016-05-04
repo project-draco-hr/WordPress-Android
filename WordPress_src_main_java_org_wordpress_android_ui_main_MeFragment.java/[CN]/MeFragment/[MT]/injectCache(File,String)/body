@@ -1,0 +1,35 @@
+{
+  final SimpleDateFormat sdf=new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z");
+  final long currentTimeMs=System.currentTimeMillis();
+  final Date currentTime=new Date(currentTimeMs);
+  final long fiveMinutesLaterMs=currentTimeMs + 5 * 60 * 1000;
+  final Date fiveMinutesLater=new Date(fiveMinutesLaterMs);
+  Cache.Entry entry=new Cache.Entry();
+  entry.data=new byte[(int)file.length()];
+  DataInputStream dis=new DataInputStream(new FileInputStream(file));
+  dis.readFully(entry.data);
+  dis.close();
+  entry.etag=null;
+  entry.softTtl=fiveMinutesLaterMs;
+  entry.ttl=fiveMinutesLaterMs;
+  entry.serverDate=currentTimeMs;
+  entry.lastModified=currentTimeMs;
+  entry.responseHeaders=new TreeMap<>();
+  entry.responseHeaders.put("Accept-Ranges","bytes");
+  entry.responseHeaders.put("Access-Control-Allow-Origin","*");
+  entry.responseHeaders.put("Cache-Control","max-age=300");
+  entry.responseHeaders.put("Content-Disposition","inline; filename=\"" + AccountHelper.getDefaultAccount().getAvatarUrl() + ".jpeg\"");
+  entry.responseHeaders.put("Content-Length",String.valueOf(file.length()));
+  entry.responseHeaders.put("Content-Type","image/jpeg");
+  entry.responseHeaders.put("Date",sdf.format(currentTime));
+  entry.responseHeaders.put("Expires",sdf.format(fiveMinutesLater));
+  entry.responseHeaders.put("Last-Modified",sdf.format(currentTime));
+  entry.responseHeaders.put("Link","<" + avatarUrl + ">; rel=\"canonical\"");
+  entry.responseHeaders.put("Server","injected cache");
+  entry.responseHeaders.put("Source-Age","0");
+  entry.responseHeaders.put("X-Android-Received-Millis",String.valueOf(currentTimeMs));
+  entry.responseHeaders.put("X-Android-Response-Source","NETWORK 200");
+  entry.responseHeaders.put("X-Android-Selected-Protocol","http/1.1");
+  entry.responseHeaders.put("X-Android-Sent-Millis",String.valueOf(currentTimeMs));
+  WordPress.requestQueue.getCache().put(Request.Method.GET + ":" + avatarUrl,entry);
+}
