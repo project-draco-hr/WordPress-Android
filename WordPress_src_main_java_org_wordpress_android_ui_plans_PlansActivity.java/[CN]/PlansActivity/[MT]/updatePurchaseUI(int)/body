@@ -1,18 +1,11 @@
 {
   final Plan plan=getPageAdapter().getPlan(position);
-  boolean showPurchaseButton=isBuyButtonAvailable(position) || isUpgradeButtonAvailable(position);
+  boolean showPurchaseButton=isBuyButtonAvailable(position);
   ViewGroup framePurchase=(ViewGroup)findViewById(R.id.frame_purchase);
   ViewGroup containerPurchase=(ViewGroup)findViewById(R.id.purchase_container);
   if (showPurchaseButton) {
     TextView txtPurchasePrice=(TextView)framePurchase.findViewById(R.id.text_purchase_price);
     txtPurchasePrice.setText(PlansUtils.getPlanDisplayPrice(plan));
-    TextView txtPurchaseLabel=(TextView)framePurchase.findViewById(R.id.text_purchase_label);
-    if (isBuyButtonAvailable(position)) {
-      txtPurchaseLabel.setText(getString(R.string.plan_purchase_now));
-    }
- else     if (isUpgradeButtonAvailable(position)) {
-      txtPurchaseLabel.setText(getString(R.string.plan_upgrade_now));
-    }
     containerPurchase.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
         startPurchaseProcess(position);
