@@ -3,7 +3,7 @@
     @Override public void onResponse(    JSONObject jsonObject){
       if (jsonObject != null && callback != null) {
         try {
-          Person person=Person.fromJSON(jsonObject,siteID,localTableBlogId);
+          Person person=Person.fromJSON(jsonObject,blogId,localTableBlogId);
           if (person != null) {
             callback.onSuccess(person);
           }
@@ -33,7 +33,7 @@
     JSONArray roles=new JSONArray();
     roles.put(newRole);
     jsonObject.put("roles",roles);
-    String path=String.format("sites/%s/users/%s",siteID,userID);
+    String path=String.format("sites/%s/users/%s",blogId,userID);
     WordPress.getRestClientUtilsV1_1().post(path,jsonObject,null,listener,errorListener);
   }
  catch (  JSONException e) {
