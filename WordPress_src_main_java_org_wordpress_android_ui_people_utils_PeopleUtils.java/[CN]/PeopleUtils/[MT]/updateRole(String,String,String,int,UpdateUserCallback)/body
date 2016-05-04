@@ -2,8 +2,13 @@
   com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
       if (jsonObject != null && callback != null) {
-        Person person=Person.fromJSON(jsonObject,siteID,localTableBlogId);
-        callback.onSuccess(person);
+        try {
+          Person person=Person.fromJSON(jsonObject,siteID,localTableBlogId);
+          callback.onSuccess(person);
+        }
+ catch (        JSONException e) {
+          callback.onError();
+        }
       }
     }
   }
@@ -12,7 +17,7 @@
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.e(T.API,volleyError);
       if (callback != null) {
-        callback.onError(volleyError);
+        callback.onError();
       }
     }
   }
@@ -27,7 +32,7 @@
   }
  catch (  JSONException e) {
     if (callback != null) {
-      callback.onJSONException(e);
+      callback.onError();
     }
   }
 }
