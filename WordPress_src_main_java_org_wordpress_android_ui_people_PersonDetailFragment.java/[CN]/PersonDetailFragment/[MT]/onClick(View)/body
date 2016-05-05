@@ -2,10 +2,24 @@
   Context context=getActivity();
   AlertDialog.Builder builder=new AlertDialog.Builder(context,R.style.Calypso_AlertDialog);
   builder.setTitle(R.string.role);
-  builder.setNegativeButton(R.string.cancel,null);
-  String[] roles=getResources().getStringArray(R.array.roles);
-  ArrayAdapter<String> arrayAdapter=new RoleListAdapter(context,R.layout.role_list_row,roles);
-  builder.setAdapter(arrayAdapter,null);
+  builder.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener(){
+    @Override public void onClick(    DialogInterface dialog,    int which){
+      Person person=PeopleTable.getPerson(mPersonID,mLocalTableBlogID);
+      if (person != null) {
+        mSelectedRole=person.getRole();
+      }
+    }
+  }
+);
+  builder.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener(){
+    @Override public void onClick(    DialogInterface dialog,    int which){
+      updatePersonRole(mSelectedRole);
+    }
+  }
+);
+  final String[] roles=getResources().getStringArray(R.array.roles);
+  ArrayAdapter<String> roleAdapter=new RoleListAdapter(context,R.layout.role_list_row,roles);
+  builder.setAdapter(roleAdapter,null);
   AlertDialog dialog=builder.show();
   Button negative=dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
   if (negative != null) {

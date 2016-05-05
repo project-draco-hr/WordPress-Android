@@ -1,0 +1,15 @@
+{
+  Person person=PeopleTable.getPerson(mPersonID,mLocalTableBlogID);
+  if (person == null || newRole == null || newRole.equalsIgnoreCase(person.getRole())) {
+    return;
+  }
+  PeopleUtils.updateRole(person.getBlogId(),person.getPersonID() + "",newRole,mLocalTableBlogID,new PeopleUtils.UpdateUserCallback(){
+    @Override public void onSuccess(    Person person){
+      PeopleTable.save(person);
+      refreshPersonDetails();
+    }
+    @Override public void onError(){
+    }
+  }
+);
+}
