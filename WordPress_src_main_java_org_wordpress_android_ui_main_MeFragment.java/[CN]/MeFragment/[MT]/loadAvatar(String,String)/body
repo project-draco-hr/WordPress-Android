@@ -1,0 +1,21 @@
+{
+  if (injectFilePath != null && !injectFilePath.isEmpty()) {
+    WordPress.getBitmapCache().removeSimilar(avatarUrl);
+    try {
+      injectCache(new File(injectFilePath),avatarUrl);
+    }
+ catch (    IOException e) {
+      EventBus.getDefault().post(new GravatarLoadFinished(false));
+    }
+    mAvatarImageView.invalidateImage();
+  }
+  mAvatarImageView.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR,new WPNetworkImageView.ImageLoadListener(){
+    @Override public void onLoaded(){
+      EventBus.getDefault().post(new GravatarLoadFinished(true));
+    }
+    @Override public void onError(){
+      EventBus.getDefault().post(new GravatarLoadFinished(false));
+    }
+  }
+);
+}
