@@ -2,14 +2,7 @@
   LoginWPCom login=new LoginWPCom(mUsername,mPassword,mTwoStepCode,mShouldSendTwoStepSMS,mJetpackBlog);
   login.execute(new LoginAbstract.Callback(){
     @Override public void onSuccess(){
-      mShouldSendTwoStepSMS=false;
-      if (isJetpackAuth() && getActivity() != null) {
-        getActivity().setResult(Activity.RESULT_OK);
-        getActivity().finish();
-        return;
-      }
-      FetchBlogListWPCom fetchBlogListWPCom=new FetchBlogListWPCom();
-      fetchBlogListWPCom.execute(mFetchBlogListCallback);
+      configureAccountAfterSuccessfulSignIn();
     }
     @Override public void onError(    int errorMessageId,    boolean twoStepCodeRequired,    boolean httpAuthRequired,    boolean erroneousSslCertificate){
       mFetchBlogListCallback.onError(errorMessageId,twoStepCodeRequired,httpAuthRequired,erroneousSslCertificate,"");
