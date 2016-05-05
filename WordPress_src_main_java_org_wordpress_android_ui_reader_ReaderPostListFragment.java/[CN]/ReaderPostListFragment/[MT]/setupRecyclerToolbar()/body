@@ -1,0 +1,28 @@
+{
+  Toolbar.OnMenuItemClickListener toolbarListener=new Toolbar.OnMenuItemClickListener(){
+    @Override public boolean onMenuItemClick(    MenuItem item){
+      if (!isAdded()) {
+        return false;
+      }
+      if (item.getItemId() == R.id.menu_settings) {
+        ReaderActivityLauncher.showReaderSubs(getActivity());
+        return true;
+      }
+ else       if (item.getItemId() == R.id.menu_search) {
+        return true;
+      }
+      return false;
+    }
+  }
+;
+  Menu menu=mRecyclerView.addToolbarMenu(R.menu.reader_list,toolbarListener);
+  MenuItem searchItem=menu.findItem(R.id.menu_search);
+  mSearchView=(SearchView)searchItem.getActionView();
+  SearchManager searchManager=(SearchManager)getActivity().getSystemService(Context.SEARCH_SERVICE);
+  mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+  mSearchView.setQueryHint("Search hint");
+  mSearchView.setIconifiedByDefault(false);
+  mSearchView.setSubmitButtonEnabled(false);
+  mSearchView.setIconified(true);
+  mSearchView.setFocusable(false);
+}
