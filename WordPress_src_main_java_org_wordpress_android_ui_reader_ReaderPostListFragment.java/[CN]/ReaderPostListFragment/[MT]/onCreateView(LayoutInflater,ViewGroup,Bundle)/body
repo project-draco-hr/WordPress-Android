@@ -63,23 +63,20 @@ int spacingHorizontal=context.getResources().getDimensionPixelSize(R.dimen.reade
 int spacingVertical=context.getResources().getDimensionPixelSize(R.dimen.reader_card_gutters);
 mRecyclerView.addItemDecoration(new RecyclerItemDecoration(spacingHorizontal,spacingVertical,false));
 if (!ReaderUtils.isLoggedOutReader()) {
-ViewGroup controls=(ViewGroup)inflater.inflate(R.layout.reader_filtered_recyclerview_controls,null);
-View btnSettings=controls.findViewById(R.id.btn_settings);
-ReaderUtils.setBackgroundToRoundRipple(btnSettings);
-btnSettings.setOnClickListener(new View.OnClickListener(){
-@Override public void onClick(View v){
-ReaderActivityLauncher.showReaderSubs(v.getContext());
+Toolbar.OnMenuItemClickListener toolbarListener=new Toolbar.OnMenuItemClickListener(){
+@Override public boolean onMenuItemClick(MenuItem item){
+if (item.getItemId() == R.id.menu_settings) {
+  ReaderActivityLauncher.showReaderSubs(getActivity());
+  return true;
+}
+ else if (item.getItemId() == R.id.menu_search) {
+  return true;
+}
+return false;
 }
 }
-);
-View btnSearch=controls.findViewById(R.id.btn_search);
-ReaderUtils.setBackgroundToRoundRipple(btnSearch);
-btnSearch.setOnClickListener(new View.OnClickListener(){
-@Override public void onClick(View v){
-}
-}
-);
-mRecyclerView.addToolbarCustomControl(controls,null);
+;
+mRecyclerView.addToolbarMenu(R.menu.reader_list,toolbarListener);
 }
 mRecyclerView.setToolbarBackgroundColor(getResources().getColor(R.color.blue_medium));
 mRecyclerView.setToolbarSpinnerTextColor(getResources().getColor(R.color.white));
