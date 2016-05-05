@@ -4,12 +4,12 @@
       if (jsonObject != null && callback != null) {
         try {
           JSONArray jsonArray=jsonObject.getJSONArray("users");
-          List<Person> people=peopleListFromJSON(jsonArray,localTableBlogId);
+          List<Person> people=peopleListFromJSON(jsonArray,blogId,localTableBlogId);
           callback.onSuccess(people);
         }
  catch (        JSONException e) {
           AppLog.e(T.API,"JSON exception occurred while parsing the response for sites/%s/users: " + e);
-          callback.onJSONException(e);
+          callback.onError();
         }
       }
     }
@@ -19,11 +19,11 @@
     @Override public void onErrorResponse(    VolleyError volleyError){
       AppLog.e(T.API,volleyError);
       if (callback != null) {
-        callback.onError(volleyError);
+        callback.onError();
       }
     }
   }
 ;
-  String path=String.format("sites/%s/users",siteID);
+  String path=String.format("sites/%s/users",blogId);
   WordPress.getRestClientUtilsV1_1().get(path,listener,errorListener);
 }

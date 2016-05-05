@@ -9,13 +9,10 @@
     String lastName=json.optString("last_name");
     String displayName=json.optString("nice_name");
     String avatarUrl=json.optString("avatar_URL");
-    Role role=Role.fromKey(json.optJSONArray("roles").optString(0));
-    return new Person(personID,localTableBlogId,username,firstName,lastName,displayName,avatarUrl,role);
+    String role=json.getJSONArray("roles").optString(0);
+    return new Person(personID,blogId,localTableBlogId,username,firstName,lastName,displayName,avatarUrl,role);
   }
- catch (  JSONException e) {
-    AppLog.e(AppLog.T.PEOPLE,"JSON exception occurred while parsing the user json: " + e);
-  }
-catch (  NumberFormatException e) {
+ catch (  NumberFormatException e) {
     AppLog.e(AppLog.T.PEOPLE,"The ID parsed from the JSON couldn't be converted to long: " + e);
   }
   return null;
