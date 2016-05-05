@@ -4,23 +4,13 @@
     Toast.makeText(getActivity(),getString(R.string.error_locating_image),Toast.LENGTH_SHORT).show();
     return;
   }
-  mProgressBar.setVisibility(View.VISIBLE);
+  showGravatarProgressBar(true);
   GravatarApi.uploadGravatar(file,new GravatarApi.GravatarUploadListener(){
     @Override public void onSuccess(){
-      loadAvatar(AccountHelper.getDefaultAccount(),filePath,new WPNetworkImageView.ImageLoadListener(){
-        @Override public void onLoaded(){
-          mProgressBar.setVisibility(View.GONE);
-        }
-        @Override public void onError(){
-          mProgressBar.setVisibility(View.GONE);
-          Toast.makeText(getActivity(),getString(R.string.error_refreshing_gravatar),Toast.LENGTH_SHORT).show();
-        }
-      }
-);
+      EventBus.getDefault().post(new GravatarUploadFinished(filePath,true));
     }
     @Override public void onError(){
-      mProgressBar.setVisibility(View.GONE);
-      Toast.makeText(getActivity(),getString(R.string.error_updating_gravatar),Toast.LENGTH_SHORT).show();
+      EventBus.getDefault().post(new GravatarUploadFinished(filePath,false));
     }
   }
 );
