@@ -63,14 +63,23 @@ int spacingHorizontal=context.getResources().getDimensionPixelSize(R.dimen.reade
 int spacingVertical=context.getResources().getDimensionPixelSize(R.dimen.reader_card_gutters);
 mRecyclerView.addItemDecoration(new RecyclerItemDecoration(spacingHorizontal,spacingVertical,false));
 if (!ReaderUtils.isLoggedOutReader()) {
-View settingsControl=inflater.inflate(R.layout.filtered_recyclerview_settings_control,null);
-mRecyclerView.addToolbarCustomControl(settingsControl,new View.OnClickListener(){
+ViewGroup controls=(ViewGroup)inflater.inflate(R.layout.reader_filtered_recyclerview_controls,null);
+View btnSettings=controls.findViewById(R.id.btn_settings);
+ReaderUtils.setBackgroundToRoundRipple(btnSettings);
+btnSettings.setOnClickListener(new View.OnClickListener(){
 @Override public void onClick(View v){
 ReaderActivityLauncher.showReaderSubs(v.getContext());
 }
 }
 );
-ReaderUtils.setBackgroundToRoundRipple(settingsControl);
+View btnSearch=controls.findViewById(R.id.btn_search);
+ReaderUtils.setBackgroundToRoundRipple(btnSearch);
+btnSearch.setOnClickListener(new View.OnClickListener(){
+@Override public void onClick(View v){
+}
+}
+);
+mRecyclerView.addToolbarCustomControl(controls,null);
 }
 mRecyclerView.setToolbarBackgroundColor(getResources().getColor(R.color.blue_medium));
 mRecyclerView.setToolbarSpinnerTextColor(getResources().getColor(R.color.white));
