@@ -1,0 +1,23 @@
+{
+  mSearchSuggestions=ReaderSearchTable.getQueryStrings();
+  MatrixCursor cursor=new MatrixCursor(new String[]{"_id","query"});
+  int id=0;
+  for (  String query : mSearchSuggestions) {
+    cursor.addRow(new Object[]{id++,query});
+  }
+  String[] fromColumns=new String[]{"query"};
+  int[] toView=new int[]{android.R.id.text1};
+  SimpleCursorAdapter adapter=new SimpleCursorAdapter(getActivity(),android.R.layout.simple_list_item_1,cursor,fromColumns,toView,0);
+  mSearchView.setSuggestionsAdapter(adapter);
+  mSearchView.setOnSuggestionListener(new SearchView.OnSuggestionListener(){
+    @Override public boolean onSuggestionSelect(    int position){
+      return false;
+    }
+    @Override public boolean onSuggestionClick(    int position){
+      String query=mSearchSuggestions.get(position);
+      mSearchView.setQuery(query,false);
+      return true;
+    }
+  }
+);
+}
