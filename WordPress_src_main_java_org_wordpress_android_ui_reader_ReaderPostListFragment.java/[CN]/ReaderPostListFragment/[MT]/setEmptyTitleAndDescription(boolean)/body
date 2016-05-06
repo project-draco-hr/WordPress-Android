@@ -1,53 +1,55 @@
 {
-  if (!isAdded()) {
-    return;
-  }
-  int titleResId;
-  int descriptionResId=0;
+  if (!isAdded())   return;
+  String title;
+  String description=null;
   if (!NetworkUtils.isNetworkAvailable(getActivity())) {
-    titleResId=R.string.reader_empty_posts_no_connection;
+    title=getString(R.string.reader_empty_posts_no_connection);
   }
  else   if (requestFailed) {
-    titleResId=R.string.reader_empty_posts_request_failed;
+    title=getString(R.string.reader_empty_posts_request_failed);
   }
  else   if (isUpdating()) {
-    titleResId=R.string.reader_empty_posts_in_tag_updating;
+    title=getString(R.string.reader_empty_posts_in_tag_updating);
   }
  else   if (getPostListType() == ReaderPostListType.BLOG_PREVIEW) {
-    titleResId=R.string.reader_empty_posts_in_blog;
+    title=getString(R.string.reader_empty_posts_in_blog);
   }
  else   if (getPostListType() == ReaderPostListType.TAG_FOLLOWED && hasCurrentTag()) {
     if (getCurrentTag().isFollowedSites()) {
       if (ReaderBlogTable.hasFollowedBlogs()) {
-        titleResId=R.string.reader_empty_followed_blogs_no_recent_posts_title;
-        descriptionResId=R.string.reader_empty_followed_blogs_no_recent_posts_description;
+        title=getString(R.string.reader_empty_followed_blogs_no_recent_posts_title);
+        description=getString(R.string.reader_empty_followed_blogs_no_recent_posts_description);
       }
  else {
-        titleResId=R.string.reader_empty_followed_blogs_title;
-        descriptionResId=R.string.reader_empty_followed_blogs_description;
+        title=getString(R.string.reader_empty_followed_blogs_title);
+        description=getString(R.string.reader_empty_followed_blogs_description);
       }
     }
  else     if (getCurrentTag().isPostsILike()) {
-      titleResId=R.string.reader_empty_posts_liked;
+      title=getString(R.string.reader_empty_posts_liked);
     }
  else     if (getCurrentTag().tagType == ReaderTagType.CUSTOM_LIST) {
-      titleResId=R.string.reader_empty_posts_in_custom_list;
+      title=getString(R.string.reader_empty_posts_in_custom_list);
     }
  else {
-      titleResId=R.string.reader_empty_posts_in_tag;
+      title=getString(R.string.reader_empty_posts_in_tag);
     }
   }
+ else   if (getPostListType() == ReaderPostListType.SEARCH_RESULTS) {
+    title=getString(R.string.reader_empty_posts_in_search_title);
+    description=String.format(getString(R.string.reader_empty_posts_in_search_description),mCurrentSearchQuery);
+  }
  else {
-    titleResId=R.string.reader_empty_posts_in_tag;
+    title=getString(R.string.reader_empty_posts_in_tag);
   }
   TextView titleView=(TextView)mEmptyView.findViewById(R.id.title_empty);
-  titleView.setText(getString(titleResId));
+  titleView.setText(title);
   TextView descriptionView=(TextView)mEmptyView.findViewById(R.id.description_empty);
-  if (descriptionResId == 0) {
+  if (description == null) {
     descriptionView.setVisibility(View.INVISIBLE);
   }
  else {
-    descriptionView.setText(getString(descriptionResId));
+    descriptionView.setText(description);
     descriptionView.setVisibility(View.VISIBLE);
   }
 }
