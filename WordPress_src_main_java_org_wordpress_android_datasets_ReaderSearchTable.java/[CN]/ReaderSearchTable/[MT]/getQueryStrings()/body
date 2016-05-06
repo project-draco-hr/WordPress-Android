@@ -1,0 +1,13 @@
+{
+  List<String> queries=new ArrayList<>();
+  Cursor c=ReaderDatabase.getReadableDb().rawQuery("SELECT query_string FROM tbl_search_history ORDER BY date_used DESC",null);
+  try {
+    while (c.moveToNext()) {
+      queries.add(c.getString(0));
+    }
+    return queries;
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+}
