@@ -6,11 +6,11 @@ case RequestCodes.PICTURE_LIBRARY_OR_CAPTURE:
       Uri imageUri;
       if (data == null || data.getData() == null) {
         imageUri=Uri.fromFile(new File(mMediaCapturePath));
-        AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.ME_GRAVATAR_SHOT_NEW);
+        AnalyticsTracker.track(AnalyticsTracker.Stat.ME_GRAVATAR_SHOT_NEW);
       }
  else {
         imageUri=data.getData();
-        AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.ME_GRAVATAR_GALLERY_PICKED);
+        AnalyticsTracker.track(AnalyticsTracker.Stat.ME_GRAVATAR_GALLERY_PICKED);
       }
       if (imageUri != null) {
         startCropActivity(imageUri);
@@ -21,7 +21,7 @@ case RequestCodes.PICTURE_LIBRARY_OR_CAPTURE:
     }
   break;
 case UCrop.REQUEST_CROP:
-AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.ME_GRAVATAR_CROPPED);
+AnalyticsTracker.track(AnalyticsTracker.Stat.ME_GRAVATAR_CROPPED);
 if (resultCode == Activity.RESULT_OK) {
 fetchMedia(UCrop.getOutput(data));
 }
