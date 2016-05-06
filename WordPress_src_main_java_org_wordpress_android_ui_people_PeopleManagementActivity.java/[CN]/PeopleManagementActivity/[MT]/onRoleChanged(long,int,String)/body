@@ -1,0 +1,23 @@
+{
+  Person person=PeopleTable.getPerson(personID,localTableBlogId);
+  if (person == null || newRole == null || newRole.equalsIgnoreCase(person.getRole())) {
+    return;
+  }
+  PeopleUtils.updateRole(person.getBlogId(),person.getPersonID() + "",newRole,localTableBlogId,new PeopleUtils.UpdateUserCallback(){
+    @Override public void onSuccess(    Person person){
+      PeopleTable.save(person);
+      FragmentManager fragmentManager=getFragmentManager();
+      PeopleListFragment peopleListFragment=(PeopleListFragment)fragmentManager.findFragmentByTag(KEY_PEOPLE_LIST_FRAGMENT);
+      PersonDetailFragment personDetailFragment=(PersonDetailFragment)fragmentManager.findFragmentByTag(KEY_PERSON_DETAIL_FRAGMENT);
+      if (peopleListFragment != null) {
+        peopleListFragment.refreshPeopleList();
+      }
+      if (personDetailFragment != null) {
+        personDetailFragment.refreshPersonDetails();
+      }
+    }
+    @Override public void onError(){
+    }
+  }
+);
+}
