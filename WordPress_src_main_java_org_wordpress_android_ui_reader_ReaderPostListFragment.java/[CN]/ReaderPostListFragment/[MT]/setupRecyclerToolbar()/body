@@ -13,9 +13,9 @@
   }
 ;
   Menu menu=mRecyclerView.addToolbarMenu(R.menu.reader_list,toolbarListener);
-  MenuItem settingsItem=menu.findItem(R.id.menu_settings);
-  MenuItem searchItem=menu.findItem(R.id.menu_search);
-  mSearchView=(SearchView)searchItem.getActionView();
+  mSettingsMenuItem=menu.findItem(R.id.menu_settings);
+  mSearchMenuItem=menu.findItem(R.id.menu_search);
+  mSearchView=(SearchView)mSearchMenuItem.getActionView();
   SearchManager searchManager=(SearchManager)getActivity().getSystemService(Context.SEARCH_SERVICE);
   mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
   mSearchView.setQueryHint(getString(R.string.reader_hint_post_search));
@@ -23,4 +23,15 @@
   mSearchView.setSubmitButtonEnabled(false);
   mSearchView.setIconified(true);
   mSearchView.setFocusable(false);
+  MenuItemCompat.setOnActionExpandListener(mSearchMenuItem,new MenuItemCompat.OnActionExpandListener(){
+    @Override public boolean onMenuItemActionExpand(    MenuItem item){
+      mSettingsMenuItem.setVisible(false);
+      return true;
+    }
+    @Override public boolean onMenuItemActionCollapse(    MenuItem item){
+      mSettingsMenuItem.setVisible(true);
+      return true;
+    }
+  }
+);
 }
