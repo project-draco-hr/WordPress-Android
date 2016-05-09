@@ -1,6 +1,8 @@
 {
   Blog blog=WordPress.getBlog(mLocalTableBlogID);
-  boolean canChangeRole=blog != null && blog.hasCapability(Capability.PROMOTE_USERS);
+  Account account=AccountHelper.getDefaultAccount();
+  boolean isCurrentUser=account.getUserId() == mPersonID;
+  boolean canChangeRole=(blog != null) && !isCurrentUser && blog.hasCapability(Capability.PROMOTE_USERS);
   if (canChangeRole) {
     mRoleContainer.setOnClickListener(this);
   }
