@@ -24,33 +24,7 @@
     }
     mEditorFragmentListener.onTrackableEvent(TrackableEvent.LINK_BUTTON_TAPPED);
     ((ToggleButton)v).setChecked(false);
-    LinkDialogFragment linkDialogFragment=new LinkDialogFragment();
-    linkDialogFragment.setTargetFragment(this,LinkDialogFragment.LINK_DIALOG_REQUEST_CODE_ADD);
-    Bundle dialogBundle=new Bundle();
-    String clipboardUri=Utils.getUrlFromClipboard(getActivity());
-    if (clipboardUri != null) {
-      dialogBundle.putString(LinkDialogFragment.LINK_DIALOG_ARG_URL,clipboardUri);
-    }
-    if (mSourceView.getVisibility() == View.VISIBLE) {
-      mSelectionStart=mSourceViewContent.getSelectionStart();
-      mSelectionEnd=mSourceViewContent.getSelectionEnd();
-      String selectedText=mSourceViewContent.getText().toString().substring(mSelectionStart,mSelectionEnd);
-      dialogBundle.putString(LinkDialogFragment.LINK_DIALOG_ARG_TEXT,selectedText);
-    }
- else {
-      mGetSelectedTextCountDownLatch=new CountDownLatch(1);
-      mWebView.execJavaScriptFromString("ZSSEditor.execFunctionForResult('getSelectedTextToLinkify');");
-      try {
-        if (mGetSelectedTextCountDownLatch.await(1,TimeUnit.SECONDS)) {
-          dialogBundle.putString(LinkDialogFragment.LINK_DIALOG_ARG_TEXT,mJavaScriptResult);
-        }
-      }
- catch (      InterruptedException e) {
-        AppLog.d(T.EDITOR,"Failed to obtain selected text from JS editor.");
-      }
-    }
-    linkDialogFragment.setArguments(dialogBundle);
-    linkDialogFragment.show(getFragmentManager(),LinkDialogFragment.class.getSimpleName());
+    displayLinkDialog();
   }
  else {
     if (v instanceof ToggleButton) {

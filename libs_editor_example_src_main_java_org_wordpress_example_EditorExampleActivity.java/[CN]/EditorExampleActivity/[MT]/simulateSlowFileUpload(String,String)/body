@@ -1,0 +1,27 @@
+{
+  Thread thread=new Thread(){
+    @Override public void run(){
+      try {
+        sleep(5000);
+        float count=(float)0.1;
+        while (count < 1.1) {
+          sleep(2000);
+          ((EditorMediaUploadListener)mEditorFragment).onMediaUploadProgress(mediaId,count);
+          count+=0.1;
+        }
+        MediaFile mediaFile=new MediaFile();
+        mediaFile.setMediaId(MEDIA_REMOTE_ID_SAMPLE);
+        mediaFile.setFileURL(mediaUrl);
+        ((EditorMediaUploadListener)mEditorFragment).onMediaUploadSucceeded(mediaId,mediaFile);
+        if (mFailedUploads.containsKey(mediaId)) {
+          mFailedUploads.remove(mediaId);
+        }
+      }
+ catch (      InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+;
+  thread.start();
+}

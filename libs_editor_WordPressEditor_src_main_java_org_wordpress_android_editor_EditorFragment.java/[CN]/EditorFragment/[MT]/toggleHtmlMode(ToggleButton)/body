@@ -10,16 +10,29 @@
   clearFormatBarButtons();
   updateFormatBarEnabledState(true);
   if (toggleButton.isChecked()) {
-    mSourceViewTitle.setText(getTitle());
-    SpannableString spannableContent=new SpannableString(getContent());
-    HtmlStyleUtils.styleHtmlForDisplay(spannableContent);
-    mSourceViewContent.setText(spannableContent);
-    mWebView.setVisibility(View.GONE);
-    mSourceView.setVisibility(View.VISIBLE);
-    mSourceViewContent.requestFocus();
-    mSourceViewContent.setSelection(0);
-    InputMethodManager imm=((InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE));
-    imm.showSoftInput(mSourceViewContent,InputMethodManager.SHOW_IMPLICIT);
+    Thread thread=new Thread(new Runnable(){
+      @Override public void run(){
+        getTitle();
+        getContent();
+        getActivity().runOnUiThread(new Runnable(){
+          @Override public void run(){
+            mSourceViewTitle.setText(mTitle);
+            SpannableString spannableContent=new SpannableString(mContentHtml);
+            HtmlStyleUtils.styleHtmlForDisplay(spannableContent);
+            mSourceViewContent.setText(spannableContent);
+            mWebView.setVisibility(View.GONE);
+            mSourceView.setVisibility(View.VISIBLE);
+            mSourceViewContent.requestFocus();
+            mSourceViewContent.setSelection(0);
+            InputMethodManager imm=((InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE));
+            imm.showSoftInput(mSourceViewContent,InputMethodManager.SHOW_IMPLICIT);
+          }
+        }
+);
+      }
+    }
+);
+    thread.start();
   }
  else {
     mWebView.setVisibility(View.VISIBLE);

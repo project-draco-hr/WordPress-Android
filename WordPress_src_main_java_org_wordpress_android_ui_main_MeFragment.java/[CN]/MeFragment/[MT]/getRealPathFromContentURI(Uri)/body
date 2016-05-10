@@ -1,0 +1,21 @@
+{
+  if (contentUri == null)   return null;
+  String[] proj={MediaStore.Images.Media.DATA};
+  CursorLoader loader=new CursorLoader(getActivity(),contentUri,proj,null,null,null);
+  Cursor cursor=loader.loadInBackground();
+  if (cursor == null)   return null;
+  int column_index=cursor.getColumnIndex(MediaStore.Images.Media.DATA);
+  if (column_index == -1) {
+    cursor.close();
+    return null;
+  }
+  String path;
+  if (cursor.moveToFirst()) {
+    path=cursor.getString(column_index);
+  }
+ else {
+    path=null;
+  }
+  cursor.close();
+  return path;
+}

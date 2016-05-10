@@ -1,7 +1,10 @@
 {
   final ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.me_fragment,container,false);
   mAvatarFrame=(ViewGroup)rootView.findViewById(R.id.frame_avatar);
+  mAvatarContainer=(ViewGroup)rootView.findViewById(R.id.avatar_container);
   mAvatarImageView=(WPNetworkImageView)rootView.findViewById(R.id.me_avatar);
+  mAvatarTooltipAnchor=rootView.findViewById(R.id.avatar_tooltip_anchor);
+  mProgressBar=rootView.findViewById(R.id.avatar_progress);
   mDisplayNameTextView=(TextView)rootView.findViewById(R.id.me_display_name);
   mUsernameTextView=(TextView)rootView.findViewById(R.id.me_username);
   mLoginLogoutTextView=(TextView)rootView.findViewById(R.id.me_login_logout_text_view);
@@ -11,6 +14,19 @@
   mNotificationsDividerView=rootView.findViewById(R.id.me_notifications_divider);
   addDropShadowToAvatar();
   refreshAccountDetails();
+  mAvatarContainer.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      AnalyticsTracker.track(AnalyticsTracker.Stat.ME_GRAVATAR_TAPPED);
+      if (mGravatarToolTipView != null) {
+        mGravatarToolTipView.remove();
+      }
+      AppPrefs.setGravatarChangePromoRequired(false);
+      if (PermissionUtils.checkAndRequestCameraAndStoragePermissions(MeFragment.this,CAMERA_AND_MEDIA_PERMISSION_REQUEST_CODE)) {
+        askForCameraOrGallery();
+      }
+    }
+  }
+);
   mMyProfileView.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
       ActivityLauncher.viewMyProfile(getActivity());
@@ -52,8 +68,13 @@
     }
   }
 );
-  if (savedInstanceState != null && savedInstanceState.getBoolean(IS_DISCONNECTING,false)) {
-    showDisconnectDialog(getActivity());
+  if (savedInstanceState != null) {
+    if (savedInstanceState.getBoolean(IS_DISCONNECTING,false)) {
+      showDisconnectDialog(getActivity());
+    }
+    if (savedInstanceState.getBoolean(IS_UPDATING_GRAVATAR,false)) {
+      showGravatarProgressBar(true);
+    }
   }
   return rootView;
 }
