@@ -7,12 +7,12 @@
     getListFragment().setCommentIsModerating(comment.commentID,true);
     getListFragment().updateEmptyView(EmptyViewMessageType.NO_CONTENT);
     CommentActions.moderateComment(accountId,comment,newStatus,new CommentActions.CommentActionListener(){
-      @Override public void onActionResult(      boolean succeeded){
+      @Override public void onActionResult(      CommentActionResult result){
         if (isFinishing() || !hasListFragment()) {
           return;
         }
         getListFragment().setCommentIsModerating(comment.commentID,false);
-        if (succeeded) {
+        if (result.isSuccess()) {
           reloadCommentList();
         }
  else {
@@ -46,12 +46,12 @@
         }
         mTrashedComments.remove(comment);
         CommentActions.moderateComment(accountId,comment,newStatus,new CommentActions.CommentActionListener(){
-          @Override public void onActionResult(          boolean succeeded){
+          @Override public void onActionResult(          CommentActionResult result){
             if (isFinishing() || !hasListFragment()) {
               return;
             }
             getListFragment().setCommentIsModerating(comment.commentID,false);
-            if (!succeeded) {
+            if (!result.isSuccess()) {
               getListFragment().loadComments();
               ToastUtils.showToast(CommentsActivity.this,R.string.error_moderate_comment,ToastUtils.Duration.LONG);
             }

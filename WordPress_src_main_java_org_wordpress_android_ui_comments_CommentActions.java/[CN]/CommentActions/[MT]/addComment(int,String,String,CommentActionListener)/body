@@ -1,7 +1,9 @@
 {
   final Blog blog=WordPress.getBlog(accountId);
   if (blog == null || TextUtils.isEmpty(commentText)) {
-    if (actionListener != null)     actionListener.onActionResult(false);
+    if (actionListener != null) {
+      actionListener.onActionResult(new CommentActionResult(CommentActionResult.COMMENT_ID_ON_ERRORS,null));
+    }
     return;
   }
   final Handler handler=new Handler();
@@ -14,27 +16,20 @@
       commentHash.put("author_url","");
       commentHash.put("author_email","");
       Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),postID,commentHash};
-      int newCommentID;
+      int newCommentID=-1;
+      String message=null;
       try {
         newCommentID=(Integer)client.call(Method.NEW_COMMENT,params);
       }
- catch (      XMLRPCException e) {
+ catch (      IOException|XmlPullParserException|XMLRPCException e) {
         AppLog.e(T.COMMENTS,"Error while sending new comment",e);
-        newCommentID=-1;
+        message=e.getMessage();
       }
-catch (      IOException e) {
-        AppLog.e(T.COMMENTS,"Error while sending new comment",e);
-        newCommentID=-1;
-      }
-catch (      XmlPullParserException e) {
-        AppLog.e(T.COMMENTS,"Error while sending new comment",e);
-        newCommentID=-1;
-      }
-      final boolean succeeded=(newCommentID >= 0);
+      final CommentActionResult cr=new CommentActionResult(newCommentID,message);
       if (actionListener != null) {
         handler.post(new Runnable(){
           @Override public void run(){
-            actionListener.onActionResult(succeeded);
+            actionListener.onActionResult(cr);
           }
         }
 );
