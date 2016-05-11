@@ -16,7 +16,12 @@
       String tagDisplayName=JSONUtils.getStringDecoded(jsonTopic,"display_name");
       String tagSlug=JSONUtils.getStringDecoded(jsonTopic,"slug");
       String endpoint=JSONUtils.getString(jsonTopic,"URL");
-      topics.add(new ReaderTag(tagSlug,tagDisplayName,tagTitle,endpoint,topicType));
+      if (tagType == ReaderTagType.DEFAULT && endpoint.contains("/read/list/")) {
+        topics.add(new ReaderTag(tagSlug,tagDisplayName,tagTitle,endpoint,ReaderTagType.CUSTOM_LIST));
+      }
+ else {
+        topics.add(new ReaderTag(tagSlug,tagDisplayName,tagTitle,endpoint,tagType));
+      }
     }
   }
   return topics;
