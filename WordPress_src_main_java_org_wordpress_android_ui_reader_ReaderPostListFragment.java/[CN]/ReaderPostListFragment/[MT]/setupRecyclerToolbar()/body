@@ -1,0 +1,44 @@
+{
+  Menu menu=mRecyclerView.addToolbarMenu(R.menu.reader_list);
+  mSettingsMenuItem=menu.findItem(R.id.menu_settings);
+  mSearchMenuItem=menu.findItem(R.id.menu_search);
+  mSettingsMenuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener(){
+    @Override public boolean onMenuItemClick(    MenuItem item){
+      ReaderActivityLauncher.showReaderSubs(getActivity());
+      return true;
+    }
+  }
+);
+  mSearchView=(SearchView)mSearchMenuItem.getActionView();
+  mSearchView.setQueryHint(getString(R.string.reader_hint_post_search));
+  mSearchView.setSubmitButtonEnabled(false);
+  mSearchView.setIconifiedByDefault(true);
+  mSearchView.setIconified(true);
+  MenuItemCompat.setOnActionExpandListener(mSearchMenuItem,new MenuItemCompat.OnActionExpandListener(){
+    @Override public boolean onMenuItemActionExpand(    MenuItem item){
+      showSearchUI();
+      return true;
+    }
+    @Override public boolean onMenuItemActionCollapse(    MenuItem item){
+      hideSearchUI();
+      return true;
+    }
+  }
+);
+  mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
+    @Override public boolean onQueryTextSubmit(    String query){
+      if (getPostListType() == ReaderPostListType.SEARCH_RESULTS) {
+      }
+ else {
+        ReaderActivityLauncher.showReaderSearchResults(getActivity(),query);
+      }
+      mSearchMenuItem.collapseActionView();
+      return true;
+    }
+    @Override public boolean onQueryTextChange(    String newText){
+      mSearchSuggestionAdapter.populate(newText);
+      return true;
+    }
+  }
+);
+}

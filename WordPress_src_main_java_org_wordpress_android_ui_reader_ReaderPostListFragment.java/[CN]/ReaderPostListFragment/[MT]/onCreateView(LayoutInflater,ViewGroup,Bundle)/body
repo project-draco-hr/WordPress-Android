@@ -3,7 +3,7 @@
   mRecyclerView=(FilteredRecyclerView)rootView.findViewById(R.id.reader_recycler_view);
   Context context=container.getContext();
   mEmptyView=rootView.findViewById(R.id.empty_custom_view);
-  mEmptyView.findViewById(R.id.layout_box_images).setVisibility(shouldShowBoxAndPagesAnimation() ? View.VISIBLE : View.GONE);
+  mEmptyViewBoxImages=mEmptyView.findViewById(R.id.layout_box_images);
   mRecyclerView.setLogT(AppLog.T.READER);
   mRecyclerView.setCustomEmptyView(mEmptyView);
   mRecyclerView.setFilterListener(new FilteredRecyclerView.FilterListener(){
@@ -62,20 +62,13 @@ setEmptyTitleAndDescription(EmptyViewMessageType.NETWORK_ERROR.equals(emptyViewM
 int spacingHorizontal=context.getResources().getDimensionPixelSize(R.dimen.reader_card_margin);
 int spacingVertical=context.getResources().getDimensionPixelSize(R.dimen.reader_card_gutters);
 mRecyclerView.addItemDecoration(new RecyclerItemDecoration(spacingHorizontal,spacingVertical,false));
-if (!ReaderUtils.isLoggedOutReader()) {
-View settingsControl=inflater.inflate(R.layout.filtered_recyclerview_settings_control,null);
-mRecyclerView.addToolbarCustomControl(settingsControl,new View.OnClickListener(){
-@Override public void onClick(View v){
-ReaderActivityLauncher.showReaderSubs(v.getContext());
-}
-}
-);
-ReaderUtils.setBackgroundToRoundRipple(settingsControl);
-}
 mRecyclerView.setToolbarBackgroundColor(getResources().getColor(R.color.blue_medium));
 mRecyclerView.setToolbarSpinnerTextColor(getResources().getColor(R.color.white));
 mRecyclerView.setToolbarSpinnerDrawable(R.drawable.arrow);
 mRecyclerView.setToolbarLeftAndRightPadding(getResources().getDimensionPixelSize(R.dimen.margin_medium) + spacingHorizontal,getResources().getDimensionPixelSize(R.dimen.margin_extra_large) + spacingHorizontal);
+if (!ReaderUtils.isLoggedOutReader() && getPostListType() == ReaderPostListType.TAG_FOLLOWED) {
+setupRecyclerToolbar();
+}
 mNewPostsBar=rootView.findViewById(R.id.layout_new_posts);
 mNewPostsBar.setVisibility(View.GONE);
 mNewPostsBar.setOnClickListener(new View.OnClickListener(){
