@@ -1,13 +1,6 @@
 {
-  Plan plan=getPageAdapter().getPlan(position);
-  boolean showPurchaseButton;
-  if (plan.isCurrentPlan()) {
-    showPurchaseButton=false;
-  }
- else {
-    long currentPlanProductId=WordPress.wpDB.getPlanIdForLocalTableBlogId(mLocalBlogID);
-    showPurchaseButton=plan.isAvailable() && plan.getProductID() > currentPlanProductId;
-  }
+  final Plan plan=getPageAdapter().getPlan(position);
+  boolean showPurchaseButton=isBuyButtonAvailable(position);
   ViewGroup framePurchase=(ViewGroup)findViewById(R.id.frame_purchase);
   ViewGroup containerPurchase=(ViewGroup)findViewById(R.id.purchase_container);
   if (showPurchaseButton) {
@@ -15,7 +8,7 @@
     txtPurchasePrice.setText(PlansUtils.getPlanDisplayPrice(plan));
     containerPurchase.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
-        startPurchaseProcess();
+        startPurchaseProcess(position);
       }
     }
 );
