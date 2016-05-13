@@ -1,18 +1,20 @@
 {
   if (note == null || TextUtils.isEmpty(replyText)) {
-    if (actionListener != null)     actionListener.onActionResult(false);
+    if (actionListener != null)     actionListener.onActionResult(new CommentActionResult(CommentActionResult.COMMENT_ID_ON_ERRORS,null));
     return;
   }
   RestRequest.Listener listener=new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject jsonObject){
-      if (actionListener != null)       actionListener.onActionResult(true);
+      if (actionListener != null)       actionListener.onActionResult(new CommentActionResult(CommentActionResult.COMMENT_ID_UNKNOWN,null));
     }
   }
 ;
   RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError volleyError){
       if (volleyError != null)       AppLog.e(T.COMMENTS,volleyError.getMessage(),volleyError);
-      if (actionListener != null)       actionListener.onActionResult(false);
+      if (actionListener != null) {
+        actionListener.onActionResult(new CommentActionResult(CommentActionResult.COMMENT_ID_ON_ERRORS,VolleyUtils.messageStringFromVolleyError(volleyError)));
+      }
     }
   }
 ;
