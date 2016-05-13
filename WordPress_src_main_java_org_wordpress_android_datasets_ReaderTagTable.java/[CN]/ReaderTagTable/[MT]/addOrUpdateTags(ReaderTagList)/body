@@ -4,12 +4,13 @@
   }
   SQLiteStatement stmt=null;
   try {
-    stmt=ReaderDatabase.getWritableDb().compileStatement("INSERT OR REPLACE INTO tbl_tags (tag_slug, tag_title, tag_type, endpoint) VALUES (?1,?2,?3,?4)");
+    stmt=ReaderDatabase.getWritableDb().compileStatement("INSERT OR REPLACE INTO tbl_tags (tag_slug, tag_display_name, tag_title, tag_type, endpoint) VALUES (?1,?2,?3,?4,?5)");
     for (    ReaderTag tag : tagList) {
       stmt.bindString(1,tag.getTagSlug());
-      stmt.bindString(2,tag.getTagTitle());
-      stmt.bindLong(3,tag.tagType.toInt());
-      stmt.bindString(4,tag.getEndpoint());
+      stmt.bindString(2,tag.getTagDisplayName());
+      stmt.bindString(3,tag.getTagTitle());
+      stmt.bindLong(4,tag.tagType.toInt());
+      stmt.bindString(5,tag.getEndpoint());
       stmt.execute();
     }
   }

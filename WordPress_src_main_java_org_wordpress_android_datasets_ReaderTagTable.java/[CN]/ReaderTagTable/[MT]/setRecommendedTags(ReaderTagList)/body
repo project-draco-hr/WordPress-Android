@@ -3,16 +3,17 @@
     return;
   }
   SQLiteDatabase db=ReaderDatabase.getWritableDb();
-  SQLiteStatement stmt=db.compileStatement("INSERT INTO tbl_tags_recommended (tag_slug, tag_title, tag_type, endpoint) VALUES (?1,?2,?3,?4)");
+  SQLiteStatement stmt=db.compileStatement("INSERT INTO tbl_tags_recommended (tag_slug, tag_display_name, tag_title, tag_type, endpoint) VALUES (?1,?2,?3,?4,?5)");
   db.beginTransaction();
   try {
     try {
       db.execSQL("DELETE FROM tbl_tags_recommended");
       for (      ReaderTag tag : tagList) {
         stmt.bindString(1,tag.getTagSlug());
-        stmt.bindString(2,tag.getTagTitle());
-        stmt.bindLong(3,tag.tagType.toInt());
-        stmt.bindString(4,tag.getEndpoint());
+        stmt.bindString(2,tag.getTagDisplayName());
+        stmt.bindString(3,tag.getTagTitle());
+        stmt.bindLong(4,tag.tagType.toInt());
+        stmt.bindString(5,tag.getEndpoint());
         stmt.execute();
       }
       db.setTransactionSuccessful();
