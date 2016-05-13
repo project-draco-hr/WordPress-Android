@@ -2,14 +2,14 @@
   WordPress.getRestClientUtils().moderateComment(String.valueOf(note.getSiteId()),String.valueOf(note.getCommentId()),CommentStatus.toRESTString(newStatus),new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject response){
       if (actionListener != null) {
-        actionListener.onActionResult(true);
+        actionListener.onActionResult(new CommentActionResult(note.getCommentId(),null));
       }
     }
   }
 ,new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError error){
       if (actionListener != null) {
-        actionListener.onActionResult(false);
+        actionListener.onActionResult(new CommentActionResult(CommentActionResult.COMMENT_ID_ON_ERRORS,null));
       }
     }
   }

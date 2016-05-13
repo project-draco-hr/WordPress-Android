@@ -15,9 +15,9 @@
   mComment.setStatus(CommentStatus.toString(newStatus));
   updateStatusViews();
   CommentActions.moderateCommentRestApi(mNote.getSiteId(),mComment.commentID,newStatus,new CommentActions.CommentActionListener(){
-    @Override public void onActionResult(    boolean succeeded){
+    @Override public void onActionResult(    CommentActionResult result){
       if (!isAdded())       return;
-      if (!succeeded) {
+      if (!result.isSuccess()) {
         mComment.setStatus(CommentStatus.toString(oldStatus));
         updateStatusViews();
         ToastUtils.showToast(getActivity(),R.string.error_moderate_comment);
