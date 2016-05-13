@@ -1,0 +1,10 @@
+{
+  new Thread(){
+    @Override public void run(){
+      ReaderPostList serverPosts=ReaderPostList.fromJson(jsonObject);
+      ReaderPostTable.addOrUpdatePosts(null,serverPosts);
+      EventBus.getDefault().post(new ReaderEvents.SearchPostsEnded(query,serverPosts));
+    }
+  }
+.start();
+}

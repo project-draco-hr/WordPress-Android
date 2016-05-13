@@ -1,0 +1,26 @@
+{
+  String path="read/search?q=" + UrlUtils.urlEncode(query) + "&number="+ ReaderConstants.READER_MAX_POSTS_TO_REQUEST+ "&meta=site,likes";
+  if (offset > 0) {
+    path+="&offset=" + offset;
+  }
+  RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      if (jsonObject != null) {
+        handleSearchResponse(query,jsonObject);
+      }
+ else {
+        EventBus.getDefault().post(new ReaderEvents.SearchPostsEnded(query,null));
+      }
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(AppLog.T.READER,volleyError);
+      EventBus.getDefault().post(new ReaderEvents.SearchPostsEnded(query,null));
+    }
+  }
+;
+  AppLog.d(AppLog.T.READER,"starting search for " + query);
+  WordPress.getRestClientUtilsV1_2().get(path,null,null,listener,errorListener);
+}
