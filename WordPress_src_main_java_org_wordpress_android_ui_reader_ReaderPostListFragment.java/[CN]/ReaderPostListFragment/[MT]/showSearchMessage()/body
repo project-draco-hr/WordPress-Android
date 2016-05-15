@@ -1,16 +1,10 @@
 {
   if (!isAdded())   return;
+  getPostAdapter().clear();
   boolean isLandscape=DisplayUtils.isLandscape(getActivity());
   boolean isTablet=DisplayUtils.isXLarge(getActivity());
   if (!isLandscape || isTablet) {
-    TextView txtSearchMsg=(TextView)getView().findViewById(R.id.text_search_message);
-    if (txtSearchMsg.getVisibility() != View.VISIBLE) {
-      AniUtils.fadeIn(txtSearchMsg,AniUtils.Duration.MEDIUM);
-    }
+    setEmptyTitleAndDescription(getString(R.string.reader_label_post_search_explainer),null);
+    mEmptyView.setVisibility(View.VISIBLE);
   }
-  RecyclerView recycler=mRecyclerView.getInternalRecyclerView();
-  if (recycler != null && recycler.getVisibility() == View.VISIBLE) {
-    AniUtils.fadeOut(recycler,AniUtils.Duration.MEDIUM);
-  }
-  mEmptyView.setVisibility(View.GONE);
 }
