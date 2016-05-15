@@ -17,8 +17,8 @@
         return;
       }
       CommentActions.moderateCommentForNote(note,status,new CommentActions.CommentActionListener(){
-        @Override public void onActionResult(        boolean succeeded){
-          if (!succeeded) {
+        @Override public void onActionResult(        CommentActionResult result){
+          if (!result.isSuccess()) {
             EventBus.getDefault().postSticky(new NoteVisibilityChanged(note.getId(),false));
             EventBus.getDefault().postSticky(new NoteModerationFailed());
           }
