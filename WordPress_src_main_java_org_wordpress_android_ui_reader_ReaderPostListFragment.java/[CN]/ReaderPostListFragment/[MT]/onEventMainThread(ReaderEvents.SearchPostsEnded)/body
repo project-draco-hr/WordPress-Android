@@ -3,7 +3,8 @@
   if (getPostListType() != ReaderPostListType.SEARCH_RESULTS || !event.getQuery().equals(mCurrentSearchQuery)) {
     return;
   }
-  setIsUpdating(false);
+  UpdateAction updateAction=event.getOffset() == 0 ? UpdateAction.REQUEST_NEWER : UpdateAction.REQUEST_OLDER;
+  setIsUpdating(false,updateAction);
   if (event.hasResults()) {
     getPostAdapter().setCurrentSearchQuery(event.getQuery());
   }
