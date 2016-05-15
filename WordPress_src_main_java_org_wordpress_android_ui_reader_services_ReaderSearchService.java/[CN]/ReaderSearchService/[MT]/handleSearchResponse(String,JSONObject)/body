@@ -2,8 +2,11 @@
   new Thread(){
     @Override public void run(){
       ReaderPostList serverPosts=ReaderPostList.fromJson(jsonObject);
-      ReaderPostTable.addOrUpdatePosts(getTagForSearchQuery(query),serverPosts);
-      EventBus.getDefault().post(new ReaderEvents.SearchPostsEnded(query,serverPosts.size()));
+      boolean hasResults=ReaderPostTable.comparePosts(serverPosts).isNewOrChanged();
+      if (hasResults) {
+        ReaderPostTable.addOrUpdatePosts(getTagForSearchQuery(query),serverPosts);
+      }
+      EventBus.getDefault().post(new ReaderEvents.SearchPostsEnded(query,hasResults));
     }
   }
 .start();
