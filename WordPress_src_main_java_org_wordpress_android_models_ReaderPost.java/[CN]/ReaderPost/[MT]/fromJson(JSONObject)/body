@@ -39,16 +39,18 @@
   post.featuredImage=JSONUtils.getString(json,"featured_image");
   post.blogName=JSONUtils.getStringDecoded(json,"site_name");
   post.published=JSONUtils.getString(json,"date");
-  String likeDate=JSONUtils.getString(json,"date_liked");
-  if (!TextUtils.isEmpty(likeDate)) {
-    post.timestamp=DateTimeUtils.iso8601ToTimestamp(likeDate);
-  }
- else {
-    post.timestamp=DateTimeUtils.iso8601ToTimestamp(post.published);
-  }
   if (json.has("score")) {
     double score=json.optDouble("score");
     post.timestamp=Math.round(score);
+  }
+ else {
+    String likeDate=JSONUtils.getString(json,"date_liked");
+    if (!TextUtils.isEmpty(likeDate)) {
+      post.timestamp=DateTimeUtils.iso8601ToTimestamp(likeDate);
+    }
+ else {
+      post.timestamp=DateTimeUtils.iso8601ToTimestamp(post.published);
+    }
   }
   if (!post.hasTitle() && post.hasExcerpt()) {
     post.title=extractTitle(post.excerpt,50);
