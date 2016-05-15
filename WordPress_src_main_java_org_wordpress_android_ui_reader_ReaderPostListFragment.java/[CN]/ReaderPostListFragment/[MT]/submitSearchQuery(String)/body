@@ -1,5 +1,11 @@
 {
   if (!isAdded())   return;
-  ReaderActivityLauncher.showReaderSearchResults(getActivity(),query);
-  mSearchMenuItem.collapseActionView();
+  EditTextUtils.hideSoftInput(mSearchView);
+  hideSearchMessage();
+  RecyclerView recycler=mRecyclerView.getInternalRecyclerView();
+  if (recycler != null && recycler.getVisibility() != View.VISIBLE) {
+    AniUtils.fadeIn(recycler,AniUtils.Duration.LONG);
+  }
+  mCurrentSearchQuery=query;
+  resetPostAdapter(ReaderPostListType.SEARCH_RESULTS);
 }
