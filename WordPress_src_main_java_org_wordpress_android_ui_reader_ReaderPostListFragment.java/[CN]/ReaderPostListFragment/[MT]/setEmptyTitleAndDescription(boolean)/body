@@ -41,12 +41,16 @@
     }
   }
  else   if (getPostListType() == ReaderPostListType.SEARCH_RESULTS) {
-    title=getString(R.string.reader_empty_posts_in_search_title);
-    description=String.format(getString(R.string.reader_empty_posts_in_search_description),mCurrentSearchQuery);
+    if (TextUtils.isEmpty(mCurrentSearchQuery)) {
+      title=getString(R.string.reader_label_post_search_explainer);
+    }
+ else {
+      title=getString(R.string.reader_empty_posts_in_search_title);
+      description=String.format(getString(R.string.reader_empty_posts_in_search_description),mCurrentSearchQuery);
+    }
   }
  else {
     title=getString(R.string.reader_empty_posts_in_tag);
   }
   setEmptyTitleAndDescription(title,description);
-  mEmptyViewBoxImages.setVisibility(shouldShowBoxAndPagesAnimation() ? View.VISIBLE : View.GONE);
 }
