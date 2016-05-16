@@ -2,25 +2,24 @@
   Context context=getActivity();
   AlertDialog.Builder builder=new AlertDialog.Builder(context,R.style.Calypso_AlertDialog);
   builder.setTitle(R.string.role);
-  builder.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener(){
-    @Override public void onClick(    DialogInterface dialog,    int which){
-      Person person=loadPerson();
-      if (person != null) {
-        mSelectedRole=person.getRole();
-      }
-    }
-  }
-);
+  builder.setNegativeButton(R.string.cancel,null);
   builder.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener(){
     @Override public void onClick(    DialogInterface dialog,    int which){
       if (mListener != null) {
-        mListener.onRoleChanged(mPersonID,mLocalTableBlogID,mSelectedRole);
+        String role=mRoleListAdapter.getSelectedRole();
+        mListener.onRoleChanged(mPersonID,mLocalTableBlogID,role);
       }
     }
   }
 );
-  final String[] roles=getResources().getStringArray(R.array.roles);
-  ArrayAdapter<String> roleAdapter=new RoleListAdapter(context,R.layout.role_list_row,roles);
-  builder.setAdapter(roleAdapter,null);
+  if (mRoleListAdapter == null) {
+    final String[] roles=getResources().getStringArray(R.array.roles);
+    mRoleListAdapter=new RoleListAdapter(context,R.layout.role_list_row,roles);
+  }
+  Person person=loadPerson();
+  if (person != null) {
+    mRoleListAdapter.setSelectedRole(person.getRole());
+  }
+  builder.setAdapter(mRoleListAdapter,null);
   builder.show();
 }
