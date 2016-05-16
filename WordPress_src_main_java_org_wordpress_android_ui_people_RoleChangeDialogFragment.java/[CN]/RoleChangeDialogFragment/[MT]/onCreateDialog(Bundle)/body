@@ -1,0 +1,30 @@
+{
+  AlertDialog.Builder builder=new AlertDialog.Builder(getActivity(),R.style.Calypso_AlertDialog);
+  builder.setTitle(R.string.role);
+  builder.setNegativeButton(R.string.cancel,null);
+  builder.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener(){
+    @Override public void onClick(    DialogInterface dialog,    int which){
+      if (mListener != null) {
+        String role=mRoleListAdapter.getSelectedRole();
+        Bundle args=getArguments();
+        if (args != null) {
+          long personID=args.getLong(PERSON_ID_TAG);
+          int localTableBlogId=args.getInt(PERSON_LOCAL_TABLE_BLOG_ID_TAG);
+          mListener.onRoleChanged(personID,localTableBlogId,role);
+        }
+      }
+    }
+  }
+);
+  if (mRoleListAdapter == null) {
+    final String[] roles=getResources().getStringArray(R.array.roles);
+    mRoleListAdapter=new RoleListAdapter(getActivity(),R.layout.role_list_row,roles);
+  }
+  Bundle args=getArguments();
+  if (args != null) {
+    String role=args.getString(ROLE_TAG);
+    mRoleListAdapter.setSelectedRole(role);
+  }
+  builder.setAdapter(mRoleListAdapter,null);
+  return builder.create();
+}
