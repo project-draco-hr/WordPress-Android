@@ -1,5 +1,11 @@
 {
-  Cursor cursor=ReaderSearchTable.getQueryStringCursor(filter,MAX_SUGGESTIONS);
-  swapCursor(cursor);
+  Cursor sqlCursor=ReaderSearchTable.getQueryStringCursor(filter,MAX_SUGGESTIONS);
+  MatrixCursor matrixCursor=new MatrixCursor(new String[]{ReaderSearchTable.COL_ID,ReaderSearchTable.COL_QUERY});
+  while (sqlCursor.moveToNext()) {
+    long id=sqlCursor.getLong(sqlCursor.getColumnIndex(ReaderSearchTable.COL_ID));
+    String query=sqlCursor.getString(sqlCursor.getColumnIndex(ReaderSearchTable.COL_QUERY));
+    matrixCursor.addRow(new Object[]{id,query});
+  }
+  swapCursor(matrixCursor);
   mCurrentFilter=filter;
 }
