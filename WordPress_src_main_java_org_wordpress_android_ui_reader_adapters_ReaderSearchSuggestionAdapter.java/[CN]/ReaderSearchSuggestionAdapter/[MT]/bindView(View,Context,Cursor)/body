@@ -1,12 +1,29 @@
 {
   SuggestionViewHolder holder=(SuggestionViewHolder)view.getTag();
+  final long id=cursor.getLong(cursor.getColumnIndex(ReaderSearchTable.COL_ID));
   final String query=cursor.getString(cursor.getColumnIndex(ReaderSearchTable.COL_QUERY));
-  holder.txtSuggestion.setText(query);
-  holder.imgDelete.setOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View v){
-      ReaderSearchTable.deleteQueryString(query);
-      populate(mCurrentFilter);
+  if (id == CUSTOM_ROW_ID) {
+    holder.imgSuggestion.setVisibility(View.INVISIBLE);
+    holder.txtSuggestion.setText(query);
+    holder.imgDelete.setVisibility(View.GONE);
+    holder.container.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ToastUtils.showToast(v.getContext(),"clicked");
+      }
     }
-  }
 );
+  }
+ else {
+    holder.imgSuggestion.setVisibility(View.VISIBLE);
+    holder.txtSuggestion.setText(query);
+    holder.imgDelete.setVisibility(View.VISIBLE);
+    holder.imgDelete.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ReaderSearchTable.deleteQueryString(query);
+        populate(mCurrentFilter);
+      }
+    }
+);
+    holder.container.setOnClickListener(null);
+  }
 }

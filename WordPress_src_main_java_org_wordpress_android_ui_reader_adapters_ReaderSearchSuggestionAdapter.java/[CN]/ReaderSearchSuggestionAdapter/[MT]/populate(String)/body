@@ -1,10 +1,14 @@
 {
   Cursor sqlCursor=ReaderSearchTable.getQueryStringCursor(filter,MAX_SUGGESTIONS);
   MatrixCursor matrixCursor=new MatrixCursor(new String[]{ReaderSearchTable.COL_ID,ReaderSearchTable.COL_QUERY});
-  while (sqlCursor.moveToNext()) {
-    long id=sqlCursor.getLong(sqlCursor.getColumnIndex(ReaderSearchTable.COL_ID));
-    String query=sqlCursor.getString(sqlCursor.getColumnIndex(ReaderSearchTable.COL_QUERY));
-    matrixCursor.addRow(new Object[]{id,query});
+  if (sqlCursor.moveToFirst()) {
+    do {
+      long id=sqlCursor.getLong(sqlCursor.getColumnIndex(ReaderSearchTable.COL_ID));
+      String query=sqlCursor.getString(sqlCursor.getColumnIndex(ReaderSearchTable.COL_QUERY));
+      matrixCursor.addRow(new Object[]{id,query});
+    }
+ while (sqlCursor.moveToNext());
+    matrixCursor.addRow(new Object[]{CUSTOM_ROW_ID,"Clear all"});
   }
   swapCursor(matrixCursor);
   mCurrentFilter=filter;
