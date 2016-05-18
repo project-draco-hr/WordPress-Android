@@ -1,0 +1,18 @@
+{
+  Blog blog=WordPress.getBlog(mLocalTableBlogID);
+  Account account=AccountHelper.getDefaultAccount();
+  boolean isCurrentUser=account.getUserId() == mPersonID;
+  boolean canChangeRole=(blog != null) && !isCurrentUser && blog.hasCapability(Capability.PROMOTE_USERS);
+  if (canChangeRole) {
+    mRoleContainer.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        showRoleChangeDialog();
+      }
+    }
+);
+  }
+ else {
+    clearRoleContainerBackground();
+    mRoleContainer.setAlpha(0.5f);
+  }
+}

@@ -1,0 +1,16 @@
+{
+  Person person=PeopleTable.getPerson(personID,localTableBlogId);
+  if (person == null || newRole == null || newRole.equalsIgnoreCase(person.getRole())) {
+    return;
+  }
+  PeopleUtils.updateRole(person.getBlogId(),person.getPersonID(),newRole,localTableBlogId,new PeopleUtils.UpdateUserCallback(){
+    @Override public void onSuccess(    Person person){
+      PeopleTable.save(person);
+      refreshOnScreenFragmentDetails();
+    }
+    @Override public void onError(){
+      ToastUtils.showToast(PeopleManagementActivity.this,R.string.error_update_role,ToastUtils.Duration.LONG);
+    }
+  }
+);
+}

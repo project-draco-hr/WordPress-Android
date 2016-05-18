@@ -1,18 +1,11 @@
 {
   PeopleUtils.fetchUsers(dotComBlogId,localTableBlogId,new PeopleUtils.FetchUsersCallback(){
     @Override public void onSuccess(    List<Person> peopleList){
-      PeopleTable.savePeople(peopleList);
-      FragmentManager fragmentManager=getFragmentManager();
-      PeopleListFragment peopleListFragment=(PeopleListFragment)fragmentManager.findFragmentByTag(KEY_PEOPLE_LIST_FRAGMENT);
-      PersonDetailFragment personDetailFragment=(PersonDetailFragment)fragmentManager.findFragmentByTag(KEY_PERSON_DETAIL_FRAGMENT);
-      if (peopleListFragment != null) {
-        peopleListFragment.refreshPeopleList();
-      }
-      if (personDetailFragment != null) {
-        personDetailFragment.refreshPersonDetails();
-      }
+      PeopleTable.savePeople(peopleList,localTableBlogId);
+      refreshOnScreenFragmentDetails();
     }
     @Override public void onError(){
+      ToastUtils.showToast(PeopleManagementActivity.this,R.string.error_fetch_people_list,ToastUtils.Duration.LONG);
     }
   }
 );

@@ -5,7 +5,13 @@
   mAvatarImageView=(WPNetworkImageView)rootView.findViewById(R.id.person_avatar);
   mDisplayNameTextView=(TextView)rootView.findViewById(R.id.person_display_name);
   mUsernameTextView=(TextView)rootView.findViewById(R.id.person_username);
+  mRoleContainer=(LinearLayout)rootView.findViewById(R.id.person_role_container);
   mRoleTextView=(TextView)rootView.findViewById(R.id.person_role);
-  mRemoveTextView=(TextView)rootView.findViewById(R.id.person_remove);
+  Account account=AccountHelper.getDefaultAccount();
+  boolean isCurrentUser=account.getUserId() == mPersonID;
+  Blog blog=WordPress.getBlog(mLocalTableBlogID);
+  if (!isCurrentUser && blog != null && blog.hasCapability(Capability.REMOVE_USERS)) {
+    setHasOptionsMenu(true);
+  }
   return rootView;
 }
