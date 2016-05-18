@@ -1,7 +1,7 @@
 {
   final Blog blog=WordPress.getBlog(accountId);
   if (blog == null || comment == null) {
-    if (actionListener != null)     actionListener.onActionResult(false);
+    if (actionListener != null)     actionListener.onActionResult(new CommentActionResult(CommentActionResult.COMMENT_ID_ON_ERRORS,null));
     return;
   }
   final Handler handler=new Handler();
@@ -37,7 +37,7 @@ catch (      XmlPullParserException e) {
       if (actionListener != null) {
         handler.post(new Runnable(){
           @Override public void run(){
-            actionListener.onActionResult(success);
+            actionListener.onActionResult(new CommentActionResult(comment.commentID,null));
           }
         }
 );

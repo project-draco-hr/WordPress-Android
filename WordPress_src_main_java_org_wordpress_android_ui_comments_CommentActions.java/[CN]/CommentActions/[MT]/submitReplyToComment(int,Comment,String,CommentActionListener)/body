@@ -1,7 +1,9 @@
 {
   final Blog blog=WordPress.getBlog(accountId);
   if (blog == null || comment == null || TextUtils.isEmpty(replyText)) {
-    if (actionListener != null)     actionListener.onActionResult(false);
+    if (actionListener != null) {
+      actionListener.onActionResult(new CommentActionResult(CommentActionResult.COMMENT_ID_ON_ERRORS,null));
+    }
     return;
   }
   final Handler handler=new Handler();
@@ -16,6 +18,7 @@
       replyHash.put("author_email","");
       Object[] params={blog.getRemoteBlogId(),blog.getUsername(),blog.getPassword(),Long.toString(comment.postID),replyHash};
       long newCommentID;
+      String message=null;
       try {
         Object newCommentIDObject=client.call(Method.NEW_COMMENT,params);
         if (newCommentIDObject instanceof Integer) {
@@ -26,26 +29,23 @@
         }
  else {
           AppLog.e(T.COMMENTS,"wp.newComment returned the wrong data type");
-          newCommentID=-1;
+          newCommentID=CommentActionResult.COMMENT_ID_ON_ERRORS;
         }
       }
- catch (      XMLRPCException e) {
+ catch (      XMLRPCFault e) {
         AppLog.e(T.COMMENTS,"Error while sending the new comment",e);
-        newCommentID=-1;
+        newCommentID=CommentActionResult.COMMENT_ID_ON_ERRORS;
+        message=e.getFaultString();
       }
-catch (      IOException e) {
+catch (      XMLRPCException|IOException|XmlPullParserException e) {
         AppLog.e(T.COMMENTS,"Error while sending the new comment",e);
-        newCommentID=-1;
+        newCommentID=CommentActionResult.COMMENT_ID_ON_ERRORS;
       }
-catch (      XmlPullParserException e) {
-        AppLog.e(T.COMMENTS,"Error while sending the new comment",e);
-        newCommentID=-1;
-      }
-      final boolean succeeded=(newCommentID >= 0);
+      final CommentActionResult cr=new CommentActionResult(newCommentID,message);
       if (actionListener != null) {
         handler.post(new Runnable(){
           @Override public void run(){
-            actionListener.onActionResult(succeeded);
+            actionListener.onActionResult(cr);
           }
         }
 );
