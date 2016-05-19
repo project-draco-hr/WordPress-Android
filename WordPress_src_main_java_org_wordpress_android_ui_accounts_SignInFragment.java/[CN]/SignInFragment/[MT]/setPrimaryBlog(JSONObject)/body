@@ -1,11 +1,15 @@
 {
   try {
-    String primaryBlogId=jsonObject.getString("primary_blog");
-    List<Map<String,Object>> blogs=WordPress.wpDB.getBlogsBy("isHidden = 0 AND blogId = " + primaryBlogId,null,1,true);
-    if (blogs != null && !blogs.isEmpty()) {
-      Map<String,Object> primaryBlog=blogs.get(0);
-      refreshBlogContent(primaryBlog);
-      WordPress.setCurrentBlog((Integer)primaryBlog.get("id"));
+    String primarySiteId=jsonObject.getString("primary_blog");
+    List<Map<String,Object>> sites=WordPress.wpDB.getBlogsBy("isHidden = 0 AND blogId = " + primarySiteId,null,1,true);
+    if (sites != null && !sites.isEmpty()) {
+      refreshAndSelectSite(sites.get(0));
+    }
+ else {
+      sites=WordPress.wpDB.getBlogsBy("isHidden = 0",null,1,true);
+      if (sites != null && !sites.isEmpty()) {
+        refreshAndSelectSite(sites.get(0));
+      }
     }
   }
  catch (  JSONException e) {
