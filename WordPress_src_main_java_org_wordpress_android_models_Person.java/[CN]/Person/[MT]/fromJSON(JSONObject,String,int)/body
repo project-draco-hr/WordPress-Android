@@ -4,13 +4,15 @@
   }
   try {
     long personID=Long.parseLong(json.getString("ID"));
-    String username=json.optString("login");
-    String firstName=json.optString("first_name");
-    String lastName=json.optString("last_name");
-    String displayName=json.optString("name");
-    String avatarUrl=json.optString("avatar_URL");
+    Person person=new Person(personID,blogId,localTableBlogId);
+    person.setUsername(json.optString("login"));
+    person.setFirstName(json.optString("first_name"));
+    person.setLastName(json.optString("last_name"));
+    person.setDisplayName(json.optString("name"));
+    person.setAvatarUrl(json.optString("avatar_URL"));
     String role=json.getJSONArray("roles").optString(0);
-    return new Person(personID,blogId,localTableBlogId,username,firstName,lastName,displayName,avatarUrl,role);
+    person.setRole(role);
+    return person;
   }
  catch (  NumberFormatException e) {
     AppLog.e(AppLog.T.PEOPLE,"The ID parsed from the JSON couldn't be converted to long: " + e);
