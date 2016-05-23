@@ -1,11 +1,9 @@
 {
   String date=DateTimeUtils.javaDateToIso8601(new Date());
-  int counter=getCounterForQueryString(query) + 1;
-  SQLiteStatement stmt=ReaderDatabase.getWritableDb().compileStatement("INSERT OR REPLACE INTO tbl_search_history (query_string, date_used, counter) VALUES (?1,?2,?3)");
+  SQLiteStatement stmt=ReaderDatabase.getWritableDb().compileStatement("INSERT OR REPLACE INTO tbl_search_suggestions (query_string, date_used) VALUES (?1,?2)");
   try {
     stmt.bindString(1,query);
     stmt.bindString(2,date);
-    stmt.bindLong(3,counter);
     stmt.execute();
   }
   finally {

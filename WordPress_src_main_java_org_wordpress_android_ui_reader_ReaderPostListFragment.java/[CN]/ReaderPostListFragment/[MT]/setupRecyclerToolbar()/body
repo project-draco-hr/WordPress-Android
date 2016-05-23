@@ -14,29 +14,39 @@
   mSearchView.setSubmitButtonEnabled(false);
   mSearchView.setIconifiedByDefault(true);
   mSearchView.setIconified(true);
+  View view=mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+  if (view instanceof AutoCompleteTextView) {
+    ((AutoCompleteTextView)view).setThreshold(1);
+  }
   MenuItemCompat.setOnActionExpandListener(mSearchMenuItem,new MenuItemCompat.OnActionExpandListener(){
     @Override public boolean onMenuItemActionExpand(    MenuItem item){
-      showSearchUI();
+      resetPostAdapter(ReaderPostListType.SEARCH_RESULTS);
+      showSearchMessage();
+      mSettingsMenuItem.setVisible(false);
       return true;
     }
     @Override public boolean onMenuItemActionCollapse(    MenuItem item){
-      hideSearchUI();
+      hideSearchMessage();
+      resetSearchSuggestionAdapter();
+      mSettingsMenuItem.setVisible(true);
+      mCurrentSearchQuery=null;
+      resetPostAdapter(ReaderPostListType.TAG_FOLLOWED);
       return true;
     }
   }
 );
   mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
     @Override public boolean onQueryTextSubmit(    String query){
-      if (getPostListType() == ReaderPostListType.SEARCH_RESULTS) {
-      }
- else {
-        ReaderActivityLauncher.showReaderSearchResults(getActivity(),query);
-      }
-      mSearchMenuItem.collapseActionView();
+      submitSearchQuery(query);
       return true;
     }
     @Override public boolean onQueryTextChange(    String newText){
-      mSearchSuggestionAdapter.populate(newText);
+      if (TextUtils.isEmpty(newText)) {
+        showSearchMessage();
+      }
+ else {
+        populateSearchSuggestionAdapter(newText);
+      }
       return true;
     }
   }
