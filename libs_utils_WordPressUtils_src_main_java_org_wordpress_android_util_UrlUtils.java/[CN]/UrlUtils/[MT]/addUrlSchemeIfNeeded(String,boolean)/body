@@ -2,11 +2,9 @@
   if (url == null) {
     return null;
   }
-  url=removeLeadingDoubleSlash(url,(isHTTPS ? "https" : "http") + "://");
-  if (!URLUtil.isValidUrl(url)) {
-    if (!(url.toLowerCase().startsWith("http://")) && !(url.toLowerCase().startsWith("https://"))) {
-      url=(isHTTPS ? "https" : "http") + "://" + url;
-    }
+  url=removeLeadingDoubleSlash(url,(isHttps ? "https" : "http") + "://");
+  if (URLUtil.isHttpUrl(url) || URLUtil.isHttpsUrl(url)) {
+    return url;
   }
-  return url;
+  return (isHttps ? "https" : "http") + "://" + removeScheme(url);
 }
