@@ -1,7 +1,12 @@
 {
-  Person person=PeopleTable.getPerson(personID,localTableBlogId);
+  final Person person=PeopleTable.getPerson(personID,localTableBlogId);
   if (person == null || newRole == null || newRole.equalsIgnoreCase(person.getRole())) {
     return;
+  }
+  FragmentManager fragmentManager=getFragmentManager();
+  final PersonDetailFragment personDetailFragment=(PersonDetailFragment)fragmentManager.findFragmentByTag(KEY_PERSON_DETAIL_FRAGMENT);
+  if (personDetailFragment != null) {
+    personDetailFragment.changeRole(newRole);
   }
   PeopleUtils.updateRole(person.getBlogId(),person.getPersonID(),newRole,localTableBlogId,new PeopleUtils.UpdateUserCallback(){
     @Override public void onSuccess(    Person person){
@@ -9,6 +14,9 @@
       refreshOnScreenFragmentDetails();
     }
     @Override public void onError(){
+      if (personDetailFragment != null) {
+        personDetailFragment.refreshPersonDetails();
+      }
       ToastUtils.showToast(PeopleManagementActivity.this,R.string.error_update_role,ToastUtils.Duration.LONG);
     }
   }
