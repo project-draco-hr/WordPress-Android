@@ -1,5 +1,5 @@
 {
-  final String sanitizedSiteUrl=XMLRPCUtils.sanitizeSiteUrl(siteUrl);
+  final String sanitizedSiteUrl=XMLRPCUtils.sanitizeSiteUrl(siteUrl,true);
   final List<String> urlsToTry=new ArrayList<>();
   urlsToTry.add(XMLRPCUtils.appendXMLRPCPath(sanitizedSiteUrl));
   if (!urlsToTry.contains(sanitizedSiteUrl)) {
@@ -10,8 +10,13 @@
   }
   AppLog.i(AppLog.T.NUX,"The app will call system.listMethods on the following URLs: " + urlsToTry);
   for (  String url : urlsToTry) {
-    if (XMLRPCUtils.checkXMLRPCEndpointValidity(url,httpUsername,httpPassword)) {
-      return url;
+    try {
+      if (XMLRPCUtils.checkXMLRPCEndpointValidity(url,httpUsername,httpPassword)) {
+        return url;
+      }
+    }
+ catch (    RuntimeException re) {
+      continue;
     }
   }
   return null;

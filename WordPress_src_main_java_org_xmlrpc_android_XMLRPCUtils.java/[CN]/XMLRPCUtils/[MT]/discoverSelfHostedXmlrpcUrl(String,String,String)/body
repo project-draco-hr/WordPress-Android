@@ -1,11 +1,20 @@
 {
   final List<String> urlsToTry=new ArrayList<>();
   urlsToTry.add(siteUrl);
-  final String sanitizedURL=sanitizeSiteUrl(siteUrl);
-  if (!urlsToTry.contains(sanitizedURL)) {
-    urlsToTry.add(sanitizedURL);
+  final String sanitizedHttpsURL=sanitizeSiteUrl(siteUrl,true);
+  if (!urlsToTry.contains(sanitizedHttpsURL)) {
+    urlsToTry.add(sanitizedHttpsURL);
   }
-  String appendedXmlrpcUrl=appendXMLRPCPath(sanitizedURL);
+  String appendedXmlrpcUrl=appendXMLRPCPath(sanitizedHttpsURL);
+  if (!urlsToTry.contains(appendedXmlrpcUrl)) {
+    appendedXmlrpcUrl+="?rsd";
+    urlsToTry.add(appendedXmlrpcUrl);
+  }
+  final String sanitizedHttpURL=sanitizeSiteUrl(siteUrl,false);
+  if (!urlsToTry.contains(sanitizedHttpURL)) {
+    urlsToTry.add(sanitizedHttpURL);
+  }
+  appendedXmlrpcUrl=appendXMLRPCPath(sanitizedHttpURL);
   if (!urlsToTry.contains(appendedXmlrpcUrl)) {
     appendedXmlrpcUrl+="?rsd";
     urlsToTry.add(appendedXmlrpcUrl);
