@@ -1,7 +1,11 @@
 {
+  if (mPeopleEndOfListReached) {
+    return;
+  }
   PeopleUtils.fetchUsers(dotComBlogId,localTableBlogId,offset,new PeopleUtils.FetchUsersCallback(){
     @Override public void onSuccess(    List<Person> peopleList,    boolean isEndOfList){
       boolean isFreshList=(offset == 0);
+      mPeopleEndOfListReached=isEndOfList;
       PeopleTable.savePeople(peopleList,localTableBlogId,isFreshList);
       refreshOnScreenFragmentDetails();
     }
