@@ -1,10 +1,14 @@
 {
+  if (!isAdded())   return;
   mEditorFragmentListener.onTrackableEvent(TrackableEvent.HTML_BUTTON_TAPPED);
+  if (System.currentTimeMillis() - mActionStartedAt < MAX_ACTION_TIME_MS) {
+    toggleButton.setChecked(false);
+    ToastUtils.showToast(getActivity(),R.string.alert_html_mode_not_ready,ToastUtils.Duration.LONG);
+    return;
+  }
   if (!mUploadingMedia.isEmpty()) {
     toggleButton.setChecked(false);
-    if (isAdded()) {
-      ToastUtils.showToast(getActivity(),R.string.alert_html_toggle_uploading,ToastUtils.Duration.LONG);
-    }
+    ToastUtils.showToast(getActivity(),R.string.alert_html_toggle_uploading,ToastUtils.Duration.LONG);
     return;
   }
   clearFormatBarButtons();
