@@ -1,0 +1,13 @@
+{
+  PeopleUtils.fetchUsers(dotComBlogId,localTableBlogId,offset,new PeopleUtils.FetchUsersCallback(){
+    @Override public void onSuccess(    List<Person> peopleList,    boolean isEndOfList){
+      boolean isFreshList=(offset == 0);
+      PeopleTable.savePeople(peopleList,localTableBlogId,isFreshList);
+      refreshOnScreenFragmentDetails();
+    }
+    @Override public void onError(){
+      ToastUtils.showToast(PeopleManagementActivity.this,R.string.error_fetch_people_list,ToastUtils.Duration.LONG);
+    }
+  }
+);
+}
