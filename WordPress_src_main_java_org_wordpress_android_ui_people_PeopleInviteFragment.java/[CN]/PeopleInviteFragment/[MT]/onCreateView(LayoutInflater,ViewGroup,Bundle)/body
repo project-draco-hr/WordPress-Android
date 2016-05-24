@@ -1,7 +1,10 @@
 {
   final ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.people_invite_fragment,container,false);
   final ViewGroup usernamesView=(ViewGroup)rootView.findViewById(R.id.usernames);
-  populateUsernameButtons(inflater,usernamesView);
+  if (savedInstanceState != null) {
+    ArrayList<String> usernames=savedInstanceState.getStringArrayList(KEY_USERNAMES);
+    populateUsernameButtons(usernames,inflater,usernamesView);
+  }
   final EditText editText=(EditText)rootView.findViewById(R.id.invite_usernames);
   editText.addTextChangedListener(new TextWatcher(){
     @Override public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){

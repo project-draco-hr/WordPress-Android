@@ -1,0 +1,19 @@
+{
+  if (usernames != null && usernames.size() > 0) {
+    for (    String username : usernames) {
+      mUsernameButtons.put(username,buttonizeUsername(username,inflater,usernamesView));
+    }
+    String dotComBlogId=getArguments().getString(ARG_BLOGID);
+    PeopleUtils.validateUsernames(usernames,dotComBlogId,new PeopleUtils.ValidateUsernameCallback(){
+      @Override public void onUsernameValidation(      String username,      ValidationResult validationResult){
+        if (!isAdded()) {
+          return;
+        }
+        styleButton(username,mUsernameButtons.get(username),validationResult);
+      }
+      @Override public void onError(){
+      }
+    }
+);
+  }
+}
