@@ -1,0 +1,9 @@
+{
+  int size=getPeopleCountForLocalBlogId(localTableBlogId);
+  int fetchLimit=PeopleUtils.FETCH_USERS_LIMIT;
+  if (size > fetchLimit) {
+    int deleteCount=size - fetchLimit;
+    String[] args=new String[]{Integer.toString(deleteCount),Integer.toString(localTableBlogId)};
+    getWritableDb().delete(PEOPLE_TABLE,"person_id " + "IN (SELECT person_id FROM people ORDER BY display_name DESC LIMIT ?) AND local_blog_id=?",args);
+  }
+}
