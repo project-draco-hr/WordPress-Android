@@ -9,13 +9,16 @@
     actionBar.setHomeButtonEnabled(true);
     actionBar.setDisplayHomeAsUpEnabled(true);
   }
-  int localBlogId=BlogUtils.getBlogLocalId(WordPress.getCurrentBlog());
-  Blog blog=WordPress.getBlog(localBlogId);
+  Blog blog=WordPress.getCurrentBlog();
+  if (blog == null) {
+    ToastUtils.showToast(this,R.string.blog_not_found);
+    finish();
+    return;
+  }
   if (savedInstanceState == null) {
-    PeopleListFragment peopleListFragment=PeopleListFragment.newInstance(localBlogId);
+    PeopleListFragment peopleListFragment=PeopleListFragment.newInstance(blog.getLocalTableBlogId());
+    peopleListFragment.setOnPersonSelectedListener(this);
     getFragmentManager().beginTransaction().add(R.id.fragment_container,peopleListFragment,KEY_PEOPLE_LIST_FRAGMENT).commit();
   }
-  if (blog != null) {
-    refreshUsersList(blog.getDotComBlogId(),localBlogId);
-  }
+  refreshUsersList(blog.getDotComBlogId(),blog.getLocalTableBlogId());
 }
