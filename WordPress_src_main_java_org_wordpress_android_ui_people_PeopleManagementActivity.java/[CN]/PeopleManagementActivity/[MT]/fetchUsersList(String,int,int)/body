@@ -1,5 +1,5 @@
 {
-  if (mPeopleEndOfListReached) {
+  if (mPeopleEndOfListReached || mFetchRequestInProgress) {
     return;
   }
   FragmentManager fragmentManager=getFragmentManager();
@@ -7,17 +7,20 @@
   if (peopleListFragment != null && offset > 0) {
     peopleListFragment.showLoadingProgress(true);
   }
+  mFetchRequestInProgress=true;
   PeopleUtils.fetchUsers(dotComBlogId,localTableBlogId,offset,new PeopleUtils.FetchUsersCallback(){
     @Override public void onSuccess(    List<Person> peopleList,    boolean isEndOfList){
       boolean isFreshList=(offset == 0);
       mPeopleEndOfListReached=isEndOfList;
       PeopleTable.savePeople(peopleList,localTableBlogId,isFreshList);
       refreshOnScreenFragmentDetails();
+      mFetchRequestInProgress=false;
       if (peopleListFragment != null) {
         peopleListFragment.showLoadingProgress(false);
       }
     }
     @Override public void onError(){
+      mFetchRequestInProgress=false;
       if (peopleListFragment != null) {
         peopleListFragment.showLoadingProgress(false);
       }
