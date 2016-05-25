@@ -1,5 +1,5 @@
 {
-  Person person=getPerson(position);
+  final Person person=getPerson(position);
   if (person != null) {
     String avatarUrl=GravatarUtils.fixGravatarUrl(person.getAvatarUrl(),mAvatarSz);
     holder.imgAvatar.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
@@ -10,4 +10,12 @@
   if (mOnFetchMorePeopleListener != null && position == getItemCount() - 1) {
     mOnFetchMorePeopleListener.onFetchMorePeople();
   }
+  holder.itemView.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      if (mOnPersonSelectedListener != null) {
+        mOnPersonSelectedListener.onPersonSelected(person);
+      }
+    }
+  }
+);
 }
