@@ -43,13 +43,14 @@
   }
  else   if (requestCode == ImageSettingsDialogFragment.IMAGE_SETTINGS_DIALOG_REQUEST_CODE) {
     if (data == null) {
+      mWebView.execJavaScriptFromString("ZSSEditor.clearCurrentEditingImage();");
       return;
     }
     Bundle extras=data.getExtras();
     if (extras == null) {
       return;
     }
-    final String imageMeta=extras.getString("imageMeta");
+    final String imageMeta=Utils.escapeQuotes(StringUtils.notNullStr(extras.getString("imageMeta")));
     final int imageRemoteId=extras.getInt("imageRemoteId");
     final boolean isFeaturedImage=extras.getBoolean("isFeatured");
     mWebView.post(new Runnable(){

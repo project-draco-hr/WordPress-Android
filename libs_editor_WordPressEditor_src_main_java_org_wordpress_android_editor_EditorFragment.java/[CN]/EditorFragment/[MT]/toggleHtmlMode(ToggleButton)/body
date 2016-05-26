@@ -1,10 +1,11 @@
 {
+  if (!isAdded()) {
+    return;
+  }
   mEditorFragmentListener.onTrackableEvent(TrackableEvent.HTML_BUTTON_TAPPED);
   if (!mUploadingMedia.isEmpty()) {
     toggleButton.setChecked(false);
-    if (isAdded()) {
-      ToastUtils.showToast(getActivity(),R.string.alert_html_toggle_uploading,ToastUtils.Duration.LONG);
-    }
+    ToastUtils.showToast(getActivity(),R.string.alert_html_toggle_uploading,ToastUtils.Duration.LONG);
     return;
   }
   clearFormatBarButtons();
@@ -12,6 +13,9 @@
   if (toggleButton.isChecked()) {
     Thread thread=new Thread(new Runnable(){
       @Override public void run(){
+        if (!isAdded()) {
+          return;
+        }
         getTitle();
         getContent();
         getActivity().runOnUiThread(new Runnable(){
