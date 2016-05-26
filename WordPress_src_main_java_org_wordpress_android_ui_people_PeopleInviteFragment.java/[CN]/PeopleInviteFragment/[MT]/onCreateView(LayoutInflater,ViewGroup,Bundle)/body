@@ -1,42 +1,51 @@
 {
+  setHasOptionsMenu(true);
   final ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.people_invite_fragment,container,false);
-  final ViewGroup usernamesView=(ViewGroup)rootView.findViewById(R.id.usernames);
+  mUsernamesContainer=(ViewGroup)rootView.findViewById(R.id.usernames);
+  String role=null;
   if (savedInstanceState != null) {
     ArrayList<String> usernames=savedInstanceState.getStringArrayList(KEY_USERNAMES);
-    populateUsernameButtons(usernames,inflater,usernamesView);
-    mRole=savedInstanceState.getString(KEY_ROLE);
+    populateUsernameButtons(usernames,inflater,mUsernamesContainer);
+    role=savedInstanceState.getString(KEY_ROLE);
   }
-  if (mRole == null) {
-    final String[] roles=getResources().getStringArray(R.array.roles);
-    mRole=roles[roles.length - 1];
+  if (role == null) {
+    role=loadDefaultRole();
   }
-  final EditText editText=(EditText)rootView.findViewById(R.id.invite_usernames);
-  editText.addTextChangedListener(new TextWatcher(){
+  mUsernameEditText=(EditText)rootView.findViewById(R.id.invite_usernames);
+  mUsernameEditText.addTextChangedListener(new TextWatcher(){
     @Override public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
       Log.d("INVITE","beforeTextChanged: " + count + " char(s): "+ s.toString());
     }
     @Override public void onTextChanged(    CharSequence s,    int start,    int before,    int count){
-      if (editText.getText().toString().endsWith(" ")) {
-        addUsername(editText,inflater,usernamesView);
+      if (mUsernameEditText.getText().toString().endsWith(" ")) {
+        addUsername(mUsernameEditText,inflater,mUsernamesContainer,null);
       }
     }
     @Override public void afterTextChanged(    Editable s){
     }
   }
 );
-  editText.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+  mUsernameEditText.setOnEditorActionListener(new TextView.OnEditorActionListener(){
     @Override public boolean onEditorAction(    TextView v,    int actionId,    KeyEvent event){
       if (actionId == EditorInfo.IME_ACTION_DONE || (event.getAction() == KeyEvent.ACTION_UP && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-        addUsername(editText,inflater,usernamesView);
+        addUsername(mUsernameEditText,inflater,mUsernamesContainer,null);
       }
       return true;
+    }
+  }
+);
+  mUsernameEditText.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+    @Override public void onFocusChange(    View v,    boolean hasFocus){
+      if (!hasFocus && mUsernameEditText.getText().toString().length() > 0) {
+        addUsername(mUsernameEditText,inflater,mUsernamesContainer,null);
+      }
     }
   }
 );
   View usernamesContainer=rootView.findViewById(R.id.usernames);
   usernamesContainer.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
-      editText.requestFocus();
+      mUsernameEditText.requestFocus();
     }
   }
 );
@@ -48,15 +57,15 @@
   }
 );
   mRoleTextView=(TextView)rootView.findViewById(R.id.role);
-  mRoleTextView.setText(mRole);
+  setRole(role);
   final int MAX_CHARS=getResources().getInteger(R.integer.invite_message_char_limit);
   final TextView remainingCharsTextView=(TextView)rootView.findViewById(R.id.message_remaining);
-  final EditText messageEditText=(EditText)rootView.findViewById(R.id.message);
-  messageEditText.addTextChangedListener(new TextWatcher(){
+  mCustomMessageEditText=(EditText)rootView.findViewById(R.id.message);
+  mCustomMessageEditText.addTextChangedListener(new TextWatcher(){
     @Override public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
     }
     @Override public void onTextChanged(    CharSequence s,    int start,    int before,    int count){
-      mCustomMessage=messageEditText.getText().toString();
+      mCustomMessage=mCustomMessageEditText.getText().toString();
       updateRemainingCharsView(remainingCharsTextView,mCustomMessage,MAX_CHARS);
     }
     @Override public void afterTextChanged(    Editable s){

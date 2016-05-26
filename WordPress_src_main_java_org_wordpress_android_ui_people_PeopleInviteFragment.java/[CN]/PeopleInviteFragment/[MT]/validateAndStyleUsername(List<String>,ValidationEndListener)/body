@@ -1,0 +1,20 @@
+{
+  String dotComBlogId=getArguments().getString(ARG_BLOGID);
+  PeopleUtils.validateUsernames(usernames,dotComBlogId,new PeopleUtils.ValidateUsernameCallback(){
+    @Override public void onUsernameValidation(    String username,    ValidationResult validationResult){
+      if (!isAdded()) {
+        return;
+      }
+      mUsernameResults.put(username,validationResult);
+      styleButton(username,mUsernameButtons.get(username),validationResult);
+    }
+    @Override public void onValidationFinished(){
+      if (validationEndListener != null) {
+        validationEndListener.onValidationEnd();
+      }
+    }
+    @Override public void onError(){
+    }
+  }
+);
+}
