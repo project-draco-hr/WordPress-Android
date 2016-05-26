@@ -19,11 +19,10 @@
     PeopleTable.deletePeopleForLocalBlogIdExceptForFirstPage(blog.getLocalTableBlogId());
     PeopleListFragment peopleListFragment=PeopleListFragment.newInstance(blog.getLocalTableBlogId());
     peopleListFragment.setOnPersonSelectedListener(this);
-    peopleListFragment.setOnFetchMorePeopleListener(this);
+    peopleListFragment.setOnFetchPeopleListener(this);
     mPeopleEndOfListReached=false;
     mFetchRequestInProgress=false;
     getFragmentManager().beginTransaction().add(R.id.fragment_container,peopleListFragment,KEY_PEOPLE_LIST_FRAGMENT).commit();
-    fetchUsersList(blog.getDotComBlogId(),blog.getLocalTableBlogId(),0);
   }
  else {
     mPeopleEndOfListReached=savedInstanceState.getBoolean(KEY_END_OF_LIST_REACHED);
@@ -32,7 +31,7 @@
     PeopleListFragment peopleListFragment=(PeopleListFragment)fragmentManager.findFragmentByTag(KEY_PEOPLE_LIST_FRAGMENT);
     if (peopleListFragment != null) {
       peopleListFragment.setOnPersonSelectedListener(this);
-      peopleListFragment.setOnFetchMorePeopleListener(this);
+      peopleListFragment.setOnFetchPeopleListener(this);
     }
   }
 }
