@@ -16,7 +16,9 @@
     return;
   }
   if (savedInstanceState == null) {
-    PeopleTable.deletePeopleForLocalBlogIdExceptForFirstPage(blog.getLocalTableBlogId());
+    if (NetworkUtils.isNetworkAvailable(this)) {
+      PeopleTable.deletePeopleForLocalBlogIdExceptForFirstPage(blog.getLocalTableBlogId());
+    }
     PeopleListFragment peopleListFragment=PeopleListFragment.newInstance(blog.getLocalTableBlogId());
     peopleListFragment.setOnPersonSelectedListener(this);
     peopleListFragment.setOnFetchPeopleListener(this);
