@@ -1,15 +1,8 @@
 {
-  final List<String> urlsToTry=new ArrayList<>();
+  final Set<String> urlsToTry=new LinkedHashSet<>();
   urlsToTry.add(siteUrl);
-  final String sanitizedURL=sanitizeSiteUrl(siteUrl);
-  if (!urlsToTry.contains(sanitizedURL)) {
-    urlsToTry.add(sanitizedURL);
-  }
-  String appendedXmlrpcUrl=appendXMLRPCPath(sanitizedURL);
-  if (!urlsToTry.contains(appendedXmlrpcUrl)) {
-    appendedXmlrpcUrl+="?rsd";
-    urlsToTry.add(appendedXmlrpcUrl);
-  }
+  urlsToTry.add(sanitizeSiteUrl(siteUrl,true));
+  urlsToTry.add(sanitizeSiteUrl(siteUrl,false));
   AppLog.i(AppLog.T.NUX,"The app will call the RSD discovery process on the following URLs: " + urlsToTry);
   String xmlrpcUrl=null;
   for (  String currentURL : urlsToTry) {

@@ -1,8 +1,12 @@
 {
   if (sAccount == null) {
-    sAccount=AccountTable.getDefaultAccount();
-    if (sAccount == null) {
-      sAccount=new Account();
+synchronized (mLock) {
+      if (sAccount == null) {
+        sAccount=AccountTable.getDefaultAccount();
+        if (sAccount == null) {
+          sAccount=new Account();
+        }
+      }
     }
   }
   return sAccount;
