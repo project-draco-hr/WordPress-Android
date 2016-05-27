@@ -1,0 +1,35 @@
+{
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      if (jsonObject != null && callback != null) {
+        try {
+          Person person=Person.fromJSON(jsonObject,blogId,localTableBlogId);
+          if (person != null) {
+            callback.onSuccess(person);
+          }
+ else {
+            AppLog.e(T.API,"Couldn't map jsonObject + " + jsonObject + " to person model.");
+            callback.onError();
+          }
+        }
+ catch (        JSONException e) {
+          callback.onError();
+        }
+      }
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.API,volleyError);
+      if (callback != null) {
+        callback.onError();
+      }
+    }
+  }
+;
+  Map<String,String> params=new HashMap<>();
+  params.put("roles",newRole.toLowerCase());
+  String path=String.format("sites/%s/users/%d",blogId,personID);
+  WordPress.getRestClientUtilsV1_1().post(path,params,null,listener,errorListener);
+}

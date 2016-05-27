@@ -1,0 +1,28 @@
+{
+  if (!NetworkUtils.checkConnection(this)) {
+    return;
+  }
+  final Person person=PeopleTable.getPerson(event.personID,event.localTableBlogId);
+  if (person == null || event.newRole == null || event.newRole.equalsIgnoreCase(person.getRole())) {
+    return;
+  }
+  FragmentManager fragmentManager=getFragmentManager();
+  final PersonDetailFragment personDetailFragment=(PersonDetailFragment)fragmentManager.findFragmentByTag(KEY_PERSON_DETAIL_FRAGMENT);
+  if (personDetailFragment != null) {
+    personDetailFragment.changeRole(event.newRole);
+  }
+  PeopleUtils.updateRole(person.getBlogId(),person.getPersonID(),event.newRole,event.localTableBlogId,new PeopleUtils.UpdateUserCallback(){
+    @Override public void onSuccess(    Person person){
+      AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.PERSON_UPDATED);
+      PeopleTable.save(person);
+      refreshOnScreenFragmentDetails();
+    }
+    @Override public void onError(){
+      if (personDetailFragment != null) {
+        personDetailFragment.refreshPersonDetails();
+      }
+      ToastUtils.showToast(PeopleManagementActivity.this,R.string.error_update_role,ToastUtils.Duration.LONG);
+    }
+  }
+);
+}

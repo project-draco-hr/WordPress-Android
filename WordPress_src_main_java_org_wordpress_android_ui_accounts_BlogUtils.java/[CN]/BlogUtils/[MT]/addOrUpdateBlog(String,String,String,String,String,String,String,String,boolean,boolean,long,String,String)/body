@@ -1,0 +1,55 @@
+{
+  Blog blog;
+  if (!WordPress.wpDB.isBlogInDatabase(Integer.parseInt(blogId),xmlRpcUrl)) {
+    blog=new Blog(xmlRpcUrl,username,password);
+    blog.setHomeURL(homeUrl);
+    blog.setHttpuser(httpUsername);
+    blog.setHttppassword(httpPassword);
+    blog.setBlogName(blogName);
+    blog.setImagePlacement("");
+    blog.setFullSizeImage(false);
+    blog.setMaxImageWidth(DEFAULT_IMAGE_SIZE);
+    blog.setMaxImageWidthId(0);
+    blog.setRemoteBlogId(Integer.parseInt(blogId));
+    blog.setDotcomFlag(WPUrlUtils.isWordPressCom(xmlRpcUrl));
+    blog.setWpVersion("");
+    blog.setAdmin(isAdmin);
+    blog.setHidden(!isVisible);
+    blog.setPlanID(planID);
+    blog.setPlanShortName(planShortName);
+    blog.setCapabilities(capabilities);
+    WordPress.wpDB.saveBlog(blog);
+    return true;
+  }
+ else {
+    int localTableBlogId=WordPress.wpDB.getLocalTableBlogIdForRemoteBlogIdAndXmlRpcUrl(Integer.parseInt(blogId),xmlRpcUrl);
+    try {
+      boolean blogUpdated=false;
+      blog=WordPress.wpDB.instantiateBlogByLocalId(localTableBlogId);
+      if (!blogName.equals(blog.getBlogName())) {
+        blog.setBlogName(blogName);
+        blogUpdated=true;
+      }
+      if (planID != blog.getPlanID()) {
+        blog.setPlanID(planID);
+        blogUpdated=true;
+      }
+      if (!blog.getPlanShortName().equals(planShortName)) {
+        blog.setPlanShortName(planShortName);
+        blogUpdated=true;
+      }
+      if (blog.getCapabilities() == null || !blog.getCapabilities().equals(capabilities)) {
+        blog.setCapabilities(capabilities);
+        blogUpdated=true;
+      }
+      if (blogUpdated) {
+        WordPress.wpDB.saveBlog(blog);
+        return true;
+      }
+    }
+ catch (    Exception e) {
+      AppLog.e(T.NUX,"localTableBlogId: " + localTableBlogId + " not found");
+    }
+    return false;
+  }
+}

@@ -22,9 +22,12 @@
   int themesVisibility=ThemeBrowserActivity.isAccessible() ? View.VISIBLE : View.GONE;
   mLookAndFeelHeader.setVisibility(themesVisibility);
   mThemesContainer.setVisibility(themesVisibility);
-  int settingsVisibility=blog.isAdmin() || !blog.isDotcomFlag() ? View.VISIBLE : View.GONE;
+  boolean isAdminOrSelfHosted=blog.isAdmin() || !blog.isDotcomFlag();
+  boolean canListPeople=blog.hasCapability(Capability.LIST_USERS);
+  mSettingsView.setVisibility(isAdminOrSelfHosted ? View.VISIBLE : View.GONE);
+  mPeopleView.setVisibility(canListPeople ? View.VISIBLE : View.GONE);
+  int settingsVisibility=(isAdminOrSelfHosted || canListPeople) ? View.VISIBLE : View.GONE;
   mConfigurationHeader.setVisibility(settingsVisibility);
-  mSettingsView.setVisibility(settingsVisibility);
   mBlavatarImageView.setImageUrl(GravatarUtils.blavatarFromUrl(blog.getUrl(),mBlavatarSz),WPNetworkImageView.ImageType.BLAVATAR);
   String blogName=StringUtils.unescapeHTML(blog.getBlogName());
   String homeURL;
