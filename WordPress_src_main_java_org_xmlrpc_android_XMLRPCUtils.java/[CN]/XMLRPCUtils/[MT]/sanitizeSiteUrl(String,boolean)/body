@@ -1,15 +1,12 @@
 {
-  if (TextUtils.isEmpty(siteUrl)) {
-    throw new XMLRPCUtilsException(XMLRPCUtilsException.Kind.SITE_URL_CANNOT_BE_EMPTY,R.string.invalid_site_url_message,siteUrl,null);
-  }
   String url=siteUrl.trim();
   if (TextUtils.isEmpty(url)) {
     throw new XMLRPCUtilsException(XMLRPCUtilsException.Kind.SITE_URL_CANNOT_BE_EMPTY,R.string.invalid_site_url_message,siteUrl,null);
   }
   url=UrlUtils.convertUrlToPunycodeIfNeeded(url);
-  url=UrlUtils.addUrlSchemeIfNeeded(url,false);
+  url=UrlUtils.addUrlSchemeIfNeeded(url,addHttps);
   url=XMLRPCUtils.stripKnownPaths(url);
-  if (!URLUtil.isValidUrl(url)) {
+  if (!(URLUtil.isHttpsUrl(url) || URLUtil.isHttpUrl(url))) {
     throw new XMLRPCUtilsException(Kind.INVALID_URL,R.string.invalid_site_url_message,url,null);
   }
   return url;

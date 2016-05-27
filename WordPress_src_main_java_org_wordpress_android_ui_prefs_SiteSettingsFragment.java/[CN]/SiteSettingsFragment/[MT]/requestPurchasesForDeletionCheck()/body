@@ -4,7 +4,7 @@
   AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.SITE_SETTINGS_DELETE_SITE_PURCHASES_REQUESTED);
   WordPress.getRestClientUtils().getSitePurchases(currentBlog.getDotComBlogId(),new RestRequest.Listener(){
     @Override public void onResponse(    JSONObject response){
-      progressDialog.dismiss();
+      dismissProgressDialog(progressDialog);
       if (isAdded()) {
         showPurchasesOrDeleteSiteDialog(response,currentBlog);
       }
@@ -12,7 +12,7 @@
   }
 ,new RestRequest.ErrorListener(){
     @Override public void onErrorResponse(    VolleyError error){
-      progressDialog.dismiss();
+      dismissProgressDialog(progressDialog);
       if (isAdded()) {
         ToastUtils.showToast(getActivity(),getString(R.string.purchases_request_error));
         AppLog.e(AppLog.T.API,"Error occurred while requesting purchases for deletion check: " + error.toString());
