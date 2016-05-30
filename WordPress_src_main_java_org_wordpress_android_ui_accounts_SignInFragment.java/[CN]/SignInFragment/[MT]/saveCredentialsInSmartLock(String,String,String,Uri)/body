@@ -5,6 +5,9 @@
   Credential credential=new Credential.Builder(username).setPassword(password).setName(displayName).setProfilePictureUri(profilePicture).build();
   Auth.CredentialsApi.save(mCredentialsClient,credential).setResultCallback(new ResultCallback<Status>(){
     @Override public void onResult(    Status status){
+      if (!isAdded()) {
+        return;
+      }
       if (!status.isSuccess() && status.hasResolution()) {
         try {
           status.startResolutionForResult(getActivity(),SignInActivity.SMART_LOCK_SAVE);
