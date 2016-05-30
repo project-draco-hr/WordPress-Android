@@ -5,6 +5,9 @@
   CredentialRequest credentialRequest=new CredentialRequest.Builder().setSupportsPasswordLogin(true).build();
   Auth.CredentialsApi.request(mCredentialsClient,credentialRequest).setResultCallback(new ResultCallback<CredentialRequestResult>(){
     @Override public void onResult(    CredentialRequestResult result){
+      if (!isAdded()) {
+        return;
+      }
       Status status=result.getStatus();
       if (status.isSuccess()) {
         Credential credential=result.getCredential();
@@ -16,7 +19,7 @@
             status.startResolutionForResult(getActivity(),SignInActivity.SMART_LOCK_READ);
           }
  catch (          IntentSender.SendIntentException e) {
-            AppLog.d(T.NUX,"SmartLock: Failed to send resolution for credential " + "request");
+            AppLog.d(T.NUX,"SmartLock: Failed to send resolution for credential request");
           }
         }
  else {
