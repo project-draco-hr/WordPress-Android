@@ -4,23 +4,14 @@
   builder.setNegativeButton(R.string.cancel,null);
   builder.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener(){
     @Override public void onClick(    DialogInterface dialog,    int which){
-      if (!isAdded()) {
-        return;
-      }
-      if (getTargetFragment() instanceof OnChangeListener) {
-        launchListener(((OnChangeListener)getTargetFragment()));
-      }
- else       if (getActivity() instanceof OnChangeListener) {
-        launchListener(((OnChangeListener)getActivity()));
-      }
-    }
-    private void launchListener(    OnChangeListener onChangeListener){
-      String role=mRoleListAdapter.getSelectedRole();
-      Bundle args=getArguments();
-      if (args != null) {
-        long personID=args.getLong(PERSON_ID_TAG);
-        int localTableBlogId=args.getInt(PERSON_LOCAL_TABLE_BLOG_ID_TAG);
-        onChangeListener.onRoleChanged(personID,localTableBlogId,role);
+      if (mListener != null) {
+        String role=mRoleListAdapter.getSelectedRole();
+        Bundle args=getArguments();
+        if (args != null) {
+          long personID=args.getLong(PERSON_ID_TAG);
+          int localTableBlogId=args.getInt(PERSON_LOCAL_TABLE_BLOG_ID_TAG);
+          mListener.onRoleChanged(personID,localTableBlogId,role);
+        }
       }
     }
   }
