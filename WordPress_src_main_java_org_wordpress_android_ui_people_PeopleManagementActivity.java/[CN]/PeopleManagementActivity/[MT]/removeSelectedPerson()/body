@@ -1,10 +1,14 @@
 {
+  if (!NetworkUtils.checkConnection(this)) {
+    return;
+  }
   Person person=getCurrentPerson();
   if (person == null) {
     return;
   }
   PeopleUtils.removePerson(person.getBlogId(),person.getPersonID(),person.getLocalTableBlogId(),new PeopleUtils.RemoveUserCallback(){
     @Override public void onSuccess(    long personID,    int localTableBlogId){
+      AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.PERSON_REMOVED);
       Person person=PeopleTable.getPerson(personID,localTableBlogId);
       String text;
       if (person != null) {
