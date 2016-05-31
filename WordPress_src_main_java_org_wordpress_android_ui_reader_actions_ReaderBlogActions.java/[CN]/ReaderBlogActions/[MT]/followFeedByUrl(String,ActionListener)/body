@@ -3,11 +3,12 @@
     if (actionListener != null) {
       actionListener.onActionResult(false);
     }
-    return false;
+    return;
   }
   ReaderBlog blogInfo=ReaderBlogTable.getFeedInfo(ReaderBlogTable.getFeedIdFromUrl(feedUrl));
   if (blogInfo != null) {
-    return internalFollowFeed(blogInfo.feedId,blogInfo.getFeedUrl(),true,actionListener);
+    internalFollowFeed(blogInfo.feedId,blogInfo.getFeedUrl(),true,actionListener);
+    return;
   }
   updateFeedInfo(0,feedUrl,new UpdateBlogInfoListener(){
     @Override public void onResult(    ReaderBlog blogInfo){
@@ -20,5 +21,4 @@
     }
   }
 );
-  return true;
 }
