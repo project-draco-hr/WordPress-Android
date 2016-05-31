@@ -2,15 +2,12 @@
   if (json == null) {
     return false;
   }
-  final boolean isSubscribed;
+  boolean isSubscribed;
   if (json.has("subscribed")) {
     isSubscribed=json.optBoolean("subscribed",false);
   }
- else   if (json.has("is_following")) {
-    isSubscribed=json.optBoolean("is_following",false);
-  }
  else {
-    isSubscribed=false;
+    isSubscribed=json.has("is_following") && json.optBoolean("is_following",false);
   }
   return (isSubscribed == isAskingToFollow);
 }
