@@ -1,0 +1,31 @@
+{
+  if (mPeopleEndOfListReached || mFetchRequestInProgress || !NetworkUtils.checkConnection(this)) {
+    return;
+  }
+  FragmentManager fragmentManager=getFragmentManager();
+  final PeopleListFragment peopleListFragment=(PeopleListFragment)fragmentManager.findFragmentByTag(KEY_PEOPLE_LIST_FRAGMENT);
+  if (peopleListFragment != null) {
+    peopleListFragment.showLoadingProgress(true);
+  }
+  mFetchRequestInProgress=true;
+  PeopleUtils.fetchUsers(dotComBlogId,localTableBlogId,offset,new PeopleUtils.FetchUsersCallback(){
+    @Override public void onSuccess(    List<Person> peopleList,    boolean isEndOfList){
+      boolean isFreshList=(offset == 0);
+      mPeopleEndOfListReached=isEndOfList;
+      PeopleTable.savePeople(peopleList,localTableBlogId,isFreshList);
+      refreshOnScreenFragmentDetails();
+      mFetchRequestInProgress=false;
+      if (peopleListFragment != null) {
+        peopleListFragment.showLoadingProgress(false);
+      }
+    }
+    @Override public void onError(){
+      mFetchRequestInProgress=false;
+      if (peopleListFragment != null) {
+        peopleListFragment.showLoadingProgress(false);
+      }
+      ToastUtils.showToast(PeopleManagementActivity.this,R.string.error_fetch_people_list,ToastUtils.Duration.LONG);
+    }
+  }
+);
+}
