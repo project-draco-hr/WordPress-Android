@@ -1,18 +1,18 @@
 {
-  if (isFinishing() || !hasPagerAdapter()) {
-    return;
-  }
+  if (isFinishing())   return;
+  PostPagerAdapter adapter=getPagerAdapter();
+  if (adapter == null)   return;
   mIsRequestingMorePosts=false;
   mProgress.setVisibility(View.GONE);
   if (event.getResult() == ReaderActions.UpdateResult.HAS_NEW) {
     AppLog.d(AppLog.T.READER,"reader pager > older posts received");
-    ReaderBlogIdPostId id=getPagerAdapter().getCurrentBlogIdPostId();
+    ReaderBlogIdPostId id=adapter.getCurrentBlogIdPostId();
     long blogId=(id != null ? id.getBlogId() : 0);
     long postId=(id != null ? id.getPostId() : 0);
     loadPosts(blogId,postId);
   }
  else {
     AppLog.d(AppLog.T.READER,"reader pager > all posts loaded");
-    getPagerAdapter().mAllPostsLoaded=true;
+    adapter.mAllPostsLoaded=true;
   }
 }

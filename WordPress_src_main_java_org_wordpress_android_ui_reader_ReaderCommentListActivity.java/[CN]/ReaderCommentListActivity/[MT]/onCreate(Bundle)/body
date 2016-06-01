@@ -2,13 +2,15 @@
   super.onCreate(savedInstanceState);
   setContentView(R.layout.reader_activity_comment_list);
   Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
-  setSupportActionBar(toolbar);
-  toolbar.setNavigationOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View v){
-      onBackPressed();
+  if (toolbar != null) {
+    setSupportActionBar(toolbar);
+    toolbar.setNavigationOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        onBackPressed();
+      }
     }
-  }
 );
+  }
   ActionBar actionBar=getSupportActionBar();
   if (actionBar != null) {
     actionBar.setDisplayShowTitleEnabled(true);
@@ -34,7 +36,7 @@
   mRecyclerView.addItemDecoration(new RecyclerItemDecoration(spacingHorizontal,spacingVertical));
   mCommentBox=(ViewGroup)findViewById(R.id.layout_comment_box);
   mEditComment=(SuggestionAutoCompleteText)mCommentBox.findViewById(R.id.edit_comment);
-  mEditComment.getAutoSaveTextHelper().setUniqueId(String.format("%s%d%d",AccountHelper.getCurrentUsernameForBlog(null),mPostId,mBlogId));
+  mEditComment.getAutoSaveTextHelper().setUniqueId(String.format(Locale.getDefault(),"%s%d%d",AccountHelper.getCurrentUsernameForBlog(null),mPostId,mBlogId));
   mSubmitReplyBtn=mCommentBox.findViewById(R.id.btn_submit_reply);
   if (!loadPost()) {
     ToastUtils.showToast(this,R.string.reader_toast_err_get_post);
