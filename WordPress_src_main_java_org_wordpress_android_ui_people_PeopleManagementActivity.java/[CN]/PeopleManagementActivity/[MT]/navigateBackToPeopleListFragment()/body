@@ -1,13 +1,11 @@
 {
   FragmentManager fragmentManager=getFragmentManager();
   if (fragmentManager.getBackStackEntryCount() > 0) {
-    PersonDetailFragment personDetailFragment=getDetailFragment();
-    boolean shouldResetToolbarElevation=(personDetailFragment != null);
-    ActionBar actionBar=getSupportActionBar();
-    if (shouldResetToolbarElevation && actionBar != null) {
-      actionBar.setElevation(getResources().getDimension(R.dimen.appbar_elevation));
-    }
     fragmentManager.popBackStack();
+    PersonDetailFragment personDetailFragment=getDetailFragment();
+    if (personDetailFragment != null && personDetailFragment.isAdded()) {
+      resetToolbarElevation();
+    }
     return true;
   }
   return false;
