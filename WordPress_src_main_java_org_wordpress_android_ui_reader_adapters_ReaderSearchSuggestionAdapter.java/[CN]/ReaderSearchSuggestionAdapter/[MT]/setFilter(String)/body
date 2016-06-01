@@ -2,7 +2,17 @@
   if (isCurrentFilter(filter) && getCursor() != null) {
     return;
   }
-  Cursor cursor=ReaderSearchTable.getQueryStringCursor(filter,MAX_SUGGESTIONS);
-  swapCursor(cursor);
+  Cursor sqlCursor=ReaderSearchTable.getQueryStringCursor(filter,MAX_SUGGESTIONS);
+  MatrixCursor matrixCursor=new MatrixCursor(new String[]{ReaderSearchTable.COL_ID,ReaderSearchTable.COL_QUERY});
+  if (sqlCursor.moveToFirst()) {
+    do {
+      long id=sqlCursor.getLong(sqlCursor.getColumnIndex(ReaderSearchTable.COL_ID));
+      String query=sqlCursor.getString(sqlCursor.getColumnIndex(ReaderSearchTable.COL_QUERY));
+      matrixCursor.addRow(new Object[]{id,query});
+    }
+ while (sqlCursor.moveToNext());
+    matrixCursor.addRow(mClearAllRow);
+  }
   mCurrentFilter=filter;
+  swapCursor(matrixCursor);
 }
