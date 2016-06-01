@@ -1,11 +1,12 @@
 {
   if (!isAdded())   return;
-  ReaderSearchTable.addOrUpdateQueryString(query);
   mSearchView.clearFocus();
   hideSearchMessage();
-  ReaderTag searchTag=ReaderSearchService.getTagForSearchQuery(query);
+  String trimQuery=query != null ? query.trim() : "";
+  ReaderSearchTable.addOrUpdateQueryString(trimQuery);
+  ReaderTag searchTag=ReaderSearchService.getTagForSearchQuery(trimQuery);
   ReaderPostTable.deletePostsWithTag(searchTag);
   mPostAdapter.setCurrentTag(searchTag);
-  mCurrentSearchQuery=query;
+  mCurrentSearchQuery=trimQuery;
   updatePostsInCurrentSearch(0);
 }
