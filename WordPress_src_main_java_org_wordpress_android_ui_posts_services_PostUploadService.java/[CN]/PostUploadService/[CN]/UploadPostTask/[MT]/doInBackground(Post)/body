@@ -1,10 +1,9 @@
 {
   mPost=posts[0];
-  mPostUploadNotifier=new PostUploadNotifier(mPost);
   String postTitle=TextUtils.isEmpty(mPost.getTitle()) ? getString(R.string.untitled) : mPost.getTitle();
   String uploadingPostTitle=String.format(getString(R.string.posting_post),postTitle);
   String uploadingPostMessage=String.format(getString(R.string.sending_content),mPost.isPage() ? getString(R.string.page).toLowerCase() : getString(R.string.post).toLowerCase());
-  mPostUploadNotifier.updateNotificationMessage(uploadingPostTitle,uploadingPostMessage);
+  mPostUploadNotifier=new PostUploadNotifier(mPost,uploadingPostTitle,uploadingPostMessage);
   mBlog=WordPress.wpDB.instantiateBlogByLocalId(mPost.getLocalTableBlogId());
   if (mBlog == null) {
     mErrorMessage=mContext.getString(R.string.blog_not_found);
@@ -19,7 +18,6 @@
   if (!TextUtils.isEmpty(mPost.getMoreText())) {
     moreContent=processPostMedia(mPost.getMoreText());
   }
-  mPostUploadNotifier.updateNotificationMessage(uploadingPostTitle,uploadingPostMessage);
   if (mIsMediaError) {
     return false;
   }

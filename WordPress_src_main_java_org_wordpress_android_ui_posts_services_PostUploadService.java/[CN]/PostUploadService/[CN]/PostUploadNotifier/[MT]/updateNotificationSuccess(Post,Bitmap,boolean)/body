@@ -4,7 +4,7 @@
   if (sharableUrl == null && !TextUtils.isEmpty(post.getPermaLink())) {
     sharableUrl=post.getPermaLink();
   }
-  Builder notificationBuilder=new NotificationCompat.Builder(getApplicationContext());
+  Builder notificationBuilder=new Notification.Builder(getApplicationContext());
   String notificationTitle=(String)(post.isPage() ? mContext.getResources().getText(R.string.page_published) : mContext.getResources().getText(R.string.post_published));
   if (!isFirstPublishing) {
     notificationTitle=(String)(post.isPage() ? mContext.getResources().getText(R.string.page_updated) : mContext.getResources().getText(R.string.post_updated));
@@ -35,5 +35,5 @@
     PendingIntent pendingIntent=PendingIntent.getBroadcast(mContext,0,shareIntent,PendingIntent.FLAG_CANCEL_CURRENT);
     notificationBuilder.addAction(R.drawable.ic_share_white_24dp,getString(R.string.share_action),pendingIntent);
   }
-  mNotificationManager.notify(notificationId,notificationBuilder.build());
+  notifyManager(notificationId,notificationBuilder.build());
 }
