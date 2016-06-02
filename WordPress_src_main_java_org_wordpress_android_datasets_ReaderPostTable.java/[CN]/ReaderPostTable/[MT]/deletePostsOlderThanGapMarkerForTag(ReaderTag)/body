@@ -1,8 +1,0 @@
-{
-  long timestamp=getGapMarkerTimestampForTag(tag);
-  if (timestamp == 0)   return;
-  String[] args={Long.toString(timestamp),tag.getTagSlug(),Integer.toString(tag.tagType.toInt())};
-  String where="pseudo_id IN (SELECT tbl_posts.pseudo_id FROM tbl_posts, tbl_post_tags" + " WHERE tbl_posts.sort_order < ?" + " AND tbl_posts.pseudo_id = tbl_post_tags.pseudo_id"+ " AND tbl_post_tags.tag_name=? AND tbl_post_tags.tag_type=?)";
-  int numDeleted=ReaderDatabase.getWritableDb().delete("tbl_post_tags",where,args);
-  AppLog.d(AppLog.T.READER,"removed " + numDeleted + " posts older than gap marker");
-}
