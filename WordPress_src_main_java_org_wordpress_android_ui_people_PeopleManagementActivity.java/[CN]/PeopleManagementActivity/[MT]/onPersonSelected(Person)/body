@@ -1,6 +1,5 @@
 {
-  FragmentManager fragmentManager=getFragmentManager();
-  PersonDetailFragment personDetailFragment=(PersonDetailFragment)fragmentManager.findFragmentByTag(KEY_PERSON_DETAIL_FRAGMENT);
+  PersonDetailFragment personDetailFragment=getDetailFragment();
   long personID=person.getPersonID();
   int localTableBlogID=person.getLocalTableBlogId();
   if (personDetailFragment == null) {
@@ -14,6 +13,11 @@
     FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
     fragmentTransaction.add(R.id.fragment_container,personDetailFragment,KEY_PERSON_DETAIL_FRAGMENT);
     fragmentTransaction.addToBackStack(null);
+    ActionBar actionBar=getSupportActionBar();
+    if (actionBar != null) {
+      actionBar.setTitle("");
+    }
+    removeToolbarElevation();
     fragmentTransaction.commit();
   }
 }
