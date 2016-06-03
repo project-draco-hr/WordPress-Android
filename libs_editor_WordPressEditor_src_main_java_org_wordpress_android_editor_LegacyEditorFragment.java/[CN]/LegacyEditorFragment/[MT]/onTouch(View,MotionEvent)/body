@@ -60,7 +60,6 @@
           ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(getActivity(),R.array.alignment_array,android.R.layout.simple_spinner_item);
           adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
           alignmentSpinner.setAdapter(adapter);
-          imageWidthText.setText(String.valueOf(mediaFile.getWidth()) + "px");
           seekBar.setProgress(mediaFile.getWidth());
           titleText.setText(mediaFile.getTitle());
           caption.setText(mediaFile.getCaption());
@@ -75,6 +74,7 @@
           alignmentSpinner.setSelection(mediaFile.getHorizontalAlignment(),true);
           final int maxWidth=MediaUtils.getMaximumImageWidth(getActivity(),imageSpan.getImageSource(),mBlogSettingMaxImageWidth);
           seekBar.setMax(maxWidth / 10);
+          imageWidthText.setText(String.format(Locale.US,"%dpx",maxWidth));
           if (mediaFile.getWidth() != 0) {
             seekBar.setProgress(mediaFile.getWidth() / 10);
           }
@@ -87,7 +87,7 @@
               if (progress == 0) {
                 progress=1;
               }
-              imageWidthText.setText(progress * 10 + "px");
+              imageWidthText.setText(String.format(Locale.US,"%dpx",progress * 10));
             }
           }
 );
