@@ -1,5 +1,15 @@
 {
   SuggestionViewHolder holder=(SuggestionViewHolder)view.getTag();
-  String query=cursor.getString(cursor.getColumnIndex(ReaderSearchTable.COL_QUERY));
+  final String query=cursor.getString(cursor.getColumnIndex(ReaderSearchTable.COL_QUERY));
   holder.txtSuggestion.setText(query);
+  long id=cursor.getLong(cursor.getColumnIndex(ReaderSearchTable.COL_ID));
+  if (id != CLEAR_ALL_ROW_ID) {
+    holder.imgDelete.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View v){
+        ReaderSearchTable.deleteQueryString(query);
+        reload();
+      }
+    }
+);
+  }
 }
