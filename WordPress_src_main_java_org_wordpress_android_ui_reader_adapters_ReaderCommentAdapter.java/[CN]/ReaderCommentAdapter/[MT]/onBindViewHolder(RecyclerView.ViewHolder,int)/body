@@ -2,7 +2,7 @@
   if (holder instanceof PostHeaderHolder) {
     PostHeaderHolder headerHolder=(PostHeaderHolder)holder;
     headerHolder.mHeaderView.setPost(mPost);
-    if (mHeaderClickEnabled) {
+    if (mIsHeaderClickEnabled) {
       headerHolder.mHeaderView.setOnClickListener(new View.OnClickListener(){
         @Override public void onClick(        View view){
           ReaderActivityLauncher.showReaderPostDetail(view.getContext(),mPost.blogId,mPost.postId);
@@ -12,8 +12,11 @@
     }
     return;
   }
-  CommentHolder commentHolder=(CommentHolder)holder;
   final ReaderComment comment=getItem(position);
+  if (comment == null) {
+    return;
+  }
+  CommentHolder commentHolder=(CommentHolder)holder;
   commentHolder.txtAuthor.setText(comment.getAuthorName());
   java.util.Date dtPublished=DateTimeUtils.iso8601ToJavaDate(comment.getPublished());
   commentHolder.txtDate.setText(DateTimeUtils.javaDateToTimeSpan(dtPublished));

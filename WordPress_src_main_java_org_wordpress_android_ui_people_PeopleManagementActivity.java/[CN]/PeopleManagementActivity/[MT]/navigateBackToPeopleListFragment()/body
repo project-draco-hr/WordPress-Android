@@ -1,6 +1,15 @@
 {
-  if (getFragmentManager().getBackStackEntryCount() > 0) {
-    getFragmentManager().popBackStack();
+  FragmentManager fragmentManager=getFragmentManager();
+  if (fragmentManager.getBackStackEntryCount() > 0) {
+    fragmentManager.popBackStack();
+    ActionBar actionBar=getSupportActionBar();
+    if (actionBar != null) {
+      actionBar.setTitle(R.string.people);
+    }
+    PersonDetailFragment personDetailFragment=getDetailFragment();
+    if (personDetailFragment != null && personDetailFragment.isAdded()) {
+      resetToolbarElevation();
+    }
     return true;
   }
   return false;
