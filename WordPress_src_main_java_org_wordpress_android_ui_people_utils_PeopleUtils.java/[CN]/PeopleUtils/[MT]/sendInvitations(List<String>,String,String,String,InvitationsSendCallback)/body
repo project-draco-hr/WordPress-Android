@@ -8,13 +8,13 @@
         callback.onError();
         return;
       }
-      List<String> failedUsernames=new ArrayList<>();
+      Map<String,String> failedUsernames=new LinkedHashMap<>();
       JSONObject errors=jsonObject.optJSONObject("errors");
       if (errors != null) {
         for (        String username : usernames) {
           JSONObject userError=errors.optJSONObject(username);
           if (userError != null) {
-            failedUsernames.add(username);
+            failedUsernames.put(username,userError.optString("message"));
           }
         }
       }
