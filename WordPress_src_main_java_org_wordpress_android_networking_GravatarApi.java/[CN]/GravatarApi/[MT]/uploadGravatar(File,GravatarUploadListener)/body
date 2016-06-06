@@ -8,7 +8,10 @@
             gravatarUploadListener.onSuccess();
           }
  else {
-            AnalyticsTracker.track(AnalyticsTracker.Stat.ME_GRAVATAR_UPLOAD_UNSUCCESSFUL);
+            Map<String,Object> properties=new HashMap<>();
+            properties.put("network_response_code",response.code());
+            properties.put("network_response_message",response.message());
+            AnalyticsTracker.track(AnalyticsTracker.Stat.ME_GRAVATAR_UPLOAD_UNSUCCESSFUL,properties);
             AppLog.w(AppLog.T.API,"Network call unsuccessful trying to upload Gravatar: " + response.message());
             gravatarUploadListener.onError();
           }
@@ -19,7 +22,10 @@
     @Override public void onFailure(    okhttp3.Call call,    final IOException e){
       new Handler(Looper.getMainLooper()).post(new Runnable(){
         @Override public void run(){
-          AnalyticsTracker.track(AnalyticsTracker.Stat.ME_GRAVATAR_UPLOAD_EXCEPTION);
+          Map<String,Object> properties=new HashMap<>();
+          properties.put("network_exception_class",e != null ? e.getClass().getCanonicalName() : "null");
+          properties.put("network_exception_message",e != null ? e.getMessage() : "null");
+          AnalyticsTracker.track(AnalyticsTracker.Stat.ME_GRAVATAR_UPLOAD_EXCEPTION,properties);
           CrashlyticsUtils.logException(e,CrashlyticsUtils.ExceptionType.SPECIFIC,AppLog.T.API,"Network call failure trying to upload Gravatar!");
           AppLog.w(AppLog.T.API,"Network call failure trying to upload Gravatar!" + e.getMessage());
           gravatarUploadListener.onError();
