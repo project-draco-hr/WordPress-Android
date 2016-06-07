@@ -1,0 +1,16 @@
+{
+  ArrayList pathAndQueryString=new ArrayList();
+  HashMap<String,String> queryParams=new HashMap<>();
+  Uri uri=Uri.parse(unsanitizedPath);
+  pathAndQueryString.add(uri.getPath());
+  if (uri.getQueryParameterNames() != null) {
+    Iterator iter=uri.getQueryParameterNames().iterator();
+    while (iter.hasNext()) {
+      String name=(String)iter.next();
+      String value=uri.getQueryParameter(name);
+      queryParams.put(name,value);
+    }
+  }
+  pathAndQueryString.add(queryParams);
+  return pathAndQueryString;
+}
