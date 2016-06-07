@@ -1,5 +1,9 @@
 {
-  RestRequest request=mRestClient.makeRequest(Method.GET,mRestClient.getAbsoluteURL(path,params),null,listener,errorListener);
+  HashMap<String,String> paramsWithLocale=getRestLocaleParams(mContext);
+  if (params != null) {
+    paramsWithLocale.putAll(params);
+  }
+  RestRequest request=mRestClient.makeRequest(Method.GET,mRestClient.getAbsoluteURL(path,paramsWithLocale),null,listener,errorListener);
   if (retryPolicy == null) {
     retryPolicy=new DefaultRetryPolicy(REST_TIMEOUT_MS,REST_MAX_RETRIES_GET,REST_BACKOFF_MULT);
   }
