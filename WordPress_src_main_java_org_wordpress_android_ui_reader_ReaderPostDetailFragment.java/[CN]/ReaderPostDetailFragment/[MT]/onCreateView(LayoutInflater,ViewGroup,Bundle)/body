@@ -1,5 +1,17 @@
 {
   final View view=inflater.inflate(R.layout.reader_fragment_post_detail,container,false);
+  CustomSwipeRefreshLayout swipeRefreshLayout=(CustomSwipeRefreshLayout)view.findViewById(R.id.swipe_to_refresh);
+  int swipeToRefreshOffset=getResources().getDimensionPixelSize(R.dimen.toolbar_content_offset);
+  swipeRefreshLayout.setProgressViewOffset(false,0,swipeToRefreshOffset);
+  mSwipeToRefreshHelper=new SwipeToRefreshHelper(getActivity(),swipeRefreshLayout,new SwipeToRefreshHelper.RefreshListener(){
+    @Override public void onRefreshStarted(){
+      if (!isAdded()) {
+        return;
+      }
+      updatePost();
+    }
+  }
+);
   mScrollView=(WPScrollView)view.findViewById(R.id.scroll_view_reader);
   mScrollView.setScrollDirectionListener(this);
   mLayoutFooter=(ViewGroup)view.findViewById(R.id.layout_post_detail_footer);
