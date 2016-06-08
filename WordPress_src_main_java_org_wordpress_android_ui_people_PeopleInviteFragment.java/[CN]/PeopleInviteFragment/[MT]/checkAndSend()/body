@@ -1,0 +1,48 @@
+{
+  if (!isAdded()) {
+    return;
+  }
+  if (mUsernameButtons.size() == 0) {
+    ToastUtils.showToast(getActivity(),R.string.invite_error_no_usenames);
+    return;
+  }
+  int invalidCount=0;
+  for (  String usernameResultString : mUsernameResults.values()) {
+    if (!usernameResultString.equals(FLAG_SUCCESS)) {
+      invalidCount++;
+    }
+  }
+  if (invalidCount > 0) {
+    ToastUtils.showToast(getActivity(),StringUtils.getQuantityString(getActivity(),0,R.string.invite_error_invalid_usenames_one,R.string.invite_error_invalid_usenames_multiple,invalidCount));
+    return;
+  }
+  String dotComBlogId=getArguments().getString(ARG_BLOGID);
+  PeopleUtils.sendInvitations(new ArrayList<>(mUsernameButtons.keySet()),mRole,mCustomMessage,dotComBlogId,new PeopleUtils.InvitationsSendCallback(){
+    @Override public void onSent(    List<String> succeededUsernames,    Map<String,String> failedUsernameErrors){
+      if (!isAdded()) {
+        return;
+      }
+      clearUsernames(succeededUsernames);
+      if (failedUsernameErrors.size() != 0) {
+        clearUsernames(failedUsernameErrors.keySet());
+        for (        Map.Entry<String,String> error : failedUsernameErrors.entrySet()) {
+          final String username=error.getKey();
+          final String errorMessage=error.getValue();
+          mUsernameResults.put(username,getString(R.string.invite_error_for_username,username,errorMessage));
+        }
+        populateUsernameButtons(failedUsernameErrors.keySet());
+        ToastUtils.showToast(getActivity(),R.string.invite_error_some_failed);
+      }
+ else {
+        ToastUtils.showToast(getActivity(),R.string.invite_sent,ToastUtils.Duration.LONG);
+      }
+    }
+    @Override public void onError(){
+      if (!isAdded()) {
+        return;
+      }
+      ToastUtils.showToast(getActivity(),R.string.invite_error_sending);
+    }
+  }
+);
+}
