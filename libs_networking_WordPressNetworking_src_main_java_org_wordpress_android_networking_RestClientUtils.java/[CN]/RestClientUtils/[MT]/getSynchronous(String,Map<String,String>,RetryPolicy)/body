@@ -4,12 +4,11 @@
   if (params != null) {
     paramsWithLocale.putAll(params);
   }
-  List embeddedParams=sanitizeUrl(path);
-  String realPath=path;
-  if (embeddedParams != null && embeddedParams.size() == 2) {
-    realPath=(String)embeddedParams.get(0);
-    paramsWithLocale.putAll((HashMap<String,String>)embeddedParams.get(1));
+  String realPath=getSanitizedPath(path);
+  if (!TextUtils.isEmpty(realPath)) {
+    realPath=path;
   }
+  paramsWithLocale.putAll(getSanitizedParameters(path));
   RestRequest request=mRestClient.makeRequest(Method.GET,mRestClient.getAbsoluteURL(realPath,paramsWithLocale),null,future,future);
   if (retryPolicy == null) {
     retryPolicy=new DefaultRetryPolicy(REST_TIMEOUT_MS,REST_MAX_RETRIES_GET,REST_BACKOFF_MULT);
