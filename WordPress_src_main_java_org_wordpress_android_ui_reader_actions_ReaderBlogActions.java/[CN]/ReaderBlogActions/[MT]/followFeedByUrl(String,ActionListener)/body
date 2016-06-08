@@ -1,0 +1,24 @@
+{
+  if (TextUtils.isEmpty(feedUrl)) {
+    if (actionListener != null) {
+      actionListener.onActionResult(false);
+    }
+    return;
+  }
+  ReaderBlog blogInfo=ReaderBlogTable.getFeedInfo(ReaderBlogTable.getFeedIdFromUrl(feedUrl));
+  if (blogInfo != null) {
+    internalFollowFeed(blogInfo.feedId,blogInfo.getFeedUrl(),true,actionListener);
+    return;
+  }
+  updateFeedInfo(0,feedUrl,new UpdateBlogInfoListener(){
+    @Override public void onResult(    ReaderBlog blogInfo){
+      if (blogInfo != null) {
+        internalFollowFeed(blogInfo.feedId,blogInfo.getFeedUrl(),true,actionListener);
+      }
+ else       if (actionListener != null) {
+        actionListener.onActionResult(false);
+      }
+    }
+  }
+);
+}

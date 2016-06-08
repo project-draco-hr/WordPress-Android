@@ -1,0 +1,23 @@
+{
+  PersonDetailFragment personDetailFragment=getDetailFragment();
+  long personID=person.getPersonID();
+  int localTableBlogID=person.getLocalTableBlogId();
+  if (personDetailFragment == null) {
+    personDetailFragment=PersonDetailFragment.newInstance(personID,localTableBlogID);
+  }
+ else {
+    personDetailFragment.setPersonDetails(personID,localTableBlogID);
+  }
+  if (!personDetailFragment.isAdded()) {
+    AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.OPENED_PERSON);
+    FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
+    fragmentTransaction.replace(R.id.fragment_container,personDetailFragment,KEY_PERSON_DETAIL_FRAGMENT);
+    fragmentTransaction.addToBackStack(null);
+    ActionBar actionBar=getSupportActionBar();
+    if (actionBar != null) {
+      actionBar.setTitle("");
+    }
+    removeToolbarElevation();
+    fragmentTransaction.commit();
+  }
+}
