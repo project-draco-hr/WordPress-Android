@@ -1,8 +1,11 @@
 {
-  final String sanitizedSiteUrl=XMLRPCUtils.sanitizeSiteUrl(siteUrl,true);
+  final String sanitizedSiteUrlHttps=XMLRPCUtils.sanitizeSiteUrl(siteUrl,true);
+  final String sanitizedSiteUrlHttp=XMLRPCUtils.sanitizeSiteUrl(siteUrl,false);
   final Set<String> urlsToTry=new LinkedHashSet<>();
-  urlsToTry.add(XMLRPCUtils.appendXMLRPCPath(sanitizedSiteUrl));
-  urlsToTry.add(sanitizedSiteUrl);
+  urlsToTry.add(XMLRPCUtils.appendXMLRPCPath(sanitizedSiteUrlHttps));
+  urlsToTry.add(XMLRPCUtils.appendXMLRPCPath(sanitizedSiteUrlHttp));
+  urlsToTry.add(sanitizedSiteUrlHttps);
+  urlsToTry.add(sanitizedSiteUrlHttp);
   urlsToTry.add(siteUrl);
   AppLog.i(AppLog.T.NUX,"The app will call system.listMethods on the following URLs: " + urlsToTry);
   for (  String url : urlsToTry) {
