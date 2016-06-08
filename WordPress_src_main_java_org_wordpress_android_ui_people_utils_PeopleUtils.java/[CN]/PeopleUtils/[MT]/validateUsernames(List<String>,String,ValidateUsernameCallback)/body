@@ -1,0 +1,73 @@
+{
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      if (jsonObject != null && callback != null) {
+        JSONObject errors=jsonObject.optJSONObject("errors");
+        int errorredUsernameCount=0;
+        if (errors != null) {
+          for (          String username : usernames) {
+            JSONObject userError=errors.optJSONObject(username);
+            if (userError == null) {
+              continue;
+            }
+            errorredUsernameCount++;
+switch (userError.optString("code")) {
+case "invalid_input":
+switch (userError.optString("message")) {
+case "User not found":
+                callback.onUsernameValidation(username,ValidationResult.USER_NOT_FOUND);
+              continue;
+case "Invalid email":
+            callback.onUsernameValidation(username,ValidationResult.INVALID_EMAIL);
+          continue;
+      }
+    break;
+case "invalid_input_has_role":
+  callback.onUsernameValidation(username,ValidationResult.ALREADY_MEMBER);
+continue;
+}
+callback.onError();
+callback.onValidationFinished();
+return;
+}
+}
+JSONArray succeededUsernames=jsonObject.optJSONArray("success");
+if (succeededUsernames == null) {
+callback.onError();
+callback.onValidationFinished();
+return;
+}
+int succeededUsernameCount=0;
+for (int i=0; i < succeededUsernames.length(); i++) {
+String username=succeededUsernames.optString(i);
+if (usernames.contains(username)) {
+succeededUsernameCount++;
+callback.onUsernameValidation(username,ValidationResult.USER_FOUND);
+}
+}
+if (errorredUsernameCount + succeededUsernameCount != usernames.size()) {
+callback.onError();
+callback.onValidationFinished();
+}
+callback.onValidationFinished();
+}
+}
+}
+;
+RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+@Override public void onErrorResponse(VolleyError volleyError){
+AppLog.e(AppLog.T.API,volleyError);
+if (callback != null) {
+callback.onError();
+}
+}
+}
+;
+String path=String.format("sites/%s/invites/validate",dotComBlogId);
+Map<String,String> params=new HashMap<>();
+for (String username : usernames) {
+params.put("invitees[" + username + "]",username);
+}
+params.put("role","follower");
+WordPress.getRestClientUtilsV1_1().post(path,params,null,listener,errorListener);
+}

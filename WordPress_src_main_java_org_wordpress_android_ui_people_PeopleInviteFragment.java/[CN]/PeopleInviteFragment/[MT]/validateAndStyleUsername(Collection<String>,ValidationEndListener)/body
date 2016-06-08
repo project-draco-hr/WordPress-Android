@@ -1,0 +1,48 @@
+{
+  List<String> usernamesToCheck=new ArrayList<>();
+  List<String> usernamesChecked=new ArrayList<>();
+  for (  String username : usernames) {
+    if (mUsernameResults.containsKey(username)) {
+      usernamesChecked.add(username);
+    }
+ else {
+      usernamesToCheck.add(username);
+    }
+  }
+  for (  String username : usernamesChecked) {
+    String resultMessage=mUsernameResults.get(username);
+    if (!resultMessage.equals(FLAG_SUCCESS)) {
+      styleButton(username,resultMessage);
+      appendError(username,resultMessage);
+    }
+  }
+  if (usernamesToCheck.size() > 0) {
+    String dotComBlogId=getArguments().getString(ARG_BLOGID);
+    PeopleUtils.validateUsernames(usernamesToCheck,dotComBlogId,new PeopleUtils.ValidateUsernameCallback(){
+      @Override public void onUsernameValidation(      String username,      ValidationResult validationResult){
+        if (!isAdded()) {
+          return;
+        }
+        final String usernameResultString=getValidationErrorString(username,validationResult);
+        mUsernameResults.put(username,usernameResultString);
+        if (validationResult != ValidationResult.USER_FOUND) {
+          styleButton(username,usernameResultString);
+          appendError(username,usernameResultString);
+        }
+      }
+      @Override public void onValidationFinished(){
+        if (validationEndListener != null) {
+          validationEndListener.onValidationEnd();
+        }
+      }
+      @Override public void onError(){
+      }
+    }
+);
+  }
+ else {
+    if (validationEndListener != null) {
+      validationEndListener.onValidationEnd();
+    }
+  }
+}
