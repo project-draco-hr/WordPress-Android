@@ -23,9 +23,22 @@
   mEmailTextField.addTextChangedListener(this);
   mPasswordTextField.addTextChangedListener(this);
   mUsernameTextField.addTextChangedListener(this);
-  mSiteUrlTextField.addTextChangedListener(this);
   mSiteUrlTextField.setOnKeyListener(mSiteUrlKeyListener);
   mSiteUrlTextField.setOnEditorActionListener(mEditorAction);
+  mSiteUrlTextField.addTextChangedListener(new TextWatcher(){
+    @Override public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
+    }
+    @Override public void onTextChanged(    CharSequence s,    int start,    int before,    int count){
+      checkIfFieldsFilled();
+    }
+    @Override public void afterTextChanged(    Editable s){
+      String lowerCase=s.toString().toLowerCase();
+      if (!lowerCase.equals(s.toString())) {
+        s.replace(0,s.length(),lowerCase);
+      }
+    }
+  }
+);
   mUsernameTextField.addTextChangedListener(new TextWatcher(){
     @Override public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
     }
