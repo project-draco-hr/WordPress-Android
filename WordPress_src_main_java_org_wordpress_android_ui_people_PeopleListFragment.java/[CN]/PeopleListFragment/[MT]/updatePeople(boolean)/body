@@ -1,0 +1,16 @@
+{
+  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+    mFilteredRecyclerView.updateEmptyView(EmptyViewMessageType.NETWORK_ERROR);
+    mFilteredRecyclerView.setRefreshing(false);
+    return;
+  }
+  mFilteredRecyclerView.updateEmptyView(EmptyViewMessageType.LOADING);
+  if (mOnFetchPeopleListener != null) {
+    if (loadMore) {
+      mOnFetchPeopleListener.onFetchMorePeople();
+    }
+ else {
+      mOnFetchPeopleListener.onFetchFirstPage();
+    }
+  }
+}
