@@ -1,5 +1,6 @@
 {
   final ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.people_list_fragment,container,false);
+  mLocalTableBlogID=getArguments().getInt(ARG_LOCAL_TABLE_BLOG_ID);
   mFilteredRecyclerView=(FilteredRecyclerView)rootView.findViewById(R.id.filtered_recycler_view);
   mFilteredRecyclerView.addItemDecoration(new PeopleItemDecoration(getActivity(),R.drawable.people_list_divider));
   mFilteredRecyclerView.setLogT(AppLog.T.PEOPLE);
@@ -8,6 +9,10 @@
     @Override public List<FilterCriteria> onLoadFilterCriteriaOptions(    boolean refresh){
       ArrayList<FilterCriteria> list=new ArrayList<>();
       Collections.addAll(list,PeopleListFilter.values());
+      Blog blog=WordPress.getBlog(mLocalTableBlogID);
+      if (blog != null && !blog.isPrivate()) {
+        list.remove(PeopleListFilter.VIEWERS);
+      }
       return list;
     }
     @Override public void onLoadFilterCriteriaOptionsAsync(    FilteredRecyclerView.FilterCriteriaAsyncLoaderListener listener,    boolean refresh){
