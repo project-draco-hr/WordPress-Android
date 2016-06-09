@@ -1,4 +1,7 @@
 {
+  if (context == null || mediaFile == null || mediaFile.getFilePath() == null) {
+    return null;
+  }
   Uri imageUri=Uri.parse(mediaFile.getFilePath());
   Bitmap thumbnailBitmap;
   if (MediaUtils.isVideo(imageUri.toString())) {
@@ -11,6 +14,7 @@
     }
   }
   WPEditImageSpan imageSpan=new WPEditImageSpan(context,thumbnailBitmap,imageUri);
-  mediaFile.setWidth(MediaUtils.getMinimumImageWidth(context,imageUri,mBlogSettingMaxImageWidth));
+  mediaFile.setWidth(MediaUtils.getMaximumImageWidth(context,imageUri,mBlogSettingMaxImageWidth));
+  imageSpan.setMediaFile(mediaFile);
   return imageSpan;
 }
