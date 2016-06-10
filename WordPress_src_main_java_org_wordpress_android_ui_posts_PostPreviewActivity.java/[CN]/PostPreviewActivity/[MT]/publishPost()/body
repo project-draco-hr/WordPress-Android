@@ -3,6 +3,9 @@
     if (!mPost.isLocalDraft()) {
       AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_UPDATED_POST,WordPress.getBlog(mPost.getLocalTableBlogId()));
     }
+    if (mPost.getStatusEnum() == PostStatus.DRAFT) {
+      mPost.setPostStatus(PostStatus.toString(PostStatus.PUBLISHED));
+    }
     PostUploadService.addPostToUpload(mPost);
     startService(new Intent(this,PostUploadService.class));
   }
