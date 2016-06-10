@@ -12,7 +12,10 @@
     holder.btnPublish.setVisibility(View.GONE);
   }
   boolean canShowStatsButton=canShowStatsForPost(post);
-  int numVisibleButtons=(canShowStatsButton ? 4 : 3);
+  boolean canShowPublishButton=canPublishPost(post);
+  int numVisibleButtons=3;
+  if (canShowPublishButton)   numVisibleButtons++;
+  if (canShowStatsButton)   numVisibleButtons++;
   holder.btnEdit.setVisibility(View.VISIBLE);
   holder.btnView.setVisibility(View.VISIBLE);
   if (mAlwaysShowAllButtons || numVisibleButtons <= 3) {
@@ -20,26 +23,30 @@
     holder.btnBack.setVisibility(View.GONE);
     holder.btnTrash.setVisibility(View.VISIBLE);
     holder.btnStats.setVisibility(canShowStatsButton ? View.VISIBLE : View.GONE);
+    holder.btnPublish.setVisibility(canShowPublishButton ? View.VISIBLE : View.GONE);
   }
  else {
     holder.btnMore.setVisibility(View.VISIBLE);
     holder.btnBack.setVisibility(View.GONE);
     holder.btnTrash.setVisibility(View.GONE);
     holder.btnStats.setVisibility(View.GONE);
+    holder.btnPublish.setVisibility(View.GONE);
   }
   View.OnClickListener btnClickListener=new View.OnClickListener(){
+    int row=0;
     @Override public void onClick(    View view){
       int buttonType=((PostListButton)view).getButtonType();
 switch (buttonType) {
 case PostListButton.BUTTON_MORE:
-        animateButtonRows(holder,post,false);
+        animateButtonRows(holder,post,++row);
       break;
 case PostListButton.BUTTON_BACK:
-    animateButtonRows(holder,post,true);
-  break;
+    row=0;
+  animateButtonRows(holder,post,row);
+break;
 default :
 if (mOnPostButtonClickListener != null) {
-  mOnPostButtonClickListener.onPostButtonClicked(buttonType,post);
+mOnPostButtonClickListener.onPostButtonClicked(buttonType,post);
 }
 break;
 }
