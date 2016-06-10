@@ -1,8 +1,11 @@
 {
-  final String sanitizedSiteUrl=XMLRPCUtils.sanitizeSiteUrl(siteUrl,true);
   final Set<String> urlsToTry=new LinkedHashSet<>();
-  urlsToTry.add(XMLRPCUtils.appendXMLRPCPath(sanitizedSiteUrl));
-  urlsToTry.add(sanitizedSiteUrl);
+  final String sanitizedSiteUrlHttps=XMLRPCUtils.sanitizeSiteUrl(siteUrl,true);
+  final String sanitizedSiteUrlHttp=XMLRPCUtils.sanitizeSiteUrl(siteUrl,false);
+  urlsToTry.add(XMLRPCUtils.appendXMLRPCPath(sanitizedSiteUrlHttp));
+  urlsToTry.add(XMLRPCUtils.appendXMLRPCPath(sanitizedSiteUrlHttps));
+  urlsToTry.add(sanitizedSiteUrlHttp);
+  urlsToTry.add(sanitizedSiteUrlHttps);
   urlsToTry.add(siteUrl);
   AppLog.i(AppLog.T.NUX,"The app will call system.listMethods on the following URLs: " + urlsToTry);
   for (  String url : urlsToTry) {
@@ -11,7 +14,13 @@
         return url;
       }
     }
- catch (    RuntimeException re) {
+ catch (    XMLRPCUtilsException e) {
+      if (e.kind == XMLRPCUtilsException.Kind.ERRONEOUS_SSL_CERTIFICATE || e.kind == XMLRPCUtilsException.Kind.HTTP_AUTH_REQUIRED || e.kind == XMLRPCUtilsException.Kind.MISSING_XMLRPC_METHOD) {
+        throw e;
+      }
+      continue;
+    }
+catch (    RuntimeException re) {
       continue;
     }
   }
