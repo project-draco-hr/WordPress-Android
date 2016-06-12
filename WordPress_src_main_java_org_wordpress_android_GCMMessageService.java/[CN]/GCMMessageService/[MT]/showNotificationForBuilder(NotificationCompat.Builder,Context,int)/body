@@ -14,8 +14,13 @@
   boolean shouldPlaySound=prefs.getBoolean("wp_pref_notification_sound",false);
   boolean shouldVibrate=prefs.getBoolean("wp_pref_notification_vibrate",false);
   boolean shouldBlinkLight=prefs.getBoolean("wp_pref_notification_light",false);
-  if (shouldPlaySound) {
-    builder.setSound(Uri.parse("android.resource://" + getPackageName() + "/"+ R.raw.notification));
+  String notificationSound=prefs.getString("wp_pref_custom_notification_sound",null);
+  boolean isNotificationSoundSelected=!TextUtils.isEmpty(notificationSound);
+  if (shouldPlaySound && !isNotificationSoundSelected) {
+    builder.setSound(Uri.parse("content://settings/system/notification_sound"));
+  }
+ else   if (isNotificationSoundSelected) {
+    builder.setSound(Uri.parse(notificationSound));
   }
   if (shouldVibrate) {
     builder.setVibrate(new long[]{500,500,500});
