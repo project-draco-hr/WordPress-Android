@@ -3,9 +3,11 @@
   mRenderBuilder=new StringBuilder(getPostContent());
   new Thread(){
     @Override public void run(){
-      resizeImages();
+      if (!mResourceVars.canShowTiledGallery) {
+        resizeImages();
+      }
       resizeIframes();
-      final String htmlContent=formatPostContentForWebView(mRenderBuilder.toString());
+      final String htmlContent=formatPostContentForWebView(mRenderBuilder.toString(),mResourceVars.canShowTiledGallery);
       mRenderBuilder=null;
       handler.post(new Runnable(){
         @Override public void run(){
