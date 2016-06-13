@@ -7,5 +7,26 @@
     confirmRemovePerson();
     return true;
   }
+ else   if (item.getItemId() == R.id.invite) {
+    FragmentManager fragmentManager=getFragmentManager();
+    Fragment peopleInviteFragment=fragmentManager.findFragmentByTag(KEY_PERSON_DETAIL_FRAGMENT);
+    if (peopleInviteFragment == null) {
+      Blog blog=WordPress.getCurrentBlog();
+      peopleInviteFragment=PeopleInviteFragment.newInstance(blog.getDotComBlogId());
+    }
+    if (!peopleInviteFragment.isAdded()) {
+      FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
+      fragmentTransaction.replace(R.id.fragment_container,peopleInviteFragment,KEY_PEOPLE_INVITE_FRAGMENT);
+      fragmentTransaction.addToBackStack(null);
+      fragmentTransaction.commit();
+    }
+  }
+ else   if (item.getItemId() == R.id.send_invitation) {
+    FragmentManager fragmentManager=getFragmentManager();
+    Fragment peopleInviteFragment=fragmentManager.findFragmentByTag(KEY_PEOPLE_INVITE_FRAGMENT);
+    if (peopleInviteFragment != null) {
+      ((InvitationSender)peopleInviteFragment).send();
+    }
+  }
   return super.onOptionsItemSelected(item);
 }

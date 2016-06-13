@@ -40,16 +40,15 @@ int width=mediaFile.getWidth();
 String inlineCSS=" ";
 String localBlogID=imageSpan.getMediaFile().getBlogId();
 Blog currentBlog=WordPress.wpDB.instantiateBlogByLocalId(Integer.parseInt(localBlogID));
-if (currentBlog != null && !mediaFile.getMimeType().equals("image/gif") && !currentBlog.getMaxImageWidth().equals("Original Size")) {
-int maxImageWidth=Integer.parseInt(currentBlog.getMaxImageWidth());
-width=Math.min(width,maxImageWidth);
+if (currentBlog != null && !mediaFile.getMimeType().equals("image/gif") && MediaUtils.getImageWidthSettingFromString(currentBlog.getMaxImageWidth()) != Integer.MAX_VALUE) {
+width=MediaUtils.getMaximumImageWidth(width,currentBlog.getMaxImageWidth());
 if (!currentBlog.isDotcomFlag()) {
-inlineCSS=String.format(" style=\"width:%dpx;max-width:%dpx;\" ",width,width);
+inlineCSS=String.format(Locale.US," style=\"width:%dpx;max-width:%dpx;\" ",width,width);
 }
 }
 content=content + "<a href=\"" + url+ "\"><img"+ inlineCSS+ "title=\""+ title+ "\" "+ alignmentCSS+ "alt=\"image\" src=\""+ url+ "?w="+ width+ "\" /></a>";
 if (!caption.equals("")) {
-content=String.format("[caption id=\"\" align=\"%s\" width=\"%d\" caption=\"%s\"]%s[/caption]",alignment,width,TextUtils.htmlEncode(caption),content);
+content=String.format(Locale.US,"[caption id=\"\" align=\"%s\" width=\"%d\" caption=\"%s\"]%s[/caption]",alignment,width,TextUtils.htmlEncode(caption),content);
 }
 }
 return content;

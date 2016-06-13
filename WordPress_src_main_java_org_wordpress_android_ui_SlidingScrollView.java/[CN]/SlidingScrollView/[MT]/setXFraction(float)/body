@@ -1,0 +1,19 @@
+{
+  mXFraction=fraction;
+  if (getWidth() == 0) {
+    if (mPreDrawListener == null) {
+      mPreDrawListener=new ViewTreeObserver.OnPreDrawListener(){
+        @Override public boolean onPreDraw(){
+          getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
+          setXFraction(mXFraction);
+          return true;
+        }
+      }
+;
+      getViewTreeObserver().addOnPreDrawListener(mPreDrawListener);
+    }
+    return;
+  }
+  float translationX=getWidth() * fraction;
+  setTranslationX(translationX);
+}

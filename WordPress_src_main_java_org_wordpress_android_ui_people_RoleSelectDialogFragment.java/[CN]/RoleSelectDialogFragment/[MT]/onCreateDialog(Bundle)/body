@@ -1,0 +1,20 @@
+{
+  final String[] roles=getResources().getStringArray(R.array.roles);
+  AlertDialog.Builder builder=new AlertDialog.Builder(getActivity(),R.style.Calypso_AlertDialog);
+  builder.setTitle(R.string.role);
+  builder.setItems(roles,new DialogInterface.OnClickListener(){
+    @Override public void onClick(    DialogInterface dialog,    int which){
+      if (!isAdded()) {
+        return;
+      }
+      if (getTargetFragment() instanceof OnRoleSelectListener) {
+        ((OnRoleSelectListener)getTargetFragment()).onRoleSelected(roles[which]);
+      }
+ else       if (getActivity() instanceof OnRoleSelectListener) {
+        ((OnRoleSelectListener)getActivity()).onRoleSelected(roles[which]);
+      }
+    }
+  }
+);
+  return builder.create();
+}
