@@ -8,9 +8,19 @@
   mProgressTextSignIn=(WPTextView)rootView.findViewById(R.id.nux_sign_in_progress_text);
   mProgressBarSignIn=(RelativeLayout)rootView.findViewById(R.id.nux_sign_in_progress_bar);
   mSiteUrlTextField=(EditText)rootView.findViewById(R.id.site_url);
-  mSiteUrlTextField.addTextChangedListener(this);
   mSiteUrlTextField.setOnKeyListener(mSiteUrlKeyListener);
   mSiteUrlTextField.setOnEditorActionListener(mEditorAction);
+  mSiteUrlTextField.addTextChangedListener(new TextWatcher(){
+    @Override public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
+    }
+    @Override public void onTextChanged(    CharSequence s,    int start,    int before,    int count){
+      checkIfFieldsFilled();
+    }
+    @Override public void afterTextChanged(    Editable s){
+      BlogUtils.convertToLowercase(s);
+    }
+  }
+);
   mSiteTitleTextField=(EditText)rootView.findViewById(R.id.site_title);
   mSiteTitleTextField.addTextChangedListener(this);
   mSiteTitleTextField.addTextChangedListener(mSiteTitleWatcher);

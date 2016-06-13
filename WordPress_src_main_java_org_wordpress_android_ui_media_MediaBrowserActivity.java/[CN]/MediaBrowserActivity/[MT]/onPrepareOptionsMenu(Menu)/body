@@ -1,0 +1,13 @@
+{
+  mSearchView=(SearchView)menu.findItem(R.id.menu_search).getActionView();
+  mSearchView.setOnQueryTextListener(this);
+  mSearchMenuItem=menu.findItem(R.id.menu_search);
+  MenuItemCompat.setOnActionExpandListener(mSearchMenuItem,this);
+  if (!TextUtils.isEmpty(mQuery) && mMediaGridFragment != null && mMediaGridFragment.isVisible()) {
+    String tempQuery=mQuery;
+    MenuItemCompat.expandActionView(mSearchMenuItem);
+    onQueryTextSubmit(tempQuery);
+    mSearchView.setQuery(mQuery,true);
+  }
+  return super.onPrepareOptionsMenu(menu);
+}
