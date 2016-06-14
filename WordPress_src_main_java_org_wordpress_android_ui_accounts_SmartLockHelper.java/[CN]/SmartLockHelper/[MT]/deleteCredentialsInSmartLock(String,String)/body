@@ -1,0 +1,13 @@
+{
+  Activity activity=getActivityAndCheckAvailability();
+  if (activity == null || mCredentialsClient == null || !mCredentialsClient.isConnected()) {
+    return;
+  }
+  Credential credential=new Credential.Builder(username).setPassword(password).build();
+  Auth.CredentialsApi.delete(mCredentialsClient,credential).setResultCallback(new ResultCallback<Status>(){
+    @Override public void onResult(    Status status){
+      AppLog.i(T.NUX,status.isSuccess() ? "SmartLock: credentials deleted for username: " + username : "SmartLock: Credentials not deleted for username: " + username);
+    }
+  }
+);
+}
