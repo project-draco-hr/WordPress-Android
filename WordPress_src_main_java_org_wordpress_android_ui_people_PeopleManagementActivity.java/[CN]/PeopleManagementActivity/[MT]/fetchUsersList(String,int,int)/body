@@ -2,10 +2,6 @@
   if (mUsersEndOfListReached || mUsersFetchRequestInProgress || !NetworkUtils.checkConnection(this)) {
     return;
   }
-  final PeopleListFragment peopleListFragment=getListFragment();
-  if (peopleListFragment != null) {
-    peopleListFragment.showLoadingProgress(true);
-  }
   mUsersFetchRequestInProgress=true;
   PeopleUtils.fetchUsers(dotComBlogId,localTableBlogId,offset,new PeopleUtils.FetchUsersCallback(){
     @Override public void onSuccess(    List<Person> peopleList,    boolean isEndOfList){
@@ -14,15 +10,9 @@
       PeopleTable.saveUsers(peopleList,localTableBlogId,isFreshList);
       refreshOnScreenFragmentDetails();
       mUsersFetchRequestInProgress=false;
-      if (peopleListFragment != null) {
-        peopleListFragment.showLoadingProgress(false);
-      }
     }
     @Override public void onError(){
       mUsersFetchRequestInProgress=false;
-      if (peopleListFragment != null) {
-        peopleListFragment.showLoadingProgress(false);
-      }
       ToastUtils.showToast(PeopleManagementActivity.this,R.string.error_fetch_people_list,ToastUtils.Duration.LONG);
     }
   }
