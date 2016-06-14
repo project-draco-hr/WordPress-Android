@@ -9,8 +9,11 @@
       mOnFetchPeopleListener.onFetchMorePeople(mPeopleListFilter);
     }
  else {
-      mFilteredRecyclerView.updateEmptyView(EmptyViewMessageType.LOADING);
-      mOnFetchPeopleListener.onFetchFirstPage(mPeopleListFilter);
+      refreshPeopleList();
+      boolean isFetching=mOnFetchPeopleListener.onFetchFirstPage(mPeopleListFilter);
+      if (isFetching) {
+        mFilteredRecyclerView.updateEmptyView(EmptyViewMessageType.LOADING);
+      }
     }
   }
 }
