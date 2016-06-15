@@ -1,9 +1,9 @@
 {
   Activity activity=getActivityAndCheckAvailability();
-  if (activity == null) {
+  if (activity == null || mCredentialsClient == null || !mCredentialsClient.isConnected()) {
     return;
   }
-  CredentialRequest credentialRequest=new CredentialRequest.Builder().setSupportsPasswordLogin(true).build();
+  CredentialRequest credentialRequest=new CredentialRequest.Builder().setPasswordLoginSupported(true).build();
   Auth.CredentialsApi.request(mCredentialsClient,credentialRequest).setResultCallback(new ResultCallback<CredentialRequestResult>(){
     @Override public void onResult(    CredentialRequestResult result){
       Status status=result.getStatus();
