@@ -2,6 +2,16 @@
   super.onCreate(savedInstanceState);
   requestWindowFeature(Window.FEATURE_NO_TITLE);
   setContentView(R.layout.welcome_activity);
+  String action=getIntent().getAction();
+  Uri data=getIntent().getData();
+  if (Intent.ACTION_VIEW.equals(action) && data != null) {
+    if (data.getBooleanQueryParameter("selfhosted",false)) {
+      getIntent().putExtra(SignInActivity.EXTRA_START_FRAGMENT,SignInActivity.ADD_SELF_HOSTED_BLOG);
+      if (data.getQueryParameter("url") != null) {
+        getIntent().putExtra(EXTRA_PREFILL_URL,data.getQueryParameter("url"));
+      }
+    }
+  }
   if (savedInstanceState == null) {
     addSignInFragment();
   }
