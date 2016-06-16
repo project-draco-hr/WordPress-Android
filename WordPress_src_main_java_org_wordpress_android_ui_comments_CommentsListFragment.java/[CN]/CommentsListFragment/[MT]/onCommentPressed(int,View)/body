@@ -1,0 +1,17 @@
+{
+  Comment comment=getAdapter().getItem(position);
+  if (comment == null) {
+    return;
+  }
+  if (mActionMode == null) {
+    if (!getAdapter().isModeratingCommentId(comment.commentID)) {
+      mFilteredCommentsView.invalidate();
+      if (getActivity() instanceof OnCommentSelectedListener) {
+        ((OnCommentSelectedListener)getActivity()).onCommentSelected(comment.commentID);
+      }
+    }
+  }
+ else {
+    getAdapter().toggleItemSelected(position,view);
+  }
+}
