@@ -4,8 +4,9 @@
   }
   mFollowersFetchRequestInProgress=true;
   PeopleUtils.fetchFollowers(dotComBlogId,localTableBlogId,page,new PeopleUtils.FetchFollowersCallback(){
-    @Override public void onSuccess(    List<Person> peopleList,    boolean isEndOfList){
+    @Override public void onSuccess(    List<Person> peopleList,    int pageFetched,    boolean isEndOfList){
       boolean isFreshList=(page == 1);
+      mFollowersLastFetchedPage=pageFetched;
       mFollowersEndOfListReached=isEndOfList;
       PeopleTable.saveFollowers(peopleList,localTableBlogId,isFreshList);
       PeopleListFragment peopleListFragment=getListFragment();
