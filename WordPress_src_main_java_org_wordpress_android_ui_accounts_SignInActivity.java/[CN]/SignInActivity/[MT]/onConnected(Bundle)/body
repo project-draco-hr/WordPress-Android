@@ -1,12 +1,15 @@
 {
   AppLog.d(T.NUX,"Google API client connected");
-  mSmartLockHelper.smartLockAutoFill(new Callback(){
-    @Override public void onCredentialRetrieved(    Credential credential){
-      SignInFragment signInFragment=(SignInFragment)getSupportFragmentManager().findFragmentByTag(SignInFragment.TAG);
-      if (signInFragment != null) {
-        signInFragment.onCredentialRetrieved(credential);
+  SignInFragment signInFragment=(SignInFragment)getSupportFragmentManager().findFragmentByTag(SignInFragment.TAG);
+  if (signInFragment != null && signInFragment.canAutofillUsernameAndPassword()) {
+    mSmartLockHelper.smartLockAutoFill(new Callback(){
+      @Override public void onCredentialRetrieved(      Credential credential){
+        SignInFragment signInFragment=(SignInFragment)getSupportFragmentManager().findFragmentByTag(SignInFragment.TAG);
+        if (signInFragment != null) {
+          signInFragment.onCredentialRetrieved(credential);
+        }
       }
     }
-  }
 );
+  }
 }
