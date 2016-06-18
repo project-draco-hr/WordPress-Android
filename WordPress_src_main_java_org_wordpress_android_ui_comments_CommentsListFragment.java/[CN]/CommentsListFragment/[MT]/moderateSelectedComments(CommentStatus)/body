@@ -26,16 +26,7 @@ return;
 getActivity().showDialog(dlgId);
 CommentActions.OnCommentsModeratedListener listener=new CommentActions.OnCommentsModeratedListener(){
 @Override public void onCommentsModerated(final CommentList moderatedComments){
-if (!isAdded()) return;
-finishActionMode();
-dismissDialog(dlgId);
-if (moderatedComments.size() > 0) {
-getAdapter().clearSelectedComments();
-getAdapter().replaceComments(moderatedComments);
-}
- else {
-ToastUtils.showToast(getActivity(),R.string.error_moderate_comment);
-}
+EventBus.getDefault().postSticky(new CommentEvents.CommentsBatchModerationFinishedEvent(moderatedComments,false));
 }
 }
 ;
