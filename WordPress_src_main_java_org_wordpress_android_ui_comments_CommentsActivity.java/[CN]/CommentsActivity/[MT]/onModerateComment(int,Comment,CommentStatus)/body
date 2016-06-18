@@ -8,16 +8,8 @@
     getListFragment().updateEmptyView();
     CommentActions.moderateComment(accountId,comment,newStatus,new CommentActions.CommentActionListener(){
       @Override public void onActionResult(      CommentActionResult result){
-        if (isFinishing() || !hasListFragment()) {
-          return;
-        }
-        getListFragment().setCommentIsModerating(comment.commentID,false);
-        if (result.isSuccess()) {
-          reloadCommentList();
-        }
- else {
-          getListFragment().updateEmptyView();
-          ToastUtils.showToast(CommentsActivity.this,R.string.error_moderate_comment,ToastUtils.Duration.LONG);
+        if (isListeningForModerationResult()) {
+          EventBus.getDefault().postSticky(new CommentEvents.CommentModerationFinishedEvent(result.isSuccess(),true,comment.commentID));
         }
       }
     }
@@ -47,16 +39,8 @@
         mTrashedComments.remove(comment);
         CommentActions.moderateComment(accountId,comment,newStatus,new CommentActions.CommentActionListener(){
           @Override public void onActionResult(          CommentActionResult result){
-            if (isFinishing() || !hasListFragment()) {
-              return;
-            }
-            getListFragment().setCommentIsModerating(comment.commentID,false);
-            if (!result.isSuccess()) {
-              getListFragment().loadComments();
-              ToastUtils.showToast(CommentsActivity.this,R.string.error_moderate_comment,ToastUtils.Duration.LONG);
-            }
- else {
-              getListFragment().updateEmptyView();
+            if (isListeningForModerationResult()) {
+              EventBus.getDefault().postSticky(new CommentEvents.CommentModerationFinishedEvent(result.isSuccess(),true,comment.commentID));
             }
           }
         }
