@@ -1,6 +1,6 @@
 {
   final ViewGroup messageView=(ViewGroup)findViewById(R.id.message_container);
-  if (mPost == null || mIsUpdatingPost || PostUploadService.isPostUploading(mPost.getLocalTablePostId()) || (!mPost.isLocalChange() && !mPost.isLocalDraft())) {
+  if (mPost == null || mIsUpdatingPost || PostUploadService.isPostUploading(mPost.getLocalTablePostId()) || (!mPost.isLocalChange() && !mPost.isLocalDraft()) && mPost.getStatusEnum() != PostStatus.DRAFT) {
     messageView.setVisibility(View.GONE);
     return;
   }
@@ -11,6 +11,9 @@
  else   if (mPost.isLocalDraft()) {
     messageText.setText(R.string.local_draft_explainer);
   }
+ else   if (mPost.getStatusEnum() == PostStatus.DRAFT) {
+    messageText.setText(R.string.draft_explainer);
+  }
   View btnPublish=messageView.findViewById(R.id.btn_publish);
   btnPublish.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
@@ -20,8 +23,8 @@
   }
 );
   View btnRevert=messageView.findViewById(R.id.btn_revert);
-  btnRevert.setVisibility(mPost.isLocalDraft() ? View.GONE : View.VISIBLE);
-  if (!mPost.isLocalDraft()) {
+  btnRevert.setVisibility(mPost.isLocalChange() ? View.VISIBLE : View.GONE);
+  if (mPost.isLocalChange()) {
     btnRevert.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View v){
         AniUtils.animateBottomBar(messageView,false);
