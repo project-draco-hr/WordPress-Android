@@ -1,0 +1,15 @@
+{
+  if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+    ToastUtils.showToast(getActivity(),R.string.error_publish_no_network,ToastUtils.Duration.SHORT);
+    return;
+  }
+  if (!post.isPublishable()) {
+    ToastUtils.showToast(getActivity(),R.string.error_publish_empty_post,ToastUtils.Duration.SHORT);
+    return;
+  }
+  post.setPostStatus(PostStatus.toString(PostStatus.PUBLISHED));
+  post.setChangedFromDraftToPublished(true);
+  PostUploadService.addPostToUpload(post);
+  getActivity().startService(new Intent(getActivity(),PostUploadService.class));
+  PostUtils.trackSavePostAnalytics(post);
+}
