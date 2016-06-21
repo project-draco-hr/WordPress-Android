@@ -1,8 +1,6 @@
 {
   if (TextUtils.isEmpty(feedUrl)) {
-    if (actionListener != null) {
-      actionListener.onActionResult(false);
-    }
+    ReaderActions.callActionListener(actionListener,false);
     return;
   }
   ReaderBlog blogInfo=ReaderBlogTable.getFeedInfo(ReaderBlogTable.getFeedIdFromUrl(feedUrl));
@@ -12,12 +10,9 @@
   }
   updateFeedInfo(0,feedUrl,new UpdateBlogInfoListener(){
     @Override public void onResult(    ReaderBlog blogInfo){
-      if (blogInfo != null) {
-        internalFollowFeed(blogInfo.feedId,blogInfo.getFeedUrl(),true,actionListener);
-      }
- else       if (actionListener != null) {
-        actionListener.onActionResult(false);
-      }
+      long feedIdToFollow=blogInfo != null ? blogInfo.feedId : 0;
+      String feedUrlToFollow=(blogInfo != null && blogInfo.hasFeedUrl()) ? blogInfo.getFeedUrl() : feedUrl;
+      internalFollowFeed(feedIdToFollow,feedUrlToFollow,true,actionListener);
     }
   }
 );
