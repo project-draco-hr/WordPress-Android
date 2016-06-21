@@ -1,0 +1,14 @@
+{
+  updateProgress(getString(R.string.signing_in));
+  LoginWPCom login=new LoginWPCom(mUsername,mPassword,null,false,null);
+  login.execute(new LoginAbstract.Callback(){
+    @Override public void onSuccess(){
+      FetchBlogListWPCom fetchBlogListWPCom=new FetchBlogListWPCom(getActivity());
+      fetchBlogListWPCom.execute(mFetchBlogListCallback);
+    }
+    @Override public void onError(    int errorMessageId,    boolean twoStepCodeRequired,    boolean httpAuthRequired,    boolean erroneousSslCertificate){
+      finishAndShowSignInScreen();
+    }
+  }
+);
+}
