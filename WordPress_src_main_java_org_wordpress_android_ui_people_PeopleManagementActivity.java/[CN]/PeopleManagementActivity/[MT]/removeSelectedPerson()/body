@@ -6,17 +6,26 @@
   if (person == null) {
     return;
   }
-  PeopleUtils.removePerson(person.getBlogId(),person.getPersonID(),person.getLocalTableBlogId(),new PeopleUtils.RemoveUserCallback(){
+  final boolean isFollower=person.isFollower();
+  final boolean isEmailFollower=person.isEmailFollower();
+  PeopleUtils.RemoveUserCallback callback=new PeopleUtils.RemoveUserCallback(){
     @Override public void onSuccess(    long personID,    int localTableBlogId){
-      AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.PERSON_REMOVED);
+      if (!isFollower && !isEmailFollower) {
+        AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.PERSON_REMOVED);
+      }
       Person person=PeopleTable.getPerson(personID,localTableBlogId);
       String text;
       if (person != null) {
         PeopleTable.deletePerson(personID,localTableBlogId);
-        text=getString(R.string.person_removed,person.getUsername());
+        text=getString(R.string.person_removed,person.getDisplayName());
       }
  else {
-        text=getString(R.string.person_removed_general);
+        if (isFollower || isEmailFollower) {
+          text=getString(R.string.follower_removed_general);
+        }
+ else {
+          text=getString(R.string.user_removed_general);
+        }
       }
       ToastUtils.showToast(PeopleManagementActivity.this,text,ToastUtils.Duration.LONG);
       navigateBackToPeopleListFragment();
@@ -26,5 +35,11 @@
       ToastUtils.showToast(PeopleManagementActivity.this,R.string.error_remove_user,ToastUtils.Duration.LONG);
     }
   }
-);
+;
+  if (isFollower || isEmailFollower) {
+    PeopleUtils.removeFollower(person.getBlogId(),person.getPersonID(),person.getLocalTableBlogId(),isEmailFollower,callback);
+  }
+ else {
+    PeopleUtils.removeUser(person.getBlogId(),person.getPersonID(),person.getLocalTableBlogId(),callback);
+  }
 }
