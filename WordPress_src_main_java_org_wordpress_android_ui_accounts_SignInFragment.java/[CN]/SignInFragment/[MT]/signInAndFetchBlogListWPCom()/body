@@ -8,7 +8,10 @@
       mFetchBlogListCallback.onError(errorMessageId,twoStepCodeRequired,httpAuthRequired,erroneousSslCertificate,"");
       mShouldSendTwoStepSMS=false;
       if (errorMessageId == R.string.username_or_password_incorrect) {
-        deleteCredentialsInSmartLock();
+        SmartLockHelper smartLockHelper=getSmartLockHelper();
+        if (smartLockHelper != null) {
+          smartLockHelper.deleteCredentialsInSmartLock(mUsername,mPassword);
+        }
       }
     }
   }
