@@ -1,10 +1,10 @@
 {
-  if (!isAdded())   return;
-  ViewGroup container=(ViewGroup)getView().findViewById(R.id.container_related_posts);
-  if (container.getChildCount() > 1) {
-    int numToRemove=container.getChildCount() - 1;
-    container.removeViews(1,numToRemove);
+  if (!isAdded() || !hasPost())   return;
+  if (event.getSourcePost().postId != mPostId || event.getSourcePost().blogId != mBlogId) {
+    return;
   }
+  ViewGroup container=(ViewGroup)getView().findViewById(R.id.container_related_posts);
+  container.removeAllViews();
   LayoutInflater inflater=LayoutInflater.from(getActivity());
   int imageSize=DisplayUtils.dpToPx(getActivity(),getResources().getDimensionPixelSize(R.dimen.reader_related_post_image_size));
   for (  ReaderPost post : event.getRelatedPosts()) {
@@ -37,7 +37,7 @@
     }
     container.addView(postView);
   }
-  if (container.getVisibility() != View.VISIBLE) {
-    AniUtils.fadeIn(container,AniUtils.Duration.MEDIUM);
-  }
+  View label=getView().findViewById(R.id.text_related_posts_label);
+  label.setVisibility(View.VISIBLE);
+  container.setVisibility(View.VISIBLE);
 }
