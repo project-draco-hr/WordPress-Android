@@ -1,10 +1,11 @@
 {
+  Resources resources=context.getResources();
   XmlResourceParser parser=resources.getXml(R.xml.wpcom_languages);
   Hashtable<String,String> entries=new Hashtable<String,String>();
   String matchedDeviceLanguage="en - English";
   try {
     int eventType=parser.getEventType();
-    String deviceLanguageCode=Locale.getDefault().getLanguage();
+    String deviceLanguageCode=LanguageUtils.getPatchedCurrentDeviceLanguage(context);
     while (eventType != XmlPullParser.END_DOCUMENT) {
       if (eventType == XmlPullParser.START_TAG) {
         String name=parser.getName();
