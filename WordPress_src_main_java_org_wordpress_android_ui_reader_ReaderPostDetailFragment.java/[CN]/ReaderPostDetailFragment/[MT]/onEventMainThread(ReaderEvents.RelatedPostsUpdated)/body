@@ -1,0 +1,32 @@
+{
+  if (!isAdded())   return;
+  ViewGroup container=(ViewGroup)getView().findViewById(R.id.container_related_posts);
+  if (container.getChildCount() > 1) {
+    int numToRemove=container.getChildCount() - 1;
+    container.removeViews(1,numToRemove);
+  }
+  LayoutInflater inflater=LayoutInflater.from(getActivity());
+  for (  ReaderPost post : event.getRelatedPosts()) {
+    View postView=inflater.inflate(R.layout.reader_related_post,container,true);
+    TextView txtTitle=(TextView)postView.findViewById(R.id.text_related_post_title);
+    TextView txtSubtitle=(TextView)postView.findViewById(R.id.text_related_post_subtitle);
+    txtTitle.setText(post.getTitle());
+    String subTitle;
+    if (post.hasAuthorName() && post.hasBlogName()) {
+      subTitle=post.getAuthorName() + ", " + post.getBlogName();
+    }
+ else     if (post.hasAuthorName()) {
+      subTitle=post.getAuthorName();
+    }
+ else     if (post.hasBlogName()) {
+      subTitle=post.getBlogName();
+    }
+ else {
+      subTitle="";
+    }
+    txtSubtitle.setText(subTitle);
+  }
+  if (container.getVisibility() != View.VISIBLE) {
+    AniUtils.fadeIn(container,AniUtils.Duration.MEDIUM);
+  }
+}
