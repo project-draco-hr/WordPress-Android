@@ -1,4 +1,4 @@
 {
-  String term=searchTerm.toLowerCase(Locale.getDefault());
+  String term=searchTerm.toLowerCase(LanguageUtils.getCurrentDeviceLanguage(WordPress.getContext()));
   return db.rawQuery("SELECT id as _id, * FROM " + MEDIA_TABLE + " WHERE blogId=? AND mediaId <> '' AND title LIKE ? AND (uploadState IS NULL OR uploadState ='uploaded') ORDER BY (uploadState=?) DESC, date_created_gmt DESC",new String[]{blogId,"%" + term + "%","uploading"});
 }
