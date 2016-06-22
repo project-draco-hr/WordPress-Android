@@ -39,12 +39,15 @@
   post.featuredImage=JSONUtils.getString(json,"featured_image");
   post.blogName=JSONUtils.getStringDecoded(json,"site_name");
   post.published=JSONUtils.getString(json,"date");
-  String likeDate=JSONUtils.getString(json,"date_liked");
-  if (!TextUtils.isEmpty(likeDate)) {
-    post.timestamp=DateTimeUtils.iso8601ToTimestamp(likeDate);
+  if (json.has("score")) {
+    post.sortIndex=json.optDouble("score");
+  }
+ else   if (json.has("date_liked")) {
+    String likeDate=JSONUtils.getString(json,"date_liked");
+    post.sortIndex=DateTimeUtils.iso8601ToTimestamp(likeDate);
   }
  else {
-    post.timestamp=DateTimeUtils.iso8601ToTimestamp(post.published);
+    post.sortIndex=DateTimeUtils.iso8601ToTimestamp(post.published);
   }
   if (!post.hasTitle() && post.hasExcerpt()) {
     post.title=extractTitle(post.excerpt,50);
