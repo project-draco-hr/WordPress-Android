@@ -3,12 +3,18 @@
   EventBus.getDefault().removeStickyEvent(CommentEvents.CommentsBatchModerationFinishedEvent.class);
   finishActionMode();
   if (moderatedComments.getComments().size() > 0) {
+    for (    Comment comment : moderatedComments.getComments()) {
+      setCommentIsModerating(comment.commentID,false);
+    }
     getAdapter().clearSelectedComments();
     if (moderatedComments.isDeleted()) {
       getAdapter().deleteComments(moderatedComments.getComments());
     }
  else {
       getAdapter().replaceComments(moderatedComments.getComments());
+    }
+    if (moderatedComments.getNewStatus() != mCommentStatusFilter) {
+      loadComments();
     }
   }
  else {

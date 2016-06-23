@@ -6,29 +6,19 @@
   }
   if (updateComments.size() == 0)   return;
   if (!NetworkUtils.checkConnection(getActivity()))   return;
-  final int dlgId;
-switch (newStatus) {
-case APPROVED:
-    dlgId=CommentDialogs.ID_COMMENT_DLG_APPROVING;
-  break;
-case UNAPPROVED:
-dlgId=CommentDialogs.ID_COMMENT_DLG_DISAPPROVING;
-break;
-case SPAM:
-dlgId=CommentDialogs.ID_COMMENT_DLG_SPAMMING;
-break;
-case TRASH:
-dlgId=CommentDialogs.ID_COMMENT_DLG_TRASHING;
-break;
-default :
-return;
-}
-getActivity().showDialog(dlgId);
-CommentActions.OnCommentsModeratedListener listener=new CommentActions.OnCommentsModeratedListener(){
-@Override public void onCommentsModerated(final CommentList moderatedComments){
-EventBus.getDefault().postSticky(new CommentEvents.CommentsBatchModerationFinishedEvent(moderatedComments,false));
-}
-}
+  CommentActions.OnCommentsModeratedListener listener=new CommentActions.OnCommentsModeratedListener(){
+    @Override public void onCommentsModerated(    final CommentList moderatedComments){
+      EventBus.getDefault().postSticky(new CommentEvents.CommentsBatchModerationFinishedEvent(moderatedComments,false,newStatus));
+    }
+  }
 ;
-CommentActions.moderateComments(WordPress.getCurrentLocalTableBlogId(),updateComments,newStatus,listener);
+  if (newStatus == CommentStatus.APPROVED || newStatus == CommentStatus.UNAPPROVED) {
+    for (    Comment comment : updateComments) {
+      setCommentIsModerating(comment.commentID,true);
+    }
+  }
+  getAdapter().clearSelectedComments();
+  finishActionMode();
+  updateEmptyView();
+  CommentActions.moderateComments(WordPress.getCurrentLocalTableBlogId(),updateComments,newStatus,listener);
 }
