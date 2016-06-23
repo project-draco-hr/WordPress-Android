@@ -1,10 +1,9 @@
 {
-  if (!hasRelatedPosts())   return;
   ViewGroup container=(ViewGroup)getView().findViewById(R.id.container_related_posts);
   container.removeAllViews();
   LayoutInflater inflater=LayoutInflater.from(getActivity());
   int imageSize=DisplayUtils.dpToPx(getActivity(),getResources().getDimensionPixelSize(R.dimen.reader_related_post_image_size));
-  for (  final ReaderRelatedPost relatedPost : mRelatedPosts) {
+  for (  final ReaderRelatedPost relatedPost : relatedPosts) {
     View postView=inflater.inflate(R.layout.reader_related_post,container,false);
     TextView txtTitle=(TextView)postView.findViewById(R.id.text_related_post_title);
     TextView txtSubtitle=(TextView)postView.findViewById(R.id.text_related_post_subtitle);
@@ -19,7 +18,10 @@
     }
     postView.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(      View view){
-        ReaderActivityLauncher.showReaderPostDetail(view.getContext(),relatedPost.getBlogId(),relatedPost.getPostId(),true);
+        if (mIsRelatedPost) {
+          mRelatedPostHistory.push(new ReaderRelatedPost(mPost));
+        }
+        navigateToRelatedPost(relatedPost);
       }
     }
 );
