@@ -1,22 +1,20 @@
 {
+  if (!NetworkUtils.checkConnection(getActivity()))   return;
   final CommentList selectedComments=getAdapter().getSelectedComments();
   final CommentList updateComments=new CommentList();
   for (  Comment comment : selectedComments) {
-    if (comment.getStatusEnum() != newStatus)     updateComments.add(comment);
+    if (comment.getStatusEnum() != newStatus) {
+      setCommentIsModerating(comment.commentID,true);
+      updateComments.add(comment);
+    }
   }
   if (updateComments.size() == 0)   return;
-  if (!NetworkUtils.checkConnection(getActivity()))   return;
   CommentActions.OnCommentsModeratedListener listener=new CommentActions.OnCommentsModeratedListener(){
     @Override public void onCommentsModerated(    final CommentList moderatedComments){
-      EventBus.getDefault().postSticky(new CommentEvents.CommentsBatchModerationFinishedEvent(moderatedComments,false,newStatus));
+      EventBus.getDefault().post(new CommentEvents.CommentsBatchModerationFinishedEvent(moderatedComments,false,newStatus));
     }
   }
 ;
-  if (newStatus == CommentStatus.APPROVED || newStatus == CommentStatus.UNAPPROVED) {
-    for (    Comment comment : updateComments) {
-      setCommentIsModerating(comment.commentID,true);
-    }
-  }
   getAdapter().clearSelectedComments();
   finishActionMode();
   updateEmptyView();

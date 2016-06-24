@@ -1,7 +1,5 @@
 {
   if (!isAdded())   return;
-  EventBus.getDefault().removeStickyEvent(CommentEvents.CommentsBatchModerationFinishedEvent.class);
-  finishActionMode();
   if (moderatedComments.getComments().size() > 0) {
     for (    Comment comment : moderatedComments.getComments()) {
       setCommentIsModerating(comment.commentID,false);
@@ -13,7 +11,7 @@
  else {
       getAdapter().replaceComments(moderatedComments.getComments());
     }
-    if (moderatedComments.getNewStatus() != mCommentStatusFilter) {
+    if (moderatedComments.getNewStatus() != mCommentStatusFilter || moderatedComments.isDeleted()) {
       loadComments();
     }
   }
