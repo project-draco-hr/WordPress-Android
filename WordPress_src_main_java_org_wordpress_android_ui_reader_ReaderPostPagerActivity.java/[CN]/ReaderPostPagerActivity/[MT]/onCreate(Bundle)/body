@@ -13,7 +13,8 @@
   if (savedInstanceState != null) {
     mBlogId=savedInstanceState.getLong(ReaderConstants.ARG_BLOG_ID);
     mPostId=savedInstanceState.getLong(ReaderConstants.ARG_POST_ID);
-    mIsSinglePostView=savedInstanceState.getBoolean(ARG_IS_SINGLE_POST);
+    mIsSinglePostView=savedInstanceState.getBoolean(ReaderConstants.ARG_IS_SINGLE_POST);
+    mIsRelatedPostView=savedInstanceState.getBoolean(ReaderConstants.ARG_IS_RELATED_POST);
     if (savedInstanceState.containsKey(ReaderConstants.ARG_POST_LIST_TYPE)) {
       mPostListType=(ReaderPostListType)savedInstanceState.getSerializable(ReaderConstants.ARG_POST_LIST_TYPE);
     }
@@ -24,7 +25,8 @@
  else {
     mBlogId=getIntent().getLongExtra(ReaderConstants.ARG_BLOG_ID,0);
     mPostId=getIntent().getLongExtra(ReaderConstants.ARG_POST_ID,0);
-    mIsSinglePostView=getIntent().getBooleanExtra(ARG_IS_SINGLE_POST,false);
+    mIsSinglePostView=getIntent().getBooleanExtra(ReaderConstants.ARG_IS_SINGLE_POST,false);
+    mIsRelatedPostView=getIntent().getBooleanExtra(ReaderConstants.ARG_IS_RELATED_POST,false);
     if (getIntent().hasExtra(ReaderConstants.ARG_POST_LIST_TYPE)) {
       mPostListType=(ReaderPostListType)getIntent().getSerializableExtra(ReaderConstants.ARG_POST_LIST_TYPE);
     }
@@ -34,6 +36,16 @@
   }
   if (mPostListType == null) {
     mPostListType=ReaderPostListType.TAG_FOLLOWED;
+  }
+  setTitle(mIsRelatedPostView ? R.string.reader_title_related_post_detail : R.string.reader_title_post_detail);
+  if (mIsRelatedPostView) {
+    mToolbar.setNavigationIcon(R.drawable.ic_close_white_24dp);
+    mToolbar.setNavigationOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        finish();
+      }
+    }
+);
   }
   mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
     @Override public void onPageSelected(    int position){

@@ -1,0 +1,13 @@
+{
+  if (jsonObject == null)   return;
+  new Thread(){
+    @Override public void run(){
+      ReaderPostList relatedPosts=ReaderPostList.fromJson(jsonObject);
+      if (relatedPosts != null && relatedPosts.size() > 0) {
+        ReaderPostTable.addOrUpdatePosts(null,relatedPosts);
+        EventBus.getDefault().post(new ReaderEvents.RelatedPostsUpdated(sourcePost,relatedPosts));
+      }
+    }
+  }
+.start();
+}
