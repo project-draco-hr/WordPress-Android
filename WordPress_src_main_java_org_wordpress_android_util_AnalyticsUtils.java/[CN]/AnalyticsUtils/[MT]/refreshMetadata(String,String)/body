@@ -1,10 +1,13 @@
 {
+  AnalyticsMetadata metadata=new AnalyticsMetadata();
   SharedPreferences preferences=PreferenceManager.getDefaultSharedPreferences(WordPress.getContext());
-  int sessionCount=preferences.getInt(AnalyticsTrackerMixpanel.SESSION_COUNT,0);
-  boolean isUserConnected=AccountHelper.isSignedIn();
-  boolean isWordPressComUser=AccountHelper.isSignedInWordPressDotCom();
-  boolean isJetpackUser=AccountHelper.isJetPackUser();
-  int numBlogs=WordPress.wpDB.getNumBlogs();
-  int versionCode=PackageUtils.getVersionCode(WordPress.getContext());
-  AnalyticsTracker.refreshMetadata(isUserConnected,isWordPressComUser,isJetpackUser,sessionCount,numBlogs,versionCode,username,email);
+  metadata.setSessionCount(preferences.getInt(AnalyticsTrackerMixpanel.SESSION_COUNT,0));
+  metadata.setUserConnected(AccountHelper.isSignedIn());
+  metadata.setWordPressComUser(AccountHelper.isSignedInWordPressDotCom());
+  metadata.setJetpackUser(AccountHelper.isJetPackUser());
+  metadata.setNumBlogs(WordPress.wpDB.getNumBlogs());
+  metadata.setVersionCode(PackageUtils.getVersionCode(WordPress.getContext()));
+  metadata.setUsername(username);
+  metadata.setEmail(email);
+  AnalyticsTracker.refreshMetadata(metadata);
 }
