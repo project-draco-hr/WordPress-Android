@@ -1,7 +1,10 @@
 {
   if (!isFinishing() && NetworkUtils.checkConnection(this)) {
     if (!mPost.isLocalDraft()) {
-      AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_UPDATED_POST,WordPress.getBlog(mPost.getLocalTableBlogId()));
+      Map<String,Object> properties=new HashMap<>();
+      Configuration configuration=WordPress.getContext().getResources().getConfiguration();
+      properties.put("hardware_keyboard",configuration.keyboard != Configuration.KEYBOARD_NOKEYS);
+      AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_UPDATED_POST,WordPress.getBlog(mPost.getLocalTableBlogId()),properties);
     }
     if (mPost.getStatusEnum() == PostStatus.DRAFT) {
       mPost.setPostStatus(PostStatus.toString(PostStatus.PUBLISHED));

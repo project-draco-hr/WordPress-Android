@@ -1,25 +1,27 @@
 {
   PostStatus status=post.getStatusEnum();
+  Map<String,Object> properties=new HashMap<>();
+  Configuration configuration=WordPress.getContext().getResources().getConfiguration();
+  properties.put("hardware_keyboard",configuration.keyboard != Configuration.KEYBOARD_NOKEYS);
 switch (status) {
 case PUBLISHED:
     if (!post.isLocalDraft()) {
-      AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_UPDATED_POST,WordPress.getBlog(post.getLocalTableBlogId()));
+      AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_UPDATED_POST,WordPress.getBlog(post.getLocalTableBlogId()),properties);
     }
  else {
     }
   break;
 case SCHEDULED:
 if (!post.isLocalDraft()) {
-  AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_UPDATED_POST,WordPress.getBlog(post.getLocalTableBlogId()));
+  AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_UPDATED_POST,WordPress.getBlog(post.getLocalTableBlogId()),properties);
 }
  else {
-  Map<String,Object> properties=new HashMap<String,Object>();
   properties.put("word_count",AnalyticsUtils.getWordCount(post.getContent()));
   AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_SCHEDULED_POST,WordPress.getBlog(post.getLocalTableBlogId()),properties);
 }
 break;
 case DRAFT:
-AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_SAVED_DRAFT,WordPress.getBlog(post.getLocalTableBlogId()));
+AnalyticsUtils.trackWithBlogDetails(AnalyticsTracker.Stat.EDITOR_SAVED_DRAFT,WordPress.getBlog(post.getLocalTableBlogId()),properties);
 break;
 default :
 }
