@@ -1,0 +1,13 @@
+{
+  if (blog == null) {
+    Toast.makeText(context,context.getText(R.string.blog_not_found),Toast.LENGTH_SHORT).show();
+    return;
+  }
+  String siteUrl=blog.getAlternativeHomeUrl();
+  Uri uri=Uri.parse(siteUrl);
+  AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.OPENED_VIEW_SITE);
+  Intent intent=new Intent(Intent.ACTION_VIEW);
+  intent.setData(uri);
+  context.startActivity(intent);
+  AppLockManager.getInstance().setExtendedTimeout();
+}
