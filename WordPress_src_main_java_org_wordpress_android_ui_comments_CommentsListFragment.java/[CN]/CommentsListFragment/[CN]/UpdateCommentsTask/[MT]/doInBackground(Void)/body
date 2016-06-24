@@ -26,7 +26,9 @@
     return ApiHelper.refreshComments(blog,params,new ApiHelper.DatabasePersistCallback(){
       @Override public void onDataReadyToSave(      List list){
         int localBlogId=blog.getLocalTableBlogId();
-        CommentTable.deleteCommentsForBlogWithFilter(localBlogId,mStatusFilter);
+        if (!mIsLoadingMore) {
+          CommentTable.deleteCommentsForBlogWithFilter(localBlogId,mStatusFilter);
+        }
         CommentTable.saveComments(localBlogId,(CommentList)list);
       }
     }
