@@ -2,13 +2,13 @@
   if (mLanguagePreference == null || TextUtils.isEmpty(languageCode))   return;
   Resources res=getResources();
   Configuration conf=res.getConfiguration();
-  Locale currentLocale=conf.locale != null ? conf.locale : Locale.getDefault();
+  Locale currentLocale=conf.locale != null ? conf.locale : LanguageUtils.getCurrentDeviceLanguage(WordPress.getContext());
   if (currentLocale.toString().equals(languageCode))   return;
   updateLanguagePreference(languageCode);
   Locale newLocale=WPPrefUtils.languageLocale(languageCode);
   conf.locale=newLocale;
   res.updateConfiguration(conf,res.getDisplayMetrics());
-  if (Locale.getDefault().equals(newLocale)) {
+  if (LanguageUtils.getCurrentDeviceLanguage(WordPress.getContext()).equals(newLocale)) {
     mSettings.edit().remove(LANGUAGE_PREF_KEY).apply();
   }
  else {
