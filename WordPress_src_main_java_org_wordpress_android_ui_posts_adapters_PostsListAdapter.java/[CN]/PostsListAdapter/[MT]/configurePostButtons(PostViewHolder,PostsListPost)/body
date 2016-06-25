@@ -5,12 +5,6 @@
  else {
     holder.btnView.setButtonType(PostListButton.BUTTON_VIEW);
   }
-  if (post.getStatusEnum() == PostStatus.DRAFT) {
-    holder.btnPublish.setVisibility(View.VISIBLE);
-  }
- else {
-    holder.btnPublish.setVisibility(View.GONE);
-  }
   boolean canShowStatsButton=canShowStatsForPost(post);
   boolean canShowPublishButton=canPublishPost(post);
   int numVisibleButtons=3;
@@ -33,20 +27,18 @@
     holder.btnPublish.setVisibility(View.GONE);
   }
   View.OnClickListener btnClickListener=new View.OnClickListener(){
-    int row=0;
     @Override public void onClick(    View view){
       int buttonType=((PostListButton)view).getButtonType();
 switch (buttonType) {
 case PostListButton.BUTTON_MORE:
-        animateButtonRows(holder,post,++row);
+        animateButtonRows(holder,post,false);
       break;
 case PostListButton.BUTTON_BACK:
-    row=0;
-  animateButtonRows(holder,post,row);
-break;
+    animateButtonRows(holder,post,true);
+  break;
 default :
 if (mOnPostButtonClickListener != null) {
-mOnPostButtonClickListener.onPostButtonClicked(buttonType,post);
+  mOnPostButtonClickListener.onPostButtonClicked(buttonType,post);
 }
 break;
 }

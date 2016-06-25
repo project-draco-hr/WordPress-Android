@@ -6,15 +6,13 @@
   animOut.setInterpolator(new AccelerateInterpolator());
   animOut.addListener(new AnimatorListenerAdapter(){
     @Override public void onAnimationEnd(    Animator animation){
-      holder.btnEdit.setVisibility(row == 0 ? View.VISIBLE : View.GONE);
-      holder.btnView.setVisibility(row == 0 ? View.VISIBLE : View.GONE);
-      holder.btnTrash.setVisibility(row == 1 ? View.VISIBLE : View.GONE);
-      boolean canShowStats=canShowStatsForPost(post);
-      holder.btnStats.setVisibility(row == 1 && canShowStats ? View.VISIBLE : View.GONE);
-      boolean canPublish=canPublishPost(post);
-      holder.btnPublish.setVisibility((row == 1 && !canShowStats || row == 2) && canPublish ? View.VISIBLE : View.GONE);
-      holder.btnMore.setVisibility(row == 0 || row == 1 && canShowStats && canPublish ? View.VISIBLE : View.GONE);
-      holder.btnBack.setVisibility(holder.btnMore.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
+      holder.btnEdit.setVisibility(showRow1 ? View.VISIBLE : View.GONE);
+      holder.btnView.setVisibility(showRow1 ? View.VISIBLE : View.GONE);
+      holder.btnMore.setVisibility(showRow1 ? View.VISIBLE : View.GONE);
+      holder.btnStats.setVisibility(!showRow1 && canShowStatsForPost(post) ? View.VISIBLE : View.GONE);
+      holder.btnPublish.setVisibility(!showRow1 && canPublishPost(post) ? View.VISIBLE : View.GONE);
+      holder.btnTrash.setVisibility(!showRow1 ? View.VISIBLE : View.GONE);
+      holder.btnBack.setVisibility(!showRow1 ? View.VISIBLE : View.GONE);
       PropertyValuesHolder scaleX=PropertyValuesHolder.ofFloat(View.SCALE_X,0f,1f);
       PropertyValuesHolder scaleY=PropertyValuesHolder.ofFloat(View.SCALE_Y,0f,1f);
       ObjectAnimator animIn=ObjectAnimator.ofPropertyValuesHolder(holder.layoutButtons,scaleX,scaleY);
