@@ -1,0 +1,16 @@
+{
+  mContainer.removeAllViews();
+  ReaderImageScanner scanner=new ReaderImageScanner(post.getText(),post.isPrivate);
+  List<String> images=new ReaderImageScanner(post.getText(),post.isPrivate).getImageList(ReaderConstants.MIN_FEATURED_IMAGE_WIDTH);
+  if (images.isEmpty()) {
+    hideContainer();
+    return;
+  }
+  for (  String imageUrl : images) {
+    View view=inflate(getContext(),R.layout.reader_thumbnail_strip_image,mContainer);
+    WPNetworkImageView imageView=(WPNetworkImageView)view.findViewById(R.id.thumbnail_strip_image);
+    String photonUrl=PhotonUtils.getPhotonImageUrl(imageUrl,mThumbnailSize,mThumbnailSize);
+    imageView.setImageUrl(photonUrl,WPNetworkImageView.ImageType.PHOTO);
+  }
+  showContainer();
+}
