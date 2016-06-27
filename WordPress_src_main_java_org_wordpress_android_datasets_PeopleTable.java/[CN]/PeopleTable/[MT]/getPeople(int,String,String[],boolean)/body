@@ -1,6 +1,7 @@
 {
   List<Person> people=new ArrayList<>();
-  Cursor c=getReadableDb().rawQuery("SELECT * FROM " + PEOPLE_TABLE + " "+ whereStatement+ " ORDER BY lower(display_name), lower(user_name)",args);
+  String orderBy=ordered ? " ORDER BY lower(display_name), lower(user_name)" : "";
+  Cursor c=getReadableDb().rawQuery("SELECT * FROM " + PEOPLE_TABLE + " "+ whereStatement+ orderBy,args);
   try {
     while (c.moveToNext()) {
       Person person=getPersonFromCursor(c,localTableBlogId);
