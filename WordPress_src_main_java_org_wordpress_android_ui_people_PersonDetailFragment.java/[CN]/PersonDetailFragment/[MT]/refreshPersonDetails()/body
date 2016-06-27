@@ -6,8 +6,23 @@
     String avatarUrl=GravatarUtils.fixGravatarUrl(person.getAvatarUrl(),avatarSz);
     mAvatarImageView.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
     mDisplayNameTextView.setText(StringUtils.unescapeHTML(person.getDisplayName()));
-    mUsernameTextView.setText(person.getUsername());
     mRoleTextView.setText(StringUtils.capitalize(person.getRole()));
+    if (!person.getUsername().isEmpty()) {
+      mUsernameTextView.setVisibility(View.VISIBLE);
+      mUsernameTextView.setText(String.format("@%s",person.getUsername()));
+    }
+ else {
+      mUsernameTextView.setVisibility(View.GONE);
+    }
+    if (person.isFollower() || person.isEmailFollower()) {
+      mSubscribedTextView.setVisibility(View.VISIBLE);
+      String dateSubscribed=SimpleDateFormat.getDateInstance().format(person.getDateSubscribed());
+      String dateText=getString(R.string.follower_subscribed_since,dateSubscribed);
+      mSubscribedTextView.setText(dateText);
+    }
+ else {
+      mSubscribedTextView.setVisibility(View.GONE);
+    }
     if (person.isFollower() || person.isEmailFollower()) {
       mRoleContainer.setVisibility(View.GONE);
     }
