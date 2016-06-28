@@ -3,7 +3,7 @@
   ReaderImageScanner scanner=new ReaderImageScanner(post.getText(),post.isPrivate);
   final ReaderImageList imageList=new ReaderImageScanner(post.getText(),post.isPrivate).getImageList(ReaderPhotoViewerActivity.MIN_IMAGE_WIDTH);
   if (imageList.size() < MIN_IMAGE_COUNT) {
-    hideView();
+    fadeOut();
     return;
   }
   int numAdded=0;
@@ -14,12 +14,6 @@
     mContainer.addView(view);
     String photonUrl=PhotonUtils.getPhotonImageUrl(imageUrl,mThumbnailSize,mThumbnailSize);
     imageView.setImageUrl(photonUrl,WPNetworkImageView.ImageType.PHOTO);
-    imageView.setOnClickListener(new OnClickListener(){
-      @Override public void onClick(      View view){
-        ReaderActivityLauncher.showReaderPhotoViewer(view.getContext(),imageUrl,post.getText(),view,post.isPrivate,0,0);
-      }
-    }
-);
     numAdded++;
     if (numAdded >= MAX_IMAGE_COUNT) {
       break;
@@ -29,11 +23,11 @@
   TextView txtCount=(TextView)labelView.findViewById(R.id.text_gallery_count);
   txtCount.setText(String.format(mCountStr,imageList.size()));
   mContainer.addView(labelView);
-  labelView.setOnClickListener(new OnClickListener(){
+  mView.setOnClickListener(new OnClickListener(){
     @Override public void onClick(    View view){
       ReaderActivityLauncher.showReaderPhotoViewer(view.getContext(),imageList.get(0),post.getText(),view,post.isPrivate,0,0);
     }
   }
 );
-  showView();
+  fadeIn();
 }
