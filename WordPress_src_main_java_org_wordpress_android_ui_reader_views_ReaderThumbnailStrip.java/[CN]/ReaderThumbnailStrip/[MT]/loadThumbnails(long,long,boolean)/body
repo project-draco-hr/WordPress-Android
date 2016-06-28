@@ -1,7 +1,8 @@
 {
   mContainer.removeAllViews();
   final String content=ReaderPostTable.getPostText(blogId,postId);
-  final ReaderImageList imageList=new ReaderImageScanner(content,isPrivate).getImageList(ReaderPhotoViewerActivity.MIN_IMAGE_WIDTH);
+  ReaderImageScanner scanner=new ReaderImageScanner(content,isPrivate);
+  final ReaderImageList imageList=scanner.getImageList(ReaderConstants.MIN_GALLERY_IMAGE_WIDTH);
   if (imageList.size() < MIN_IMAGE_COUNT) {
     mView.setVisibility(View.GONE);
     return;
@@ -25,7 +26,11 @@
   mContainer.addView(labelView);
   mView.setOnClickListener(new OnClickListener(){
     @Override public void onClick(    View view){
-      ReaderActivityLauncher.showReaderPhotoViewer(view.getContext(),imageList.get(0),content,view,isPrivate,0,0);
+      EnumSet<PhotoViewerOption> options=EnumSet.of(PhotoViewerOption.IS_GALLERY_IMAGE);
+      if (isPrivate) {
+        options.add(PhotoViewerOption.IS_PRIVATE_IMAGE);
+      }
+      ReaderActivityLauncher.showReaderPhotoViewer(view.getContext(),imageList.get(0),content,view,options,0,0);
     }
   }
 );
