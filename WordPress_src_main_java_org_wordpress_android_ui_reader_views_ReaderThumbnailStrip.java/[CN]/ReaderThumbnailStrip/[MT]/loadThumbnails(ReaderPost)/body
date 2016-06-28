@@ -1,14 +1,14 @@
 {
   mContainer.removeAllViews();
   ReaderImageScanner scanner=new ReaderImageScanner(post.getText(),post.isPrivate);
-  final List<String> images=new ReaderImageScanner(post.getText(),post.isPrivate).getImageList(MIN_IMAGE_WIDTH);
-  if (images.size() < MIN_IMAGE_COUNT) {
+  final ReaderImageList imageList=new ReaderImageScanner(post.getText(),post.isPrivate).getImageList(ReaderPhotoViewerActivity.MIN_IMAGE_WIDTH);
+  if (imageList.size() < MIN_IMAGE_COUNT) {
     hideView();
     return;
   }
   int numAdded=0;
   LayoutInflater inflater=LayoutInflater.from(getContext());
-  for (  final String imageUrl : images) {
+  for (  final String imageUrl : imageList) {
     View view=inflater.inflate(R.layout.reader_thumbnail_strip_image,mContainer,false);
     WPNetworkImageView imageView=(WPNetworkImageView)view.findViewById(R.id.thumbnail_strip_image);
     mContainer.addView(view);
@@ -27,11 +27,11 @@
   }
   View labelView=inflater.inflate(R.layout.reader_thumbnail_strip_labels,mContainer,false);
   TextView txtCount=(TextView)labelView.findViewById(R.id.text_gallery_count);
-  txtCount.setText(String.format(mCountStr,images.size()));
+  txtCount.setText(String.format(mCountStr,imageList.size()));
   mContainer.addView(labelView);
   labelView.setOnClickListener(new OnClickListener(){
     @Override public void onClick(    View view){
-      ReaderActivityLauncher.showReaderPhotoViewer(view.getContext(),images.get(0),post.getText(),view,post.isPrivate,0,0);
+      ReaderActivityLauncher.showReaderPhotoViewer(view.getContext(),imageList.get(0),post.getText(),view,post.isPrivate,0,0);
     }
   }
 );
