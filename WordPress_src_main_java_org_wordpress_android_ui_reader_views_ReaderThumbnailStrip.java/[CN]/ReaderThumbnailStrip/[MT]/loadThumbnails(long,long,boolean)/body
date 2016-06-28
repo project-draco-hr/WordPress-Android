@@ -1,8 +1,9 @@
 {
   mContainer.removeAllViews();
-  final ReaderImageList imageList=new ReaderImageScanner(post.getText(),post.isPrivate).getImageList(ReaderPhotoViewerActivity.MIN_IMAGE_WIDTH);
+  final String content=ReaderPostTable.getPostText(blogId,postId);
+  final ReaderImageList imageList=new ReaderImageScanner(content,isPrivate).getImageList(ReaderPhotoViewerActivity.MIN_IMAGE_WIDTH);
   if (imageList.size() < MIN_IMAGE_COUNT) {
-    fadeOut();
+    mView.setVisibility(View.GONE);
     return;
   }
   int numAdded=0;
@@ -14,7 +15,7 @@
     String photonUrl=PhotonUtils.getPhotonImageUrl(imageUrl,mThumbnailSize,mThumbnailSize);
     imageView.setImageUrl(photonUrl,WPNetworkImageView.ImageType.PHOTO);
     numAdded++;
-    if (numAdded >= MAX_IMAGE_COUNT) {
+    if (numAdded >= mMaxImageCount) {
       break;
     }
   }
@@ -24,9 +25,11 @@
   mContainer.addView(labelView);
   mView.setOnClickListener(new OnClickListener(){
     @Override public void onClick(    View view){
-      ReaderActivityLauncher.showReaderPhotoViewer(view.getContext(),imageList.get(0),post.getText(),view,post.isPrivate,0,0);
+      ReaderActivityLauncher.showReaderPhotoViewer(view.getContext(),imageList.get(0),content,view,isPrivate,0,0);
     }
   }
 );
-  fadeIn();
+  if (mView.getVisibility() != View.VISIBLE) {
+    AniUtils.fadeIn(mView,AniUtils.Duration.SHORT);
+  }
 }
