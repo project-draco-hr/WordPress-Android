@@ -8,9 +8,7 @@
     getListFragment().updateEmptyView();
     CommentActions.moderateComment(accountId,comment,newStatus,new CommentActions.CommentActionListener(){
       @Override public void onActionResult(      CommentActionResult result){
-        if (isListeningForModerationResult()) {
-          EventBus.getDefault().post(new CommentEvents.CommentModerationFinishedEvent(result.isSuccess(),true,comment.commentID,newStatus));
-        }
+        EventBus.getDefault().post(new CommentEvents.CommentModerationFinishedEvent(result.isSuccess(),true,comment.commentID,newStatus));
       }
     }
 );
@@ -39,9 +37,7 @@
         mTrashedComments.remove(comment);
         CommentActions.moderateComment(accountId,comment,newStatus,new CommentActions.CommentActionListener(){
           @Override public void onActionResult(          CommentActionResult result){
-            if (isListeningForModerationResult()) {
-              EventBus.getDefault().post(new CommentEvents.CommentModerationFinishedEvent(result.isSuccess(),true,comment.commentID,newStatus));
-            }
+            EventBus.getDefault().post(new CommentEvents.CommentModerationFinishedEvent(result.isSuccess(),true,comment.commentID,newStatus));
           }
         }
 );
