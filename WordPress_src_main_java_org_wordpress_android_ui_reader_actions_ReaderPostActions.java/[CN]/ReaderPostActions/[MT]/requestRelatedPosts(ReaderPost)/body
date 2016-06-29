@@ -1,0 +1,18 @@
+{
+  if (sourcePost == null)   return;
+  RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      handleRelatedPostsResponse(sourcePost,jsonObject);
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.w(T.READER,"updateRelatedPosts failed");
+      AppLog.e(T.READER,volleyError);
+    }
+  }
+;
+  String path="/read/site/" + sourcePost.blogId + "/post/"+ sourcePost.postId+ "/related";
+  WordPress.getRestClientUtilsV1_2().get(path,null,null,listener,errorListener);
+}
