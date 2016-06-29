@@ -104,7 +104,11 @@
       @Override public void onClick(      View v){
         Blog blog=WordPress.getCurrentBlog();
         boolean isPrivate=blog != null && blog.isPrivate();
-        ReaderActivityLauncher.showReaderPhotoViewer(v.getContext(),mImageUri,isPrivate);
+        EnumSet<PhotoViewerOption> imageOptions=EnumSet.noneOf(PhotoViewerOption.class);
+        if (isPrivate) {
+          imageOptions.add(PhotoViewerOption.IS_PRIVATE_IMAGE);
+        }
+        ReaderActivityLauncher.showReaderPhotoViewer(v.getContext(),mImageUri,imageOptions);
       }
     }
 );
