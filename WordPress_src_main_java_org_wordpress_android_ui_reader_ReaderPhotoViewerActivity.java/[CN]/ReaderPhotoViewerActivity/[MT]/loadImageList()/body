@@ -3,9 +3,11 @@
   if (TextUtils.isEmpty(mContent)) {
     imageList=new ReaderImageList(mIsPrivate);
   }
+ else   if (mIsGallery) {
+    imageList=new ReaderImageScanner(mContent,mIsPrivate).getGalleryImageList();
+  }
  else {
-    int minWidth=mIsGallery ? ReaderConstants.MIN_GALLERY_IMAGE_WIDTH : 0;
-    imageList=new ReaderImageScanner(mContent,mIsPrivate).getImageList(minWidth);
+    imageList=new ReaderImageScanner(mContent,mIsPrivate).getImageList();
   }
   if (!TextUtils.isEmpty(mInitialImageUrl) && !imageList.hasImageUrl(mInitialImageUrl)) {
     imageList.addImageUrl(0,mInitialImageUrl);
