@@ -1,43 +1,21 @@
 {
+  if (!NetworkUtils.checkConnection(getActivity()))   return;
   final CommentList selectedComments=getAdapter().getSelectedComments();
   final CommentList updateComments=new CommentList();
   for (  Comment comment : selectedComments) {
-    if (comment.getStatusEnum() != newStatus)     updateComments.add(comment);
+    if (comment.getStatusEnum() != newStatus) {
+      setCommentIsModerating(comment.commentID,true);
+      updateComments.add(comment);
+    }
   }
   if (updateComments.size() == 0)   return;
-  if (!NetworkUtils.checkConnection(getActivity()))   return;
-  final int dlgId;
-switch (newStatus) {
-case APPROVED:
-    dlgId=CommentDialogs.ID_COMMENT_DLG_APPROVING;
-  break;
-case UNAPPROVED:
-dlgId=CommentDialogs.ID_COMMENT_DLG_DISAPPROVING;
-break;
-case SPAM:
-dlgId=CommentDialogs.ID_COMMENT_DLG_SPAMMING;
-break;
-case TRASH:
-dlgId=CommentDialogs.ID_COMMENT_DLG_TRASHING;
-break;
-default :
-return;
-}
-getActivity().showDialog(dlgId);
-CommentActions.OnCommentsModeratedListener listener=new CommentActions.OnCommentsModeratedListener(){
-@Override public void onCommentsModerated(final CommentList moderatedComments){
-if (!isAdded()) return;
-finishActionMode();
-dismissDialog(dlgId);
-if (moderatedComments.size() > 0) {
-getAdapter().clearSelectedComments();
-getAdapter().replaceComments(moderatedComments);
-}
- else {
-ToastUtils.showToast(getActivity(),R.string.error_moderate_comment);
-}
-}
-}
+  CommentActions.OnCommentsModeratedListener listener=new CommentActions.OnCommentsModeratedListener(){
+    @Override public void onCommentsModerated(    final CommentList moderatedComments){
+      EventBus.getDefault().post(new CommentEvents.CommentsBatchModerationFinishedEvent(moderatedComments,false));
+    }
+  }
 ;
-CommentActions.moderateComments(WordPress.getCurrentLocalTableBlogId(),updateComments,newStatus,listener);
+  getAdapter().clearSelectedComments();
+  finishActionMode();
+  CommentActions.moderateComments(WordPress.getCurrentLocalTableBlogId(),updateComments,newStatus,listener);
 }
