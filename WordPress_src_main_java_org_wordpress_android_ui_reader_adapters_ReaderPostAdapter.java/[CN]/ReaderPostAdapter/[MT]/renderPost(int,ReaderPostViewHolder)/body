@@ -9,7 +9,18 @@
  else {
     dateLine=DateTimeUtils.javaDateToTimeSpan(post.getDatePublished());
   }
-  holder.txtDate.setText(dateLine);
+  if (!isBlogPreview()) {
+    holder.txtDate.setText(dateLine);
+    holder.layoutPostHeader.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        ReaderActivityLauncher.showReaderBlogPreview(view.getContext(),post);
+      }
+    }
+);
+  }
+ else {
+    holder.txtDateBelowTitle.setText(dateLine);
+  }
   if (post.hasBlogUrl()) {
     String imageUrl=GravatarUtils.blavatarFromUrl(post.getUrl(),mAvatarSzMedium);
     holder.imgAvatar.setImageUrl(imageUrl,WPNetworkImageView.ImageType.BLAVATAR);
@@ -25,14 +36,6 @@
   }
  else {
     holder.txtBlogName.setText(null);
-  }
-  if (!isBlogPreview()) {
-    holder.layoutPostHeader.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View view){
-        ReaderActivityLauncher.showReaderBlogPreview(view.getContext(),post);
-      }
-    }
-);
   }
   if (post.hasExcerpt()) {
     holder.txtText.setVisibility(View.VISIBLE);
