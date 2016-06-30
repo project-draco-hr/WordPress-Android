@@ -1,25 +1,7 @@
 {
   final Plan plan=getPageAdapter().getPlan(position);
-  boolean showPurchaseButton=isBuyButtonAvailable(position);
   ViewGroup framePurchase=(ViewGroup)findViewById(R.id.frame_purchase);
-  ViewGroup containerPurchase=(ViewGroup)findViewById(R.id.purchase_container);
-  if (showPurchaseButton) {
-    TextView txtPurchasePrice=(TextView)framePurchase.findViewById(R.id.text_purchase_price);
-    txtPurchasePrice.setText(PlansUtils.getPlanDisplayPrice(plan));
-    containerPurchase.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(      View v){
-        startPurchaseProcess(position);
-      }
-    }
-);
-  }
- else {
-    containerPurchase.setOnClickListener(null);
-  }
-  if (showPurchaseButton && framePurchase.getVisibility() != View.VISIBLE) {
+  if (framePurchase.getVisibility() != View.VISIBLE) {
     AniUtils.animateBottomBar(framePurchase,true);
-  }
- else   if (!showPurchaseButton && framePurchase.getVisibility() == View.VISIBLE) {
-    AniUtils.animateBottomBar(framePurchase,false);
   }
 }
