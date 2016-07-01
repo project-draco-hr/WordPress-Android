@@ -1,0 +1,16 @@
+{
+  String[] args={Integer.toString(localTableBlogId)};
+  String orderBy=orderByString(table);
+  Cursor c=getReadableDb().rawQuery("SELECT * FROM " + table + " WHERE local_blog_id=?"+ orderBy,args);
+  List<Person> people=new ArrayList<>();
+  try {
+    while (c.moveToNext()) {
+      Person person=getPersonFromCursor(c,table,localTableBlogId);
+      people.add(person);
+    }
+  }
+  finally {
+    SqlUtils.closeCursor(c);
+  }
+  return people;
+}

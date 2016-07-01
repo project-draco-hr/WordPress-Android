@@ -1,0 +1,15 @@
+{
+  getWritableDb().beginTransaction();
+  try {
+    if (isFreshList) {
+      PeopleTable.deletePeople(table,localTableBlogId);
+    }
+    for (    Person person : peopleList) {
+      PeopleTable.save(table,person);
+    }
+    getWritableDb().setTransactionSuccessful();
+  }
+  finally {
+    getWritableDb().endTransaction();
+  }
+}
