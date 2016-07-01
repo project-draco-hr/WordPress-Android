@@ -6,6 +6,10 @@
   if (person == null) {
     return;
   }
+  String blogId=WordPress.getCurrentRemoteBlogId();
+  if (blogId == null) {
+    return;
+  }
   final boolean isFollower=person.isFollower();
   final boolean isEmailFollower=person.isEmailFollower();
   final String displayName=person.getDisplayName();
@@ -29,9 +33,9 @@
   }
 ;
   if (isFollower || isEmailFollower) {
-    PeopleUtils.removeFollower(person.getBlogId(),person.getPersonID(),person.getLocalTableBlogId(),isEmailFollower,callback);
+    PeopleUtils.removeFollower(blogId,person.getPersonID(),person.getLocalTableBlogId(),isEmailFollower,callback);
   }
  else {
-    PeopleUtils.removeUser(person.getBlogId(),person.getPersonID(),person.getLocalTableBlogId(),callback);
+    PeopleUtils.removeUser(blogId,person.getPersonID(),person.getLocalTableBlogId(),callback);
   }
 }
