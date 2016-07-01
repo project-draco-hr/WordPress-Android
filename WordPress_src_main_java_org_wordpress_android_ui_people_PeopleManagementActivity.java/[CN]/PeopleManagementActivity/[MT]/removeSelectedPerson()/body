@@ -8,16 +8,15 @@
   }
   final boolean isFollower=person.isFollower();
   final boolean isEmailFollower=person.isEmailFollower();
-  final boolean isViewer=person.isViewer();
   final String displayName=person.getDisplayName();
   PeopleUtils.RemoveUserCallback callback=new PeopleUtils.RemoveUserCallback(){
     @Override public void onSuccess(    long personID,    int localTableBlogId){
-      if (!isFollower && !isEmailFollower && !isViewer) {
+      if (!isFollower && !isEmailFollower) {
         AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.PERSON_REMOVED);
       }
-      Person person=PeopleTable.getPerson(personID,localTableBlogId,isFollower,isViewer);
+      Person person=PeopleTable.getUser(personID,localTableBlogId);
       if (person != null) {
-        PeopleTable.deletePerson(personID,localTableBlogId,isFollower,isViewer);
+        PeopleTable.deleteUser(personID,localTableBlogId);
       }
       String message=getString(R.string.person_removed,displayName);
       ToastUtils.showToast(PeopleManagementActivity.this,message,ToastUtils.Duration.LONG);

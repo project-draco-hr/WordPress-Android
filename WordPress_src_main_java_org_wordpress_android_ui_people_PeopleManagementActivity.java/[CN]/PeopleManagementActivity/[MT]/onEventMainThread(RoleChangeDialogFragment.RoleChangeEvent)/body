@@ -2,7 +2,7 @@
   if (!NetworkUtils.checkConnection(this)) {
     return;
   }
-  final Person person=PeopleTable.getPerson(event.personID,event.localTableBlogId,false,false);
+  final Person person=PeopleTable.getUser(event.personID,event.localTableBlogId);
   if (person == null || event.newRole == null || event.newRole.equalsIgnoreCase(person.getRole())) {
     return;
   }
@@ -13,7 +13,7 @@
   PeopleUtils.updateRole(person.getBlogId(),person.getPersonID(),event.newRole,event.localTableBlogId,new PeopleUtils.UpdateUserCallback(){
     @Override public void onSuccess(    Person person){
       AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.PERSON_UPDATED);
-      PeopleTable.save(person);
+      PeopleTable.saveUser(person);
       refreshOnScreenFragmentDetails();
     }
     @Override public void onError(){
