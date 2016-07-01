@@ -2,6 +2,9 @@
   if (!isAdded()) {
     return;
   }
+  if (!NetworkUtils.checkConnection(getActivity())) {
+    return;
+  }
   if (mUsernameButtons.size() == 0) {
     ToastUtils.showToast(getActivity(),R.string.invite_error_no_usernames);
     return;
@@ -16,6 +19,8 @@
     ToastUtils.showToast(getActivity(),StringUtils.getQuantityString(getActivity(),0,R.string.invite_error_invalid_usernames_one,R.string.invite_error_invalid_usernames_multiple,invalidCount));
     return;
   }
+  mInviteOperationInProgress=true;
+  getActivity().invalidateOptionsMenu();
   String dotComBlogId=getArguments().getString(ARG_BLOGID);
   PeopleUtils.sendInvitations(new ArrayList<>(mUsernameButtons.keySet()),mRole,mCustomMessage,dotComBlogId,new PeopleUtils.InvitationsSendCallback(){
     @Override public void onSent(    List<String> succeededUsernames,    Map<String,String> failedUsernameErrors){
@@ -36,12 +41,16 @@
  else {
         ToastUtils.showToast(getActivity(),R.string.invite_sent,ToastUtils.Duration.LONG);
       }
+      mInviteOperationInProgress=false;
+      getActivity().invalidateOptionsMenu();
     }
     @Override public void onError(){
       if (!isAdded()) {
         return;
       }
       ToastUtils.showToast(getActivity(),R.string.invite_error_sending);
+      mInviteOperationInProgress=false;
+      getActivity().invalidateOptionsMenu();
     }
   }
 );
