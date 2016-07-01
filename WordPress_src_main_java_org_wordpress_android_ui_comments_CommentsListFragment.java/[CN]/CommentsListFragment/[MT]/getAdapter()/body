@@ -1,76 +1,11 @@
 {
   if (mAdapter == null) {
-    CommentAdapter.OnDataLoadedListener dataLoadedListener=new CommentAdapter.OnDataLoadedListener(){
-      @Override public void onDataLoaded(      boolean isEmpty){
-        if (!isAdded())         return;
-        if (!isEmpty) {
-          mFilteredCommentsView.hideEmptyView();
-        }
- else         if (!mIsUpdatingComments) {
-          mFilteredCommentsView.updateEmptyView(EmptyViewMessageType.NO_CONTENT);
-        }
-      }
-    }
-;
-    CommentAdapter.OnLoadMoreListener loadMoreListener=new CommentAdapter.OnLoadMoreListener(){
-      @Override public void onLoadMore(){
-        if (mCanLoadMoreComments && !mIsUpdatingComments) {
-          updateComments(true);
-        }
-      }
-    }
-;
-    CommentAdapter.OnSelectedItemsChangeListener changeListener=new CommentAdapter.OnSelectedItemsChangeListener(){
-      @Override public void onSelectedItemsChanged(){
-        if (mActionMode != null) {
-          if (getSelectedCommentCount() == 0) {
-            mActionMode.finish();
-          }
- else {
-            updateActionModeTitle();
-            mActionMode.invalidate();
-          }
-        }
-      }
-    }
-;
-    CommentAdapter.OnCommentPressedListener pressedListener=new CommentAdapter.OnCommentPressedListener(){
-      @Override public void onCommentPressed(      int position,      View view){
-        Comment comment=getAdapter().getItem(position);
-        if (comment == null) {
-          return;
-        }
-        if (mActionMode == null) {
-          if (!getAdapter().isModeratingCommentId(comment.commentID)) {
-            mFilteredCommentsView.invalidate();
-            if (getActivity() instanceof OnCommentSelectedListener) {
-              ((OnCommentSelectedListener)getActivity()).onCommentSelected(comment.commentID);
-            }
-          }
-        }
- else {
-          getAdapter().toggleItemSelected(position,view);
-        }
-      }
-      @Override public void onCommentLongPressed(      int position,      View view){
-        if (mActionMode == null) {
-          if (getActivity() instanceof AppCompatActivity) {
-            ((AppCompatActivity)getActivity()).startSupportActionMode(new ActionModeCallback());
-            getAdapter().setEnableSelection(true);
-            getAdapter().setItemSelected(position,true,view);
-          }
-        }
- else {
-          getAdapter().toggleItemSelected(position,view);
-        }
-      }
-    }
-;
     mAdapter=new CommentAdapter(getActivity(),WordPress.getCurrentLocalTableBlogId());
-    mAdapter.setOnCommentPressedListener(pressedListener);
-    mAdapter.setOnDataLoadedListener(dataLoadedListener);
-    mAdapter.setOnLoadMoreListener(loadMoreListener);
-    mAdapter.setOnSelectedItemsChangeListener(changeListener);
+    mAdapter.setInitialState(mCommentAdapterState);
+    mAdapter.setOnCommentPressedListener(this);
+    mAdapter.setOnDataLoadedListener(this);
+    mAdapter.setOnLoadMoreListener(this);
+    mAdapter.setOnSelectedItemsChangeListener(this);
   }
   return mAdapter;
 }
