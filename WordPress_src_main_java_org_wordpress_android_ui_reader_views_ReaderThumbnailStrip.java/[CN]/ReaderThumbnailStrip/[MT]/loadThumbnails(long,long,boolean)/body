@@ -1,0 +1,39 @@
+{
+  mContainer.removeAllViews();
+  final String content=ReaderPostTable.getPostText(blogId,postId);
+  final ReaderImageList imageList=new ReaderImageScanner(content,isPrivate).getGalleryImageList();
+  if (imageList.size() < MIN_IMAGE_COUNT) {
+    mView.setVisibility(View.GONE);
+    return;
+  }
+  int numAdded=0;
+  LayoutInflater inflater=LayoutInflater.from(getContext());
+  for (  final String imageUrl : imageList) {
+    View view=inflater.inflate(R.layout.reader_thumbnail_strip_image,mContainer,false);
+    WPNetworkImageView imageView=(WPNetworkImageView)view.findViewById(R.id.thumbnail_strip_image);
+    mContainer.addView(view);
+    String photonUrl=PhotonUtils.getPhotonImageUrl(imageUrl,mThumbnailSize,mThumbnailSize);
+    imageView.setImageUrl(photonUrl,WPNetworkImageView.ImageType.PHOTO);
+    numAdded++;
+    if (numAdded >= mMaxImageCount) {
+      break;
+    }
+  }
+  View labelView=inflater.inflate(R.layout.reader_thumbnail_strip_labels,mContainer,false);
+  TextView txtCount=(TextView)labelView.findViewById(R.id.text_gallery_count);
+  txtCount.setText(String.format(mCountStr,imageList.size()));
+  mContainer.addView(labelView);
+  mView.setOnClickListener(new OnClickListener(){
+    @Override public void onClick(    View view){
+      EnumSet<PhotoViewerOption> options=EnumSet.of(PhotoViewerOption.IS_GALLERY_IMAGE);
+      if (isPrivate) {
+        options.add(PhotoViewerOption.IS_PRIVATE_IMAGE);
+      }
+      ReaderActivityLauncher.showReaderPhotoViewer(view.getContext(),imageList.get(0),content,view,options,0,0);
+    }
+  }
+);
+  if (mView.getVisibility() != View.VISIBLE) {
+    AniUtils.fadeIn(mView,AniUtils.Duration.SHORT);
+  }
+}
