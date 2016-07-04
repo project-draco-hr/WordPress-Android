@@ -26,30 +26,26 @@
       AppPrefs.setPeopleListFilter(mPeopleListFilter);
     }
     @Override public String onShowEmptyViewMessage(    EmptyViewMessageType emptyViewMsgType){
-      if (emptyViewMsgType == EmptyViewMessageType.NO_CONTENT) {
-        if (mPeopleListFilter == null) {
-          return "";
-        }
- else {
-switch (mPeopleListFilter) {
-case FOLLOWERS:
-            return getString(R.string.people_empty_list_filtered_followers);
-case EMAIL_FOLLOWERS:
-          return getString(R.string.people_empty_list_filtered_email_followers);
-default :
-        return "";
-    }
-  }
-}
- else {
-  int stringId=0;
+      int stringId=0;
 switch (emptyViewMsgType) {
 case LOADING:
-    stringId=R.string.people_fetching;
-  break;
+        stringId=R.string.people_fetching;
+      break;
 case NETWORK_ERROR:
-stringId=R.string.no_network_message;
+    stringId=R.string.no_network_message;
+  break;
+case NO_CONTENT:
+switch (mPeopleListFilter) {
+case TEAM:
+  stringId=R.string.people_empty_list_filtered_users;
 break;
+case FOLLOWERS:
+stringId=R.string.people_empty_list_filtered_followers;
+break;
+case EMAIL_FOLLOWERS:
+stringId=R.string.people_empty_list_filtered_email_followers;
+break;
+}
 case GENERIC_ERROR:
 switch (mPeopleListFilter) {
 case TEAM:
@@ -65,7 +61,6 @@ break;
 break;
 }
 return getString(stringId);
-}
 }
 @Override public void onShowCustomEmptyView(EmptyViewMessageType emptyViewMsgType){
 }
