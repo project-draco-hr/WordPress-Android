@@ -17,6 +17,13 @@
   mEditReply=(SuggestionAutoCompleteText)mLayoutReply.findViewById(R.id.edit_comment);
   mEditReply.getAutoSaveTextHelper().setUniqueId(String.format(LanguageUtils.getCurrentDeviceLanguage(getActivity()),"%s%d%d",AccountHelper.getCurrentUsernameForBlog(WordPress.getCurrentBlog()),getRemoteBlogId(),getCommentId()));
   mSubmitReplyBtn=mLayoutReply.findViewById(R.id.btn_submit_reply);
+  View replyBox=mLayoutReply.findViewById(R.id.reply_box);
+  if (mComment != null && (mComment.getStatusEnum() == CommentStatus.SPAM || mComment.getStatusEnum() == CommentStatus.TRASH || mComment.getStatusEnum() == CommentStatus.DELETE)) {
+    replyBox.setVisibility(View.GONE);
+  }
+ else {
+    replyBox.setVisibility(View.VISIBLE);
+  }
   mBtnLikeComment.setVisibility(View.GONE);
   mLayoutButtons.setVisibility(View.GONE);
   mTxtContent.setLinksClickable(true);
