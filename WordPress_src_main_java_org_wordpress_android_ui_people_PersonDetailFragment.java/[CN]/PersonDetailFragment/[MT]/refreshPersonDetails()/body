@@ -8,27 +8,25 @@
     mDisplayNameTextView.setText(StringUtils.unescapeHTML(person.getDisplayName()));
     mRoleTextView.setText(StringUtils.capitalize(person.getRole()));
     if (!TextUtils.isEmpty(person.getUsername())) {
-      mUsernameTextView.setVisibility(View.VISIBLE);
       mUsernameTextView.setText(String.format("@%s",person.getUsername()));
     }
- else {
-      mUsernameTextView.setVisibility(View.GONE);
-    }
-    if (person.getPersonType() == Person.PersonType.USER) {
-      mSubscribedTextView.setVisibility(View.GONE);
-    }
- else {
-      mSubscribedTextView.setVisibility(View.VISIBLE);
-      String dateSubscribed=SimpleDateFormat.getDateInstance().format(person.getDateSubscribed());
-      String dateText=getString(R.string.follower_subscribed_since,dateSubscribed);
-      mSubscribedTextView.setText(dateText);
-    }
-    if (person.getPersonType() == Person.PersonType.USER) {
+    if (mPersonType == Person.PersonType.USER) {
       mRoleContainer.setVisibility(View.VISIBLE);
       setupRoleContainerForCapability();
+      mSubscribedDateContainer.setVisibility(View.GONE);
     }
  else {
       mRoleContainer.setVisibility(View.GONE);
+      mSubscribedDateContainer.setVisibility(View.VISIBLE);
+      if (mPersonType == Person.PersonType.FOLLOWER) {
+        mSubscribedDateTitleView.setText(R.string.title_follower);
+      }
+ else       if (mPersonType == Person.PersonType.EMAIL_FOLLOWER) {
+        mSubscribedDateTitleView.setText(R.string.title_email_follower);
+      }
+      String dateSubscribed=SimpleDateFormat.getDateInstance().format(person.getDateSubscribed());
+      String dateText=getString(R.string.follower_subscribed_since,dateSubscribed);
+      mSubscribedDateTextView.setText(dateText);
     }
   }
  else {
