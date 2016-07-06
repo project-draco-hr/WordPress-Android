@@ -14,5 +14,10 @@
     int pageToFetch=mEmailFollowersLastFetchedPage + 1;
     return fetchEmailFollowersList(blog.getDotComBlogId(),blog.getLocalTableBlogId(),pageToFetch);
   }
+ else   if (filter == PeopleListFilter.VIEWERS && !mViewersEndOfListReached) {
+    Blog blog=WordPress.getCurrentBlog();
+    int count=PeopleTable.getViewersCountForLocalBlogId(blog.getLocalTableBlogId());
+    return fetchViewersList(blog.getDotComBlogId(),blog.getLocalTableBlogId(),count);
+  }
   return false;
 }
