@@ -4,14 +4,14 @@
       if (jsonObject != null && callback != null) {
         try {
           JSONArray jsonArray=jsonObject.getJSONArray("subscribers");
-          List<Person> people=peopleListFromJSON(jsonArray,blogId,localTableBlogId,!isEmailFollower,isEmailFollower,false);
+          List<Person> people=peopleListFromJSON(jsonArray,localTableBlogId,!isEmailFollower,isEmailFollower);
           int pageFetched=jsonObject.optInt("page");
           int numberOfPages=jsonObject.optInt("pages");
           boolean isEndOfList=page >= numberOfPages || page >= FOLLOWER_PAGE_LIMIT;
           callback.onSuccess(people,pageFetched,isEndOfList);
         }
  catch (        JSONException e) {
-          AppLog.e(T.API,"JSON exception occurred while parsing the response for sites/%s/users: " + e);
+          AppLog.e(T.API,"JSON exception occurred while parsing the response for " + "sites/%s/stats/followers: " + e);
           callback.onError();
         }
       }

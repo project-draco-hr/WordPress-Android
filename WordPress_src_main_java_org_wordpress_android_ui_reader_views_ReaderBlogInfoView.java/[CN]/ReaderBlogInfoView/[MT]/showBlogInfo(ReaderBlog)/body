@@ -4,11 +4,11 @@
   }
   mBlogInfo=blogInfo;
   ViewGroup layoutInfo=(ViewGroup)findViewById(R.id.layout_blog_info);
-  ViewGroup layoutDescription=(ViewGroup)layoutInfo.findViewById(R.id.layout_blog_description);
   TextView txtBlogName=(TextView)layoutInfo.findViewById(R.id.text_blog_name);
   TextView txtDomain=(TextView)layoutInfo.findViewById(R.id.text_domain);
   TextView txtDescription=(TextView)layoutInfo.findViewById(R.id.text_blog_description);
   TextView txtFollowCount=(TextView)layoutInfo.findViewById(R.id.text_blog_follow_count);
+  WPNetworkImageView imgBlavatar=(WPNetworkImageView)layoutInfo.findViewById(R.id.image_blavatar);
   if (blogInfo.hasName()) {
     txtBlogName.setText(blogInfo.getName());
   }
@@ -24,10 +24,10 @@
   }
   if (blogInfo.hasDescription()) {
     txtDescription.setText(blogInfo.getDescription());
-    layoutDescription.setVisibility(View.VISIBLE);
+    txtDescription.setVisibility(View.VISIBLE);
   }
  else {
-    layoutDescription.setVisibility(View.GONE);
+    txtDescription.setVisibility(View.GONE);
   }
   txtFollowCount.setText(String.format(getContext().getString(R.string.reader_label_follow_count),blogInfo.numSubscribers));
   if (ReaderUtils.isLoggedOutReader()) {
@@ -42,6 +42,14 @@
       }
     }
 );
+  }
+  if (blogInfo.hasImageUrl()) {
+    int imageSize=getContext().getResources().getDimensionPixelSize(R.dimen.avatar_sz_medium);
+    String imageUrl=PhotonUtils.getPhotonImageUrl(blogInfo.getImageUrl(),imageSize,imageSize);
+    imgBlavatar.setImageUrl(imageUrl,ImageType.BLAVATAR);
+  }
+ else {
+    imgBlavatar.showDefaultBlavatarImage();
   }
   if (layoutInfo.getVisibility() != View.VISIBLE) {
     layoutInfo.setVisibility(View.VISIBLE);
