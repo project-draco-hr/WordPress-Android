@@ -11,13 +11,31 @@
   if (role == null) {
     role=loadDefaultRole();
   }
-  mUsernameEditText=(EditText)getView().findViewById(R.id.invite_usernames);
+  mUsernameEditText=(MultiUsernameEditText)getView().findViewById(R.id.invite_usernames);
+  mUsernameEditText.setOnSelectionChangeListener(new MultiUsernameEditText.OnSelectionChangeListener(){
+    @Override public void onSelectionChanged(    int selStart,    int selEnd){
+      if (selEnd == 0) {
+        if (mUsernameEditText.getText().toString().length() == 0) {
+          List<String> list=new ArrayList<>(mUsernameButtons.keySet());
+          if (!list.isEmpty()) {
+            String username=list.get(list.size() - 1);
+            removeUsername(username);
+          }
+          mUsernameEditText.setText(" ");
+        }
+        mUsernameEditText.setSelection(1);
+      }
+    }
+  }
+);
   mUsernameEditText.addTextChangedListener(new TextWatcher(){
     @Override public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
     }
     @Override public void onTextChanged(    CharSequence s,    int start,    int before,    int count){
-      if (mUsernameEditText.getText().toString().endsWith(" ")) {
+      if (!mAddingUsername && mUsernameEditText.getText().toString().endsWith(" ")) {
+        mAddingUsername=true;
         addUsername(mUsernameEditText,null);
+        mAddingUsername=false;
       }
     }
     @Override public void afterTextChanged(    Editable s){
