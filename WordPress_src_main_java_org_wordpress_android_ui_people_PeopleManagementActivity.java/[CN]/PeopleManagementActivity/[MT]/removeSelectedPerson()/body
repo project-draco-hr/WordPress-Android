@@ -12,15 +12,12 @@
   }
   final Person.PersonType personType=person.getPersonType();
   final String displayName=person.getDisplayName();
-  PeopleUtils.RemoveUserCallback callback=new PeopleUtils.RemoveUserCallback(){
+  PeopleUtils.RemovePersonCallback callback=new PeopleUtils.RemovePersonCallback(){
     @Override public void onSuccess(    long personID,    int localTableBlogId){
       if (personType == Person.PersonType.USER) {
         AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.PERSON_REMOVED);
       }
-      Person person=PeopleTable.getUser(personID,localTableBlogId);
-      if (person != null) {
-        PeopleTable.deleteUser(personID,localTableBlogId);
-      }
+      PeopleTable.deletePerson(personID,localTableBlogId,personType);
       String message=getString(R.string.person_removed,displayName);
       ToastUtils.showToast(PeopleManagementActivity.this,message,ToastUtils.Duration.LONG);
       navigateBackToPeopleListFragment();
