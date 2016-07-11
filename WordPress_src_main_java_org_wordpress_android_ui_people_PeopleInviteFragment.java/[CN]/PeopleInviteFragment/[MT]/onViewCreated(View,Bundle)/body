@@ -18,6 +18,8 @@
     role=loadDefaultRole();
   }
   mUsernameEditText=(MultiUsernameEditText)view.findViewById(R.id.invite_usernames);
+  mUsernameEditText.setText(" ");
+  mUsernameEditText.setSelection(1);
   mUsernameEditText.setOnSelectionChangeListener(new MultiUsernameEditText.OnSelectionChangeListener(){
     @Override public void onSelectionChanged(    int selStart,    int selEnd){
       if (selEnd == 0) {
@@ -45,7 +47,7 @@
         mUsernameEditText.setText(" ");
         shouldIgnoreChanges=false;
       }
- else       if (mUsernameEditText.getText().toString().endsWith(" ")) {
+ else       if (isUsernameContainsDelimiter(mUsernameEditText.getText().toString())) {
         shouldIgnoreChanges=true;
         addUsername(mUsernameEditText,null);
         shouldIgnoreChanges=false;
