@@ -7,13 +7,7 @@
     }
   }
 );
-  String role=null;
-  if (savedInstanceState != null) {
-    ArrayList<String> usernames=savedInstanceState.getStringArrayList(KEY_USERNAMES);
-    mUsernameResults=(HashMap<String,String>)savedInstanceState.getSerializable(KEY_USERNAME_RESULTS);
-    populateUsernameButtons(usernames);
-    role=savedInstanceState.getString(KEY_ROLE);
-  }
+  String role=mRole;
   if (role == null) {
     role=loadDefaultRole();
   }
@@ -77,6 +71,10 @@
     }
   }
 );
+  if (mUsernameButtons != null && mUsernameButtons.size() > 0) {
+    ArrayList<String> usernames=new ArrayList<>(mUsernameButtons.keySet());
+    populateUsernameButtons(usernames);
+  }
   View roleContainer=getView().findViewById(R.id.role_container);
   roleContainer.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
