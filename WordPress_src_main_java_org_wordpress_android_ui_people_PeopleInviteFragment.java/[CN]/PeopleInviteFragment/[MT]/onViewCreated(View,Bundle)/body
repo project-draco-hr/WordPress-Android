@@ -1,6 +1,12 @@
 {
   super.onViewCreated(view,savedInstanceState);
-  mUsernamesContainer=(ViewGroup)getView().findViewById(R.id.usernames);
+  mUsernamesContainer=(ViewGroup)view.findViewById(R.id.usernames);
+  mUsernamesContainer.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      EditTextUtils.showSoftInput(mUsernameEditText);
+    }
+  }
+);
   String role=null;
   if (savedInstanceState != null) {
     ArrayList<String> usernames=savedInstanceState.getStringArrayList(KEY_USERNAMES);
@@ -11,11 +17,11 @@
   if (role == null) {
     role=loadDefaultRole();
   }
-  mUsernameEditText=(MultiUsernameEditText)getView().findViewById(R.id.invite_usernames);
+  mUsernameEditText=(MultiUsernameEditText)view.findViewById(R.id.invite_usernames);
   mUsernameEditText.setOnSelectionChangeListener(new MultiUsernameEditText.OnSelectionChangeListener(){
     @Override public void onSelectionChanged(    int selStart,    int selEnd){
       if (selEnd == 0) {
-        if (mUsernameEditText.getText().toString().length() == 0) {
+        if (TextUtils.isEmpty(mUsernameEditText.getText())) {
           List<String> list=new ArrayList<>(mUsernameButtons.keySet());
           if (!list.isEmpty()) {
             String username=list.get(list.size() - 1);
@@ -29,13 +35,20 @@
   }
 );
   mUsernameEditText.addTextChangedListener(new TextWatcher(){
+    private boolean shouldIgnoreChanges=false;
     @Override public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
     }
     @Override public void onTextChanged(    CharSequence s,    int start,    int before,    int count){
-      if (!mAddingUsername && mUsernameEditText.getText().toString().endsWith(" ")) {
-        mAddingUsername=true;
+      if (shouldIgnoreChanges)       return;
+      if (mUsernameButtons.size() >= MAX_NUMBER_OF_INVITEES && !TextUtils.isEmpty(s)) {
+        shouldIgnoreChanges=true;
+        mUsernameEditText.setText(" ");
+        shouldIgnoreChanges=false;
+      }
+ else       if (mUsernameEditText.getText().toString().endsWith(" ")) {
+        shouldIgnoreChanges=true;
         addUsername(mUsernameEditText,null);
-        mAddingUsername=false;
+        shouldIgnoreChanges=false;
       }
     }
     @Override public void afterTextChanged(    Editable s){
@@ -59,13 +72,6 @@
       if (!hasFocus && mUsernameEditText.getText().toString().length() > 0) {
         addUsername(mUsernameEditText,null);
       }
-    }
-  }
-);
-  View usernamesContainer=getView().findViewById(R.id.usernames);
-  usernamesContainer.setOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View v){
-      EditTextUtils.showSoftInput(mUsernameEditText);
     }
   }
 );
