@@ -1,0 +1,18 @@
+{
+  if (filter == PeopleListFilter.TEAM && !mUsersEndOfListReached) {
+    Blog blog=WordPress.getCurrentBlog();
+    int count=PeopleTable.getUsersCountForLocalBlogId(blog.getLocalTableBlogId());
+    return fetchUsersList(blog.getDotComBlogId(),blog.getLocalTableBlogId(),count);
+  }
+ else   if (filter == PeopleListFilter.FOLLOWERS && !mFollowersEndOfListReached) {
+    Blog blog=WordPress.getCurrentBlog();
+    int pageToFetch=mFollowersLastFetchedPage + 1;
+    return fetchFollowersList(blog.getDotComBlogId(),blog.getLocalTableBlogId(),pageToFetch);
+  }
+ else   if (filter == PeopleListFilter.EMAIL_FOLLOWERS && !mEmailFollowersEndOfListReached) {
+    Blog blog=WordPress.getCurrentBlog();
+    int pageToFetch=mEmailFollowersLastFetchedPage + 1;
+    return fetchEmailFollowersList(blog.getDotComBlogId(),blog.getLocalTableBlogId(),pageToFetch);
+  }
+  return false;
+}

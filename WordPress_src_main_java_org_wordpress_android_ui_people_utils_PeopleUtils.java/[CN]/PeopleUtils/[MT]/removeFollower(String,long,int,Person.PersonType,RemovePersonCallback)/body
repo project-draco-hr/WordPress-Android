@@ -1,0 +1,33 @@
+{
+  com.wordpress.rest.RestRequest.Listener listener=new RestRequest.Listener(){
+    @Override public void onResponse(    JSONObject jsonObject){
+      if (jsonObject != null && callback != null) {
+        boolean success=jsonObject.optBoolean("deleted");
+        if (success) {
+          callback.onSuccess(personID,localTableBlogId);
+        }
+ else {
+          callback.onError();
+        }
+      }
+    }
+  }
+;
+  RestRequest.ErrorListener errorListener=new RestRequest.ErrorListener(){
+    @Override public void onErrorResponse(    VolleyError volleyError){
+      AppLog.e(T.API,volleyError);
+      if (callback != null) {
+        callback.onError();
+      }
+    }
+  }
+;
+  String path;
+  if (personType == Person.PersonType.EMAIL_FOLLOWER) {
+    path=String.format("sites/%s/email-followers/%d/delete",blogId,personID);
+  }
+ else {
+    path=String.format("sites/%s/followers/%d/delete",blogId,personID);
+  }
+  WordPress.getRestClientUtilsV1_1().post(path,listener,errorListener);
+}
