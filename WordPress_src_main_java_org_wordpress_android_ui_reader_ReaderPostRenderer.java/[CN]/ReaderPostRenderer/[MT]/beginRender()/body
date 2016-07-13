@@ -3,12 +3,12 @@
   mRenderBuilder=new StringBuilder(getPostContent());
   new Thread(){
     @Override public void run(){
-      final boolean renderAsTiledGallery=shouldRenderAsTiledGallery();
-      if (!renderAsTiledGallery) {
+      final boolean hasTiledGallery=hasTiledGallery(mRenderBuilder.toString());
+      if (!(hasTiledGallery && mResourceVars.isWideDisplay)) {
         resizeImages();
       }
       resizeIframes();
-      final String htmlContent=formatPostContentForWebView(mRenderBuilder.toString(),renderAsTiledGallery);
+      final String htmlContent=formatPostContentForWebView(mRenderBuilder.toString(),hasTiledGallery,mResourceVars.isWideDisplay);
       mRenderBuilder=null;
       handler.post(new Runnable(){
         @Override public void run(){

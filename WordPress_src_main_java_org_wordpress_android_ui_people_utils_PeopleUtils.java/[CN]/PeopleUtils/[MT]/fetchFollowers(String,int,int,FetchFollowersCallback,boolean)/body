@@ -4,7 +4,8 @@
       if (jsonObject != null && callback != null) {
         try {
           JSONArray jsonArray=jsonObject.getJSONArray("subscribers");
-          List<Person> people=peopleListFromJSON(jsonArray,localTableBlogId,!isEmailFollower,isEmailFollower);
+          Person.PersonType personType=isEmailFollower ? Person.PersonType.EMAIL_FOLLOWER : Person.PersonType.FOLLOWER;
+          List<Person> people=peopleListFromJSON(jsonArray,localTableBlogId,personType);
           int pageFetched=jsonObject.optInt("page");
           int numberOfPages=jsonObject.optInt("pages");
           boolean isEndOfList=page >= numberOfPages || page >= FOLLOWER_PAGE_LIMIT;
