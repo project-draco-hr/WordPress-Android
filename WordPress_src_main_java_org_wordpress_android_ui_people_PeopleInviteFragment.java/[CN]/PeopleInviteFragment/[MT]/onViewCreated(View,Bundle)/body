@@ -12,16 +12,15 @@
     role=loadDefaultRole();
   }
   mUsernameEditText=(MultiUsernameEditText)view.findViewById(R.id.invite_usernames);
+  mUsernameEditText.setOnKeyListener(new View.OnKeyListener(){
+    @Override public boolean onKey(    View view,    int i,    KeyEvent keyEvent){
+      return keyEvent.getKeyCode() == KeyEvent.KEYCODE_DEL && keyEvent.getAction() == KeyEvent.ACTION_DOWN && removeLastEnteredUsername();
+    }
+  }
+);
   mUsernameEditText.setOnBackspacePressedListener(new MultiUsernameEditText.OnBackspacePressedListener(){
-    @Override public void onBackspacePressed(){
-      if (!TextUtils.isEmpty(mUsernameEditText.getText())) {
-        return;
-      }
-      List<String> list=new ArrayList<>(mUsernameButtons.keySet());
-      if (!list.isEmpty()) {
-        String username=list.get(list.size() - 1);
-        removeUsername(username);
-      }
+    @Override public boolean onBackspacePressed(){
+      return removeLastEnteredUsername();
     }
   }
 );
