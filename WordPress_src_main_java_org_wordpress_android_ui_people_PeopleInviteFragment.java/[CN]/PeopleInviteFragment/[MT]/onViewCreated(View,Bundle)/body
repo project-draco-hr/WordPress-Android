@@ -12,20 +12,15 @@
     role=loadDefaultRole();
   }
   mUsernameEditText=(MultiUsernameEditText)view.findViewById(R.id.invite_usernames);
-  mUsernameEditText.setText(" ");
-  mUsernameEditText.setSelection(1);
-  mUsernameEditText.setOnSelectionChangeListener(new MultiUsernameEditText.OnSelectionChangeListener(){
-    @Override public void onSelectionChanged(    int selStart,    int selEnd){
-      if (selEnd == 0) {
-        if (TextUtils.isEmpty(mUsernameEditText.getText())) {
-          List<String> list=new ArrayList<>(mUsernameButtons.keySet());
-          if (!list.isEmpty()) {
-            String username=list.get(list.size() - 1);
-            removeUsername(username);
-          }
-          mUsernameEditText.setText(" ");
-        }
-        mUsernameEditText.setSelection(1);
+  mUsernameEditText.setOnBackspacePressedListener(new MultiUsernameEditText.OnBackspacePressedListener(){
+    @Override public void onBackspacePressed(){
+      if (!TextUtils.isEmpty(mUsernameEditText.getText())) {
+        return;
+      }
+      List<String> list=new ArrayList<>(mUsernameButtons.keySet());
+      if (!list.isEmpty()) {
+        String username=list.get(list.size() - 1);
+        removeUsername(username);
       }
     }
   }
@@ -35,12 +30,14 @@
     @Override public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
     }
     @Override public void onTextChanged(    CharSequence s,    int start,    int before,    int count){
-      if (shouldIgnoreChanges)       return;
+      if (shouldIgnoreChanges) {
+        return;
+      }
       shouldIgnoreChanges=true;
       if (mUsernameButtons.size() >= MAX_NUMBER_OF_INVITEES && !TextUtils.isEmpty(s)) {
-        mUsernameEditText.setText(" ");
+        resetEditTextContent(mUsernameEditText);
       }
- else       if (isUsernameContainsDelimiter(mUsernameEditText.getText().toString())) {
+ else       if (endsWithDelimiter(mUsernameEditText.getText().toString())) {
         addUsername(mUsernameEditText,null);
       }
       shouldIgnoreChanges=false;
@@ -69,22 +66,22 @@
     }
   }
 );
-  if (mUsernameButtons != null && mUsernameButtons.size() > 0) {
+  if (mUsernameButtons.size() > 0) {
     ArrayList<String> usernames=new ArrayList<>(mUsernameButtons.keySet());
     populateUsernameButtons(usernames);
   }
-  View roleContainer=getView().findViewById(R.id.role_container);
+  View roleContainer=view.findViewById(R.id.role_container);
   roleContainer.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
       RoleSelectDialogFragment.show(PeopleInviteFragment.this,0);
     }
   }
 );
-  mRoleTextView=(TextView)getView().findViewById(R.id.role);
+  mRoleTextView=(TextView)view.findViewById(R.id.role);
   setRole(role);
   final int MAX_CHARS=getResources().getInteger(R.integer.invite_message_char_limit);
-  final TextView remainingCharsTextView=(TextView)getView().findViewById(R.id.message_remaining);
-  mCustomMessageEditText=(EditText)getView().findViewById(R.id.message);
+  final TextView remainingCharsTextView=(TextView)view.findViewById(R.id.message_remaining);
+  mCustomMessageEditText=(EditText)view.findViewById(R.id.message);
   mCustomMessageEditText.addTextChangedListener(new TextWatcher(){
     @Override public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
     }
