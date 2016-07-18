@@ -5,10 +5,35 @@
     int avatarSz=getResources().getDimensionPixelSize(R.dimen.people_avatar_sz);
     String avatarUrl=GravatarUtils.fixGravatarUrl(person.getAvatarUrl(),avatarSz);
     mAvatarImageView.setImageUrl(avatarUrl,WPNetworkImageView.ImageType.AVATAR);
-    mDisplayNameTextView.setText(person.getDisplayName());
-    mUsernameTextView.setText(person.getUsername());
+    mDisplayNameTextView.setText(StringUtils.unescapeHTML(person.getDisplayName()));
     mRoleTextView.setText(StringUtils.capitalize(person.getRole()));
-    setupRoleContainerForCapability();
+    if (!TextUtils.isEmpty(person.getUsername())) {
+      mUsernameTextView.setText(String.format("@%s",person.getUsername()));
+    }
+    if (mPersonType == Person.PersonType.USER) {
+      mRoleContainer.setVisibility(View.VISIBLE);
+      setupRoleContainerForCapability();
+    }
+ else {
+      mRoleContainer.setVisibility(View.GONE);
+    }
+    if (mPersonType == Person.PersonType.USER || mPersonType == Person.PersonType.VIEWER) {
+      mSubscribedDateContainer.setVisibility(View.GONE);
+    }
+ else {
+      mSubscribedDateContainer.setVisibility(View.VISIBLE);
+      if (mPersonType == Person.PersonType.FOLLOWER) {
+        mSubscribedDateTitleView.setText(R.string.title_follower);
+      }
+ else       if (mPersonType == Person.PersonType.EMAIL_FOLLOWER) {
+        mSubscribedDateTitleView.setText(R.string.title_email_follower);
+      }
+      String dateSubscribed=SimpleDateFormat.getDateInstance().format(person.getDateSubscribed());
+      String dateText=getString(R.string.follower_subscribed_since,dateSubscribed);
+      mSubscribedDateTextView.setText(dateText);
+    }
+    int padding=mPersonType == Person.PersonType.EMAIL_FOLLOWER ? (int)getResources().getDimension(R.dimen.margin_small) : 0;
+    changeDisplayNameTopPadding(padding);
   }
  else {
     AppLog.w(AppLog.T.PEOPLE,"Person returned null from DB for personID: " + mPersonID + " & localTableBlogID: "+ mLocalTableBlogID);

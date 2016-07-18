@@ -1,0 +1,23 @@
+{
+  if (jsonArray == null) {
+    return null;
+  }
+  ArrayList<Person> peopleList=new ArrayList<>(jsonArray.length());
+  for (int i=0; i < jsonArray.length(); i++) {
+    Person person;
+    if (personType == Person.PersonType.USER) {
+      person=Person.userFromJSON(jsonArray.optJSONObject(i),localTableBlogId);
+    }
+ else     if (personType == Person.PersonType.VIEWER) {
+      person=Person.viewerFromJSON(jsonArray.optJSONObject(i),localTableBlogId);
+    }
+ else {
+      boolean isEmailFollower=(personType == Person.PersonType.EMAIL_FOLLOWER);
+      person=Person.followerFromJSON(jsonArray.optJSONObject(i),localTableBlogId,isEmailFollower);
+    }
+    if (person != null) {
+      peopleList.add(person);
+    }
+  }
+  return peopleList;
+}

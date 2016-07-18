@@ -8,6 +8,14 @@
   mUploadingMedia=new HashMap<>();
   mFailedMediaIds=new HashSet<>();
   mWebView=(EditorWebViewAbstract)view.findViewById(R.id.webview);
+  if (mWebView.shouldSwitchToCompatibilityMode()) {
+    ViewGroup parent=(ViewGroup)mWebView.getParent();
+    int index=parent.indexOfChild(mWebView);
+    parent.removeView(mWebView);
+    mWebView=new EditorWebViewCompatibility(getActivity(),null);
+    mWebView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT));
+    parent.addView(mWebView,index);
+  }
   mWebView.setOnTouchListener(this);
   mWebView.setOnImeBackListener(this);
   mWebView.setAuthHeaderRequestListener(this);

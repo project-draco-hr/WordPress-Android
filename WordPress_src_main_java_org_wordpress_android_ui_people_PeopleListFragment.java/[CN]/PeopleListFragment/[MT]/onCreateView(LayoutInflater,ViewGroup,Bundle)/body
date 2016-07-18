@@ -1,11 +1,90 @@
 {
   setHasOptionsMenu(true);
   final ViewGroup rootView=(ViewGroup)inflater.inflate(R.layout.people_list_fragment,container,false);
-  mRecyclerView=(RecyclerView)rootView.findViewById(R.id.recycler_view);
-  mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-  mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-  mRecyclerView.addItemDecoration(new PeopleItemDecoration(getActivity(),R.drawable.people_list_divider));
-  mProgress=(ProgressBar)rootView.findViewById(R.id.progress_footer);
-  mProgress.setVisibility(View.GONE);
-  return rootView;
+  mLocalTableBlogID=getArguments().getInt(ARG_LOCAL_TABLE_BLOG_ID);
+  final Blog blog=WordPress.getBlog(mLocalTableBlogID);
+  final boolean isPrivate=blog != null && blog.isPrivate();
+  mFilteredRecyclerView=(FilteredRecyclerView)rootView.findViewById(R.id.filtered_recycler_view);
+  mFilteredRecyclerView.addItemDecoration(new PeopleItemDecoration(getActivity(),R.drawable.people_list_divider));
+  mFilteredRecyclerView.setLogT(AppLog.T.PEOPLE);
+  mFilteredRecyclerView.setSwipeToRefreshEnabled(false);
+  mFilteredRecyclerView.setToolbarBackgroundColor(ContextCompat.getColor(getActivity(),R.color.blue_medium));
+  mFilteredRecyclerView.setToolbarSpinnerTextColor(ContextCompat.getColor(getActivity(),R.color.white));
+  mFilteredRecyclerView.setToolbarSpinnerDrawable(R.drawable.arrow);
+  mFilteredRecyclerView.setToolbarLeftAndRightPadding(getResources().getDimensionPixelSize(R.dimen.margin_filter_spinner),getResources().getDimensionPixelSize(R.dimen.margin_none));
+  mFilteredRecyclerView.setFilterListener(new FilteredRecyclerView.FilterListener(){
+    @Override public List<FilterCriteria> onLoadFilterCriteriaOptions(    boolean refresh){
+      ArrayList<FilterCriteria> list=new ArrayList<>();
+      Collections.addAll(list,PeopleListFilter.values());
+      if (!isPrivate) {
+        list.remove(PeopleListFilter.VIEWERS);
+      }
+      return list;
+    }
+    @Override public void onLoadFilterCriteriaOptionsAsync(    FilteredRecyclerView.FilterCriteriaAsyncLoaderListener listener,    boolean refresh){
+    }
+    @Override public FilterCriteria onRecallSelection(){
+      mPeopleListFilter=AppPrefs.getPeopleListFilter();
+      if (mPeopleListFilter == PeopleListFilter.VIEWERS && !isPrivate) {
+        mPeopleListFilter=PeopleListFilter.TEAM;
+        AppPrefs.setPeopleListFilter(mPeopleListFilter);
+      }
+      return mPeopleListFilter;
+    }
+    @Override public void onLoadData(){
+      updatePeople(false);
+    }
+    @Override public void onFilterSelected(    int position,    FilterCriteria criteria){
+      mPeopleListFilter=(PeopleListFilter)criteria;
+      AppPrefs.setPeopleListFilter(mPeopleListFilter);
+    }
+    @Override public String onShowEmptyViewMessage(    EmptyViewMessageType emptyViewMsgType){
+      int stringId=0;
+switch (emptyViewMsgType) {
+case LOADING:
+        stringId=R.string.people_fetching;
+      break;
+case NETWORK_ERROR:
+    stringId=R.string.no_network_message;
+  break;
+case NO_CONTENT:
+switch (mPeopleListFilter) {
+case TEAM:
+  stringId=R.string.people_empty_list_filtered_users;
+break;
+case FOLLOWERS:
+stringId=R.string.people_empty_list_filtered_followers;
+break;
+case EMAIL_FOLLOWERS:
+stringId=R.string.people_empty_list_filtered_email_followers;
+break;
+case VIEWERS:
+stringId=R.string.people_empty_list_filtered_viewers;
+break;
+}
+break;
+case GENERIC_ERROR:
+switch (mPeopleListFilter) {
+case TEAM:
+stringId=R.string.error_fetch_users_list;
+break;
+case FOLLOWERS:
+stringId=R.string.error_fetch_followers_list;
+break;
+case EMAIL_FOLLOWERS:
+stringId=R.string.error_fetch_email_followers_list;
+break;
+case VIEWERS:
+stringId=R.string.error_fetch_viewers_list;
+break;
+}
+break;
+}
+return getString(stringId);
+}
+@Override public void onShowCustomEmptyView(EmptyViewMessageType emptyViewMsgType){
+}
+}
+);
+return rootView;
 }

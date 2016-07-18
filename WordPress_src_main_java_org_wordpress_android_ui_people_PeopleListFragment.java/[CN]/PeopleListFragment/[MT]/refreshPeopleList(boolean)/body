@@ -1,0 +1,35 @@
+{
+  if (!isAdded())   return;
+  List<Person> peopleList;
+switch (mPeopleListFilter) {
+case TEAM:
+    peopleList=PeopleTable.getUsers(mLocalTableBlogID);
+  break;
+case FOLLOWERS:
+peopleList=PeopleTable.getFollowers(mLocalTableBlogID);
+break;
+case EMAIL_FOLLOWERS:
+peopleList=PeopleTable.getEmailFollowers(mLocalTableBlogID);
+break;
+case VIEWERS:
+peopleList=PeopleTable.getViewers(mLocalTableBlogID);
+break;
+default :
+peopleList=new ArrayList<>();
+break;
+}
+PeopleAdapter peopleAdapter=(PeopleAdapter)mFilteredRecyclerView.getAdapter();
+if (peopleAdapter == null) {
+peopleAdapter=new PeopleAdapter(getActivity(),peopleList);
+mFilteredRecyclerView.setAdapter(peopleAdapter);
+}
+ else {
+peopleAdapter.setPeopleList(peopleList);
+}
+if (!peopleList.isEmpty()) {
+mFilteredRecyclerView.hideEmptyView();
+}
+ else if (!isFetching) {
+mFilteredRecyclerView.updateEmptyView(EmptyViewMessageType.NO_CONTENT);
+}
+}

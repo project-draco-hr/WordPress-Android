@@ -2,15 +2,24 @@
   if (!isAdded()) {
     return;
   }
+  if (!NetworkUtils.checkConnection(getActivity())) {
+    enableSendButton(true);
+    return;
+  }
+  enableSendButton(false);
   if (mUsernameEditText.getText().toString().length() > 0) {
     addUsername(mUsernameEditText,new ValidationEndListener(){
       @Override public void onValidationEnd(){
-        checkAndSend();
+        if (!checkAndSend()) {
+          enableSendButton(true);
+        }
       }
     }
 );
   }
  else {
-    checkAndSend();
+    if (!checkAndSend()) {
+      enableSendButton(true);
+    }
   }
 }
