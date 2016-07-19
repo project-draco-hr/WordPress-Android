@@ -3,19 +3,33 @@
   mBlogId=post.blogId;
   mTitle=post.getTitle();
   mFeaturedImage=post.getFeaturedImage();
-  if (post.hasAuthorName() && post.hasBlogName()) {
-    if (post.getAuthorName().equalsIgnoreCase(post.getBlogName())) {
-      mByline=post.getBlogName();
+  String blogNameOrUrl;
+  boolean hasBlogNameOrUrl;
+  if (post.hasBlogName()) {
+    blogNameOrUrl=post.getBlogName();
+    hasBlogNameOrUrl=true;
+  }
+ else   if (post.hasBlogUrl()) {
+    blogNameOrUrl=post.getBlogUrl();
+    hasBlogNameOrUrl=true;
+  }
+ else {
+    blogNameOrUrl=null;
+    hasBlogNameOrUrl=false;
+  }
+  if (post.hasAuthorName() && hasBlogNameOrUrl) {
+    if (post.getAuthorName().equalsIgnoreCase(blogNameOrUrl)) {
+      mByline=blogNameOrUrl;
     }
  else {
-      mByline=post.getAuthorName() + ", " + post.getBlogName();
+      mByline=post.getAuthorName() + ", " + blogNameOrUrl;
     }
   }
  else   if (post.hasAuthorName()) {
     mByline=post.getAuthorName();
   }
- else   if (post.hasBlogName()) {
-    mByline=post.getBlogName();
+ else   if (hasBlogNameOrUrl) {
+    mByline=blogNameOrUrl;
   }
  else {
     mByline="";
