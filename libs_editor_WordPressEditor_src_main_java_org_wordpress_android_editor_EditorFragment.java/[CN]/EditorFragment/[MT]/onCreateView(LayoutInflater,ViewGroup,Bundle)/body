@@ -20,10 +20,20 @@
   mWebView.setOnImeBackListener(this);
   mWebView.setAuthHeaderRequestListener(this);
   mWebView.setOnDragListener(new View.OnDragListener(){
+    private final String MIMETYPE_JPEG="image/jpeg";
+    private final String[] mSupportedMimeTypes={ClipDescription.MIMETYPE_TEXT_PLAIN,ClipDescription.MIMETYPE_TEXT_HTML,MIMETYPE_JPEG};
+    private boolean isSupported(    ClipDescription clipDescription){
+      for (      String supportedMimeType : mSupportedMimeTypes) {
+        if (clipDescription.hasMimeType(supportedMimeType)) {
+          return true;
+        }
+      }
+      return false;
+    }
     @Override public boolean onDrag(    View view,    DragEvent dragEvent){
 switch (dragEvent.getAction()) {
 case DragEvent.ACTION_DRAG_STARTED:
-        break;
+        return isSupported(dragEvent.getClipDescription());
 case DragEvent.ACTION_DRAG_ENTERED:
       break;
 case DragEvent.ACTION_DRAG_LOCATION:
@@ -34,7 +44,16 @@ break;
 case DragEvent.ACTION_DRAG_EXITED:
 break;
 case DragEvent.ACTION_DROP:
+ClipDescription clipDescription=dragEvent.getClipDescription();
+if (clipDescription.getMimeTypeCount() < 1) {
+break;
+}
+if (clipDescription.hasMimeType(MIMETYPE_JPEG)) {
 mEditorFragmentListener.onMediaDropped(dragEvent.getClipData().getItemAt(0).getUri());
+}
+ else if (clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) || clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)) {
+mEditorFragmentListener.onTextDropped(dragEvent.getClipData().getItemAt(0).getHtmlText());
+}
 break;
 case DragEvent.ACTION_DRAG_ENDED:
 default :
