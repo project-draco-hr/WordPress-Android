@@ -13,7 +13,7 @@
   final String siteUrl=EditTextUtils.getText(mSiteUrlTextField).trim();
   final String siteName=EditTextUtils.getText(mSiteTitleTextField).trim();
   final String language=CreateUserAndBlog.getDeviceLanguage(getActivity());
-  CreateUserAndBlog createUserAndBlog=new CreateUserAndBlog("","","",siteUrl,siteName,language,getRestClientUtils(),getActivity(),new ErrorListener(),new CreateUserAndBlog.Callback(){
+  CreateUserAndBlog createUserAndBlog=new CreateUserAndBlog("","","",siteUrl,siteName,language,getRestClientUtils(),new ErrorListener(),new CreateUserAndBlog.Callback(){
     @Override public void onStepFinished(    CreateUserAndBlog.Step step){
       if (getActivity() != null) {
         updateProgress(getString(R.string.create_new_blog_wpcom));
@@ -32,6 +32,7 @@
         String blogId=details.getString("blogid");
         String username=AccountHelper.getDefaultAccount().getUserName();
         BlogUtils.addOrUpdateBlog(blogName,xmlRpcUrl,homeUrl,blogId,username,null,null,null,true,true,PlansConstants.DEFAULT_PLAN_ID_FOR_NEW_BLOG,null,null);
+        AnalyticsTracker.track(AnalyticsTracker.Stat.CREATED_SITE);
         ToastUtils.showToast(getActivity(),R.string.new_blog_wpcom_created);
       }
  catch (      JSONException e) {
