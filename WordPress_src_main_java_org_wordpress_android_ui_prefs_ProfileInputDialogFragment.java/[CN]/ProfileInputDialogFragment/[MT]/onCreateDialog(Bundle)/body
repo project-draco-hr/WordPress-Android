@@ -28,8 +28,11 @@
   }
   alertDialogBuilder.setCancelable(true).setPositiveButton(R.string.ok,new DialogInterface.OnClickListener(){
     public void onClick(    DialogInterface dialog,    int id){
-      if (mCallback != null) {
-        mCallback.onSuccessfulInput(editText.getText().toString(),callbackId);
+      if (getTargetFragment() instanceof Callback) {
+        ((Callback)getTargetFragment()).onSuccessfulInput(editText.getText().toString(),callbackId);
+      }
+ else {
+        AppLog.e(AppLog.T.UTILS,"Target fragment doesn't implement ProfileInputDialogFragment.Callback");
       }
     }
   }
