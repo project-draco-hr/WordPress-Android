@@ -5,14 +5,19 @@
  else   if (holder instanceof ReaderXPostViewHolder) {
     renderXPost(position,(ReaderXPostViewHolder)holder);
   }
- else   if (holder instanceof BlogInfoViewHolder) {
-    BlogInfoViewHolder blogHolder=(BlogInfoViewHolder)holder;
-    blogHolder.mBlogInfoView.setOnBlogInfoLoadedListener(mBlogInfoLoadedListener);
-    blogHolder.mBlogInfoView.loadBlogInfo(mCurrentBlogId,mCurrentFeedId);
+ else   if (holder instanceof SiteHeaderViewHolder) {
+    SiteHeaderViewHolder blogHolder=(SiteHeaderViewHolder)holder;
+    blogHolder.mSiteHeaderView.setOnBlogInfoLoadedListener(mBlogInfoLoadedListener);
+    if (isDiscover()) {
+      blogHolder.mSiteHeaderView.loadBlogInfo(ReaderConstants.DISCOVER_SITE_ID,0);
+    }
+ else {
+      blogHolder.mSiteHeaderView.loadBlogInfo(mCurrentBlogId,mCurrentFeedId);
+    }
   }
- else   if (holder instanceof TagInfoViewHolder) {
-    TagInfoViewHolder tagHolder=(TagInfoViewHolder)holder;
-    tagHolder.mTagInfoView.setCurrentTag(mCurrentTag);
+ else   if (holder instanceof TagHeaderViewHolder) {
+    TagHeaderViewHolder tagHolder=(TagHeaderViewHolder)holder;
+    tagHolder.mTagHeaderView.setCurrentTag(mCurrentTag);
   }
  else   if (holder instanceof GapMarkerViewHolder) {
     GapMarkerViewHolder gapHolder=(GapMarkerViewHolder)holder;
