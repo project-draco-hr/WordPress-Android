@@ -1,0 +1,27 @@
+{
+  if (mNosaraClient == null) {
+    return;
+  }
+  try {
+    JSONObject properties=new JSONObject();
+    properties.put(JETPACK_USER,metadata.isJetpackUser());
+    properties.put(NUMBER_OF_BLOGS,metadata.getNumBlogs());
+    mNosaraClient.registerUserProperties(properties);
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.UTILS,e);
+  }
+  if (metadata.isUserConnected() && metadata.isWordPressComUser()) {
+    setWordPressComUserName(metadata.getUsername());
+    if (getAnonID() != null) {
+      mNosaraClient.trackAliasUser(getWordPressComUserName(),getAnonID(),TracksClient.NosaraUserType.WPCOM);
+      clearAnonID();
+    }
+  }
+ else {
+    setWordPressComUserName(null);
+    if (getAnonID() == null) {
+      generateNewAnonID();
+    }
+  }
+}

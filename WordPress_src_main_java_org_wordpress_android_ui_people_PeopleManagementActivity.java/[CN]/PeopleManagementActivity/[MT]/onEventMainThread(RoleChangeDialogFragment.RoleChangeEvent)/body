@@ -2,18 +2,22 @@
   if (!NetworkUtils.checkConnection(this)) {
     return;
   }
-  final Person person=PeopleTable.getPerson(event.personID,event.localTableBlogId);
+  final Person person=PeopleTable.getUser(event.personID,event.localTableBlogId);
   if (person == null || event.newRole == null || event.newRole.equalsIgnoreCase(person.getRole())) {
+    return;
+  }
+  String blogId=WordPress.getCurrentRemoteBlogId();
+  if (blogId == null) {
     return;
   }
   final PersonDetailFragment personDetailFragment=getDetailFragment();
   if (personDetailFragment != null) {
     personDetailFragment.changeRole(event.newRole);
   }
-  PeopleUtils.updateRole(person.getBlogId(),person.getPersonID(),event.newRole,event.localTableBlogId,new PeopleUtils.UpdateUserCallback(){
+  PeopleUtils.updateRole(blogId,person.getPersonID(),event.newRole,event.localTableBlogId,new PeopleUtils.UpdateUserCallback(){
     @Override public void onSuccess(    Person person){
       AnalyticsUtils.trackWithCurrentBlogDetails(AnalyticsTracker.Stat.PERSON_UPDATED);
-      PeopleTable.save(person);
+      PeopleTable.saveUser(person);
       refreshOnScreenFragmentDetails();
     }
     @Override public void onError(){

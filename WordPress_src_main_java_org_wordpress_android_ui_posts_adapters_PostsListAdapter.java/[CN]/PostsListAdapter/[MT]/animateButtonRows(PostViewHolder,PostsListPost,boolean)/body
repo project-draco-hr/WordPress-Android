@@ -1,0 +1,26 @@
+{
+  PropertyValuesHolder scaleX=PropertyValuesHolder.ofFloat(View.SCALE_X,1f,0f);
+  PropertyValuesHolder scaleY=PropertyValuesHolder.ofFloat(View.SCALE_Y,1f,0f);
+  ObjectAnimator animOut=ObjectAnimator.ofPropertyValuesHolder(holder.layoutButtons,scaleX,scaleY);
+  animOut.setDuration(ROW_ANIM_DURATION);
+  animOut.setInterpolator(new AccelerateInterpolator());
+  animOut.addListener(new AnimatorListenerAdapter(){
+    @Override public void onAnimationEnd(    Animator animation){
+      holder.btnEdit.setVisibility(showRow1 ? View.VISIBLE : View.GONE);
+      holder.btnView.setVisibility(showRow1 ? View.VISIBLE : View.GONE);
+      holder.btnMore.setVisibility(showRow1 ? View.VISIBLE : View.GONE);
+      holder.btnStats.setVisibility(!showRow1 && canShowStatsForPost(post) ? View.VISIBLE : View.GONE);
+      holder.btnPublish.setVisibility(!showRow1 && canPublishPost(post) ? View.VISIBLE : View.GONE);
+      holder.btnTrash.setVisibility(!showRow1 ? View.VISIBLE : View.GONE);
+      holder.btnBack.setVisibility(!showRow1 ? View.VISIBLE : View.GONE);
+      PropertyValuesHolder scaleX=PropertyValuesHolder.ofFloat(View.SCALE_X,0f,1f);
+      PropertyValuesHolder scaleY=PropertyValuesHolder.ofFloat(View.SCALE_Y,0f,1f);
+      ObjectAnimator animIn=ObjectAnimator.ofPropertyValuesHolder(holder.layoutButtons,scaleX,scaleY);
+      animIn.setDuration(ROW_ANIM_DURATION);
+      animIn.setInterpolator(new DecelerateInterpolator());
+      animIn.start();
+    }
+  }
+);
+  animOut.start();
+}

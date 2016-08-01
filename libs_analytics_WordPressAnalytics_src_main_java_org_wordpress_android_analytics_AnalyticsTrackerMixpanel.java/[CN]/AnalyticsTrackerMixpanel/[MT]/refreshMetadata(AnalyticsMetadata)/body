@@ -1,0 +1,53 @@
+{
+  try {
+    JSONObject properties=new JSONObject();
+    properties.put(MIXPANEL_PLATFORM,"Android");
+    properties.put(MIXPANEL_SESSION_COUNT,metadata.getSessionCount());
+    properties.put(DOTCOM_USER,metadata.isUserConnected());
+    properties.put(JETPACK_USER,metadata.isJetpackUser());
+    properties.put(MIXPANEL_NUMBER_OF_BLOGS,metadata.getNumBlogs());
+    properties.put(APP_LOCALE,mContext.getResources().getConfiguration().locale.toString());
+    mMixpanel.registerSuperProperties(properties);
+  }
+ catch (  JSONException e) {
+    AppLog.e(AppLog.T.UTILS,e);
+  }
+  if (metadata.isUserConnected() && metadata.isWordPressComUser()) {
+    setWordPressComUserName(metadata.getUsername());
+    if (getAnonID() != null) {
+      mMixpanel.alias(getWordPressComUserName(),getAnonID());
+      clearAnonID();
+    }
+ else {
+      mMixpanel.identify(metadata.getUsername());
+    }
+  }
+ else {
+    setWordPressComUserName(null);
+    if (getAnonID() == null) {
+      generateNewAnonID();
+    }
+    mMixpanel.identify(getAnonID());
+  }
+  if (metadata.isUserConnected()) {
+    try {
+      String userID=getWordPressComUserName() != null ? getWordPressComUserName() : getAnonID();
+      if (userID == null) {
+        return;
+      }
+      mMixpanel.getPeople().identify(userID);
+      JSONObject jsonObj=new JSONObject();
+      jsonObj.put("$username",userID);
+      if (metadata.getEmail() != null) {
+        jsonObj.put("$email",metadata.getEmail());
+      }
+      jsonObj.put("$first_name",userID);
+      mMixpanel.getPeople().set(jsonObj);
+    }
+ catch (    JSONException e) {
+      AppLog.e(AppLog.T.UTILS,e);
+    }
+catch (    OutOfMemoryError outOfMemoryError) {
+    }
+  }
+}

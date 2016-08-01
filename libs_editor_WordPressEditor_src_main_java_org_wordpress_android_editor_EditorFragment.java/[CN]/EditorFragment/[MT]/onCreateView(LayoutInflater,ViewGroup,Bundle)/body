@@ -8,9 +8,18 @@
   mUploadingMedia=new HashMap<>();
   mFailedMediaIds=new HashSet<>();
   mWebView=(EditorWebViewAbstract)view.findViewById(R.id.webview);
+  if (mWebView.shouldSwitchToCompatibilityMode()) {
+    ViewGroup parent=(ViewGroup)mWebView.getParent();
+    int index=parent.indexOfChild(mWebView);
+    parent.removeView(mWebView);
+    mWebView=new EditorWebViewCompatibility(getActivity(),null);
+    mWebView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT));
+    parent.addView(mWebView,index);
+  }
   mWebView.setOnTouchListener(this);
   mWebView.setOnImeBackListener(this);
   mWebView.setAuthHeaderRequestListener(this);
+  mWebView.setOnDragListener(mOnDragListener);
   if (mCustomHttpHeaders != null && mCustomHttpHeaders.size() > 0) {
     for (    Map.Entry<String,String> entry : mCustomHttpHeaders.entrySet()) {
       mWebView.setCustomHeader(entry.getKey(),entry.getValue());
@@ -49,6 +58,8 @@
   mSourceViewContent.addTextChangedListener(new HtmlStyleTextWatcher());
   mSourceViewTitle.setHint(mTitlePlaceholder);
   mSourceViewContent.setHint("<p>" + mContentPlaceholder + "</p>");
+  mSourceViewTitle.setOnDragListener(mOnDragListener);
+  mSourceViewContent.setOnDragListener(mOnDragListener);
   setupFormatBarButtonMap(view);
   return view;
 }

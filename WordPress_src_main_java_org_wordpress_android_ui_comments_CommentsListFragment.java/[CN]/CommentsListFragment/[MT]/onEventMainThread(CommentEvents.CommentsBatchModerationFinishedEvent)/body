@@ -1,0 +1,18 @@
+{
+  if (!isAdded())   return;
+  if (moderatedComments.getComments().size() > 0) {
+    for (    Comment comment : moderatedComments.getComments()) {
+      setCommentIsModerating(comment.commentID,false);
+    }
+    if (moderatedComments.isDeleted()) {
+      getAdapter().deleteComments(moderatedComments.getComments());
+    }
+ else {
+      getAdapter().replaceComments(moderatedComments.getComments());
+    }
+    loadComments();
+  }
+ else {
+    ToastUtils.showToast(getActivity(),R.string.error_moderate_comment);
+  }
+}

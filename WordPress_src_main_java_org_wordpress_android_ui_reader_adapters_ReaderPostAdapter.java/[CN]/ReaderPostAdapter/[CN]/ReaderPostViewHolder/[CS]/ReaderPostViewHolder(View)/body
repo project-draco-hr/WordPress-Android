@@ -4,18 +4,28 @@
   txtTitle=(TextView)itemView.findViewById(R.id.text_title);
   txtText=(TextView)itemView.findViewById(R.id.text_excerpt);
   txtBlogName=(TextView)itemView.findViewById(R.id.text_blog_name);
-  txtDate=(TextView)itemView.findViewById(R.id.text_date);
+  txtDomain=(TextView)itemView.findViewById(R.id.text_domain);
+  txtDateline=(TextView)itemView.findViewById(R.id.text_dateline);
   txtTag=(TextView)itemView.findViewById(R.id.text_tag);
   txtWordCount=(TextView)itemView.findViewById(R.id.text_word_count);
   commentCount=(ReaderIconCountView)itemView.findViewById(R.id.count_comments);
   likeCount=(ReaderIconCountView)itemView.findViewById(R.id.count_likes);
   imgFeatured=(WPNetworkImageView)itemView.findViewById(R.id.image_featured);
+  imgBlavatar=(WPNetworkImageView)itemView.findViewById(R.id.image_blavatar);
   imgAvatar=(WPNetworkImageView)itemView.findViewById(R.id.image_avatar);
   imgMore=(ImageView)itemView.findViewById(R.id.image_more);
   layoutDiscover=(ViewGroup)itemView.findViewById(R.id.layout_discover);
   imgDiscoverAvatar=(WPNetworkImageView)layoutDiscover.findViewById(R.id.image_discover_avatar);
   txtDiscover=(TextView)layoutDiscover.findViewById(R.id.text_discover);
+  thumbnailStrip=(ReaderThumbnailStrip)itemView.findViewById(R.id.thumbnail_strip);
   layoutPostHeader=(ViewGroup)itemView.findViewById(R.id.layout_post_header);
-  layoutPostHeader.setPadding(layoutPostHeader.getPaddingLeft(),layoutPostHeader.getPaddingTop(),layoutPostHeader.getPaddingRight() - imgMore.getPaddingRight(),layoutPostHeader.getPaddingBottom());
+  if (!hasSiteHeader()) {
+    layoutPostHeader.setPadding(layoutPostHeader.getPaddingLeft(),layoutPostHeader.getPaddingTop(),layoutPostHeader.getPaddingRight() - imgMore.getPaddingRight(),layoutPostHeader.getPaddingBottom());
+  }
+ else {
+    layoutPostHeader.setVisibility(View.GONE);
+    int extraPadding=itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_medium);
+    txtTitle.setPadding(txtTitle.getPaddingLeft(),txtTitle.getPaddingTop() + extraPadding,txtTitle.getPaddingRight(),txtTitle.getPaddingBottom());
+  }
   ReaderUtils.setBackgroundToRoundRipple(imgMore);
 }

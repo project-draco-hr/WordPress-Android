@@ -1,0 +1,45 @@
+{
+  ViewGroup container=(ViewGroup)getView().findViewById(R.id.container_related_posts);
+  container.removeAllViews();
+  LayoutInflater inflater=LayoutInflater.from(getActivity());
+  int imageSize=DisplayUtils.dpToPx(getActivity(),getResources().getDimensionPixelSize(R.dimen.reader_related_post_image_size));
+  for (int index=0; index < relatedPosts.size(); index++) {
+    final ReaderRelatedPost relatedPost=relatedPosts.get(index);
+    View postView=inflater.inflate(R.layout.reader_related_post,container,false);
+    TextView txtTitle=(TextView)postView.findViewById(R.id.text_related_post_title);
+    TextView txtByline=(TextView)postView.findViewById(R.id.text_related_post_byline);
+    WPNetworkImageView imgFeatured=(WPNetworkImageView)postView.findViewById(R.id.image_related_post);
+    txtTitle.setText(relatedPost.getTitle());
+    txtByline.setText(relatedPost.getByline());
+    imgFeatured.setVisibility(relatedPost.hasFeaturedImage() ? View.VISIBLE : View.GONE);
+    if (relatedPost.hasFeaturedImage()) {
+      String imageUrl=PhotonUtils.getPhotonImageUrl(relatedPost.getFeaturedImage(),imageSize,imageSize);
+      imgFeatured.setImageUrl(imageUrl,WPNetworkImageView.ImageType.PHOTO_ROUNDED);
+      imgFeatured.setVisibility(View.VISIBLE);
+    }
+    postView.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        if (mIsRelatedPost) {
+          mPostHistory.push(new ReaderBlogIdPostId(mPost.blogId,mPost.postId));
+          replacePost(relatedPost.getBlogId(),relatedPost.getPostId());
+        }
+ else {
+          ReaderActivityLauncher.showReaderPostDetail(getActivity(),relatedPost.getBlogId(),relatedPost.getPostId(),true);
+        }
+      }
+    }
+);
+    container.addView(postView);
+    if (index < relatedPosts.size() - 1) {
+      View dividerView=inflater.inflate(R.layout.reader_related_post_divider,container,false);
+      container.addView(dividerView);
+    }
+  }
+  View label=getView().findViewById(R.id.text_related_posts_label);
+  if (label.getVisibility() != View.VISIBLE) {
+    AniUtils.fadeIn(label,AniUtils.Duration.MEDIUM);
+  }
+  if (container.getVisibility() != View.VISIBLE) {
+    AniUtils.fadeIn(container,AniUtils.Duration.MEDIUM);
+  }
+}

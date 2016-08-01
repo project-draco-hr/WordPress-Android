@@ -1,24 +1,45 @@
 {
   super.onViewCreated(view,savedInstanceState);
-  mUsernamesContainer=(ViewGroup)getView().findViewById(R.id.usernames);
-  String role=null;
-  if (savedInstanceState != null) {
-    ArrayList<String> usernames=savedInstanceState.getStringArrayList(KEY_USERNAMES);
-    mUsernameResults=(HashMap<String,String>)savedInstanceState.getSerializable(KEY_USERNAME_RESULTS);
-    populateUsernameButtons(usernames);
-    role=savedInstanceState.getString(KEY_ROLE);
+  mUsernamesContainer=(ViewGroup)view.findViewById(R.id.usernames);
+  mUsernamesContainer.setOnClickListener(new View.OnClickListener(){
+    @Override public void onClick(    View v){
+      EditTextUtils.showSoftInput(mUsernameEditText);
+    }
   }
+);
+  String role=mRole;
   if (role == null) {
     role=loadDefaultRole();
   }
-  mUsernameEditText=(EditText)getView().findViewById(R.id.invite_usernames);
+  mUsernameEditText=(MultiUsernameEditText)view.findViewById(R.id.invite_usernames);
+  mUsernameEditText.setOnKeyListener(new View.OnKeyListener(){
+    @Override public boolean onKey(    View view,    int i,    KeyEvent keyEvent){
+      return keyEvent.getKeyCode() == KeyEvent.KEYCODE_DEL && keyEvent.getAction() == KeyEvent.ACTION_DOWN && removeLastEnteredUsername();
+    }
+  }
+);
+  mUsernameEditText.setOnBackspacePressedListener(new MultiUsernameEditText.OnBackspacePressedListener(){
+    @Override public boolean onBackspacePressed(){
+      return removeLastEnteredUsername();
+    }
+  }
+);
   mUsernameEditText.addTextChangedListener(new TextWatcher(){
+    private boolean shouldIgnoreChanges=false;
     @Override public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
     }
     @Override public void onTextChanged(    CharSequence s,    int start,    int before,    int count){
-      if (mUsernameEditText.getText().toString().endsWith(" ")) {
+      if (shouldIgnoreChanges) {
+        return;
+      }
+      shouldIgnoreChanges=true;
+      if (mUsernameButtons.size() >= MAX_NUMBER_OF_INVITEES && !TextUtils.isEmpty(s)) {
+        resetEditTextContent(mUsernameEditText);
+      }
+ else       if (endsWithDelimiter(mUsernameEditText.getText().toString())) {
         addUsername(mUsernameEditText,null);
       }
+      shouldIgnoreChanges=false;
     }
     @Override public void afterTextChanged(    Editable s){
     }
@@ -44,25 +65,22 @@
     }
   }
 );
-  View usernamesContainer=getView().findViewById(R.id.usernames);
-  usernamesContainer.setOnClickListener(new View.OnClickListener(){
-    @Override public void onClick(    View v){
-      EditTextUtils.showSoftInput(mUsernameEditText);
-    }
+  if (mUsernameButtons.size() > 0) {
+    ArrayList<String> usernames=new ArrayList<>(mUsernameButtons.keySet());
+    populateUsernameButtons(usernames);
   }
-);
-  View roleContainer=getView().findViewById(R.id.role_container);
+  View roleContainer=view.findViewById(R.id.role_container);
   roleContainer.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
       RoleSelectDialogFragment.show(PeopleInviteFragment.this,0);
     }
   }
 );
-  mRoleTextView=(TextView)getView().findViewById(R.id.role);
+  mRoleTextView=(TextView)view.findViewById(R.id.role);
   setRole(role);
   final int MAX_CHARS=getResources().getInteger(R.integer.invite_message_char_limit);
-  final TextView remainingCharsTextView=(TextView)getView().findViewById(R.id.message_remaining);
-  mCustomMessageEditText=(EditText)getView().findViewById(R.id.message);
+  final TextView remainingCharsTextView=(TextView)view.findViewById(R.id.message_remaining);
+  mCustomMessageEditText=(EditText)view.findViewById(R.id.message);
   mCustomMessageEditText.addTextChangedListener(new TextWatcher(){
     @Override public void beforeTextChanged(    CharSequence s,    int start,    int count,    int after){
     }
