@@ -7,6 +7,11 @@
   intent.putExtra("username",mUsername);
   intent.putExtra("password",mPassword);
   getTargetFragment().onActivityResult(getTargetRequestCode(),Activity.RESULT_OK,intent);
-  getFragmentManager().popBackStack();
+  try {
+    getFragmentManager().popBackStack();
+  }
+ catch (  IllegalStateException e) {
+    AppLog.e(T.NUX,e);
+  }
   ToastUtils.showToast(getActivity(),R.string.signup_succeed_signin_failed,Duration.LONG);
 }
