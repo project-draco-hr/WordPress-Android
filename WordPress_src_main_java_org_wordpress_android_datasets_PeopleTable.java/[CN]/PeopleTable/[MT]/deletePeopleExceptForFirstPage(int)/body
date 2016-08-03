@@ -9,9 +9,13 @@
         String where="local_blog_id=" + localTableBlogId;
         String[] columns={"person_id"};
         String limit=Integer.toString(size - fetchLimit);
-        String query=SQLiteQueryBuilder.buildQueryString(false,table,columns,where,null,null,null,limit);
+        String orderBy=null;
+        if (shouldOrder(table)) {
+          orderBy=" lower(display_name) DESC, lower(user_name) DESC";
+        }
+        String inQuery=SQLiteQueryBuilder.buildQueryString(false,table,columns,where,null,null,orderBy,limit);
         String[] args=new String[]{Integer.toString(localTableBlogId)};
-        getWritableDb().delete(table,"local_blog_id=?1 AND person_id IN (" + query + ")",args);
+        getWritableDb().delete(table,"local_blog_id=?1 AND person_id IN (" + inQuery + ")",args);
       }
     }
     getWritableDb().setTransactionSuccessful();
