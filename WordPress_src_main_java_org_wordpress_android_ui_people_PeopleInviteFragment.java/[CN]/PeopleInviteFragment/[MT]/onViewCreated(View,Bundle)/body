@@ -69,10 +69,13 @@
     ArrayList<String> usernames=new ArrayList<>(mUsernameButtons.keySet());
     populateUsernameButtons(usernames);
   }
+  String dotComBlogId=getArguments().getString(ARG_BLOGID);
+  Blog blog=WordPress.wpDB.getBlogForDotComBlogId(dotComBlogId);
+  final boolean isPrivateSite=blog != null && blog.isPrivate();
   View roleContainer=view.findViewById(R.id.role_container);
   roleContainer.setOnClickListener(new View.OnClickListener(){
     @Override public void onClick(    View v){
-      RoleSelectDialogFragment.show(PeopleInviteFragment.this,0);
+      RoleSelectDialogFragment.show(PeopleInviteFragment.this,0,isPrivateSite);
     }
   }
 );
