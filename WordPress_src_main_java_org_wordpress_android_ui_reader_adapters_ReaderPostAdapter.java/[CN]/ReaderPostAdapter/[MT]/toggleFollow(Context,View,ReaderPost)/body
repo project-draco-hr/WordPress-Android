@@ -6,6 +6,7 @@
   final boolean isAskingToFollow=!isCurrentlyFollowed;
   ReaderActions.ActionListener actionListener=new ReaderActions.ActionListener(){
     @Override public void onActionResult(    boolean succeeded){
+      followButton.setEnabled(true);
       if (!succeeded) {
         int resId=(isAskingToFollow ? R.string.reader_toast_err_follow_blog : R.string.reader_toast_err_unfollow_blog);
         ToastUtils.showToast(context,resId);
@@ -18,5 +19,6 @@
     ToastUtils.showToast(context,R.string.reader_toast_err_generic);
     return;
   }
+  followButton.setEnabled(false);
   setFollowStatusForBlog(post.blogId,isAskingToFollow);
 }
