@@ -103,6 +103,20 @@
     holder.imgMore.setVisibility(View.GONE);
     holder.imgMore.setOnClickListener(null);
   }
+  boolean showFollowButton=!hasSiteHeader() && !mIsLoggedOutReader && !isFollowedSites();
+  if (showFollowButton) {
+    holder.followButton.setIsFollowed(post.isFollowedByCurrentUser);
+    holder.followButton.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(      View view){
+        toggleFollow(view.getContext(),view,post);
+      }
+    }
+);
+    holder.followButton.setVisibility(View.VISIBLE);
+  }
+ else {
+    holder.followButton.setVisibility(View.GONE);
+  }
   if (post.isDiscoverPost()) {
     showDiscoverData(holder,post);
   }
