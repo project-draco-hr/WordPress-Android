@@ -1,0 +1,14 @@
+{
+  if (context == null || !hasNotifications()) {
+    return;
+  }
+  NotificationManagerCompat notificationManager=NotificationManagerCompat.from(context);
+  for (  Integer pushId : sActiveNotificationsMap.keySet()) {
+    Bundle noteBundle=sActiveNotificationsMap.get(pushId);
+    if (noteBundle.getString(PUSH_ARG_NOTE_ID,"").equals(noteID)) {
+      notificationManager.cancel(pushId);
+      removeNotification(pushId);
+      return;
+    }
+  }
+}
