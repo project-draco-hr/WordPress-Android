@@ -1,0 +1,37 @@
+{
+  if (builder == null) {
+    return;
+  }
+  if (sActiveNotificationsMap.size() > 1) {
+    NotificationCompat.InboxStyle inboxStyle=new NotificationCompat.InboxStyle();
+    int noteCtr=1;
+    for (    Bundle pushBundle : sActiveNotificationsMap.values()) {
+      if (noteCtr > MAX_INBOX_ITEMS) {
+        break;
+      }
+      if (pushBundle == null || pushBundle.getString(PUSH_ARG_MSG) == null) {
+        continue;
+      }
+      if (pushBundle.getString(PUSH_ARG_TYPE,"").equals(PUSH_TYPE_COMMENT)) {
+        String pnTitle=StringEscapeUtils.unescapeHtml((pushBundle.getString(PUSH_ARG_TITLE)));
+        String pnMessage=StringEscapeUtils.unescapeHtml((pushBundle.getString(PUSH_ARG_MSG)));
+        inboxStyle.addLine(pnTitle + ": " + pnMessage);
+      }
+ else {
+        String pnMessage=StringEscapeUtils.unescapeHtml((pushBundle.getString(PUSH_ARG_MSG)));
+        inboxStyle.addLine(pnMessage);
+      }
+      noteCtr++;
+    }
+    if (sActiveNotificationsMap.size() > MAX_INBOX_ITEMS) {
+      inboxStyle.setSummaryText(String.format(getString(R.string.more_notifications),sActiveNotificationsMap.size() - MAX_INBOX_ITEMS));
+    }
+    String subject=String.format(getString(R.string.new_notifications),sActiveNotificationsMap.size());
+    NotificationCompat.Builder groupBuilder=new NotificationCompat.Builder(this).setSmallIcon(R.drawable.notification_icon).setColor(getResources().getColor(R.color.blue_wordpress)).setGroup(NOTIFICATION_GROUP_KEY).setGroupSummary(true).setAutoCancel(true).setTicker(message).setContentTitle(getString(R.string.app_name)).setContentText(subject).setStyle(inboxStyle);
+    showNotificationForBuilder(groupBuilder,this,GROUP_NOTIFICATION_ID);
+  }
+ else {
+    builder.setGroupSummary(true);
+    showNotificationForBuilder(builder,this,GROUP_NOTIFICATION_ID);
+  }
+}

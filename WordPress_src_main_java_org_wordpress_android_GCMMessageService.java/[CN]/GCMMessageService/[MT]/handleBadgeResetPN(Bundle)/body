@@ -1,7 +1,30 @@
 {
   if (data != null && data.containsKey(PUSH_ARG_NOTE_ID)) {
-    String noteId=data.getString(PUSH_ARG_NOTE_ID,"");
-    removeNotificationFromSystemBar(this,noteId);
+    removeNotificationWithNoteIdFromSystemBar(this,data);
+    if (sActiveNotificationsMap.size() > 0) {
+      String title=StringEscapeUtils.unescapeHtml(data.getString(PUSH_ARG_TITLE));
+      if (title == null) {
+        title=getString(R.string.app_name);
+      }
+      String message=StringEscapeUtils.unescapeHtml(data.getString(PUSH_ARG_MSG));
+      if (sActiveNotificationsMap.size() == 1) {
+        for (        Integer pushId : sActiveNotificationsMap.keySet()) {
+          Bundle dataRemainingNote=sActiveNotificationsMap.get(pushId);
+          if (dataRemainingNote != null) {
+            String titleRemainingNote=StringEscapeUtils.unescapeHtml(dataRemainingNote.getString(PUSH_ARG_TITLE));
+            if (!TextUtils.isEmpty(titleRemainingNote)) {
+              title=titleRemainingNote;
+            }
+            String messageRemainingNote=StringEscapeUtils.unescapeHtml(dataRemainingNote.getString(PUSH_ARG_MSG));
+            if (!TextUtils.isEmpty(messageRemainingNote)) {
+              message=messageRemainingNote;
+            }
+          }
+        }
+      }
+      NotificationCompat.Builder builder=getNotificationBuilder(title,message);
+      showGroupNotificationForBuilder(builder,message);
+    }
   }
  else {
   }

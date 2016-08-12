@@ -1,0 +1,85 @@
+{
+  if (data == null)   return;
+  String noteType=StringUtils.notNullStr(data.getString(PUSH_ARG_TYPE));
+  String title=StringEscapeUtils.unescapeHtml(data.getString(PUSH_ARG_TITLE));
+  if (title == null) {
+    title=getString(R.string.app_name);
+  }
+  String message=StringEscapeUtils.unescapeHtml(data.getString(PUSH_ARG_MSG));
+  String noteId=data.getString(PUSH_ARG_NOTE_ID,"");
+  long thisTime=System.currentTimeMillis();
+  if (sPreviousNoteId != null && sPreviousNoteId.equals(noteId)) {
+    long seconds=TimeUnit.MILLISECONDS.toSeconds(thisTime - sPreviousNoteTime);
+    if (seconds <= 1) {
+      AppLog.w(T.NOTIFS,"skipped potential duplicate notification");
+      return;
+    }
+  }
+  sPreviousNoteId=noteId;
+  sPreviousNoteTime=thisTime;
+  int pushId=0;
+  for (  Integer id : sActiveNotificationsMap.keySet()) {
+    if (id == null) {
+      continue;
+    }
+    Bundle noteBundle=sActiveNotificationsMap.get(id);
+    if (noteBundle != null && noteBundle.getString(PUSH_ARG_NOTE_ID,"").equals(noteId)) {
+      pushId=id;
+      sActiveNotificationsMap.put(pushId,data);
+      break;
+    }
+  }
+  if (pushId == 0) {
+    pushId=PUSH_NOTIFICATION_ID + sActiveNotificationsMap.size();
+    sActiveNotificationsMap.put(pushId,data);
+  }
+  String iconUrl=data.getString("icon");
+  Bitmap largeIconBitmap=null;
+  if (iconUrl != null) {
+    try {
+      iconUrl=URLDecoder.decode(iconUrl,"UTF-8");
+      int largeIconSize=getResources().getDimensionPixelSize(android.R.dimen.notification_large_icon_height);
+      String resizedUrl=PhotonUtils.getPhotonImageUrl(iconUrl,largeIconSize,largeIconSize);
+      largeIconBitmap=ImageUtils.downloadBitmap(resizedUrl);
+      if (largeIconBitmap != null && shouldCircularizeNoteIcon(noteType)) {
+        largeIconBitmap=ImageUtils.getCircularBitmap(largeIconBitmap);
+      }
+    }
+ catch (    UnsupportedEncodingException e) {
+      AppLog.e(T.NOTIFS,e);
+    }
+  }
+  if (NotificationsUtils.isNotificationsEnabled(this)) {
+    Map<String,Object> properties=new HashMap<>();
+    if (!TextUtils.isEmpty(noteType)) {
+      if (noteType.equals(PUSH_TYPE_COMMENT)) {
+        properties.put("notification_type","comment");
+      }
+ else {
+        properties.put("notification_type",noteType);
+      }
+    }
+    bumpPushNotificationsAnalytics(Stat.PUSH_NOTIFICATION_RECEIVED,data,properties);
+    AnalyticsTracker.flush();
+  }
+  NotificationCompat.Builder builder=getNotificationBuilder(title,message);
+  if (noteType.equals(PUSH_TYPE_COMMENT)) {
+    Intent commentReplyIntent=new Intent(this,WPMainActivity.class);
+    commentReplyIntent.putExtra(WPMainActivity.ARG_OPENED_FROM_PUSH,true);
+    commentReplyIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    commentReplyIntent.setAction("android.intent.action.MAIN");
+    commentReplyIntent.addCategory("android.intent.category.LAUNCHER");
+    commentReplyIntent.addCategory("comment-reply");
+    commentReplyIntent.putExtra(NotificationsListFragment.NOTE_INSTANT_REPLY_EXTRA,true);
+    if (noteId != null) {
+      commentReplyIntent.putExtra(NotificationsListFragment.NOTE_ID_EXTRA,noteId);
+    }
+    PendingIntent commentReplyPendingIntent=PendingIntent.getActivity(this,0,commentReplyIntent,PendingIntent.FLAG_CANCEL_CURRENT);
+    builder.addAction(R.drawable.ic_reply_white_24dp,getText(R.string.reply),commentReplyPendingIntent);
+  }
+  if (largeIconBitmap != null) {
+    builder.setLargeIcon(largeIconBitmap);
+  }
+  showNotificationForBuilder(builder,this,pushId);
+  showGroupNotificationForBuilder(builder,message);
+}
