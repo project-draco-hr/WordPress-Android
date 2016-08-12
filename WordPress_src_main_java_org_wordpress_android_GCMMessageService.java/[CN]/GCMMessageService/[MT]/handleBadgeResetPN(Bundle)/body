@@ -2,6 +2,7 @@
   if (data != null && data.containsKey(PUSH_ARG_NOTE_ID)) {
     removeNotificationWithNoteIdFromSystemBar(this,data);
     if (sActiveNotificationsMap.size() > 0) {
+      Bitmap largeIconBitmap=null;
       String title=StringEscapeUtils.unescapeHtml(data.getString(PUSH_ARG_TITLE));
       if (title == null) {
         title=getString(R.string.app_name);
@@ -18,9 +19,16 @@
           if (!TextUtils.isEmpty(remainingNoteMessage)) {
             message=remainingNoteMessage;
           }
+          largeIconBitmap=getLargeIconBitmap(remainingNote.getString("icon"),shouldCircularizeNoteIcon(remainingNote.getString(PUSH_ARG_TYPE)));
         }
       }
       NotificationCompat.Builder builder=getNotificationBuilder(title,message);
+      if (largeIconBitmap == null) {
+        largeIconBitmap=getLargeIconBitmap(data.getString("icon"),shouldCircularizeNoteIcon(PUSH_TYPE_BADGE_RESET));
+      }
+      if (largeIconBitmap != null) {
+        builder.setLargeIcon(largeIconBitmap);
+      }
       showGroupNotificationForBuilder(builder,message);
     }
   }
