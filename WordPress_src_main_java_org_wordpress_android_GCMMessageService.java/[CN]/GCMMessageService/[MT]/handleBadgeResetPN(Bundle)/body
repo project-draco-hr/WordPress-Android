@@ -8,17 +8,15 @@
       }
       String message=StringEscapeUtils.unescapeHtml(data.getString(PUSH_ARG_MSG));
       if (sActiveNotificationsMap.size() == 1) {
-        for (        Integer pushId : sActiveNotificationsMap.keySet()) {
-          Bundle dataRemainingNote=sActiveNotificationsMap.get(pushId);
-          if (dataRemainingNote != null) {
-            String titleRemainingNote=StringEscapeUtils.unescapeHtml(dataRemainingNote.getString(PUSH_ARG_TITLE));
-            if (!TextUtils.isEmpty(titleRemainingNote)) {
-              title=titleRemainingNote;
-            }
-            String messageRemainingNote=StringEscapeUtils.unescapeHtml(dataRemainingNote.getString(PUSH_ARG_MSG));
-            if (!TextUtils.isEmpty(messageRemainingNote)) {
-              message=messageRemainingNote;
-            }
+        Bundle remainingNote=sActiveNotificationsMap.values().iterator().next();
+        if (remainingNote != null) {
+          String remainingNoteTitle=StringEscapeUtils.unescapeHtml(remainingNote.getString(PUSH_ARG_TITLE));
+          if (!TextUtils.isEmpty(remainingNoteTitle)) {
+            title=remainingNoteTitle;
+          }
+          String remainingNoteMessage=StringEscapeUtils.unescapeHtml(remainingNote.getString(PUSH_ARG_MSG));
+          if (!TextUtils.isEmpty(remainingNoteMessage)) {
+            message=remainingNoteMessage;
           }
         }
       }
