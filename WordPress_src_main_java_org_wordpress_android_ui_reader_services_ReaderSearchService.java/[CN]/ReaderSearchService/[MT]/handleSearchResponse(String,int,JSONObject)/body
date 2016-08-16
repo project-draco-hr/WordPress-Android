@@ -2,10 +2,10 @@
   new Thread(){
     @Override public void run(){
       ReaderPostList serverPosts=ReaderPostList.fromJson(jsonObject);
-      int sortIndex=offset + 1;
+      int sortIndex=offset;
       for (      ReaderPost post : serverPosts) {
         post.sortIndex=sortIndex;
-        sortIndex++;
+        sortIndex--;
       }
       ReaderPostTable.addOrUpdatePosts(getTagForSearchQuery(query),serverPosts);
       EventBus.getDefault().post(new ReaderEvents.SearchPostsEnded(query,offset,true));
