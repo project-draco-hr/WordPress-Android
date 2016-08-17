@@ -46,15 +46,12 @@
     }
   }
 ;
-  if (role.toLowerCase().equals(ROLE_VIEWER)) {
-    role=ROLE_FOLLOWER;
-  }
   String path=String.format("sites/%s/invites/new",dotComBlogId);
   Map<String,String> params=new HashMap<>();
   for (  String username : usernames) {
     params.put("invitees[" + username + "]",username);
   }
-  params.put("role",role);
+  params.put("role",getRoleParameter(context,role));
   params.put("message",message);
   WordPress.getRestClientUtilsV1_1().post(path,params,null,listener,errorListener);
 }
