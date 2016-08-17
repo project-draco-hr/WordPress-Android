@@ -11,6 +11,8 @@
   mListScrollPositionManager=new ListScrollPositionManager(mListView,false);
   mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
   mListView.setItemsCanFocus(false);
+  mEmptyView=(TextView)findViewById(R.id.empty_view);
+  mListView.setEmptyView(mEmptyView);
   mListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
     @Override public void onItemClick(    AdapterView<?> arg0,    View arg1,    int position,    long arg3){
       if (getCheckedItemCount(mListView) > 1) {
@@ -51,7 +53,13 @@
   }
 );
   populateCategoryList();
-  if (NetworkUtils.isNetworkAvailable(this) && savedInstanceState == null) {
-    refreshCategories();
+  if (NetworkUtils.isNetworkAvailable(this)) {
+    mEmptyView.setText(R.string.empty_list_default);
+    if (isCategoryListEmpty()) {
+      refreshCategories();
+    }
+  }
+ else {
+    mEmptyView.setText(R.string.no_network_title);
   }
 }
