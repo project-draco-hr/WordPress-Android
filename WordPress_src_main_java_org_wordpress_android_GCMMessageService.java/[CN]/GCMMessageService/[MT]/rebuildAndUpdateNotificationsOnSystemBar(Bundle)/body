@@ -1,0 +1,27 @@
+{
+  Bitmap largeIconBitmap=null;
+  String title=getNotificationTitleOrAppNameFromBundle(data);
+  String message=StringEscapeUtils.unescapeHtml(data.getString(PUSH_ARG_MSG));
+  if (sActiveNotificationsMap.size() == 1) {
+    Bundle remainingNote=sActiveNotificationsMap.values().iterator().next();
+    if (remainingNote != null) {
+      String remainingNoteTitle=StringEscapeUtils.unescapeHtml(remainingNote.getString(PUSH_ARG_TITLE));
+      if (!TextUtils.isEmpty(remainingNoteTitle)) {
+        title=remainingNoteTitle;
+      }
+      String remainingNoteMessage=StringEscapeUtils.unescapeHtml(remainingNote.getString(PUSH_ARG_MSG));
+      if (!TextUtils.isEmpty(remainingNoteMessage)) {
+        message=remainingNoteMessage;
+      }
+      largeIconBitmap=getLargeIconBitmap(remainingNote.getString("icon"),shouldCircularizeNoteIcon(remainingNote.getString(PUSH_ARG_TYPE)));
+    }
+  }
+  NotificationCompat.Builder builder=getNotificationBuilder(title,message);
+  if (largeIconBitmap == null) {
+    largeIconBitmap=getLargeIconBitmap(data.getString("icon"),shouldCircularizeNoteIcon(PUSH_TYPE_BADGE_RESET));
+  }
+  if (largeIconBitmap != null) {
+    builder.setLargeIcon(largeIconBitmap);
+  }
+  showGroupNotificationForBuilder(builder,message);
+}
