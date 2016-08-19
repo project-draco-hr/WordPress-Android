@@ -1,0 +1,50 @@
+{
+  if (data == null)   return;
+  String noteType=StringUtils.notNullStr(data.getString(PUSH_ARG_TYPE));
+  String title=StringEscapeUtils.unescapeHtml(data.getString(PUSH_ARG_TITLE));
+  if (title == null) {
+    title=getString(R.string.app_name);
+  }
+  String message=StringEscapeUtils.unescapeHtml(data.getString(PUSH_ARG_MSG));
+  String noteId=data.getString(PUSH_ARG_NOTE_ID,"");
+  long thisTime=System.currentTimeMillis();
+  if (sPreviousNoteId != null && sPreviousNoteId.equals(noteId)) {
+    long seconds=TimeUnit.MILLISECONDS.toSeconds(thisTime - sPreviousNoteTime);
+    if (seconds <= 1) {
+      AppLog.w(T.NOTIFS,"skipped potential duplicate notification");
+      return;
+    }
+  }
+  sPreviousNoteId=noteId;
+  sPreviousNoteTime=thisTime;
+  int pushId=0;
+  for (  Integer id : sActiveNotificationsMap.keySet()) {
+    if (id == null) {
+      continue;
+    }
+    Bundle noteBundle=sActiveNotificationsMap.get(id);
+    if (noteBundle != null && noteBundle.getString(PUSH_ARG_NOTE_ID,"").equals(noteId)) {
+      pushId=id;
+      sActiveNotificationsMap.put(pushId,data);
+      break;
+    }
+  }
+  if (pushId == 0) {
+    pushId=PUSH_NOTIFICATION_ID + sActiveNotificationsMap.size();
+    sActiveNotificationsMap.put(pushId,data);
+  }
+  if (NotificationsUtils.isNotificationsEnabled(this)) {
+    Map<String,Object> properties=new HashMap<>();
+    if (!TextUtils.isEmpty(noteType)) {
+      if (noteType.equals(PUSH_TYPE_COMMENT)) {
+        properties.put("notification_type","comment");
+      }
+ else {
+        properties.put("notification_type",noteType);
+      }
+    }
+    bumpPushNotificationsAnalytics(Stat.PUSH_NOTIFICATION_RECEIVED,data,properties);
+    AnalyticsTracker.flush();
+  }
+  showGroupNotificationForActiveNotificationsMap(pushId,noteId,noteType,data.getString("icon"),title,message);
+}

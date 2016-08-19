@@ -1,0 +1,22 @@
+{
+  if (context == null || data == null || !hasNotifications()) {
+    return;
+  }
+  String noteID=data.getString(PUSH_ARG_NOTE_ID,"");
+  if (TextUtils.isEmpty(noteID)) {
+    return;
+  }
+  NotificationManagerCompat notificationManager=NotificationManagerCompat.from(context);
+  for (Iterator<Map.Entry<Integer,Bundle>> it=sActiveNotificationsMap.entrySet().iterator(); it.hasNext(); ) {
+    Map.Entry<Integer,Bundle> row=it.next();
+    Integer pushId=row.getKey();
+    Bundle noteBundle=row.getValue();
+    if (noteBundle.getString(PUSH_ARG_NOTE_ID,"").equals(noteID)) {
+      notificationManager.cancel(pushId);
+      it.remove();
+    }
+  }
+  if (sActiveNotificationsMap.size() == 0) {
+    notificationManager.cancel(GCMMessageService.GROUP_NOTIFICATION_ID);
+  }
+}
