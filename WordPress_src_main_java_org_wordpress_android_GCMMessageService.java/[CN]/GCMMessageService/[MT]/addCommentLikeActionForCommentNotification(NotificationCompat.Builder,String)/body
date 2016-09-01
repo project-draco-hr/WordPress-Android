@@ -1,0 +1,14 @@
+{
+  Intent commentLikeIntent=new Intent(this,WPMainActivity.class);
+  commentLikeIntent.putExtra(WPMainActivity.ARG_OPENED_FROM_PUSH,true);
+  commentLikeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+  commentLikeIntent.setAction("android.intent.action.MAIN");
+  commentLikeIntent.addCategory("android.intent.category.LAUNCHER");
+  commentLikeIntent.addCategory("comment-like");
+  commentLikeIntent.putExtra(NotificationsListFragment.NOTE_INSTANT_LIKE_EXTRA,true);
+  if (noteId != null) {
+    commentLikeIntent.putExtra(NotificationsListFragment.NOTE_ID_EXTRA,noteId);
+  }
+  PendingIntent commentLikePendingIntent=PendingIntent.getActivity(this,0,commentLikeIntent,PendingIntent.FLAG_CANCEL_CURRENT);
+  builder.addAction(R.drawable.ic_action_like,getText(R.string.like),commentLikePendingIntent);
+}
