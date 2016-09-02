@@ -1,5 +1,31 @@
 {
-  addCommentReplyActionForCommentNotification(builder,noteId);
-  addCommentLikeActionForCommentNotification(builder,noteId);
-  addCommentApproveActionForCommentNotification(builder,noteId);
+  boolean bActionsSet=false;
+  if (SimperiumUtils.getNotesBucket() != null) {
+    try {
+      Note note=SimperiumUtils.getNotesBucket().get(noteId);
+      if (note != null) {
+        if (note.canReply()) {
+          addCommentReplyActionForCommentNotification(builder,noteId);
+        }
+        if (note.getCommentStatus().equals(CommentStatus.UNAPPROVED)) {
+          if (note.canModerate()) {
+            addCommentApproveActionForCommentNotification(builder,noteId);
+          }
+        }
+ else {
+          if (note.canLike()) {
+            addCommentLikeActionForCommentNotification(builder,noteId);
+          }
+        }
+      }
+      bActionsSet=true;
+    }
+ catch (    BucketObjectMissingException e) {
+      e.printStackTrace();
+    }
+  }
+  if (!bActionsSet) {
+    addCommentReplyActionForCommentNotification(builder,noteId);
+    addCommentLikeActionForCommentNotification(builder,noteId);
+  }
 }
