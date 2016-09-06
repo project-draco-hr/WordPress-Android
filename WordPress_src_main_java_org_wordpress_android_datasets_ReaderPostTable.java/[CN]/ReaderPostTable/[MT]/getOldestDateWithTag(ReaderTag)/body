@@ -1,0 +1,8 @@
+{
+  if (tag == null) {
+    return "";
+  }
+  String sql="SELECT tbl_posts.date FROM tbl_posts, tbl_post_tags" + " WHERE tbl_posts.pseudo_id = tbl_post_tags.pseudo_id" + " AND tbl_post_tags.tag_name=? AND tbl_post_tags.tag_type=?"+ " ORDER BY date LIMIT 1";
+  String[] args={tag.getTagSlug(),Integer.toString(tag.tagType.toInt())};
+  return SqlUtils.stringForQuery(ReaderDatabase.getReadableDb(),sql,args);
+}
