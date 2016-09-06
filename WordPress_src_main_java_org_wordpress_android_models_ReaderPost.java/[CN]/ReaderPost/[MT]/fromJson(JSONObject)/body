@@ -38,14 +38,17 @@
   assignAuthorFromJson(post,json.optJSONObject("author"));
   post.featuredImage=JSONUtils.getString(json,"featured_image");
   post.blogName=JSONUtils.getStringDecoded(json,"site_name");
-  post.published=JSONUtils.getString(json,"date");
+  post.pubDate=JSONUtils.getString(json,"date");
   if (json.has("date_liked")) {
-    String likeDate=JSONUtils.getString(json,"date_liked");
-    post.sortIndex=DateTimeUtils.iso8601ToTimestamp(likeDate);
+    post.date=JSONUtils.getString(json,"date_liked");
+  }
+ else   if (json.has("tagged_on")) {
+    post.date=JSONUtils.getString(json,"tagged_on");
   }
  else {
-    post.sortIndex=DateTimeUtils.iso8601ToTimestamp(post.published);
+    post.date=post.pubDate;
   }
+  post.sortIndex=DateTimeUtils.iso8601ToTimestamp(post.date);
   if (!post.hasTitle() && post.hasExcerpt()) {
     post.title=extractTitle(post.excerpt,50);
   }
