@@ -1,0 +1,27 @@
+{
+  if (date == null) {
+    return "";
+  }
+  long passedTime=date.getTime();
+  long currentTime=System.currentTimeMillis();
+  long secondsSince=(currentTime - passedTime) / 1000;
+  if (secondsSince < 60) {
+    return context.getString(R.string.timespan_now);
+  }
+  long minutesSince=secondsSince / 60;
+  if (minutesSince < 60) {
+    return Long.toString(minutesSince) + "m";
+  }
+  long hoursSince=minutesSince / 60;
+  if (hoursSince < 24) {
+    return Long.toString(hoursSince) + "h";
+  }
+  long daysSince=hoursSince / 24;
+  if (daysSince < 7) {
+    return Long.toString(daysSince) + "d";
+  }
+  if (daysSince < 365) {
+    return DateUtils.formatDateTime(context,passedTime,DateUtils.FORMAT_NO_YEAR | DateUtils.FORMAT_ABBREV_ALL);
+  }
+  return DateUtils.formatDateTime(context,passedTime,DateUtils.FORMAT_ABBREV_ALL);
+}
