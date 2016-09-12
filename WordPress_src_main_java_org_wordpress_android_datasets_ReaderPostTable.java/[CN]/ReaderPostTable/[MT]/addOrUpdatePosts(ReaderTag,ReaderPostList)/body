@@ -3,7 +3,7 @@
     return;
   }
   SQLiteDatabase db=ReaderDatabase.getWritableDb();
-  SQLiteStatement stmtPosts=db.compileStatement("INSERT OR REPLACE INTO tbl_posts (" + COLUMN_NAMES + ") VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21,?22,?23,?24,?25,?26,?27,?28,?29,?30,?31,?32,?33,?34,?35,?36,?37)");
+  SQLiteStatement stmtPosts=db.compileStatement("INSERT OR REPLACE INTO tbl_posts (" + COLUMN_NAMES + ") VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21,?22,?23,?24,?25,?26,?27,?28,?29,?30,?31,?32,?33,?34,?35,?36,?37,?38)");
   SQLiteStatement stmtTags=db.compileStatement("INSERT OR REPLACE INTO tbl_post_tags (post_id, blog_id, feed_id, pseudo_id, tag_name, tag_type) VALUES (?1,?2,?3,?4,?5,?6)");
   db.beginTransaction();
   try {
@@ -45,6 +45,7 @@
       stmtPosts.bindString(35,post.getDiscoverJson());
       stmtPosts.bindLong(36,post.xpostPostId);
       stmtPosts.bindLong(37,post.xpostBlogId);
+      stmtPosts.bindString(38,post.getRailcarJson());
       stmtPosts.execute();
     }
     if (tag != null) {
