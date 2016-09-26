@@ -2,7 +2,7 @@
   final ReaderPost post=getItem(position);
   ReaderTypes.ReaderPostListType postListType=getPostListType();
   holder.txtTitle.setText(post.getTitle());
-  String timestamp=DateTimeUtils.javaDateToTimeSpan(post.getDatePublished());
+  String timestamp=DateTimeUtils.javaDateToTimeSpan(post.getDisplayDate(),WordPress.getContext());
   if (post.hasAuthorName()) {
     holder.txtDateline.setText(post.getAuthorName() + ReaderConstants.UNICODE_BULLET_WITH_SPACE + timestamp);
   }
@@ -142,4 +142,8 @@
   }
 );
   checkLoadMore(position);
+  if (post.hasRailcar() && !mRenderedIds.contains(post.getPseudoId())) {
+    mRenderedIds.add(post.getPseudoId());
+    AnalyticsUtils.trackRailcarRender(post.getRailcarJson());
+  }
 }
