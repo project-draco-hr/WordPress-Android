@@ -1,19 +1,15 @@
 {
   List<String> usernamesToCheck=new ArrayList<>();
-  List<String> usernamesChecked=new ArrayList<>();
   for (  String username : usernames) {
     if (mUsernameResults.containsKey(username)) {
-      usernamesChecked.add(username);
+      String resultMessage=mUsernameResults.get(username);
+      styleButton(username,resultMessage);
+      updateUsernameError(username,resultMessage);
     }
  else {
+      styleButton(username,null);
+      updateUsernameError(username,null);
       usernamesToCheck.add(username);
-    }
-  }
-  for (  String username : usernamesChecked) {
-    String resultMessage=mUsernameResults.get(username);
-    if (!resultMessage.equals(FLAG_SUCCESS)) {
-      styleButton(username,resultMessage);
-      appendError(username,resultMessage);
     }
   }
   if (usernamesToCheck.size() > 0) {
@@ -28,10 +24,8 @@
         }
         final String usernameResultString=getValidationErrorString(username,validationResult);
         mUsernameResults.put(username,usernameResultString);
-        if (validationResult != ValidationResult.USER_FOUND) {
-          styleButton(username,usernameResultString);
-          appendError(username,usernameResultString);
-        }
+        styleButton(username,usernameResultString);
+        updateUsernameError(username,usernameResultString);
       }
       @Override public void onValidationFinished(){
         if (validationEndListener != null) {
