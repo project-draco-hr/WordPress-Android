@@ -1,0 +1,24 @@
+{
+  if (!isAdded()) {
+    return;
+  }
+  TextView usernameErrorTextView;
+  if (mUsernameErrorViews.containsKey(username)) {
+    usernameErrorTextView=(TextView)mUsernameErrorViews.get(username);
+    if (usernameResult == null || usernameResult.equals(FLAG_SUCCESS)) {
+      ((ViewGroup)usernameErrorTextView.getParent()).removeView(usernameErrorTextView);
+      mUsernameErrorViews.remove(username);
+      return;
+    }
+  }
+ else {
+    if (usernameResult == null || usernameResult.equals(FLAG_SUCCESS)) {
+      return;
+    }
+    usernameErrorTextView=(TextView)LayoutInflater.from(getActivity()).inflate(R.layout.people_invite_error_view,null);
+    final ViewGroup usernameErrorsContainer=(ViewGroup)getView().findViewById(R.id.username_errors_container);
+    usernameErrorsContainer.addView(usernameErrorTextView);
+    mUsernameErrorViews.put(username,usernameErrorTextView);
+  }
+  usernameErrorTextView.setText(usernameResult);
+}

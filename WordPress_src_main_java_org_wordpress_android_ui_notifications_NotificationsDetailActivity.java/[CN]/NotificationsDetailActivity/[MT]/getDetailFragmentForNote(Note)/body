@@ -2,7 +2,9 @@
   if (note == null)   return null;
   Fragment fragment;
   if (note.isCommentType()) {
-    fragment=CommentDetailFragment.newInstance(note.getId());
+    boolean isInstantLike=getIntent().getBooleanExtra(NotificationsListFragment.NOTE_INSTANT_LIKE_EXTRA,false);
+    boolean isInstantApprove=getIntent().getBooleanExtra(NotificationsListFragment.NOTE_INSTANT_APPROVE_EXTRA,false);
+    fragment=isInstantLike ? CommentDetailFragment.newInstanceForInstantLike(note.getId()) : isInstantApprove ? CommentDetailFragment.newInstanceForInstantApprove(note.getId()) : CommentDetailFragment.newInstance(note.getId());
   }
  else   if (note.isAutomattcherType()) {
     boolean isPost=(note.getSiteId() != 0 && note.getPostId() != 0 && note.getCommentId() == 0);

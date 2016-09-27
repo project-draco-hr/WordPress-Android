@@ -17,7 +17,10 @@
   CommentActions.moderateCommentRestApi(mNote.getSiteId(),mComment.commentID,newStatus,new CommentActions.CommentActionListener(){
     @Override public void onActionResult(    CommentActionResult result){
       if (!isAdded())       return;
-      if (!result.isSuccess()) {
+      if (result.isSuccess()) {
+        ToastUtils.showToast(getActivity(),R.string.comment_moderated_approved,ToastUtils.Duration.SHORT);
+      }
+ else {
         mComment.setStatus(CommentStatus.toString(oldStatus));
         updateStatusViews();
         ToastUtils.showToast(getActivity(),R.string.error_moderate_comment);

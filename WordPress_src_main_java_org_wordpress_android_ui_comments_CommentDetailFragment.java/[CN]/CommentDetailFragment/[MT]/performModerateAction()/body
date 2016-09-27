@@ -1,0 +1,13 @@
+{
+  if (!hasComment() || !isAdded() || !NetworkUtils.checkConnection(getActivity())) {
+    return;
+  }
+  CommentStatus newStatus=CommentStatus.APPROVED;
+  if (mComment.getStatusEnum() == CommentStatus.APPROVED) {
+    newStatus=CommentStatus.UNAPPROVED;
+  }
+  mComment.setStatus(newStatus.toString());
+  setModerateButtonForStatus(newStatus);
+  AniUtils.startAnimation(mBtnModerateIcon,R.anim.notifications_button_scale);
+  moderateComment(newStatus);
+}
