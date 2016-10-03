@@ -1,8 +1,12 @@
 {
-  HashMap<String,Boolean> config=new HashMap<String,Boolean>();
-  config.put("enableInAppNotification",false);
+  InstallConfig installConfig=new InstallConfig.Builder().setEnableInAppNotification(true).build();
   Core.init(Support.getInstance());
-  Core.install(application,BuildConfig.HELPSHIFT_API_KEY,BuildConfig.HELPSHIFT_API_DOMAIN,BuildConfig.HELPSHIFT_API_ID,config);
+  try {
+    Core.install(application,BuildConfig.HELPSHIFT_API_KEY,BuildConfig.HELPSHIFT_API_DOMAIN,BuildConfig.HELPSHIFT_API_ID,installConfig);
+  }
+ catch (  InstallException e) {
+    AppLog.e(T.UTILS,e);
+  }
   Support.setDelegate(new Delegate(){
     @Override public void sessionBegan(){
     }
